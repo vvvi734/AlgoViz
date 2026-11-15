@@ -1,0 +1,2609 @@
+{
+  "bubble": [
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          5,
+          2,
+          8,
+          1,
+          6,
+          3
+        ]
+      },
+      "message": "初始数组 / Initial array"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          5,
+          2,
+          8,
+          1,
+          6,
+          3
+        ],
+        "focus": [
+          0,
+          1
+        ]
+      },
+      "message": "比较相邻元素 / Compare neighbors"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          2,
+          5,
+          8,
+          1,
+          6,
+          3
+        ],
+        "focus": [
+          0,
+          1
+        ]
+      },
+      "message": "交换 / Swap"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          2,
+          5,
+          8,
+          1,
+          6,
+          3
+        ],
+        "focus": [
+          1,
+          2
+        ]
+      },
+      "message": "比较相邻元素 / Compare neighbors"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          2,
+          5,
+          8,
+          1,
+          6,
+          3
+        ],
+        "focus": [
+          2,
+          3
+        ]
+      },
+      "message": "比较相邻元素 / Compare neighbors"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          2,
+          5,
+          1,
+          8,
+          6,
+          3
+        ],
+        "focus": [
+          2,
+          3
+        ]
+      },
+      "message": "交换 / Swap"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          2,
+          5,
+          1,
+          8,
+          6,
+          3
+        ],
+        "focus": [
+          3,
+          4
+        ]
+      },
+      "message": "比较相邻元素 / Compare neighbors"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          2,
+          5,
+          1,
+          6,
+          8,
+          3
+        ],
+        "focus": [
+          3,
+          4
+        ]
+      },
+      "message": "交换 / Swap"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          2,
+          5,
+          1,
+          6,
+          8,
+          3
+        ],
+        "focus": [
+          4,
+          5
+        ]
+      },
+      "message": "比较相邻元素 / Compare neighbors"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          2,
+          5,
+          1,
+          6,
+          3,
+          8
+        ],
+        "focus": [
+          4,
+          5
+        ]
+      },
+      "message": "交换 / Swap"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          2,
+          5,
+          1,
+          6,
+          3,
+          8
+        ],
+        "focus": [
+          0,
+          1
+        ]
+      },
+      "message": "比较相邻元素 / Compare neighbors"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          2,
+          5,
+          1,
+          6,
+          3,
+          8
+        ],
+        "focus": [
+          1,
+          2
+        ]
+      },
+      "message": "比较相邻元素 / Compare neighbors"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          2,
+          1,
+          5,
+          6,
+          3,
+          8
+        ],
+        "focus": [
+          1,
+          2
+        ]
+      },
+      "message": "交换 / Swap"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          2,
+          1,
+          5,
+          6,
+          3,
+          8
+        ],
+        "focus": [
+          2,
+          3
+        ]
+      },
+      "message": "比较相邻元素 / Compare neighbors"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          2,
+          1,
+          5,
+          6,
+          3,
+          8
+        ],
+        "focus": [
+          3,
+          4
+        ]
+      },
+      "message": "比较相邻元素 / Compare neighbors"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          2,
+          1,
+          5,
+          3,
+          6,
+          8
+        ],
+        "focus": [
+          3,
+          4
+        ]
+      },
+      "message": "交换 / Swap"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          2,
+          1,
+          5,
+          3,
+          6,
+          8
+        ],
+        "focus": [
+          0,
+          1
+        ]
+      },
+      "message": "比较相邻元素 / Compare neighbors"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          5,
+          3,
+          6,
+          8
+        ],
+        "focus": [
+          0,
+          1
+        ]
+      },
+      "message": "交换 / Swap"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          5,
+          3,
+          6,
+          8
+        ],
+        "focus": [
+          1,
+          2
+        ]
+      },
+      "message": "比较相邻元素 / Compare neighbors"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          5,
+          3,
+          6,
+          8
+        ],
+        "focus": [
+          2,
+          3
+        ]
+      },
+      "message": "比较相邻元素 / Compare neighbors"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          3,
+          5,
+          6,
+          8
+        ],
+        "focus": [
+          2,
+          3
+        ]
+      },
+      "message": "交换 / Swap"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          3,
+          5,
+          6,
+          8
+        ],
+        "focus": [
+          0,
+          1
+        ]
+      },
+      "message": "比较相邻元素 / Compare neighbors"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          3,
+          5,
+          6,
+          8
+        ],
+        "focus": [
+          1,
+          2
+        ]
+      },
+      "message": "比较相邻元素 / Compare neighbors"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          3,
+          5,
+          6,
+          8
+        ],
+        "focus": [
+          0,
+          1
+        ]
+      },
+      "message": "比较相邻元素 / Compare neighbors"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          3,
+          5,
+          6,
+          8
+        ],
+        "done": true
+      },
+      "message": "排序完成 / Sorted"
+    }
+  ],
+  "insertion": [
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          7,
+          3,
+          5,
+          1,
+          9,
+          2
+        ]
+      },
+      "message": "开始 / Start"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          7,
+          7,
+          5,
+          1,
+          9,
+          2
+        ],
+        "focus": [
+          0,
+          1
+        ]
+      },
+      "message": "右移 / Shift right"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          3,
+          7,
+          5,
+          1,
+          9,
+          2
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "插入 / Insert"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          3,
+          7,
+          7,
+          1,
+          9,
+          2
+        ],
+        "focus": [
+          1,
+          2
+        ]
+      },
+      "message": "右移 / Shift right"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          3,
+          5,
+          7,
+          1,
+          9,
+          2
+        ],
+        "focus": [
+          1
+        ]
+      },
+      "message": "插入 / Insert"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          3,
+          5,
+          7,
+          7,
+          9,
+          2
+        ],
+        "focus": [
+          2,
+          3
+        ]
+      },
+      "message": "右移 / Shift right"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          3,
+          5,
+          5,
+          7,
+          9,
+          2
+        ],
+        "focus": [
+          1,
+          2
+        ]
+      },
+      "message": "右移 / Shift right"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          3,
+          3,
+          5,
+          7,
+          9,
+          2
+        ],
+        "focus": [
+          0,
+          1
+        ]
+      },
+      "message": "右移 / Shift right"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          3,
+          5,
+          7,
+          9,
+          2
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "插入 / Insert"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          3,
+          5,
+          7,
+          9,
+          2
+        ],
+        "focus": [
+          4
+        ]
+      },
+      "message": "插入 / Insert"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          3,
+          5,
+          7,
+          9,
+          9
+        ],
+        "focus": [
+          4,
+          5
+        ]
+      },
+      "message": "右移 / Shift right"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          3,
+          5,
+          7,
+          7,
+          9
+        ],
+        "focus": [
+          3,
+          4
+        ]
+      },
+      "message": "右移 / Shift right"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          3,
+          5,
+          5,
+          7,
+          9
+        ],
+        "focus": [
+          2,
+          3
+        ]
+      },
+      "message": "右移 / Shift right"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          3,
+          3,
+          5,
+          7,
+          9
+        ],
+        "focus": [
+          1,
+          2
+        ]
+      },
+      "message": "右移 / Shift right"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          3,
+          5,
+          7,
+          9
+        ],
+        "focus": [
+          1
+        ]
+      },
+      "message": "插入 / Insert"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          3,
+          5,
+          7,
+          9
+        ],
+        "done": true
+      },
+      "message": "完成 / Done"
+    }
+  ],
+  "selection": [
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          6,
+          4,
+          9,
+          1,
+          7,
+          2
+        ]
+      },
+      "message": "开始 / Start"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          6,
+          4,
+          9,
+          1,
+          7,
+          2
+        ],
+        "focus": [
+          0,
+          1
+        ]
+      },
+      "message": "寻找最小值 / Find minimum"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          6,
+          4,
+          9,
+          1,
+          7,
+          2
+        ],
+        "focus": [
+          1,
+          2
+        ]
+      },
+      "message": "寻找最小值 / Find minimum"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          6,
+          4,
+          9,
+          1,
+          7,
+          2
+        ],
+        "focus": [
+          1,
+          3
+        ]
+      },
+      "message": "寻找最小值 / Find minimum"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          6,
+          4,
+          9,
+          1,
+          7,
+          2
+        ],
+        "focus": [
+          3,
+          4
+        ]
+      },
+      "message": "寻找最小值 / Find minimum"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          6,
+          4,
+          9,
+          1,
+          7,
+          2
+        ],
+        "focus": [
+          3,
+          5
+        ]
+      },
+      "message": "寻找最小值 / Find minimum"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          4,
+          9,
+          6,
+          7,
+          2
+        ],
+        "focus": [
+          0,
+          3
+        ]
+      },
+      "message": "确定位置 / Place minimum"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          4,
+          9,
+          6,
+          7,
+          2
+        ],
+        "focus": [
+          1,
+          2
+        ]
+      },
+      "message": "寻找最小值 / Find minimum"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          4,
+          9,
+          6,
+          7,
+          2
+        ],
+        "focus": [
+          1,
+          3
+        ]
+      },
+      "message": "寻找最小值 / Find minimum"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          4,
+          9,
+          6,
+          7,
+          2
+        ],
+        "focus": [
+          1,
+          4
+        ]
+      },
+      "message": "寻找最小值 / Find minimum"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          4,
+          9,
+          6,
+          7,
+          2
+        ],
+        "focus": [
+          1,
+          5
+        ]
+      },
+      "message": "寻找最小值 / Find minimum"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          9,
+          6,
+          7,
+          4
+        ],
+        "focus": [
+          1,
+          5
+        ]
+      },
+      "message": "确定位置 / Place minimum"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          9,
+          6,
+          7,
+          4
+        ],
+        "focus": [
+          2,
+          3
+        ]
+      },
+      "message": "寻找最小值 / Find minimum"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          9,
+          6,
+          7,
+          4
+        ],
+        "focus": [
+          3,
+          4
+        ]
+      },
+      "message": "寻找最小值 / Find minimum"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          9,
+          6,
+          7,
+          4
+        ],
+        "focus": [
+          3,
+          5
+        ]
+      },
+      "message": "寻找最小值 / Find minimum"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          4,
+          6,
+          7,
+          9
+        ],
+        "focus": [
+          2,
+          5
+        ]
+      },
+      "message": "确定位置 / Place minimum"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          4,
+          6,
+          7,
+          9
+        ],
+        "focus": [
+          3,
+          4
+        ]
+      },
+      "message": "寻找最小值 / Find minimum"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          4,
+          6,
+          7,
+          9
+        ],
+        "focus": [
+          3,
+          5
+        ]
+      },
+      "message": "寻找最小值 / Find minimum"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          4,
+          6,
+          7,
+          9
+        ],
+        "focus": [
+          3,
+          3
+        ]
+      },
+      "message": "确定位置 / Place minimum"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          4,
+          6,
+          7,
+          9
+        ],
+        "focus": [
+          4,
+          5
+        ]
+      },
+      "message": "寻找最小值 / Find minimum"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          4,
+          6,
+          7,
+          9
+        ],
+        "focus": [
+          4,
+          4
+        ]
+      },
+      "message": "确定位置 / Place minimum"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          4,
+          6,
+          7,
+          9
+        ],
+        "focus": [
+          5,
+          5
+        ]
+      },
+      "message": "确定位置 / Place minimum"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          4,
+          6,
+          7,
+          9
+        ],
+        "done": true
+      },
+      "message": "完成 / Done"
+    }
+  ],
+  "quick": [
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          8,
+          3,
+          1,
+          7,
+          5,
+          2,
+          9,
+          4
+        ]
+      },
+      "message": "开始 / Start"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          8,
+          3,
+          1,
+          7,
+          5,
+          2,
+          9,
+          4
+        ],
+        "focus": [
+          0,
+          7
+        ]
+      },
+      "message": "与枢轴比较 / Compare pivot"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          8,
+          3,
+          1,
+          7,
+          5,
+          2,
+          9,
+          4
+        ],
+        "focus": [
+          1,
+          7
+        ]
+      },
+      "message": "与枢轴比较 / Compare pivot"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          3,
+          8,
+          1,
+          7,
+          5,
+          2,
+          9,
+          4
+        ],
+        "focus": [
+          0,
+          1
+        ]
+      },
+      "message": "分区交换 / Partition swap"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          3,
+          8,
+          1,
+          7,
+          5,
+          2,
+          9,
+          4
+        ],
+        "focus": [
+          2,
+          7
+        ]
+      },
+      "message": "与枢轴比较 / Compare pivot"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          3,
+          1,
+          8,
+          7,
+          5,
+          2,
+          9,
+          4
+        ],
+        "focus": [
+          1,
+          2
+        ]
+      },
+      "message": "分区交换 / Partition swap"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          3,
+          1,
+          8,
+          7,
+          5,
+          2,
+          9,
+          4
+        ],
+        "focus": [
+          3,
+          7
+        ]
+      },
+      "message": "与枢轴比较 / Compare pivot"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          3,
+          1,
+          8,
+          7,
+          5,
+          2,
+          9,
+          4
+        ],
+        "focus": [
+          4,
+          7
+        ]
+      },
+      "message": "与枢轴比较 / Compare pivot"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          3,
+          1,
+          8,
+          7,
+          5,
+          2,
+          9,
+          4
+        ],
+        "focus": [
+          5,
+          7
+        ]
+      },
+      "message": "与枢轴比较 / Compare pivot"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          3,
+          1,
+          2,
+          7,
+          5,
+          8,
+          9,
+          4
+        ],
+        "focus": [
+          2,
+          5
+        ]
+      },
+      "message": "分区交换 / Partition swap"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          3,
+          1,
+          2,
+          7,
+          5,
+          8,
+          9,
+          4
+        ],
+        "focus": [
+          6,
+          7
+        ]
+      },
+      "message": "与枢轴比较 / Compare pivot"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          3,
+          1,
+          2,
+          4,
+          5,
+          8,
+          9,
+          7
+        ],
+        "focus": [
+          3
+        ]
+      },
+      "message": "枢轴归位 / Pivot placed"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          3,
+          1,
+          2,
+          4,
+          5,
+          8,
+          9,
+          7
+        ],
+        "focus": [
+          0,
+          2
+        ]
+      },
+      "message": "与枢轴比较 / Compare pivot"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          3,
+          1,
+          2,
+          4,
+          5,
+          8,
+          9,
+          7
+        ],
+        "focus": [
+          1,
+          2
+        ]
+      },
+      "message": "与枢轴比较 / Compare pivot"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          3,
+          2,
+          4,
+          5,
+          8,
+          9,
+          7
+        ],
+        "focus": [
+          0,
+          1
+        ]
+      },
+      "message": "分区交换 / Partition swap"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          8,
+          9,
+          7
+        ],
+        "focus": [
+          1
+        ]
+      },
+      "message": "枢轴归位 / Pivot placed"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          8,
+          9,
+          7
+        ],
+        "focus": [
+          4,
+          7
+        ]
+      },
+      "message": "与枢轴比较 / Compare pivot"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          8,
+          9,
+          7
+        ],
+        "focus": [
+          4,
+          4
+        ]
+      },
+      "message": "分区交换 / Partition swap"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          8,
+          9,
+          7
+        ],
+        "focus": [
+          5,
+          7
+        ]
+      },
+      "message": "与枢轴比较 / Compare pivot"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          8,
+          9,
+          7
+        ],
+        "focus": [
+          6,
+          7
+        ]
+      },
+      "message": "与枢轴比较 / Compare pivot"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          7,
+          9,
+          8
+        ],
+        "focus": [
+          5
+        ]
+      },
+      "message": "枢轴归位 / Pivot placed"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          7,
+          9,
+          8
+        ],
+        "focus": [
+          6,
+          7
+        ]
+      },
+      "message": "与枢轴比较 / Compare pivot"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          7,
+          8,
+          9
+        ],
+        "focus": [
+          6
+        ]
+      },
+      "message": "枢轴归位 / Pivot placed"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          7,
+          8,
+          9
+        ],
+        "done": true
+      },
+      "message": "完成 / Done"
+    }
+  ],
+  "binary": [
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          3,
+          5,
+          7,
+          9,
+          11,
+          13
+        ]
+      },
+      "message": "有序数组 / Sorted array"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          3,
+          5,
+          7,
+          9,
+          11,
+          13
+        ],
+        "focus": [
+          3
+        ],
+        "range": [
+          0,
+          6
+        ]
+      },
+      "message": "检查中间元素 / Check midpoint"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          3,
+          5,
+          7,
+          9,
+          11,
+          13
+        ],
+        "focus": [
+          5
+        ],
+        "range": [
+          4,
+          6
+        ]
+      },
+      "message": "检查中间元素 / Check midpoint"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          3,
+          5,
+          7,
+          9,
+          11,
+          13
+        ],
+        "focus": [
+          4
+        ],
+        "range": [
+          4,
+          4
+        ]
+      },
+      "message": "检查中间元素 / Check midpoint"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          3,
+          5,
+          7,
+          9,
+          11,
+          13
+        ],
+        "focus": [
+          4
+        ],
+        "done": true
+      },
+      "message": "查找成功 / Found"
+    }
+  ],
+  "linear": [
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          6,
+          2,
+          8,
+          4,
+          1
+        ]
+      },
+      "message": "开始 / Start"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          6,
+          2,
+          8,
+          4,
+          1
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "检查当前位置 / Inspect"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          6,
+          2,
+          8,
+          4,
+          1
+        ],
+        "focus": [
+          1
+        ]
+      },
+      "message": "检查当前位置 / Inspect"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          6,
+          2,
+          8,
+          4,
+          1
+        ],
+        "focus": [
+          2
+        ]
+      },
+      "message": "检查当前位置 / Inspect"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          6,
+          2,
+          8,
+          4,
+          1
+        ],
+        "focus": [
+          3
+        ]
+      },
+      "message": "检查当前位置 / Inspect"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          6,
+          2,
+          8,
+          4,
+          1
+        ],
+        "focus": [
+          3
+        ],
+        "done": true
+      },
+      "message": "找到目标 / Found"
+    }
+  ],
+  "stack": [
+    {
+      "state": {
+        "type": "stack",
+        "values": []
+      },
+      "message": "空栈 / Empty stack"
+    },
+    {
+      "state": {
+        "type": "stack",
+        "values": [
+          4
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "push 4"
+    },
+    {
+      "state": {
+        "type": "stack",
+        "values": [
+          4,
+          9
+        ],
+        "focus": [
+          1
+        ]
+      },
+      "message": "push 9"
+    },
+    {
+      "state": {
+        "type": "stack",
+        "values": [
+          4,
+          9,
+          2
+        ],
+        "focus": [
+          2
+        ]
+      },
+      "message": "push 2"
+    },
+    {
+      "state": {
+        "type": "stack",
+        "values": [
+          4,
+          9
+        ],
+        "focus": [
+          1
+        ]
+      },
+      "message": "pop "
+    },
+    {
+      "state": {
+        "type": "stack",
+        "values": [
+          4,
+          9,
+          7
+        ],
+        "focus": [
+          2
+        ]
+      },
+      "message": "push 7"
+    }
+  ],
+  "queue": [
+    {
+      "state": {
+        "type": "queue",
+        "values": []
+      },
+      "message": "空队列 / Empty queue"
+    },
+    {
+      "state": {
+        "type": "queue",
+        "values": [
+          3
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "enqueue 3"
+    },
+    {
+      "state": {
+        "type": "queue",
+        "values": [
+          3,
+          8
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "enqueue 8"
+    },
+    {
+      "state": {
+        "type": "queue",
+        "values": [
+          3,
+          8,
+          5
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "enqueue 5"
+    },
+    {
+      "state": {
+        "type": "queue",
+        "values": [
+          8,
+          5
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "dequeue "
+    },
+    {
+      "state": {
+        "type": "queue",
+        "values": [
+          8,
+          5,
+          2
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "enqueue 2"
+    }
+  ],
+  "linked": [
+    {
+      "state": {
+        "type": "linked",
+        "values": []
+      },
+      "message": "空链表 / Empty list"
+    },
+    {
+      "state": {
+        "type": "linked",
+        "values": [
+          3
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "insert 3"
+    },
+    {
+      "state": {
+        "type": "linked",
+        "values": [
+          8,
+          3
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "insert 8"
+    },
+    {
+      "state": {
+        "type": "linked",
+        "values": [
+          5,
+          8,
+          3
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "insert 5"
+    },
+    {
+      "state": {
+        "type": "linked",
+        "values": [
+          8,
+          3
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "remove "
+    },
+    {
+      "state": {
+        "type": "linked",
+        "values": [
+          7,
+          8,
+          3
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "insert 7"
+    }
+  ],
+  "bfs": [
+    {
+      "state": {
+        "type": "graph",
+        "visited": [
+          "A"
+        ],
+        "focus": [
+          "A"
+        ]
+      },
+      "message": "起点 / Start"
+    },
+    {
+      "state": {
+        "type": "graph",
+        "visited": [
+          "A"
+        ],
+        "focus": [
+          "A"
+        ]
+      },
+      "message": "访问 / Visit A"
+    },
+    {
+      "state": {
+        "type": "graph",
+        "visited": [
+          "A",
+          "B"
+        ],
+        "focus": [
+          "B"
+        ]
+      },
+      "message": "加入队列 / Enqueue B"
+    },
+    {
+      "state": {
+        "type": "graph",
+        "visited": [
+          "A",
+          "B",
+          "C"
+        ],
+        "focus": [
+          "C"
+        ]
+      },
+      "message": "加入队列 / Enqueue C"
+    },
+    {
+      "state": {
+        "type": "graph",
+        "visited": [
+          "A",
+          "B",
+          "C"
+        ],
+        "focus": [
+          "B"
+        ]
+      },
+      "message": "访问 / Visit B"
+    },
+    {
+      "state": {
+        "type": "graph",
+        "visited": [
+          "A",
+          "B",
+          "C",
+          "D"
+        ],
+        "focus": [
+          "D"
+        ]
+      },
+      "message": "加入队列 / Enqueue D"
+    },
+    {
+      "state": {
+        "type": "graph",
+        "visited": [
+          "A",
+          "B",
+          "C",
+          "D",
+          "E"
+        ],
+        "focus": [
+          "E"
+        ]
+      },
+      "message": "加入队列 / Enqueue E"
+    },
+    {
+      "state": {
+        "type": "graph",
+        "visited": [
+          "A",
+          "B",
+          "C",
+          "D",
+          "E"
+        ],
+        "focus": [
+          "C"
+        ]
+      },
+      "message": "访问 / Visit C"
+    },
+    {
+      "state": {
+        "type": "graph",
+        "visited": [
+          "A",
+          "B",
+          "C",
+          "D",
+          "E",
+          "F"
+        ],
+        "focus": [
+          "F"
+        ]
+      },
+      "message": "加入队列 / Enqueue F"
+    },
+    {
+      "state": {
+        "type": "graph",
+        "visited": [
+          "A",
+          "B",
+          "C",
+          "D",
+          "E",
+          "F"
+        ],
+        "focus": [
+          "D"
+        ]
+      },
+      "message": "访问 / Visit D"
+    },
+    {
+      "state": {
+        "type": "graph",
+        "visited": [
+          "A",
+          "B",
+          "C",
+          "D",
+          "E",
+          "F"
+        ],
+        "focus": [
+          "E"
+        ]
+      },
+      "message": "访问 / Visit E"
+    },
+    {
+      "state": {
+        "type": "graph",
+        "visited": [
+          "A",
+          "B",
+          "C",
+          "D",
+          "E",
+          "F"
+        ],
+        "focus": [
+          "F"
+        ]
+      },
+      "message": "访问 / Visit F"
+    }
+  ],
+  "dfs": [
+    {
+      "state": {
+        "type": "graph",
+        "visited": [
+          "A"
+        ],
+        "focus": [
+          "A"
+        ]
+      },
+      "message": "访问 / Visit A"
+    },
+    {
+      "state": {
+        "type": "graph",
+        "visited": [
+          "A",
+          "B"
+        ],
+        "focus": [
+          "B"
+        ]
+      },
+      "message": "访问 / Visit B"
+    },
+    {
+      "state": {
+        "type": "graph",
+        "visited": [
+          "A",
+          "B",
+          "D"
+        ],
+        "focus": [
+          "D"
+        ]
+      },
+      "message": "访问 / Visit D"
+    },
+    {
+      "state": {
+        "type": "graph",
+        "visited": [
+          "A",
+          "B",
+          "D"
+        ],
+        "focus": [
+          "D"
+        ]
+      },
+      "message": "回溯 / Backtrack D"
+    },
+    {
+      "state": {
+        "type": "graph",
+        "visited": [
+          "A",
+          "B",
+          "D",
+          "E"
+        ],
+        "focus": [
+          "E"
+        ]
+      },
+      "message": "访问 / Visit E"
+    },
+    {
+      "state": {
+        "type": "graph",
+        "visited": [
+          "A",
+          "B",
+          "D",
+          "E",
+          "F"
+        ],
+        "focus": [
+          "F"
+        ]
+      },
+      "message": "访问 / Visit F"
+    },
+    {
+      "state": {
+        "type": "graph",
+        "visited": [
+          "A",
+          "B",
+          "D",
+          "E",
+          "F",
+          "C"
+        ],
+        "focus": [
+          "C"
+        ]
+      },
+      "message": "访问 / Visit C"
+    },
+    {
+      "state": {
+        "type": "graph",
+        "visited": [
+          "A",
+          "B",
+          "D",
+          "E",
+          "F",
+          "C"
+        ],
+        "focus": [
+          "C"
+        ]
+      },
+      "message": "回溯 / Backtrack C"
+    },
+    {
+      "state": {
+        "type": "graph",
+        "visited": [
+          "A",
+          "B",
+          "D",
+          "E",
+          "F",
+          "C"
+        ],
+        "focus": [
+          "F"
+        ]
+      },
+      "message": "回溯 / Backtrack F"
+    },
+    {
+      "state": {
+        "type": "graph",
+        "visited": [
+          "A",
+          "B",
+          "D",
+          "E",
+          "F",
+          "C"
+        ],
+        "focus": [
+          "E"
+        ]
+      },
+      "message": "回溯 / Backtrack E"
+    },
+    {
+      "state": {
+        "type": "graph",
+        "visited": [
+          "A",
+          "B",
+          "D",
+          "E",
+          "F",
+          "C"
+        ],
+        "focus": [
+          "B"
+        ]
+      },
+      "message": "回溯 / Backtrack B"
+    },
+    {
+      "state": {
+        "type": "graph",
+        "visited": [
+          "A",
+          "B",
+          "D",
+          "E",
+          "F",
+          "C"
+        ],
+        "focus": [
+          "A"
+        ]
+      },
+      "message": "回溯 / Backtrack A"
+    }
+  ],
+  "inorder": [
+    {
+      "state": {
+        "type": "tree",
+        "values": [
+          4,
+          2,
+          6,
+          1,
+          3,
+          5,
+          7
+        ],
+        "visited": []
+      },
+      "message": "开始 / Start"
+    },
+    {
+      "state": {
+        "type": "tree",
+        "values": [
+          4,
+          2,
+          6,
+          1,
+          3,
+          5,
+          7
+        ],
+        "visited": [
+          3
+        ],
+        "focus": [
+          3
+        ]
+      },
+      "message": "访问 / Visit 1"
+    },
+    {
+      "state": {
+        "type": "tree",
+        "values": [
+          4,
+          2,
+          6,
+          1,
+          3,
+          5,
+          7
+        ],
+        "visited": [
+          3,
+          1
+        ],
+        "focus": [
+          1
+        ]
+      },
+      "message": "访问 / Visit 2"
+    },
+    {
+      "state": {
+        "type": "tree",
+        "values": [
+          4,
+          2,
+          6,
+          1,
+          3,
+          5,
+          7
+        ],
+        "visited": [
+          3,
+          1,
+          4
+        ],
+        "focus": [
+          4
+        ]
+      },
+      "message": "访问 / Visit 3"
+    },
+    {
+      "state": {
+        "type": "tree",
+        "values": [
+          4,
+          2,
+          6,
+          1,
+          3,
+          5,
+          7
+        ],
+        "visited": [
+          3,
+          1,
+          4,
+          0
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "访问 / Visit 4"
+    },
+    {
+      "state": {
+        "type": "tree",
+        "values": [
+          4,
+          2,
+          6,
+          1,
+          3,
+          5,
+          7
+        ],
+        "visited": [
+          3,
+          1,
+          4,
+          0,
+          5
+        ],
+        "focus": [
+          5
+        ]
+      },
+      "message": "访问 / Visit 5"
+    },
+    {
+      "state": {
+        "type": "tree",
+        "values": [
+          4,
+          2,
+          6,
+          1,
+          3,
+          5,
+          7
+        ],
+        "visited": [
+          3,
+          1,
+          4,
+          0,
+          5,
+          2
+        ],
+        "focus": [
+          2
+        ]
+      },
+      "message": "访问 / Visit 6"
+    },
+    {
+      "state": {
+        "type": "tree",
+        "values": [
+          4,
+          2,
+          6,
+          1,
+          3,
+          5,
+          7
+        ],
+        "visited": [
+          3,
+          1,
+          4,
+          0,
+          5,
+          2,
+          6
+        ],
+        "focus": [
+          6
+        ]
+      },
+      "message": "访问 / Visit 7"
+    },
+    {
+      "state": {
+        "type": "tree",
+        "values": [
+          4,
+          2,
+          6,
+          1,
+          3,
+          5,
+          7
+        ],
+        "visited": [
+          3,
+          1,
+          4,
+          0,
+          5,
+          2,
+          6
+        ],
+        "done": true
+      },
+      "message": "完成 / Done"
+    }
+  ]
+}
