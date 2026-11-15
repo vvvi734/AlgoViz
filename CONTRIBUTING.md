@@ -62,3 +62,14 @@ npm run build
 ## 提交约定
 
 使用 Conventional Commits：`feat:` / `fix:` / `refactor:` / `test:` / `docs:` / `chore:`。一个 PR 只解决一个 Issue，保持最小作用域，不要顺手改无关模块。
+
+## 阶段提交规范（项目约定）
+
+每完成一个阶段（一个独立 Issue，或一个 Phase 收尾）就提交一次并推送，不要攒到最后一并提交。
+
+- 远端：`https://gitee.com/vvvi734/algolens.git`，分支 `main`（`origin/main`）。
+- 提交信息：`<type>(phase-N): <一句话说明>`，例如 `test(phase-1): 补齐 12 个算法的帧回归测试`。
+- 提交前必须跑完：`npm run typecheck` → `npm test` → `npm run build`。
+- 提交内容只含该阶段的改动；`node_modules/`、`dist/`、`*.log`、`*.tsbuildinfo`、`.env*` 由 `.gitignore` 排除，不要强制添加。
+- 推送：`git push origin main`。若远端已有他人提交，先 `git pull --rebase origin main` 再推。
+- 阶段提交后，在 PR / 报告里写明「本阶段改动、验证结果、仍未完成的部分」，不要把占位能力写成已支持。
