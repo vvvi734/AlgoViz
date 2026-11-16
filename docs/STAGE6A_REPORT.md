@@ -177,7 +177,7 @@ E2E 覆盖：
 - 分支：`main`
 - 远端：`https://gitee.com/vvvi734/algolens.git`
 - 基线：`a230b4f`（Stage 5A）
-- 本阶段提交：`<pending>`（提交信息 `feat(phase-6a): local AI gateway + progressive web mentor`）
+- 实现提交：`ae584fa`（`feat(phase-6a): local AI gateway + progressive web mentor`）；本报告的哈希更新与测试记录在紧随其后的文档提交中
 - 工作区：提交前包含 Stage 6A 新建/修改文件；`dist/`、`packages/ai-gateway/dist/`、`.env` 均被忽略。
 - 推送：`git push origin main`（普通推送，无 force）。
 
