@@ -19,12 +19,6 @@ async function selectAlgo(page: Page, id: string) {
   }
 }
 
-async function runPython(page: Page) {
-  await page.selectOption('#code-lang', 'python');
-  await page.click('[data-testid="run-btn"]');
-  await expect(page.locator('[data-testid="run-feedback"]')).not.toContainText('运行中', { timeout: 90_000 });
-}
-
 async function stackValues(page: Page): Promise<string[]> {
   return page.locator('[data-testid="stack-item"]').evaluateAll((nodes) =>
     nodes.map((node) => node.getAttribute('data-value') ?? ''),
@@ -106,9 +100,12 @@ test.describe('Stage 7B — AlgoViz brand and real stack/queue animation', () =>
     await page.setViewportSize({ width: 1440, height: 900 });
     await openApp(page);
     await selectAlgo(page, 'stack');
-    await runPython(page);
+    // Selecting stack must auto-run the Python preset in Python, not the JS
+    // legacy runner. Otherwise the first view is the old node list with an
+    // "Invalid or unexpected token" error.
     await expect(page.locator('[data-testid="stack-visual"]')).toBeVisible({ timeout: 90_000 });
     await expect(page.locator('[data-testid="progress"]')).toHaveText('1 / 7');
+    await expect(page.locator('[data-testid="run-feedback"]')).not.toContainText('执行出错');
 
     // Frame 0: real empty stack with no fabricated item.
     await expect(page.locator('[data-testid="stack-empty"]')).toBeVisible();
@@ -179,9 +176,9 @@ test.describe('Stage 7B — AlgoViz brand and real stack/queue animation', () =>
     await page.setViewportSize({ width: 1440, height: 900 });
     await openApp(page);
     await selectAlgo(page, 'queue');
-    await runPython(page);
     await expect(page.locator('[data-testid="queue-visual"]')).toBeVisible({ timeout: 90_000 });
     await expect(page.locator('[data-testid="progress"]')).toHaveText('1 / 7');
+    await expect(page.locator('[data-testid="run-feedback"]')).not.toContainText('执行出错');
 
     await expect(page.locator('[data-testid="queue-empty"]')).toBeVisible();
     await expect(page.locator('[data-testid="queue-item"]')).toHaveCount(0);
@@ -258,8 +255,8 @@ test.describe('Stage 7B — AlgoViz brand and real stack/queue animation', () =>
     await page.setViewportSize({ width: 1024, height: 768 });
     await openApp(page);
     await selectAlgo(page, 'stack');
-    await runPython(page);
     await expect(page.locator('[data-testid="stack-visual"]')).toBeVisible({ timeout: 90_000 });
+    await expect(page.locator('[data-testid="progress"]')).toHaveText('1 / 7');
     for (let i = 0; i < 3; i += 1) await page.click('[data-testid="next-btn"]');
     const progress = await page.locator('[data-testid="progress"]').textContent();
     expect(await stackValues(page)).toEqual(['8', '5', '3']);

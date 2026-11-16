@@ -161,8 +161,11 @@ describe('Stage 5A — exporting the current learning context', () => {
     const downloads = captureDownloads();
     renderApp();
     await waitFor(() => expect(mockedRun).toHaveBeenCalled());
-
+    await waitFor(() => expect(screen.getByTestId('run-feedback').textContent).toContain('动画已生成'));
+    const runsBeforeRun = mockedRun.mock.calls.length;
     fireEvent.click(screen.getByTestId('run-btn'));
+    await waitFor(() => expect(mockedRun.mock.calls.length).toBe(runsBeforeRun + 1));
+    await waitFor(() => expect(screen.getByTestId('run-feedback').textContent).toContain('动画已生成'));
     await waitFor(() => expect(screen.getByTestId('progress').textContent).toMatch(/1 \/ 3/));
     const runsAfterRun = mockedRun.mock.calls.length;
 

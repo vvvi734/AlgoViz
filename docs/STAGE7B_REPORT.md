@@ -245,7 +245,7 @@ VisualStage → StackVisual / QueueVisual
 | TypeScript | `npm run typecheck` | **0 错误** |
 | 单元/组件 | `npm test -- --reporter=dot` | **51 文件 / 405 tests 通过**（基线 381 + 24 新增） |
 | 构建 | `npm run build` | **成功**；`dist/index` 511.27 kB / gzip 162.89 kB |
-| 浏览器 E2E | `npx playwright test --reporter=line` | **26 / 26 passed（1.5m）**（基线 22 + 4 新增） |
+| 浏览器 E2E | `npx playwright test --reporter=line` | **26 / 26 passed（1.9m）**（基线 22 + 4 新增） |
 | MCP 协议 | `npx vitest run packages/mcp-server` | **20 / 20 通过** |
 | MCP stdio | `npm run mcp:smoke` | **9 pass，1 skip**（skip 为未提供 `--context-dir` 的上下文回读） |
 | MCP 类型/构建 | `npm run mcp:typecheck` / `mcp:build` | 通过 |
@@ -266,7 +266,22 @@ VisualStage → StackVisual / QueueVisual
 
 ### 测试时序说明
 
-全量首跑曾出现 2 个既有计时抖动（`App.stage3.playback` 与 `App.stage3b.lesson` 在异步首轮 run 完成前就开始拖动，仍显示 `1/12`）。本阶段只加固测试：先等待 `run-feedback` 显示“动画已生成”，再执行拖动/切换，不删除测试、不削弱任何断言。加固后全量 **405/405** 通过。
+全量首跑曾出现 2 个既有计时抖动（`App.stage3.playback` 与 `App.stage3b.lesson` 在异步首轮 run 完成前就开始拖动，仍显示 `1/12`）。提交后复跑又暴露出 `App.stage3.test` 与 `App.stage5a.session.test` 的同类竞争：它们在自动首轮 run 完成前就点击下一帧或拖动时间轴，随后首轮 reset 把位置打回第 0 帧。本阶段只加固测试：先等待 `run-feedback` 显示“动画已生成”且首轮帧数落定，再执行拖动/切换；Stage 5A 的显式第二次运行同时等待调用次数与完成状态。不删除测试、不削弱任何断言。加固后全量 **405/405** 通过。
+
+### 7B.1 提交后修复：选中栈/队列首轮自动运行语言错误
+
+用户反馈本地页面中的栈动画与验收截图不一致。复现确认不是缓存问题：
+
+- 选中“栈”后 `#code-lang` 已经是 `python`；
+- `run-feedback` 显示 `执行出错: Invalid or unexpected token`；
+- 画布仍是旧的 JS 节点/数组视图，进度约 `1 / 25`；
+- 手动再点“运行并可视化”后才变成 `1 / 7` 的桶状栈。
+
+根因在 `selectAlgo`：`preferredLang` 已设为 Python，但 `setCodeLangState` 是异步的，紧接着的 `runVisualizationWith(code, rawInput)` 闭包仍捕获旧的 `codeLang = 'js'`，于是首轮把 Python 源码交给 JS 执行器。用户只选中“栈”而不手动点运行时，就会停在旧视图。
+
+修复：`runVisualizationWith` 增加可选参数 `language: CodeLanguage = codeLang`，内部用该语言调用 `runForLanguage`；`selectAlgo` 显式传入 `preferredLang`，首轮运行不再依赖异步 state 更新。
+
+验证：本地 `http://localhost:5173` 选中栈后自动得到 `1 / 7`、`动画已生成 · 7 frames` 和桶状视图；前进 3 帧为 `4 / 7`，DOM 元素值为 `['8','5','3']`。修复后 `typecheck`、`build`、405 项单测与 26 条 E2E 均通过。
 
 ---
 

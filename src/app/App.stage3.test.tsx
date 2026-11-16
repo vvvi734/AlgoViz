@@ -26,6 +26,7 @@ function renderApp() {
 }
 
 async function waitForReady() {
+  await waitFor(() => expect(screen.getByTestId('run-feedback').textContent).toContain('动画已生成'));
   await waitFor(() => expect(screen.getByTestId('progress').textContent).toBe('1 / 2'));
 }
 

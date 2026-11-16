@@ -163,7 +163,7 @@ export function useLabController(): LabController {
     return () => window.removeEventListener('beforeunload', flush);
   }, []);
 
-  const runVisualizationWith = useCallback(async (code: string, rawInput: string) => {
+  const runVisualizationWith = useCallback(async (code: string, rawInput: string, language: CodeLanguage = codeLang) => {
     let input: unknown;
     try {
       input = JSON.parse(rawInput);
@@ -175,7 +175,7 @@ export function useLabController(): LabController {
     setStatus({ text: t('running'), error: false });
     setDiagnostics([]);
     try {
-      const output = await runForLanguage('visual', code, input, null, codeLang, {
+      const output = await runForLanguage('visual', code, input, null, language, {
         jsTimeout: t('workerTimeout'),
         pythonTimeout: b('Python 初始化或执行超时（30 秒）', 'Python initialization/execution timed out (30s)'),
       });
@@ -239,7 +239,7 @@ export function useLabController(): LabController {
     setInputJson(rawInput);
     setDiagnostics([]);
     setStatus({ text: '', error: false });
-    void runVisualizationWith(code, rawInput);
+    void runVisualizationWith(code, rawInput, preferredLang);
   }, [catalog, codeLang, playback, flushCurrent, applyCode, runVisualizationWith]);
 
   const setCodeLang = useCallback((next: CodeLanguage) => {
