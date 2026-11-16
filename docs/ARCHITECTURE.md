@@ -1,8 +1,8 @@
-# AlgoLens 架构方案（v0.3 / Stage 1）
+# AlgoLens 架构方案（v0.3 / Stage 2）
 
 本文描述从单文件原型（`index.html`，296 行 / ~70 KB）迁移到 React + TypeScript + Vite 后的模块边界、数据流与演进约束。
 
-**定位已收敛**：Python 为主要教学语言；JavaScript 作为前端实现语言继续支持既有 12 个算法演示。**C/C++ 与在线判题已从规划中取消**，相关入口与执行后端已移除。Stage 1 已落地「统一 Trace Event Schema v1 + 旧动画兼容 + Python 冒泡排序同步演示」，详见 [STAGE1_REPORT.md](./STAGE1_REPORT.md)。
+**定位已收敛**：Python 为主要教学语言；JavaScript 作为前端实现语言继续支持既有 12 个算法演示。**C/C++ 与在线判题已从规划中取消**，相关入口与执行后端已移除。Stage 1 落地「统一 Trace Event Schema v1 + 旧动画兼容 + Python 冒泡排序同步演示」；Stage 2 落地「Monaco Editor + 执行行高亮 + Python 错误诊断 + 本地代码保存 + 真实浏览器 E2E」，详见 [STAGE1_REPORT.md](./STAGE1_REPORT.md) 与 [STAGE2_REPORT.md](./STAGE2_REPORT.md)。
 
 ## 1. 现状盘点（迁移前）
 
@@ -40,6 +40,8 @@ flowchart TD
 | `src/domain/visualization` | `TraceState → VisualModel` 纯映射、日志窗口 | 不写 `innerHTML` |
 | `src/runtime/js` | Worker 客户端 + 与 Worker 共用的纯执行体 | 不在主线程 `new Function` |
 | `src/runtime/python` | Pyodide classic worker（按需 CDN）+ 扩展版 `trace()` | 不内置 Pyodide 到 bundle |
+| `src/runtime/monaco` | Monaco 懒加载、本地 Worker 打包、`algolens` 主题映射 | 不打包到主 bundle（`import()` 拆包） |
+| `src/runtime/drafts` | localStorage 代码草稿（按算法 × 语言） | 不缓存敏感信息；由 `features` 通过接口调用 |
 | `src/runtime/url` | HTTP(S) 地址校验 | 不承载业务逻辑 |
 | `src/runtime/ai` | `/api/ai` 客户端与响应校验 | 不保存任何 API key |
 | `src/theme` | 偏好解析、媒体查询监听、根元素属性 | 不写组件颜色 |
@@ -80,7 +82,8 @@ flowchart TD
 | 帧回归 | Vitest + legacy 快照 | 12 个算法逐帧一致、空/重复/单元素输入、排序终态 |
 | 组件冒烟 | Vitest + jsdom + Testing Library | 12 个算法入口、时间轴交互、三态主题、语言切换、视图切换 |
 | 令牌契约 | Vitest 读 CSS 文本 | 两套主题 token 完整性、无硬编码颜色 |
-| E2E / a11y | Playwright + axe | **未实现**，见 Issue 12 |
+| E2E | Playwright（真实 Edge 无头 + `vite preview`） | Monaco 加载、Python 冒泡同步高亮、SyntaxError 波浪线出现/清除、草稿自动保存/刷新恢复、主题切换（见 `e2e/lab.spec.ts`） |
+| a11y | axe | **未实现**，见后续 Issue |
 
 `npm run typecheck`、`npm test`、`npm run build` 是每次 PR 的必过门槛（见 `.github/workflows/ci.yml`）。
 
@@ -92,8 +95,8 @@ flowchart TD
 
 ```
 Stage 1（已完成）: Trace Schema v1 → 旧动画适配 → Python trace 扩展 → 同步观察面板 → 冒泡排序端到端
-Stage 2（规划）  : 代码编辑器（Monaco 高亮 / 行号 / 诊断 / 保存，按 Trace 高亮）
-后续             : 递归调用栈动画、AI 渐进式教学、题库扩充、E2E / axe
+Stage 2（已完成）: Monaco 编辑器（懒加载/本地 Worker）→ 执行行高亮 → Python 错误诊断与 Marker → 源码一致性/异步隔离 → 草稿自动保存 → 深浅主题适配 → 真实浏览器 E2E
+后续             : 递归调用栈动画、AI 渐进式教学、题库扩充、a11y / axe
 ```
 
 `Trace Event Schema v1` 是编辑器诊断与递归栈动画的前置：Monaco 需要根据 `event.sourceLocation` 高亮，调用栈动画需要 `callStack` 协议（本阶段已定义、未动画化）。

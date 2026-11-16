@@ -60,6 +60,10 @@
   --code-fg: #dceeff;
   --code-edge: #304258;
   --code-edge-focus: #5cbaae;
+  --code-active-line: #14334b;
+  --code-active-line-gutter: #2b947d;
+  --code-selection: #23415f;
+  --code-line-highlight: #0e2233;
   --input-bg: #0a1524;
   --note-bg: #1b3540;
   --note-fg: #b9e2da;
@@ -145,6 +149,10 @@
   --code-fg: #14243a;
   --code-edge: #cfdae8;
   --code-edge-focus: #087a69;
+  --code-active-line: #d8efe8;
+  --code-active-line-gutter: #149a81;
+  --code-selection: #cfe0f2;
+  --code-line-highlight: #eef4fb;
   --input-bg: #f8fbff;
   --note-bg: #e0f5ee;
   --note-fg: #17564d;

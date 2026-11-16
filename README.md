@@ -4,8 +4,8 @@
 
 面向大学生与 408 考研学生的浏览器端算法学习平台：**Python 在浏览器内运行**，根据真实执行结果生成逐帧动画，并同步展示代码位置、变量值与步骤讲解。完全本地运行，无需租服务器。
 
-> **当前版本：v0.3 Stage 1。** 刚完成「统一 Trace Event Schema v1 + 旧动画兼容 + Python 冒泡排序同步演示 + 回归测试」。
-> 定位已收敛：**Python 为主要教学语言**，JavaScript 作为前端实现语言继续支持既有 12 个算法演示；**C / C++ 与在线判题已从规划中取消**。详见 [阶段一开发总结](docs/STAGE1_REPORT.md)。
+> **当前版本：v0.3 Stage 2。** 刚完成「Monaco Editor + Python 同步调试体验」：语法高亮、行号、执行行高亮联动、Python 错误诊断（Monaco Marker）、本地代码自动保存、真实浏览器 E2E 验证。
+> 定位已收敛：**Python 为主要教学语言**，JavaScript 作为前端实现语言继续支持既有 12 个算法演示；**C / C++ 与在线判题已从规划中取消**。详见 [阶段一总结](docs/STAGE1_REPORT.md) 与 [阶段二总结](docs/STAGE2_REPORT.md)。
 
 ---
 
@@ -24,13 +24,18 @@
 | 统一 Trace Event Schema v1 | ✅ 已实现 | Zod 运行时校验：`schemaVersion/step/eventType/visualType/state/message/sourceLocation/variables/callStack` + 事件/帧/变量限额 |
 | 同步观察面板 | ✅ 已实现 | 代码位置高亮 + 变量观察器 + 步骤讲解，四区随 `currentEvent` 联动 |
 | Python 冒泡排序端到端演示 | ✅ 已实现 | 真实 `i/j/arr/n` 变量、源码行号、比较/交换高亮 |
+| Monaco 代码编辑器 | ✅ 已实现 | Python/JS 语法高亮、行号、缩进、折叠、撤销/重做、自适应尺寸 |
+| 执行行高亮联动 | ✅ 已实现 | `currentEvent.sourceLocation.line` 驱动 Monaco 高亮；时间轴/单步/回退/拖动同步 |
+| Python 错误诊断 | ✅ 已实现 | SyntaxError/NameError/… 结构化抽取，行列映射为 Monaco Marker |
+| 本地代码自动保存 | ✅ 已实现 | 按算法×语言 debounce 自动保存，刷新/切换恢复，两步确认恢复默认 |
+| 源码一致性与异步隔离 | ✅ 已实现 | 编辑后旧 Trace 不高亮新代码并提示重跑；`runId` 丢弃过期结果 |
 | 练习题库（原创示例） | ✅ 已实现 | 8 道原创题 + 3 级循序提示 + 本机学习记录 |
 | 练习「运行并查看输出」 | ✅ 已实现 | 仅展示输入 → 输出，**不再自动判题**；完成状态由用户手动标记 |
 | C / C++ | 🚫 已取消 | 语言入口、占位模板与 `/api/execute` 执行后端均已移除 |
 | 在线 Judge / 自动判题 | 🚫 已取消 | 相关入口与宣传已清理 |
-| 代码编辑器语法高亮 / 行号 / 诊断 / 保存 | ⏳ 后续 | 目前为纯 `textarea`；只读代码位置高亮已就绪，Monaco 留到 Stage 2 |
 | 中英文界面 / 移动端适配 | ⚠️ 部分 | 覆盖全部现有文案；未做触控尺寸与可访问性审计 |
-| 自动化测试 | ⚠️ 部分 | 112 项单测 / 帧回归 / jsdom 冒烟；无 Playwright E2E / axe |
+| 自动化测试 | ✅ 已实现 | 133 项单测 / 帧回归 / jsdom 冒烟 + 4 条真实浏览器 E2E（Playwright + Edge） |
+| 练习页编辑器 | ⏳ 后续 | 练习页仍为 textarea；Monaco 仅用于实验室主编辑器 |
 | GitHub Pages 部署 | ✅ 已实现 | workflow 构建 `dist/` 后发布 |
 | 开源贡献规范 | ✅ 基础版 | [CONTRIBUTING.md](CONTRIBUTING.md)、[行为准则](CODE_OF_CONDUCT.md) |
 
@@ -40,9 +45,10 @@
 npm ci
 npm run dev            # 开发服务器
 npm run typecheck      # TypeScript 严格检查
-npm test               # Vitest（112 项）
+npm test               # Vitest（133 项）
 npm run build          # tsc -b && vite build → dist/
 npm run preview        # 预览构建产物
+npm run test:e2e       # Playwright E2E（默认驱动本机 Microsoft Edge）
 ```
 
 浏览器打开 Vite 提示的地址。不要用 `file://` 直接打开：Worker 与模块加载会受限。
@@ -60,11 +66,12 @@ src/
   app/         视图编排
   features/    lab（含 SyncPanel 同步观察）/ practice / ai
   domain/      algorithms / problems / trace（schema + adapter + player）/ visualization
-  runtime/     js worker / python（Pyodide）/ ai / url / storage
+  runtime/     js worker / python（Pyodide + 结构化诊断）/ monaco（懒加载 + 主题）/ ai / url / storage / drafts
   theme/       三态主题解析与 Provider
   i18n/        中英词典与 Provider
   styles/      tokens.css（唯一颜色源）+ app.css
   test/        setup 与 legacy 帧快照
+e2e/            Playwright 真实浏览器测试
 legacy/        迁移前数据定义（回归基线来源，应用运行时不引用）
 docs/          ARCHITECTURE.md、阶段报告
 scripts/       从 legacy 定义生成类型化数据
@@ -98,8 +105,9 @@ scripts/       从 legacy 定义生成类型化数据
 ### 路线图
 
 Stage 1（已完成）：统一 Trace 协议 + 旧动画兼容 + Python 冒泡排序同步演示。
-Stage 2（规划）：代码编辑器（Monaco 高亮 / 行号 / 诊断 / 保存）+ 按 Trace 高亮。
-后续：递归调用栈动画、AI 渐进式教学、题库扩充、E2E / axe。
+Stage 2（已完成）：Monaco 编辑器 + 执行行高亮联动 + Python 错误诊断 + 本地代码保存 + 真实浏览器 E2E。
+Stage 3（规划）：高级数据结构可视化 + 递归调用栈 + 分层变量观察 + Python 调用过程同步。
+后续：AI 渐进式教学、题库扩充、练习页 Monaco 迁移、axe 可访问性。
 
 ### License
 
@@ -111,14 +119,15 @@ MIT（见 [LICENSE](LICENSE)）。题目与算法说明均为原创示例，不�
 
 AlgoLens is a browser-first algorithm visualization learning platform where **Python runs in the browser** and every animation frame is driven by real execution results, synchronised with the source line, variable values and a step explanation. It runs entirely locally — no server required.
 
-**Stage 1** ships the unified, versioned **Trace Event Schema v1** (Zod-validated), a compatibility adapter for the 12 legacy animations, an extended `trace()` for Python (real variable snapshots + explicit line numbers), a synchronous observation panel, and a full bubble-sort end-to-end demo. **C/C++ and online auto-grading were removed from the roadmap**; Python is the primary teaching language and JavaScript remains as the frontend implementation language.
+**Stage 2** adds a full Monaco Editor (Python/JS highlighting, line numbers, execution-line highlighting driven by the Trace's `sourceLocation.line`), structured Python error diagnostics rendered as Monaco markers, and debounced local code autosave with per-algorithm×language isolation — all verified with real-browser Playwright tests.
 
 ```sh
 npm ci
 npm run dev
 npm run typecheck
-npm test          # 112 tests
+npm test          # 133 tests
 npm run build
+npm run test:e2e  # Playwright (local Microsoft Edge)
 ```
 
-See [docs/STAGE1_REPORT.md](docs/STAGE1_REPORT.md) for the detailed report and [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for module boundaries. Never put provider API keys in the browser. MIT licensed; all exercises are original, not official past exam questions.
+See [docs/STAGE2_REPORT.md](docs/STAGE2_REPORT.md) for the detailed report and [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for module boundaries. Never put provider API keys in the browser. MIT licensed; all exercises are original, not official past exam questions.

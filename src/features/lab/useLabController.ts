@@ -11,18 +11,23 @@ import type { TraceEvent } from '../../domain/trace/schema';
 import { parseTraceDocument } from '../../domain/trace/schema';
 import { framesToTraceDocument } from '../../domain/trace/adapter';
 import type { VisualRunResult } from '../../domain/trace/types';
+import { ExecutionError, formatDiagnostic, type ExecutionDiagnostic } from '../../domain/trace/diagnostic';
 import type { GeneratedAlgorithm } from '../../runtime/ai/client';
 import { runForLanguage, isVisualResult } from '../../runtime/execute';
 import { safeGet, safeSet } from '../../runtime/storage';
+import { loadDraft, saveDraft } from '../../runtime/drafts';
 import { useI18n } from '../../i18n/I18nProvider';
 import { usePlayback, type Playback } from './usePlayback';
 
 const CODE_LANG_KEY = 'algolens-code-language';
+const DRAFT_DEBOUNCE_MS = 600;
 
 export interface StatusMessage {
   text: string;
   error: boolean;
 }
+
+export type DraftStatus = 'idle' | 'dirty' | 'saving' | 'saved' | 'error';
 
 function storedLanguage(): CodeLanguage {
   const value = safeGet(CODE_LANG_KEY);
@@ -42,12 +47,17 @@ export interface LabController {
   source: string;
   /** True when the editor has diverged from the snapshot used by `events`. */
   traceStale: boolean;
+  /** Structured Python diagnostics for the most recent run (empty on success). */
+  diagnostics: ExecutionDiagnostic[];
+  /** Autosave state shown next to the editor. */
+  draftStatus: DraftStatus;
   playback: Playback;
   status: StatusMessage;
   engineText: string;
   selectAlgo: (id: string) => void;
   setCodeLang: (lang: CodeLanguage) => void;
-  setEditorCode: (code: string) => void;
+  /** User edit: sets the code and schedules a debounced autosave. */
+  editCode: (code: string) => void;
   setInputJson: (input: string) => void;
   runVisualization: () => void;
   restorePreset: () => void;
@@ -64,14 +74,80 @@ export function useLabController(): LabController {
   );
   const [currentAlgo, setCurrentAlgo] = useState('bubble');
   const [codeLang, setCodeLangState] = useState<CodeLanguage>(storedLanguage);
-  const [editorCode, setEditorCode] = useState(() => exampleFor('bubble', storedLanguage()));
+  const [editorCode, setEditorCodeState] = useState(() => {
+    const initialLang = storedLanguage();
+    return loadDraft('bubble', initialLang) ?? exampleFor('bubble', initialLang);
+  });
   const [inputJson, setInputJson] = useState(() => JSON.stringify(baseCatalog.bubble.input));
   const [events, setEvents] = useState<TraceEvent[]>([]);
   const [source, setSource] = useState('');
+  const [diagnostics, setDiagnostics] = useState<ExecutionDiagnostic[]>([]);
+  const [draftStatus, setDraftStatus] = useState<DraftStatus>('saved');
   const [status, setStatus] = useState<StatusMessage>({ text: '', error: false });
   const playback = usePlayback(events);
-  const savedCodes = useRef<Record<string, string>>({});
   const runId = useRef(0);
+
+  // Latest-value refs so async / debounced callbacks always write the right key.
+  const location = useRef<{ algo: string; lang: CodeLanguage }>({ algo: 'bubble', lang: storedLanguage() });
+  const codeRef = useRef(editorCode);
+  useEffect(() => {
+    codeRef.current = editorCode;
+  }, [editorCode]);
+
+  const saveTimer = useRef<number | null>(null);
+  const clearSaveTimer = useCallback(() => {
+    if (saveTimer.current != null) {
+      window.clearTimeout(saveTimer.current);
+      saveTimer.current = null;
+    }
+  }, []);
+
+  const writeDraft = useCallback((algo: string, langId: CodeLanguage, code: string) => {
+    setDraftStatus('saving');
+    const ok = saveDraft(algo, langId, code);
+    setDraftStatus(ok ? 'saved' : 'error');
+    return ok;
+  }, []);
+
+  // Programmatic change (load / restore / language swap): flush any pending save
+  // and swap the value WITHOUT triggering an autosave.
+  const applyCode = useCallback((code: string) => {
+    clearSaveTimer();
+    setEditorCodeState(code);
+    setDraftStatus('saved');
+  }, [clearSaveTimer]);
+
+  // User edit: update immediately, autosave after a short debounce.
+  const editCode = useCallback((code: string) => {
+    setEditorCodeState(code);
+    setDraftStatus('dirty');
+    clearSaveTimer();
+    const loc = location.current;
+    saveTimer.current = window.setTimeout(() => {
+      saveTimer.current = null;
+      writeDraft(loc.algo, loc.lang, code);
+    }, DRAFT_DEBOUNCE_MS);
+  }, [clearSaveTimer, writeDraft]);
+
+  // Persist the in-flight draft of the current location before moving on.
+  const flushCurrent = useCallback(() => {
+    clearSaveTimer();
+    writeDraft(location.current.algo, location.current.lang, codeRef.current);
+  }, [clearSaveTimer, writeDraft]);
+
+  // Flush the pending debounced save when the page unloads so a refresh keeps
+  // the most recent keystrokes.
+  useEffect(() => {
+    const flush = () => {
+      if (saveTimer.current != null) {
+        window.clearTimeout(saveTimer.current);
+        saveTimer.current = null;
+        saveDraft(location.current.algo, location.current.lang, codeRef.current);
+      }
+    };
+    window.addEventListener('beforeunload', flush);
+    return () => window.removeEventListener('beforeunload', flush);
+  }, []);
 
   const runVisualizationWith = useCallback(async (code: string, rawInput: string) => {
     let input: unknown;
@@ -83,6 +159,7 @@ export function useLabController(): LabController {
     }
     const id = ++runId.current;
     setStatus({ text: t('running'), error: false });
+    setDiagnostics([]);
     try {
       const output = await runForLanguage('visual', code, input, null, codeLang, {
         jsTimeout: t('workerTimeout'),
@@ -95,20 +172,25 @@ export function useLabController(): LabController {
       if (!parsed.ok) {
         setEvents([]);
         setSource('');
+        setDiagnostics([]);
         setStatus({ text: `${t('error')}: ${parsed.errors.join('; ')}`, error: true });
         return;
       }
       setEvents(parsed.document.events);
       setSource(parsed.document.source ?? code);
+      setDiagnostics([]);
       setStatus({
         text: parsed.document.events.length ? `${t('loaded')} · ${parsed.document.events.length} frames` : t('noTrace'),
         error: !parsed.document.events.length,
       });
     } catch (error) {
       if (id !== runId.current) return;
+      const diagnostic = error instanceof ExecutionError ? error.diagnostic : undefined;
       setEvents([]);
       setSource('');
-      setStatus({ text: `${t('error')}: ${(error as Error).message}`, error: true });
+      setDiagnostics(diagnostic ? [diagnostic] : []);
+      const text = diagnostic ? formatDiagnostic(diagnostic) : (error as Error).message;
+      setStatus({ text: `${t('error')}: ${text}`, error: true });
     }
   }, [codeLang, t, b]);
 
@@ -127,31 +209,40 @@ export function useLabController(): LabController {
     const entry = catalog[id];
     if (!entry) return;
     playback.stop();
-    const code = savedCodes.current[`${id}:${codeLang}`] ?? exampleFor(id, codeLang);
+    flushCurrent();
+    const code = loadDraft(id, codeLang) ?? exampleFor(id, codeLang);
+    location.current = { algo: id, lang: codeLang };
     const rawInput = JSON.stringify(entry.input);
     setCurrentAlgo(id);
-    setEditorCode(code);
+    applyCode(code);
     setInputJson(rawInput);
+    setDiagnostics([]);
     setStatus({ text: '', error: false });
     void runVisualizationWith(code, rawInput);
-  }, [catalog, codeLang, playback, runVisualizationWith]);
+  }, [catalog, codeLang, playback, flushCurrent, applyCode, runVisualizationWith]);
 
   const setCodeLang = useCallback((next: CodeLanguage) => {
-    savedCodes.current[`${currentAlgo}:${codeLang}`] = editorCode;
+    if (next === codeLang) return;
+    flushCurrent();
     setCodeLangState(next);
     safeSet(CODE_LANG_KEY, next);
-    setEditorCode(savedCodes.current[`${currentAlgo}:${next}`] ?? exampleFor(currentAlgo, next));
-  }, [currentAlgo, codeLang, editorCode]);
+    const code = loadDraft(currentAlgo, next) ?? exampleFor(currentAlgo, next);
+    location.current = { algo: currentAlgo, lang: next };
+    applyCode(code);
+    setDiagnostics([]);
+  }, [codeLang, currentAlgo, flushCurrent, applyCode]);
 
   const restorePreset = useCallback(() => {
     const entry = catalog[currentAlgo];
     if (!entry) return;
     const code = exampleFor(currentAlgo, codeLang);
     const rawInput = JSON.stringify(entry.input);
-    setEditorCode(code);
+    applyCode(code);
+    writeDraft(currentAlgo, codeLang, code);
     setInputJson(rawInput);
+    setDiagnostics([]);
     void runVisualizationWith(code, rawInput);
-  }, [catalog, currentAlgo, codeLang, runVisualizationWith]);
+  }, [catalog, currentAlgo, codeLang, applyCode, writeDraft, runVisualizationWith]);
 
   const randomizeInput = useCallback(() => {
     const entry = catalog[currentAlgo];
@@ -180,15 +271,18 @@ export function useLabController(): LabController {
       input: generated.input,
       code: generated.code,
     });
+    flushCurrent();
+    location.current = { algo: 'custom', lang: 'js' };
     setCurrentAlgo('custom');
     setCodeLangState('js');
     safeSet(CODE_LANG_KEY, 'js');
-    setEditorCode(generated.code);
+    applyCode(generated.code);
     setInputJson(JSON.stringify(generated.input));
     setEvents([]);
     setSource('');
+    setDiagnostics([]);
     setStatus({ text: t('generated'), error: false });
-  }, [b, t]);
+  }, [b, t, flushCurrent, applyCode]);
 
   const traceStale = source !== '' && editorCode !== source;
 
@@ -202,12 +296,14 @@ export function useLabController(): LabController {
     events,
     source,
     traceStale,
+    diagnostics,
+    draftStatus,
     playback,
     status,
     engineText: engineNote(codeLang, lang),
     selectAlgo,
     setCodeLang,
-    setEditorCode,
+    editCode,
     setInputJson,
     runVisualization,
     restorePreset,

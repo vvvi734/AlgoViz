@@ -7,11 +7,20 @@ import { SyncPanel } from './SyncPanel';
 import { AiMentor } from './AiMentor';
 import type { LabController } from './useLabController';
 import { useI18n } from '../../i18n/I18nProvider';
+import { useTheme } from '../../theme/ThemeProvider';
 
 export function LabView({ lab, apiUrl }: { lab: LabController; apiUrl: string }) {
   const { t, pick } = useI18n();
+  const { resolved } = useTheme();
   const entry = lab.catalog[lab.currentAlgo];
   const currentEvent = lab.events[lab.playback.index];
+  // Highlight the line only when the draft still matches the executed snapshot;
+  // a stale trace must never map its line numbers onto newly-edited code.
+  const highlightLine = !lab.traceStale && currentEvent?.sourceLocation?.line
+    ? currentEvent.sourceLocation.line
+    : null;
+  const noLocationHint = !lab.traceStale && lab.events.length > 0 && currentEvent != null && !currentEvent.sourceLocation;
+
   return (
     <div className="workspace" data-testid="learn-view">
       <AlgorithmSidebar
@@ -39,8 +48,13 @@ export function LabView({ lab, apiUrl }: { lab: LabController; apiUrl: string })
           code={lab.editorCode}
           inputJson={lab.inputJson}
           status={lab.status}
+          highlightLine={highlightLine}
+          noLocationHint={noLocationHint}
+          diagnostics={lab.diagnostics}
+          draftStatus={lab.draftStatus}
+          theme={resolved}
           onCodeLangChange={lab.setCodeLang}
-          onCodeChange={lab.setEditorCode}
+          onCodeChange={lab.editCode}
           onInputChange={lab.setInputJson}
           onRun={lab.runVisualization}
           onRestore={lab.restorePreset}

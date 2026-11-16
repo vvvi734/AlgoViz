@@ -9,6 +9,10 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: true,
+    // Monaco ships as its own lazy chunk (~4 MB / ~1 MB gzip) that is only
+    // fetched when the code editor first opens; raise the warning threshold so
+    // the build log stays readable without hiding real regressions.
+    chunkSizeWarningLimit: 5000,
   },
   test: {
     environment: 'jsdom',

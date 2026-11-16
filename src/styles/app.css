@@ -82,6 +82,43 @@ a { color: var(--accent); }
    highlighter (Issue 06) can share exactly the same palette. */
 .codearea { background: var(--code-bg); color: var(--code-fg); border: 1px solid var(--code-edge); border-radius: 10px; display: block; width: 100%; resize: vertical; min-height: 245px; padding: 16px; font: 13px/1.7 ui-monospace, SFMono-Regular, Consolas, monospace; tab-size: 2; outline: none; }
 .codearea:focus { border-color: var(--code-edge-focus); }
+
+/* Monaco editor host. The wrap is vertically resizable; Monaco follows it via
+   automaticLayout (ResizeObserver), so no manual relayout is needed. */
+.monaco-wrap {
+  position: relative;
+  height: 320px;
+  min-height: 220px;
+  max-height: 800px;
+  resize: vertical;
+  overflow: hidden;
+  border: 1px solid var(--code-edge);
+  border-radius: 10px;
+  background: var(--code-bg);
+}
+.monaco-wrap:focus-within { border-color: var(--code-edge-focus); }
+.monaco-host { width: 100%; height: 100%; }
+.monaco-loading {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  background: var(--code-bg);
+}
+
+/* Execution-line decoration injected into Monaco. */
+.algolens-active-line { background: var(--code-active-line) !important; }
+.algolens-active-line-gutter { background: var(--code-active-line-gutter); color: var(--txt); }
+
+/* Autosave status chip. */
+.engine-note { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.save-indicator { font-size: 11px; margin-left: auto; padding: 2px 8px; border-radius: 7px; white-space: nowrap; }
+.save-indicator.save-saved { color: var(--tag-green-fg); background: var(--tag-green-bg); }
+.save-indicator.save-dirty { color: var(--tag-orange-fg); background: var(--tag-orange-bg); }
+.save-indicator.save-saving { color: var(--tag-fg); background: var(--tag-bg); }
+.save-indicator.save-error { color: var(--red); background: var(--feedback-error-bg); }
+
 .inputline { display: flex; align-items: center; gap: 8px; margin-top: 11px; flex-wrap: wrap; }
 .inputline input { flex: 1; min-width: 140px; background: var(--input-bg); border: 1px solid var(--edge); border-radius: 8px; padding: 9px 11px; color: var(--txt); outline: none; }
 .inputline input:focus { border-color: var(--accent); }

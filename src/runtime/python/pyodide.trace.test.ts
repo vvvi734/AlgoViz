@@ -24,7 +24,15 @@ describe('Python trace() runtime contract', () => {
   });
 
   it('injects input and trace into the user namespace', () => {
-    expect(PYTHON_VISUAL_BOOTSTRAP).toContain('exec(user_code, {"input": input, "trace": trace})');
+    expect(PYTHON_VISUAL_BOOTSTRAP).toContain("exec(compile(user_code, USER_FILENAME, 'exec'), {'input': input, 'trace': trace})");
+  });
+
+  it('wraps user code so failures become structured diagnostics', () => {
+    expect(PYTHON_VISUAL_BOOTSTRAP).toContain('except SyntaxError as err');
+    expect(PYTHON_VISUAL_BOOTSTRAP).toContain('except BaseException as err');
+    expect(PYTHON_VISUAL_BOOTSTRAP).toContain('def _post_diagnostic(');
+    expect(PYTHON_VISUAL_BOOTSTRAP).toContain("payload['line'] = int(line)");
+    expect(PYTHON_VISUAL_BOOTSTRAP).toContain('postDiagnostic(json.dumps(payload, ensure_ascii=False))');
   });
 
   it('turns Python-emitted frames into validated events with line + variables', () => {
