@@ -21,6 +21,7 @@ export function LessonPanel({
   originName,
   hasExample,
   onUseExample,
+  compact = false,
 }: {
   lesson: Lesson | undefined;
   events: readonly TraceEvent[];
@@ -31,9 +32,11 @@ export function LessonPanel({
   originName?: string;
   hasExample?: boolean;
   onUseExample?: () => void;
+  /** Stage 7A: compress course copy so it never dominates the learning view. */
+  compact?: boolean;
 }) {
   const { t, lang } = useI18n();
-  const [openOverview, setOpenOverview] = useState(true);
+  const [openOverview, setOpenOverview] = useState(!compact);
   const detailsId = useId();
 
   if (!lesson) {
@@ -53,7 +56,7 @@ export function LessonPanel({
   const unknownStepId = eventStepId && !activeStep ? eventStepId : null;
 
   return (
-    <section className="panel pad lessonpanel" data-testid="lesson-panel">
+    <section className={`panel pad lessonpanel${compact ? ' is-compact' : ''}`} data-testid="lesson-panel">
       <div className="sectionhead">
         <div>
           <div className="eyebrow">{t('lessonEyebrow')}</div>
@@ -133,8 +136,8 @@ export function LessonPanel({
                 <span className="lessonstep-num">{stepIndex + 1}</span>
                 <span className="lessonstep-body">
                   <span className="lessonstep-title">{step.title[lang]}</span>
-                  <span className="lessonstep-text">{step.explanation[lang]}</span>
-                  {step.tip && <span className="lessonstep-tip">💡 {step.tip[lang]}</span>}
+                  {!compact && <span className="lessonstep-text">{step.explanation[lang]}</span>}
+                  {!compact && step.tip && <span className="lessonstep-tip">💡 {step.tip[lang]}</span>}
                 </span>
                 <span className="lessonstep-count" aria-label={t('lessonStepFrames')}>{frames}</span>
               </button>

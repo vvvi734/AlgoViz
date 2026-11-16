@@ -1,0 +1,372 @@
+/* ==========================================================================
+   Stage 7A — learning workspace information architecture
+   Colours remain token-only. Layout uses Grid/Flex; no UI framework.
+   ========================================================================== */
+
+body {
+  font-size: 15px;
+  line-height: 1.62;
+}
+
+.smalltext { font-size: 13px; }
+.eyebrow { font-size: 12px; letter-spacing: 1.6px; }
+.tag { font-size: 12px; padding: 3px 8px; }
+.sectionhead h2 { font-size: 16px; }
+.sectionhead { margin-bottom: 12px; }
+
+/* Primary navigation: two live destinations + a restrained tools menu. */
+.nav { align-items: center; margin-bottom: 16px; }
+.navmore { position: relative; }
+.navmore-trigger.open { background: var(--panel-2); border-color: var(--edge-hover); }
+.navmore-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 30;
+  min-width: 260px;
+  display: grid;
+  gap: 2px;
+  padding: 6px;
+  background: var(--panel);
+  border: 1px solid var(--edge);
+  border-radius: 13px;
+  box-shadow: var(--shadow);
+}
+.navmore-menu button {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--txt);
+  padding: 10px 11px;
+  text-align: left;
+}
+.navmore-menu button:hover { background: var(--alg-hover); }
+.navmore-note {
+  margin: 4px 6px 2px;
+  padding-top: 7px;
+  border-top: 1px solid var(--edge);
+  color: var(--muted);
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
+/* Workspace shell: collapsible directory + one primary column. */
+.lab-shell {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+  min-width: 0;
+}
+.lab-shell.nav-collapsed { grid-template-columns: minmax(0, 1fr); }
+.lab-shell.nav-collapsed .lab-sidebar-wrap { display: none; }
+.lab-main { display: grid; gap: 14px; min-width: 0; }
+.lab-sidebar-wrap { min-width: 0; }
+.lab-sidebar-wrap .sidebar {
+  position: sticky;
+  top: 12px;
+  max-height: calc(100vh - 24px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.lab-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+  flex-wrap: wrap;
+}
+.lab-head-main { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; min-width: 0; }
+.lab-head h1 { margin: 1px 0 0; font-size: 21px; line-height: 1.25; letter-spacing: -.3px; }
+.lab-head-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.mobile-algo-select {
+  display: none;
+  min-width: 180px;
+  max-width: 100%;
+  background: var(--input-bg);
+  color: var(--txt);
+  border: 1px solid var(--edge);
+  border-radius: 9px;
+  padding: 9px 11px;
+}
+.sidebar-toggle { font-size: 13px; }
+
+/* Animation and Monaco sit side by side as the two primary learning surfaces. */
+.lab-primary {
+  display: grid;
+  grid-template-columns: minmax(0, 1.12fr) minmax(0, 1fr);
+  gap: 14px;
+  align-items: stretch;
+  min-width: 0;
+}
+.stage-panel { display: flex; flex-direction: column; min-width: 0; }
+.stage-playback { display: flex; flex-direction: column; min-width: 0; }
+.stage-panel .stage {
+  min-height: clamp(290px, 39vh, 460px);
+  flex: 1 1 auto;
+}
+.stage-head { flex: 0 0 auto; }
+.code-panel { min-width: 0; display: flex; }
+.code-panel > section {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.code-panel .monaco-wrap {
+  flex: 1 1 auto;
+  height: auto;
+  min-height: 260px;
+  max-height: none;
+  resize: vertical;
+}
+.code-panel .controls { gap: 6px; }
+.code-panel .controls .btn { padding: 7px 11px; }
+.code-panel .note { margin-top: 9px; }
+
+/* The current trace step is always visible, immediately below the animation. */
+.stage-current-step {
+  margin-top: 10px;
+  border: 1px solid var(--edge);
+  border-left: 4px solid var(--accent);
+  border-radius: 8px;
+}
+.current-step {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 12px 16px;
+  border-left: 4px solid var(--accent);
+  background: linear-gradient(90deg, var(--info-bg), var(--panel));
+  flex-wrap: wrap;
+  min-width: 0;
+}
+.current-step-main { display: flex; align-items: flex-start; gap: 10px; min-width: 0; flex: 1 1 420px; }
+.current-step-copy { display: grid; gap: 2px; min-width: 0; }
+.current-step-copy strong { font-size: 15.5px; line-height: 1.35; }
+.current-step-message { color: var(--txt); overflow-wrap: anywhere; }
+.current-step-tip { color: var(--muted); font-size: 13px; overflow-wrap: anywhere; }
+.current-vars { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; max-width: 52%; }
+.current-var {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: 1px solid var(--edge);
+  background: var(--stat-bg);
+  border-radius: 8px;
+  padding: 3px 7px;
+  font-size: 12.5px;
+  min-width: 0;
+}
+.current-var b { color: var(--accent); }
+.current-var code { color: var(--code-fg); overflow-wrap: anywhere; }
+
+/* Tabs keep secondary panels mounted but out of the primary reading path. */
+.workspace-tabs {
+  background: var(--panel);
+  border: 1px solid var(--edge);
+  border-radius: 15px;
+  box-shadow: var(--shadow);
+  min-width: 0;
+  overflow: hidden;
+}
+.workspace-tablist {
+  display: flex;
+  gap: 2px;
+  padding: 7px 9px 0;
+  border-bottom: 1px solid var(--edge);
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+.workspace-tab {
+  border: 1px solid transparent;
+  border-bottom: 0;
+  border-radius: 9px 9px 0 0;
+  background: transparent;
+  color: var(--muted);
+  padding: 9px 13px;
+  font-weight: 700;
+  font-size: 13px;
+  white-space: nowrap;
+}
+.workspace-tab:hover { color: var(--txt); background: var(--alg-hover); }
+.workspace-tab.active {
+  color: var(--accent);
+  background: var(--tab-active-bg);
+  border-color: var(--tab-active-edge);
+}
+.workspace-tabpanel { padding: 4px 14px 14px; min-width: 0; }
+.workspace-tabpanel[hidden] { display: none; }
+.workspace-tabpanel .panel {
+  border: 0;
+  box-shadow: none;
+  background: transparent;
+  padding: 12px 0 0;
+}
+.workspace-tabpanel .panel .panel { padding: 0; }
+.state-stack, .tools-stack { display: grid; gap: 6px; min-width: 0; }
+.tools-note { border-top: 1px solid var(--edge); }
+
+/* Compact teaching course: current step + clickable stage chips. */
+.lessonpanel.is-compact .sectionhead { margin-bottom: 7px; }
+.lessonpanel.is-compact .lesson-oneliner { font-size: 14px; max-width: 76ch; }
+.lessonpanel.is-compact .lesson-meta { margin-bottom: 4px; }
+.lessonpanel.is-compact .lessonsteps {
+  display: flex;
+  gap: 6px;
+  max-height: none;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 4px;
+  scrollbar-width: thin;
+}
+.lessonpanel.is-compact .lessonstep {
+  flex: 0 0 auto;
+  width: auto;
+  max-width: 260px;
+  grid-template-columns: 22px minmax(0, 1fr) auto;
+  padding: 7px 9px;
+}
+.lessonpanel.is-compact .lessonstep-body { white-space: normal; }
+.lessonpanel.is-compact .lessonstep-title { font-size: 13px; }
+.lessonpanel.is-compact .lesson-current { margin-top: 8px; }
+.lessonpanel.is-compact .lesson-overview {
+  max-height: 34vh;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+.lesson-overview p, .lessonstep-text, .lesson-mistakes ul { font-size: 13.5px; line-height: 1.65; }
+.lessonstep-title { font-size: 14px; }
+.lesson-current { font-size: 14px; }
+.lesson-vars .chip { font-size: 12.5px; }
+
+/* Secondary panel typography and tables. */
+.vartable { font-size: 13px; }
+.vartable th { font-size: 12px; }
+.codeview { font-size: 13px; }
+.sync-col h3, .sync-explanation h3, .lesson-subhead, .sidebar h3 { font-size: 12px; }
+.sync-snapshot { display: flex; flex-direction: column; align-items: flex-start; gap: 7px; }
+.sync-snapshot .btn { align-self: flex-start; }
+
+/* AI mentor: same features, now on a full-width on-demand tab. */
+.mentor { margin-top: 0; }
+.mentor-row { grid-template-columns: repeat(2, minmax(180px, 260px)); }
+.mentor textarea.prompt { min-height: 92px; }
+.mentor-answer-body { font-size: 14px; }
+.mentor-answer ul { font-size: 13.5px; }
+.mentor-offline.is-error { border-color: var(--edge); background: var(--info-bg); }
+.mentor-offline.is-error .mentor-error { color: var(--red); }
+.mentor .sectionhead .tag { font-size: 12px; }
+
+/* Reading improves without shrinking or nesting every card. */
+.info p, .note, .packbanner, .sessionwarn { line-height: 1.6; }
+.btn.small { font-size: 13px; }
+.pill, .btn, .tab, .select { border-radius: 9px; }
+
+/* Tablet and compact desktop: directory narrows; code stacks below animation. */
+@media (max-width: 1279px) {
+  .lab-shell { grid-template-columns: 200px minmax(0, 1fr); gap: 12px; }
+  /* Flatten the primary pair so the current-step strip can sit directly
+     between the animation and the editor instead of after the editor. */
+  .lab-main { display: flex; flex-direction: column; }
+  .lab-primary { display: contents; }
+  .lab-head { order: 0; }
+  .stage-panel { order: 1; }
+  .code-panel { order: 3; }
+  .workspace-tabs { order: 4; }
+  .lab-primary { grid-template-columns: minmax(0, 1fr); }
+  .stage-panel .stage { min-height: 330px; }
+  .code-panel .monaco-wrap { min-height: 330px; height: 38vh; flex: 0 0 auto; }
+  .current-vars { max-width: 100%; }
+}
+
+@media (max-width: 899px) {
+  .lab-shell, .lab-shell.nav-collapsed { grid-template-columns: minmax(0, 1fr); }
+  .lab-sidebar-wrap { display: none; }
+  .sidebar-toggle { display: none; }
+  .mobile-algo-select { display: block; }
+  .lab-head { padding: 11px 13px; }
+  .lab-head h1 { font-size: 19px; }
+  .current-step { position: static; }
+}
+
+@media (max-width: 760px) {
+  .app { padding: 12px; }
+  .topbar { padding-bottom: 14px; }
+  .nav { gap: 5px; margin-bottom: 12px; }
+  .tab { padding: 9px 12px; font-size: 13.5px; }
+  .navmore-menu { left: auto; right: 0; min-width: min(280px, calc(100vw - 24px)); }
+  .lab-main { gap: 10px; }
+  .lab-primary { gap: 10px; }
+  .stage-panel .stage { min-height: 240px; padding: 10px; }
+  .bars { height: 170px; min-width: 0; gap: 5px; }
+  .bar-item { min-width: 0; max-width: 48px; }
+  .bar-label { font-size: 11px; }
+  .code-panel .monaco-wrap { min-height: 280px; height: 38vh; }
+  .current-step { padding: 10px 12px; gap: 8px; }
+  .current-step-main { flex: 1 1 100%; }
+  .current-step-copy strong { font-size: 15px; }
+  .workspace-tablist { padding: 5px 7px 0; }
+  .workspace-tab { padding: 8px 10px; font-size: 12.5px; }
+  .workspace-tabpanel { padding: 2px 10px 10px; }
+  .lessonpanel.is-compact .lessonsteps {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    max-height: 245px;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+  .lessonpanel.is-compact .lessonstep { width: 100%; max-width: none; }
+  .lessonpanel.is-compact .lesson-overview { max-height: none; }
+  .mentor-row { grid-template-columns: minmax(0, 1fr); }
+  .modal { padding: 10px; }
+  .sync-grid { grid-template-columns: minmax(0, 1fr); }
+  .vartable { table-layout: fixed; }
+  .vartable .varvalue { overflow-wrap: anywhere; }
+  .codeview { max-width: 100%; }
+  .codetext { min-width: 0; overflow-x: hidden; white-space: pre-wrap; overflow-wrap: anywhere; }
+}
+
+@media (max-width: 430px) {
+  .brand small { letter-spacing: 1.1px; }
+  .logo { width: 34px; height: 34px; }
+  .theme-select { min-width: 0; }
+  .lab-head-main { gap: 5px; }
+  .lab-head h1 { font-size: 18px; }
+  .lab-head-actions, .mobile-algo-select { width: 100%; }
+  .current-step-copy strong { font-size: 14.5px; }
+  .workspace-tabpanel { padding-left: 8px; padding-right: 8px; }
+  .mentor-presets .btn, .mentor-actions .btn, .sessionactions .btn { flex: 1 1 auto; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.mentor-error-line { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; margin: 4px 0; }
+.mentor-error-details {
+  margin: 6px 0;
+  padding: 9px 11px;
+  border: 1px solid var(--edge);
+  border-radius: 8px;
+  background: var(--code-bg);
+  color: var(--muted);
+  font: 13px/1.55 ui-monospace, SFMono-Regular, Consolas, monospace;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-height: 180px;
+  overflow: auto;
+}

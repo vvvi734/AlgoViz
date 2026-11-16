@@ -1,6 +1,12 @@
 import { expect, test, type Page } from '@playwright/test';
 
 /** Replace the Monaco editor content by selecting all and typing. */
+/** Stage 7A: secondary panels live in on-demand workspace tabs. */
+async function openTab(page: Page, tab: 'lesson' | 'state' | 'mentor' | 'tools') {
+  await page.click(`[data-testid="workspace-tab-${tab}"]`);
+  await expect(page.locator(`[data-testid="workspace-panel-${tab}"]`)).toBeVisible();
+}
+
 async function setEditorCode(page: Page, code: string) {
   // Click the visible editor surface (Monaco's hidden textarea is not clickable
   // in headless mode), then select-all and type over it.
@@ -20,6 +26,7 @@ test.describe('AlgoLens Stage 2 — Monaco + Python sync (real browser)', () => 
     await page.click('[data-testid="run-btn"]');
 
     // First run downloads Pyodide (~10 MB), so give it room.
+    await openTab(page, 'state');
     await expect(page.locator('[data-testid="variables-watch"]')).toBeVisible({ timeout: 90_000 });
     await expect(page.locator('[data-testid="variables-watch"]')).toContainText('arr');
     await expect(page.locator('[data-testid="variables-watch"]')).toContainText('i');
@@ -52,6 +59,7 @@ test.describe('AlgoLens Stage 2 — Monaco + Python sync (real browser)', () => 
     await page.click('[data-testid="run-btn"]');
     await expect(page.locator('[data-testid="run-feedback"]')).not.toContainText('SyntaxError', { timeout: 90_000 });
     await expect(page.locator('.monaco-editor .squiggly-error')).toHaveCount(0);
+    await openTab(page, 'state');
     await expect(page.locator('[data-testid="variables-watch"]')).toBeVisible({ timeout: 90_000 });
     await expect(page.locator('[data-testid="variables-watch"]')).toContainText('arr');
   });
@@ -98,6 +106,7 @@ test.describe('AlgoLens Stage 2 — Monaco + Python sync (real browser)', () => 
     await page.click('[data-testid="algo-factorial"]');
 
     // First run downloads Pyodide (~10 MB) and executes the real recursion.
+    await openTab(page, 'state');
     await expect(page.locator('[data-testid="call-stack"]')).toBeVisible({ timeout: 120_000 });
 
     // factorial(4) begins: at least one frame, and stepping forward pushes more.
@@ -137,6 +146,7 @@ test.describe('AlgoLens Stage 2 — Monaco + Python sync (real browser)', () => 
     await page.selectOption('#code-lang', 'python');
     await page.click('[data-testid="algo-fib"]');
 
+    await openTab(page, 'state');
     await expect(page.locator('[data-testid="call-stack"]')).toBeVisible({ timeout: 120_000 });
     await expect(page.locator('[data-testid="call-frame-f1"]')).toBeVisible();
 
@@ -184,6 +194,7 @@ test.describe('Stage 3B — teaching steps synced with real Pyodide execution', 
     // pauses playback; variables + Monaco line move to the same cursor.
     await page.click('[data-testid="lesson-step-compare"]');
     await expect(page.locator('[data-testid="lesson-active-step"]')).toHaveAttribute('data-step-id', 'compare');
+    await openTab(page, 'state');
     await expect(page.locator('[data-testid="variables-watch"]')).toContainText('arr');
     await expect(page.locator('[data-testid="variables-watch"]')).toContainText('i');
     await expect(page.locator('.algolens-active-line').first()).toBeVisible();
@@ -214,12 +225,15 @@ test.describe('Stage 3B — teaching steps synced with real Pyodide execution', 
       'call',
       { timeout: 120_000 },
     );
+    await openTab(page, 'state');
     await expect(page.locator('[data-testid="call-frame-f1"]')).toBeVisible();
 
     // Jump to the first `combine` frame: the call stack must still be on screen
     // and the variables must belong to that depth, not to a guessed state.
+    await openTab(page, 'lesson');
     await page.click('[data-testid="lesson-step-combine"]');
     await expect(page.locator('[data-testid="lesson-active-step"]')).toHaveAttribute('data-step-id', 'combine');
+    await openTab(page, 'state');
     await expect(page.locator('[data-testid="call-stack"]')).toBeVisible();
     await expect(page.locator('[data-testid="variables-watch"]')).toContainText('n');
     await expect(page.locator('.algolens-active-line').first()).toBeVisible();

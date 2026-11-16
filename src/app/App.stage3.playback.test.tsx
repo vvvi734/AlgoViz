@@ -107,6 +107,10 @@ describe('Stage 3 playback fix — a new trace restarts the timeline', () => {
     expect(screen.getByTestId('variables-watch').textContent).toContain('4');
     expect(screen.getByTestId('variables-scope').textContent).toContain('factorial');
 
+    // Stage 7A: the read-only snapshot is opt-in inside the state tab.
+    fireEvent.click(screen.getByTestId('workspace-tab-state'));
+    fireEvent.click(screen.getByTestId('sync-source-toggle'));
+
     // Code position highlights the line recorded by frame 0 (line 2).
     const activeLine = document.querySelector('.codeline.active');
     expect(activeLine).not.toBeNull();

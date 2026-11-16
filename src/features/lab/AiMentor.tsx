@@ -79,6 +79,7 @@ export function AiMentor({ algorithmId, algorithmName, lesson, event, events, st
   const [providers, setProviders] = useState<ProvidersResponse | null>(null);
   const [gatewayState, setGatewayState] = useState<'loading' | 'online' | 'offline'>('loading');
   const [gatewayError, setGatewayError] = useState('');
+  const [showGatewayDetails, setShowGatewayDetails] = useState(false);
   const [providerId, setProviderId] = useState('');
   const [model, setModel] = useState('');
   const [level, setLevel] = useState<MentorLevel>(1);
@@ -327,7 +328,23 @@ export function AiMentor({ algorithmId, algorithmName, lesson, event, events, st
       {gatewayState !== 'online' && (
         <div className={`mentor-offline ${gatewayState === 'offline' ? 'is-error' : ''}`}>
           <p>{gatewayState === 'loading' ? t('aiConnecting') : t('aiOfflineHelp')}</p>
-          {gatewayError && <p className="smalltext">{gatewayError}</p>}
+          {gatewayError && (
+            <p className="mentor-error-line">
+              <span className="mentor-error">{t('aiServiceUnavailable')}</span>
+              <button
+                type="button"
+                className="linkbtn"
+                aria-expanded={showGatewayDetails}
+                data-testid="mentor-error-details"
+                onClick={() => setShowGatewayDetails((value) => !value)}
+              >
+                {showGatewayDetails ? t('aiHideDetails') : t('aiShowDetails')}
+              </button>
+            </p>
+          )}
+          {showGatewayDetails && gatewayError && (
+            <pre className="mentor-error-details" data-testid="mentor-error-detail-body">{gatewayError}</pre>
+          )}
           <p className="mentor-localhint" data-testid="mentor-local-hint">
             {localHint}
           </p>

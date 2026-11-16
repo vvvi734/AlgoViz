@@ -80,9 +80,11 @@ describe('App UI regression (Phase 1)', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Switch language' }));
     expect(screen.getByTestId('play-btn').textContent).toBe('▶ Play');
 
-    fireEvent.click(screen.getByRole('button', { name: /University \/ Exam Practice|大学 \/ 考研题库/ }));
+    fireEvent.click(screen.getByTestId('nav-more'));
+    fireEvent.click(screen.getByTestId('nav-practice'));
     expect(screen.getAllByTestId(/^problem-/)).toHaveLength(8);
-    fireEvent.click(screen.getByRole('button', { name: /Import with AI|AI 导入算法/ }));
+    fireEvent.click(screen.getByTestId('nav-more'));
+    fireEvent.click(screen.getByTestId('nav-custom'));
     expect(screen.getByTestId('custom-view')).toBeTruthy();
   });
 });

@@ -4,7 +4,8 @@ import { describe, expect, it } from 'vitest';
 
 // Resolve from the repo root (Vitest sets cwd there in CI and locally).
 const tokens = readFileSync(resolve(process.cwd(), 'src/styles/tokens.css'), 'utf8');
-const app = readFileSync(resolve(process.cwd(), 'src/styles/app.css'), 'utf8');
+const app = readFileSync(resolve(process.cwd(), 'src/styles/app.css'), 'utf8') +
+  '\n' + readFileSync(resolve(process.cwd(), 'src/styles/stage7a.css'), 'utf8');
 
 const LIGHT_MARKER = ":root[data-theme='light']";
 const [darkBlock, lightBlock] = tokens.split(LIGHT_MARKER);

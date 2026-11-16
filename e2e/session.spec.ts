@@ -48,6 +48,7 @@ async function openApp(page: Page) {
 test.describe('Stage 5A — Agent session file → AlgoLens Web', () => {
   test('import, preview, apply, then a user-triggered real Pyodide run', async ({ page }) => {
     await openApp(page);
+    await page.click('[data-testid="workspace-tab-tools"]');
 
     await page.setInputFiles('[data-testid="session-file-input"]', SESSION_FILE);
     await expect(page.locator('[data-testid="session-preview"]')).toBeVisible();
@@ -71,9 +72,11 @@ test.describe('Stage 5A — Agent session file → AlgoLens Web', () => {
     await expect(page.locator('[data-testid="lesson-active-step"]')).toHaveAttribute('data-step-id', 'init', {
       timeout: 120_000,
     });
+    await page.click('[data-testid="workspace-tab-state"]');
     await expect(page.locator('[data-testid="variables-watch"]')).toContainText('arr');
 
     // Lesson → timeline: jumping to `compare` lands on a real frame of that stage.
+    await page.click('[data-testid="workspace-tab-lesson"]');
     await page.click('[data-testid="lesson-step-compare"]');
     await expect(page.locator('[data-testid="lesson-active-step"]')).toHaveAttribute('data-step-id', 'compare');
     await expect(page.locator('[data-testid="step-desc"]')).toContainText('比较');
@@ -102,6 +105,7 @@ test.describe('Stage 5A — AlgoLens Web → Agent context file', () => {
     await expect(page.locator('[data-testid="lesson-active-step"]')).toHaveAttribute('data-step-id', 'compare');
     const frameBefore = await page.locator('[data-testid="step-number"]').textContent();
 
+    await page.click('[data-testid="workspace-tab-tools"]');
     await page.check('[data-testid="session-export-source"]');
     const downloadPromise = page.waitForEvent('download');
     await page.click('[data-testid="session-export"]');

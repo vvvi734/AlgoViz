@@ -4,8 +4,8 @@
 
 面向大学生与 408 考研学生的浏览器端算法学习平台：**Python 在浏览器内运行**，根据真实执行结果生成逐帧动画，并同步展示代码位置、变量值与步骤讲解。完全本地运行，无需租服务器。
 
-> **当前版本：v0.7 Stage 6A。** 在 Stage 5A 的 MCP 文件桥基础上交付**网页 AI 导师 MVP**：本地 `packages/ai-gateway`（只监听 127.0.0.1）连接 Ollama 或用户自己的 OpenAI Chat Completions Key，浏览器只访问同源 `/api/mentor`、`/api/providers`；学习面板可基于当前真实 Trace 帧解释步骤/变量/调用栈，支持五级渐进提示、Level 5 显式确认、中止与离线本地提示。新增 36 项单测与 3 条真实浏览器 E2E（共 378 项 / 16 条；MCP 与页面功能保持不回归）。**真实 Ollama / 云端模型未实测**（本机未运行 Ollama、未配置 Key）。
-> 定位已收敛：**Python 为主要教学语言**，JavaScript 作为前端实现语言继续支持既有 12 个算法演示；**C / C++ 与在线判题已从规划中取消**。详见 [阶段一总结](docs/STAGE1_REPORT.md)、[阶段二总结](docs/STAGE2_REPORT.md)、[阶段三总结](docs/STAGE3_REPORT.md)、[阶段 3B 总结](docs/STAGE3B_REPORT.md)、[阶段四总结](docs/STAGE4_REPORT.md)、[阶段 5A 总结](docs/STAGE5A_REPORT.md) 与 [阶段 6A 总结](docs/STAGE6A_REPORT.md)；知识包格式与作者指引见 [PACK_FORMAT_V1](docs/PACK_FORMAT_V1.md)、[PACK_AUTHOR_GUIDE](docs/PACK_AUTHOR_GUIDE.md)；MCP 安装与宿主配置见 [MCP_INSTALL](docs/MCP_INSTALL.md)；AI Gateway 安装与安全边界见 [AI_GATEWAY](docs/AI_GATEWAY.md)。
+> **当前版本：v0.8 Stage 7A。** 学习实验室完成信息架构与响应式重构：动画、Monaco 代码与「当前步骤」尽量同屏，教学步骤/变量与调用栈/AI 导师/学习工具收进按需标签页，整份只读源码改为可展开快照，课程渐进展示；主导航收敛为「学习实验室 / 知识包 / 更多工具」，题库与 AI 导入仅在「更多工具」中保留并标注状态。Stage 6A 的本地 AI Gateway、五级提示与既有执行链路保持不变。当前门禁：**381 项单测 / 22 条真实浏览器 E2E**；真实 Ollama / 云端模型仍未实测。
+> 定位已收敛：**Python 为主要教学语言**，JavaScript 作为前端实现语言继续支持既有 12 个算法演示；**C / C++ 与在线判题已从规划中取消**。详见 [阶段一总结](docs/STAGE1_REPORT.md)、[阶段二总结](docs/STAGE2_REPORT.md)、[阶段三总结](docs/STAGE3_REPORT.md)、[阶段 3B 总结](docs/STAGE3B_REPORT.md)、[阶段四总结](docs/STAGE4_REPORT.md)、[阶段 5A 总结](docs/STAGE5A_REPORT.md)、[阶段 6A 总结](docs/STAGE6A_REPORT.md) 与 [阶段 7A 总结](docs/STAGE7A_REPORT.md)；知识包格式与作者指引见 [PACK_FORMAT_V1](docs/PACK_FORMAT_V1.md)、[PACK_AUTHOR_GUIDE](docs/PACK_AUTHOR_GUIDE.md)；MCP 安装与宿主配置见 [MCP_INSTALL](docs/MCP_INSTALL.md)；AI Gateway 安装与安全边界见 [AI_GATEWAY](docs/AI_GATEWAY.md)。
 
 ---
 
@@ -43,7 +43,7 @@
 | 真实宿主接入 | ⚠️ 部分 | 协议层已用官方 Client + stdio 子进程 + Inspector CLI 实测；Claude Code / Cursor / VS Code **仅有配置模板，未实测** |
 | Python 递归调用栈 | ✅ 已实现 | `@tracked` 装饰器捕获真实调用/返回事件、唯一 frameId、逐层局部变量与返回值 |
 | 调用栈面板 | ✅ 已实现 | 栈式展示调用帧、高亮活跃帧、点击帧切换变量作用域、时间轴回退恢复历史栈 |
-| 同步观察面板 | ✅ 已实现 | 代码位置高亮 + 变量观察器 + 步骤讲解，四区随 `currentEvent` 联动 |
+| 同步观察面板 | ✅ 已实现 | 变量观察器 + 步骤讲解随 `currentEvent` 联动；整份只读源码改为按需「已执行源码快照」，Monaco 是唯一主代码区 |
 | Python 冒泡排序端到端演示 | ✅ 已实现 | 真实 `i/j/arr/n` 变量、源码行号、比较/交换高亮 |
 | Monaco 代码编辑器 | ✅ 已实现 | Python/JS 语法高亮、行号、缩进、折叠、撤销/重做、自适应尺寸 |
 | 执行行高亮联动 | ✅ 已实现 | `currentEvent.sourceLocation.line` 驱动 Monaco 高亮；时间轴/单步/回退/拖动同步 |
@@ -54,10 +54,10 @@
 | 练习「运行并查看输出」 | ✅ 已实现 | 仅展示输入 → 输出，**不再自动判题**；完成状态由用户手动标记 |
 | C / C++ | 🚫 已取消 | 语言入口、占位模板与 `/api/execute` 执行后端均已移除 |
 | 在线 Judge / 自动判题 | 🚫 已取消 | 相关入口与宣传已清理 |
-| 中英文界面 / 移动端适配 | ⚠️ 部分 | 覆盖全部现有文案；未做触控尺寸与可访问性审计 |
-| 自动化测试 | ✅ 已实现 | 378 项单测 / 帧回归 / jsdom 冒烟 + 16 条真实浏览器 E2E（Playwright + Edge，含真实 Pyodide、知识包、会话文件、AI 导师真实帧/离线/防剧透）；另有 MCP 协议测试 20 项与 stdio 冒烟 9 项通过 + 1 项按配置跳过 |
+| 中英文界面 / 移动端适配 | ⚠️ 部分 | Stage 7A 修复 390–1920 横向溢出与 1024 布局，加入键盘标签切换 E2E；仍未安装 axe-core，触控尺寸未逐项审计 |
+| 自动化测试 | ✅ 已实现 | 381 项单测 / 帧回归 / jsdom 冒烟 + 22 条真实浏览器 E2E（Playwright + Edge，含真实 Pyodide、知识包、会话文件、AI 导师真实帧/离线/防剧透、Stage 7A 布局与标签状态）；另有 MCP 协议测试 20 项与 stdio 冒烟 9 项通过 + 1 项按配置跳过 |
 | 知识包远程市场 / 包签名 | ⏳ 后续 | 本版只有本地文件导入；无远程仓库、无自动下载、无签名校验 |
-| 网页 AI 导师（本地 Gateway） | ✅ 已实现（真机未验证） | Stage 6A：Ollama + OpenAI Chat Completions 适配、五级教学 Schema、防剧透降级、同源代理；本机无 Ollama/云端 Key，真实模型未验证 |
+| 网页 AI 导师（本地 Gateway） | ✅ 已实现（真机未验证） | Stage 7A 将其收进工作区标签页，连接状态与错误详情保留；Stage 6A：Ollama + OpenAI Chat Completions 适配、五级教学 Schema、防剧透降级、同源代理；本机无 Ollama/云端 Key，真实模型未验证 |
 | AI Gateway 安全边界 | ✅ 已实现 | 仅 127.0.0.1、Origin + 自定义头、96 KiB 请求 / 30s / 20 rpm、严格 Zod、目标地址仅启动配置、密钥只存 Gateway 环境变量 |
 | 多模态 / RAG / 自动判题 / Agent 实时同步 | ⏳ 后续 | Stage 6A 明确不做；文件桥与 stdio MCP 保持独立 |
 | 练习页编辑器 | ⏳ 后续 | 练习页仍为 textarea；Monaco 仅用于实验室主编辑器 |
@@ -148,6 +148,14 @@ scripts/       从 legacy 定义生成类型化数据、build-pack.mjs、validat
 - `.algocontext.json`：网页导出的**当前真实帧**（`contextFormatVersion: 1`、`stepIndex`、`totalEvents`、`lessonStepId`、真实 `event`、可选 `source`）。上限 128 KiB；导出不重跑；MCP 只从用户配置的目录读取裸文件名。
 - 两者都由 `src/domain/sessions/` 定义并被网页与 MCP 共用；MCP 看不到浏览器 IndexedDB，工具输出显式标注 `browserIndexedDbVisible: false`。
 
+### 学习实验室布局（Stage 7A）
+
+- 宽屏：左侧可折叠算法目录；中间动画 + 右侧 Monaco；「当前步骤」紧接动画下方；底部标签页为教学步骤 / 变量与调用栈 / AI 导师 / 学习工具。
+- ≤1279px：单列顺序为动画 → 当前步骤 → 代码 → 标签页；≤899px 目录改为顶部算法选择；≤760px 单列且无页面级横向滚动。
+- 标签页只隐藏 DOM，不卸载面板，因此 Monaco、Trace、草稿与 AI 会话状态不因切换而重建。题库与 AI 导入入口位于「更多工具」菜单，代码与数据未删除。
+
+详细证据与已知限制见 [阶段 7A 总结](docs/STAGE7A_REPORT.md)，实际截图位于 `docs/stage7a/`。
+
 ### 网页 AI 导师（Stage 6A）
 
 - 浏览器只访问**同源** `POST /api/mentor` 与 `GET /api/providers`；Vite dev/preview 将其代理到 `127.0.0.1:8787` 的本地 Gateway。页面里没有可填任意 URL 的 AI 代理地址，也没有任何 Key。
@@ -194,15 +202,17 @@ AlgoLens is a browser-first algorithm visualization learning platform where **Py
 
 **Stage 5A** shipped the first local MCP agent plugin: `packages/mcp-server` (official TS SDK, stdio) exposing six course/pack/session/context tools plus a five-level `teach_algorithm` prompt, with `.algosession.json` / `.algocontext.json` as the explicit file bridge; MCP reads only configured directories and never browser IndexedDB.
 
+**Stage 7A** restructures the learning lab: the animation, Monaco editor and current trace step share the first screen; teaching steps, variables/call stack, the AI mentor and learning tools move into on-demand tabs; the duplicated read-only source view becomes an expandable executed snapshot; courses open progressively. Navigation is reduced to Learn / Packs / More tools, with practice and AI import kept (labelled) inside More tools. Tabs keep their panels mounted, so switching never recreates Monaco, the trace, drafts or AI state. Screenshots and limits are recorded in [docs/STAGE7A_REPORT.md](docs/STAGE7A_REPORT.md).
+
 **Stage 6A** adds an optional local AI tutor. `packages/ai-gateway` is a loopback-only Node process (`127.0.0.1:8787`) that talks to local Ollama or your own OpenAI Chat Completions key; the page only calls same-origin `/api/mentor` and `/api/providers`. The mentor explains the real frame under the playhead (variables, call stack and teaching stage), enforces five hint levels with an explicit Level 5 confirmation, redacts leaked full code at low levels, and keeps old answers tied to their own frame. Keys never enter the browser, localStorage or Git; without the Gateway the whole lab keeps working and the panel says AI is offline. Real Ollama/cloud calls were **not tested** here, and GitHub Pages (static hosting) does not include a Gateway.
 
 ```sh
 npm ci
 npm run dev
 npm run typecheck
-npm test          # 378 tests (incl. 20 MCP protocol tests + gateway tests)
+npm test          # 381 tests (incl. 20 MCP protocol tests + gateway tests)
 npm run build
-npm run test:e2e  # 16 Playwright tests (local Microsoft Edge; mock provider)
+npm run test:e2e  # 22 Playwright tests (local Microsoft Edge; mock provider)
 npm run pack -- packs/algolens-search-basics.algopack   # validate a pack (same chain as the browser)
 npm run mcp:install && npm run mcp:build                 # optional MCP server (Node >= 20)
 npm run mcp:smoke                                        # real stdio child-process smoke test

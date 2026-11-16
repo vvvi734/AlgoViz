@@ -57,7 +57,7 @@ export function App() {
   return (
     <div className="app">
       <TopBar onOpenApi={() => setApiOpen(true)} />
-      <NavTabs view={view} onChange={setView} />
+      <NavTabs view={view} onChange={setView} onOpenApi={() => setApiOpen(true)} />
 
       <div className={view === 'learn' ? '' : 'hidden'}>
         <LabView

@@ -83,9 +83,11 @@ test.describe('Stage 4 — pack Python example produces a real trace', () => {
       'init',
       { timeout: 120_000 },
     );
+    await page.click('[data-testid="workspace-tab-state"]');
     await expect(page.locator('[data-testid="variables-watch"]')).toContainText('target');
 
     // Lesson → timeline: a `found` stage exists only in the real trace.
+    await page.click('[data-testid="workspace-tab-lesson"]');
     await page.click('[data-testid="lesson-step-found"]');
     await expect(page.locator('[data-testid="lesson-active-step"]')).toHaveAttribute('data-step-id', 'found');
     await expect(page.locator('.algolens-active-line').first()).toBeVisible();

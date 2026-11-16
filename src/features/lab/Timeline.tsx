@@ -6,7 +6,7 @@ export function Timeline({ events, playback }: { events: TraceEvent[]; playback:
   const { t } = useI18n();
   const last = Math.max(0, events.length - 1);
   return (
-    <>
+    <div className="stage-playback">
       <div className="stage-foot">
         <span className="step-number" data-testid="step-number">
           {t('step')} {events.length ? playback.index + 1 : 0}
@@ -66,6 +66,6 @@ export function Timeline({ events, playback }: { events: TraceEvent[]; playback:
         <span data-testid="progress">{playback.progress}</span>
         <span>{t('timelineHint')}</span>
       </div>
-    </>
+    </div>
   );
 }

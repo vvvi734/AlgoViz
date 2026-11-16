@@ -4,6 +4,7 @@ import { ThemeProvider } from './theme/ThemeProvider';
 import { I18nProvider } from './i18n/I18nProvider';
 import './styles/tokens.css';
 import './styles/app.css';
+import './styles/stage7a.css';
 
 const container = document.getElementById('root');
 if (!container) throw new Error('Missing #root element');

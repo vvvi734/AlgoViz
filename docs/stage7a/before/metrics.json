@@ -1,0 +1,162 @@
+[
+  {
+    "viewport": "1920",
+    "theme": "light",
+    "file": "docs\\stage7a\\before\\1920-light.png",
+    "overflowX": false,
+    "scrollWidth": 1920,
+    "clientWidth": 1920,
+    "bodyHeight": 3089,
+    "workspace": {
+      "x": 142,
+      "width": 1636,
+      "columns": "240px 1049px 315px"
+    },
+    "errors": [
+      "Error: Missing requestHandler or method: getSyntacticDiagnostics",
+      "Error: Missing requestHandler or method: provideInlayHints\n\nError: Missing requestHandler or method: provideInlayHints",
+      "Error: Missing requestHandler or method: getCodeFixesAtPosition\n\nError: Missing requestHandler or method: getCodeFixesAtPosition",
+      "Error: Missing requestHandler or method: getNavigationTree\n\nError: Missing requestHandler or method: getNavigationTree"
+    ]
+  },
+  {
+    "viewport": "1920",
+    "theme": "dark",
+    "file": "docs\\stage7a\\before\\1920-dark.png",
+    "overflowX": false,
+    "scrollWidth": 1920,
+    "clientWidth": 1920,
+    "bodyHeight": 3089,
+    "workspace": {
+      "x": 142,
+      "width": 1636,
+      "columns": "240px 1049px 315px"
+    },
+    "errors": [
+      "Error: Missing requestHandler or method: getSyntacticDiagnostics",
+      "Error: Missing requestHandler or method: provideInlayHints\n\nError: Missing requestHandler or method: provideInlayHints",
+      "Error: Missing requestHandler or method: getCodeFixesAtPosition\n\nError: Missing requestHandler or method: getCodeFixesAtPosition",
+      "Error: Missing requestHandler or method: getNavigationTree\n\nError: Missing requestHandler or method: getNavigationTree"
+    ]
+  },
+  {
+    "viewport": "1440",
+    "theme": "light",
+    "file": "docs\\stage7a\\before\\1440-light.png",
+    "overflowX": false,
+    "scrollWidth": 1440,
+    "clientWidth": 1440,
+    "bodyHeight": 3129,
+    "workspace": {
+      "x": 22,
+      "width": 1396,
+      "columns": "240px 809px 315px"
+    },
+    "errors": [
+      "Error: Missing requestHandler or method: getSyntacticDiagnostics",
+      "Error: Missing requestHandler or method: provideInlayHints\n\nError: Missing requestHandler or method: provideInlayHints",
+      "Error: Missing requestHandler or method: getCodeFixesAtPosition\n\nError: Missing requestHandler or method: getCodeFixesAtPosition",
+      "Error: Missing requestHandler or method: getNavigationTree\n\nError: Missing requestHandler or method: getNavigationTree"
+    ]
+  },
+  {
+    "viewport": "1440",
+    "theme": "dark",
+    "file": "docs\\stage7a\\before\\1440-dark.png",
+    "overflowX": false,
+    "scrollWidth": 1440,
+    "clientWidth": 1440,
+    "bodyHeight": 3129,
+    "workspace": {
+      "x": 22,
+      "width": 1396,
+      "columns": "240px 809px 315px"
+    },
+    "errors": [
+      "Error: Missing requestHandler or method: getSyntacticDiagnostics",
+      "Error: Missing requestHandler or method: provideInlayHints\n\nError: Missing requestHandler or method: provideInlayHints",
+      "Error: Missing requestHandler or method: getCodeFixesAtPosition\n\nError: Missing requestHandler or method: getCodeFixesAtPosition",
+      "Error: Missing requestHandler or method: getNavigationTree\n\nError: Missing requestHandler or method: getNavigationTree"
+    ]
+  },
+  {
+    "viewport": "1024",
+    "theme": "light",
+    "file": "docs\\stage7a\\before\\1024-light.png",
+    "overflowX": false,
+    "scrollWidth": 1024,
+    "clientWidth": 1024,
+    "bodyHeight": 3601,
+    "workspace": {
+      "x": 22,
+      "width": 980,
+      "columns": "190px 774px"
+    },
+    "errors": [
+      "Error: Missing requestHandler or method: getSyntacticDiagnostics",
+      "Error: Missing requestHandler or method: provideInlayHints\n\nError: Missing requestHandler or method: provideInlayHints",
+      "Error: Missing requestHandler or method: getCodeFixesAtPosition\n\nError: Missing requestHandler or method: getCodeFixesAtPosition",
+      "Error: Missing requestHandler or method: getNavigationTree\n\nError: Missing requestHandler or method: getNavigationTree"
+    ]
+  },
+  {
+    "viewport": "1024",
+    "theme": "dark",
+    "file": "docs\\stage7a\\before\\1024-dark.png",
+    "overflowX": false,
+    "scrollWidth": 1024,
+    "clientWidth": 1024,
+    "bodyHeight": 3601,
+    "workspace": {
+      "x": 22,
+      "width": 980,
+      "columns": "190px 774px"
+    },
+    "errors": [
+      "Error: Missing requestHandler or method: getSyntacticDiagnostics",
+      "Error: Missing requestHandler or method: provideInlayHints\n\nError: Missing requestHandler or method: provideInlayHints",
+      "Error: Missing requestHandler or method: getCodeFixesAtPosition\n\nError: Missing requestHandler or method: getCodeFixesAtPosition",
+      "Error: Missing requestHandler or method: getNavigationTree\n\nError: Missing requestHandler or method: getNavigationTree"
+    ]
+  },
+  {
+    "viewport": "768",
+    "theme": "light",
+    "file": "docs\\stage7a\\before\\768-light.png",
+    "overflowX": false,
+    "scrollWidth": 768,
+    "clientWidth": 768,
+    "bodyHeight": 3893,
+    "workspace": {
+      "x": 22,
+      "width": 724,
+      "columns": "190px 518px"
+    },
+    "errors": [
+      "Error: Missing requestHandler or method: getSyntacticDiagnostics",
+      "Error: Missing requestHandler or method: provideInlayHints\n\nError: Missing requestHandler or method: provideInlayHints",
+      "Error: Missing requestHandler or method: getCodeFixesAtPosition\n\nError: Missing requestHandler or method: getCodeFixesAtPosition",
+      "Error: Missing requestHandler or method: getNavigationTree\n\nError: Missing requestHandler or method: getNavigationTree"
+    ]
+  },
+  {
+    "viewport": "390",
+    "theme": "light",
+    "file": "docs\\stage7a\\before\\390-light.png",
+    "overflowX": true,
+    "scrollWidth": 718,
+    "clientWidth": 390,
+    "bodyHeight": 5316,
+    "workspace": {
+      "x": 13,
+      "width": 364,
+      "columns": "364px"
+    },
+    "errors": [
+      "Error: Missing requestHandler or method: getSyntacticDiagnostics",
+      "Error: Missing requestHandler or method: provideInlayHints\n\nError: Missing requestHandler or method: provideInlayHints",
+      "Error: Missing requestHandler or method: getCodeFixesAtPosition\n\nError: Missing requestHandler or method: getCodeFixesAtPosition",
+      "Error: Missing requestHandler or method: getNavigationTree\n\nError: Missing requestHandler or method: getNavigationTree"
+    ]
+  }
+]

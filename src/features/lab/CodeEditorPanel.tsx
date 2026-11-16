@@ -64,7 +64,7 @@ export function CodeEditorPanel({
   }, []);
 
   return (
-    <section className="panel pad">
+    <section className="panel pad code-editor-panel">
       <div className="sectionhead">
         <div className="language-row">
           <h2>{t('codeEditor')}</h2>

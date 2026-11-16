@@ -15,6 +15,7 @@ async function openApp(page: Page) {
 }
 
 async function runBubbleToCompare(page: Page): Promise<void> {
+  await page.click('[data-testid="workspace-tab-lesson"]');
   await page.selectOption('#code-lang', 'python');
   await expect(page.locator('.monaco-editor')).toContainText('lesson_step');
   await page.click('[data-testid="run-btn"]');
@@ -29,6 +30,7 @@ test.describe('Stage 6A — AI mentor with a real trace', () => {
   test('explains the frame on screen using its real variables', async ({ page }) => {
     await openApp(page);
     await runBubbleToCompare(page);
+    await page.click('[data-testid="workspace-tab-mentor"]');
 
     await expect(page.locator('[data-testid="mentor-panel"]')).toBeVisible();
     await expect(page.locator('[data-testid="mentor-status"]')).toContainText('AI 网关已连接');
@@ -53,6 +55,7 @@ test.describe('Stage 6A — AI mentor with a real trace', () => {
   test('hides a leaked full solution at Level 1 and shows it only after Level 5 confirmation', async ({ page }) => {
     await openApp(page);
     await runBubbleToCompare(page);
+    await page.click('[data-testid="workspace-tab-mentor"]');
 
     await expect(page.locator('[data-testid="mentor-provider"]')).toHaveValue('mock');
     await page.selectOption('[data-testid="mentor-model"]', 'mock-leak');
@@ -81,11 +84,13 @@ test.describe('Stage 6A — AI mentor with a real trace', () => {
     await page.route('**/api/mentor', (route) => route.abort());
 
     await openApp(page);
+    await page.click('[data-testid="workspace-tab-mentor"]');
     await expect(page.locator('[data-testid="mentor-status"]')).toContainText('AI 未连接');
     await expect(page.locator('[data-testid="mentor-local-hint"]')).toContainText('本地教学提示（非 AI）');
     await expect(page.locator('[data-testid="mentor-send"]')).toHaveCount(0);
 
     await runBubbleToCompare(page);
+    await page.click('[data-testid="workspace-tab-state"]');
     await expect(page.locator('[data-testid="variables-watch"]')).toContainText('arr');
     await expect(page.locator('[data-testid="step-desc"]')).toContainText('比较');
   });

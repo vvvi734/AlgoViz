@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import type { CallFrame, TraceEvent } from '../../domain/trace/schema';
 import { useI18n } from '../../i18n/I18nProvider';
 
@@ -49,13 +50,17 @@ export function SyncPanel({
   source,
   stale,
   selectedFrameId,
+  showSource = true,
 }: {
   event: TraceEvent | undefined;
   source: string;
   stale: boolean;
   selectedFrameId: string | null;
+  /** Stage 7A: Monaco is the primary code surface; the snapshot here is opt-in. */
+  showSource?: boolean;
 }) {
   const { t } = useI18n();
+  const [openSnapshot, setOpenSnapshot] = useState(false);
 
   const lines = source ? source.split('\n') : [];
   const activeLine = event?.sourceLocation?.line ?? null;
@@ -70,25 +75,48 @@ export function SyncPanel({
 
       {stale && <p className="muted smalltext sync-warn" data-testid="sync-stale">{t('codeChanged')}</p>}
 
-      <div className="sync-grid">
-        <div className="sync-col">
-          <h3 className="smalltext muted">{t('codePosition')}</h3>
-          {lines.length === 0 ? (
-            <div className="empty smalltext" data-testid="code-position-empty">{t('noCode')}</div>
-          ) : (
-            <pre className="codeview" data-testid="code-position" aria-label="Source code position">
-              {lines.map((text, i) => (
-                <div key={i} className={`codeline ${activeLine === i + 1 ? 'active' : ''}`}>
-                  <span className="lineno">{i + 1}</span>
-                  <span className="codetext">{text || ' '}</span>
-                </div>
-              ))}
-            </pre>
-          )}
-          {activeLine == null && lines.length > 0 && (
-            <div className="muted smalltext" data-testid="no-location">{t('noLocation')}</div>
-          )}
-        </div>
+      <div className={`sync-grid${showSource || openSnapshot ? '' : ' source-collapsed'}`}>
+        {(showSource || openSnapshot) && (
+          <div className="sync-col">
+            <div className="sync-colhead">
+              <h3 className="smalltext muted">{t('codePosition')}</h3>
+              {!showSource && (
+                <button type="button" className="btn btn-ghost btn-small" onClick={() => setOpenSnapshot(false)}>
+                  {t('hideSnapshot')}
+                </button>
+              )}
+            </div>
+            {lines.length === 0 ? (
+              <div className="empty smalltext" data-testid="code-position-empty">{t('noCode')}</div>
+            ) : (
+              <pre className="codeview" data-testid="code-position" aria-label="Source code position">
+                {lines.map((text, i) => (
+                  <div key={i} className={`codeline ${activeLine === i + 1 ? 'active' : ''}`}>
+                    <span className="lineno">{i + 1}</span>
+                    <span className="codetext">{text || ' '}</span>
+                  </div>
+                ))}
+              </pre>
+            )}
+            {activeLine == null && lines.length > 0 && (
+              <div className="muted smalltext" data-testid="no-location">{t('noLocation')}</div>
+            )}
+          </div>
+        )}
+        {!showSource && !openSnapshot && (
+          <div className="sync-col sync-snapshot">
+            <h3 className="smalltext muted">{t('codePosition')}</h3>
+            <p className="muted smalltext">{t('snapshotNote')}</p>
+            <button
+              type="button"
+              className="btn btn-ghost"
+              data-testid="sync-source-toggle"
+              onClick={() => setOpenSnapshot(true)}
+            >
+              {t('showSnapshot')}
+            </button>
+          </div>
+        )}
 
         <div className="sync-col">
           <h3 className="smalltext muted">{t('variablesWatch')}</h3>

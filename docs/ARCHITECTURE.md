@@ -1,8 +1,8 @@
-# AlgoLens 架构方案（v0.7 / Stage 6A）
+# AlgoLens 架构方案（v0.8 / Stage 7A）
 
 本文描述从单文件原型（`index.html`，296 行 / ~70 KB）迁移到 React + TypeScript + Vite 后的模块边界、数据流与演进约束。
 
-**定位已收敛**：Python 为主要教学语言；JavaScript 作为前端实现语言继续支持既有 12 个算法演示。**C/C++ 与在线判题已从规划中取消**，相关入口与执行后端已移除。Stage 1 落地「统一 Trace Event Schema v1 + 旧动画兼容 + Python 冒泡排序同步演示」；Stage 2 落地「Monaco Editor + 执行行高亮 + Python 错误诊断 + 本地代码保存 + 真实浏览器 E2E」；Stage 3 落地「Python 递归调用栈 + 作用域感知变量观察 + 时间轴重置修复」；Stage 3B 落地「教学课程数据层 + 教学阶段关联 + 教学面板与时间轴双向联动」；Stage 4 落地「可安装教学知识包 `.algopack`（容器规范 + 安全导入 + 本地安装 + 注册表组合 + 管理页）」；Stage 5A 落地「本地 MCP Agent 插件（stdio、6 工具 + 五级 Prompt）+ `.algosession.json` / `.algocontext.json` 双文件桥 + 网页导入/导出」；Stage 6A 落地「本地 AI Gateway（仅 127.0.0.1）+ Ollama / OpenAI Chat Completions Provider + 共享五级 Mentor Schema 与防剧透降级 + 网页 AI 导师面板」，详见 [STAGE1_REPORT.md](./STAGE1_REPORT.md)、[STAGE2_REPORT.md](./STAGE2_REPORT.md)、[STAGE3_REPORT.md](./STAGE3_REPORT.md)、[STAGE3B_REPORT.md](./STAGE3B_REPORT.md)、[STAGE4_REPORT.md](./STAGE4_REPORT.md)、[STAGE5A_REPORT.md](./STAGE5A_REPORT.md)、[STAGE6A_REPORT.md](./STAGE6A_REPORT.md)、[AI_GATEWAY.md](./AI_GATEWAY.md)、[PACK_FORMAT_V1.md](./PACK_FORMAT_V1.md) 与 [MCP_INSTALL.md](./MCP_INSTALL.md)。
+**定位已收敛**：Python 为主要教学语言；JavaScript 作为前端实现语言继续支持既有 12 个算法演示。**C/C++ 与在线判题已从规划中取消**，相关入口与执行后端已移除。Stage 1 落地「统一 Trace Event Schema v1 + 旧动画兼容 + Python 冒泡排序同步演示」；Stage 2 落地「Monaco Editor + 执行行高亮 + Python 错误诊断 + 本地代码保存 + 真实浏览器 E2E」；Stage 3 落地「Python 递归调用栈 + 作用域感知变量观察 + 时间轴重置修复」；Stage 3B 落地「教学课程数据层 + 教学阶段关联 + 教学面板与时间轴双向联动」；Stage 4 落地「可安装教学知识包 `.algopack`（容器规范 + 安全导入 + 本地安装 + 注册表组合 + 管理页）」；Stage 5A 落地「本地 MCP Agent 插件（stdio、6 工具 + 五级 Prompt）+ `.algosession.json` / `.algocontext.json` 双文件桥 + 网页导入/导出」；Stage 6A 落地「本地 AI Gateway（仅 127.0.0.1）+ Ollama / OpenAI Chat Completions Provider + 共享五级 Mentor Schema 与防剧透降级 + 网页 AI 导师面板」；Stage 7A 落地「学习实验室信息架构重构：动画 + Monaco + 当前步骤同屏，教学/变量/AI/工具按需标签，课程渐进展开，1024 与移动端单列且无横向溢出」，详见 [STAGE1_REPORT.md](./STAGE1_REPORT.md)、[STAGE2_REPORT.md](./STAGE2_REPORT.md)、[STAGE3_REPORT.md](./STAGE3_REPORT.md)、[STAGE3B_REPORT.md](./STAGE3B_REPORT.md)、[STAGE4_REPORT.md](./STAGE4_REPORT.md)、[STAGE5A_REPORT.md](./STAGE5A_REPORT.md)、[STAGE6A_REPORT.md](./STAGE6A_REPORT.md)、[STAGE7A_REPORT.md](./STAGE7A_REPORT.md)、[AI_GATEWAY.md](./AI_GATEWAY.md)、[PACK_FORMAT_V1.md](./PACK_FORMAT_V1.md) 与 [MCP_INSTALL.md](./MCP_INSTALL.md)。
 
 ## 1. 现状盘点（迁移前）
 
@@ -129,6 +129,13 @@ flowchart TD
 - **请求与步骤绑定**：组件用 requestId + 快照元数据（algorithmId、stepIndex、totalEvents）记录每条回答；切换帧会 abort 在途请求并清空对话，历史回答即使在返回后也只属于它自己的帧，卡片显示“来自之前的步骤”。模型不能改播放位置、Monaco、变量或 Trace。
 - **静态与本地分界**：GitHub Pages 无 `/api/*`，面板进入离线态并显示标注“非 AI”的本地提示；算法、课程、Python、知识包与 MCP 不受影响。完整 AI 只在本地 `npm run dev` + `npm run ai:dev`。
 
+### 3.10 学习实验室：一个主工作区，按需标签（Stage 7A）
+- **信息层级**：`.lab-shell` 是「可折叠目录 + 主列」。`LabView` 的 `.lab-primary` 在宽屏为「动画/时间轴 + Monaco」两列；「当前步骤」紧接动画（`VisualStage`）之后，时间轴紧随其后；变量、课程、AI、工具进入 `WorkspaceTabs`。`ConceptPanel` 不再常驻，`LessonPanel` 使用 compact 模式，完整讲义折叠。
+- **单一代码面**：`SyncPanel` 保留只读源码能力，但 `LabView` 传 `showSource={false}`，只显示「查看已执行源码快照」；Monaco 继续持有草稿、行高亮、Marker 与 traceStale。
+- **状态不随面板卸载**：`WorkspaceTabs` 同时挂载四个 panel，只切换 `hidden` 与 `aria-selected`；Monaco、时间轴、Trace 位于标签之外。`WorkspaceTabs.test.tsx` 用输入框草稿证明隐藏面板不丢状态，E2E 再验证真实 Monaco 草稿与运行进度不变。
+- **响应式是顺序变化而非第二套布局**：≤1279px 令 `.lab-primary { display:contents }`，按动画 → 当前步骤 → 代码 → 标签页重排；≤899px 目录变顶部算法选择；≤760px 单列，课程 steps 纵向内部滚动。`scripts/capture-ui.mjs` 在五个视口实测 `scrollWidth == clientWidth`。
+- **导航收敛**：`NavTabs` 只保留学习实验室、知识包、更多工具；题库（暂停）与 AI 导入（实验）在 `nav-more-menu` 中保留原页面与数据，不删除兼容逻辑。
+
 ## 4. 测试策略
 
 | 层次 | 工具 | 覆盖 |
@@ -141,6 +148,7 @@ flowchart TD
 | AI Gateway（Stage 6A） | Vitest + 真实 `http` 临时端口 + 注入 fake provider + `fetch` stub | 请求 Schema、Origin/自定义头/跨站、体积/速率、Level 5 授权、Provider 401/404/429/超时/无效 JSON、防剧透降级、Mock 显式开启、错误不泄 Key；Ollama/OpenAI 适配器分别用 fetch stub 覆盖 |
 | AI 导师组件 | Vitest + jsdom + Testing Library | 连接状态、发送真实帧、切换步骤后旧回答不冒充新步骤、中止、离线本地提示、Level 5 确认、模型结构化字段渲染 |
 | stdio 子进程 | Node + `StdioClientTransport` | 真实 `dist/server.mjs` 启动、握手、6 工具、真实上下文回读、stderr 诊断（`scripts/smoke.mjs`） |
+| 工作区布局（Stage 7A） | Playwright + 真实页面 | 1440 并排 + 当前步骤落在 900 高首屏；1024/390 无页面级横向溢出；标签切换保留 Monaco 草稿、不自动运行；方向键切标签、Escape 关闭菜单；AI 错误折叠 |
 | 组件冒烟 | Vitest + jsdom + Testing Library | 14 个算法入口、时间轴交互与 **Trace 切换重置**、三态主题、语言切换、视图切换、调用栈面板与作用域变量、教学面板（高亮/禁用/跳转/空态）、知识包页（预览/确认/卸载/错误文案）、**App 级导入→课程→卸载** |
 | 令牌契约 | Vitest 读 CSS 文本 | 两套主题 token 完整性、无硬编码颜色 |
 | E2E | Playwright（真实 Edge 无头 + `vite preview`） | Monaco 加载、Python 冒泡同步高亮、SyntaxError 波浪线出现/清除、草稿自动保存/刷新恢复、主题切换、真实 Pyodide 阶乘/斐波那契递归栈、JS 长短 Trace 切换重置、**教学步骤与真实数组/变量/调用栈同步**（`e2e/lab.spec.ts`）、**知识包导入→安装→刷新恢复→卸载**与**包内 Python 示例真实 Trace**（`e2e/packs.spec.ts`）、**Agent 会话导入→用户运行→步骤同步**与**导出真实帧→Schema 复验**（`e2e/session.spec.ts`） |
