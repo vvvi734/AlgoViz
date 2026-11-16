@@ -45,7 +45,7 @@
 ## 3. Git 与包身份
 
 - 远端保持 `https://gitee.com/vvvi734/algolens.git`，分支 `main`，未改 remote、未强推、未重写历史。
-- 根 `package.json` 的 `name` 仍为 `algolens`（内部包身份），`version` 在 Stage 7B 为 `0.9.0-phase7b`，Stage 7C 升为 `0.9.0-phase7c`，`description` 改为 AlgoViz 描述。
+- 根 `package.json` 的 `name` 仍为 `algolens`（内部包身份），`version` 在 Stage 7B 为 `0.9.0-phase7b`，Stage 7C 升为 `0.9.0-phase7c`，Stage 7D 升为 `0.9.0-phase7d`，`description` 改为 AlgoViz 描述。
 - 没有发布任何 npm 包；`packages/mcp-server` 与 `packages/ai-gateway` 的包名/协议身份未改。
 - 官方 `.algopack` 二进制因 manifest/README 文案变化而重新生成，属于内容更新，不是格式升级。
 

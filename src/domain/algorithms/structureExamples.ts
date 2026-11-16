@@ -11,6 +11,7 @@
  * working; Python is the primary teaching language for these two structures.
  */
 import { LINKED_DEFAULT_INPUT, LINKED_PYTHON } from './linkedListExamples';
+import { TREE_PYTHON } from './treeTraversalExamples';
 
 export const STACK_DEFAULT_INPUT: unknown = [
   ['push', 3],
@@ -120,6 +121,7 @@ const STRUCTURE_PYTHON: Record<string, string> = {
   stack: STACK_PYTHON,
   queue: QUEUE_PYTHON,
   linked: LINKED_PYTHON,
+  inorder: TREE_PYTHON,
 };
 
 const STRUCTURE_INPUT: Record<string, unknown> = {

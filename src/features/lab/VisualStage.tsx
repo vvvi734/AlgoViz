@@ -4,6 +4,7 @@ import type { TraceEvent } from '../../domain/trace/schema';
 import { useI18n } from '../../i18n/I18nProvider';
 import { QueueVisual, StackVisual } from './StructureVisuals';
 import { LinkedListVisual } from './LinkedListVisual';
+import { BinaryTreeVisual } from './BinaryTreeVisual';
 
 export function VisualStage({ event }: { event: TraceEvent | undefined }) {
   const { t } = useI18n();
@@ -16,6 +17,7 @@ export function VisualStage({ event }: { event: TraceEvent | undefined }) {
           emptyStack: t('stackEmpty'),
           emptyQueue: t('queueEmpty'),
           emptyLinked: t('linkedEmpty'),
+          emptyTree: t('treeEmpty'),
         },
         event.structure,
       )
@@ -31,6 +33,9 @@ export function VisualStage({ event }: { event: TraceEvent | undefined }) {
       break;
     case 'linked-list':
       content = <LinkedListVisual model={model} />;
+      break;
+    case 'binary-tree':
+      content = <BinaryTreeVisual model={model} />;
       break;
     case 'bars':
       content = (
@@ -87,11 +92,18 @@ export function VisualStage({ event }: { event: TraceEvent | undefined }) {
     case 'raw':
       content = <div className="empty">{model.text}</div>;
       break;
-    default:
+    case 'empty':
       content = <div className="empty">◈ {model.text}</div>;
+      break;
+    default:
+      content = <div className="empty">{t('invalidTrace')}</div>;
   }
 
-  const structured = model.kind === 'stack' || model.kind === 'queue' || model.kind === 'linked-list';
+  const structured =
+    model.kind === 'stack' ||
+    model.kind === 'queue' ||
+    model.kind === 'linked-list' ||
+    model.kind === 'binary-tree';
   return (
     <div
       className={`stage${structured ? ' has-structure' : ''}`}

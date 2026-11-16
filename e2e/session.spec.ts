@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Page } from './fixtures';
 import { bubbleSortLesson } from '../src/domain/lessons/bubbleSort';
 import { exampleFor } from '../src/domain/algorithms/examples';
 import { buildLearningSession, serializeLearningSession } from '../src/domain/sessions/session';

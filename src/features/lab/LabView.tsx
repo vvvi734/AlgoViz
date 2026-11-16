@@ -1,6 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { AlgorithmSidebar } from './AlgorithmSidebar';
 import { VisualStage } from './VisualStage';
+import { TreeTraversalPicker } from './TreeTraversalPicker';
 import { Timeline } from './Timeline';
 import { CodeEditorPanel } from './CodeEditorPanel';
 import { SyncPanel } from './SyncPanel';
@@ -51,6 +52,9 @@ export function LabView({
   const { resolved } = useTheme();
   const entry = lab.catalog[lab.currentAlgo];
   const currentEvent = lab.events[lab.playback.index];
+  const actualTreeTraversal =
+    currentEvent?.structure?.kind === 'binary-tree' ? currentEvent.structure.traversal : null;
+  const showTreePicker = lab.currentAlgo === 'inorder' && lab.codeLang === 'python';
   const highlightLine = !lab.traceStale && currentEvent?.sourceLocation?.line
     ? currentEvent.sourceLocation.line
     : null;
@@ -207,6 +211,13 @@ export function LabView({
               {lab.traceStale && <span className="tag orange">{t('traceStaleShort')}</span>}
             </div>
             <VisualStage event={currentEvent} />
+            {showTreePicker ? (
+              <TreeTraversalPicker
+                inputJson={lab.inputJson}
+                actualTraversal={actualTreeTraversal}
+                onSelect={lab.selectTreeMode}
+              />
+            ) : null}
             <section className="current-step stage-current-step" data-testid="current-step">
               <div className="current-step-main">
                 <span className="tag tag-active">{t('currentStep')}</span>

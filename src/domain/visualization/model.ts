@@ -1,5 +1,6 @@
 import type { TraceState } from '../trace/types';
 import type { AnyStructureSnapshot, StructureOperation, StructureSnapshot } from '../trace/schema';
+import { buildBinaryTreeModel, type BinaryTreeVisualModel } from './binaryTreeModel';
 import { buildLinkedListModel, type LinkedListVisualModel } from './linkedListModel';
 
 /**
@@ -51,6 +52,7 @@ export type VisualModel =
   | { kind: 'stack'; operation: StructureOperation; items: StructureItemModel[]; removed?: StructureItemModel; empty: boolean; label: string }
   | { kind: 'queue'; operation: StructureOperation; items: StructureItemModel[]; removed?: StructureItemModel; empty: boolean; label: string }
   | LinkedListVisualModel
+  | BinaryTreeVisualModel
   | { kind: 'graph'; edges: Array<[number, number]>; nodes: GraphNodeModel[]; isTree: boolean }
   | { kind: 'raw'; text: string };
 
@@ -60,6 +62,7 @@ export interface VisualLabels {
   emptyStack?: string;
   emptyQueue?: string;
   emptyLinked?: string;
+  emptyTree?: string;
 }
 
 const TREE_COORDS: Array<[number, number]> = [
@@ -198,6 +201,13 @@ export function buildVisualModel(
   const s = state as TraceState;
   const kind = s.type || 'array';
   const focus = asFocusSet(s);
+
+  if (structure !== undefined && structure.kind === 'binary-tree') {
+    if (kind !== 'tree') return { kind: 'raw', text: labels.invalid };
+    const model = buildBinaryTreeModel(structure, labels.emptyTree ?? labels.emptyStructure);
+    if (!model) return { kind: 'raw', text: labels.invalid };
+    return model;
+  }
 
   if (structure !== undefined && structure.kind === 'linked-list') {
     if (kind !== 'linked') return { kind: 'raw', text: labels.invalid };

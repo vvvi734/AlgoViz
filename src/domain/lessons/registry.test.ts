@@ -29,6 +29,7 @@ describe('Lesson registry (Stage 3B)', () => {
       'stack-lifo-basics',
       'queue-fifo-basics',
       'linked-list-pointer-basics',
+      'binary-tree-traversal-basics',
     ]);
   });
 
@@ -64,6 +65,6 @@ describe('Lesson registry (Stage 3B)', () => {
     const covered = lessonRegistry.lessons.map((lesson) => lesson.algorithmId);
     const uncovered = catalogIds.filter((id) => !covered.includes(id));
     expect(catalogIds.length).toBe(14);
-    expect(uncovered.length).toBe(9);
+    expect(uncovered.length).toBe(8);
   });
 });

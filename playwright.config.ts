@@ -3,7 +3,9 @@ import { defineConfig } from '@playwright/test';
 /**
  * Browser E2E. Uses the locally installed Microsoft Edge (channel `msedge`) so
  * CI-free, sandbox-free runs need no browser download. The `dist/` build is
- * served by `vite preview`; Pyodide is fetched from jsdelivr at runtime.
+ * served by `vite preview`. Product code loads Pyodide from jsDelivr; every E2E
+ * spec routes that URL to the local `pyodide@0.27.7` package via `fixtures.ts`,
+ * so the Worker and Python execution stay real even when the CDN is blocked.
  *
  * Stage 6A adds a second web server: the real local AI Gateway, launched from
  * TypeScript with vite-node so E2E does not depend on a prior `ai:build`.

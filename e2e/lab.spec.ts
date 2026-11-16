@@ -1,4 +1,4 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Page } from './fixtures';
 
 /** Replace the Monaco editor content by selecting all and typing. */
 /** Stage 7A: secondary panels live in on-demand workspace tabs. */

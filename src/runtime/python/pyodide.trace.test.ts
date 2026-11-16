@@ -89,14 +89,28 @@ describe('Python recursion tracer contract (Stage 3)', () => {
     // Stage 3B widened the signature to an optional-argument decorator; the
     // bare `@tracked` form must keep working, so `fn=None` + `decorate(fn)`
     // is part of the contract, not an implementation detail.
-    expect(PYTHON_RECURSION_HELPER).toContain('def tracked(fn=None, *, call_step=None, return_step=None)');
+    expect(PYTHON_RECURSION_HELPER).toContain('def tracked(fn=None, *, call_step=None, return_step=None, enter_hook=None, return_hook=None)');
     expect(PYTHON_RECURSION_HELPER).toContain('if fn is None:');
     expect(PYTHON_RECURSION_HELPER).toContain('return decorate(fn)');
     expect(PYTHON_RECURSION_HELPER).toContain("_FRAME_SEQ[0] += 1");
     expect(PYTHON_RECURSION_HELPER).toContain("fid = 'f' + str(_FRAME_SEQ[0])");
-    expect(PYTHON_RECURSION_HELPER).toContain("_emit_call(target.__name__, frame, arg_dict, target.__code__.co_firstlineno, call_step)");
+    expect(PYTHON_RECURSION_HELPER).toContain("_emit_call(target.__name__, frame, arg_dict, target.__code__.co_firstlineno, call_step, enter_extra)");
+    expect(PYTHON_RECURSION_HELPER).toContain('def _emit_call(fn_name, frame, arg_dict, call_line, lesson_step=None, extra=None)');
+    expect(PYTHON_RECURSION_HELPER).toContain('def _emit_return(fn_name, frame, retval, ret_line, lesson_step=None, extra=None)');
+    expect(PYTHON_RECURSION_HELPER).toContain("enter_extra = enter_hook(frame, arg_dict) if enter_hook else None");
+    expect(PYTHON_RECURSION_HELPER).toContain("return_extra = return_hook(frame, result) if return_hook else None");
+    expect(PYTHON_RECURSION_HELPER).toContain("if 'structure' in extra:");
     expect(PYTHON_RECURSION_HELPER).toContain("frame['returnValue'] = _snapshot(retval)");
     expect(PYTHON_RECURSION_HELPER).toContain("frame['status'] = 'returning'");
+  });
+
+  it('honours hook-provided lesson steps and snapshots updated locals before the frame', () => {
+    expect(PYTHON_RECURSION_HELPER).toContain("elif extra.get('lessonStepId'):");
+    expect(PYTHON_RECURSION_HELPER).toContain("payload['lessonStepId'] = str(extra['lessonStepId'])");
+    const localsIndex = PYTHON_RECURSION_HELPER.indexOf("frame['locals'] = _snapshot_variables(variables)");
+    const snapshotIndex = PYTHON_RECURSION_HELPER.indexOf("'callStack': _call_stack_snapshot()");
+    expect(localsIndex).toBeGreaterThan(-1);
+    expect(snapshotIndex).toBeGreaterThan(localsIndex);
   });
 
   it('captures the caller frame id / depth into the frame and cleans up on exception', () => {

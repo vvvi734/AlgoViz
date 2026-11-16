@@ -11,6 +11,7 @@ import { queueLesson } from './queue';
 import { stackLesson } from './stack';
 import { factorialLesson } from './factorial';
 import { linkedListLesson } from './linkedList';
+import { binaryTreeLesson } from './binaryTree';
 import { validateLessonSet } from './schema';
 import type { Lesson, LessonValidationResult } from './types';
 
@@ -43,9 +44,16 @@ export function createLessonRegistry(input: unknown[]): LessonRegistry {
   };
 }
 
-const BUNDLED: unknown[] = [bubbleSortLesson, factorialLesson, stackLesson, queueLesson, linkedListLesson];
+const BUNDLED: unknown[] = [
+  bubbleSortLesson,
+  factorialLesson,
+  stackLesson,
+  queueLesson,
+  linkedListLesson,
+  binaryTreeLesson,
+];
 
-/** Courses shipped with the app itself (bubble, factorial, stack, queue, linked-list). */
+/** Courses shipped with the app itself (bubble, factorial, stack, queue, linked-list, binary-tree). */
 export const lessonRegistry: LessonRegistry = createLessonRegistry(BUNDLED);
 
 /**

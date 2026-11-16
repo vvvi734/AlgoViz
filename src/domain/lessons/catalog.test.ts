@@ -23,7 +23,7 @@ describe('composite lesson catalog', () => {
     expect(catalog.byId('pack-course')?.algorithmId).toBe('binary');
     // Built-in courses keep their priority and panellable content.
     expect(catalog.byAlgorithm('bubble')?.lessonId).toBe('bubble-sort-basics');
-    expect(catalog.lessons).toHaveLength(6);
+    expect(catalog.lessons).toHaveLength(7);
   });
 
   it('never lets a pack override a built-in course', () => {
@@ -40,7 +40,7 @@ describe('composite lesson catalog', () => {
     const broken = { ...lessonFixture(), steps: [] } as unknown as typeof bubbleSortLesson;
     const catalog = createLessonCatalog([{ packId: 'broken', lessons: [broken] }]);
     expect(catalog.byAlgorithm('binary')).toBeUndefined();
-    expect(catalog.lessons).toHaveLength(5);
+    expect(catalog.lessons).toHaveLength(6);
   });
 
   it('drops a pack course as soon as the pack is not passed in', () => {
@@ -51,7 +51,7 @@ describe('composite lesson catalog', () => {
     expect(afterUninstall.has('binary')).toBe(false);
     expect(afterUninstall.byId('pack-course')).toBeUndefined();
     expect(afterUninstall.byAlgorithm('factorial')?.lessonId).toBe(factorialLesson.lessonId);
-    expect(afterUninstall.lessons).toHaveLength(5);
+    expect(afterUninstall.lessons).toHaveLength(6);
   });
 
   it('does not let two packs claim the same algorithm', () => {

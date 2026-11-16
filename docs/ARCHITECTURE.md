@@ -1,8 +1,8 @@
-# AlgoViz 架构方案（v0.9 / Stage 7C）
+# AlgoViz 架构方案（v0.9 / Stage 7D）
 
 本文描述从单文件原型（`index.html`，296 行 / ~70 KB）迁移到 React + TypeScript + Vite 后的模块边界、数据流与演进约束。
 
-**定位已收敛**：Python 为主要教学语言；JavaScript 作为前端实现语言继续支持既有 12 个算法演示。**C/C++ 与在线判题已从规划中取消**，相关入口与执行后端已移除。Stage 1 落地「统一 Trace Event Schema v1 + 旧动画兼容 + Python 冒泡排序同步演示」；Stage 2 落地「Monaco Editor + 执行行高亮 + Python 错误诊断 + 本地代码保存 + 真实浏览器 E2E」；Stage 3 落地「Python 递归调用栈 + 作用域感知变量观察 + 时间轴重置修复」；Stage 3B 落地「教学课程数据层 + 教学阶段关联 + 教学面板与时间轴双向联动」；Stage 4 落地「可安装教学知识包 `.algopack`（容器规范 + 安全导入 + 本地安装 + 注册表组合 + 管理页）」；Stage 5A 落地「本地 MCP Agent 插件（stdio、6 工具 + 五级 Prompt）+ `.algosession.json` / `.algocontext.json` 双文件桥 + 网页导入/导出」；Stage 6A 落地「本地 AI Gateway（仅 127.0.0.1）+ Ollama / OpenAI Chat Completions Provider + 共享五级 Mentor Schema 与防剧透降级 + 网页 AI 导师面板」；Stage 7A 落地「学习实验室信息架构重构：动画 + Monaco + 当前步骤同屏，教学/变量/AI/工具按需标签，课程渐进展开，1024 与移动端单列且无横向溢出」；Stage 7B 落地「AlgoViz 品牌迁移 + 可选 structure Trace 语义 + 栈桶状/队列排队专属渲染 + 真实 Python 栈/队列课程」；Stage 7C 落地「单链表结构化 Trace + 真实 Python Node 对象 + 纯 linkedListModel + 节点/箭头/HEAD/NULL/断开节点渲染 + 双语链表课程」，详见 [STAGE1_REPORT.md](./STAGE1_REPORT.md)、[STAGE2_REPORT.md](./STAGE2_REPORT.md)、[STAGE3_REPORT.md](./STAGE3_REPORT.md)、[STAGE3B_REPORT.md](./STAGE3B_REPORT.md)、[STAGE4_REPORT.md](./STAGE4_REPORT.md)、[STAGE5A_REPORT.md](./STAGE5A_REPORT.md)、[STAGE6A_REPORT.md](./STAGE6A_REPORT.md)、[STAGE7A_REPORT.md](./STAGE7A_REPORT.md)、[STAGE7B_REPORT.md](./STAGE7B_REPORT.md)、[STAGE7C_REPORT.md](./STAGE7C_REPORT.md)、[BRAND_MIGRATION.md](./BRAND_MIGRATION.md)、[AI_GATEWAY.md](./AI_GATEWAY.md)、[PACK_FORMAT_V1.md](./PACK_FORMAT_V1.md) 与 [MCP_INSTALL.md](./MCP_INSTALL.md)。
+**定位已收敛**：Python 为主要教学语言；JavaScript 作为前端实现语言继续支持既有 12 个算法演示。**C/C++ 与在线判题已从规划中取消**，相关入口与执行后端已移除。Stage 1 落地「统一 Trace Event Schema v1 + 旧动画兼容 + Python 冒泡排序同步演示」；Stage 2 落地「Monaco Editor + 执行行高亮 + Python 错误诊断 + 本地代码保存 + 真实浏览器 E2E」；Stage 3 落地「Python 递归调用栈 + 作用域感知变量观察 + 时间轴重置修复」；Stage 3B 落地「教学课程数据层 + 教学阶段关联 + 教学面板与时间轴双向联动」；Stage 4 落地「可安装教学知识包 `.algopack`（容器规范 + 安全导入 + 本地安装 + 注册表组合 + 管理页）」；Stage 5A 落地「本地 MCP Agent 插件（stdio、6 工具 + 五级 Prompt）+ `.algosession.json` / `.algocontext.json` 双文件桥 + 网页导入/导出」；Stage 6A 落地「本地 AI Gateway（仅 127.0.0.1）+ Ollama / OpenAI Chat Completions Provider + 共享五级 Mentor Schema 与防剧透降级 + 网页 AI 导师面板」；Stage 7A 落地「学习实验室信息架构重构：动画 + Monaco + 当前步骤同屏，教学/变量/AI/工具按需标签，课程渐进展开，1024 与移动端单列且无横向溢出」；Stage 7B 落地「AlgoViz 品牌迁移 + 可选 structure Trace 语义 + 栈桶状/队列排队专属渲染 + 真实 Python 栈/队列课程」；Stage 7C 落地「单链表结构化 Trace + 真实 Python Node 对象 + 纯 linkedListModel + 节点/箭头/HEAD/NULL/断开节点渲染 + 双语链表课程」；Stage 7D 落地「二叉树结构化 Trace + 真实 Python TreeNode 三模式递归 + 纯树布局/模型 + 层级画布/递归路径/访问序号 + 调用栈联动 + 双语树课程」，详见 [STAGE1_REPORT.md](./STAGE1_REPORT.md)、[STAGE2_REPORT.md](./STAGE2_REPORT.md)、[STAGE3_REPORT.md](./STAGE3_REPORT.md)、[STAGE3B_REPORT.md](./STAGE3B_REPORT.md)、[STAGE4_REPORT.md](./STAGE4_REPORT.md)、[STAGE5A_REPORT.md](./STAGE5A_REPORT.md)、[STAGE6A_REPORT.md](./STAGE6A_REPORT.md)、[STAGE7A_REPORT.md](./STAGE7A_REPORT.md)、[STAGE7B_REPORT.md](./STAGE7B_REPORT.md)、[STAGE7C_REPORT.md](./STAGE7C_REPORT.md)、[STAGE7D_REPORT.md](./STAGE7D_REPORT.md)、[BRAND_MIGRATION.md](./BRAND_MIGRATION.md)、[AI_GATEWAY.md](./AI_GATEWAY.md)、[PACK_FORMAT_V1.md](./PACK_FORMAT_V1.md) 与 [MCP_INSTALL.md](./MCP_INSTALL.md)。
 
 ## 1. 现状盘点（迁移前）
 
@@ -151,6 +151,16 @@ flowchart TD
 - **任意帧直接渲染**：每一帧都是完整快照；拖动、回退和跳帧只替换 `currentEvent`，不会逐帧重放未执行的指针赋值。`prefers-reduced-motion` 关闭节点进入动画与过渡，保留文字、边框、箭头和角色标签。
 - **课程与默认语言**：`linked-list-pointer-basics` 的 8 个 stepId（init/create/find/connect/insert/unlink/traverse/done）与 Python `lesson_step=` 完全一致；选中 `linked` 时默认 Python，同时保留 legacy JS 数组帧与旧视图。
 
+### 3.13 二叉树专属动画：层级、三种递归与调用栈联动（Stage 7D）
+- **协议仍是同一个可选 `structure`**：`structureSchema` 扩为 stack/queue、linked-list、binary-tree 三分支。树快照为 `{kind:'binary-tree', traversal, operation, rootId, nodes[{id,value,leftId,rightId}], currentNodeId, visitedIds, pathIds}`；旧栈/队列/链表/legacy Trace 保持不变。
+- **结构安全规则**：节点最多 40 个；ID 唯一；`leftId/rightId` 必须指向存在的节点或 null；`rootId` 必须存在（空树为 null）；每个非 root 最多一个父；无环；所有节点必须从 root 可达；`visitedIds/pathIds` 只能引用存在的节点；`pathIds` 必须从 root 连续到当前节点。`init/done` 的 current 为 null 且路径为空；其他操作 current 非空；`visit` 的 current 必须已在 visited；`left/right` 必须确有对应孩子。
+- **真实 Python 树**：`TreeNode` 保存 `node_id/value/index/left/right`，层序数组建树后将引用转换为 `leftId/rightId`；节点 ID 是 `n1…n7` 教学身份，不使用 Python `id()`，不把对象直接 JSON 序列化；每帧生成独立快照，后续递归不能污染历史。
+- **三模式共用一棵树与一个 `inorder` 条目**：合法输入为旧数组（默认中序）或 `{mode, tree}`；`MODE` 记录真实执行模式。`traverse(node)` 内按模式在左递归前、两次递归之间或右递归后调用 `visit_node`，左右递归使用真实 `node.left/right`，没有预写结果数组。
+- **递归帧与树帧分离**：`@tracked` 仍用 `fN` 标识函数帧，树节点用 `nN`；`enter_hook` 在帧入栈后追加 PATH、生成进入帧；`return_hook` 在弹出前生成返回帧。调用栈来自真实 `_CALL_STACK`，UI 不根据节点位置推断帧。
+- **纯布局与渲染**：`layoutBinaryTree(nodes, rootId)` 用迭代中序分配列、深度分配行，返回稳定节点/边坐标；空树/缺失 root 返回空布局，不可达节点不绘制，带 `seen/inStack` 防护环。`BinaryTreeVisual` 只渲染 `BinaryTreeVisualModel`：根/左/右层级、SVG 父子边、当前节点边框、已访问序号、递归路径、ROOT/LEAF 与模式/操作标签；宽树在画布内滚动，不让页面横向溢出。
+- **当前 ≠ 已访问**：`enter` 只改变当前节点与路径；`visit` 才追加访问序号。中序/后序的当前节点可以没有序号。任意跳帧只替换 `currentEvent`，树、栈、变量一起恢复；`prefers-reduced-motion` 关闭过渡但保留状态与文字。
+- **课程与模式选择**：`binary-tree-traversal-basics` 的 9 个 stepId（init/root/enter/left/visit/right/return/order/done）与 Python `lesson_step=` 一致；模式选择器只改写输入 `{mode, tree}`，旧 Trace 保留并显示 pending，必须由用户明确 Run 才生成从第 0 帧开始的新 Trace。
+
 ## 4. 测试策略
 
 | 层次 | 工具 | 覆盖 |
@@ -170,6 +180,8 @@ flowchart TD
 | 令牌契约 | Vitest 读 CSS 文本 | 两套主题 token 完整性、无硬编码颜色 |
 | E2E | Playwright（真实 Edge 无头 + `vite preview`） | Monaco 加载、Python 冒泡同步高亮、SyntaxError 波浪线出现/清除、草稿自动保存/刷新恢复、主题切换、真实 Pyodide 阶乘/斐波那契递归栈、JS 长短 Trace 切换重置、**教学步骤与真实数组/变量/调用栈同步**（`e2e/lab.spec.ts`）、**知识包导入→安装→刷新恢复→卸载**与**包内 Python 示例真实 Trace**（`e2e/packs.spec.ts`）、**Agent 会话导入→用户运行→步骤同步**与**导出真实帧→Schema 复验**（`e2e/session.spec.ts`） |
 | 栈/队列 E2E（Stage 7B） | Playwright + 真实 Pyodide | 真实 7 帧栈/队列、DOM 顶→底/前→后顺序、Peek/Front 不移除、Pop/Dequeue 与回退、1024/390 无横向溢出、Light/Dark、Reduced Motion、36 张真实截图 |
+| 二叉树语义（Stage 7D） | Vitest + Schema/布局/模型/组件/Python | 空树/单节点/只有左或右孩子/同值不同 ID/重复 ID/悬空引用/多父/环/40 上限；根上、左孩子左下、右孩子右下、同层不重叠、边不交叉；三种遍历访问序列与真实递归路径；调用栈、变量、源码行、9 个 stepId；任意帧坐标稳定 |
+| 二叉树 E2E（Stage 7D） | Playwright + 真实 Pyodide | 真实 30 帧：前序 4-2-1-3-6-5-7、中序 1-2-3-4-5-6-7、后序 1-3-2-5-7-6-4；递归下降/返回与三层调用栈；模式切换 pending 与旧 Trace 保留；回退恢复；空树/单节点/同值；1024/390 无页面溢出、Reduced Motion；栈回归；102 张截图 |
 | 单链表 E2E（Stage 7C） | Playwright + 真实 Pyodide | 真实 22 帧：中间插入三阶段（create/set-next/predecessor）、删除绕过并清空 next、回退恢复、HEAD→NULL 遍历、同值不同 ID、栈/队列切换无残留、1024/390 无页面溢出、Reduced Motion、60 张截图 |
 | a11y | axe | **未实现**，见后续 Issue |
 
@@ -191,7 +203,8 @@ Stage 5A（已完成）: 共享会话/上下文格式 → 课程与包工具 →
 Stage 6A（已完成 MVP）: 共享 Mentor Schema（真实帧/五级/限额）→ 本地 Gateway（loopback/Origin/限额/超时）→ Ollama + OpenAI Provider → Prompt 与防剧透降级 → 网页面板（连接状态/预设提问/中止/Level 5 确认/旧步骤隔离）→ Mock E2E。真实模型另需手动验证
 Stage 7B（已完成）: 品牌审计与旧 key 兼容 → 可选 structure Trace 协议 → 纯 stack/queue VisualModel → 桶状/排队渲染 → 真实 Python 示例与双语课程 → 真实 Pyodide E2E + 36 张视觉截图
 Stage 7C（已完成）: linked-list union Schema → 真实 Python Node/next 示例 → 纯 linkedListModel（HEAD 可达链）→ SVG 节点/箭头/HEAD/NULL/断开节点 → 双语链表课程 → 真实 Pyodide E2E + 60 张视觉截图
-后续             : 链表（单/双）节点 ID 与指针重连、树/图渲染；Agent ⇄ 浏览器实时同步（Stage 5B 候选）、RAG / 多轮记忆、练习页 Monaco、a11y / axe、远程包市场与签名
+Stage 7D（已完成）: binary-tree union Schema → 真实 Python TreeNode/left/right 三模式递归 → 纯树布局与模型 → 层级画布/递归路径/访问序号 → 调用栈联动与双语树课程 → 真实 Pyodide E2E + 102 张视觉截图
+后续             : 双向链表、图 BFS/DFS 专属渲染；Agent ⇄ 浏览器实时同步（Stage 5B 候选）、RAG / 多轮记忆、练习页 Monaco、a11y / axe、远程包市场与签名
 ```
 
 `Trace Event Schema v1` 是编辑器诊断、递归栈动画与后续树/图可视化的共同前置：Monaco 需要根据 `event.sourceLocation` 高亮，调用栈读取 `callStack`，任何新结构都必须先扩展协议再改渲染，不允许渲染层自己发明字段。

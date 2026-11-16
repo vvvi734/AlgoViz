@@ -298,12 +298,12 @@ export const ALGORITHM_CATALOG: AlgorithmCatalog = {
     "group": "tree",
     "icon": "♧",
     "name": [
-      "二叉树中序遍历",
-      "Inorder traversal"
+      "二叉树遍历",
+      "Binary tree traversal"
     ],
     "desc": [
-      "按左子树、根节点、右子树的顺序访问节点。",
-      "Visit the left subtree, root, then right subtree."
+      "用真实 Python 递归演示前序、中序、后序遍历，观察左右子树、访问顺序与调用栈。",
+      "Traverse a real Python binary tree in preorder, inorder or postorder and watch left/right recursion, visit order and the call stack."
     ],
     "time": "O(n)",
     "space": "O(h)",

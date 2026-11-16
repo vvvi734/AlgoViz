@@ -17,6 +17,11 @@ import type { GeneratedAlgorithm } from '../../runtime/ai/client';
 import { runForLanguage, isVisualResult } from '../../runtime/execute';
 import { safeGet, safeSet } from '../../runtime/storage';
 import { loadDraft, saveDraft } from '../../runtime/drafts';
+import {
+  treeValuesFromInput,
+  withTreeMode,
+  type TreeMode,
+} from '../../domain/algorithms/treeTraversalExamples';
 import { useI18n } from '../../i18n/I18nProvider';
 import { usePlayback, type Playback } from './usePlayback';
 
@@ -60,6 +65,11 @@ export interface LabController {
   /** User edit: sets the code and schedules a debounced autosave. */
   editCode: (code: string) => void;
   setInputJson: (input: string) => void;
+  /**
+   * Stage 7D: select a traversal mode by rewriting the input object
+   * `{mode, tree}`. It never runs code; a real trace still requires Run.
+   */
+  selectTreeMode: (mode: TreeMode) => void;
   runVisualization: () => void;
   restorePreset: () => void;
   randomizeInput: () => void;
@@ -224,9 +234,11 @@ export function useLabController(): LabController {
     if (!entry) return;
     playback.stop();
     flushCurrent();
-    // Stack/queue/linked-list only emit structured frames from the real Python
-    // presets. Default those courses to Python; the user can still switch to JS.
-    const preferredLang: CodeLanguage = id === 'stack' || id === 'queue' || id === 'linked' ? 'python' : codeLang;
+    // Stack/queue/linked-list/binary-tree only emit structured frames from the
+    // real Python presets. Default those courses to Python; the user can still
+    // switch to JS (legacy frames remain available).
+    const preferredLang: CodeLanguage =
+      id === 'stack' || id === 'queue' || id === 'linked' || id === 'inorder' ? 'python' : codeLang;
     if (preferredLang !== codeLang) {
       setCodeLangState(preferredLang);
       safeSet(CODE_LANG_KEY, preferredLang);
@@ -250,8 +262,32 @@ export function useLabController(): LabController {
     const code = loadDraft(currentAlgo, next) ?? exampleFor(currentAlgo, next);
     location.current = { algo: currentAlgo, lang: next };
     applyCode(code);
+    // The legacy JS inorder preset reads a level-order array. If the learner
+    // selected a tree mode, switch back to that array shape so switching
+    // languages never feeds JS an object it cannot read.
+    if (currentAlgo === 'inorder' && next === 'js') {
+      let parsed: unknown;
+      try {
+        parsed = JSON.parse(inputJson);
+      } catch {
+        parsed = null;
+      }
+      setInputJson(JSON.stringify(treeValuesFromInput(parsed)));
+    }
     setDiagnostics([]);
-  }, [codeLang, currentAlgo, flushCurrent, applyCode]);
+  }, [codeLang, currentAlgo, flushCurrent, applyCode, inputJson]);
+
+  const selectTreeMode = useCallback((mode: TreeMode) => {
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(inputJson);
+    } catch {
+      parsed = null;
+    }
+    playback.stop();
+    setInputJson(JSON.stringify(withTreeMode(parsed, mode)));
+    setStatus({ text: '', error: false });
+  }, [inputJson, playback]);
 
   const restorePreset = useCallback(() => {
     const entry = catalog[currentAlgo];
@@ -369,6 +405,7 @@ export function useLabController(): LabController {
     setCodeLang,
     editCode,
     setInputJson,
+    selectTreeMode,
     runVisualization,
     restorePreset,
     randomizeInput,

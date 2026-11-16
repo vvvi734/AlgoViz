@@ -78,7 +78,7 @@ function dfs(n){seen.add(n);trace({type:'graph',visited:[...seen],focus:[n]},'�
 for(const v of (edges[n]||[]))if(!seen.has(v))dfs(v);
 trace({type:'graph',visited:[...seen],focus:[n]},'回溯 / Backtrack '+n);}
 dfs(input.start||'A');`},
- inorder:{group:'tree',icon:'♧',name:['二叉树中序遍历','Inorder traversal'],desc:['按左子树、根节点、右子树的顺序访问节点。','Visit the left subtree, root, then right subtree.'],time:'O(n)',space:'O(h)',input:[4,2,6,1,3,5,7],code:`const nodes=input;const seen=[];
+ inorder:{group:'tree',icon:'♧',name:['二叉树遍历','Binary tree traversal'],desc:['用真实 Python 递归演示前序、中序、后序遍历，观察左右子树、访问顺序与调用栈。','Traverse a real Python binary tree in preorder, inorder or postorder and watch left/right recursion, visit order and the call stack.'],time:'O(n)',space:'O(h)',input:[4,2,6,1,3,5,7],code:`const nodes=input;const seen=[];
 trace({type:'tree',values:nodes,visited:[]},'开始 / Start');
 function walk(i){if(i>=nodes.length||nodes[i]==null)return;walk(i*2+1);
 seen.push(i);trace({type:'tree',values:nodes,visited:[...seen],focus:[i]},'访问 / Visit '+nodes[i]);

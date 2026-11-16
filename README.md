@@ -4,7 +4,7 @@
 
 面向学生的浏览器端数据结构与算法学习平台：**Python 在浏览器内运行**，根据真实执行结果生成逐帧动画，并同步展示代码位置、变量值与步骤讲解。完全本地运行，无需租服务器。
 
-> **当前版本：v0.9 Stage 7C。** 用户可见品牌为 **AlgoViz**，旧 localStorage / IndexedDB / `.algopack` / `.algosession.json` / `.algocontext.json` / MCP Tool / AI Gateway 标识保持兼容。栈是顶部开放的竖直桶（LIFO），队列是左 FRONT、右 REAR 的横向排队（FIFO）；单链表以真实 Python `Node` 对象的 `node_id` 作为身份，用数据格、`next` 格、有向箭头、HEAD / NULL、临时节点托盘与指针变化徽章，逐步展示中间插入、删除重连和遍历。全部由真实 Python/Pyodide Trace 与结构化操作语义驱动，不使用消息文本猜测。学习实验室沿用 Stage 7A 的同屏工作区、按需标签与渐进课程。当前门禁：**434 项单测 / 32 条真实浏览器 E2E**；真实 Ollama / 云端模型仍未实测。
+> **当前版本：v0.9 Stage 7D。** 用户可见品牌为 **AlgoViz**，旧 localStorage / IndexedDB / `.algopack` / `.algosession.json` / `.algocontext.json` / MCP Tool / AI Gateway 标识保持兼容。栈是顶部开放的竖直桶（LIFO），队列是左 FRONT、右 REAR 的横向排队（FIFO）；单链表以真实 Python `Node` 对象的 `node_id` 作为身份，用数据格、`next` 格、有向箭头、HEAD / NULL、临时节点托盘与指针变化徽章，逐步展示中间插入、删除重连和遍历。全部由真实 Python/Pyodide Trace 与结构化操作语义驱动，不使用消息文本猜测。学习实验室沿用 Stage 7A 的同屏工作区、按需标签与渐进课程。二叉树用真实 Python `TreeNode` 的 `left/right` 引用构建层级画布，前序/中序/后序共用同一棵 7 节点树，可切换模式并观察真实递归调用栈、根到当前路径、访问序号与源码行。当前门禁：**458 项单测 / 39 条真实浏览器 E2E**；真实 Ollama / 云端模型仍未实测。
 > 定位已收敛：**Python 为主要教学语言**，JavaScript 作为前端实现语言继续支持既有 12 个算法演示；**C / C++ 与在线判题已从规划中取消**。详见 [阶段一总结](docs/STAGE1_REPORT.md)、[阶段二总结](docs/STAGE2_REPORT.md)、[阶段三总结](docs/STAGE3_REPORT.md)、[阶段 3B 总结](docs/STAGE3B_REPORT.md)、[阶段四总结](docs/STAGE4_REPORT.md)、[阶段 5A 总结](docs/STAGE5A_REPORT.md)、[阶段 6A 总结](docs/STAGE6A_REPORT.md)、[阶段 7A 总结](docs/STAGE7A_REPORT.md)、[阶段 7B 总结](docs/STAGE7B_REPORT.md) 与 [阶段 7C 总结](docs/STAGE7C_REPORT.md)；品牌边界见 [BRAND_MIGRATION](docs/BRAND_MIGRATION.md)；知识包格式与作者指引见 [PACK_FORMAT_V1](docs/PACK_FORMAT_V1.md)、[PACK_AUTHOR_GUIDE](docs/PACK_AUTHOR_GUIDE.md)；MCP 安装与宿主配置见 [MCP_INSTALL](docs/MCP_INSTALL.md)；AI Gateway 安装与安全边界见 [AI_GATEWAY](docs/AI_GATEWAY.md)。
 
 ---
@@ -21,11 +21,11 @@
 | 播放 / 暂停 / 回退 / 单步 / 拖动 / 速度 | ✅ 已实现 | 纯函数状态机 + 逐帧回归；新 Trace 加载即回到第 0 帧并停止播放，索引恒在合法范围内 |
 | JavaScript 本地执行 | ✅ 已实现 | 3 秒限时 Web Worker，可离线 |
 | Python 执行（Pyodide） | ✅ 已实现 | Worker 内运行；`trace()` 支持真实变量快照、源码行号与可选的 stack/queue/linked-list 结构语义 |
-| 统一 Trace Event Schema v1 | ✅ 已实现 | Zod 运行时校验：`schemaVersion/step/eventType/visualType/state/message/sourceLocation/variables/callStack/lessonStepId` + Stage 7B/7C 可选 `structure`（stack / queue / linked-list union）+ 事件/帧/变量限额；旧 Trace 无 `structure` 时继续走 legacy 视图 |
+| 统一 Trace Event Schema v1 | ✅ 已实现 | Zod 运行时校验：`schemaVersion/step/eventType/visualType/state/message/sourceLocation/variables/callStack/lessonStepId` + Stage 7B/7C/7D 可选 `structure`（stack / queue / linked-list / binary-tree union）+ 事件/帧/变量限额；旧 Trace 无 `structure` 时继续走 legacy 视图 |
 | 教学课程数据层 | ✅ 已实现 | `domain/lessons/`：Lesson 类型 + Zod 校验 + 注册表 + 纯同步函数；与 React / Worker 完全解耦，可校验、可查询 |
 | 教学面板（LessonPanel） | ✅ 已实现 | 算法介绍 / 前置知识 / 复杂度 / 教学阶段（含帧数徽标）/ 当前执行解释 / 常见错误；中英双语 |
 | 教学步骤 ⇄ 时间轴双向联动 | ✅ 已实现 | 同一 `currentEvent`：时间轴驱动高亮，点击步骤跳到真实执行帧（向后找 → 回绕首帧 → 不可用则禁用） |
-| 算法课程内容 | ⚠️ 5 / 14 内置 | 内置冒泡排序、阶乘、栈、队列、单链表五门完整双语课程；其余算法显示"尚未提供教学课程"空态，可由知识包补充 |
+| 算法课程内容 | ⚠️ 6 / 14 内置 | 内置冒泡排序、阶乘、栈、队列、单链表、二叉树遍历六门完整双语课程；其余算法显示"尚未提供教学课程"空态，可由知识包补充 |
 | 可安装知识包（`.algopack`） | ✅ 已实现 | ZIP 容器 + manifest v1 + 有界解压 + 路径白名单；导入 → 预览 → 确认 → 本地安装 |
 | 知识包安全校验 | ✅ 已实现 | 6 MiB / 64 条目 / 512 KiB 单文件 / 3 MiB 总量 / 200:1 压缩比；拒绝路径穿越、绝对路径、重复名、加密条目、ZIP64、非文本 |
 | 知识包本地持久化 | ✅ 已实现 | IndexedDB `algolens-packs` 三 store 单事务安装/替换/卸载；刷新恢复；配额失败有明确错误 |
@@ -48,6 +48,7 @@
 | 栈专属教学可视化 | ✅ Stage 7B | 顶部开放、底部封闭的竖直桶；Push 从顶部进入、Pop 从顶部离开、Peek 高亮栈顶；空栈、7 帧真实 Python、DOM 顶到底顺序可测 |
 | 队列专属教学可视化 | ✅ Stage 7B | 左 FRONT / 右 REAR 的横向排队；Enqueue 从右进入、Dequeue 从左离开；出队后剩余元素补位；空队列、7 帧真实 Python、DOM 前到后顺序可测 |
 | 单链表专属教学可视化 | ✅ Stage 7C | 真实 Python `Node` + `next` 引用；数据格/next 格、SVG 有向箭头、HEAD 向下箭头、尾部 NULL、临时/断开节点托盘、指针变化徽章；中间插入三阶段、删除重连、遍历与回退均有真实帧；`node_id` 区分同值节点 |
+| 二叉树专属教学可视化 | ✅ Stage 7D | 真实 Python `TreeNode` + `left/right` 引用；根在顶部、左孩子在左下、右孩子在右下的层级画布，SVG 父子边与箭头；前序/中序/后序共用 `inorder` 算法条目和同一棵树，通过模式选择器切换后由明确 Run 生成新 Trace；当前节点、已访问序号、递归路径、调用栈、源码行与 9 步双语课程同步；`node_id` 区分同值节点 |
 | 品牌迁移与兼容 | ✅ Stage 7B | 界面/标题/元数据/README 使用 AlgoViz；旧持久化 key、packId、MCP Tool、AI Gateway 环境变量与协议头保持不变，见 `docs/BRAND_MIGRATION.md` |
 | Monaco 代码编辑器 | ✅ 已实现 | Python/JS 语法高亮、行号、缩进、折叠、撤销/重做、自适应尺寸 |
 | 执行行高亮联动 | ✅ 已实现 | `currentEvent.sourceLocation.line` 驱动 Monaco 高亮；时间轴/单步/回退/拖动同步 |
@@ -59,7 +60,7 @@
 | C / C++ | 🚫 已取消 | 语言入口、占位模板与 `/api/execute` 执行后端均已移除 |
 | 在线 Judge / 自动判题 | 🚫 已取消 | 相关入口与宣传已清理 |
 | 中英文界面 / 移动端适配 | ⚠️ 部分 | Stage 7A 修复 390–1920 横向溢出与 1024 布局；Stage 7B 栈/队列在 1440/1024/390 与 Light/Dark 下实测无页面横向溢出；仍未安装 axe-core，触控尺寸未逐项审计 |
-| 自动化测试 | ✅ 已实现 | 434 项单测 / 帧回归 / jsdom 冒烟 + 32 条真实浏览器 E2E（Playwright + Edge，含真实 Pyodide、知识包、会话文件、AI 导师真实帧/离线/防剧透、Stage 7A 布局与标签状态、Stage 7B 栈/队列、Stage 7C 链表节点/箭头/回退与 60 张截图）；另有 MCP 协议测试 20 项与 stdio 冒烟 9 项通过 + 1 项按配置跳过 |
+| 自动化测试 | ✅ 已实现 | 458 项单测 / 帧回归 / jsdom 冒烟 + 39 条真实浏览器 E2E（Playwright + Edge，含真实 Pyodide、知识包、会话文件、AI 导师真实帧/离线/防剧透、Stage 7A 布局与标签状态、Stage 7B 栈/队列、Stage 7C 链表节点/箭头/回退、Stage 7D 二叉树三模式/递归调用栈/回退与 106 张截图）；另有 MCP 协议测试 20 项与 stdio 冒烟 9 项通过 + 1 项按配置跳过 |
 | 知识包远程市场 / 包签名 | ⏳ 后续 | 本版只有本地文件导入；无远程仓库、无自动下载、无签名校验 |
 | 网页 AI 导师（本地 Gateway） | ✅ 已实现（真机未验证） | Stage 7A 将其收进工作区标签页，连接状态与错误详情保留；Stage 6A：Ollama + OpenAI Chat Completions 适配、五级教学 Schema、防剧透降级、同源代理；本机无 Ollama/云端 Key，真实模型未验证 |
 | AI Gateway 安全边界 | ✅ 已实现 | 仅 127.0.0.1、Origin + 自定义头、96 KiB 请求 / 30s / 20 rpm、严格 Zod、目标地址仅启动配置、密钥只存 Gateway 环境变量 |
@@ -195,6 +196,7 @@ Stage 6A（已完成 MVP）：本地 AI Gateway（仅 127.0.0.1）+ Ollama / Ope
 Stage 7A（已完成）：学习实验室信息架构重构（动画 + Monaco + 当前步骤同屏、按需标签、课程渐进展开、1024/390 单列无横向溢出）。
 Stage 7B（已完成）：AlgoViz 品牌迁移与旧 key 兼容、可选 structure Trace、栈桶状/队列排队专属渲染、真实 Python 栈/队列课程与截图。
 Stage 7C（已完成）：单链表结构化 Trace、真实 Python Node 示例（插入/删除/遍历）、纯链表 VisualModel、节点/箭头/HEAD/NULL/断开节点渲染、双语课程、6 条真实 Pyodide E2E 与 60 张截图。
+Stage 7D（已完成）：二叉树结构化 Trace、真实 Python TreeNode 三模式递归（前序/中序/后序）、纯树布局与模型、层级画布/递归路径/访问序号、调用栈联动、9 步双语课程、6 条真实 Pyodide E2E 与 106 张截图。
 后续：Agent ↔ 浏览器实时同步（Stage 5B 候选）、RAG、题库扩充、练习页 Monaco 迁移、远程包市场与包签名、axe 可访问性。
 
 ### License
@@ -214,6 +216,8 @@ AlgoViz is a browser-first algorithm visualization learning platform where **Pyt
 **Stage 6A** adds an optional local AI tutor. `packages/ai-gateway` is a loopback-only Node process (`127.0.0.1:8787`) that talks to local Ollama or your own OpenAI Chat Completions key; the page only calls same-origin `/api/mentor` and `/api/providers`. The mentor explains the real frame under the playhead (variables, call stack and teaching stage), enforces five hint levels with an explicit Level 5 confirmation, redacts leaked full code at low levels, and keeps old answers tied to their own frame. Keys never enter the browser, localStorage or Git; without the Gateway the whole lab keeps working and the panel says AI is offline. Real Ollama/cloud calls were **not tested** here, and GitHub Pages (static hosting) does not include a Gateway.
 
 **Stage 7B** moves the user-facing brand to AlgoViz while keeping legacy storage keys and protocol identifiers compatible, and adds structure-driven stack and queue visuals: a top-open vertical bucket for LIFO and a left-front/right-rear row for FIFO. Both are driven by real Python frames, not message parsing.
+
+**Stage 7D** adds a real binary-tree traversal lab on one shared tree: genuine Python `TreeNode` objects with real `left`/`right` references, a pure depth/column layout (root on top, left child lower-left, right child lower-right), and the same `inorder` catalogue entry executed in preorder, inorder or postorder. Switching a mode keeps the old trace until the learner presses Run; the new trace starts at frame 0. The canvas synchronises the current node (entered ≠ visited), visited order badges, root-to-current recursion path, the real `@tracked` call stack, Monaco line and nine bilingual lesson steps. Every frame is a full snapshot, so scrubbing restores the tree and stack together. Screenshots and limits are recorded in [docs/STAGE7D_REPORT.md](docs/STAGE7D_REPORT.md).
 
 **Stage 7C** adds a real singly linked-list teaching visualization: actual Python `Node` objects with a stable `node_id`, real `next` references, HEAD/NULL markers, SVG arrows, a detached-node tray and a pointer-change badge. Middle insertion is shown as create → `new.next = previous.next` → `previous.next = new`; deletion first bypasses the target and then clears `target.next`; traversal highlights the current Node while Monaco, variables and the lesson step stay on the same frame. Every frame is a full snapshot, so scrubbing and arbitrary jumps restore the exact chain. Screenshots and limits are recorded in [docs/STAGE7C_REPORT.md](docs/STAGE7C_REPORT.md).
 

@@ -1,5 +1,5 @@
 import path from 'node:path';
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Page } from './fixtures';
 
 /**
  * Stage 4 — the official `.algopack` end to end, in a real browser.

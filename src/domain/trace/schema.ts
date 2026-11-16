@@ -307,8 +307,290 @@ export const linkedListSnapshotSchema = z
   });
 export type LinkedListSnapshot = z.infer<typeof linkedListSnapshotSchema>;
 
-/** Stage 7B stack/queue + Stage 7C linked-list. Old events may omit it entirely. */
-export const structureSchema = z.union([structureSnapshotSchema, linkedListSnapshotSchema]);
+/**
+ * Stage 7D: binary-tree traversal semantics. Every frame is a full snapshot of
+ * the real TreeNode objects plus the real recursion state recorded by Python:
+ *
+ *  - `nodes` stores stable teaching ids (`n1`, …), values and real left/right
+ *    references; array order is never used as identity.
+ *  - `rootId` is the single root. A node array is either empty (rootId null) or
+ *    a fully reachable tree (no forest, no detached nodes, no cycles).
+ *  - `visitedIds` is the real visit sequence in order; `pathIds` is the real
+ *    root→current recursion path kept by the Python traversal.
+ *  - `traversal` names the real executed mode. The UI reads it as a recorded
+ *    fact; it is never inferred from the algorithm id or message text.
+ *
+ * `enter`/`return` frames are emitted by the tracked wrapper, while
+ * `visit`/`left`/`right` come from explicit trace calls in the Python source.
+ */
+export const BINARY_TREE_OPERATIONS = [
+  'init', 'enter', 'visit', 'left', 'right', 'return', 'done',
+] as const;
+export type BinaryTreeOperation = (typeof BINARY_TREE_OPERATIONS)[number];
+
+export const BINARY_TREE_TRAVERSALS = ['preorder', 'inorder', 'postorder'] as const;
+export type BinaryTreeTraversal = (typeof BINARY_TREE_TRAVERSALS)[number];
+
+export const binaryTreeNodeSchema = z.object({
+  id: z.string().min(1).max(LIMITS.MAX_NAME_CHARS),
+  value: jsonValueSchema.refine(
+    (value) => JSON.stringify(value).length <= LIMITS.MAX_VARIABLE_VALUE_JSON_BYTES,
+    'binary-tree node value too large',
+  ),
+  leftId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+  rightId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+});
+export type BinaryTreeNode = z.infer<typeof binaryTreeNodeSchema>;
+
+export const binaryTreeSnapshotSchema = z
+  .object({
+    kind: z.literal('binary-tree'),
+    traversal: z.enum(BINARY_TREE_TRAVERSALS),
+    operation: z.enum(BINARY_TREE_OPERATIONS),
+    rootId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+    nodes: z.array(binaryTreeNodeSchema).max(40),
+    currentNodeId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+    visitedIds: z.array(z.string().min(1).max(LIMITS.MAX_NAME_CHARS)).max(40),
+    pathIds: z.array(z.string().min(1).max(LIMITS.MAX_NAME_CHARS)).max(40),
+  })
+  .superRefine((snapshot, ctx) => {
+    const ids = new Set<string>();
+    const byId = new Map<string, BinaryTreeNode>();
+    snapshot.nodes.forEach((node, index) => {
+      if (ids.has(node.id)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['nodes', index, 'id'],
+          message: `duplicate binary-tree node id "${node.id}"`,
+        });
+      }
+      ids.add(node.id);
+      byId.set(node.id, node);
+    });
+
+    if (snapshot.nodes.length === 0) {
+      if (snapshot.rootId !== null) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['rootId'],
+          message: 'an empty binary tree must have rootId = null',
+        });
+      }
+    } else if (snapshot.rootId === null || !ids.has(snapshot.rootId)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['rootId'],
+        message: 'rootId must refer to a real node in a non-empty tree',
+      });
+    }
+
+    snapshot.nodes.forEach((node, index) => {
+      for (const key of ['leftId', 'rightId'] as const) {
+        const ref = node[key];
+        if (ref !== null && !ids.has(ref)) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['nodes', index, key],
+            message: `${key} "${ref}" does not refer to a node`,
+          });
+        }
+      }
+    });
+
+    if (snapshot.currentNodeId !== null && !ids.has(snapshot.currentNodeId)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['currentNodeId'],
+        message: `currentNodeId "${snapshot.currentNodeId}" does not refer to a node`,
+      });
+    }
+
+    // Each node has at most one parent; every node is reachable exactly once
+    // from the root. This rejects both multi-parent DAGs and cycles.
+    const parentCount = new Map<string, number>();
+    snapshot.nodes.forEach((node) => {
+      for (const ref of [node.leftId, node.rightId]) {
+        if (ref !== null) parentCount.set(ref, (parentCount.get(ref) ?? 0) + 1);
+      }
+    });
+    for (const [id, count] of parentCount) {
+      if (count > 1) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['nodes'],
+          message: `node "${id}" has multiple parents`,
+        });
+      }
+    }
+    if (snapshot.rootId !== null && (parentCount.get(snapshot.rootId) ?? 0) > 0) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['rootId'],
+        message: 'the root must not have a parent',
+      });
+    }
+
+    if (snapshot.nodes.length > 0 && snapshot.rootId !== null) {
+      const seen = new Set<string>();
+      const stack = [snapshot.rootId];
+      let cycleDetected = false;
+      while (stack.length) {
+        const id = stack.pop() as string;
+        if (seen.has(id)) {
+          cycleDetected = true;
+          break;
+        }
+        seen.add(id);
+        const node = byId.get(id);
+        if (!node) break;
+        if (node.leftId !== null) stack.push(node.leftId);
+        if (node.rightId !== null) stack.push(node.rightId);
+      }
+      if (cycleDetected) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['nodes'],
+          message: 'cyclic binary-tree reference detected',
+        });
+      }
+      for (const node of snapshot.nodes) {
+        if (!seen.has(node.id)) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['nodes'],
+            message: `binary-tree node "${node.id}" is not reachable from the root`,
+          });
+        }
+      }
+    }
+
+    const visited = new Set<string>();
+    snapshot.visitedIds.forEach((id, index) => {
+      if (!ids.has(id)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['visitedIds', index],
+          message: `visited id "${id}" does not refer to a node`,
+        });
+      }
+      if (visited.has(id)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['visitedIds', index],
+          message: `visitedIds contains duplicate node "${id}"`,
+        });
+      }
+      visited.add(id);
+    });
+
+    // Path validation: starts at the root, follows real parent→child edges,
+    // ends at the current node, and never repeats a node.
+    snapshot.pathIds.forEach((id, index) => {
+      if (!ids.has(id)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['pathIds', index],
+          message: `path id "${id}" does not refer to a node`,
+        });
+      }
+      if (index === 0 && id !== snapshot.rootId) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['pathIds', 0],
+          message: 'pathIds must start at rootId',
+        });
+      }
+      if (index > 0) {
+        const previousId = snapshot.pathIds[index - 1];
+        const parent = previousId === undefined ? undefined : byId.get(previousId);
+        const isChild = parent?.leftId === id || parent?.rightId === id;
+        if (!isChild) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['pathIds', index],
+            message: 'pathIds must follow real left/right references',
+          });
+        }
+      }
+    });
+
+    if (snapshot.pathIds.length && snapshot.currentNodeId !== null) {
+      const last = snapshot.pathIds[snapshot.pathIds.length - 1];
+      if (last !== snapshot.currentNodeId) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['pathIds'],
+          message: 'the path must end at currentNodeId',
+        });
+      }
+    }
+
+    if (snapshot.operation === 'init' || snapshot.operation === 'done') {
+      if (snapshot.currentNodeId !== null) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['currentNodeId'],
+          message: `${snapshot.operation} must not name a current node`,
+        });
+      }
+      if (snapshot.pathIds.length > 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['pathIds'],
+          message: `${snapshot.operation} must have an empty recursion path`,
+        });
+      }
+    } else {
+      if (snapshot.currentNodeId === null) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['currentNodeId'],
+          message: `${snapshot.operation} must name the current node`,
+        });
+      }
+      if (snapshot.pathIds.length === 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['pathIds'],
+          message: `${snapshot.operation} must carry the current recursion path`,
+        });
+      }
+    }
+
+    if (snapshot.operation === 'visit' && snapshot.currentNodeId !== null && !visited.has(snapshot.currentNodeId)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['visitedIds'],
+        message: 'a visit frame must already include currentNodeId in visitedIds',
+      });
+    }
+
+    if (snapshot.currentNodeId !== null) {
+      const current = byId.get(snapshot.currentNodeId);
+      if (snapshot.operation === 'left' && current?.leftId === null) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['operation'],
+          message: 'left requires the current node to have a left child',
+        });
+      }
+      if (snapshot.operation === 'right' && current?.rightId === null) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['operation'],
+          message: 'right requires the current node to have a right child',
+        });
+      }
+    }
+  });
+export type BinaryTreeSnapshot = z.infer<typeof binaryTreeSnapshotSchema>;
+
+/** Stage 7B stack/queue + Stage 7C linked-list + Stage 7D binary-tree. */
+export const structureSchema = z.union([
+  structureSnapshotSchema,
+  linkedListSnapshotSchema,
+  binaryTreeSnapshotSchema,
+]);
 export type AnyStructureSnapshot = z.infer<typeof structureSchema>;
 
 /** One variable snapshot captured at a step. `type` is a free-form label. */
