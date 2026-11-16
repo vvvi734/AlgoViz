@@ -306,7 +306,9 @@ VisualStage → StackVisual / QueueVisual
 - 远端：`origin https://gitee.com/vvvi734/algolens.git`
 - 起始 HEAD：`c26affa docs(stage7a): finalize git acceptance status`
 - 功能与文档提交：`3f02f8b`
-- 工作区：提交后 clean
+- 报告哈希回填：`2eb2d54`
+- 提交后缺陷修复：`5c70be4 fix(stage7b): run first auto-visualization in selected language`
+- 工作区：报告哈希回填后 clean
 - 推送：`git push origin main`，结果见交付说明
 
 ---
