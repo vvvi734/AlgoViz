@@ -4,8 +4,7 @@
 - 版本：`0.9.0-phase7b`
 - 分支：`main`
 - 远端：`https://gitee.com/vvvi734/algolens.git`（未修改）
-- 功能提交：`{{COMMIT}}`
-- 报告回填提交：`{{REPORT_COMMIT}}`
+- 功能与文档提交：`3f02f8b`
 
 ---
 
@@ -291,8 +290,7 @@ VisualStage → StackVisual / QueueVisual
 - 分支：`main`
 - 远端：`origin https://gitee.com/vvvi734/algolens.git`
 - 起始 HEAD：`c26affa docs(stage7a): finalize git acceptance status`
-- 功能提交：`{{COMMIT}}`
-- 报告回填提交：`{{REPORT_COMMIT}}`
+- 功能与文档提交：`3f02f8b`
 - 工作区：提交后 clean
 - 推送：`git push origin main`，结果见交付说明
 
