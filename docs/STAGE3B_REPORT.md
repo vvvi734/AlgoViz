@@ -274,7 +274,10 @@ Python 帧 dict → `postFrame(json)` → Worker `onmessage` → `RawTraceFrame.
 
 提交记录：
 
-- `<待回填>` `feat(phase-3b): teaching course model, lesson-linked traces and lesson panel`
+- `f863e0c` `feat(phase-3b): teaching course model, lesson-linked traces and lesson panel` —— 代码、测试、文档与版本记录（推送成功：`8f5b7f2..f863e0c  main -> main`）
+- 随后一条 `docs(phase-3b): …` 提交用于把本节的提交号与推送结果回填进报告（沿用 Stage 3 的做法）
+
+推送结果：`git push origin main` 成功，远端 `origin/main` 已指向新提交；推送后工作区 clean。
 
 ---
 
