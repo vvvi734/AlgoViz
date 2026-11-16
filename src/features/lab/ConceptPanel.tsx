@@ -1,16 +1,16 @@
 import { logWindow } from '../../domain/visualization/model';
 import type { AlgorithmEntry } from '../../domain/algorithms/types';
-import type { TraceFrame } from '../../domain/trace/types';
+import type { TraceEvent } from '../../domain/trace/schema';
 import { useI18n } from '../../i18n/I18nProvider';
 
 export function ConceptPanel({
   entry,
-  frames,
+  events,
   index,
   onSeek,
 }: {
   entry: AlgorithmEntry | undefined;
-  frames: TraceFrame[];
+  events: TraceEvent[];
   index: number;
   onSeek: (index: number) => void;
 }) {
@@ -28,7 +28,7 @@ export function ConceptPanel({
       </div>
       <h3 className="smalltext muted">{t('stepLog')}</h3>
       <ol className="steps">
-        {logWindow(frames, index).map(({ item, index: absolute, current }) => (
+        {logWindow(events, index).map(({ item, index: absolute, current }) => (
           <li key={absolute} className={current ? 'current' : ''} onClick={() => onSeek(absolute)}>
             {item.message || `Step ${absolute + 1}`}
           </li>

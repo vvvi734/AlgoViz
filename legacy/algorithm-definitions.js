@@ -101,15 +101,20 @@ export const problems=[
 
 export const langExamples={
  python:{
+  // Bubble sort is the first fully-synchronised demo (Stage 1): every trace()
+  // records real runtime variables (i/j/arr/n) and an explicit source line.
+  // `line` points at the semantically meaningful statement (compare/swap), not
+  // the trace() call itself. See src/domain/trace/schema.ts and pyodide.ts.
   bubble:`arr = list(input)
-trace({'type':'array','values':arr[:]}, 'Start')
-for i in range(len(arr)):
-    for j in range(len(arr)-1-i):
-        trace({'type':'array','values':arr[:],'focus':[j,j+1]}, 'Compare')
-        if arr[j] > arr[j+1]:
-            arr[j], arr[j+1] = arr[j+1], arr[j]
-            trace({'type':'array','values':arr[:],'focus':[j,j+1]}, 'Swap')
-trace({'type':'array','values':arr[:],'done':True}, 'Sorted')`,
+n = len(arr)
+trace({'type':'array','values':arr[:]}, '开始 / Start', line=1, variables={'n': n, 'arr': arr.copy()})
+for i in range(n - 1):
+    for j in range(n - 1 - i):
+        trace({'type':'array','values':arr[:],'focus':[j, j+1]}, '比较 / Compare', line=7, variables={'i': i, 'j': j, 'arr': arr.copy()})
+        if arr[j] > arr[j + 1]:
+            arr[j], arr[j + 1] = arr[j + 1], arr[j]
+            trace({'type':'array','values':arr[:],'focus':[j, j+1]}, '交换 / Swap', line=8, variables={'i': i, 'j': j, 'arr': arr.copy()})
+trace({'type':'array','values':arr[:],'done':True}, '排序完成 / Sorted', line=10, variables={'arr': arr.copy()})`,
   binary:`nums, target = input['nums'], input['target']
 left, right = 0, len(nums)-1
 while left <= right:
@@ -120,40 +125,5 @@ while left <= right:
     if nums[mid] < target: left = mid+1
     else: right = mid-1
 trace({'type':'array','values':nums[:]}, 'Search ended')`
- },
- cpp:{
-  bubble:`#include <iostream>
-#include <vector>
-#include <algorithm>
-using namespace std;
-// The server will pass input as JSON. Emit one TRACE JSON object per line.
-// This standalone example uses sample values; adapt JSON input in /api/execute.
-int main() {
-  vector<int> a={5,2,8,1,6,3};
-  auto trace=[&](int x,int y){
-    cout << "TRACE {\\"type\\":\\"array\\",\\"values\\":[";
-    for(int k=0;k<(int)a.size();++k){if(k)cout<<",";cout<<a[k];}
-    cout << "],\\"focus\\":[" << x << "," << y << "]}" << endl;
-  };
-  for(int i=0;i<(int)a.size();++i)
-    for(int j=0;j+1<(int)a.size()-i;++j){
-      trace(j,j+1);
-      if(a[j]>a[j+1]){swap(a[j],a[j+1]);trace(j,j+1);}
-    }
-  return 0;
-}`
- },
- c:{
-  bubble:`#include <stdio.h>
-int main(void) {
-  int a[]={5,2,8,1,6,3},n=6;
-  for(int i=0;i<n;i++) for(int j=0;j<n-1-i;j++){
-    if(a[j]>a[j+1]){int t=a[j];a[j]=a[j+1];a[j+1]=t;}
-    printf("TRACE {\\"type\\":\\"array\\",\\"values\\":[");
-    for(int k=0;k<n;k++) printf("%s%d",k?",":"",a[k]);
-    printf("],\\"focus\\":[%d,%d]}\\n",j,j+1);
-  }
-  return 0;
-}`
  }
 };

@@ -7,8 +7,10 @@ import {
 } from '../../domain/algorithms/examples';
 import type { AlgorithmCatalog, AlgorithmEntry, CodeLanguage } from '../../domain/algorithms/types';
 import { CODE_LANGUAGES } from '../../domain/algorithms/types';
-import type { TraceFrame, VisualRunResult } from '../../domain/trace/types';
-import { isTraceFrame } from '../../domain/trace/types';
+import type { TraceEvent } from '../../domain/trace/schema';
+import { parseTraceDocument } from '../../domain/trace/schema';
+import { framesToTraceDocument } from '../../domain/trace/adapter';
+import type { VisualRunResult } from '../../domain/trace/types';
 import type { GeneratedAlgorithm } from '../../runtime/ai/client';
 import { runForLanguage, isVisualResult } from '../../runtime/execute';
 import { safeGet, safeSet } from '../../runtime/storage';
@@ -34,7 +36,12 @@ export interface LabController {
   codeLang: CodeLanguage;
   editorCode: string;
   inputJson: string;
-  frames: TraceFrame[];
+  /** Validated trace events — the single source of truth for every panel. */
+  events: TraceEvent[];
+  /** Source-code snapshot that produced `events`. */
+  source: string;
+  /** True when the editor has diverged from the snapshot used by `events`. */
+  traceStale: boolean;
   playback: Playback;
   status: StatusMessage;
   engineText: string;
@@ -59,9 +66,10 @@ export function useLabController(): LabController {
   const [codeLang, setCodeLangState] = useState<CodeLanguage>(storedLanguage);
   const [editorCode, setEditorCode] = useState(() => exampleFor('bubble', storedLanguage()));
   const [inputJson, setInputJson] = useState(() => JSON.stringify(baseCatalog.bubble.input));
-  const [frames, setFrames] = useState<TraceFrame[]>([]);
+  const [events, setEvents] = useState<TraceEvent[]>([]);
+  const [source, setSource] = useState('');
   const [status, setStatus] = useState<StatusMessage>({ text: '', error: false });
-  const playback = usePlayback(frames);
+  const playback = usePlayback(events);
   const savedCodes = useRef<Record<string, string>>({});
   const runId = useRef(0);
 
@@ -82,18 +90,27 @@ export function useLabController(): LabController {
       });
       if (id !== runId.current) return;
       if (!isVisualResult(output)) throw new Error('Expected frames[]');
-      const nextFrames = (output as VisualRunResult).frames.filter(isTraceFrame);
-      setFrames(nextFrames);
+      const document = framesToTraceDocument((output as VisualRunResult).frames, code);
+      const parsed = parseTraceDocument(document);
+      if (!parsed.ok) {
+        setEvents([]);
+        setSource('');
+        setStatus({ text: `${t('error')}: ${parsed.errors.join('; ')}`, error: true });
+        return;
+      }
+      setEvents(parsed.document.events);
+      setSource(parsed.document.source ?? code);
       setStatus({
-        text: nextFrames.length ? `${t('loaded')} · ${nextFrames.length} frames` : t('noTrace'),
-        error: !nextFrames.length,
+        text: parsed.document.events.length ? `${t('loaded')} · ${parsed.document.events.length} frames` : t('noTrace'),
+        error: !parsed.document.events.length,
       });
     } catch (error) {
       if (id !== runId.current) return;
-      setFrames([]);
+      setEvents([]);
+      setSource('');
       setStatus({ text: `${t('error')}: ${(error as Error).message}`, error: true });
     }
-  }, [codeLang, currentAlgo, t, b]);
+  }, [codeLang, t, b]);
 
   const runVisualization = useCallback(() => {
     void runVisualizationWith(editorCode, inputJson);
@@ -168,9 +185,12 @@ export function useLabController(): LabController {
     safeSet(CODE_LANG_KEY, 'js');
     setEditorCode(generated.code);
     setInputJson(JSON.stringify(generated.input));
-    setFrames([]);
+    setEvents([]);
+    setSource('');
     setStatus({ text: t('generated'), error: false });
   }, [b, t]);
+
+  const traceStale = source !== '' && editorCode !== source;
 
   return {
     catalog,
@@ -179,7 +199,9 @@ export function useLabController(): LabController {
     codeLang,
     editorCode,
     inputJson,
-    frames,
+    events,
+    source,
+    traceStale,
     playback,
     status,
     engineText: engineNote(codeLang, lang),

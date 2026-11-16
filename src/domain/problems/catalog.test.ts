@@ -27,15 +27,13 @@ describe('practice bank (current scope: 2 sample categories, 8 original problems
     }
   });
 
-  it('produces a scaffold in all four languages', () => {
+  it('produces a scaffold in both teaching languages', () => {
     for (const language of CODE_LANGUAGES) {
       const code = practiceTemplate(problems[0], language);
       expect(code.length, language).toBeGreaterThan(0);
     }
     expect(practiceTemplate(problems[0], 'js')).toBe(problems[0].starter);
     expect(practiceTemplate(problems[0], 'python')).toContain('def solve');
-    expect(practiceTemplate(problems[0], 'cpp')).toContain('#include');
-    expect(practiceTemplate(problems[0], 'c')).toContain('#include <stdio.h>');
   });
 
   it('falls back to the first problem for unknown ids', () => {

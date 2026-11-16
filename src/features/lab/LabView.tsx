@@ -3,6 +3,7 @@ import { VisualStage } from './VisualStage';
 import { Timeline } from './Timeline';
 import { CodeEditorPanel } from './CodeEditorPanel';
 import { ConceptPanel } from './ConceptPanel';
+import { SyncPanel } from './SyncPanel';
 import { AiMentor } from './AiMentor';
 import type { LabController } from './useLabController';
 import { useI18n } from '../../i18n/I18nProvider';
@@ -10,6 +11,7 @@ import { useI18n } from '../../i18n/I18nProvider';
 export function LabView({ lab, apiUrl }: { lab: LabController; apiUrl: string }) {
   const { t, pick } = useI18n();
   const entry = lab.catalog[lab.currentAlgo];
+  const currentEvent = lab.events[lab.playback.index];
   return (
     <div className="workspace" data-testid="learn-view">
       <AlgorithmSidebar
@@ -27,9 +29,10 @@ export function LabView({ lab, apiUrl }: { lab: LabController; apiUrl: string })
             </div>
             <span className="tag green">{(entry?.group ?? 'custom').toUpperCase()}</span>
           </div>
-          <VisualStage frame={lab.frames[lab.playback.index]} />
-          <Timeline frames={lab.frames} playback={lab.playback} />
+          <VisualStage event={currentEvent} />
+          <Timeline events={lab.events} playback={lab.playback} />
         </section>
+        <SyncPanel event={currentEvent} source={lab.source} stale={lab.traceStale} />
         <CodeEditorPanel
           codeLang={lab.codeLang}
           engineText={lab.engineText}
@@ -47,14 +50,14 @@ export function LabView({ lab, apiUrl }: { lab: LabController; apiUrl: string })
       <aside className="rightcol">
         <ConceptPanel
           entry={entry}
-          frames={lab.frames}
+          events={lab.events}
           index={lab.playback.index}
           onSeek={lab.playback.seek}
         />
         <AiMentor
           apiUrl={apiUrl}
           algorithmName={entry ? pick(entry.name) : ''}
-          currentFrameMessage={lab.frames[lab.playback.index]?.message}
+          currentFrameMessage={currentEvent?.message}
           code={lab.editorCode}
         />
       </aside>

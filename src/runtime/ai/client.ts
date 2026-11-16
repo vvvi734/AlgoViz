@@ -1,5 +1,5 @@
 import type { Lang } from '../../i18n/types';
-import { validateHttpUrl } from '../native/client';
+import { validateHttpUrl } from '../url';
 
 export const AI_API_STORAGE_KEY = 'algolens-api';
 export const DEFAULT_AI_API = '/api/ai';

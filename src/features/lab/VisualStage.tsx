@@ -1,12 +1,12 @@
 import type { ReactNode } from 'react';
 import { buildVisualModel } from '../../domain/visualization/model';
-import type { TraceFrame } from '../../domain/trace/types';
+import type { TraceEvent } from '../../domain/trace/schema';
 import { useI18n } from '../../i18n/I18nProvider';
 
-export function VisualStage({ frame }: { frame: TraceFrame | undefined }) {
+export function VisualStage({ event }: { event: TraceEvent | undefined }) {
   const { t } = useI18n();
-  const model = frame
-    ? buildVisualModel(frame.state, { invalid: t('invalidTrace'), emptyStructure: t('emptyStack') })
+  const model = event
+    ? buildVisualModel(event.state, { invalid: t('invalidTrace'), emptyStructure: t('emptyStack') })
     : { kind: 'empty' as const, text: t('ready') };
 
   let content: ReactNode;

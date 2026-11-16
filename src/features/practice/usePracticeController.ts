@@ -19,6 +19,12 @@ function storedLanguage(): CodeLanguage {
 
 export type ProblemFilter = 'all' | 'university' | 'postgrad';
 
+/** A single sample run: the input and the function's actual output. */
+export interface SampleOutput {
+  input: unknown;
+  output: unknown;
+}
+
 export interface PracticeController {
   filteredProblems: PracticeProblem[];
   currentProblem: PracticeProblem;
@@ -35,8 +41,19 @@ export interface PracticeController {
   selectProblem: (id: string) => void;
   resetScaffold: () => void;
   showHint: () => void;
-  testSolution: () => Promise<void>;
+  runSamples: () => Promise<void>;
+  toggleSolved: () => void;
   reviewCode: (apiUrl: string) => Promise<void>;
+}
+
+function formatValue(value: unknown): string {
+  if (value === undefined) return 'undefined';
+  if (typeof value === 'string') return value;
+  try {
+    return JSON.stringify(value);
+  } catch {
+    return String(value);
+  }
 }
 
 export function usePracticeController(): PracticeController {
@@ -45,7 +62,7 @@ export function usePracticeController(): PracticeController {
   const [currentProblem, setCurrentProblem] = useState<PracticeProblem>(() => problems[0]);
   const [practiceCode, setPracticeCode] = useState(() => practiceTemplate(problems[0], storedLanguage()));
   const [hintIndex, setHintIndex] = useState(0);
-  const [lastTests, setLastTests] = useState<TestCaseResult[] | null>(null);
+  const [lastOutputs, setLastOutputs] = useState<SampleOutput[] | null>(null);
   const [status, setStatus] = useState<StatusMessage>({ text: '', error: false });
   const [filter, setFilter] = useState<ProblemFilter>('all');
   const [solved, setSolved] = useState<Set<string>>(() => {
@@ -60,11 +77,8 @@ export function usePracticeController(): PracticeController {
   );
 
   const engineText = useMemo(() => {
-    if (practiceLang === 'js') return b('JavaScript 示例题：本地公开测试。', 'JavaScript: local sample tests.');
-    if (practiceLang === 'python') {
-      return b('Python 首次使用需联网加载 Pyodide；公开样例测试在本地运行。', 'Python needs a one-time Pyodide download; sample tests run locally.');
-    }
-    return b('C/C++ 需要安全执行后端 /api/execute；当前仓库不提供该服务。', 'C/C++ require a sandboxed /api/execute backend; this repo does not ship one.');
+    if (practiceLang === 'js') return b('JavaScript 示例题：本地运行并查看输出。', 'JavaScript: run locally and inspect output.');
+    return b('Python 首次使用需联网加载 Pyodide；示例在本地运行并查看输出。', 'Python needs a one-time Pyodide download; samples run locally.');
   }, [practiceLang, b]);
 
   const selectProblem = useCallback((id: string) => {
@@ -72,7 +86,7 @@ export function usePracticeController(): PracticeController {
     setCurrentProblem(problem);
     setPracticeCode(practiceTemplate(problem, practiceLang));
     setHintIndex(0);
-    setLastTests(null);
+    setLastOutputs(null);
     setStatus({ text: '', error: false });
   }, [practiceLang]);
 
@@ -81,7 +95,7 @@ export function usePracticeController(): PracticeController {
     safeSet(PRACTICE_LANG_KEY, next);
     setPracticeCode(practiceTemplate(currentProblem, next));
     setHintIndex(0);
-    setLastTests(null);
+    setLastOutputs(null);
     setStatus({ text: '', error: false });
   }, [currentProblem]);
 
@@ -94,7 +108,10 @@ export function usePracticeController(): PracticeController {
     setHintIndex(Math.min(hintIndex + 1, currentProblem.hints.length));
   }, [hintIndex, currentProblem, lang, t]);
 
-  const testSolution = useCallback(async () => {
+  // Runs solve() over the sample inputs and shows input → output. This is a
+  // learning aid ("run and inspect output"), NOT an auto-grader: no pass/fail
+  // verdict, no automatic completion marking.
+  const runSamples = useCallback(async () => {
     setStatus({ text: t('running'), error: false });
     try {
       const output = await runForLanguage('test', practiceCode, null, currentProblem.tests, practiceLang, {
@@ -102,26 +119,36 @@ export function usePracticeController(): PracticeController {
         pythonTimeout: b('Python 初始化或执行超时（30 秒）', 'Python initialization/execution timed out (30s)'),
       });
       if (!('result' in output)) throw new Error('Expected result[]');
-      const results = output.result;
-      setLastTests(results);
-      const passed = results.filter((r) => r.pass).length;
-      let message = `${t('testSummary')}: ${passed} / ${results.length} ${t('passed')}\n`;
-      results.forEach((item, index) => {
-        message += `\n${item.pass ? '✓' : '✕'} Case ${index + 1}: ${item.pass ? t('passed') : t('failedTest')}`;
-        if (!item.pass) {
-          message += `\n  expected: ${JSON.stringify(item.expected)}\n  actual: ${JSON.stringify(item.actual)}`;
-        }
-      });
-      setStatus({ text: message, error: passed !== results.length });
-      if (passed === results.length) {
-        safeSet(solvedKey(currentProblem.id), '1');
-        setSolved((previous) => new Set(previous).add(currentProblem.id));
-      }
+      const results: TestCaseResult[] = output.result;
+      const outputs = currentProblem.tests.map(([input], index): SampleOutput => ({
+        input,
+        output: results[index]?.actual,
+      }));
+      setLastOutputs(outputs);
+      const message = outputs
+        .map((item, index) => `样例 ${index + 1}\n  输入: ${formatValue(item.input)}\n  输出: ${formatValue(item.output)}`)
+        .join('\n');
+      setStatus({ text: message.trim(), error: false });
     } catch (error) {
-      setLastTests(null);
+      setLastOutputs(null);
       setStatus({ text: `${t('error')}: ${(error as Error).message}`, error: true });
     }
   }, [practiceCode, currentProblem, practiceLang, t, b]);
+
+  // Completion is a user-driven learning record, persisted locally.
+  const toggleSolved = useCallback(() => {
+    setSolved((previous) => {
+      const next = new Set(previous);
+      if (next.has(currentProblem.id)) {
+        next.delete(currentProblem.id);
+        safeSet(solvedKey(currentProblem.id), '');
+      } else {
+        next.add(currentProblem.id);
+        safeSet(solvedKey(currentProblem.id), '1');
+      }
+      return next;
+    });
+  }, [currentProblem.id]);
 
   const applyAiText = useCallback((reply: AiReply) => {
     if (reply.kind !== 'text') return;
@@ -143,7 +170,7 @@ export function usePracticeController(): PracticeController {
         payload: {
           problem: { name: currentProblem.name[0], description: currentProblem.desc[0] },
           code: practiceCode,
-          testResults: lastTests,
+          sampleOutputs: lastOutputs,
           instruction: 'Use Socratic questions, identify a likely bug, and give incremental hints. Never provide a full corrected solution.',
         },
       });
@@ -154,7 +181,7 @@ export function usePracticeController(): PracticeController {
         error: true,
       });
     }
-  }, [lang, currentProblem, practiceCode, lastTests, applyAiText, localFallback, t, b]);
+  }, [lang, currentProblem, practiceCode, lastOutputs, applyAiText, localFallback, t, b]);
 
   return {
     filteredProblems,
@@ -172,7 +199,8 @@ export function usePracticeController(): PracticeController {
     selectProblem,
     resetScaffold,
     showHint,
-    testSolution,
+    runSamples,
+    toggleSolved,
     reviewCode,
   };
 }

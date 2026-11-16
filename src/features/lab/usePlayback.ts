@@ -11,13 +11,13 @@ import {
   togglePlay,
   type PlaybackState,
 } from '../../domain/trace/player';
-import type { TraceFrame } from '../../domain/trace/types';
+import type { TraceEvent } from '../../domain/trace/schema';
 
 /** React binding for the pure playback state machine. */
-export function usePlayback(frames: TraceFrame[]) {
+export function usePlayback(events: TraceEvent[]) {
   const [state, setState] = useState<PlaybackState>(initialPlayback);
   const [speed, setSpeed] = useState(3);
-  const frameCount = frames.length;
+  const frameCount = events.length;
 
   // A new run always starts at frame 0 with playback stopped.
   useEffect(() => {

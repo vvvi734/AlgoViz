@@ -1,4 +1,12 @@
-export type CodeLanguage = 'js' | 'python' | 'cpp' | 'c';
+/**
+ * Teaching languages.
+ *
+ * Python is the primary teaching language; JavaScript remains as the frontend
+ * implementation language that also powers the existing 12-algorithm demo set.
+ * C and C++ were removed from the roadmap (see docs/STAGE1_REPORT.md) and no
+ * longer appear in any user-facing entry point.
+ */
+export type CodeLanguage = 'js' | 'python';
 
 /** Groups currently shipped by the catalog. `custom` is created by AI import. */
 export type AlgorithmGroup = 'sort' | 'search' | 'ds' | 'graph' | 'tree' | 'custom';
@@ -16,23 +24,9 @@ export interface AlgorithmEntry {
 
 export type AlgorithmCatalog = Record<string, AlgorithmEntry>;
 
-export const CODE_LANGUAGES: CodeLanguage[] = ['js', 'python', 'cpp', 'c'];
+export const CODE_LANGUAGES: CodeLanguage[] = ['js', 'python'];
 
 export const CODE_LANGUAGE_LABELS: Record<CodeLanguage, string> = {
   js: 'JavaScript',
   python: 'Python',
-  cpp: 'C++17',
-  c: 'C11',
-};
-
-/**
- * Local execution is available for JavaScript (Worker) and Python (Pyodide).
- * C/C++ require an external sandboxed executor which is NOT shipped here.
- * See docs/ARCHITECTURE.md and Issue 08.
- */
-export const LOCALLY_EXECUTABLE: Record<CodeLanguage, boolean> = {
-  js: true,
-  python: true,
-  cpp: false,
-  c: false,
 };

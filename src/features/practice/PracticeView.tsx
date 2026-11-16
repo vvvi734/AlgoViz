@@ -6,6 +6,7 @@ import { useI18n } from '../../i18n/I18nProvider';
 
 export function PracticeView({ controller, apiUrl }: { controller: PracticeController; apiUrl: string }) {
   const { t, pick } = useI18n();
+  const isSolved = controller.solved.has(controller.currentProblem.id);
   return (
     <div className="practice" data-testid="practice-view">
       <ProblemList controller={controller} />
@@ -42,10 +43,13 @@ export function PracticeView({ controller, apiUrl }: { controller: PracticeContr
           onChange={(event) => controller.setPracticeCode(event.target.value)}
         />
         <div className="controls" style={{ marginTop: 12 }}>
-          <button className="btn primary" onClick={() => void controller.testSolution()}>{t('test')}</button>
+          <button className="btn primary" onClick={() => void controller.runSamples()} data-testid="run-samples">{t('runSamples')}</button>
           <button className="btn" onClick={controller.showHint}>{t('hint')}</button>
           <button className="btn" onClick={() => void controller.reviewCode(apiUrl)}>{t('review')}</button>
           <button className="btn ghost" onClick={controller.resetScaffold}>{t('resetScaffold')}</button>
+          <button className="btn" onClick={controller.toggleSolved} data-testid="toggle-solved">
+            {isSolved ? t('unmarkDone') : t('markDone')}
+          </button>
         </div>
         <Feedback status={controller.status} />
       </section>

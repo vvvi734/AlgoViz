@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { validateHttpUrl } from '../../runtime/native/client';
+import { validateHttpUrl } from '../../runtime/url';
 import { useI18n } from '../../i18n/I18nProvider';
 
 export function ApiSettingsModal({

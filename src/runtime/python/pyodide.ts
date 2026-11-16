@@ -1,16 +1,51 @@
-import type { RunMode, TestCaseResult, TraceFrame, VisualRunResult, TestRunResult } from '../../domain/trace/types';
+import type { RunMode, RawTraceFrame, TestCaseResult, VisualRunResult, TestRunResult } from '../../domain/trace/types';
 
 /** Pyodide is loaded on demand from a CDN; nothing is bundled into the app. */
 export const PYODIDE_VERSION = '0.27.7';
 export const PYODIDE_CDN = `https://cdn.jsdelivr.net/pyodide/v${PYODIDE_VERSION}/full/pyodide.js`;
 export const PYODIDE_TIMEOUT_MS = 30000;
 
-const PYTHON_VISUAL_BOOTSTRAP = [
+/**
+ * Python-side snapshot helper: deep-copies JSON-compatible values and converts
+ * anything non-serialisable (sets, custom objects, …) to a string, so a later
+ * mutation of the original list can never corrupt an already-recorded frame.
+ */
+export const PYTHON_SNAPSHOT_HELPER = [
+  'def _snapshot(value):',
+  '    if isinstance(value, bool):',
+  '        return value',
+  '    if isinstance(value, list) or isinstance(value, tuple):',
+  '        return [_snapshot(item) for item in value]',
+  '    if isinstance(value, dict):',
+  '        return {str(k): _snapshot(v) for k, v in value.items()}',
+  '    if isinstance(value, (int, float)) or value is None or isinstance(value, str):',
+  '        return value',
+  '    return str(value)',
+].join('\n');
+
+/**
+ * Backwards-compatible trace(): `trace(state, message)` still works; new calls
+ * may pass `line` and a `variables` dict whose values are snapshotted at call
+ * time. Line numbers are recorded explicitly — nothing is guessed.
+ */
+export const PYTHON_TRACE_HELPER = [
+  PYTHON_SNAPSHOT_HELPER,
+  'def _snapshot_variables(variables):',
+  "    return [{'name': str(k), 'type': type(v).__name__, 'value': _snapshot(v)} for k, v in (variables or {}).items()]",
+  "def trace(state, message='', line=None, variables=None):",
+  "    frame = {'state': _snapshot(state), 'message': str(message)}",
+  '    if line is not None:',
+  "        frame['line'] = int(line)",
+  '    if variables:',
+  "        frame['variables'] = _snapshot_variables(variables)",
+  "    postFrame(json.dumps(frame, ensure_ascii=False))",
+].join('\n');
+
+export const PYTHON_VISUAL_BOOTSTRAP = [
   'import json',
   'from js import postFrame',
   'input = json.loads(input_json)',
-  'def trace(state, message=""):',
-  "    postFrame(json.dumps({'state': state, 'message': str(message)}, ensure_ascii=False))",
+  PYTHON_TRACE_HELPER,
   'exec(user_code, {"input": input, "trace": trace})',
 ].join('\n');
 
@@ -31,12 +66,12 @@ const PYTHON_TEST_BOOTSTRAP = [
 
 interface WorkerReply {
   ok: boolean;
-  frames?: TraceFrame[];
+  frames?: RawTraceFrame[];
   result?: TestCaseResult[];
   error?: string;
 }
 
-function buildWorkerSource(): string {
+export function buildWorkerSource(): string {
   // A classic worker (not a module worker) because Pyodide's loader uses
   // importScripts. Python snippets are injected as JSON strings so no nested
   // template-literal escaping is needed.

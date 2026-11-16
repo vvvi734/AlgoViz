@@ -2,7 +2,6 @@ import type { Lang } from '../../i18n/types';
 import { ALGORITHM_CATALOG, ALGORITHM_GROUPS } from './catalog.generated';
 import { LANGUAGE_EXAMPLES } from './languageExamples.generated';
 import type { AlgorithmCatalog, AlgorithmGroup, CodeLanguage } from './types';
-import { CODE_LANGUAGE_LABELS } from './types';
 
 export const catalog: AlgorithmCatalog = ALGORITHM_CATALOG;
 
@@ -16,10 +15,6 @@ export function localizedName(id: string, lang: Lang): string {
 
 export function localizedText(pair: string[], lang: Lang): string {
   return pair[lang === 'zh' ? 0 : 1] ?? pair[0] ?? '';
-}
-
-export function labelForLanguage(lang: CodeLanguage): string {
-  return CODE_LANGUAGE_LABELS[lang];
 }
 
 export function groupLabel(group: AlgorithmGroup | string, lang: Lang): string {
@@ -44,10 +39,7 @@ export function exampleFor(algoId: string, language: CodeLanguage): string {
   const preset = LANGUAGE_EXAMPLES[language]?.[algoId];
   if (preset) return preset;
   const name = entry?.name[1] ?? algoId;
-  if (language === 'python') {
-    return `# ${name}: write Python code and call trace(state, message).\n# Input is available as variable: input\ntrace({'type':'array','values': [1,2,3]}, 'Example frame')`;
-  }
-  return `// ${name}: implement this algorithm in ${labelForLanguage(language)}.\n// Emit lines prefixed with TRACE followed by JSON snapshots.\n// A configured isolated /api/execute backend is required.\n`;
+  return `# ${name}: write Python code and call trace(state, message).\n# Input is available as variable: input\ntrace({'type':'array','values': [1,2,3]}, 'Example frame')`;
 }
 
 export function engineNote(language: CodeLanguage, lang: Lang): string {
@@ -55,14 +47,8 @@ export function engineNote(language: CodeLanguage, lang: Lang): string {
   if (language === 'js') {
     return b('JavaScript：浏览器 Worker 本地执行，可离线演示。', 'JavaScript: runs locally inside a browser Worker.');
   }
-  if (language === 'python') {
-    return b(
-      'Python 首次使用需联网加载 Pyodide；之后可逐帧展示 trace() 状态。',
-      'Python needs a one-time Pyodide download; trace() frames play locally.',
-    );
-  }
   return b(
-    'C/C++ 需要安全执行后端 /api/execute；当前仓库不提供该服务，静态页面不会假装编译本地代码。',
-    'C/C++ require a sandboxed /api/execute backend; this repo does not ship one.',
+    'Python 首次使用需联网加载 Pyodide；之后可逐帧展示 trace() 状态，并同步变量与代码行。',
+    'Python needs a one-time Pyodide download; trace() frames play locally with variables and source lines.',
   );
 }

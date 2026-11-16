@@ -119,6 +119,25 @@ textarea.prompt:focus { border-color: var(--accent); }
 .problem-card:hover, .problem-card.active { border-color: var(--accent); }
 .problem-solved { color: var(--accent); margin-top: 8px; }
 .custom-view { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+/* Stage-1 synchronous observation panel (code position / variables / step). */
+.sync-grid { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 12px; margin-bottom: 12px; }
+.sync-col h3 { font-size: 11px; letter-spacing: 1.2px; text-transform: uppercase; margin: 0 0 7px; }
+.sync-warn { color: var(--warn); margin: 4px 0 10px; }
+.sync-explanation { border-left: 3px solid var(--note-edge); background: var(--note-bg); color: var(--note-fg); padding: 10px 12px; border-radius: 6px; margin-top: 4px; }
+.sync-explanation h3 { margin: 0 0 4px; font-size: 11px; letter-spacing: 1.2px; text-transform: uppercase; }
+.sync-explanation p { margin: 0; font-size: 13px; }
+.codeview { margin: 0; max-height: 300px; overflow: auto; background: var(--code-bg); color: var(--code-fg); border: 1px solid var(--code-edge); border-radius: 10px; font: 12.5px/1.65 ui-monospace, SFMono-Regular, Consolas, monospace; tab-size: 2; }
+.codeline { display: flex; }
+.codeline.active { background: var(--note-bg); border-left: 3px solid var(--note-edge); }
+.lineno { flex: 0 0 36px; text-align: right; padding: 0 10px 0 6px; color: var(--muted); user-select: none; }
+.codetext { flex: 1; white-space: pre; overflow-x: auto; padding-right: 10px; }
+.vartable { width: 100%; border-collapse: collapse; font: 12.5px/1.6 ui-monospace, SFMono-Regular, Consolas, monospace; background: var(--info-bg); border: 1px solid var(--info-edge); border-radius: 10px; overflow: hidden; }
+.vartable th, .vartable td { text-align: left; padding: 6px 9px; border-bottom: 1px solid var(--edge); }
+.vartable th { color: var(--muted); font-weight: 700; font-size: 11px; }
+.varname { color: var(--accent); font-weight: 700; }
+.vartype { color: var(--muted); }
+.varvalue { color: var(--code-fg); word-break: break-all; }
 .modal { position: fixed; inset: 0; z-index: 99; background: var(--modal-backdrop); display: grid; place-items: center; padding: 18px; }
 .modal-card { max-width: 540px; width: 100%; box-shadow: var(--shadow); }
 .modal label { display: block; margin: 10px 0 4px; }
@@ -136,6 +155,7 @@ textarea.prompt:focus { border-color: var(--accent); }
   .sidebar h3 { display: none; }
   .alg-item { flex-shrink: 0; width: auto; white-space: nowrap; }
   .problem-list { grid-template-columns: 1fr; }
+  .sync-grid { grid-template-columns: 1fr; }
   .topbar { gap: 10px; }
   .brand { font-size: 20px; }
   .stage { min-height: 220px; }

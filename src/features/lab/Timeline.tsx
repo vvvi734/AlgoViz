@@ -1,18 +1,18 @@
 import type { Playback } from './usePlayback';
-import type { TraceFrame } from '../../domain/trace/types';
+import type { TraceEvent } from '../../domain/trace/schema';
 import { useI18n } from '../../i18n/I18nProvider';
 
-export function Timeline({ frames, playback }: { frames: TraceFrame[]; playback: Playback }) {
+export function Timeline({ events, playback }: { events: TraceEvent[]; playback: Playback }) {
   const { t } = useI18n();
-  const last = Math.max(0, frames.length - 1);
+  const last = Math.max(0, events.length - 1);
   return (
     <>
       <div className="stage-foot">
         <span className="step-number" data-testid="step-number">
-          {t('step')} {frames.length ? playback.index + 1 : 0}
+          {t('step')} {events.length ? playback.index + 1 : 0}
         </span>
         <span className="muted" data-testid="step-desc">
-          {frames[playback.index]?.message || t('ready')}
+          {events[playback.index]?.message || t('ready')}
         </span>
       </div>
       <input
@@ -38,7 +38,7 @@ export function Timeline({ frames, playback }: { frames: TraceFrame[]; playback:
         <button
           className="btn primary"
           onClick={playback.toggle}
-          disabled={frames.length <= 1}
+          disabled={events.length <= 1}
           data-testid="play-btn"
         >
           {playback.playing ? t('pause') : t('play')}

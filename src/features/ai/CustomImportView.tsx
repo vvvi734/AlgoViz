@@ -80,7 +80,6 @@ export function CustomImportView({
         <h2>{t('integration')}</h2>
         <div className="info"><h3>{t('howItWorks')}</h3><p>{t('howDetail')}</p></div>
         <div className="info"><h3>{t('apiSecurity')}</h3><p>{t('apiSecurityDetail')}</p></div>
-        <div className="info"><h3>{t('grading')}</h3><p>{t('gradingDetail')}</p></div>
       </section>
     </div>
   );

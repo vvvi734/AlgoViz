@@ -1,6 +1,8 @@
-# AlgoLens 架构方案（v0.2 / Phase 1）
+# AlgoLens 架构方案（v0.3 / Stage 1）
 
-本文描述从单文件原型（`index.html`，296 行 / ~70 KB）迁移到 React + TypeScript + Vite 后的模块边界、数据流与演进约束。**当前仓库只实现了 Phase 1**，其余能力见 [`docs/issues/`](./issues/) 中的独立 Issue。
+本文描述从单文件原型（`index.html`，296 行 / ~70 KB）迁移到 React + TypeScript + Vite 后的模块边界、数据流与演进约束。
+
+**定位已收敛**：Python 为主要教学语言；JavaScript 作为前端实现语言继续支持既有 12 个算法演示。**C/C++ 与在线判题已从规划中取消**，相关入口与执行后端已移除。Stage 1 已落地「统一 Trace Event Schema v1 + 旧动画兼容 + Python 冒泡排序同步演示」，详见 [STAGE1_REPORT.md](./STAGE1_REPORT.md)。
 
 ## 1. 现状盘点（迁移前）
 
@@ -20,7 +22,7 @@
 flowchart TD
   A[app/ App.tsx · 视图切换 / 全局状态编排] --> B[features/ lab · practice · ai]
   B --> C[domain/ 纯逻辑：algorithms · problems · trace · visualization]
-  B --> D[runtime/ 副作用：js worker · pyodide · native · ai · storage]
+  B --> D[runtime/ 副作用：js worker · python(Pyodide) · ai · url · storage]
   A --> E[theme/ 三态主题 + CSS 设计令牌]
   A --> F[i18n/ zh-en 词典]
   C -. 通过接口调用 .-> D
@@ -34,11 +36,11 @@ flowchart TD
 | --- | --- | --- |
 | `src/domain/algorithms` | 12 个算法定义、按教学语言取示例 | 不执行用户代码 |
 | `src/domain/problems` | 题库数据、脚手架 | 不判题 |
-| `src/domain/trace` | 帧类型、采集器、**纯函数播放状态机** | 不碰 `setInterval` / DOM |
+| `src/domain/trace` | Trace Event Schema（Zod 校验）、legacy 适配层、**纯函数播放状态机** | 不碰 `setInterval` / DOM；不编造变量/行号 |
 | `src/domain/visualization` | `TraceState → VisualModel` 纯映射、日志窗口 | 不写 `innerHTML` |
 | `src/runtime/js` | Worker 客户端 + 与 Worker 共用的纯执行体 | 不在主线程 `new Function` |
-| `src/runtime/python` | Pyodide classic worker（按需 CDN） | 不内置 Pyodide 到 bundle |
-| `src/runtime/native` | C/C++ 的 `/api/execute` 客户端 + URL 校验 | **不编译、不运行不可信代码** |
+| `src/runtime/python` | Pyodide classic worker（按需 CDN）+ 扩展版 `trace()` | 不内置 Pyodide 到 bundle |
+| `src/runtime/url` | HTTP(S) 地址校验 | 不承载业务逻辑 |
 | `src/runtime/ai` | `/api/ai` 客户端与响应校验 | 不保存任何 API key |
 | `src/theme` | 偏好解析、媒体查询监听、根元素属性 | 不写组件颜色 |
 | `src/i18n` | 词典、翻译、语言持久化 | 不放业务文案以外的逻辑 |
@@ -59,15 +61,16 @@ flowchart TD
 - `legacy/algorithm-definitions.js` 保留迁移前的算法源码；`npm run sync:legacy` 由它生成类型化数据模块和 `src/test/fixtures/legacy-frames.json`（12 个算法的逐帧快照）。
 - `catalog.test.ts` 逐一比对新执行结果与该快照；任何改动算法代码导致动画变化都会被测试挡下。
 
-### 3.3 运行时：语言适配器，不假装支持
+### 3.3 运行时：统一事件协议，不假装支持
 - 统一入口 `runtime/execute.ts` 的 `runForLanguage(mode, code, input, tests, language, messages)`。
-- JS → 3 秒限时 Worker；Python → 30 秒限时 Pyodide Worker（CDN 按需加载）；C/C++ → 仅向外部隔离服务发请求，**当前仓库不提供该服务**。
+- JS → 3 秒限时 Worker；Python → 30 秒限时 Pyodide Worker（CDN 按需加载），`trace()` 支持真实变量快照与显式行号。
+- 两个 runner 产出的 `frames` 统一由 `domain/trace/adapter.ts` 转为 Trace Event Schema v1，再由 `schema.ts`（Zod）校验后才进入播放/同步面板。
 - README 与界面文案都明确写出哪些能力是「协议 / 占位」，避免把未实现标记成已支持。
 
 ### 3.4 安全边界
 - 浏览器不保存任何模型厂商密钥；AI 请求只发到用户自部署的同源/HTTPS 代理。
-- C/C++ 编译执行必须落在独立沙箱（Issue 08），带 CPU/内存/时间/输出上限、无网络、只读文件系统、认证与速率限制；服务端还要校验 `TRACE` 输出，不能盲信。
-- 用户 JS 只在 Worker 内 `new Function`；练习样例测试是**公开测试**，正式判题需隐藏测试（Issue 10）。
+- 用户 JS 只在 Worker 内 `new Function`；Python 只在 Pyodide Worker 内执行，均不经过服务器，绝无远程代码执行。
+- 练习「运行并查看输出」是学习辅助，**不做成绩判定**；完成状态由用户手动标记。
 
 ## 4. 测试策略
 
@@ -88,10 +91,9 @@ flowchart TD
 ## 6. 演进顺序与不可跳跃的依赖
 
 ```
-Phase 1: 01 骨架 → 02 主题 → 03 动画回归 → 04 组件化重构（本次交付）
-Phase 2: 05 Trace Schema → 06 编辑器 → 07 Pyodide → 08 C/C++ 沙箱
-Phase 3: 09 AI 渐进教学 → 10 题库三分类/四语言示例 → 11 i18n/移动端
-Phase 4: 12 E2E → 13 开源治理与发布
+Stage 1（已完成）: Trace Schema v1 → 旧动画适配 → Python trace 扩展 → 同步观察面板 → 冒泡排序端到端
+Stage 2（规划）  : 代码编辑器（Monaco 高亮 / 行号 / 诊断 / 保存，按 Trace 高亮）
+后续             : 递归调用栈动画、AI 渐进式教学、题库扩充、E2E / axe
 ```
 
-`05 Trace Event Schema` 是 `06/07/08` 的前置：编辑器诊断、Python 错误定位、C/C++ 帧输出都要先有同一份版本化事件协议。`09/10` 依赖后端能力，但前端结构化响应可以先定义。
+`Trace Event Schema v1` 是编辑器诊断与递归栈动画的前置：Monaco 需要根据 `event.sourceLocation` 高亮，调用栈动画需要 `callStack` 协议（本阶段已定义、未动画化）。

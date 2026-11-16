@@ -62,12 +62,10 @@ describe('legacy algorithm catalogue (12 presets)', () => {
     }
   });
 
-  it('marks unsupported C/C++ combinations as explicit placeholders', () => {
-    const placeholder = exampleFor('quick', 'cpp');
-    expect(placeholder).toContain('TRACE');
-    expect(placeholder).toContain(CODE_LANGUAGE_LABELS.cpp);
-    expect(exampleFor('quick', 'python')).toContain('trace(');
-    expect(exampleFor('bubble', 'c')).toContain('TRACE');
+  it('ships only the two teaching languages (Python + JavaScript)', () => {
+    expect(CODE_LANGUAGES).toEqual(['js', 'python']);
+    expect(CODE_LANGUAGE_LABELS).toEqual({ js: 'JavaScript', python: 'Python' });
+    expect(exampleFor('bubble', 'python')).toContain('trace(');
   });
 
   it('labels every sidebar group in both UI languages', () => {

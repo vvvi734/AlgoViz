@@ -1,9 +1,10 @@
 /**
  * LEGACY trace shape, kept verbatim for the v0.2 refactor regression baseline.
  *
- * This is NOT the unified Trace Event Schema required by the roadmap:
- * Issue 05 introduces a versioned, validated event protocol shared by
- * JS / Python / C / C++ adapters. Until then, all runners emit this shape.
+ * Runners still emit this loose shape; `src/domain/trace/adapter.ts` normalises
+ * it into the unified, validated Trace Event Schema (`schema.ts`). Python adds
+ * the optional `line` / `variables` metadata below; JS keeps emitting the bare
+ * `{state,message}` form.
  */
 export interface TraceState {
   type: string;
@@ -18,6 +19,21 @@ export interface TraceState {
 export interface TraceFrame {
   state: TraceState;
   message: string;
+}
+
+/** A variable snapshot attached to a Python trace step (before validation). */
+export interface RawVariableSnapshot {
+  name: string;
+  type: string;
+  value: unknown;
+  scope?: string;
+}
+
+/** Frame produced by the Python runner: legacy fields + optional source metadata. */
+export interface RawTraceFrame extends TraceFrame {
+  line?: number;
+  column?: number;
+  variables?: RawVariableSnapshot[];
 }
 
 export const MAX_FRAMES = 500;
@@ -40,7 +56,7 @@ export interface RunRequest {
 }
 
 export interface VisualRunResult {
-  frames: TraceFrame[];
+  frames: RawTraceFrame[];
 }
 
 export interface TestRunResult {

@@ -2,7 +2,6 @@ import type { CodeLanguage } from '../domain/algorithms/types';
 import type { RunMode, TestCaseResult, TraceFrame, VisualRunResult, TestRunResult } from '../domain/trace/types';
 import { executeJs } from './js/client';
 import { executePython } from './python/pyodide';
-import { executeNative } from './native/client';
 
 export interface ExecutorMessages {
   jsTimeout: string;
@@ -10,8 +9,10 @@ export interface ExecutorMessages {
 }
 
 /**
- * Single dispatch point for all teaching languages. Adding a language only
- * requires a new adapter here plus a Trace Event adapter in Issue 05.
+ * Single dispatch point for the teaching languages. C/C++ were removed from the
+ * roadmap, so this only routes JavaScript (Worker) and Python (Pyodide); both
+ * run entirely inside the browser — no untrusted code is ever executed in a
+ * server process.
  */
 export function runForLanguage(
   mode: RunMode,
@@ -26,9 +27,6 @@ export function runForLanguage(
       return executeJs(mode, code, input, tests, messages.jsTimeout);
     case 'python':
       return executePython(mode, code, input, tests, messages.pythonTimeout);
-    case 'cpp':
-    case 'c':
-      return executeNative(mode, code, input, tests, language);
   }
 }
 
