@@ -209,7 +209,7 @@ Stage 7A E2E 覆盖：
 
 - 分支：`main`
 - 远端：`https://gitee.com/vvvi734/algolens.git`
-- Stage 7A 实现提交：见本报告所在提交（提交信息 `feat(stage7a): refactor learning lab UX`）
+- Stage 7A 实现提交：`8d4b1c3`（`feat(stage7a): refactor learning lab workspace UX`，含代码、文档与截图）
 - 工作区：提交前有本阶段新增/修改；提交后应为 clean（构建产物 `dist/` 按仓库规则忽略）
 - 推送：提交后正常 `git push origin main`；最终哈希与推送状态见交付回复/`git log -1`
 
