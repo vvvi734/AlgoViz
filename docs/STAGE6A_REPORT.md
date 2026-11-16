@@ -26,7 +26,7 @@
 | 17 | 构建成功 | ✅ 完成 | `npm run build` 成功；`ai:build` 产出 `packages/ai-gateway/dist/server.mjs` |
 | 18 | 浏览器 E2E 通过 | ✅ 完成 | Playwright 全量 16/16（含 mentor 3 条） |
 | 19 | 原有 MCP 功能不回归 | ✅ 完成 | `mcp:typecheck` 0 错误；MCP 协议 20 项在 378 内通过；`mcp:smoke` 9 项通过 + 1 项跳过（未提供 `--context-dir`，属预期） |
-| 20 | 文档、Git 提交和实际验证记录完整 | 🟡 部分完成 | 本报告 + `AI_GATEWAY.md` + README/ARCHITECTURE 已更新；提交与推送见 J；真实模型验证缺失已在 I 标明 |
+| 20 | 文档、Git 提交和实际验证记录完整 | ✅ 完成 | 本报告 + `AI_GATEWAY.md` + README/ARCHITECTURE 已更新；提交与推送成功；真实模型未验证在 2/3 与 I 明确标注 |
 
 ## B. AI Gateway 架构
 
@@ -177,9 +177,9 @@ E2E 覆盖：
 - 分支：`main`
 - 远端：`https://gitee.com/vvvi734/algolens.git`
 - 基线：`a230b4f`（Stage 5A）
-- 实现提交：`ae584fa`（`feat(phase-6a): local AI gateway + progressive web mentor`）；本报告的哈希更新与测试记录在紧随其后的文档提交中
-- 工作区：提交前包含 Stage 6A 新建/修改文件；`dist/`、`packages/ai-gateway/dist/`、`.env` 均被忽略。
-- 推送：`git push origin main`（普通推送，无 force）。
+- 实现提交：`ae584fa`（`feat(phase-6a): local AI gateway + progressive web mentor`）；文档提交：`e11aa54`（含最终 E2E 记录）；两者均已推送
+- 工作区：已提交，`git status` 干净；`dist/`、`packages/ai-gateway/dist/`、`.env` 均被忽略。
+- 推送：`git push origin main` 成功（普通推送，无 force）；`origin/main` 与本地一致。
 
 ## K. 后续准备（只评估）
 
