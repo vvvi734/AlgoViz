@@ -10,6 +10,7 @@ import { CustomImportView } from '../features/ai/CustomImportView';
 import { ApiSettingsModal } from '../features/ai/ApiSettingsModal';
 import { PacksView } from '../features/packs/PacksView';
 import { usePacksController } from '../features/packs/usePacksController';
+import { useSessionTransfer } from '../features/lab/useSessionTransfer';
 import { AI_API_STORAGE_KEY, DEFAULT_AI_API, type GeneratedAlgorithm } from '../runtime/ai/client';
 import { safeGet, safeSet } from '../runtime/storage';
 import { useI18n } from '../i18n/I18nProvider';
@@ -24,6 +25,10 @@ export function App() {
   // Stage 4: installed `.algopack` courses, composed with the built-in ones
   // (built-in always wins — see domain/lessons/catalog.ts).
   const packs = usePacksController();
+  // Stage 5A: file-based bridge with the local MCP server (import session /
+  // export the current real context). It reads `packs.catalog`, so a pack
+  // course must be installed before its session can be applied.
+  const session = useSessionTransfer({ lab, lessons: packs.catalog });
 
   const saveApiUrl = (url: string) => {
     setApiUrl(url);
@@ -61,6 +66,7 @@ export function App() {
           lessons={packs.catalog}
           packOrigin={installedPack?.manifest.name}
           courseExample={courseExample}
+          session={session}
         />
       </div>
       <div className={view === 'practice' ? '' : 'hidden'}>

@@ -48,7 +48,12 @@ export const LIMITS = {
 /** Recursive JSON value — the only values allowed inside a trace. */
 export type JsonValue = string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue };
 
-const jsonValueSchema: z.ZodType<JsonValue> = z.lazy(() =>
+/**
+ * Zod counterpart of {@link JsonValue}. Exported so formats that *embed* trace
+ * values (learning sessions, exported contexts) validate the same JSON subset
+ * instead of re-inventing one.
+ */
+export const jsonValueSchema: z.ZodType<JsonValue> = z.lazy(() =>
   z.union([z.string(), z.number().finite(), z.boolean(), z.null(), z.array(jsonValueSchema), z.record(jsonValueSchema)]),
 );
 

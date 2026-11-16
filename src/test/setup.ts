@@ -31,13 +31,22 @@ function makeQuery(media: string): MockMediaQueryList {
 
 const queries = new Map<string, MockMediaQueryList>();
 
-Object.defineProperty(window, 'matchMedia', {
-  writable: true,
-  value: (media: string) => {
-    if (!queries.has(media)) queries.set(media, makeQuery(media));
-    return queries.get(media)!;
-  },
-});
+/**
+ * The MCP protocol tests run in the node environment (no DOM) while sharing
+ * this setup file, so every browser-only fixture is guarded instead of
+ * dragging jsdom into them.
+ */
+const hasDom = typeof window !== 'undefined';
+
+if (hasDom) {
+  Object.defineProperty(window, 'matchMedia', {
+    writable: true,
+    value: (media: string) => {
+      if (!queries.has(media)) queries.set(media, makeQuery(media));
+      return queries.get(media)!;
+    },
+  });
+}
 
 /** Test helper: emulate an OS-level light/dark switch. */
 export function setSystemDark(value: boolean): void {
@@ -50,6 +59,7 @@ export function systemIsDark(): boolean {
 }
 
 afterEach(() => {
+  if (!hasDom) return;
   window.localStorage.clear();
   document.documentElement.removeAttribute('data-theme');
   document.documentElement.removeAttribute('data-theme-preference');

@@ -69,6 +69,13 @@ export interface LabController {
    * text can never execute implicitly.
    */
   applyCourseExample: (code: string, input: unknown) => void;
+  /**
+   * Stage 5A: open an imported `.algosession.json` — switch algorithm, load the
+   * session's Python example as inert text and stop. Nothing is executed here:
+   * the trace only exists after the user presses Run. Returns `false` when the
+   * algorithm does not exist.
+   */
+  openLearningSession: (session: { algorithmId: string; source?: string; input?: unknown }) => boolean;
 }
 
 export function useLabController(): LabController {
@@ -280,7 +287,34 @@ export function useLabController(): LabController {
     setStatus({ text: t('lessonExampleLoaded'), error: false });
   }, [applyCode, catalog, currentAlgo, flushCurrent, t, writeDraft]);
 
+  // Stage 5A: apply an imported learning session. Switching algorithm normally
+  // runs its preset, but an *import* must not execute anything — the session is
+  // an intent, so this path clears the frames and waits for the user's Run.
+  const openLearningSession = useCallback((session: { algorithmId: string; source?: string; input?: unknown }) => {
+    const entry = catalog[session.algorithmId];
+    if (!entry) return false;
+    playback.stop();
+    flushCurrent();
+    const targetLang: CodeLanguage = session.source ? 'python' : codeLang;
+    if (targetLang !== codeLang) {
+      setCodeLangState(targetLang);
+      safeSet(CODE_LANG_KEY, targetLang);
+    }
+    location.current = { algo: session.algorithmId, lang: targetLang };
+    setCurrentAlgo(session.algorithmId);
+    const code = session.source ?? loadDraft(session.algorithmId, targetLang) ?? exampleFor(session.algorithmId, targetLang);
+    applyCode(code);
+    setInputJson(JSON.stringify(session.input ?? entry.input ?? null));
+    if (session.source) writeDraft(session.algorithmId, 'python', session.source);
+    setEvents([]);
+    setSource('');
+    setDiagnostics([]);
+    setStatus({ text: t('sessionAppliedShort'), error: false });
+    return true;
+  }, [applyCode, catalog, codeLang, flushCurrent, playback, t, writeDraft]);
+
   const loadCustom = useCallback((generated: GeneratedAlgorithm) => {
+
     const note = b(
       'AI 生成的可视化算法，请检查代码安全性与正确性。',
       'AI-generated visualization; review code for safety and correctness.',
@@ -332,5 +366,6 @@ export function useLabController(): LabController {
     randomizeInput,
     loadCustom,
     applyCourseExample,
+    openLearningSession,
   };
 }

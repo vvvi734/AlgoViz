@@ -7,6 +7,8 @@ import { ConceptPanel } from './ConceptPanel';
 import { SyncPanel } from './SyncPanel';
 import { CallStackPanel } from './CallStackPanel';
 import { LessonPanel } from './LessonPanel';
+import { SessionPanel } from './SessionPanel';
+import type { SessionTransferController } from './useSessionTransfer';
 import { AiMentor } from './AiMentor';
 import type { LabController } from './useLabController';
 import type { LessonCatalog } from '../../domain/lessons/catalog';
@@ -20,6 +22,7 @@ export function LabView({
   lessons,
   packOrigin,
   courseExample,
+  session,
 }: {
   lab: LabController;
   apiUrl: string;
@@ -29,6 +32,8 @@ export function LabView({
   packOrigin?: LocalizedLabel;
   /** The current course's Python example (lazy text from an installed pack). */
   courseExample?: PackExample;
+  /** Stage 5A: Agent session import + current-context export. */
+  session: SessionTransferController;
 }) {
   const { t, pick, lang } = useI18n();
   const { resolved } = useTheme();
@@ -98,6 +103,7 @@ export function LabView({
               : undefined
           }
         />
+        <SessionPanel session={session} lessons={lessons} />
         {hasCallStack && (
           <CallStackPanel
             event={currentEvent}

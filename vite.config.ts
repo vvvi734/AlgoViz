@@ -18,7 +18,12 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     setupFiles: ['./src/test/setup.ts'],
-    include: ['src/**/*.{test,spec}.{ts,tsx}'],
+    // MCP protocol tests live in the isolated subpackage; they opt into the
+    // node environment per file (`// @vitest-environment node`) and the shared
+    // setup file no-ops when there is no DOM.
+    include: ['src/**/*.{test,spec}.{ts,tsx}', 'packages/mcp-server/src/**/*.test.ts'],
+    // The MCP dependency tree is large; give protocol round-trips room to boot.
+    testTimeout: 20_000,
     restoreMocks: true,
   },
 });

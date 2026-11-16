@@ -1,0 +1,30 @@
+{
+  "name": "algolens-mcp-server",
+  "private": true,
+  "version": "0.6.0-phase5a",
+  "type": "module",
+  "license": "MIT",
+  "description": "Local stdio MCP server: AlgoLens courses, knowledge packs and learning sessions, using the host Agent's own AI.",
+  "engines": {
+    "node": ">=20"
+  },
+  "bin": {
+    "algolens-mcp": "dist/server.mjs"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "start": "node dist/server.mjs",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "smoke": "node scripts/smoke.mjs"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.2",
+    "fflate": "^0.8.3",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "esbuild": "^0.28.2",
+    "typescript": "^5.8.3"
+  }
+}
