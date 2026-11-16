@@ -175,6 +175,49 @@ textarea.prompt:focus { border-color: var(--accent); }
 .varname { color: var(--accent); font-weight: 700; }
 .vartype { color: var(--muted); }
 .varvalue { color: var(--code-fg); word-break: break-all; }
+/* Stage-3 call-stack panel. */
+.callstack {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 7px;
+  /* A deep recursion trace can carry up to MAX_CALL_STACK (64) frames. Scroll
+     inside the panel so a long stack never pushes the workspace off-screen. */
+  max-height: 460px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.callframe {
+  border: 1px solid var(--info-edge);
+  background: var(--info-bg);
+  border-radius: 10px;
+  padding: 8px 11px;
+  cursor: pointer;
+  transition: border-color .12s, box-shadow .12s;
+}
+.callframe:hover { border-color: var(--edge-hover); }
+.callframe.active { border-color: var(--accent); background: var(--alg-active-bg); }
+.callframe.selected { box-shadow: 0 0 0 2px var(--focus-ring); }
+.callframe-head { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+.callframe-depth {
+  flex: 0 0 auto;
+  min-width: 22px;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--tag-fg);
+  background: var(--tag-bg);
+  border-radius: 6px;
+  padding: 1px 5px;
+}
+.callframe-name { font-weight: 800; color: var(--accent); }
+.callframe-return { font-size: 12px; color: var(--warn); margin-left: auto; }
+.callframe-line { font-size: 12px; margin-top: 4px; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; word-break: break-all; }
+.callframe-line.muted { color: var(--muted); }
+.callstack-hint { margin: 8px 0 0; }
+.scope-label { display: inline-block; font-size: 11px; color: var(--tag-green-fg); background: var(--tag-green-bg); border-radius: 7px; padding: 2px 8px; margin-bottom: 6px; }
+
 .modal { position: fixed; inset: 0; z-index: 99; background: var(--modal-backdrop); display: grid; place-items: center; padding: 18px; }
 .modal-card { max-width: 540px; width: 100%; box-shadow: var(--shadow); }
 .modal label { display: block; margin: 10px 0 4px; }

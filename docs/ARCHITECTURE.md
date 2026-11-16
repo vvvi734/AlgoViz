@@ -1,8 +1,8 @@
-# AlgoLens 架构方案（v0.3 / Stage 2）
+# AlgoLens 架构方案（v0.3 / Stage 3）
 
 本文描述从单文件原型（`index.html`，296 行 / ~70 KB）迁移到 React + TypeScript + Vite 后的模块边界、数据流与演进约束。
 
-**定位已收敛**：Python 为主要教学语言；JavaScript 作为前端实现语言继续支持既有 12 个算法演示。**C/C++ 与在线判题已从规划中取消**，相关入口与执行后端已移除。Stage 1 落地「统一 Trace Event Schema v1 + 旧动画兼容 + Python 冒泡排序同步演示」；Stage 2 落地「Monaco Editor + 执行行高亮 + Python 错误诊断 + 本地代码保存 + 真实浏览器 E2E」，详见 [STAGE1_REPORT.md](./STAGE1_REPORT.md) 与 [STAGE2_REPORT.md](./STAGE2_REPORT.md)。
+**定位已收敛**：Python 为主要教学语言；JavaScript 作为前端实现语言继续支持既有 12 个算法演示。**C/C++ 与在线判题已从规划中取消**，相关入口与执行后端已移除。Stage 1 落地「统一 Trace Event Schema v1 + 旧动画兼容 + Python 冒泡排序同步演示」；Stage 2 落地「Monaco Editor + 执行行高亮 + Python 错误诊断 + 本地代码保存 + 真实浏览器 E2E」；Stage 3 落地「Python 递归调用栈 + 作用域感知变量观察 + 时间轴重置修复」，详见 [STAGE1_REPORT.md](./STAGE1_REPORT.md)、[STAGE2_REPORT.md](./STAGE2_REPORT.md) 与 [STAGE3_REPORT.md](./STAGE3_REPORT.md)。
 
 ## 1. 现状盘点（迁移前）
 
@@ -74,15 +74,21 @@ flowchart TD
 - 用户 JS 只在 Worker 内 `new Function`；Python 只在 Pyodide Worker 内执行，均不经过服务器，绝无远程代码执行。
 - 练习「运行并查看输出」是学习辅助，**不做成绩判定**；完成状态由用户手动标记。
 
+### 3.5 递归可视化：一条事件流，四块视图（Stage 3）
+- Python 侧不解析文本，而是注入 `tracked` 装饰器：进入/返回真实产生事件，`frameId` 由单调计数器发号（同一函数的不同递归层是不同帧），`_snapshot()` 深拷贝保证历史帧不被后续 `list` 变异污染。
+- `callStack` 沿用 Stage 1 定义的协议字段（`name/frameId/line/depth/arguments/locals/returnValue/status`），全部可选，旧 `{name,line}` 帧仍然通过校验。
+- 前端仍是**单一 `currentEvent`**：`Timeline/usePlayback` 只决定 `index`，`VisualStage`、`SyncPanel`（含变量作用域）、`CallStackPanel`、Monaco 行装饰全部读同一个 `events[index]`；`selectedFrameId` 只是"在变量表里看哪一帧"，不参与时间轴。
+- 播放状态机新增不变量：**新 Trace（`events` 数组身份变化）即回到第 0 帧并停止播放**，且 `index` 始终被钳制在 `[0, frameCount-1]`。重置信号用数组身份而非长度，因为同长度、不同内容的 Trace 也必须归零；`events` 是 React state 值，跨普通重渲染身份稳定，所以用户拖动的位置不会被主题/语言切换清掉。注意 `frames` 是 `lib.dom` 的全局（`declare var frames: WindowProxy`），把依赖写成 `[frames]` 会类型检查通过但永不触发——这是已修复的真实缺陷。
+
 ## 4. 测试策略
 
 | 层次 | 工具 | 覆盖 |
 | --- | --- | --- |
-| 纯逻辑单测 | Vitest | 主题解析、播放状态机、可视化映射、i18n、题库数据、关键词路由 |
-| 帧回归 | Vitest + legacy 快照 | 12 个算法逐帧一致、空/重复/单元素输入、排序终态 |
-| 组件冒烟 | Vitest + jsdom + Testing Library | 12 个算法入口、时间轴交互、三态主题、语言切换、视图切换 |
+| 纯逻辑单测 | Vitest | 主题解析、播放状态机（含 `clampPlayback`）、可视化映射、i18n、题库数据、关键词路由 |
+| 帧回归 | Vitest + legacy 快照 | 14 个算法逐帧一致（12 旧 + 阶乘/斐波那契）、空/重复/单元素输入、排序终态 |
+| 组件冒烟 | Vitest + jsdom + Testing Library | 14 个算法入口、时间轴交互与 **Trace 切换重置**、三态主题、语言切换、视图切换、调用栈面板与作用域变量 |
 | 令牌契约 | Vitest 读 CSS 文本 | 两套主题 token 完整性、无硬编码颜色 |
-| E2E | Playwright（真实 Edge 无头 + `vite preview`） | Monaco 加载、Python 冒泡同步高亮、SyntaxError 波浪线出现/清除、草稿自动保存/刷新恢复、主题切换（见 `e2e/lab.spec.ts`） |
+| E2E | Playwright（真实 Edge 无头 + `vite preview`） | Monaco 加载、Python 冒泡同步高亮、SyntaxError 波浪线出现/清除、草稿自动保存/刷新恢复、主题切换、真实 Pyodide 阶乘/斐波那契递归栈、JS 长短 Trace 切换重置（见 `e2e/lab.spec.ts`） |
 | a11y | axe | **未实现**，见后续 Issue |
 
 `npm run typecheck`、`npm test`、`npm run build` 是每次 PR 的必过门槛（见 `.github/workflows/ci.yml`）。
@@ -96,7 +102,8 @@ flowchart TD
 ```
 Stage 1（已完成）: Trace Schema v1 → 旧动画适配 → Python trace 扩展 → 同步观察面板 → 冒泡排序端到端
 Stage 2（已完成）: Monaco 编辑器（懒加载/本地 Worker）→ 执行行高亮 → Python 错误诊断与 Marker → 源码一致性/异步隔离 → 草稿自动保存 → 深浅主题适配 → 真实浏览器 E2E
-后续             : 递归调用栈动画、AI 渐进式教学、题库扩充、a11y / axe
+Stage 3（已完成）: callStack 协议落地 → Python @tracked 递归追踪 → 调用栈面板与作用域变量 → 阶乘/斐波那契端到端 → 时间轴重置与索引钳制修复
+后续             : 树/图与动态规划可视化、练习页 Monaco、a11y / axe、AI 渐进式教学
 ```
 
-`Trace Event Schema v1` 是编辑器诊断与递归栈动画的前置：Monaco 需要根据 `event.sourceLocation` 高亮，调用栈动画需要 `callStack` 协议（本阶段已定义、未动画化）。
+`Trace Event Schema v1` 是编辑器诊断、递归栈动画与后续树/图可视化的共同前置：Monaco 需要根据 `event.sourceLocation` 高亮，调用栈读取 `callStack`，任何新结构都必须先扩展协议再改渲染，不允许渲染层自己发明字段。

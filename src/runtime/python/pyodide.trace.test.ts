@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { PYTHON_TRACE_HELPER, PYTHON_VISUAL_BOOTSTRAP } from './pyodide';
+import { PYTHON_RECURSION_HELPER, PYTHON_SNAPSHOT_HELPER, PYTHON_TRACE_HELPER, PYTHON_VISUAL_BOOTSTRAP } from './pyodide';
 import { framesToTraceDocument } from '../../domain/trace/adapter';
 import { parseTraceDocument } from '../../domain/trace/schema';
 import type { RawTraceFrame } from '../../domain/trace/types';
@@ -14,17 +14,19 @@ describe('Python trace() runtime contract', () => {
 
   it('records optional line and variables metadata', () => {
     expect(PYTHON_TRACE_HELPER).toContain("frame['line'] = int(line)");
-    expect(PYTHON_TRACE_HELPER).toContain("frame['variables'] = _snapshot_variables(variables)");
+    expect(PYTHON_TRACE_HELPER).toContain("frame['variables'] = _snapshot_variables(explicit)");
   });
 
   it('deep-copies values so mutable lists cannot pollute earlier frames', () => {
-    expect(PYTHON_TRACE_HELPER).toContain('def _snapshot(value)');
-    expect(PYTHON_TRACE_HELPER).toContain('return [_snapshot(item) for item in value]');
-    expect(PYTHON_TRACE_HELPER).toContain('return str(value)');
+    expect(PYTHON_SNAPSHOT_HELPER).toContain('def _snapshot(value)');
+    expect(PYTHON_SNAPSHOT_HELPER).toContain('return [_snapshot(item) for item in value]');
+    expect(PYTHON_SNAPSHOT_HELPER).toContain('return str(value)');
   });
 
-  it('injects input and trace into the user namespace', () => {
-    expect(PYTHON_VISUAL_BOOTSTRAP).toContain("exec(compile(user_code, USER_FILENAME, 'exec'), {'input': input, 'trace': trace})");
+  it('injects input, trace, tracked and stack_state into the user namespace', () => {
+    expect(PYTHON_VISUAL_BOOTSTRAP).toContain(
+      "exec(compile(user_code, USER_FILENAME, 'exec'), {'input': input, 'trace': trace, 'tracked': tracked, 'stack_state': stack_state})",
+    );
   });
 
   it('wraps user code so failures become structured diagnostics', () => {
@@ -54,5 +56,35 @@ describe('Python trace() runtime contract', () => {
     if (!parsed.ok) return;
     expect(parsed.document.events[0].sourceLocation?.line).toBe(8);
     expect(parsed.document.events[0].variables?.[0].name).toBe('i');
+  });
+});
+
+describe('Python recursion tracer contract (Stage 3)', () => {
+  it('ships a tracked decorator that hands out distinct frame ids and emits call/return events', () => {
+    expect(PYTHON_RECURSION_HELPER).toContain('def tracked(fn)');
+    expect(PYTHON_RECURSION_HELPER).toContain("_FRAME_SEQ[0] += 1");
+    expect(PYTHON_RECURSION_HELPER).toContain("fid = 'f' + str(_FRAME_SEQ[0])");
+    expect(PYTHON_RECURSION_HELPER).toContain("_emit_call(fn.__name__, frame, arg_dict, fn.__code__.co_firstlineno)");
+    expect(PYTHON_RECURSION_HELPER).toContain("frame['returnValue'] = _snapshot(retval)");
+    expect(PYTHON_RECURSION_HELPER).toContain("frame['status'] = 'returning'");
+  });
+
+  it('captures the caller frame id / depth into the frame and cleans up on exception', () => {
+    expect(PYTHON_RECURSION_HELPER).toContain("'depth': len(_CALL_STACK)");
+    expect(PYTHON_RECURSION_HELPER).toContain('_CALL_STACK.append(frame)');
+    expect(PYTHON_RECURSION_HELPER).toContain('_CALL_STACK.pop()');
+  });
+
+  it('attaches a full call-stack snapshot and auto-captured locals inside trace()', () => {
+    expect(PYTHON_TRACE_HELPER).toContain('caller = sys._getframe(1)');
+    expect(PYTHON_TRACE_HELPER).toContain("frame['callStack'] = _call_stack_snapshot()");
+    expect(PYTHON_TRACE_HELPER).toContain("_CALL_STACK[-1]['locals'] = vars_out");
+    // Outside a tracked frame, legacy explicit-variable behaviour is preserved.
+    expect(PYTHON_TRACE_HELPER).toContain("elif explicit:");
+  });
+
+  it('filters out non-serialisable / callable locals so frames stay JSON-safe', () => {
+    expect(PYTHON_RECURSION_HELPER).toContain('_EXCLUDED_LOCAL_TYPES');
+    expect(PYTHON_RECURSION_HELPER).toContain('json.dumps(_snapshot(v))');
   });
 });

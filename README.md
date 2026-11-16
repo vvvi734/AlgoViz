@@ -4,8 +4,8 @@
 
 面向大学生与 408 考研学生的浏览器端算法学习平台：**Python 在浏览器内运行**，根据真实执行结果生成逐帧动画，并同步展示代码位置、变量值与步骤讲解。完全本地运行，无需租服务器。
 
-> **当前版本：v0.3 Stage 2。** 刚完成「Monaco Editor + Python 同步调试体验」：语法高亮、行号、执行行高亮联动、Python 错误诊断（Monaco Marker）、本地代码自动保存、真实浏览器 E2E 验证。
-> 定位已收敛：**Python 为主要教学语言**，JavaScript 作为前端实现语言继续支持既有 12 个算法演示；**C / C++ 与在线判题已从规划中取消**。详见 [阶段一总结](docs/STAGE1_REPORT.md) 与 [阶段二总结](docs/STAGE2_REPORT.md)。
+> **当前版本：v0.3 Stage 3。** 刚完成「Python 递归调用栈与局部变量同步可视化」：真实 Pyodide 捕获 `@tracked` 递归调用栈、调用帧唯一标识、逐层局部变量、返回值与函数返回事件，新增调用栈面板与作用域感知的变量观察器，阶乘 `factorial(4)=24` 与斐波那契 `fib(4)=3` 两个端到端演示，真实浏览器 E2E 验证。本阶段收尾同时修复了时间轴缺陷：切换算法/语言后旧索引不再残留（新 Trace 归零 + 索引钳制），见下方「路线图」。
+> 定位已收敛：**Python 为主要教学语言**，JavaScript 作为前端实现语言继续支持既有 12 个算法演示；**C / C++ 与在线判题已从规划中取消**。详见 [阶段一总结](docs/STAGE1_REPORT.md)、[阶段二总结](docs/STAGE2_REPORT.md) 与 [阶段三总结](docs/STAGE3_REPORT.md)。
 
 ---
 
@@ -17,11 +17,13 @@
 | --- | --- | --- |
 | React + TypeScript + Vite 工程结构 | ✅ 已实现 | 严格类型检查、模块边界清晰 |
 | Light / Dark / System 三态主题 | ✅ 已实现 | 跟随系统实时响应；首屏无闪屏；偏好持久化 |
-| 12 个算法逐帧动画 | ✅ 已实现 | 冒泡/插入/选择/快排、二分/线性查找、栈/队列/链表、BFS/DFS、树中序 |
-| 播放 / 暂停 / 回退 / 单步 / 拖动 / 速度 | ✅ 已实现 | 纯函数状态机，逐帧回归测试 |
+| 14 个算法逐帧动画 | ✅ 已实现 | 12 个原有（冒泡/插入/选择/快排、二分/线性查找、栈/队列/链表、BFS/DFS、树中序）+ 阶乘 / 斐波那契递归 |
+| 播放 / 暂停 / 回退 / 单步 / 拖动 / 速度 | ✅ 已实现 | 纯函数状态机 + 逐帧回归；新 Trace 加载即回到第 0 帧并停止播放，索引恒在合法范围内 |
 | JavaScript 本地执行 | ✅ 已实现 | 3 秒限时 Web Worker，可离线 |
 | Python 执行（Pyodide） | ✅ 已实现 | Worker 内运行；`trace()` 支持真实变量快照与源码行号 |
 | 统一 Trace Event Schema v1 | ✅ 已实现 | Zod 运行时校验：`schemaVersion/step/eventType/visualType/state/message/sourceLocation/variables/callStack` + 事件/帧/变量限额 |
+| Python 递归调用栈 | ✅ 已实现 | `@tracked` 装饰器捕获真实调用/返回事件、唯一 frameId、逐层局部变量与返回值 |
+| 调用栈面板 | ✅ 已实现 | 栈式展示调用帧、高亮活跃帧、点击帧切换变量作用域、时间轴回退恢复历史栈 |
 | 同步观察面板 | ✅ 已实现 | 代码位置高亮 + 变量观察器 + 步骤讲解，四区随 `currentEvent` 联动 |
 | Python 冒泡排序端到端演示 | ✅ 已实现 | 真实 `i/j/arr/n` 变量、源码行号、比较/交换高亮 |
 | Monaco 代码编辑器 | ✅ 已实现 | Python/JS 语法高亮、行号、缩进、折叠、撤销/重做、自适应尺寸 |
@@ -34,7 +36,7 @@
 | C / C++ | 🚫 已取消 | 语言入口、占位模板与 `/api/execute` 执行后端均已移除 |
 | 在线 Judge / 自动判题 | 🚫 已取消 | 相关入口与宣传已清理 |
 | 中英文界面 / 移动端适配 | ⚠️ 部分 | 覆盖全部现有文案；未做触控尺寸与可访问性审计 |
-| 自动化测试 | ✅ 已实现 | 133 项单测 / 帧回归 / jsdom 冒烟 + 4 条真实浏览器 E2E（Playwright + Edge） |
+| 自动化测试 | ✅ 已实现 | 170 项单测 / 帧回归 / jsdom 冒烟 + 7 条真实浏览器 E2E（Playwright + Edge） |
 | 练习页编辑器 | ⏳ 后续 | 练习页仍为 textarea；Monaco 仅用于实验室主编辑器 |
 | GitHub Pages 部署 | ✅ 已实现 | workflow 构建 `dist/` 后发布 |
 | 开源贡献规范 | ✅ 基础版 | [CONTRIBUTING.md](CONTRIBUTING.md)、[行为准则](CODE_OF_CONDUCT.md) |
@@ -45,7 +47,7 @@
 npm ci
 npm run dev            # 开发服务器
 npm run typecheck      # TypeScript 严格检查
-npm test               # Vitest（133 项）
+npm test               # Vitest（170 项）
 npm run build          # tsc -b && vite build → dist/
 npm run preview        # 预览构建产物
 npm run test:e2e       # Playwright E2E（默认驱动本机 Microsoft Edge）
@@ -106,8 +108,8 @@ scripts/       从 legacy 定义生成类型化数据
 
 Stage 1（已完成）：统一 Trace 协议 + 旧动画兼容 + Python 冒泡排序同步演示。
 Stage 2（已完成）：Monaco 编辑器 + 执行行高亮联动 + Python 错误诊断 + 本地代码保存 + 真实浏览器 E2E。
-Stage 3（规划）：高级数据结构可视化 + 递归调用栈 + 分层变量观察 + Python 调用过程同步。
-后续：AI 渐进式教学、题库扩充、练习页 Monaco 迁移、axe 可访问性。
+Stage 3（已完成）：Python 递归调用栈 + 局部变量同步可视化（`@tracked` + 调用栈面板 + 作用域变量 + 阶乘/斐波那契演示）；收尾修复时间轴在切换 Trace 后不归零的缺陷。
+后续：AI 渐进式教学、题库扩充、练习页 Monaco 迁移、二叉树/图遍历高级可视化、axe 可访问性。
 
 ### License
 
@@ -119,15 +121,15 @@ MIT（见 [LICENSE](LICENSE)）。题目与算法说明均为原创示例，不�
 
 AlgoLens is a browser-first algorithm visualization learning platform where **Python runs in the browser** and every animation frame is driven by real execution results, synchronised with the source line, variable values and a step explanation. It runs entirely locally — no server required.
 
-**Stage 2** adds a full Monaco Editor (Python/JS highlighting, line numbers, execution-line highlighting driven by the Trace's `sourceLocation.line`), structured Python error diagnostics rendered as Monaco markers, and debounced local code autosave with per-algorithm×language isolation — all verified with real-browser Playwright tests.
+**Stage 3** adds real Python recursion call-stack tracing: a `@tracked` decorator captures call/return events, unique frame ids, per-depth locals and return values, rendered in a new call-stack panel with scope-aware variables — demonstrated end-to-end by `factorial(4) = 24` and `fib(4) = 3`, all verified with real-browser Playwright tests.
 
 ```sh
 npm ci
 npm run dev
 npm run typecheck
-npm test          # 133 tests
+npm test          # 170 tests
 npm run build
 npm run test:e2e  # Playwright (local Microsoft Edge)
 ```
 
-See [docs/STAGE2_REPORT.md](docs/STAGE2_REPORT.md) for the detailed report and [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for module boundaries. Never put provider API keys in the browser. MIT licensed; all exercises are original, not official past exam questions.
+See [docs/STAGE3_REPORT.md](docs/STAGE3_REPORT.md) for the detailed report and [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for module boundaries. Never put provider API keys in the browser. MIT licensed; all exercises are original, not official past exam questions.

@@ -25,20 +25,118 @@ export const PYTHON_SNAPSHOT_HELPER = [
 ].join('\n');
 
 /**
+ * Recursion / call-stack tracing helpers. `@tracked` instruments a Python
+ * function so its entry, return value and the current stack are captured as
+ * real trace events; `stack_state()` is a convenience for emitting a stack of
+ * function names as the visual `state`. Frames are kept as JSON snapshots (via
+ * `_snapshot`) so a later mutation can never pollute an earlier event.
+ *
+ * Frame identity: `_FRAME_SEQ` hands out monotonically increasing `fN` ids, so
+ * the same function called at different recursion depths is always a distinct
+ * frame. `sys._getframe` is only read transiently inside `trace()` — the frame
+ * object is never stored, avoiding reference cycles / leaks.
+ */
+export const PYTHON_RECURSION_HELPER = [
+  '_CALL_STACK = []',
+  '_FRAME_SEQ = [0]',
+  "_EXCLUDED_LOCAL_TYPES = ('module', 'function', 'type', 'method', 'builtin_function_or_method', 'classmethod', 'staticmethod')",
+  'def _snapshot_variables(variables, scope=None):',
+  '    items = []',
+  '    for k, v in (variables or {}).items():',
+  '        name = str(k)',
+  "        if name.startswith('_'):",
+  '            continue',
+  "        item = {'name': name, 'type': type(v).__name__, 'value': _snapshot(v)}",
+  '        if scope:',
+  "            item['scope'] = str(scope)",
+  '        items.append(item)',
+  '    return items',
+  'def _filter_locals(locals_dict):',
+  '    out = {}',
+  '    for k, v in (locals_dict or {}).items():',
+  '        name = str(k)',
+  "        if name.startswith('_'):",
+  '            continue',
+  '        if type(v).__name__ in _EXCLUDED_LOCAL_TYPES:',
+  '            continue',
+  '        try:',
+  '            json.dumps(_snapshot(v))',
+  '        except Exception:',
+  '            continue',
+  '        out[name] = v',
+  '    return out',
+  'def _call_stack_snapshot():',
+  '    return [_snapshot(f) for f in _CALL_STACK]',
+  'def _stack_names():',
+  "    return [_snapshot(f['name']) for f in _CALL_STACK]",
+  'def stack_state():',
+  "    return {'type': 'stack', 'values': _stack_names()}",
+  'def _fmt_args(arg_dict):',
+  "    return ', '.join(str(k) + '=' + repr(_snapshot(v)) for k, v in arg_dict.items())",
+  'def _post_frame(frame):',
+  "    postFrame(json.dumps(frame, ensure_ascii=False))",
+  'def _emit_call(fn_name, frame, arg_dict, call_line):',
+  "    _post_frame({'state': stack_state(), 'message': '调用 / call ' + fn_name + '(' + _fmt_args(arg_dict) + ')', 'line': call_line, 'variables': frame['arguments'], 'callStack': _call_stack_snapshot()})",
+  'def _emit_return(fn_name, frame, retval, ret_line):',
+  "    frame['status'] = 'returning'",
+  "    frame['returnValue'] = _snapshot(retval)",
+  "    _post_frame({'state': stack_state(), 'message': '返回 / return ' + fn_name + ' = ' + repr(_snapshot(retval)), 'line': ret_line, 'variables': _snapshot_variables({'return': retval}), 'callStack': _call_stack_snapshot()})",
+  'def tracked(fn):',
+  '    def wrapper(*args, **kwargs):',
+  '        _FRAME_SEQ[0] += 1',
+  "        fid = 'f' + str(_FRAME_SEQ[0])",
+  '        arg_names = fn.__code__.co_varnames[:len(args)]',
+  '        arg_dict = dict(zip(arg_names, args))',
+  '        arg_dict.update(kwargs)',
+  "        frame = {'frameId': fid, 'name': fn.__name__, 'depth': len(_CALL_STACK), 'arguments': _snapshot_variables(arg_dict), 'locals': _snapshot_variables(arg_dict), 'status': 'running'}",
+  '        _CALL_STACK.append(frame)',
+  '        _emit_call(fn.__name__, frame, arg_dict, fn.__code__.co_firstlineno)',
+  '        try:',
+  '            result = fn(*args, **kwargs)',
+  '        except BaseException:',
+  '            _CALL_STACK.pop()',
+  '            raise',
+  "        ret_line = frame.get('line', fn.__code__.co_firstlineno)",
+  '        _emit_return(fn.__name__, frame, result, ret_line)',
+  '        _CALL_STACK.pop()',
+  '        return result',
+  "    wrapper.__name__ = fn.__name__",
+  '    return wrapper',
+].join('\n');
+
+/**
  * Backwards-compatible trace(): `trace(state, message)` still works; new calls
  * may pass `line` and a `variables` dict whose values are snapshotted at call
  * time. Line numbers are recorded explicitly — nothing is guessed.
+ *
+ * When called inside a `@tracked` function it also (a) auto-captures the
+ * caller's local variables from the real runtime frame, (b) updates that call
+ * frame's `locals`, and (c) attaches a full `callStack` snapshot to the event.
+ * Outside any tracked frame it falls back to the legacy explicit-variables path.
  */
 export const PYTHON_TRACE_HELPER = [
-  PYTHON_SNAPSHOT_HELPER,
-  'def _snapshot_variables(variables):',
-  "    return [{'name': str(k), 'type': type(v).__name__, 'value': _snapshot(v)} for k, v in (variables or {}).items()]",
   "def trace(state, message='', line=None, variables=None):",
   "    frame = {'state': _snapshot(state), 'message': str(message)}",
   '    if line is not None:',
   "        frame['line'] = int(line)",
-  '    if variables:',
-  "        frame['variables'] = _snapshot_variables(variables)",
+  '    explicit = variables or {}',
+  '    if _CALL_STACK:',
+  '        try:',
+  '            caller = sys._getframe(1)',
+  '            auto = _filter_locals(caller.f_locals)',
+  '        except Exception:',
+  '            auto = {}',
+  '        merged = dict(auto)',
+  '        for k, v in explicit.items():',
+  '            merged[str(k)] = v',
+  '        vars_out = _snapshot_variables(merged)',
+  "        _CALL_STACK[-1]['locals'] = vars_out",
+  '        if line is not None:',
+  "            _CALL_STACK[-1]['line'] = int(line)",
+  "        frame['variables'] = vars_out",
+  "        frame['callStack'] = _call_stack_snapshot()",
+  '    elif explicit:',
+  "        frame['variables'] = _snapshot_variables(explicit)",
   "    postFrame(json.dumps(frame, ensure_ascii=False))",
 ].join('\n');
 
@@ -52,6 +150,8 @@ export const PYTHON_VISUAL_BOOTSTRAP = [
   'import json, sys, traceback',
   'from js import postFrame, postDiagnostic',
   'input = json.loads(input_json)',
+  PYTHON_SNAPSHOT_HELPER,
+  PYTHON_RECURSION_HELPER,
   PYTHON_TRACE_HELPER,
   "USER_FILENAME = '<algo>'",
   'def _post_diagnostic(category, error_type, message, line=None, column=None, tb_text=""):',
@@ -64,7 +164,7 @@ export const PYTHON_VISUAL_BOOTSTRAP = [
   "        payload['traceback'] = str(tb_text)",
   "    postDiagnostic(json.dumps(payload, ensure_ascii=False))",
   'try:',
-  "    exec(compile(user_code, USER_FILENAME, 'exec'), {'input': input, 'trace': trace})",
+  "    exec(compile(user_code, USER_FILENAME, 'exec'), {'input': input, 'trace': trace, 'tracked': tracked, 'stack_state': stack_state})",
   'except SyntaxError as err:',
   "    _post_diagnostic('syntax', type(err).__name__, err.msg or str(err), getattr(err, 'lineno', None), getattr(err, 'offset', None), traceback.format_exc())",
   'except BaseException as err:',

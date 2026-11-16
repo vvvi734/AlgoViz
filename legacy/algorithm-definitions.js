@@ -83,10 +83,20 @@ trace({type:'tree',values:nodes,visited:[]},'开始 / Start');
 function walk(i){if(i>=nodes.length||nodes[i]==null)return;walk(i*2+1);
 seen.push(i);trace({type:'tree',values:nodes,visited:[...seen],focus:[i]},'访问 / Visit '+nodes[i]);
 walk(i*2+2);}
-walk(0);trace({type:'tree',values:nodes,visited:[...seen],done:true},'完成 / Done');`}
+ walk(0);trace({type:'tree',values:nodes,visited:[...seen],done:true},'完成 / Done');`},
+ factorial:{group:'recursion',icon:'↺',name:['阶乘','Factorial'],desc:['递归计算 n!，观察函数调用栈的压入与逐层返回。','Compute n! recursively, watching the call stack push and layered returns.'],time:'O(n)',space:'O(n)',input:4,code:`const n=input;
+trace({type:'array',values:[n]},'计算 factorial / Compute');
+function factorial(x){return x<=1?1:x*factorial(x-1);}
+const result=factorial(n);
+trace({type:'array',values:[result],done:true},'结果 / Result: '+result);`},
+ fib:{group:'recursion',icon:'↺',name:['斐波那契','Fibonacci'],desc:['递归计算斐波那契数列，观察同一函数多分支调用与唯一帧标识。','Recursively compute Fibonacci, watching multi-branch calls with unique frame ids.'],time:'O(2ⁿ)',space:'O(n)',input:4,code:`const n=input;
+trace({type:'array',values:[n]},'计算 fib / Compute');
+function fib(x){return x<=1?x:fib(x-1)+fib(x-2);}
+const result=fib(n);
+trace({type:'array',values:[result],done:true},'结果 / Result: '+result);`}
 };
 
-export const groups=[['sort','排序 / Sorting'],['search','查找 / Searching'],['ds','线性结构 / Linear DS'],['graph','图算法 / Graph'],['tree','树 / Trees']];
+export const groups=[['sort','排序 / Sorting'],['search','查找 / Searching'],['ds','线性结构 / Linear DS'],['graph','图算法 / Graph'],['tree','树 / Trees'],['recursion','递归 / Recursion']];
 
 export const problems=[
  {id:'twoSum',cat:'university',diff:'easy',name:['两数之和','Two Sum'],desc:['给定整数数组 nums 和 target，返回两数之和等于 target 的一对下标；保证存在一解。','Given nums and target, return indices of a pair summing to target; exactly one answer exists.'],starter:`function solve({nums, target}) {\n  // TODO: 寻找两个下标 / Find two indices\n  return [];\n}`,tests:[[{nums:[2,7,11,15],target:9},[0,1]],[{nums:[3,2,4],target:6},[1,2]],[{nums:[3,3],target:6},[0,1]]],hints:[['先想想：每看到一个数，你需要的“另一半”是什么？','For each number, what complement are you looking for?'],['能否边遍历边记住已经见过的值与下标？','Could you remember past values and indices as you scan?'],['考虑用 Map 存储数值 → 下标，查询 target - nums[i]。','Use a Map from number to index; check target - nums[i].']]},
@@ -124,6 +134,32 @@ while left <= right:
         break
     if nums[mid] < target: left = mid+1
     else: right = mid-1
-trace({'type':'array','values':nums[:]}, 'Search ended')`
+trace({'type':'array','values':nums[:]}, 'Search ended')`,
+  // Stage 3 recursion demos: the @tracked decorator captures real call/return
+  // events + per-depth locals; trace() auto-captures the caller's locals and
+  // attaches the call-stack snapshot. Lines point at the meaningful statement.
+  factorial:`@tracked
+def factorial(n):
+    if n <= 1:
+        trace(stack_state(), '递归终止 / Base case', line=5)
+        return 1
+    result = n * factorial(n - 1)
+    trace(stack_state(), '本层计算 / Compute', line=8)
+    return result
+
+answer = factorial(input)
+trace({'type':'stack','values':[],'done':True}, '完成 / Done', line=11, variables={'answer': answer})`,
+  fib:`@tracked
+def fib(n):
+    if n <= 1:
+        trace(stack_state(), '递归终止 / Base case', line=5)
+        return n
+    left = fib(n - 1)
+    right = fib(n - 2)
+    trace(stack_state(), '本层计算 / Combine', line=9)
+    return left + right
+
+answer = fib(input)
+trace({'type':'stack','values':[],'done':True}, '完成 / Done', line=12, variables={'answer': answer})`
  }
 };

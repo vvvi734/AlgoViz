@@ -71,10 +71,47 @@ export const sourceLocationSchema = z.object({
 });
 export type SourceLocation = z.infer<typeof sourceLocationSchema>;
 
-/** A call-stack frame (specified now, animated later). */
+/**
+ * Lifecycle status of a call frame. A frame is `running` from entry until its
+ * function is about to return; the runner flips it to `returning` for the
+ * return event (so the panel can show the real return value) and then removes
+ * it from the stack. `returned` is reserved for future async/awaited frames.
+ */
+export const CALL_FRAME_STATUS = ['running', 'returning', 'returned'] as const;
+export type CallFrameStatus = (typeof CALL_FRAME_STATUS)[number];
+
+/**
+ * A call-stack frame. Stage 1 only carried `name` / `line`; Stage 3 extends it
+ * backwards-compatibly with the fields a real recursion trace needs. Every new
+ * field is optional, so legacy `{name, line}` frames and events without a
+ * callStack keep validating unchanged.
+ *
+ * Invariants the runner must uphold (enforced at capture, not by Zod alone):
+ *  - distinct frames get distinct `frameId`s, even for the same function name
+ *  - `locals`/`arguments` are deep JSON snapshots (never live object refs)
+ *  - `returnValue` is set only for `returning`/`returned` frames
+ */
 export const callFrameSchema = z.object({
+  /** Function name. Required for every frame (kept for Stage-1 compatibility). */
   name: z.string().min(1).max(LIMITS.MAX_NAME_CHARS),
+  /** Stable unique id for THIS invocation (same function recursing → new id). */
+  frameId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).optional(),
+  /** 1-based source line the frame currently executes (legacy field). */
   line: z.number().int().positive().optional(),
+  /** Recursion depth (0 = outermost call). */
+  depth: z.number().int().nonnegative().optional(),
+  /** Call-argument snapshot. */
+  arguments: z.array(variableSnapshotSchema).max(LIMITS.MAX_VARIABLES).optional(),
+  /** This frame's local-variable snapshot (independent per depth). */
+  locals: z.array(variableSnapshotSchema).max(LIMITS.MAX_VARIABLES).optional(),
+  /** Real return value once the frame starts returning. */
+  returnValue: jsonValueSchema
+    .refine(
+      (value) => JSON.stringify(value).length <= LIMITS.MAX_VARIABLE_VALUE_JSON_BYTES,
+      'return value too large',
+    )
+    .optional(),
+  status: z.enum(CALL_FRAME_STATUS).optional(),
 });
 export type CallFrame = z.infer<typeof callFrameSchema>;
 

@@ -9,7 +9,7 @@
 export type CodeLanguage = 'js' | 'python';
 
 /** Groups currently shipped by the catalog. `custom` is created by AI import. */
-export type AlgorithmGroup = 'sort' | 'search' | 'ds' | 'graph' | 'tree' | 'custom';
+export type AlgorithmGroup = 'sort' | 'search' | 'ds' | 'graph' | 'tree' | 'recursion' | 'custom';
 
 export interface AlgorithmEntry {
   group: string;

@@ -91,4 +91,52 @@ describe('Trace Event Schema v1', () => {
     expect(parseTraceDocument(doc([event({ callStack: [{ name: 'dfs', line: 0 }] })])).ok).toBe(false);
     expect(parseTraceDocument(doc([event({ callStack: [{ name: 'dfs', line: 1 }] })])).ok).toBe(true);
   });
+
+  it('accepts a full recursion call stack with distinct frames and same-named locals', () => {
+    const result = parseTraceDocument(doc([event({
+      callStack: [
+        {
+          name: 'factorial', frameId: 'f1', depth: 0, line: 2, status: 'running',
+          arguments: [{ name: 'n', type: 'int', value: 4 }],
+          locals: [{ name: 'n', type: 'int', value: 4 }],
+        },
+        {
+          name: 'factorial', frameId: 'f2', depth: 1, line: 6, status: 'returning', returnValue: 2,
+          arguments: [{ name: 'n', type: 'int', value: 2 }],
+          locals: [{ name: 'n', type: 'int', value: 2 }],
+        },
+      ],
+    })]));
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    const stack = result.document.events[0].callStack!;
+    expect(stack).toHaveLength(2);
+    // Same function name, but two distinct invocations.
+    expect(stack[0].frameId).toBe('f1');
+    expect(stack[1].frameId).toBe('f2');
+    // Same-named local `n` must live on each frame independently.
+    expect(stack[0].locals![0]).toEqual({ name: 'n', type: 'int', value: 4 });
+    expect(stack[1].locals![0]).toEqual({ name: 'n', type: 'int', value: 2 });
+    expect(stack[1].status).toBe('returning');
+    expect(stack[1].returnValue).toBe(2);
+  });
+
+  it('rejects malformed recursion frames (bad depth, empty id, bad status, oversized locals)', () => {
+    expect(parseTraceDocument(doc([event({ callStack: [{ name: 'f', depth: -1 }] })])).ok).toBe(false);
+    expect(parseTraceDocument(doc([event({ callStack: [{ name: 'f', frameId: '' }] })])).ok).toBe(false);
+    expect(parseTraceDocument(doc([event({ callStack: [{ name: 'f', status: 'paused' as never }] })])).ok).toBe(false);
+    const bigLocals = event({
+      callStack: [{ name: 'f', locals: [{ name: 'x', type: 'str', value: 'x'.repeat(3000) }] }],
+    });
+    expect(parseTraceDocument(doc([bigLocals])).ok).toBe(false);
+  });
+
+  it('enforces the maximum call-stack depth', () => {
+    const deep = Array.from({ length: LIMITS.MAX_CALL_STACK + 1 }, (_, i) => ({
+      name: 'f', frameId: `f${i}`, depth: i,
+    }));
+    expect(parseTraceDocument(doc([event({ callStack: deep })])).ok).toBe(false);
+    const ok = deep.slice(0, LIMITS.MAX_CALL_STACK);
+    expect(parseTraceDocument(doc([event({ callStack: ok })])).ok).toBe(true);
+  });
 });

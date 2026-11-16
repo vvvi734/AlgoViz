@@ -31,10 +31,10 @@ function renderApp() {
 }
 
 describe('App UI regression (Phase 1)', () => {
-  it('renders all 12 presets and loads a timeline on startup', async () => {
+  it('renders all 14 presets and loads a timeline on startup', async () => {
     renderApp();
     await waitFor(() => expect(screen.getByTestId('progress').textContent).toBe('1 / 3'));
-    expect(screen.getAllByTestId(/^algo-/)).toHaveLength(12);
+    expect(screen.getAllByTestId(/^algo-/)).toHaveLength(14);
     expect(screen.getByTestId('progress').textContent).toBe('1 / 3');
     expect((screen.getByTestId('code-editor') as HTMLTextAreaElement).value).toContain('const arr');
     expect(document.querySelectorAll('.bar')).toHaveLength(3);

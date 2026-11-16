@@ -9,15 +9,17 @@
  *  - no `callStack` (none of the current runners emit one)
  *  - `eventType` is only ever `step` or `done`; it is never guessed from text
  */
-import type { RawTraceFrame, TraceState } from './types';
+import type { RawCallFrame, RawTraceFrame, RawVariableSnapshot, TraceState } from './types';
 import {
   LIMITS,
   TRACE_SCHEMA_VERSION,
   VISUAL_TYPES,
+  type CallFrame,
   type EventType,
   type JsonValue,
   type TraceDocument,
   type TraceEvent,
+  type VariableSnapshot,
   type VisualType,
 } from './schema';
 
@@ -32,6 +34,35 @@ export function inferVisualType(state: TraceState | undefined): VisualType {
 /** The only event kinds the adapter will emit. */
 export function inferEventType(state: TraceState | undefined): EventType {
   return state?.done ? 'done' : 'step';
+}
+
+/** Normalise a loose variable list (used for both `variables` and frame locals). */
+function mapVariables(variables: RawVariableSnapshot[] | undefined): VariableSnapshot[] | undefined {
+  if (!Array.isArray(variables) || variables.length === 0) return undefined;
+  const mapped = variables.slice(0, LIMITS.MAX_VARIABLES).map((variable) => ({
+    name: String(variable.name ?? ''),
+    type: String(variable.type ?? ''),
+    value: variable.value as JsonValue,
+    ...(typeof variable.scope === 'string' && variable.scope ? { scope: variable.scope } : {}),
+  }));
+  return mapped.length ? mapped : undefined;
+}
+
+/** Normalise one loose call frame; drop fields the schema won't accept. */
+function toCallFrame(frame: RawCallFrame): CallFrame {
+  const out: CallFrame = { name: String(frame.name ?? '') };
+  if (typeof frame.frameId === 'string' && frame.frameId) out.frameId = frame.frameId;
+  if (typeof frame.line === 'number' && Number.isInteger(frame.line) && frame.line > 0) out.line = frame.line;
+  if (typeof frame.depth === 'number' && Number.isInteger(frame.depth) && frame.depth >= 0) out.depth = frame.depth;
+  const args = mapVariables(frame.arguments);
+  if (args) out.arguments = args;
+  const locals = mapVariables(frame.locals);
+  if (locals) out.locals = locals;
+  if (frame.returnValue !== undefined) out.returnValue = frame.returnValue as JsonValue;
+  if (frame.status === 'running' || frame.status === 'returning' || frame.status === 'returned') {
+    out.status = frame.status;
+  }
+  return out;
 }
 
 function toEvent(frame: RawTraceFrame, index: number): TraceEvent {
@@ -52,13 +83,10 @@ function toEvent(frame: RawTraceFrame, index: number): TraceEvent {
       ...(typeof frame.column === 'number' && frame.column > 0 ? { column: frame.column } : {}),
     };
   }
-  if (Array.isArray(frame.variables) && frame.variables.length) {
-    event.variables = frame.variables.slice(0, LIMITS.MAX_VARIABLES).map((variable) => ({
-      name: String(variable.name ?? ''),
-      type: String(variable.type ?? ''),
-      value: variable.value as JsonValue,
-      ...(typeof variable.scope === 'string' && variable.scope ? { scope: variable.scope } : {}),
-    }));
+  const variables = mapVariables(frame.variables);
+  if (variables) event.variables = variables;
+  if (Array.isArray(frame.callStack) && frame.callStack.length) {
+    event.callStack = frame.callStack.slice(0, LIMITS.MAX_CALL_STACK).map(toCallFrame);
   }
   return event;
 }

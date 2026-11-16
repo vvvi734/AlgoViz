@@ -1,30 +1,65 @@
-import type { TraceEvent } from '../../domain/trace/schema';
+import type { CallFrame, TraceEvent } from '../../domain/trace/schema';
 import { useI18n } from '../../i18n/I18nProvider';
 
 /**
- * Stage-1 synchronous observation panel. All three regions are driven by the
- * SAME `event` (and its `source` snapshot) so they can never drift apart when
- * the timeline plays, pauses, rewinds or scrubs.
+ * Stage-1 synchronous observation panel, upgraded in Stage 3 to be scope-aware.
+ * All regions are driven by the SAME `event` (and its `source` snapshot) so
+ * they can never drift apart when the timeline plays, pauses, rewinds or scrubs.
  *
- *  A) Code position — a lightweight read-only view (no Monaco yet) that
- *     highlights the line recorded in `event.sourceLocation`.
- *  B) Data structure — rendered by the existing VisualStage (not here).
- *  C) Variables watch — the real runtime variables captured at this step.
- *  D) Step explanation — the trace message for this step.
+ *  A) Code position — highlights the line recorded in `event.sourceLocation`.
+ *  B) Variables watch — for recursion traces this shows the selected call
+ *     frame's locals (or the active frame when none is selected); for legacy
+ *     traces it falls back to the flat `event.variables`.
+ *  C) Step explanation — the trace message for this step.
  */
+
+interface ResolvedVariables {
+  rows: TraceEvent['variables'];
+  scopeLabel: string | null;
+  frameId: string | null;
+}
+
+/** Pure resolution of which variable scope to display for the current event. */
+export function resolveScope(
+  event: TraceEvent | undefined,
+  selectedFrameId: string | null,
+): ResolvedVariables {
+  const stack = event?.callStack;
+  if (!stack || stack.length === 0) {
+    // Legacy (Stage-1) path: no call stack, show the flat variables unchanged.
+    return { rows: event?.variables ?? [], scopeLabel: null, frameId: null };
+  }
+  const active = stack[stack.length - 1];
+  const selected = selectedFrameId != null
+    ? stack.find((frame) => frame.frameId === selectedFrameId)
+    : undefined;
+  const frame: CallFrame | undefined = selected ?? active;
+  const rows = frame?.locals ?? event?.variables ?? [];
+  return {
+    rows,
+    scopeLabel: frame
+      ? `${frame.name}${frame.depth != null ? ` · 深度 ${frame.depth}` : ''}`
+      : 'global',
+    frameId: frame?.frameId ?? null,
+  };
+}
+
 export function SyncPanel({
   event,
   source,
   stale,
+  selectedFrameId,
 }: {
   event: TraceEvent | undefined;
   source: string;
   stale: boolean;
+  selectedFrameId: string | null;
 }) {
   const { t } = useI18n();
 
   const lines = source ? source.split('\n') : [];
   const activeLine = event?.sourceLocation?.line ?? null;
+  const { rows, scopeLabel, frameId } = resolveScope(event, selectedFrameId);
 
   return (
     <section className="panel pad" data-testid="sync-panel">
@@ -57,7 +92,12 @@ export function SyncPanel({
 
         <div className="sync-col">
           <h3 className="smalltext muted">{t('variablesWatch')}</h3>
-          {!event?.variables?.length ? (
+          {scopeLabel && (
+            <div className="scope-label" data-testid="variables-scope">
+              {t('scope')}: {scopeLabel}
+            </div>
+          )}
+          {!rows?.length ? (
             <div className="empty smalltext" data-testid="variables-empty">{t('noVariables')}</div>
           ) : (
             <table className="vartable" data-testid="variables-watch">
@@ -69,8 +109,8 @@ export function SyncPanel({
                 </tr>
               </thead>
               <tbody>
-                {event.variables.map((variable) => (
-                  <tr key={variable.name}>
+                {rows.map((variable, index) => (
+                  <tr key={`${frameId ?? 'global'}-${variable.name}-${index}`}>
                     <td className="varname">{variable.name}</td>
                     <td className="vartype">{variable.type}</td>
                     <td className="varvalue">{formatValue(variable.value)}</td>

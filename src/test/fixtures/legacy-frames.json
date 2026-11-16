@@ -2605,5 +2605,47 @@
       },
       "message": "完成 / Done"
     }
+  ],
+  "factorial": [
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          4
+        ]
+      },
+      "message": "计算 factorial / Compute"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          24
+        ],
+        "done": true
+      },
+      "message": "结果 / Result: 24"
+    }
+  ],
+  "fib": [
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          4
+        ]
+      },
+      "message": "计算 fib / Compute"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          3
+        ],
+        "done": true
+      },
+      "message": "结果 / Result: 3"
+    }
   ]
 }

@@ -29,11 +29,29 @@ export interface RawVariableSnapshot {
   scope?: string;
 }
 
+/**
+ * Loose call-frame shape emitted by the Python recursion tracer (before the
+ * adapter normalises it into the validated `CallFrame`). Mirrors the schema
+ * fields but keeps `unknown` values until the adapter validates them.
+ */
+export interface RawCallFrame {
+  name?: string;
+  frameId?: string;
+  line?: number;
+  depth?: number;
+  arguments?: RawVariableSnapshot[];
+  locals?: RawVariableSnapshot[];
+  returnValue?: unknown;
+  status?: string;
+}
+
 /** Frame produced by the Python runner: legacy fields + optional source metadata. */
 export interface RawTraceFrame extends TraceFrame {
   line?: number;
   column?: number;
   variables?: RawVariableSnapshot[];
+  /** Full call-stack snapshot at this step (recursion demos). */
+  callStack?: RawCallFrame[];
 }
 
 export const MAX_FRAMES = 500;

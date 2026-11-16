@@ -316,7 +316,39 @@ export const ALGORITHM_CATALOG: AlgorithmCatalog = {
       5,
       7
     ],
-    "code": "const nodes=input;const seen=[];\ntrace({type:'tree',values:nodes,visited:[]},'开始 / Start');\nfunction walk(i){if(i>=nodes.length||nodes[i]==null)return;walk(i*2+1);\nseen.push(i);trace({type:'tree',values:nodes,visited:[...seen],focus:[i]},'访问 / Visit '+nodes[i]);\nwalk(i*2+2);}\nwalk(0);trace({type:'tree',values:nodes,visited:[...seen],done:true},'完成 / Done');"
+    "code": "const nodes=input;const seen=[];\ntrace({type:'tree',values:nodes,visited:[]},'开始 / Start');\nfunction walk(i){if(i>=nodes.length||nodes[i]==null)return;walk(i*2+1);\nseen.push(i);trace({type:'tree',values:nodes,visited:[...seen],focus:[i]},'访问 / Visit '+nodes[i]);\nwalk(i*2+2);}\n walk(0);trace({type:'tree',values:nodes,visited:[...seen],done:true},'完成 / Done');"
+  },
+  "factorial": {
+    "group": "recursion",
+    "icon": "↺",
+    "name": [
+      "阶乘",
+      "Factorial"
+    ],
+    "desc": [
+      "递归计算 n!，观察函数调用栈的压入与逐层返回。",
+      "Compute n! recursively, watching the call stack push and layered returns."
+    ],
+    "time": "O(n)",
+    "space": "O(n)",
+    "input": 4,
+    "code": "const n=input;\ntrace({type:'array',values:[n]},'计算 factorial / Compute');\nfunction factorial(x){return x<=1?1:x*factorial(x-1);}\nconst result=factorial(n);\ntrace({type:'array',values:[result],done:true},'结果 / Result: '+result);"
+  },
+  "fib": {
+    "group": "recursion",
+    "icon": "↺",
+    "name": [
+      "斐波那契",
+      "Fibonacci"
+    ],
+    "desc": [
+      "递归计算斐波那契数列，观察同一函数多分支调用与唯一帧标识。",
+      "Recursively compute Fibonacci, watching multi-branch calls with unique frame ids."
+    ],
+    "time": "O(2ⁿ)",
+    "space": "O(n)",
+    "input": 4,
+    "code": "const n=input;\ntrace({type:'array',values:[n]},'计算 fib / Compute');\nfunction fib(x){return x<=1?x:fib(x-1)+fib(x-2);}\nconst result=fib(n);\ntrace({type:'array',values:[result],done:true},'结果 / Result: '+result);"
   }
 };
 
@@ -340,5 +372,9 @@ export const ALGORITHM_GROUPS: Array<[AlgorithmGroup, string]> = [
   [
     "tree",
     "树 / Trees"
+  ],
+  [
+    "recursion",
+    "递归 / Recursion"
   ]
 ];

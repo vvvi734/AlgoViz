@@ -66,6 +66,43 @@ describe('legacy frame → Trace Event adapter', () => {
     expect(inferEventType({ type: 'array' })).toBe('step');
   });
 
+  it('maps a raw call stack into validated call frames', () => {
+    const frames: RawTraceFrame[] = [
+      {
+        state: { type: 'stack', values: ['factorial', 'factorial'] },
+        message: 'return',
+        line: 6,
+        callStack: [
+          {
+            name: 'factorial', frameId: 'f1', depth: 0, status: 'running',
+            arguments: [{ name: 'n', type: 'int', value: 4 }],
+            locals: [{ name: 'n', type: 'int', value: 4 }],
+          },
+          {
+            name: 'factorial', frameId: 'f2', depth: 1, status: 'returning', returnValue: 2,
+            locals: [{ name: 'n', type: 'int', value: 2 }],
+          },
+        ],
+      },
+    ];
+    const parsed = parseTraceDocument(framesToTraceDocument(frames));
+    expect(parsed.ok).toBe(true);
+    if (!parsed.ok) return;
+    const stack = parsed.document.events[0].callStack!;
+    expect(stack[0].frameId).toBe('f1');
+    expect(stack[0].arguments![0]).toEqual({ name: 'n', type: 'int', value: 4 });
+    expect(stack[1].status).toBe('returning');
+    expect(stack[1].returnValue).toBe(2);
+  });
+
+  it('omits callStack entirely when a frame carries none (legacy algorithms)', () => {
+    const frames: RawTraceFrame[] = [{ state: { type: 'array', values: [1] }, message: 'x' }];
+    const parsed = parseTraceDocument(framesToTraceDocument(frames));
+    expect(parsed.ok).toBe(true);
+    if (!parsed.ok) return;
+    expect(parsed.document.events[0].callStack).toBeUndefined();
+  });
+
   it('caps messages to the schema limit', () => {
     const frames: RawTraceFrame[] = [{ state: { type: 'array', values: [] }, message: 'x'.repeat(500) }];
     const parsed = parseTraceDocument(framesToTraceDocument(frames));

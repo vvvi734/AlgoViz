@@ -1,9 +1,11 @@
+import { useEffect, useState } from 'react';
 import { AlgorithmSidebar } from './AlgorithmSidebar';
 import { VisualStage } from './VisualStage';
 import { Timeline } from './Timeline';
 import { CodeEditorPanel } from './CodeEditorPanel';
 import { ConceptPanel } from './ConceptPanel';
 import { SyncPanel } from './SyncPanel';
+import { CallStackPanel } from './CallStackPanel';
 import { AiMentor } from './AiMentor';
 import type { LabController } from './useLabController';
 import { useI18n } from '../../i18n/I18nProvider';
@@ -20,6 +22,25 @@ export function LabView({ lab, apiUrl }: { lab: LabController; apiUrl: string })
     ? currentEvent.sourceLocation.line
     : null;
   const noLocationHint = !lab.traceStale && lab.events.length > 0 && currentEvent != null && !currentEvent.sourceLocation;
+
+  // Frame selection for the call-stack panel. Kept here (not in the panel) so
+  // the variables watch and the call stack agree on a single selection, but it
+  // never drives the timeline — that still uses the single `currentEvent`.
+  const [selectedFrameId, setSelectedFrameId] = useState<string | null>(null);
+  // A new run (fresh `events` array) resets the selection.
+  useEffect(() => setSelectedFrameId(null), [lab.events]);
+  // Scrubbing to a step whose stack no longer contains the selected frame falls
+  // back to the active frame.
+  useEffect(() => {
+    if (selectedFrameId == null) return;
+    const stack = currentEvent?.callStack;
+    if (!stack || !stack.some((frame) => frame.frameId === selectedFrameId)) {
+      setSelectedFrameId(null);
+    }
+  }, [currentEvent, selectedFrameId]);
+
+  // Only render the call-stack panel for traces that actually carry one.
+  const hasCallStack = lab.events.some((event) => !!event.callStack?.length);
 
   return (
     <div className="workspace" data-testid="learn-view">
@@ -41,7 +62,19 @@ export function LabView({ lab, apiUrl }: { lab: LabController; apiUrl: string })
           <VisualStage event={currentEvent} />
           <Timeline events={lab.events} playback={lab.playback} />
         </section>
-        <SyncPanel event={currentEvent} source={lab.source} stale={lab.traceStale} />
+        {hasCallStack && (
+          <CallStackPanel
+            event={currentEvent}
+            selectedFrameId={selectedFrameId}
+            onSelectFrame={setSelectedFrameId}
+          />
+        )}
+        <SyncPanel
+          event={currentEvent}
+          source={lab.source}
+          stale={lab.traceStale}
+          selectedFrameId={selectedFrameId}
+        />
         <CodeEditorPanel
           codeLang={lab.codeLang}
           engineText={lab.engineText}

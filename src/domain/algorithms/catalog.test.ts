@@ -13,10 +13,10 @@ function visualFrames(code: string, input: unknown): TraceFrame[] {
   return result.frames;
 }
 
-describe('legacy algorithm catalogue (12 presets)', () => {
-  it('ship exactly the 12 original algorithms', () => {
-    expect(algorithmIds()).toHaveLength(12);
-    expect(Object.keys(expected)).toHaveLength(12);
+describe('legacy algorithm catalogue (14 presets)', () => {
+  it('ship exactly the 12 original algorithms plus 2 recursion demos', () => {
+    expect(algorithmIds()).toHaveLength(14);
+    expect(Object.keys(expected)).toHaveLength(14);
   });
 
   it.each(Object.keys(catalog))('%s reproduces the pre-refactor frame stream byte-for-byte', (id) => {
@@ -68,8 +68,15 @@ describe('legacy algorithm catalogue (12 presets)', () => {
     expect(exampleFor('bubble', 'python')).toContain('trace(');
   });
 
+  it('ships real Python recursion presets for factorial and fib', () => {
+    expect(exampleFor('factorial', 'python')).toContain('@tracked');
+    expect(exampleFor('factorial', 'python')).toContain('def factorial');
+    expect(exampleFor('fib', 'python')).toContain('@tracked');
+    expect(exampleFor('fib', 'python')).toContain('def fib');
+  });
+
   it('labels every sidebar group in both UI languages', () => {
-    for (const group of ['sort', 'search', 'ds', 'graph', 'tree', 'custom']) {
+    for (const group of ['sort', 'search', 'ds', 'graph', 'tree', 'recursion', 'custom']) {
       expect(groupLabel(group, 'zh')).toBeTruthy();
       expect(groupLabel(group, 'en')).toBeTruthy();
     }

@@ -62,3 +62,22 @@ export function advance(state: PlaybackState, frameCount: number): PlaybackState
 export function progressLabel(state: PlaybackState, frameCount: number): string {
   return `${frameCount ? state.index + 1 : 0} / ${frameCount}`;
 }
+
+/**
+ * Force a playback state back inside `[0, maxIndex(frameCount)]`.
+ *
+ * Returns the SAME object when nothing needs fixing, so it is safe to feed
+ * straight into a React state updater (`setState(current => clampPlayback(...))`)
+ * without causing an extra render on every commit.
+ *
+ * An index past the end means the trace it referred to no longer exists, so
+ * playback is stopped as well — resuming would silently rewind to frame 0.
+ */
+export function clampPlayback(state: PlaybackState, frameCount: number): PlaybackState {
+  const max = maxIndex(frameCount);
+  if (state.index >= 0 && state.index <= max) return state;
+  return {
+    index: Math.min(Math.max(0, Math.trunc(state.index) || 0), max),
+    playing: false,
+  };
+}

@@ -24,6 +24,7 @@ export function groupLabel(group: AlgorithmGroup | string, lang: Lang): string {
     ds: ['基础数据结构', 'DATA STRUCTURES'],
     graph: ['图算法', 'GRAPHS'],
     tree: ['树算法', 'TREES'],
+    recursion: ['递归', 'RECURSION'],
     custom: ['自定义', 'CUSTOM'],
   };
   const pair = labels[group];
