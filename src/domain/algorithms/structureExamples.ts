@@ -10,6 +10,8 @@
  * byte-for-byte legacy frame oracle stays untouched. Existing JS demos keep
  * working; Python is the primary teaching language for these two structures.
  */
+import { LINKED_DEFAULT_INPUT, LINKED_PYTHON } from './linkedListExamples';
+
 export const STACK_DEFAULT_INPUT: unknown = [
   ['push', 3],
   ['push', 5],
@@ -117,18 +119,21 @@ emit("done", "演示结束 / Done", 43, "done")
 const STRUCTURE_PYTHON: Record<string, string> = {
   stack: STACK_PYTHON,
   queue: QUEUE_PYTHON,
+  linked: LINKED_PYTHON,
 };
 
 const STRUCTURE_INPUT: Record<string, unknown> = {
   stack: STACK_DEFAULT_INPUT,
   queue: QUEUE_DEFAULT_INPUT,
+  linked: LINKED_DEFAULT_INPUT,
 };
 
 export function structurePythonExample(algorithmId: string): string | undefined {
   return STRUCTURE_PYTHON[algorithmId];
 }
 
-/** Default operations for the two Stage 7B lessons, without touching the legacy catalogue. */
+/** Default operations for the Stage 7B stack/queue and Stage 7C linked-list lessons,
+ * without touching the legacy catalogue. */
 export function structureDefaultInput(algorithmId: string): unknown | undefined {
   return STRUCTURE_INPUT[algorithmId];
 }

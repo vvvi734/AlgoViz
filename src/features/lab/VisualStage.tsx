@@ -3,6 +3,7 @@ import { buildVisualModel } from '../../domain/visualization/model';
 import type { TraceEvent } from '../../domain/trace/schema';
 import { useI18n } from '../../i18n/I18nProvider';
 import { QueueVisual, StackVisual } from './StructureVisuals';
+import { LinkedListVisual } from './LinkedListVisual';
 
 export function VisualStage({ event }: { event: TraceEvent | undefined }) {
   const { t } = useI18n();
@@ -14,6 +15,7 @@ export function VisualStage({ event }: { event: TraceEvent | undefined }) {
           emptyStructure: t('emptyStack'),
           emptyStack: t('stackEmpty'),
           emptyQueue: t('queueEmpty'),
+          emptyLinked: t('linkedEmpty'),
         },
         event.structure,
       )
@@ -26,6 +28,9 @@ export function VisualStage({ event }: { event: TraceEvent | undefined }) {
       break;
     case 'queue':
       content = <QueueVisual model={model} />;
+      break;
+    case 'linked-list':
+      content = <LinkedListVisual model={model} />;
       break;
     case 'bars':
       content = (
@@ -86,7 +91,7 @@ export function VisualStage({ event }: { event: TraceEvent | undefined }) {
       content = <div className="empty">◈ {model.text}</div>;
   }
 
-  const structured = model.kind === 'stack' || model.kind === 'queue';
+  const structured = model.kind === 'stack' || model.kind === 'queue' || model.kind === 'linked-list';
   return (
     <div
       className={`stage${structured ? ' has-structure' : ''}`}

@@ -1,0 +1,314 @@
+/* ==========================================================================
+   Stage 7C — singly linked list: node cells, next cells and pointer arrows
+   The layout is deterministic from the pure model. Wide chains scroll inside
+   this canvas, never at page level. No timers or independent playback state.
+   ========================================================================== */
+
+.linked-visual {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: stretch;
+  z-index: 1;
+}
+
+.linked-toolbar {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.linked-op-label {
+  color: var(--accent);
+  font: 850 12px/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+}
+
+.linked-legend {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.linked-legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  display: inline-block;
+  margin-right: -4px;
+}
+.linked-legend-dot.head { background: var(--accent); }
+.linked-legend-dot.next { background: var(--node-edge); }
+.linked-legend-dot.null { background: transparent; border: 1px dashed var(--muted); }
+
+.linked-change {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+  padding: 6px 10px;
+  border: 1px solid var(--node-edge);
+  border-left: 3px solid var(--accent-2);
+  border-radius: 7px;
+  background: var(--stat-bg);
+  color: var(--txt);
+  font: 12px/1.4 ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+.linked-change strong { color: var(--accent-2); }
+.linked-change-label { color: var(--muted); font-size: 11px; letter-spacing: .4px; }
+.linked-change-arrow { color: var(--accent); font-weight: 850; }
+
+/* The viewport owns horizontal scrolling so a long list cannot widen the page. */
+.linked-scroller {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0 0 10px;
+  scrollbar-width: thin;
+  overscroll-behavior-x: contain;
+}
+
+.linked-chain {
+  position: relative;
+  min-height: 236px;
+  flex: 0 0 auto;
+}
+
+.linked-node {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--node-edge);
+  border-radius: 9px;
+  background: var(--node-bg);
+  color: var(--node-fg);
+  box-shadow: 0 5px 14px var(--stage-bg-b);
+  overflow: hidden;
+  transition: border-color .16s, background .16s, box-shadow .16s;
+  z-index: 2;
+}
+
+.linked-node-id {
+  position: absolute;
+  top: 3px;
+  left: 6px;
+  color: var(--muted);
+  font: 750 10px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+  letter-spacing: .5px;
+  z-index: 3;
+}
+
+.linked-node-data {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 6px 4px;
+  font: 800 16px/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
+  overflow-wrap: anywhere;
+  text-align: center;
+}
+
+.linked-node-next {
+  flex: 0 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  padding: 3px 7px;
+  border-top: 1px solid var(--node-edge);
+  background: var(--panel-2);
+  color: var(--muted);
+  font: 700 9.5px/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
+  letter-spacing: .3px;
+  white-space: nowrap;
+}
+.linked-node-next-target { color: var(--node-fg); }
+
+.linked-node.is-active {
+  border-color: var(--accent);
+  background: var(--node-focus-bg);
+  color: var(--node-focus-fg);
+  box-shadow: 0 0 0 2px var(--node-focus-ring), 0 0 22px var(--bar-focus-glow);
+}
+.linked-node.is-active .linked-node-next { background: var(--tab-active-bg); color: var(--accent); }
+.linked-node.is-active .linked-node-next-target { color: var(--accent); }
+
+.linked-node.is-changed {
+  border-color: var(--accent-2);
+  box-shadow: 0 0 0 2px var(--accent-2), 0 0 24px var(--bar-focus-glow);
+}
+.linked-node.is-changed .linked-node-next { background: var(--tag-green-bg); }
+
+.linked-node.is-temporary {
+  border-style: dashed;
+  opacity: .96;
+  animation: linked-node-in .26s ease-out both;
+}
+
+.linked-node.is-detached {
+  border-style: dashed;
+  opacity: .82;
+}
+
+.linked-edges {
+  position: absolute;
+  inset: 0 auto auto 0;
+  pointer-events: none;
+  z-index: 1;
+  color: var(--node-edge);
+  overflow: visible;
+}
+
+.linked-edge,
+.linked-null-line,
+.linked-head-line {
+  stroke: var(--node-edge);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+}
+.linked-edge.is-changed {
+  stroke: var(--accent-2);
+  stroke-width: 3;
+}
+.linked-head-line { stroke: var(--accent); stroke-width: 2.4; }
+.linked-null-line { stroke: var(--muted); stroke-width: 1.8; }
+.linked-edges marker path { fill: var(--accent); }
+
+.linked-head {
+  position: absolute;
+  color: var(--accent);
+  font: 850 11px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+  letter-spacing: 1.1px;
+  white-space: nowrap;
+}
+.linked-head-arrow { color: var(--accent); font-size: 14px; }
+
+.linked-null {
+  position: absolute;
+  z-index: 2;
+  padding: 4px 7px;
+  border: 1px dashed var(--muted);
+  border-radius: 5px;
+  color: var(--muted);
+  background: var(--stat-bg);
+  font: 800 11px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+  letter-spacing: .8px;
+  white-space: nowrap;
+}
+
+.linked-empty {
+  position: absolute;
+  left: 8px;
+  top: 62px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex-wrap: wrap;
+  padding: 14px 16px;
+  border: 1px dashed var(--edge);
+  border-radius: 9px;
+  color: var(--muted);
+  background: var(--stat-bg);
+  font: 800 12px/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
+  max-width: calc(100% - 16px);
+}
+.linked-empty-head { color: var(--accent); letter-spacing: 1px; }
+.linked-empty-arrow { color: var(--accent); }
+.linked-empty-null { color: var(--txt); letter-spacing: .7px; }
+.linked-empty-text { flex: 1 1 160px; font-weight: 500; font-size: 12px; }
+
+.linked-detached-region {
+  border-top: 1px dashed var(--edge);
+  padding-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.linked-detached-label {
+  color: var(--muted);
+  font-size: 11px;
+  letter-spacing: .5px;
+}
+.linked-detached-list {
+  display: flex;
+  align-items: stretch;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-width: 100%;
+  min-width: 0;
+}
+.linked-detached-node {
+  position: relative;
+  width: 164px;
+  max-width: 100%;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: 1fr auto auto;
+  gap: 2px;
+  padding: 8px 9px;
+  border: 1px dashed var(--node-edge);
+  border-radius: 8px;
+  background: var(--stat-bg);
+  color: var(--txt);
+  font: 12px/1.3 ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+.linked-detached-node.is-temporary { border-color: var(--accent); }
+.linked-detached-node.is-changed { border-color: var(--accent-2); box-shadow: 0 0 0 1px var(--accent-2); }
+.linked-detached-value { grid-row: 1; grid-column: 2; color: var(--node-fg); font-weight: 850; }
+.linked-detached-next { grid-column: 1 / -1; color: var(--muted); font-size: 10.5px; }
+.linked-detached-note { grid-column: 1 / -1; color: var(--accent); font-size: 10px; line-height: 1.4; }
+
+@keyframes linked-node-in {
+  from { opacity: 0; transform: translateY(-10px) scale(.96); }
+  to { opacity: .96; transform: translateY(0) scale(1); }
+}
+
+@media (max-width: 760px) {
+  .linked-chain { min-height: 228px; }
+  .linked-toolbar { align-items: flex-start; }
+  .linked-legend { gap: 6px; }
+  .linked-detached-node { width: 148px; }
+  .linked-node-data { font-size: 15px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .linked-node,
+  .linked-node.is-temporary,
+  .linked-edge,
+  .linked-node.is-changed {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+
+/* Stage 7C: narrow screens keep an explicit affordance for the internal
+   horizontal scroll, so a clipped 4th node never looks like a missing node. */
+.linked-scroll-hint {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  .linked-scroll-hint {
+    display: block;
+    margin: 0 0 8px;
+    font-size: 11px;
+    color: var(--muted);
+    text-align: right;
+  }
+}

@@ -14,7 +14,7 @@ import {
   LIMITS,
   TRACE_SCHEMA_VERSION,
   VISUAL_TYPES,
-  structureSnapshotSchema,
+  structureSchema,
   type CallFrame,
   type EventType,
   type JsonValue,
@@ -94,10 +94,10 @@ function toEvent(frame: RawTraceFrame, index: number): TraceEvent {
   if (typeof frame.lessonStepId === 'string' && frame.lessonStepId) {
     event.lessonStepId = frame.lessonStepId;
   }
-  // Stage 7B: only attach semantics that pass the protocol schema. A malformed
+  // Stage 7B/7C: only attach semantics that pass the protocol schema. A malformed
   // structure payload is dropped (legacy view remains), never half-applied.
   if (frame.structure !== undefined) {
-    const structure = structureSnapshotSchema.safeParse(frame.structure);
+    const structure = structureSchema.safeParse(frame.structure);
     if (structure.success) event.structure = structure.data;
   }
   return event;

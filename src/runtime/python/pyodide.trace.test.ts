@@ -55,8 +55,10 @@ describe('Python trace() runtime contract', () => {
     const parsed = parseTraceDocument(valid);
     expect(parsed.ok).toBe(true);
     if (!parsed.ok) return;
-    expect(parsed.document.events[0].structure?.kind).toBe('stack');
-    expect(parsed.document.events[0].structure?.items.map((x) => x.value)).toEqual([3, 5]);
+    const first = parsed.document.events[0].structure;
+    expect(first?.kind).toBe('stack');
+    if (first?.kind !== 'stack') return;
+    expect(first.items.map((x) => x.value)).toEqual([3, 5]);
     expect(parsed.document.events[1].structure).toBeUndefined();
   });
 

@@ -1,5 +1,6 @@
 import type { TraceState } from '../trace/types';
-import type { StructureOperation, StructureSnapshot } from '../trace/schema';
+import type { AnyStructureSnapshot, StructureOperation, StructureSnapshot } from '../trace/schema';
+import { buildLinkedListModel, type LinkedListVisualModel } from './linkedListModel';
 
 /**
  * Pure mapping from a trace state to a renderable model. React components only
@@ -49,6 +50,7 @@ export type VisualModel =
   | { kind: 'nodes'; structure: 'stack' | 'queue' | 'linked'; nodes: NodeModel[] }
   | { kind: 'stack'; operation: StructureOperation; items: StructureItemModel[]; removed?: StructureItemModel; empty: boolean; label: string }
   | { kind: 'queue'; operation: StructureOperation; items: StructureItemModel[]; removed?: StructureItemModel; empty: boolean; label: string }
+  | LinkedListVisualModel
   | { kind: 'graph'; edges: Array<[number, number]>; nodes: GraphNodeModel[]; isTree: boolean }
   | { kind: 'raw'; text: string };
 
@@ -57,6 +59,7 @@ export interface VisualLabels {
   emptyStructure: string;
   emptyStack?: string;
   emptyQueue?: string;
+  emptyLinked?: string;
 }
 
 const TREE_COORDS: Array<[number, number]> = [
@@ -189,12 +192,19 @@ function structureModel(
 export function buildVisualModel(
   state: unknown,
   labels: VisualLabels,
-  structure?: StructureSnapshot,
+  structure?: AnyStructureSnapshot,
 ): VisualModel {
   if (!state || typeof state !== 'object') return { kind: 'empty', text: labels.invalid };
   const s = state as TraceState;
   const kind = s.type || 'array';
   const focus = asFocusSet(s);
+
+  if (structure !== undefined && structure.kind === 'linked-list') {
+    if (kind !== 'linked') return { kind: 'raw', text: labels.invalid };
+    const model = buildLinkedListModel(structure, labels.emptyLinked ?? labels.emptyStructure);
+    if (!model) return { kind: 'raw', text: labels.invalid };
+    return model;
+  }
 
   if (structure !== undefined && (kind === 'stack' || kind === 'queue')) {
     if (!isRenderableStructure(structure)) return { kind: 'raw', text: labels.invalid };

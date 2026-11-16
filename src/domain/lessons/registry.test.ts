@@ -28,6 +28,7 @@ describe('Lesson registry (Stage 3B)', () => {
       'factorial-recursion-basics',
       'stack-lifo-basics',
       'queue-fifo-basics',
+      'linked-list-pointer-basics',
     ]);
   });
 
@@ -63,6 +64,6 @@ describe('Lesson registry (Stage 3B)', () => {
     const covered = lessonRegistry.lessons.map((lesson) => lesson.algorithmId);
     const uncovered = catalogIds.filter((id) => !covered.includes(id));
     expect(catalogIds.length).toBe(14);
-    expect(uncovered.length).toBe(10);
+    expect(uncovered.length).toBe(9);
   });
 });

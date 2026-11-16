@@ -6,6 +6,7 @@ import './styles/tokens.css';
 import './styles/app.css';
 import './styles/stage7a.css';
 import './styles/stage7b.css';
+import './styles/stage7c.css';
 
 const container = document.getElementById('root');
 if (!container) throw new Error('Missing #root element');

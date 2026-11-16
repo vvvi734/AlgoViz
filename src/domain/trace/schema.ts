@@ -141,6 +141,176 @@ export const structureSnapshotSchema = z
   });
 export type StructureSnapshot = z.infer<typeof structureSnapshotSchema>;
 
+/**
+ * Stage 7C: singly linked-list semantics. A frame snapshots every Node object
+ * the Python program still holds, not only the nodes reachable from HEAD:
+ * `nodes` may therefore contain a newly created node that is not connected yet
+ * or a node that was just detached. Reachability is derived from `headId` and
+ * `nextId`; the renderer never treats the array order as the chain order.
+ *
+ * `change` records the pointer assignment that produced this frame
+ * (`beforeNextId -> afterNextId`) and must agree with the node's new `nextId`.
+ * A cycle is rejected here (Stage 7C does not teach circular lists), so both the
+ * model and the renderer are guaranteed a finite chain.
+ */
+export const LINKED_LIST_OPERATIONS = [
+  'init', 'create', 'set-next', 'set-head', 'visit', 'detach', 'done',
+] as const;
+export type LinkedListOperation = (typeof LINKED_LIST_OPERATIONS)[number];
+
+export const linkedListNodeSchema = z.object({
+  id: z.string().min(1).max(LIMITS.MAX_NAME_CHARS),
+  value: jsonValueSchema.refine(
+    (value) => JSON.stringify(value).length <= LIMITS.MAX_VARIABLE_VALUE_JSON_BYTES,
+    'linked-list node value too large',
+  ),
+  nextId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+});
+export type LinkedListNode = z.infer<typeof linkedListNodeSchema>;
+
+export const linkedListChangeSchema = z.object({
+  nodeId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS),
+  beforeNextId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+  afterNextId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+});
+export type LinkedListChange = z.infer<typeof linkedListChangeSchema>;
+
+export const linkedListSnapshotSchema = z
+  .object({
+    kind: z.literal('linked-list'),
+    operation: z.enum(LINKED_LIST_OPERATIONS),
+    headId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+    nodes: z.array(linkedListNodeSchema).max(40),
+    targetId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).optional(),
+    change: linkedListChangeSchema.optional(),
+  })
+  .superRefine((snapshot, ctx) => {
+    const ids = new Set<string>();
+    const byId = new Map<string, LinkedListNode>();
+    snapshot.nodes.forEach((node, index) => {
+      if (ids.has(node.id)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['nodes', index, 'id'],
+          message: `duplicate linked-list node id "${node.id}"`,
+        });
+      }
+      ids.add(node.id);
+      byId.set(node.id, node);
+    });
+
+    if (snapshot.headId !== null && !ids.has(snapshot.headId)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['headId'],
+        message: `headId "${snapshot.headId}" does not refer to a node`,
+      });
+    }
+    snapshot.nodes.forEach((node, index) => {
+      if (node.nextId !== null && !ids.has(node.nextId)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['nodes', index, 'nextId'],
+          message: `nextId "${node.nextId}" does not refer to a node`,
+        });
+      }
+    });
+    if (snapshot.targetId !== undefined && !ids.has(snapshot.targetId)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['targetId'],
+        message: `targetId "${snapshot.targetId}" does not refer to a node`,
+      });
+    }
+
+    // Reject any cycle, including one that only exists among detached nodes.
+    for (const start of snapshot.nodes) {
+      const path = new Set<string>();
+      let current: string | null = start.id;
+      while (current !== null) {
+        if (path.has(current)) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['nodes'],
+            message: `cyclic linked list detected at node "${current}"`,
+          });
+          break;
+        }
+        path.add(current);
+        current = byId.get(current)?.nextId ?? null;
+      }
+    }
+
+    if (snapshot.change) {
+      const changed = byId.get(snapshot.change.nodeId);
+      if (!changed) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['change', 'nodeId'],
+          message: 'change.nodeId does not refer to a node',
+        });
+      } else if (changed.nextId !== snapshot.change.afterNextId) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['change', 'afterNextId'],
+          message: "change.afterNextId must equal the node's recorded nextId",
+        });
+      }
+      for (const key of ['beforeNextId', 'afterNextId'] as const) {
+        const ref = snapshot.change[key];
+        if (ref !== null && !ids.has(ref)) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['change', key],
+            message: `${key} "${ref}" does not refer to a node`,
+          });
+        }
+      }
+      if (snapshot.operation !== 'set-next' && snapshot.operation !== 'detach') {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['change'],
+          message: `change is not valid for operation "${snapshot.operation}"`,
+        });
+      }
+      if (snapshot.targetId !== snapshot.change.nodeId) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['targetId'],
+          message: 'targetId must identify the node whose pointer changed',
+        });
+      }
+      if (snapshot.operation === 'detach' && snapshot.change.afterNextId !== null) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['change', 'afterNextId'],
+          message: 'detach must record next = null',
+        });
+      }
+    } else if (snapshot.operation === 'set-next' || snapshot.operation === 'detach') {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['change'],
+        message: `${snapshot.operation} must record the pointer change`,
+      });
+    }
+
+    if (snapshot.operation === 'create' || snapshot.operation === 'visit' || snapshot.operation === 'set-next' || snapshot.operation === 'detach') {
+      if (!snapshot.targetId) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['targetId'],
+          message: `${snapshot.operation} must identify its target node`,
+        });
+      }
+    }
+  });
+export type LinkedListSnapshot = z.infer<typeof linkedListSnapshotSchema>;
+
+/** Stage 7B stack/queue + Stage 7C linked-list. Old events may omit it entirely. */
+export const structureSchema = z.union([structureSnapshotSchema, linkedListSnapshotSchema]);
+export type AnyStructureSnapshot = z.infer<typeof structureSchema>;
+
 /** One variable snapshot captured at a step. `type` is a free-form label. */
 export const variableSnapshotSchema = z.object({
   name: z.string().min(1).max(LIMITS.MAX_NAME_CHARS),
@@ -229,7 +399,7 @@ export const traceEventSchema = z.object({
    * Stage 7B: optional, validated stack/queue semantics recorded by the runner.
    * Absent on all legacy traces; absence means "render the legacy node view".
    */
-  structure: structureSnapshotSchema.optional(),
+  structure: structureSchema.optional(),
 });
 export type TraceEvent = z.infer<typeof traceEventSchema>;
 

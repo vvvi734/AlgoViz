@@ -224,9 +224,9 @@ export function useLabController(): LabController {
     if (!entry) return;
     playback.stop();
     flushCurrent();
-    // Stack/queue only emit structured frames from the real Python presets.
-    // Default those two courses to Python; the user can still switch to JS.
-    const preferredLang: CodeLanguage = id === 'stack' || id === 'queue' ? 'python' : codeLang;
+    // Stack/queue/linked-list only emit structured frames from the real Python
+    // presets. Default those courses to Python; the user can still switch to JS.
+    const preferredLang: CodeLanguage = id === 'stack' || id === 'queue' || id === 'linked' ? 'python' : codeLang;
     if (preferredLang !== codeLang) {
       setCodeLangState(preferredLang);
       safeSet(CODE_LANG_KEY, preferredLang);
