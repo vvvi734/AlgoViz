@@ -415,7 +415,7 @@ packages/mcp-server/            ← MCP Adapter（唯一 Node 专属层）
 
 - 分支：`main`
 - 本阶段起点：`89b35cc`（Stage 4 收尾提交）
-- 工作区：提交前含 13 个修改 + 8 个新增（详见下表）；构建产物 `dist/`、`node_modules/`、`test-results/` 均被忽略，未进入提交。
+- 工作区：提交前含 13 个修改 + 9 组新增（详见下表）；构建产物 `dist/`、`node_modules/`、`test-results/` 均被忽略，未进入提交。
 - 提交拆分（便于审阅）：
   1. `4c6cec8` — `feat(phase-5a): local stdio MCP server and web learning-session bridge`（共享域层 + Web 会话面板 + MCP 子包 + 测试 + 脚本 + 版本升级）
   2. `cf363ca` — `docs(phase-5a): stage 5A report, MCP install guide and architecture notes`（STAGE5A_REPORT / MCP_INSTALL / README / ARCHITECTURE / REFERENCES）
