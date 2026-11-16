@@ -1,1 +1,1 @@
-export type ViewName = 'learn' | 'practice' | 'custom';
+export type ViewName = 'learn' | 'practice' | 'custom' | 'packs';

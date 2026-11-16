@@ -1,8 +1,8 @@
-# AlgoLens 架构方案（v0.4 / Stage 3B）
+# AlgoLens 架构方案（v0.5 / Stage 4）
 
 本文描述从单文件原型（`index.html`，296 行 / ~70 KB）迁移到 React + TypeScript + Vite 后的模块边界、数据流与演进约束。
 
-**定位已收敛**：Python 为主要教学语言；JavaScript 作为前端实现语言继续支持既有 12 个算法演示。**C/C++ 与在线判题已从规划中取消**，相关入口与执行后端已移除。Stage 1 落地「统一 Trace Event Schema v1 + 旧动画兼容 + Python 冒泡排序同步演示」；Stage 2 落地「Monaco Editor + 执行行高亮 + Python 错误诊断 + 本地代码保存 + 真实浏览器 E2E」；Stage 3 落地「Python 递归调用栈 + 作用域感知变量观察 + 时间轴重置修复」；Stage 3B 落地「教学课程数据层 + 教学阶段关联 + 教学面板与时间轴双向联动」，详见 [STAGE1_REPORT.md](./STAGE1_REPORT.md)、[STAGE2_REPORT.md](./STAGE2_REPORT.md)、[STAGE3_REPORT.md](./STAGE3_REPORT.md) 与 [STAGE3B_REPORT.md](./STAGE3B_REPORT.md)。
+**定位已收敛**：Python 为主要教学语言；JavaScript 作为前端实现语言继续支持既有 12 个算法演示。**C/C++ 与在线判题已从规划中取消**，相关入口与执行后端已移除。Stage 1 落地「统一 Trace Event Schema v1 + 旧动画兼容 + Python 冒泡排序同步演示」；Stage 2 落地「Monaco Editor + 执行行高亮 + Python 错误诊断 + 本地代码保存 + 真实浏览器 E2E」；Stage 3 落地「Python 递归调用栈 + 作用域感知变量观察 + 时间轴重置修复」；Stage 3B 落地「教学课程数据层 + 教学阶段关联 + 教学面板与时间轴双向联动」；Stage 4 落地「可安装教学知识包 `.algopack`（容器规范 + 安全导入 + 本地安装 + 注册表组合 + 管理页）」，详见 [STAGE1_REPORT.md](./STAGE1_REPORT.md)、[STAGE2_REPORT.md](./STAGE2_REPORT.md)、[STAGE3_REPORT.md](./STAGE3_REPORT.md)、[STAGE3B_REPORT.md](./STAGE3B_REPORT.md)、[STAGE4_REPORT.md](./STAGE4_REPORT.md) 与 [PACK_FORMAT_V1.md](./PACK_FORMAT_V1.md)。
 
 ## 1. 现状盘点（迁移前）
 
@@ -37,10 +37,12 @@ flowchart TD
 | `src/domain/algorithms` | 12 个算法定义、按教学语言取示例 | 不执行用户代码 |
 | `src/domain/problems` | 题库数据、脚手架 | 不判题 |
 | `src/domain/trace` | Trace Event Schema（Zod 校验）、legacy 适配层、**纯函数播放状态机** | 不碰 `setInterval` / DOM；不编造变量/行号 |
-| `src/domain/lessons` | 教学课程数据：类型、Zod 校验、注册表、课程 ⇄ Trace 的**纯查找函数** | 不引用 React / Worker；不执行代码；不从 message 推断教学阶段 |
+| `src/domain/lessons` | 教学课程数据：类型、Zod 校验、注册表、课程 ⇄ Trace 的**纯查找函数**、内置 + 知识包课程的组合目录（`catalog.ts`） | 不引用 React / Worker；不执行代码；不从 message 推断教学阶段 |
+| `src/domain/packs` | 知识包纯逻辑：格式常量与限额、路径白名单、manifest Zod 解析、中央目录策略、内容校验与预览 | 不解压、不写存储、不执行包内代码 |
 | `src/domain/visualization` | `TraceState → VisualModel` 纯映射、日志窗口 | 不写 `innerHTML` |
 | `src/runtime/js` | Worker 客户端 + 与 Worker 共用的纯执行体 | 不在主线程 `new Function` |
 | `src/runtime/python` | Pyodide classic worker（按需 CDN）+ 扩展版 `trace()` | 不内置 Pyodide 到 bundle |
+| `src/runtime/packs` | 有界 ZIP 读取（中央目录 + 限量流式解压）、IndexedDB 三 store 单事务存储 | 不把 ZIP 写盘、不做无上限解压、不自动执行示例 |
 | `src/runtime/monaco` | Monaco 懒加载、本地 Worker 打包、`algolens` 主题映射 | 不打包到主 bundle（`import()` 拆包） |
 | `src/runtime/drafts` | localStorage 代码草稿（按算法 × 语言） | 不缓存敏感信息；由 `features` 通过接口调用 |
 | `src/runtime/url` | HTTP(S) 地址校验 | 不承载业务逻辑 |
@@ -89,15 +91,24 @@ flowchart TD
 - **注册表是信任边界**：`createLessonRegistry` 加载即校验（id 规则、`stepId` 唯一、中英列表等长、一算法一课程），校验失败直接抛；运行期 `byAlgorithm` 对没有课程的算法返回 `undefined`，旧算法照常工作。
 - **仍是一条游标**：`LessonPanel` 与 `VisualStage` / `SyncPanel` / `CallStackPanel` / Monaco 一样读 `events[index]`，没有第二套播放进度；点步骤调用同一个 `seek()`（并暂停播放）。
 
+### 3.7 知识包：内容与应用分离，安全先行（Stage 4）
+- **包是内容**：`.algopack` 只是 ZIP，里面只有 `manifest.json`、JSON 课程、UTF-8 Python 示例与 `LICENSE`；没有自定义渲染器、没有 JS/CSS，因此 Core 不需要为包新增执行入口。
+- **三段式校验**：`domain/packs`（纯策略：路径白名单 + 中央目录元数据）→ `runtime/packs/zip.ts`（有界解压：条目数/单文件 512 KiB/总 3 MiB/压缩比 200:1，1 KiB 切片边解压边计数，核对声明长度）→ `domain/packs/validate.ts`（manifest + Lesson Schema + 算法/内置/跨包冲突 + 版本），全部通过后才产生预览。
+- **存储单事务**：`algolens-packs` v1 三个 store（`packs` / `lessons` / `examples`），安装、替换、卸载都在**一个 readwrite 事务**内完成；写事务前先读完旧行，写事务内同步发全部请求再 `await transactionDone`，避免 `await` 让事务失活。配额/失败统一映射成 `storage-quota` / `storage-failed`，不会退化成 `UnknownError`。
+- **注册表组合而非重写**：`createLessonCatalog(packs)` 把内置课程放在前面，每个包仍用 `createLessonRegistry` 独立校验；单个包数据损坏被跳过，不影响内置课程或其它包。`originOf(algorithmId)` 返回 `builtin` 或 `{pack, packId}`，UI 据此显示来源徽标与「载入课程示例」按钮。
+- **示例只载入不执行**：`applyCourseExample()` 只写编辑器 + 切语言 + 填 `input`，不调用 `runForLanguage`（App 级测试断言运行次数不变）；用户点「运行」才进既有 Pyodide Worker。Pyodide 不是恶意 Python 的沙箱，风险在预览阶段明示。
+- **可作者化**：`scripts/build-pack.mjs` 打包、`scripts/validate-pack.ts` 跑真实 `readPackArchive` + `validatePack`，与浏览器同一条校验链，CLI 通过即导入可用。
+
 ## 4. 测试策略
 
 | 层次 | 工具 | 覆盖 |
 | --- | --- | --- |
-| 纯逻辑单测 | Vitest | 主题解析、播放状态机（含 `clampPlayback`）、可视化映射、i18n、题库数据、关键词路由、教学课程校验与阶段查找 |
+| 纯逻辑单测 | Vitest | 主题解析、播放状态机（含 `clampPlayback`）、可视化映射、i18n、题库数据、关键词路由、教学课程校验与阶段查找、**知识包 manifest/路径/中央目录/内容校验** |
 | 帧回归 | Vitest + legacy 快照 | 14 个算法逐帧一致（12 旧 + 阶乘/斐波那契）、空/重复/单元素输入、排序终态 |
-| 组件冒烟 | Vitest + jsdom + Testing Library | 14 个算法入口、时间轴交互与 **Trace 切换重置**、三态主题、语言切换、视图切换、调用栈面板与作用域变量、教学面板（高亮/禁用/跳转/空态） |
+| 存储单测 | Vitest + fake-indexeddb | 安装成功、刷新恢复、卸载隔离、重复安装、版本冲突/显式替换、写事务失败回滚、配额映射、存储不可用 |
+| 组件冒烟 | Vitest + jsdom + Testing Library | 14 个算法入口、时间轴交互与 **Trace 切换重置**、三态主题、语言切换、视图切换、调用栈面板与作用域变量、教学面板（高亮/禁用/跳转/空态）、知识包页（预览/确认/卸载/错误文案）、**App 级导入→课程→卸载** |
 | 令牌契约 | Vitest 读 CSS 文本 | 两套主题 token 完整性、无硬编码颜色 |
-| E2E | Playwright（真实 Edge 无头 + `vite preview`） | Monaco 加载、Python 冒泡同步高亮、SyntaxError 波浪线出现/清除、草稿自动保存/刷新恢复、主题切换、真实 Pyodide 阶乘/斐波那契递归栈、JS 长短 Trace 切换重置、**教学步骤与真实数组/变量/调用栈同步**（见 `e2e/lab.spec.ts`） |
+| E2E | Playwright（真实 Edge 无头 + `vite preview`） | Monaco 加载、Python 冒泡同步高亮、SyntaxError 波浪线出现/清除、草稿自动保存/刷新恢复、主题切换、真实 Pyodide 阶乘/斐波那契递归栈、JS 长短 Trace 切换重置、**教学步骤与真实数组/变量/调用栈同步**（`e2e/lab.spec.ts`）、**知识包导入→安装→刷新恢复→卸载**与**包内 Python 示例真实 Trace**（`e2e/packs.spec.ts`） |
 | a11y | axe | **未实现**，见后续 Issue |
 
 `npm run typecheck`、`npm test`、`npm run build` 是每次 PR 的必过门槛（见 `.github/workflows/ci.yml`）。
@@ -113,7 +124,8 @@ Stage 1（已完成）: Trace Schema v1 → 旧动画适配 → Python trace 扩
 Stage 2（已完成）: Monaco 编辑器（懒加载/本地 Worker）→ 执行行高亮 → Python 错误诊断与 Marker → 源码一致性/异步隔离 → 草稿自动保存 → 深浅主题适配 → 真实浏览器 E2E
 Stage 3（已完成）: callStack 协议落地 → Python @tracked 递归追踪 → 调用栈面板与作用域变量 → 阶乘/斐波那契端到端 → 时间轴重置与索引钳制修复
 Stage 3B（已完成）: Lesson 数据层（类型/Zod/注册表）→ `lessonStepId` 协议扩展与执行时记录 → 教学面板 → 步骤 ⇄ 时间轴双向联动 → 冒泡/阶乘课程
-后续             : 可安装知识包（`.algopack`）、树/图与动态规划可视化、练习页 Monaco、a11y / axe、AI 渐进式教学
+Stage 4（已完成）: 格式规范与限额 → 路径白名单 → 有界 ZIP 读取 → manifest/Lesson/冲突校验与预览 → IndexedDB 单事务安装 → 课程目录组合（内置优先）→ 管理页 → 官方示例包与真实 Trace 同步
+后续             : MCP Agent 适配层（课程查询 / Trace 读取）、树/图与动态规划可视化、练习页 Monaco、a11y / axe、AI 渐进式教学、远程包市场与签名
 ```
 
 `Trace Event Schema v1` 是编辑器诊断、递归栈动画与后续树/图可视化的共同前置：Monaco 需要根据 `event.sourceLocation` 高亮，调用栈读取 `callStack`，任何新结构都必须先扩展协议再改渲染，不允许渲染层自己发明字段。

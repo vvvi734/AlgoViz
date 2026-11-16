@@ -276,3 +276,22 @@ textarea.prompt:focus { border-color: var(--accent); }
   .lessonsteps { max-height: none; }
   .lesson-meta { grid-template-columns: 1fr; }
 }
+
+/* ---- Stage 4: installable knowledge packs ---- */
+.packsview { grid-template-columns: minmax(0, 1fr); }
+.packactions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin: 10px 0; }
+.packfileinput { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.packbanner { display: flex; justify-content: space-between; align-items: center; gap: 10px; border-radius: 9px; padding: 8px 11px; font-size: 12.5px; margin: 8px 0; border: 1px solid var(--edge); background: var(--stat-bg); color: var(--txt); }
+.packbanner.error { border-color: var(--red); color: var(--red); }
+.packbanner.ok { border-color: var(--tag-green-bg); background: var(--tag-green-bg); color: var(--tag-green-fg); }
+.packbanner.warn { border-color: var(--info-edge); background: var(--info-bg); }
+.packnote { margin: 10px 0 0; }
+.packmeta { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 12px; color: var(--muted); margin: 8px 0; }
+.packlessonlist { list-style: none; margin: 6px 0; padding: 0; display: grid; gap: 5px; font-size: 12.5px; }
+.packlist { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.packcard { border: 1px solid var(--edge); border-radius: 12px; padding: 12px 14px; background: var(--stat-bg); }
+.packcard h3 { margin: 0; font-size: 15px; }
+.packconfirm { margin-top: 8px; border-top: 1px dashed var(--edge); padding-top: 8px; }
+.linkbtn { background: none; border: none; color: var(--accent); cursor: pointer; font: inherit; font-size: 12px; padding: 0 4px; text-decoration: underline; }
+.lesson-origin { margin: 0 0 6px; }
+.lesson-example { margin: 0 0 8px; }

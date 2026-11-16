@@ -63,6 +63,12 @@ export interface LabController {
   restorePreset: () => void;
   randomizeInput: () => void;
   loadCustom: (generated: GeneratedAlgorithm) => void;
+  /**
+   * Stage 4: load a pack course's Python example into the editor **without
+   * running it**. Execution still requires the user to press Run, so imported
+   * text can never execute implicitly.
+   */
+  applyCourseExample: (code: string, input: unknown) => void;
 }
 
 export function useLabController(): LabController {
@@ -258,6 +264,22 @@ export function useLabController(): LabController {
     setInputJson(JSON.stringify(next));
   }, [catalog, currentAlgo]);
 
+  // Stage 4: a pack course example is loaded as inert text — it is NOT executed
+  // here. Execution still requires the user to press "Run", so text imported
+  // from a pack never runs implicitly.
+  const applyCourseExample = useCallback((code: string, sampleInput: unknown) => {
+    flushCurrent();
+    setCodeLangState('python');
+    safeSet(CODE_LANG_KEY, 'python');
+    location.current = { algo: currentAlgo, lang: 'python' };
+    applyCode(code);
+    const raw = JSON.stringify(sampleInput ?? catalog[currentAlgo]?.input ?? null);
+    setInputJson(raw);
+    writeDraft(currentAlgo, 'python', code);
+    setDiagnostics([]);
+    setStatus({ text: t('lessonExampleLoaded'), error: false });
+  }, [applyCode, catalog, currentAlgo, flushCurrent, t, writeDraft]);
+
   const loadCustom = useCallback((generated: GeneratedAlgorithm) => {
     const note = b(
       'AI 生成的可视化算法，请检查代码安全性与正确性。',
@@ -309,5 +331,6 @@ export function useLabController(): LabController {
     restorePreset,
     randomizeInput,
     loadCustom,
+    applyCourseExample,
   };
 }

@@ -9,12 +9,28 @@ import { CallStackPanel } from './CallStackPanel';
 import { LessonPanel } from './LessonPanel';
 import { AiMentor } from './AiMentor';
 import type { LabController } from './useLabController';
-import { lessonRegistry } from '../../domain/lessons/registry';
+import type { LessonCatalog } from '../../domain/lessons/catalog';
+import type { LocalizedLabel, PackExample } from '../../domain/packs/types';
 import { useI18n } from '../../i18n/I18nProvider';
 import { useTheme } from '../../theme/ThemeProvider';
 
-export function LabView({ lab, apiUrl }: { lab: LabController; apiUrl: string }) {
-  const { t, pick } = useI18n();
+export function LabView({
+  lab,
+  apiUrl,
+  lessons,
+  packOrigin,
+  courseExample,
+}: {
+  lab: LabController;
+  apiUrl: string;
+  /** Built-in + installed-pack courses; never a hard-coded singleton. */
+  lessons: LessonCatalog;
+  /** Name of the pack the current course came from, if any. */
+  packOrigin?: LocalizedLabel;
+  /** The current course's Python example (lazy text from an installed pack). */
+  courseExample?: PackExample;
+}) {
+  const { t, pick, lang } = useI18n();
   const { resolved } = useTheme();
   const entry = lab.catalog[lab.currentAlgo];
   const currentEvent = lab.events[lab.playback.index];
@@ -45,8 +61,8 @@ export function LabView({ lab, apiUrl }: { lab: LabController; apiUrl: string })
   const hasCallStack = lab.events.some((event) => !!event.callStack?.length);
 
   // Stage 3B: the course for the current algorithm, or `undefined` for the
-  // algorithms that have none yet. The panel renders an explicit empty state.
-  const lesson = lessonRegistry.byAlgorithm(lab.currentAlgo);
+  // algorithms that have none yet. Stage 4: pack courses join the same lookup.
+  const lesson = lessons.byAlgorithm(lab.currentAlgo);
 
   return (
     <div className="workspace" data-testid="learn-view">
@@ -74,6 +90,13 @@ export function LabView({ lab, apiUrl }: { lab: LabController; apiUrl: string })
           index={lab.playback.index}
           currentEvent={currentEvent}
           onSeek={lab.playback.seek}
+          originName={packOrigin ? packOrigin[lang] : undefined}
+          hasExample={Boolean(courseExample)}
+          onUseExample={
+            courseExample
+              ? () => lab.applyCourseExample(courseExample.code, courseExample.input)
+              : undefined
+          }
         />
         {hasCallStack && (
           <CallStackPanel

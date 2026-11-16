@@ -18,12 +18,19 @@ export function LessonPanel({
   index,
   currentEvent,
   onSeek,
+  originName,
+  hasExample,
+  onUseExample,
 }: {
   lesson: Lesson | undefined;
   events: readonly TraceEvent[];
   index: number;
   currentEvent: TraceEvent | undefined;
   onSeek: (index: number) => void;
+  /** Stage 4: set when the course was installed from a `.algopack`. */
+  originName?: string;
+  hasExample?: boolean;
+  onUseExample?: () => void;
 }) {
   const { t, lang } = useI18n();
   const [openOverview, setOpenOverview] = useState(true);
@@ -57,6 +64,25 @@ export function LessonPanel({
 
       <p className="lesson-oneliner" data-testid="lesson-oneliner">{lesson.oneLiner[lang]}</p>
 
+      {originName && (
+        <p className="muted smalltext lesson-origin" data-testid="lesson-origin">
+          {t('packOrigin').replace('{pack}', originName)}
+        </p>
+      )}
+
+      {hasExample && onUseExample && (
+        <div className="lesson-example">
+          <button
+            type="button"
+            className="btn small"
+            data-testid="lesson-use-example"
+            onClick={onUseExample}
+          >
+            {t('lessonUseExample')}
+          </button>
+        </div>
+      )}
+
       <div className="lesson-meta">
         <div className="stat"><b>{lesson.complexity.time}</b><span>{t('timeCost')}</span></div>
         <div className="stat"><b>{lesson.complexity.space}</b><span>{t('spaceCost')}</span></div>
@@ -84,7 +110,6 @@ export function LessonPanel({
       </div>
 
       <h3 className="lesson-subhead">{t('lessonSteps')}</h3>
-      <p className="muted smalltext lesson-hint">{t('lessonStepsHint')}</p>
       <p className="muted smalltext lesson-hint">{t('lessonStepsHint')}</p>
       <ol className="lessonsteps" data-testid="lesson-steps">
         {lesson.steps.map((step, stepIndex) => {

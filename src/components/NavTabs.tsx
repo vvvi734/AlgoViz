@@ -5,6 +5,7 @@ const VIEWS: Array<{ id: ViewName; key: string }> = [
   { id: 'learn', key: 'learn' },
   { id: 'practice', key: 'practice' },
   { id: 'custom', key: 'custom' },
+  { id: 'packs', key: 'packs' },
 ];
 
 export function NavTabs({ view, onChange }: { view: ViewName; onChange: (view: ViewName) => void }) {
@@ -16,6 +17,7 @@ export function NavTabs({ view, onChange }: { view: ViewName; onChange: (view: V
           key={id}
           className={`tab ${view === id ? 'active' : ''}`}
           aria-current={view === id ? 'page' : undefined}
+          data-testid={`nav-${id}`}
           onClick={() => onChange(id)}
         >
           {t(key)}
