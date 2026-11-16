@@ -308,16 +308,17 @@ E2E 明细（真实浏览器，非 mock）：
 | 分支 | `main`（跟踪 `origin/main`） |
 | 远端 | `https://gitee.com/vvvi734/algolens.git` |
 | 提交前 HEAD | `f921552 feat(phase-2): Monaco editor, trace-linked highlighting, diagnostics, drafts, E2E` |
-| 提交 | `feat(phase-3): recursive call stack visualization and playback fixes`（哈希见下方「提交后记录」） |
-| 推送 | `git push origin main` |
+| 提交 | `db5552a feat(phase-3): recursive call stack visualization and playback fixes`（34 个文件，+1806 / −79） |
+| 推送 | `git push origin main` → `f921552..db5552a  main -> main`（成功） |
 | 工作区 | 提交后应仅剩 gitignored 的 `dist/`、`tsconfig.tsbuildinfo`、`test-results/`；无临时脚本 |
 
 安全性说明：本阶段全程未使用 `git reset --hard`、`git clean -fd`、force push，未改写历史，未修改远端地址；临时采集脚本（`.tmp-*.mjs`）在仓库内运行后已删除，未入库。
 
 ### 提交后记录
 
-- Commit：见 `git log -1 --oneline`（本文在提交前撰写，哈希由提交后回填）。
-- Push：以 `git status` 的 `main...origin/main` 无 `ahead` 为准。
+- 主提交：`db5552a`（`feat(phase-3): recursive call stack visualization and playback fixes`），包含 Stage 3 全部功能、修复、测试与文档；`docs/STAGE3_REPORT.md` 首次随该提交进入仓库。
+- 推送：`f921552..db5552a  main -> main`，`git status` 显示 `main` 与 `origin/main` 同步、无 `ahead`／`behind`。
+- 本文档的哈希回填本身是随后的一次纯文档补充提交，不改变代码与测试结论。
 
 ## J. 下一阶段准备情况
 
