@@ -22,10 +22,12 @@ describe('Lesson registry (Stage 3B)', () => {
     expect(lessonRegistry.has('bubble')).toBe(true);
   });
 
-  it('exposes both bundled courses in registration order', () => {
+  it('exposes all bundled courses in registration order', () => {
     expect(lessonRegistry.lessons.map((lesson) => lesson.lessonId)).toEqual([
       'bubble-sort-basics',
       'factorial-recursion-basics',
+      'stack-lifo-basics',
+      'queue-fifo-basics',
     ]);
   });
 
@@ -57,10 +59,10 @@ describe('Lesson registry (Stage 3B)', () => {
     expect(broken.errors.join(' ')).toContain('buble-sort');
   });
 
-  it('leaves the other twelve algorithms without a course, and that is legal', () => {
+  it('leaves the other algorithms without a course, and that is legal', () => {
     const covered = lessonRegistry.lessons.map((lesson) => lesson.algorithmId);
     const uncovered = catalogIds.filter((id) => !covered.includes(id));
     expect(catalogIds.length).toBe(14);
-    expect(uncovered.length).toBe(12);
+    expect(uncovered.length).toBe(10);
   });
 });

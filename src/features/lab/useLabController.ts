@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   catalog as baseCatalog,
+  defaultInputFor,
   engineNote,
   exampleFor,
   groups,
@@ -223,9 +224,16 @@ export function useLabController(): LabController {
     if (!entry) return;
     playback.stop();
     flushCurrent();
-    const code = loadDraft(id, codeLang) ?? exampleFor(id, codeLang);
-    location.current = { algo: id, lang: codeLang };
-    const rawInput = JSON.stringify(entry.input);
+    // Stack/queue only emit structured frames from the real Python presets.
+    // Default those two courses to Python; the user can still switch to JS.
+    const preferredLang: CodeLanguage = id === 'stack' || id === 'queue' ? 'python' : codeLang;
+    if (preferredLang !== codeLang) {
+      setCodeLangState(preferredLang);
+      safeSet(CODE_LANG_KEY, preferredLang);
+    }
+    const code = loadDraft(id, preferredLang) ?? exampleFor(id, preferredLang);
+    location.current = { algo: id, lang: preferredLang };
+    const rawInput = JSON.stringify(defaultInputFor(id));
     setCurrentAlgo(id);
     applyCode(code);
     setInputJson(rawInput);
@@ -249,7 +257,7 @@ export function useLabController(): LabController {
     const entry = catalog[currentAlgo];
     if (!entry) return;
     const code = exampleFor(currentAlgo, codeLang);
-    const rawInput = JSON.stringify(entry.input);
+    const rawInput = JSON.stringify(defaultInputFor(currentAlgo));
     applyCode(code);
     writeDraft(currentAlgo, codeLang, code);
     setInputJson(rawInput);
@@ -266,7 +274,7 @@ export function useLabController(): LabController {
     } else if (entry.group === 'search') {
       next = { nums: [1, 3, 5, 7, 9, 11, 13], target: [3, 5, 9, 13][Math.floor(Math.random() * 4)] };
     } else {
-      next = entry.input ?? [5, 2, 8, 1];
+      next = defaultInputFor(currentAlgo) ?? [5, 2, 8, 1];
     }
     setInputJson(JSON.stringify(next));
   }, [catalog, currentAlgo]);
@@ -304,7 +312,7 @@ export function useLabController(): LabController {
     setCurrentAlgo(session.algorithmId);
     const code = session.source ?? loadDraft(session.algorithmId, targetLang) ?? exampleFor(session.algorithmId, targetLang);
     applyCode(code);
-    setInputJson(JSON.stringify(session.input ?? entry.input ?? null));
+    setInputJson(JSON.stringify(session.input ?? defaultInputFor(session.algorithmId) ?? null));
     if (session.source) writeDraft(session.algorithmId, 'python', session.source);
     setEvents([]);
     setSource('');

@@ -1,6 +1,6 @@
-# algolens-search-basics
+# algolens-search-basics（AlgoViz 官方示例包）
 
-Official example pack for AlgoLens. It adds one teaching course for the
+Official example pack for AlgoViz. It adds one teaching course for the
 `binary` (binary search) algorithm, which ships in the app without a course.
 
 | Field | Value |

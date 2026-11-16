@@ -10,7 +10,7 @@
     "zh": "二分查找的完整教学课程：有序数组、检查中间元素、区间收缩、命中与未命中。附带一份可在浏览器中运行的 Python 教学示例。",
     "en": "A complete binary search course: sorted arrays, probing the middle, narrowing the range, hit and miss. Ships a Python teaching example that runs in the browser."
   },
-  "author": "AlgoLens",
+  "author": "AlgoViz",
   "license": "MIT",
   "requiredTraceSchema": 1,
   "lessons": [

@@ -1,6 +1,7 @@
 import type { Lang } from '../../i18n/types';
 import { ALGORITHM_CATALOG, ALGORITHM_GROUPS } from './catalog.generated';
 import { LANGUAGE_EXAMPLES } from './languageExamples.generated';
+import { structureDefaultInput, structurePythonExample } from './structureExamples';
 import type { AlgorithmCatalog, AlgorithmGroup, CodeLanguage } from './types';
 
 export const catalog: AlgorithmCatalog = ALGORITHM_CATALOG;
@@ -37,10 +38,17 @@ export const groups: Array<[AlgorithmGroup, string]> = ALGORITHM_GROUPS as Array
 export function exampleFor(algoId: string, language: CodeLanguage): string {
   const entry = catalog[algoId];
   if (language === 'js') return entry?.code ?? '';
+  const structurePreset = structurePythonExample(algoId);
+  if (structurePreset) return structurePreset;
   const preset = LANGUAGE_EXAMPLES[language]?.[algoId];
   if (preset) return preset;
   const name = entry?.name[1] ?? algoId;
   return `# ${name}: write Python code and call trace(state, message).\n# Input is available as variable: input\ntrace({'type':'array','values': [1,2,3]}, 'Example frame')`;
+}
+
+/** Stage 7B default operations; does not mutate the legacy catalogue or frame oracle. */
+export function defaultInputFor(algoId: string): unknown {
+  return structureDefaultInput(algoId) ?? catalog[algoId]?.input ?? null;
 }
 
 export function engineNote(language: CodeLanguage, lang: Lang): string {

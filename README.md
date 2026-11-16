@@ -1,11 +1,11 @@
-# AlgoLens · Python 为主的算法可视化学习平台
+# AlgoViz · Python 为主的数据结构与算法可视化学习平台
 
 [English](#english) | [中文](#中文)
 
-面向大学生与 408 考研学生的浏览器端算法学习平台：**Python 在浏览器内运行**，根据真实执行结果生成逐帧动画，并同步展示代码位置、变量值与步骤讲解。完全本地运行，无需租服务器。
+面向学生的浏览器端数据结构与算法学习平台：**Python 在浏览器内运行**，根据真实执行结果生成逐帧动画，并同步展示代码位置、变量值与步骤讲解。完全本地运行，无需租服务器。
 
-> **当前版本：v0.8 Stage 7A。** 学习实验室完成信息架构与响应式重构：动画、Monaco 代码与「当前步骤」尽量同屏，教学步骤/变量与调用栈/AI 导师/学习工具收进按需标签页，整份只读源码改为可展开快照，课程渐进展示；主导航收敛为「学习实验室 / 知识包 / 更多工具」，题库与 AI 导入仅在「更多工具」中保留并标注状态。Stage 6A 的本地 AI Gateway、五级提示与既有执行链路保持不变。当前门禁：**381 项单测 / 22 条真实浏览器 E2E**；真实 Ollama / 云端模型仍未实测。
-> 定位已收敛：**Python 为主要教学语言**，JavaScript 作为前端实现语言继续支持既有 12 个算法演示；**C / C++ 与在线判题已从规划中取消**。详见 [阶段一总结](docs/STAGE1_REPORT.md)、[阶段二总结](docs/STAGE2_REPORT.md)、[阶段三总结](docs/STAGE3_REPORT.md)、[阶段 3B 总结](docs/STAGE3B_REPORT.md)、[阶段四总结](docs/STAGE4_REPORT.md)、[阶段 5A 总结](docs/STAGE5A_REPORT.md)、[阶段 6A 总结](docs/STAGE6A_REPORT.md) 与 [阶段 7A 总结](docs/STAGE7A_REPORT.md)；知识包格式与作者指引见 [PACK_FORMAT_V1](docs/PACK_FORMAT_V1.md)、[PACK_AUTHOR_GUIDE](docs/PACK_AUTHOR_GUIDE.md)；MCP 安装与宿主配置见 [MCP_INSTALL](docs/MCP_INSTALL.md)；AI Gateway 安装与安全边界见 [AI_GATEWAY](docs/AI_GATEWAY.md)。
+> **当前版本：v0.9 Stage 7B。** 用户可见品牌迁移为 **AlgoViz**，旧 localStorage / IndexedDB / `.algopack` / `.algosession.json` / `.algocontext.json` / MCP Tool / AI Gateway 标识保持兼容。栈与队列拥有各自的专属动画：栈是顶部开放的竖直桶（LIFO），队列是左 FRONT、右 REAR 的横向排队（FIFO），全部由真实 Python/Pyodide Trace 与结构化操作语义驱动，不使用消息文本猜测。学习实验室沿用 Stage 7A 的同屏工作区、按需标签与渐进课程。当前门禁：**405 项单测 / 26 条真实浏览器 E2E**；真实 Ollama / 云端模型仍未实测。
+> 定位已收敛：**Python 为主要教学语言**，JavaScript 作为前端实现语言继续支持既有 12 个算法演示；**C / C++ 与在线判题已从规划中取消**。详见 [阶段一总结](docs/STAGE1_REPORT.md)、[阶段二总结](docs/STAGE2_REPORT.md)、[阶段三总结](docs/STAGE3_REPORT.md)、[阶段 3B 总结](docs/STAGE3B_REPORT.md)、[阶段四总结](docs/STAGE4_REPORT.md)、[阶段 5A 总结](docs/STAGE5A_REPORT.md)、[阶段 6A 总结](docs/STAGE6A_REPORT.md)、[阶段 7A 总结](docs/STAGE7A_REPORT.md) 与 [阶段 7B 总结](docs/STAGE7B_REPORT.md)；品牌边界见 [BRAND_MIGRATION](docs/BRAND_MIGRATION.md)；知识包格式与作者指引见 [PACK_FORMAT_V1](docs/PACK_FORMAT_V1.md)、[PACK_AUTHOR_GUIDE](docs/PACK_AUTHOR_GUIDE.md)；MCP 安装与宿主配置见 [MCP_INSTALL](docs/MCP_INSTALL.md)；AI Gateway 安装与安全边界见 [AI_GATEWAY](docs/AI_GATEWAY.md)。
 
 ---
 
@@ -20,18 +20,18 @@
 | 14 个算法逐帧动画 | ✅ 已实现 | 12 个原有（冒泡/插入/选择/快排、二分/线性查找、栈/队列/链表、BFS/DFS、树中序）+ 阶乘 / 斐波那契递归 |
 | 播放 / 暂停 / 回退 / 单步 / 拖动 / 速度 | ✅ 已实现 | 纯函数状态机 + 逐帧回归；新 Trace 加载即回到第 0 帧并停止播放，索引恒在合法范围内 |
 | JavaScript 本地执行 | ✅ 已实现 | 3 秒限时 Web Worker，可离线 |
-| Python 执行（Pyodide） | ✅ 已实现 | Worker 内运行；`trace()` 支持真实变量快照与源码行号 |
-| 统一 Trace Event Schema v1 | ✅ 已实现 | Zod 运行时校验：`schemaVersion/step/eventType/visualType/state/message/sourceLocation/variables/callStack/lessonStepId` + 事件/帧/变量限额 |
+| Python 执行（Pyodide） | ✅ 已实现 | Worker 内运行；`trace()` 支持真实变量快照、源码行号与可选的 stack/queue 结构语义 |
+| 统一 Trace Event Schema v1 | ✅ 已实现 | Zod 运行时校验：`schemaVersion/step/eventType/visualType/state/message/sourceLocation/variables/callStack/lessonStepId` + Stage 7B 可选 `structure` + 事件/帧/变量限额；旧 Trace 无 `structure` 时继续走 legacy 视图 |
 | 教学课程数据层 | ✅ 已实现 | `domain/lessons/`：Lesson 类型 + Zod 校验 + 注册表 + 纯同步函数；与 React / Worker 完全解耦，可校验、可查询 |
 | 教学面板（LessonPanel） | ✅ 已实现 | 算法介绍 / 前置知识 / 复杂度 / 教学阶段（含帧数徽标）/ 当前执行解释 / 常见错误；中英双语 |
 | 教学步骤 ⇄ 时间轴双向联动 | ✅ 已实现 | 同一 `currentEvent`：时间轴驱动高亮，点击步骤跳到真实执行帧（向后找 → 回绕首帧 → 不可用则禁用） |
-| 算法课程内容 | ⚠️ 2 / 14 内置 | 内置冒泡排序与阶乘两门完整课程；其余算法显示"尚未提供教学课程"空态，可由知识包补充 |
+| 算法课程内容 | ⚠️ 4 / 14 内置 | 内置冒泡排序、阶乘、栈、队列四门完整双语课程；其余算法显示"尚未提供教学课程"空态，可由知识包补充 |
 | 可安装知识包（`.algopack`） | ✅ 已实现 | ZIP 容器 + manifest v1 + 有界解压 + 路径白名单；导入 → 预览 → 确认 → 本地安装 |
 | 知识包安全校验 | ✅ 已实现 | 6 MiB / 64 条目 / 512 KiB 单文件 / 3 MiB 总量 / 200:1 压缩比；拒绝路径穿越、绝对路径、重复名、加密条目、ZIP64、非文本 |
 | 知识包本地持久化 | ✅ 已实现 | IndexedDB `algolens-packs` 三 store 单事务安装/替换/卸载；刷新恢复；配额失败有明确错误 |
 | 知识包管理界面 | ✅ 已实现 | 「知识包」页：已装列表、导入、预览确认、版本替换提示、卸载确认、空态与错误态，中英双语 + 三态主题 |
 | 课程注册表组合 | ✅ 已实现 | `createLessonCatalog`：内置优先，包课程同 Schema 校验，非法包内容跳过而非崩溃；卸载即失效 |
-| 官方示例知识包 | ✅ 已实现 | `packs/algolens-search-basics.algopack`（5 条目 / 6100 B）：`binary` 二分查找 5 步双语课程 + 真实 Pyodide 示例 |
+| 官方示例知识包 | ✅ 已实现 | `packs/algolens-search-basics.algopack`（5 条目 / 6144 B）：`binary` 二分查找 5 步双语课程 + 真实 Pyodide 示例 |
 | 学习会话格式（`.algosession.json`） | ✅ 已实现 | `domain/sessions`：严格 Zod、`sessionFormatVersion=1`、96 KiB / 40k 源码字符 / 8 KiB 输入；`lessonOrigin` 记录课程来源 |
 | 学习上下文格式（`.algocontext.json`） | ✅ 已实现 | 真实帧 + 变量 + 调用栈 + 教学阶段；128 KiB；源码仅在用户勾选时写入；导出不重跑 |
 | Agent 学习会话导入 | ✅ 已实现 | 网页「学习会话」面板：选文件 → 预览（课程/阶段/是否含源码）→ 确认应用；不自动运行、不覆盖草稿前需确认 |
@@ -45,6 +45,9 @@
 | 调用栈面板 | ✅ 已实现 | 栈式展示调用帧、高亮活跃帧、点击帧切换变量作用域、时间轴回退恢复历史栈 |
 | 同步观察面板 | ✅ 已实现 | 变量观察器 + 步骤讲解随 `currentEvent` 联动；整份只读源码改为按需「已执行源码快照」，Monaco 是唯一主代码区 |
 | Python 冒泡排序端到端演示 | ✅ 已实现 | 真实 `i/j/arr/n` 变量、源码行号、比较/交换高亮 |
+| 栈专属教学可视化 | ✅ Stage 7B | 顶部开放、底部封闭的竖直桶；Push 从顶部进入、Pop 从顶部离开、Peek 高亮栈顶；空栈、7 帧真实 Python、DOM 顶到底顺序可测 |
+| 队列专属教学可视化 | ✅ Stage 7B | 左 FRONT / 右 REAR 的横向排队；Enqueue 从右进入、Dequeue 从左离开；出队后剩余元素补位；空队列、7 帧真实 Python、DOM 前到后顺序可测 |
+| 品牌迁移与兼容 | ✅ Stage 7B | 界面/标题/元数据/README 使用 AlgoViz；旧持久化 key、packId、MCP Tool、AI Gateway 环境变量与协议头保持不变，见 `docs/BRAND_MIGRATION.md` |
 | Monaco 代码编辑器 | ✅ 已实现 | Python/JS 语法高亮、行号、缩进、折叠、撤销/重做、自适应尺寸 |
 | 执行行高亮联动 | ✅ 已实现 | `currentEvent.sourceLocation.line` 驱动 Monaco 高亮；时间轴/单步/回退/拖动同步 |
 | Python 错误诊断 | ✅ 已实现 | SyntaxError/NameError/… 结构化抽取，行列映射为 Monaco Marker |
@@ -54,8 +57,8 @@
 | 练习「运行并查看输出」 | ✅ 已实现 | 仅展示输入 → 输出，**不再自动判题**；完成状态由用户手动标记 |
 | C / C++ | 🚫 已取消 | 语言入口、占位模板与 `/api/execute` 执行后端均已移除 |
 | 在线 Judge / 自动判题 | 🚫 已取消 | 相关入口与宣传已清理 |
-| 中英文界面 / 移动端适配 | ⚠️ 部分 | Stage 7A 修复 390–1920 横向溢出与 1024 布局，加入键盘标签切换 E2E；仍未安装 axe-core，触控尺寸未逐项审计 |
-| 自动化测试 | ✅ 已实现 | 381 项单测 / 帧回归 / jsdom 冒烟 + 22 条真实浏览器 E2E（Playwright + Edge，含真实 Pyodide、知识包、会话文件、AI 导师真实帧/离线/防剧透、Stage 7A 布局与标签状态）；另有 MCP 协议测试 20 项与 stdio 冒烟 9 项通过 + 1 项按配置跳过 |
+| 中英文界面 / 移动端适配 | ⚠️ 部分 | Stage 7A 修复 390–1920 横向溢出与 1024 布局；Stage 7B 栈/队列在 1440/1024/390 与 Light/Dark 下实测无页面横向溢出；仍未安装 axe-core，触控尺寸未逐项审计 |
+| 自动化测试 | ✅ 已实现 | 405 项单测 / 帧回归 / jsdom 冒烟 + 26 条真实浏览器 E2E（Playwright + Edge，含真实 Pyodide、知识包、会话文件、AI 导师真实帧/离线/防剧透、Stage 7A 布局与标签状态、Stage 7B 栈/队列 DOM 顺序与截图）；另有 MCP 协议测试 20 项与 stdio 冒烟 9 项通过 + 1 项按配置跳过 |
 | 知识包远程市场 / 包签名 | ⏳ 后续 | 本版只有本地文件导入；无远程仓库、无自动下载、无签名校验 |
 | 网页 AI 导师（本地 Gateway） | ✅ 已实现（真机未验证） | Stage 7A 将其收进工作区标签页，连接状态与错误详情保留；Stage 6A：Ollama + OpenAI Chat Completions 适配、五级教学 Schema、防剧透降级、同源代理；本机无 Ollama/云端 Key，真实模型未验证 |
 | AI Gateway 安全边界 | ✅ 已实现 | 仅 127.0.0.1、Origin + 自定义头、96 KiB 请求 / 30s / 20 rpm、严格 Zod、目标地址仅启动配置、密钥只存 Gateway 环境变量 |
@@ -70,10 +73,10 @@
 npm ci
 npm run dev            # 开发服务器
 npm run typecheck      # TypeScript 严格检查
-npm test               # Vitest（378 项）
+npm test               # Vitest（405 项）
 npm run build          # tsc -b && vite build → dist/
 npm run preview        # 预览构建产物
-npm run test:e2e       # Playwright E2E（默认驱动本机 Microsoft Edge，16 条）
+npm run test:e2e       # Playwright E2E（默认驱动本机 Microsoft Edge，26 条）
 npm run pack:build     # 从 packs/src/<name>/ 构建 .algopack
 npm run pack -- packs/algolens-search-basics.algopack   # 校验知识包（与浏览器同一条校验链）
 ```
@@ -198,7 +201,7 @@ MIT（见 [LICENSE](LICENSE)）。题目与算法说明均为原创示例，不�
 
 ## English
 
-AlgoLens is a browser-first algorithm visualization learning platform where **Python runs in the browser** and every animation frame is driven by real execution results, synchronised with the source line, variable values and a step explanation. It runs entirely locally — no server required.
+AlgoViz is a browser-first algorithm visualization learning platform where **Python runs in the browser** and every animation frame is driven by real execution results, synchronised with the source line, variable values and a step explanation. It runs entirely locally — no server required.
 
 **Stage 5A** shipped the first local MCP agent plugin: `packages/mcp-server` (official TS SDK, stdio) exposing six course/pack/session/context tools plus a five-level `teach_algorithm` prompt, with `.algosession.json` / `.algocontext.json` as the explicit file bridge; MCP reads only configured directories and never browser IndexedDB.
 
@@ -210,7 +213,7 @@ AlgoLens is a browser-first algorithm visualization learning platform where **Py
 npm ci
 npm run dev
 npm run typecheck
-npm test          # 381 tests (incl. 20 MCP protocol tests + gateway tests)
+npm test          # 405 tests (incl. 20 MCP protocol tests + gateway tests)
 npm run build
 npm run test:e2e  # 22 Playwright tests (local Microsoft Edge; mock provider)
 npm run pack -- packs/algolens-search-basics.algopack   # validate a pack (same chain as the browser)

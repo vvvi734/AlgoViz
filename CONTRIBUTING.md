@@ -1,6 +1,6 @@
 # 贡献指南 / Contributing
 
-感谢你愿意改进 AlgoLens。请先阅读 [README 状态矩阵](../README.md) 与 [架构方案](ARCHITECTURE.md)，避免重复实现或把未实现能力误标为已支持。
+感谢你愿意改进 AlgoViz。请先阅读 [README 状态矩阵](../README.md) 与 [架构方案](ARCHITECTURE.md)，避免重复实现或把未实现能力误标为已支持。
 
 ## 开发前
 

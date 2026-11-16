@@ -57,6 +57,11 @@ export interface RawTraceFrame extends TraceFrame {
    * Absent for runners that never emit one — the adapter must not invent it.
    */
   lessonStepId?: string;
+  /**
+   * Stage 7B optional stack/queue semantics emitted by the Python runner. Kept
+   * `unknown` until the adapter validates it; JS legacy frames never carry it.
+   */
+  structure?: unknown;
 }
 
 export const MAX_FRAMES = 500;

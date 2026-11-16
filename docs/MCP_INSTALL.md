@@ -1,4 +1,4 @@
-# AlgoLens MCP Server — 安装与接入（Stage 5A）
+# AlgoViz MCP Server — 安装与接入（Stage 5A）
 
 本文件说明如何在本机安装、构建、启动并接入 `packages/mcp-server`。它是一份**本地 stdio MCP Server**：
 不监听端口、不需要服务器、不需要任何 AI API Key，AI 由 MCP 宿主（Claude Code / Cursor / VS Code 等）自带。
@@ -18,7 +18,7 @@
 | 操作系统 | Windows / macOS / Linux | Windows 11 + PowerShell 7 |
 | 网络 | **首次** `npm run mcp:install` 需要联网下载依赖；运行 MCP Server 本身**完全离线** | 已验证 |
 
-浏览器端（AlgoLens Web）与 MCP Server 是两套独立产物：MCP 故障不会影响网页；网页正常也不需要 MCP 在跑。
+浏览器端（AlgoViz Web）与 MCP Server 是两套独立产物：MCP 故障不会影响网页；网页正常也不需要 MCP 在跑。
 
 ---
 
@@ -46,7 +46,7 @@ npm run mcp:start -- --help
 期望输出（stderr）：
 
 ```text
-AlgoLens MCP server (stdio).
+AlgoViz MCP server (stdio).
 
 Usage: node dist/server.mjs [options]
 

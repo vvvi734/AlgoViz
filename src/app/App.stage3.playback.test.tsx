@@ -71,6 +71,17 @@ function renderApp() {
   );
 }
 
+/**
+ * The app paints an initial legacy trace before the first async run resolves.
+ * Waiting only for "1 / 12" can therefore race with the run's reset, especially
+ * when the full suite runs in parallel. Wait for the run feedback too, so the
+ * trace under test is the freshly installed one.
+ */
+async function waitForInitialRun() {
+  await waitFor(() => expect(screen.getByTestId('progress').textContent).toBe('1 / 12'));
+  await waitFor(() => expect(screen.getByTestId('run-feedback').textContent).toContain('动画已生成'));
+}
+
 /** Route the mocked runner by the preset source it receives. */
 function framesFor(code: string) {
   return code.includes('factorial(') ? factorialFrames : bubbleFrames;
@@ -84,7 +95,7 @@ beforeEach(() => {
 describe('Stage 3 playback fix — a new trace restarts the timeline', () => {
   it('scenario A: scrubbing a long trace then switching to a shorter one lands on frame 0', async () => {
     renderApp();
-    await waitFor(() => expect(screen.getByTestId('progress').textContent).toBe('1 / 12'));
+    await waitForInitialRun();
 
     // Go far forward in the long (bubble) trace.
     fireEvent.change(screen.getByTestId('scrub'), { target: { value: '10' } });
@@ -148,7 +159,7 @@ describe('Stage 3 playback fix — a new trace restarts the timeline', () => {
 
   it('scenario C: an empty trace renders a defined empty state and clears the old call stack', async () => {
     renderApp();
-    await waitFor(() => expect(screen.getByTestId('progress').textContent).toBe('1 / 12'));
+    await waitForInitialRun();
 
     // Put a real call stack on screen first.
     fireEvent.click(screen.getByTestId('algo-factorial'));
@@ -176,7 +187,7 @@ describe('Stage 3 playback fix — a new trace restarts the timeline', () => {
 
   it('scenario E: UI-only changes do not reset the scrubbed position', async () => {
     renderApp();
-    await waitFor(() => expect(screen.getByTestId('progress').textContent).toBe('1 / 12'));
+    await waitForInitialRun();
 
     fireEvent.change(screen.getByTestId('scrub'), { target: { value: '6' } });
     expect(screen.getByTestId('progress').textContent).toBe('7 / 12');

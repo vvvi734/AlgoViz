@@ -8,8 +8,10 @@ describe('Python trace() runtime contract', () => {
   it('keeps the legacy two-argument call working', () => {
     // The signature must default message/line/variables so `trace(state)` and
     // `trace(state, message)` from the old presets keep running unchanged.
-    expect(PYTHON_TRACE_HELPER).toContain("def trace(state, message='', line=None, variables=None, lesson_step=None)");
+    expect(PYTHON_TRACE_HELPER).toContain("def trace(state, message='', line=None, variables=None, lesson_step=None, structure=None)");
     expect(PYTHON_TRACE_HELPER).toContain("frame = {'state': _snapshot(state), 'message': str(message)}");
+    expect(PYTHON_TRACE_HELPER).toContain('if structure is not None:');
+    expect(PYTHON_TRACE_HELPER).toContain("frame['structure'] = _snapshot(structure)");
   });
 
   it('records optional line and variables metadata', () => {
@@ -35,6 +37,27 @@ describe('Python trace() runtime contract', () => {
     expect(PYTHON_VISUAL_BOOTSTRAP).toContain('def _post_diagnostic(');
     expect(PYTHON_VISUAL_BOOTSTRAP).toContain("payload['line'] = int(line)");
     expect(PYTHON_VISUAL_BOOTSTRAP).toContain('postDiagnostic(json.dumps(payload, ensure_ascii=False))');
+  });
+
+  it('passes valid structure semantics through and drops malformed ones', () => {
+    const valid = framesToTraceDocument([
+      {
+        state: { type: 'stack', values: [3, 5] },
+        message: 'push 5',
+        structure: { kind: 'stack', operation: 'push', items: [{ id: 's1', value: 3 }, { id: 's2', value: 5 }], targetId: 's2' },
+      },
+      {
+        state: { type: 'stack', values: [3, 5] },
+        message: 'bad',
+        structure: { kind: 'queue', operation: 'push', items: [] },
+      },
+    ], 'source');
+    const parsed = parseTraceDocument(valid);
+    expect(parsed.ok).toBe(true);
+    if (!parsed.ok) return;
+    expect(parsed.document.events[0].structure?.kind).toBe('stack');
+    expect(parsed.document.events[0].structure?.items.map((x) => x.value)).toEqual([3, 5]);
+    expect(parsed.document.events[1].structure).toBeUndefined();
   });
 
   it('turns Python-emitted frames into validated events with line + variables', () => {

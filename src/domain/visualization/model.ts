@@ -1,4 +1,5 @@
 import type { TraceState } from '../trace/types';
+import type { StructureOperation, StructureSnapshot } from '../trace/schema';
 
 /**
  * Pure mapping from a trace state to a renderable model. React components only
@@ -29,16 +30,33 @@ export interface GraphNodeModel {
   status: 'focus' | 'visited' | 'none';
 }
 
+export type StructureItemState = 'normal' | 'entering' | 'peeking' | 'leaving';
+
+/** One element in a stack/queue snapshot. IDs come from the Trace, not the DOM. */
+export interface StructureItemModel {
+  id: string;
+  value: unknown;
+  index: number;
+  /** Top for the stack's last item; front/rear for the queue's ends. */
+  role: 'top' | 'front' | 'rear' | 'member';
+  active: boolean;
+  state: StructureItemState;
+}
+
 export type VisualModel =
   | { kind: 'empty'; text: string }
   | { kind: 'bars'; bars: BarModel[] }
   | { kind: 'nodes'; structure: 'stack' | 'queue' | 'linked'; nodes: NodeModel[] }
+  | { kind: 'stack'; operation: StructureOperation; items: StructureItemModel[]; removed?: StructureItemModel; empty: boolean; label: string }
+  | { kind: 'queue'; operation: StructureOperation; items: StructureItemModel[]; removed?: StructureItemModel; empty: boolean; label: string }
   | { kind: 'graph'; edges: Array<[number, number]>; nodes: GraphNodeModel[]; isTree: boolean }
   | { kind: 'raw'; text: string };
 
 export interface VisualLabels {
   invalid: string;
   emptyStructure: string;
+  emptyStack?: string;
+  emptyQueue?: string;
 }
 
 const TREE_COORDS: Array<[number, number]> = [
@@ -54,11 +72,136 @@ function asFocusSet(state: TraceState): Set<number | string> {
   return new Set(Array.isArray(state.focus) ? state.focus : []);
 }
 
-export function buildVisualModel(state: unknown, labels: VisualLabels): VisualModel {
+const STACK_OPS: readonly StructureOperation[] = ['init', 'push', 'pop', 'peek', 'done'];
+const QUEUE_OPS: readonly StructureOperation[] = ['init', 'enqueue', 'dequeue', 'front', 'done'];
+
+/**
+ * Defensive check for the model boundary. The schema already validates traces,
+ * but model tests and future pack traces can call this directly; malformed
+ * semantics must produce an explicit error, never a guessed animation.
+ */
+export function isRenderableStructure(value: unknown): value is StructureSnapshot {
+  if (!value || typeof value !== 'object') return false;
+  const snapshot = value as Partial<StructureSnapshot>;
+  if (snapshot.kind !== 'stack' && snapshot.kind !== 'queue') return false;
+  if (typeof snapshot.operation !== 'string') return false;
+  const allowed = snapshot.kind === 'stack' ? STACK_OPS : QUEUE_OPS;
+  if (!allowed.includes(snapshot.operation as StructureOperation)) return false;
+  if (!Array.isArray(snapshot.items) || snapshot.items.length > 40) return false;
+  const ids = new Set<string>();
+  for (const item of snapshot.items) {
+    if (!item || typeof item !== 'object') return false;
+    if (typeof item.id !== 'string' || item.id.length === 0 || ids.has(item.id)) return false;
+    ids.add(item.id);
+    if (item.value === undefined) return false;
+  }
+  if (snapshot.removed !== undefined) {
+    if (!snapshot.removed || typeof snapshot.removed.id !== 'string' || !snapshot.removed.id) return false;
+    if (snapshot.removed.value === undefined) return false;
+  }
+  if (snapshot.targetId !== undefined && (typeof snapshot.targetId !== 'string' || !snapshot.targetId)) return false;
+  if ((snapshot.operation === 'pop' || snapshot.operation === 'dequeue') && !snapshot.removed) return false;
+  return true;
+}
+
+function buildStackModel(snapshot: StructureSnapshot, label: string): VisualModel {
+  const items: StructureItemModel[] = snapshot.items.map((item, index) => ({
+    id: item.id,
+    value: item.value,
+    index,
+    role: index === snapshot.items.length - 1 ? 'top' : 'member',
+    active: snapshot.operation === 'peek' && item.id === snapshot.targetId,
+    state:
+      snapshot.operation === 'push' && item.id === snapshot.targetId ? 'entering' :
+      snapshot.operation === 'peek' && item.id === snapshot.targetId ? 'peeking' : 'normal',
+  }));
+  const removed = snapshot.removed
+    ? ({
+        id: snapshot.removed.id,
+        value: snapshot.removed.value,
+        index: -1,
+        role: 'top',
+        active: true,
+        state: 'leaving',
+      } satisfies StructureItemModel)
+    : undefined;
+  // A peek without a target falls back to the actual top: the operation is
+  // explicit, the top is derived from the recorded order rather than invented.
+  if (snapshot.operation === 'peek' && !snapshot.targetId && items.length) {
+    items[items.length - 1].active = true;
+  }
+  return {
+    kind: 'stack',
+    operation: snapshot.operation,
+    items,
+    ...(removed ? { removed } : {}),
+    empty: items.length === 0,
+    label,
+  };
+}
+
+function buildQueueModel(snapshot: StructureSnapshot, label: string): VisualModel {
+  const items: StructureItemModel[] = snapshot.items.map((item, index) => ({
+    id: item.id,
+    value: item.value,
+    index,
+    role:
+      index === 0 && index === snapshot.items.length - 1 ? 'front' :
+      index === 0 ? 'front' :
+      index === snapshot.items.length - 1 ? 'rear' : 'member',
+    active:
+      (snapshot.operation === 'front' || snapshot.operation === 'dequeue') && item.id === snapshot.targetId,
+    state: snapshot.operation === 'enqueue' && item.id === snapshot.targetId ? 'entering' : 'normal',
+  }));
+  const removed = snapshot.removed
+    ? ({
+        id: snapshot.removed.id,
+        value: snapshot.removed.value,
+        index: -1,
+        role: 'front',
+        active: true,
+        state: 'leaving',
+      } satisfies StructureItemModel)
+    : undefined;
+  if (snapshot.operation === 'front' && !snapshot.targetId && items.length) items[0].active = true;
+  return {
+    kind: 'queue',
+    operation: snapshot.operation,
+    items,
+    ...(removed ? { removed } : {}),
+    empty: items.length === 0,
+    label,
+  };
+}
+
+function structureModel(
+  state: TraceState,
+  structure: StructureSnapshot,
+  labels: VisualLabels,
+): VisualModel | null {
+  if (structure.kind !== state.type) return null;
+  if (Array.isArray(state.values) && state.values.length !== structure.items.length) return null;
+  return structure.kind === 'stack'
+    ? buildStackModel(structure, labels.emptyStack ?? labels.emptyStructure)
+    : buildQueueModel(structure, labels.emptyQueue ?? labels.emptyStructure);
+}
+
+export function buildVisualModel(
+  state: unknown,
+  labels: VisualLabels,
+  structure?: StructureSnapshot,
+): VisualModel {
   if (!state || typeof state !== 'object') return { kind: 'empty', text: labels.invalid };
   const s = state as TraceState;
   const kind = s.type || 'array';
   const focus = asFocusSet(s);
+
+  if (structure !== undefined && (kind === 'stack' || kind === 'queue')) {
+    if (!isRenderableStructure(structure)) return { kind: 'raw', text: labels.invalid };
+    const model = structureModel(s, structure, labels);
+    if (!model) return { kind: 'raw', text: labels.invalid };
+    return model;
+  }
 
   if (kind === 'array') {
     const values = Array.isArray(s.values) ? s.values.slice(0, 60) : [];

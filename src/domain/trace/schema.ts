@@ -31,6 +31,24 @@ export type VisualType = (typeof VISUAL_TYPES)[number];
 export const EVENT_TYPES = ['init', 'step', 'compare', 'swap', 'visit', 'mark', 'done'] as const;
 export type EventType = (typeof EVENT_TYPES)[number];
 
+/**
+ * Stage 7B structural operations. These are RECORDED by the runner, never
+ * inferred from `message`, the algorithm id, or a change in array length.
+ * `init`/`done` describe the container lifecycle; the rest are real operations.
+ */
+export const STRUCTURE_KINDS = ['stack', 'queue'] as const;
+export type StructureKind = (typeof STRUCTURE_KINDS)[number];
+
+export const STRUCTURE_OPERATIONS = [
+  'init', 'push', 'pop', 'peek', 'enqueue', 'dequeue', 'front', 'done',
+] as const;
+export type StructureOperation = (typeof STRUCTURE_OPERATIONS)[number];
+
+const STRUCTURE_OPERATIONS_BY_KIND: Record<StructureKind, readonly StructureOperation[]> = {
+  stack: ['init', 'push', 'pop', 'peek', 'done'],
+  queue: ['init', 'enqueue', 'dequeue', 'front', 'done'],
+};
+
 /** Bounded payloads. Kept in one place so tests can assert them. */
 export const LIMITS = {
   MAX_EVENTS: 500,
@@ -56,6 +74,72 @@ export type JsonValue = string | number | boolean | null | JsonValue[] | { [key:
 export const jsonValueSchema: z.ZodType<JsonValue> = z.lazy(() =>
   z.union([z.string(), z.number().finite(), z.boolean(), z.null(), z.array(jsonValueSchema), z.record(jsonValueSchema)]),
 );
+
+/** One element of a stack/queue snapshot. `id` is stable for the element's lifetime. */
+export const structureItemSchema = z.object({
+  id: z.string().min(1).max(LIMITS.MAX_NAME_CHARS),
+  value: jsonValueSchema.refine(
+    (value) => JSON.stringify(value).length <= LIMITS.MAX_VARIABLE_VALUE_JSON_BYTES,
+    'structure element value too large',
+  ),
+});
+export type StructureItem = z.infer<typeof structureItemSchema>;
+
+/**
+ * Additive Stage 7B structure semantics. `items` is the container AFTER the
+ * operation (bottom→top for a stack, front→rear for a queue). `targetId`
+ * identifies the element involved; for `pop`/`dequeue` it may refer to
+ * `removed`, which is why the removed element is also snapshotted explicitly.
+ *
+ * The field is optional on `TraceEvent`, so every Stage 1–7A event still
+ * validates. An event without this field is rendered by the legacy node view,
+ * never by guessing an operation from text.
+ */
+export const structureSnapshotSchema = z
+  .object({
+    kind: z.enum(STRUCTURE_KINDS),
+    operation: z.enum(STRUCTURE_OPERATIONS),
+    items: z.array(structureItemSchema).max(40),
+    targetId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).optional(),
+    removed: structureItemSchema.optional(),
+  })
+  .superRefine((snapshot, ctx) => {
+    const ids = new Set<string>();
+    snapshot.items.forEach((item, index) => {
+      if (ids.has(item.id)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['items', index, 'id'],
+          message: `duplicate structure element id "${item.id}"`,
+        });
+      }
+      ids.add(item.id);
+    });
+    if (!STRUCTURE_OPERATIONS_BY_KIND[snapshot.kind].includes(snapshot.operation)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['operation'],
+        message: `operation "${snapshot.operation}" is not valid for ${snapshot.kind}`,
+      });
+    }
+    if (snapshot.operation === 'pop' || snapshot.operation === 'dequeue') {
+      if (!snapshot.removed) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['removed'],
+          message: `${snapshot.operation} must record the removed element`,
+        });
+      }
+      if (snapshot.targetId && snapshot.removed && snapshot.targetId !== snapshot.removed.id) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['targetId'],
+          message: 'targetId must identify the removed element',
+        });
+      }
+    }
+  });
+export type StructureSnapshot = z.infer<typeof structureSnapshotSchema>;
 
 /** One variable snapshot captured at a step. `type` is a free-form label. */
 export const variableSnapshotSchema = z.object({
@@ -141,6 +225,11 @@ export const traceEventSchema = z.object({
    * text. Optional and additive, so every Stage-1/2/3 event still validates.
    */
   lessonStepId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).optional(),
+  /**
+   * Stage 7B: optional, validated stack/queue semantics recorded by the runner.
+   * Absent on all legacy traces; absence means "render the legacy node view".
+   */
+  structure: structureSnapshotSchema.optional(),
 });
 export type TraceEvent = z.infer<typeof traceEventSchema>;
 

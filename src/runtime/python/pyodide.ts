@@ -131,7 +131,7 @@ export const PYTHON_RECURSION_HELPER = [
  * where the pedagogy is known; nothing is ever inferred from the message text.
  */
 export const PYTHON_TRACE_HELPER = [
-  "def trace(state, message='', line=None, variables=None, lesson_step=None):",
+  "def trace(state, message='', line=None, variables=None, lesson_step=None, structure=None):",
   "    frame = {'state': _snapshot(state), 'message': str(message)}",
   '    if line is not None:',
   "        frame['line'] = int(line)",
@@ -155,6 +155,8 @@ export const PYTHON_TRACE_HELPER = [
   "        frame['variables'] = _snapshot_variables(explicit)",
   '    if lesson_step is not None:',
   "        frame['lessonStepId'] = str(lesson_step)",
+  '    if structure is not None:',
+  "        frame['structure'] = _snapshot(structure)",
   "    postFrame(json.dumps(frame, ensure_ascii=False))",
 ].join('\n');
 

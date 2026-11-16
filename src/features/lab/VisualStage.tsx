@@ -2,15 +2,31 @@ import type { ReactNode } from 'react';
 import { buildVisualModel } from '../../domain/visualization/model';
 import type { TraceEvent } from '../../domain/trace/schema';
 import { useI18n } from '../../i18n/I18nProvider';
+import { QueueVisual, StackVisual } from './StructureVisuals';
 
 export function VisualStage({ event }: { event: TraceEvent | undefined }) {
   const { t } = useI18n();
   const model = event
-    ? buildVisualModel(event.state, { invalid: t('invalidTrace'), emptyStructure: t('emptyStack') })
+    ? buildVisualModel(
+        event.state,
+        {
+          invalid: t('invalidTrace'),
+          emptyStructure: t('emptyStack'),
+          emptyStack: t('stackEmpty'),
+          emptyQueue: t('queueEmpty'),
+        },
+        event.structure,
+      )
     : { kind: 'empty' as const, text: t('ready') };
 
   let content: ReactNode;
   switch (model.kind) {
+    case 'stack':
+      content = <StackVisual model={model} />;
+      break;
+    case 'queue':
+      content = <QueueVisual model={model} />;
+      break;
     case 'bars':
       content = (
         <div className="bars">
@@ -70,5 +86,14 @@ export function VisualStage({ event }: { event: TraceEvent | undefined }) {
       content = <div className="empty">◈ {model.text}</div>;
   }
 
-  return <div className="stage" aria-label="Algorithm visualization" data-testid="visual-stage">{content}</div>;
+  const structured = model.kind === 'stack' || model.kind === 'queue';
+  return (
+    <div
+      className={`stage${structured ? ' has-structure' : ''}`}
+      aria-label="Algorithm visualization"
+      data-testid="visual-stage"
+    >
+      {content}
+    </div>
+  );
 }

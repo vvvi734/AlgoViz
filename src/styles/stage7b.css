@@ -1,0 +1,322 @@
+/* ==========================================================================
+   Stage 7B — dedicated stack tank and queue line renderers
+   Colours are token-only. Animations are state-driven CSS classes, not timers.
+   ========================================================================== */
+
+.stage.has-structure {
+  align-items: stretch;
+  overflow: hidden;
+}
+
+.structure-visual {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  z-index: 1;
+}
+
+.structure-op-row {
+  width: 100%;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.structure-op {
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 850;
+  letter-spacing: .8px;
+  text-transform: uppercase;
+}
+
+.structure-hint {
+  color: var(--muted);
+  font-size: 12.5px;
+  line-height: 1.45;
+  text-align: right;
+  flex: 1 1 180px;
+  min-width: 0;
+}
+
+/* Stack: only left/right/bottom borders — the top is visibly open. */
+.stack-tank {
+  width: min(300px, 88%);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  border-left: 2px solid var(--node-edge);
+  border-right: 2px solid var(--node-edge);
+  border-bottom: 3px solid var(--node-edge);
+  border-radius: 0 0 16px 16px;
+  background: linear-gradient(180deg, transparent 0%, var(--node-bg) 100%);
+  box-shadow: inset 0 -10px 24px var(--stage-bg-b);
+}
+
+.stack-topline {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 12px 6px;
+  color: var(--accent);
+  font: 850 12px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+  letter-spacing: 1.4px;
+}
+
+.stack-body {
+  position: relative;
+  min-height: clamp(210px, 30vh, 290px);
+  padding: 10px 12px 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.stack-bottom {
+  border-top: 1px solid var(--node-edge);
+  background: var(--panel-2);
+  color: var(--muted);
+  text-align: center;
+  padding: 7px 8px;
+  font: 750 11px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+  letter-spacing: 1.8px;
+}
+
+/* Queue: a real horizontal line with FRONT on the left and REAR on the right. */
+.queue-track {
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.queue-rail {
+  flex: 0 0 58px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  border: 1px solid var(--edge);
+  border-radius: 10px;
+  background: var(--stat-bg);
+  color: var(--muted);
+  font-size: 11px;
+  letter-spacing: .7px;
+  text-align: center;
+  padding: 8px 4px;
+}
+
+.queue-rail b {
+  color: var(--txt);
+  font: 850 12px/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
+  letter-spacing: 1.2px;
+}
+
+.queue-rail small { font-size: 11px; line-height: 1.25; color: var(--muted); }
+.queue-rail span { color: var(--accent); font-size: 18px; line-height: 1; }
+.queue-rail.is-active {
+  border-color: var(--accent);
+  background: var(--tab-active-bg);
+  box-shadow: 0 0 0 1px var(--node-focus-ring);
+}
+.queue-rail.is-active b { color: var(--accent); }
+
+.queue-lane {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 122px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 12px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  border-bottom: 2px solid var(--node-edge);
+  scrollbar-width: thin;
+}
+
+.queue-lane::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  border-top: 1px dashed var(--edge);
+  pointer-events: none;
+}
+
+.structure-empty {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  min-height: 88px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border: 1px dashed var(--edge);
+  border-radius: 10px;
+  color: var(--muted);
+  font-size: 13px;
+  text-align: center;
+}
+
+.structure-empty-icon { color: var(--accent); font-size: 22px; line-height: 1; }
+
+.structure-item {
+  position: relative;
+  z-index: 1;
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  border: 1px solid var(--node-edge);
+  background: var(--node-bg);
+  color: var(--node-fg);
+  box-shadow: 0 4px 12px var(--stage-bg-b);
+  transition: border-color .16s, transform .16s;
+}
+
+.stack-item {
+  width: 84%;
+  align-self: center;
+  min-height: 42px;
+  border-radius: 8px;
+  font: 800 17px/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+
+.queue-item {
+  min-width: 54px;
+  min-height: 54px;
+  padding: 4px 8px;
+  border-radius: 10px;
+  font: 800 16px/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+
+.structure-value { min-width: 1ch; overflow-wrap: anywhere; text-align: center; }
+
+.structure-tag {
+  font-size: 10px;
+  line-height: 1.2;
+  letter-spacing: .6px;
+  color: var(--tag-green-fg);
+  background: var(--tag-green-bg);
+  border-radius: 5px;
+  padding: 1px 5px;
+  white-space: nowrap;
+  text-transform: uppercase;
+}
+
+.structure-item.is-top { border-color: var(--accent); }
+.structure-item.is-active,
+.structure-item.is-peeking {
+  border-color: var(--accent);
+  background: var(--node-focus-bg);
+  color: var(--node-focus-fg);
+  box-shadow: 0 0 0 2px var(--node-focus-ring), 0 0 20px var(--bar-focus-glow);
+}
+.queue-item.queue-front { border-left-width: 3px; border-left-color: var(--accent-2); }
+.queue-item.queue-rear { border-right-width: 3px; border-right-color: var(--accent); }
+
+.structure-item.is-entering { animation: structure-enter .28s ease-out both; }
+.stack-item.is-entering { animation-name: stack-enter; }
+.queue-item.is-entering { animation-name: queue-enter; }
+
+/* Removed elements are shown once, at the open top of the tank, then fade out.
+   They stay in flow (margin-bottom:auto) so current items remain anchored at
+   the closed bottom and never overlap the operation row above the tank. */
+.stack-leaving {
+  position: relative;
+  z-index: 3;
+  width: 84%;
+  align-self: center;
+  margin-bottom: auto;
+  opacity: .9;
+  border-style: dashed;
+  animation: stack-leave .32s ease-in both;
+}
+
+/* Dequeue's removed element has its own row above the lane, so the remaining
+   items close the gap immediately and never leave an invisible slot. */
+.queue-exit {
+  width: 100%;
+  min-height: 34px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-left: 66px;
+}
+
+.queue-exit-label {
+  color: var(--muted);
+  font-size: 11px;
+  letter-spacing: .5px;
+}
+
+.queue-leaving {
+  min-width: 46px;
+  min-height: 30px;
+  padding: 2px 8px;
+  border-style: dashed;
+  opacity: .9;
+  animation: queue-leave .32s ease-in both;
+}
+
+@keyframes structure-enter {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes stack-enter {
+  from { opacity: 0; transform: translateY(-28px) scale(.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes stack-leave {
+  from { opacity: .9; transform: translateY(0) scale(1); }
+  to { opacity: .45; transform: translateY(-40px) scale(.92); }
+}
+@keyframes queue-enter {
+  from { opacity: 0; transform: translateX(28px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes queue-leave {
+  from { opacity: .9; transform: translateX(0); }
+  to { opacity: .45; transform: translateX(-18px); }
+}
+
+@media (max-width: 760px) {
+  .stack-tank { width: min(250px, 100%); }
+  .stack-body { min-height: 210px; padding-left: 9px; padding-right: 9px; }
+  .queue-exit { padding-left: 52px; }
+  .queue-track { gap: 5px; }
+  .queue-rail { flex-basis: 46px; padding: 6px 3px; }
+  .queue-rail b { font-size: 10.5px; letter-spacing: .7px; }
+  .queue-rail small { font-size: 10px; }
+  .queue-lane { gap: 6px; padding: 10px 8px; min-height: 112px; }
+  .queue-item { min-width: 46px; min-height: 48px; padding: 3px 6px; font-size: 14px; }
+  .structure-hint { flex-basis: 100%; text-align: left; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .structure-item,
+  .structure-item.is-entering,
+  .stack-leaving,
+  .queue-leaving {
+    animation: none !important;
+    transition: none !important;
+  }
+  .stack-leaving { opacity: 1; }
+  .queue-leaving { opacity: 1; }
+}

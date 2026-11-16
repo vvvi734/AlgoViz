@@ -7,6 +7,8 @@
  * file system assumptions live here.
  */
 import { bubbleSortLesson } from './bubbleSort';
+import { queueLesson } from './queue';
+import { stackLesson } from './stack';
 import { factorialLesson } from './factorial';
 import { validateLessonSet } from './schema';
 import type { Lesson, LessonValidationResult } from './types';
@@ -40,7 +42,7 @@ export function createLessonRegistry(input: unknown[]): LessonRegistry {
   };
 }
 
-const BUNDLED: unknown[] = [bubbleSortLesson, factorialLesson];
+const BUNDLED: unknown[] = [bubbleSortLesson, factorialLesson, stackLesson, queueLesson];
 
 /** Courses shipped with the app itself (Stage 3B: two of them). */
 export const lessonRegistry: LessonRegistry = createLessonRegistry(BUNDLED);

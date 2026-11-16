@@ -4,7 +4,7 @@
 
 ## 0. 先决条件
 
-- 目标算法必须已存在于 AlgoLens（真实 id 见 `src/domain/algorithms/`，例如 `bubble` `binary` `linear` `factorial`）。
+- 目标算法必须已存在于 AlgoViz（真实 id 见 `src/domain/algorithms/`，例如 `bubble` `binary` `linear` `factorial`）。
 - 目标算法**还没有内置课程**才能被包接管。内置课程（当前为 `bubble`、`factorial`）永远优先，包对其声明课程会被拒绝（`algorithm-builtin-conflict`）。
 - 需要一门课程，包含 3～6 个教学阶段，中英文都要写。
 
@@ -131,6 +131,6 @@ lesson binary-search-basics → binary (5 steps)
 ## 7. 发布与合规
 
 - 附带 `LICENSE`，并在 `README.md` 写明第三方素材来源与许可。
-- 不要复制他人教程原文；AlgoLens 的课程文案与示例应为你自己的表达。
+- 不要复制他人教程原文；AlgoViz 的课程文案与示例应为你自己的表达。
 - 不要把用户数据、密钥或本地路径打进包。
 - 安装完全在用户浏览器本地完成：没有服务器、没有账号、没有远程市场。

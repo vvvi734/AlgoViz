@@ -47,7 +47,7 @@ algolens-search-basics.algopack
   "version": "1.0.0",
   "name": { "zh": "查找算法入门", "en": "Search basics" },
   "description": { "zh": "……", "en": "……" },
-  "author": "AlgoLens",
+  "author": "AlgoViz",
   "license": "MIT",
   "requiredTraceSchema": 1,
   "lessons": ["lessons/binary-search.json"],
@@ -136,7 +136,7 @@ algolens-search-basics.algopack
 ## 9. 许可证与版权
 
 - 包内必须携带 `LICENSE`（非空），`manifest.license` 只是短标识，二者应一致。
-- 若课程文案/示例改编自第三方，必须在 `README.md` 注明来源与许可证，并保留要求的版权声明。AlgoLens 官方示例包为原创内容，MIT。
+- 若课程文案/示例改编自第三方，必须在 `README.md` 注明来源与许可证，并保留要求的版权声明。AlgoViz 官方示例包为原创内容，MIT。
 - Core 只存储与展示文本，不主张对第三方内容的版权。
 
 ## 10. 未来扩展（未实现，仅记录边界）

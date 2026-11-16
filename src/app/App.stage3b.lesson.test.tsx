@@ -38,6 +38,12 @@ function renderApp() {
   );
 }
 
+/** Wait for the async first run, not just the initial legacy frame painted by the shell. */
+async function waitForInitialRun() {
+  await waitFor(() => expect(screen.getByTestId('progress').textContent).toBe('1 / 12'));
+  await waitFor(() => expect(screen.getByTestId('run-feedback').textContent).toContain('动画已生成'));
+}
+
 beforeEach(() => {
   window.localStorage.clear();
   mockedRun.mockReset();
@@ -47,7 +53,7 @@ beforeEach(() => {
 describe('Stage 3B — teaching steps follow the single timeline cursor', () => {
   it('renders the course and highlights the stage recorded by frame 0', async () => {
     renderApp();
-    await waitFor(() => expect(screen.getByTestId('progress').textContent).toBe('1 / 12'));
+    await waitForInitialRun();
     expect(screen.getByTestId('lesson-panel')).toBeTruthy();
     expect(screen.getByTestId('lesson-title').textContent).toContain('冒泡排序');
     await waitFor(() =>
@@ -57,7 +63,7 @@ describe('Stage 3B — teaching steps follow the single timeline cursor', () => 
 
   it('timeline → lesson: scrubbing and stepping update the highlighted stage', async () => {
     renderApp();
-    await waitFor(() => expect(screen.getByTestId('progress').textContent).toBe('1 / 12'));
+    await waitForInitialRun();
 
     fireEvent.change(screen.getByTestId('scrub'), { target: { value: '2' } });
     await waitFor(() => expect(screen.getByTestId('progress').textContent).toBe('3 / 12'));
@@ -80,7 +86,7 @@ describe('Stage 3B — teaching steps follow the single timeline cursor', () => 
 
   it('lesson → timeline: clicking a step seeks the real frame and pauses playback', async () => {
     renderApp();
-    await waitFor(() => expect(screen.getByTestId('progress').textContent).toBe('1 / 12'));
+    await waitForInitialRun();
 
     // Playing first, so the click must also stop the timer.
     fireEvent.click(screen.getByTestId('play-btn'));
@@ -98,7 +104,7 @@ describe('Stage 3B — teaching steps follow the single timeline cursor', () => 
 
   it('keeps an algorithm without a course working and shows the empty state', async () => {
     renderApp();
-    await waitFor(() => expect(screen.getByTestId('progress').textContent).toBe('1 / 12'));
+    await waitForInitialRun();
 
     fireEvent.click(screen.getByTestId('algo-binary'));
     // The course-less algorithm must render an explicit empty state, never crash.
@@ -112,7 +118,7 @@ describe('Stage 3B — teaching steps follow the single timeline cursor', () => 
 
   it('switching language keeps the frame, the code and the highlighted step id', async () => {
     renderApp();
-    await waitFor(() => expect(screen.getByTestId('progress').textContent).toBe('1 / 12'));
+    await waitForInitialRun();
     fireEvent.change(screen.getByTestId('scrub'), { target: { value: '2' } });
     expect(screen.getByTestId('lesson-active-step').dataset.stepId).toBe('swap');
 
@@ -128,7 +134,7 @@ describe('Stage 3B — teaching steps follow the single timeline cursor', () => 
 
   it('does not keep the old teaching highlight after a new run', async () => {
     renderApp();
-    await waitFor(() => expect(screen.getByTestId('progress').textContent).toBe('1 / 12'));
+    await waitForInitialRun();
     fireEvent.change(screen.getByTestId('scrub'), { target: { value: '11' } });
     await waitFor(() => expect(screen.getByTestId('progress').textContent).toBe('12 / 12'));
     await waitFor(() =>
@@ -136,7 +142,7 @@ describe('Stage 3B — teaching steps follow the single timeline cursor', () => 
     );
 
     fireEvent.click(screen.getByTestId('run-btn'));
-    await waitFor(() => expect(screen.getByTestId('progress').textContent).toBe('1 / 12'));
+    await waitForInitialRun();
     expect(screen.getByTestId('lesson-active-step').dataset.stepId).toBe('init');
   });
 
@@ -145,7 +151,7 @@ describe('Stage 3B — teaching steps follow the single timeline cursor', () => 
       frames: linkedFrames.map(({ lessonStepId: _ignored, ...frame }) => frame),
     }));
     renderApp();
-    await waitFor(() => expect(screen.getByTestId('progress').textContent).toBe('1 / 12'));
+    await waitForInitialRun();
     expect(screen.getByTestId('lesson-panel')).toBeTruthy();
     expect(screen.queryByTestId('lesson-active-step')).toBeNull();
     expect(screen.getByTestId('lesson-unlinked')).toBeTruthy();

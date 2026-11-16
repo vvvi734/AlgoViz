@@ -1,10 +1,10 @@
 {
   "name": "algolens",
   "private": true,
-  "version": "0.8.0-phase7a",
+  "version": "0.9.0-phase7b",
   "type": "module",
   "license": "MIT",
-  "description": "AlgoLens - a browser-first, multi-language algorithm visualization learning platform",
+  "description": "AlgoViz - interactive data structure and algorithm visualization learning platform",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
