@@ -5,7 +5,7 @@
 - 分支：`main`
 - 远端：`https://gitee.com/vvvi734/algolens.git`（未修改）
 - 起始 HEAD：`47c6951 docs(stage7b): record post-delivery auto-run fix`
-- 功能与文档提交：见 J 节（提交后回填）
+- 功能与文档提交：`0ab61cd`（见 J 节）
 
 ---
 
@@ -373,9 +373,9 @@ class Node:
 - 分支：`main`
 - 远端：`origin https://gitee.com/vvvi734/algolens.git`（未修改）
 - 起始 HEAD：`47c6951`
-- 功能与文档提交：**提交后回填**
-- 报告哈希回填提交：**提交后回填**
-- 工作区：提交后 clean
+- 功能与文档提交：`0ab61cd`
+- 报告哈希回填提交：紧随其后的 docs 回填提交；为避免哈希递归，正文不记录该提交自身哈希，可用 `git log -1 --format=%h` 核对
+- 工作区：docs 回填提交后 clean
 - 推送：`git push origin main`，结果见交付说明
 
 本阶段未使用 `git reset --hard`、`git clean -fd`、强推或改写历史。
