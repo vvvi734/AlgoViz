@@ -1,6 +1,6 @@
 # Stage 4 报告 — 可安装教学知识包系统（`.algopack` MVP）
 
-> 版本 `0.5.0-phase4` ｜ 代码提交 `6d4c814` ｜ 基线 HEAD `7a7f81b`（Stage 3B）
+> 版本 `0.5.0-phase4` ｜ 代码提交 `6d4c814` ｜ 报告提交 `6b703d8` ｜ 基线 HEAD `7a7f81b`（Stage 3B）
 > 本报告只陈述真实执行结果；未实现的能力一律标为未完成，不以设计代替实现。
 
 ## A. 18 项验收矩阵
@@ -155,9 +155,11 @@ OK packs/algolens-search-basics.algopack
 - 分支：`main`（跟踪 `origin/main`），远端 `https://gitee.com/vvvi734/algolens.git`。
 - 基线 HEAD：`7a7f81b`（Stage 3B 文档回填）。
 - 本阶段代码 + 文档提交：`6d4c814` — `feat(phase-4): installable .algopack packs with safe import and local install`。
-- 工作区：提交后干净（`git status` 无输出）；本报告作为文档回填单独提交。
-- 推送：使用普通 `git push`（无 force、无改写历史、不改远端地址）；推送结果在下一行回填。
-  - 推送结果：待回填（见本次提交后的推送记录）。
+- 本报告提交：`6b703d8` — `docs(phase-4): add the stage 4 report covering the 18 acceptance items`。
+- 工作区：提交后干净（`git status --short --branch` 仅显示 `## main...origin/main`）。
+- 推送：普通 `git push`（无 force、无改写历史、不改远端地址），结果如下。
+  - **推送成功**：`To https://gitee.com/vvvi734/algolens.git` / `7a7f81b..6b703d8  main -> main`；本地 `main` 与 `origin/main` 同步。
+
 
 ## K. 下一阶段准备（仅评估，不实现）
 
