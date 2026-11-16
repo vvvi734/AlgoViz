@@ -102,8 +102,16 @@ test.describe('AlgoLens Stage 2 — Monaco + Python sync (real browser)', () => 
 
     // factorial(4) begins: at least one frame, and stepping forward pushes more.
     await expect(page.locator('[data-testid="call-frame-f1"]')).toBeVisible();
-    await page.click('[data-testid="next-btn"]');
-    await expect(page.locator('[data-testid="call-frame-f2"]')).toBeVisible({ timeout: 15_000 });
+
+    // Step down until the inner frame appears. Stage 3B added a real `recurse`
+    // event before the deeper call, so the exact number of steps between two
+    // calls is data-driven — assert the behaviour, not a fixed ordinal.
+    let stepsDown = 0;
+    for (; stepsDown < 6; stepsDown += 1) {
+      if ((await page.locator('[data-testid="call-frame-f2"]').count()) > 0) break;
+      await page.click('[data-testid="next-btn"]');
+    }
+    await expect(page.locator('[data-testid="call-frame-f2"]')).toBeVisible();
 
     // The variables watch shows the per-frame `n`.
     await expect(page.locator('[data-testid="variables-watch"]')).toContainText('n');
@@ -112,7 +120,7 @@ test.describe('AlgoLens Stage 2 — Monaco + Python sync (real browser)', () => 
     await expect(page.locator('.algolens-active-line').first()).toBeVisible();
 
     // Rewind restores the historical (smaller) call stack.
-    await page.click('[data-testid="prev-btn"]');
+    for (let i = 0; i < stepsDown; i += 1) await page.click('[data-testid="prev-btn"]');
     await expect(page.locator('[data-testid="call-frame-f2"]')).toHaveCount(0);
 
     // Scrub to the last event: the call stack is cleared and `answer` = 24.
@@ -142,6 +150,91 @@ test.describe('AlgoLens Stage 2 — Monaco + Python sync (real browser)', () => 
     const last = await page.locator('[data-testid="scrub"]').evaluate((el) => (el as HTMLInputElement).max);
     await page.locator('[data-testid="scrub"]').fill(String(last));
     await expect(page.locator('[data-testid="variables-watch"]')).toContainText('3');
+  });
+});
+
+/**
+ * Stage 3B — the teaching panel is driven by the SAME cursor as the timeline,
+ * and its highlight comes from `lesson_step=` recorded by the real Python run.
+ * No mocked frames here: these tests require the actual Pyodide download.
+ */
+test.describe('Stage 3B — teaching steps synced with real Pyodide execution', () => {
+  test('bubble sort: lesson highlight follows the real trace and a step click seeks', async ({ page }) => {
+    await page.goto('/');
+    await expect(page.locator('.monaco-editor')).toBeVisible({ timeout: 45_000 });
+
+    await page.selectOption('#code-lang', 'python');
+    await page.click('[data-testid="algo-bubble"]');
+
+    // First frame is the real `init` stage (recorded by trace(..., lesson_step='init')).
+    await expect(page.locator('[data-testid="lesson-title"]')).toContainText('冒泡排序');
+    await expect(page.locator('[data-testid="lesson-active-step"]')).toHaveAttribute(
+      'data-step-id',
+      'init',
+      { timeout: 120_000 },
+    );
+
+    // `compare` is a repeated teaching stage, so its badge counts many frames.
+    const compareFrames = Number(
+      await page.locator('[data-testid="lesson-step-compare"] .lessonstep-count').textContent(),
+    );
+    expect(compareFrames).toBeGreaterThan(1);
+
+    // Lesson → timeline: clicking the step seeks to a real compare frame and
+    // pauses playback; variables + Monaco line move to the same cursor.
+    await page.click('[data-testid="lesson-step-compare"]');
+    await expect(page.locator('[data-testid="lesson-active-step"]')).toHaveAttribute('data-step-id', 'compare');
+    await expect(page.locator('[data-testid="variables-watch"]')).toContainText('arr');
+    await expect(page.locator('[data-testid="variables-watch"]')).toContainText('i');
+    await expect(page.locator('.algolens-active-line').first()).toBeVisible();
+    await expect(page.locator('[data-testid="play-btn"]')).toContainText('播放');
+
+    // Timeline → lesson: stepping forward keeps a stage the run really recorded.
+    await page.click('[data-testid="next-btn"]');
+    const stageAfterStep = await page.locator('[data-testid="lesson-active-step"]').getAttribute('data-step-id');
+    expect(['compare', 'swap']).toContain(stageAfterStep);
+
+    // The final frame belongs to `done`.
+    const last = await page.locator('[data-testid="scrub"]').evaluate((el) => (el as HTMLInputElement).max);
+    await page.locator('[data-testid="scrub"]').fill(String(last));
+    await expect(page.locator('[data-testid="lesson-active-step"]')).toHaveAttribute('data-step-id', 'done');
+  });
+
+  test('factorial recursion: lesson stages track the real call stack, answer stays 24', async ({ page }) => {
+    await page.goto('/');
+    await expect(page.locator('.monaco-editor')).toBeVisible({ timeout: 45_000 });
+
+    await page.selectOption('#code-lang', 'python');
+    await page.click('[data-testid="algo-factorial"]');
+
+    await expect(page.locator('[data-testid="lesson-title"]')).toContainText('递归阶乘');
+    // Frame 0 is the decorator-emitted `call` event of factorial(4).
+    await expect(page.locator('[data-testid="lesson-active-step"]')).toHaveAttribute(
+      'data-step-id',
+      'call',
+      { timeout: 120_000 },
+    );
+    await expect(page.locator('[data-testid="call-frame-f1"]')).toBeVisible();
+
+    // Jump to the first `combine` frame: the call stack must still be on screen
+    // and the variables must belong to that depth, not to a guessed state.
+    await page.click('[data-testid="lesson-step-combine"]');
+    await expect(page.locator('[data-testid="lesson-active-step"]')).toHaveAttribute('data-step-id', 'combine');
+    await expect(page.locator('[data-testid="call-stack"]')).toBeVisible();
+    await expect(page.locator('[data-testid="variables-watch"]')).toContainText('n');
+    await expect(page.locator('.algolens-active-line').first()).toBeVisible();
+
+    // End of the trace: `done` stage, real answer 24, stack cleared.
+    const last = await page.locator('[data-testid="scrub"]').evaluate((el) => (el as HTMLInputElement).max);
+    await page.locator('[data-testid="scrub"]').fill(String(last));
+    await expect(page.locator('[data-testid="lesson-active-step"]')).toHaveAttribute('data-step-id', 'done');
+    await expect(page.locator('[data-testid="variables-watch"]')).toContainText('24');
+    await expect(page.locator('[data-testid="call-stack"]')).toHaveCount(0);
+
+    // Backward: returning to frame 0 restores the `call` stage and the stack.
+    await page.locator('[data-testid="scrub"]').fill('0');
+    await expect(page.locator('[data-testid="lesson-active-step"]')).toHaveAttribute('data-step-id', 'call');
+    await expect(page.locator('[data-testid="call-frame-f1"]')).toBeVisible();
   });
 });
 

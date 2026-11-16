@@ -6,8 +6,10 @@ import { CodeEditorPanel } from './CodeEditorPanel';
 import { ConceptPanel } from './ConceptPanel';
 import { SyncPanel } from './SyncPanel';
 import { CallStackPanel } from './CallStackPanel';
+import { LessonPanel } from './LessonPanel';
 import { AiMentor } from './AiMentor';
 import type { LabController } from './useLabController';
+import { lessonRegistry } from '../../domain/lessons/registry';
 import { useI18n } from '../../i18n/I18nProvider';
 import { useTheme } from '../../theme/ThemeProvider';
 
@@ -42,6 +44,10 @@ export function LabView({ lab, apiUrl }: { lab: LabController; apiUrl: string })
   // Only render the call-stack panel for traces that actually carry one.
   const hasCallStack = lab.events.some((event) => !!event.callStack?.length);
 
+  // Stage 3B: the course for the current algorithm, or `undefined` for the
+  // algorithms that have none yet. The panel renders an explicit empty state.
+  const lesson = lessonRegistry.byAlgorithm(lab.currentAlgo);
+
   return (
     <div className="workspace" data-testid="learn-view">
       <AlgorithmSidebar
@@ -62,6 +68,13 @@ export function LabView({ lab, apiUrl }: { lab: LabController; apiUrl: string })
           <VisualStage event={currentEvent} />
           <Timeline events={lab.events} playback={lab.playback} />
         </section>
+        <LessonPanel
+          lesson={lesson}
+          events={lab.events}
+          index={lab.playback.index}
+          currentEvent={currentEvent}
+          onSeek={lab.playback.seek}
+        />
         {hasCallStack && (
           <CallStackPanel
             event={currentEvent}

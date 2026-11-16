@@ -1,7 +1,7 @@
 {
   "name": "algolens",
   "private": true,
-  "version": "0.3.0-phase3",
+  "version": "0.4.0-phase3b",
   "type": "module",
   "license": "MIT",
   "description": "AlgoLens - a browser-first, multi-language algorithm visualization learning platform",

@@ -8,7 +8,7 @@ describe('Python trace() runtime contract', () => {
   it('keeps the legacy two-argument call working', () => {
     // The signature must default message/line/variables so `trace(state)` and
     // `trace(state, message)` from the old presets keep running unchanged.
-    expect(PYTHON_TRACE_HELPER).toContain("def trace(state, message='', line=None, variables=None)");
+    expect(PYTHON_TRACE_HELPER).toContain("def trace(state, message='', line=None, variables=None, lesson_step=None)");
     expect(PYTHON_TRACE_HELPER).toContain("frame = {'state': _snapshot(state), 'message': str(message)}");
   });
 
@@ -61,10 +61,15 @@ describe('Python trace() runtime contract', () => {
 
 describe('Python recursion tracer contract (Stage 3)', () => {
   it('ships a tracked decorator that hands out distinct frame ids and emits call/return events', () => {
-    expect(PYTHON_RECURSION_HELPER).toContain('def tracked(fn)');
+    // Stage 3B widened the signature to an optional-argument decorator; the
+    // bare `@tracked` form must keep working, so `fn=None` + `decorate(fn)`
+    // is part of the contract, not an implementation detail.
+    expect(PYTHON_RECURSION_HELPER).toContain('def tracked(fn=None, *, call_step=None, return_step=None)');
+    expect(PYTHON_RECURSION_HELPER).toContain('if fn is None:');
+    expect(PYTHON_RECURSION_HELPER).toContain('return decorate(fn)');
     expect(PYTHON_RECURSION_HELPER).toContain("_FRAME_SEQ[0] += 1");
     expect(PYTHON_RECURSION_HELPER).toContain("fid = 'f' + str(_FRAME_SEQ[0])");
-    expect(PYTHON_RECURSION_HELPER).toContain("_emit_call(fn.__name__, frame, arg_dict, fn.__code__.co_firstlineno)");
+    expect(PYTHON_RECURSION_HELPER).toContain("_emit_call(target.__name__, frame, arg_dict, target.__code__.co_firstlineno, call_step)");
     expect(PYTHON_RECURSION_HELPER).toContain("frame['returnValue'] = _snapshot(retval)");
     expect(PYTHON_RECURSION_HELPER).toContain("frame['status'] = 'returning'");
   });

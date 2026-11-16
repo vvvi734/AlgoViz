@@ -130,6 +130,12 @@ export const traceEventSchema = z.object({
   sourceLocation: sourceLocationSchema.optional(),
   variables: z.array(variableSnapshotSchema).max(LIMITS.MAX_VARIABLES).optional(),
   callStack: z.array(callFrameSchema).max(LIMITS.MAX_CALL_STACK).optional(),
+  /**
+   * Stage 3B: teaching stage this frame belongs to, as recorded by the runner
+   * (Python `trace(..., lesson_step="compare")`). Never inferred from message
+   * text. Optional and additive, so every Stage-1/2/3 event still validates.
+   */
+  lessonStepId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).optional(),
 });
 export type TraceEvent = z.infer<typeof traceEventSchema>;
 

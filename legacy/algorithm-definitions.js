@@ -115,16 +115,19 @@ export const langExamples={
   // records real runtime variables (i/j/arr/n) and an explicit source line.
   // `line` points at the semantically meaningful statement (compare/swap), not
   // the trace() call itself. See src/domain/trace/schema.ts and pyodide.ts.
+  // Stage 3B adds `lesson_step=` so the course panel highlights the teaching
+  // stage the running code is actually in (never inferred from text).
   bubble:`arr = list(input)
 n = len(arr)
-trace({'type':'array','values':arr[:]}, '开始 / Start', line=1, variables={'n': n, 'arr': arr.copy()})
+trace({'type':'array','values':arr[:]}, '开始 / Start', line=1, variables={'n': n, 'arr': arr.copy()}, lesson_step='init')
 for i in range(n - 1):
     for j in range(n - 1 - i):
-        trace({'type':'array','values':arr[:],'focus':[j, j+1]}, '比较 / Compare', line=7, variables={'i': i, 'j': j, 'arr': arr.copy()})
+        trace({'type':'array','values':arr[:],'focus':[j, j+1]}, '比较 / Compare', line=7, variables={'i': i, 'j': j, 'arr': arr.copy()}, lesson_step='compare')
         if arr[j] > arr[j + 1]:
             arr[j], arr[j + 1] = arr[j + 1], arr[j]
-            trace({'type':'array','values':arr[:],'focus':[j, j+1]}, '交换 / Swap', line=8, variables={'i': i, 'j': j, 'arr': arr.copy()})
-trace({'type':'array','values':arr[:],'done':True}, '排序完成 / Sorted', line=10, variables={'arr': arr.copy()})`,
+            trace({'type':'array','values':arr[:],'focus':[j, j+1]}, '交换 / Swap', line=8, variables={'i': i, 'j': j, 'arr': arr.copy()}, lesson_step='swap')
+    trace({'type':'array','values':arr[:]}, '完成一轮 / Pass complete', line=4, variables={'i': i, 'arr': arr.copy()}, lesson_step='pass')
+trace({'type':'array','values':arr[:],'done':True}, '排序完成 / Sorted', line=11, variables={'arr': arr.copy()}, lesson_step='done')`,
   binary:`nums, target = input['nums'], input['target']
 left, right = 0, len(nums)-1
 while left <= right:
@@ -138,17 +141,21 @@ trace({'type':'array','values':nums[:]}, 'Search ended')`,
   // Stage 3 recursion demos: the @tracked decorator captures real call/return
   // events + per-depth locals; trace() auto-captures the caller's locals and
   // attaches the call-stack snapshot. Lines point at the meaningful statement.
-  factorial:`@tracked
+  // Stage 3B: call_step / return_step tag the decorator's own events, and the
+  // body traces tag check / recurse / combine — all recorded while executing.
+  factorial:`@tracked(call_step='call', return_step='return')
 def factorial(n):
     if n <= 1:
-        trace(stack_state(), '递归终止 / Base case', line=5)
+        trace(stack_state(), '递归终止 / Base case', line=3, lesson_step='check')
         return 1
-    result = n * factorial(n - 1)
-    trace(stack_state(), '本层计算 / Compute', line=8)
+    trace(stack_state(), '继续递归 / Recurse', line=7, lesson_step='recurse')
+    partial = factorial(n - 1)
+    result = n * partial
+    trace(stack_state(), '本层计算 / Combine', line=8, lesson_step='combine')
     return result
 
 answer = factorial(input)
-trace({'type':'stack','values':[],'done':True}, '完成 / Done', line=11, variables={'answer': answer})`,
+trace({'type':'stack','values':[],'done':True}, '完成 / Done', line=13, variables={'answer': answer}, lesson_step='done')`,
   fib:`@tracked
 def fib(n):
     if n <= 1:

@@ -88,6 +88,11 @@ function toEvent(frame: RawTraceFrame, index: number): TraceEvent {
   if (Array.isArray(frame.callStack) && frame.callStack.length) {
     event.callStack = frame.callStack.slice(0, LIMITS.MAX_CALL_STACK).map(toCallFrame);
   }
+  // Stage 3B: pass through only an id the runner actually recorded. No text
+  // sniffing, no algorithm-name guessing — no link means no link.
+  if (typeof frame.lessonStepId === 'string' && frame.lessonStepId) {
+    event.lessonStepId = frame.lessonStepId;
+  }
   return event;
 }
 

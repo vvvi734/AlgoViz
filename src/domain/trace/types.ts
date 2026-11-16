@@ -52,6 +52,11 @@ export interface RawTraceFrame extends TraceFrame {
   variables?: RawVariableSnapshot[];
   /** Full call-stack snapshot at this step (recursion demos). */
   callStack?: RawCallFrame[];
+  /**
+   * Teaching stage recorded at execution time (`trace(..., lesson_step=...)`).
+   * Absent for runners that never emit one — the adapter must not invent it.
+   */
+  lessonStepId?: string;
 }
 
 export const MAX_FRAMES = 500;
