@@ -1,8 +1,8 @@
-# AlgoLens 架构方案（v0.5 / Stage 4）
+# AlgoLens 架构方案（v0.6 / Stage 5A）
 
 本文描述从单文件原型（`index.html`，296 行 / ~70 KB）迁移到 React + TypeScript + Vite 后的模块边界、数据流与演进约束。
 
-**定位已收敛**：Python 为主要教学语言；JavaScript 作为前端实现语言继续支持既有 12 个算法演示。**C/C++ 与在线判题已从规划中取消**，相关入口与执行后端已移除。Stage 1 落地「统一 Trace Event Schema v1 + 旧动画兼容 + Python 冒泡排序同步演示」；Stage 2 落地「Monaco Editor + 执行行高亮 + Python 错误诊断 + 本地代码保存 + 真实浏览器 E2E」；Stage 3 落地「Python 递归调用栈 + 作用域感知变量观察 + 时间轴重置修复」；Stage 3B 落地「教学课程数据层 + 教学阶段关联 + 教学面板与时间轴双向联动」；Stage 4 落地「可安装教学知识包 `.algopack`（容器规范 + 安全导入 + 本地安装 + 注册表组合 + 管理页）」，详见 [STAGE1_REPORT.md](./STAGE1_REPORT.md)、[STAGE2_REPORT.md](./STAGE2_REPORT.md)、[STAGE3_REPORT.md](./STAGE3_REPORT.md)、[STAGE3B_REPORT.md](./STAGE3B_REPORT.md)、[STAGE4_REPORT.md](./STAGE4_REPORT.md) 与 [PACK_FORMAT_V1.md](./PACK_FORMAT_V1.md)。
+**定位已收敛**：Python 为主要教学语言；JavaScript 作为前端实现语言继续支持既有 12 个算法演示。**C/C++ 与在线判题已从规划中取消**，相关入口与执行后端已移除。Stage 1 落地「统一 Trace Event Schema v1 + 旧动画兼容 + Python 冒泡排序同步演示」；Stage 2 落地「Monaco Editor + 执行行高亮 + Python 错误诊断 + 本地代码保存 + 真实浏览器 E2E」；Stage 3 落地「Python 递归调用栈 + 作用域感知变量观察 + 时间轴重置修复」；Stage 3B 落地「教学课程数据层 + 教学阶段关联 + 教学面板与时间轴双向联动」；Stage 4 落地「可安装教学知识包 `.algopack`（容器规范 + 安全导入 + 本地安装 + 注册表组合 + 管理页）」；Stage 5A 落地「本地 MCP Agent 插件（stdio、6 工具 + 五级 Prompt）+ `.algosession.json` / `.algocontext.json` 双文件桥 + 网页导入/导出」，详见 [STAGE1_REPORT.md](./STAGE1_REPORT.md)、[STAGE2_REPORT.md](./STAGE2_REPORT.md)、[STAGE3_REPORT.md](./STAGE3_REPORT.md)、[STAGE3B_REPORT.md](./STAGE3B_REPORT.md)、[STAGE4_REPORT.md](./STAGE4_REPORT.md)、[STAGE5A_REPORT.md](./STAGE5A_REPORT.md)、[PACK_FORMAT_V1.md](./PACK_FORMAT_V1.md) 与 [MCP_INSTALL.md](./MCP_INSTALL.md)。
 
 ## 1. 现状盘点（迁移前）
 
@@ -26,6 +26,9 @@ flowchart TD
   A --> E[theme/ 三态主题 + CSS 设计令牌]
   A --> F[i18n/ zh-en 词典]
   C -. 通过接口调用 .-> D
+  M[packages/mcp-server · stdio MCP Adapter] --> C
+  M --> D
+  D -. ".algosession / .algocontext 文件交换（无实时通道）" .-> M
   E --> G[styles/tokens.css 唯一颜色源]
   G --> H[styles/app.css 只引用 var(--token)]
 ```
@@ -39,6 +42,7 @@ flowchart TD
 | `src/domain/trace` | Trace Event Schema（Zod 校验）、legacy 适配层、**纯函数播放状态机** | 不碰 `setInterval` / DOM；不编造变量/行号 |
 | `src/domain/lessons` | 教学课程数据：类型、Zod 校验、注册表、课程 ⇄ Trace 的**纯查找函数**、内置 + 知识包课程的组合目录（`catalog.ts`） | 不引用 React / Worker；不执行代码；不从 message 推断教学阶段 |
 | `src/domain/packs` | 知识包纯逻辑：格式常量与限额、路径白名单、manifest Zod 解析、中央目录策略、内容校验与预览 | 不解压、不写存储、不执行包内代码 |
+| `src/domain/sessions` | Stage 5A 两种桥接文件的**唯一定义**：`.algosession.json` / `.algocontext.json` 的类型、Zod 严格校验、builder/parser、限额、IssueCode | 不读写文件、不碰浏览器存储、不执行代码；不保存密钥/聊天/环境路径 |
 | `src/domain/visualization` | `TraceState → VisualModel` 纯映射、日志窗口 | 不写 `innerHTML` |
 | `src/runtime/js` | Worker 客户端 + 与 Worker 共用的纯执行体 | 不在主线程 `new Function` |
 | `src/runtime/python` | Pyodide classic worker（按需 CDN）+ 扩展版 `trace()` | 不内置 Pyodide 到 bundle |
@@ -50,6 +54,7 @@ flowchart TD
 | `src/theme` | 偏好解析、媒体查询监听、根元素属性 | 不写组件颜色 |
 | `src/i18n` | 词典、翻译、语言持久化 | 不放业务文案以外的逻辑 |
 | `src/features/*` | React 组件 + 状态 hook | 不直接摸 DOM / 存储 |
+| `packages/mcp-server` | Stage 5A 本地 MCP Adapter：stdio 生命周期、目录配置与 `fsSafe`、课程/包/会话/上下文 6 个工具、五级教学 Prompt | 不引用 React / DOM / IndexedDB；不执行 Python；不联网；不扫描磁盘；不复制第二套校验规则 |
 | `legacy/` | 迁移前数据定义，作为回归基线来源 | 不被应用运行时引用 |
 | `src/test/fixtures` | 由 `npm run sync:legacy` 生成的帧快照 | 不随测试运行自动更新 |
 
@@ -99,6 +104,15 @@ flowchart TD
 - **示例只载入不执行**：`applyCourseExample()` 只写编辑器 + 切语言 + 填 `input`，不调用 `runForLanguage`（App 级测试断言运行次数不变）；用户点「运行」才进既有 Pyodide Worker。Pyodide 不是恶意 Python 的沙箱，风险在预览阶段明示。
 - **可作者化**：`scripts/build-pack.mjs` 打包、`scripts/validate-pack.ts` 跑真实 `readPackArchive` + `validatePack`，与浏览器同一条校验链，CLI 通过即导入可用。
 
+### 3.8 MCP Adapter：共享 Core，隔离宿主（Stage 5A）
+- **Adapter 不是第二个后端**：`packages/mcp-server` 只把已有 Core 暴露给 MCP 宿主。课程来自 `domain/lessons`，包解析复用 `runtime/packs/zip.ts` + `domain/packs/validate.ts`，两种文件格式来自 `domain/sessions`；没有第二套课程、第二套包规则、第二套 Trace。
+- **一个方向、一个通道**：Node 侧 `StdioServerTransport`，stdout 只走 JSON-RPC，所有诊断写 stderr。没有 HTTP、没有 WebSocket、没有监听端口，因此不需要鉴权层，也不构成新增攻击面。
+- **能力即目录**：`--pack-dir`（只读包）/ `--session-dir`（只写会话）/ `--context-dir`（只读上下文）必须由用户显式给出（CLI 或 `ALGOLENS_*` 环境变量，绝对路径）。未配置时对应工具直接禁用并给出配置方法，**不猜默认目录、不扫描磁盘**。
+- **文件名不是路径**：`fsSafe.ts` 统一执行四道闸门——裸文件名正则 → `realpath` 容器校验 → `lstat` 拒绝符号链接 → `stat` 大小预检；写侧用 `wx` 独占创建，同名自动加 `-2..-50` 后缀，**永不覆盖**。
+- **浏览器不可见是事实而非缺陷**：包安装在 IndexedDB，stdio 进程读不到。`list_available_packs` / `list_lessons` 显式输出 `browserIndexedDbVisible:false`；会话用 `lessonOrigin` 记录来源，导入时包缺失返回 `origin-pack-missing` 并提示先安装。
+- **导入不执行，导出不重跑**：`useSessionTransfer` 的 apply 只做 stop → flush → 切语言 → 写编辑器/输入 → 清空事件；导出只序列化 `events[index]`，不调用 `runForLanguage`。App 级测试用"运行次数不变"与"帧号不变"断言这两条。
+- **Prompt 不给 AI，只给宿主**：`teach_algorithm` 组装课程与真实帧，并硬性区分"数据/指令"、"真实帧/推断"；不内置模型调用，也不需要任何 API Key。Prompt 约束是模板，不承诺绝对防剧透。
+
 ## 4. 测试策略
 
 | 层次 | 工具 | 覆盖 |
@@ -106,9 +120,12 @@ flowchart TD
 | 纯逻辑单测 | Vitest | 主题解析、播放状态机（含 `clampPlayback`）、可视化映射、i18n、题库数据、关键词路由、教学课程校验与阶段查找、**知识包 manifest/路径/中央目录/内容校验** |
 | 帧回归 | Vitest + legacy 快照 | 14 个算法逐帧一致（12 旧 + 阶乘/斐波那契）、空/重复/单元素输入、排序终态 |
 | 存储单测 | Vitest + fake-indexeddb | 安装成功、刷新恢复、卸载隔离、重复安装、版本冲突/显式替换、写事务失败回滚、配额映射、存储不可用 |
+| 会话/上下文格式 | Vitest（node + jsdom） | 两文件 Schema、格式版本、未知键拒绝、`stepIndex === event.step`、大小限额、篡改检测、导出不重跑 |
+| MCP 协议 | Vitest + 官方 SDK `Client` + `InMemoryTransport` | 工具/提示词发现、参数校验、内置+包课程、中英 stepId、未知 lesson/step、会话写盘复验且从不覆盖、上下文读取（穿越/绝对路径/符号链接/超限/篡改/坏 JSON）、恶意包文本、Prompt 五级 |
+| stdio 子进程 | Node + `StdioClientTransport` | 真实 `dist/server.mjs` 启动、握手、6 工具、真实上下文回读、stderr 诊断（`scripts/smoke.mjs`） |
 | 组件冒烟 | Vitest + jsdom + Testing Library | 14 个算法入口、时间轴交互与 **Trace 切换重置**、三态主题、语言切换、视图切换、调用栈面板与作用域变量、教学面板（高亮/禁用/跳转/空态）、知识包页（预览/确认/卸载/错误文案）、**App 级导入→课程→卸载** |
 | 令牌契约 | Vitest 读 CSS 文本 | 两套主题 token 完整性、无硬编码颜色 |
-| E2E | Playwright（真实 Edge 无头 + `vite preview`） | Monaco 加载、Python 冒泡同步高亮、SyntaxError 波浪线出现/清除、草稿自动保存/刷新恢复、主题切换、真实 Pyodide 阶乘/斐波那契递归栈、JS 长短 Trace 切换重置、**教学步骤与真实数组/变量/调用栈同步**（`e2e/lab.spec.ts`）、**知识包导入→安装→刷新恢复→卸载**与**包内 Python 示例真实 Trace**（`e2e/packs.spec.ts`） |
+| E2E | Playwright（真实 Edge 无头 + `vite preview`） | Monaco 加载、Python 冒泡同步高亮、SyntaxError 波浪线出现/清除、草稿自动保存/刷新恢复、主题切换、真实 Pyodide 阶乘/斐波那契递归栈、JS 长短 Trace 切换重置、**教学步骤与真实数组/变量/调用栈同步**（`e2e/lab.spec.ts`）、**知识包导入→安装→刷新恢复→卸载**与**包内 Python 示例真实 Trace**（`e2e/packs.spec.ts`）、**Agent 会话导入→用户运行→步骤同步**与**导出真实帧→Schema 复验**（`e2e/session.spec.ts`） |
 | a11y | axe | **未实现**，见后续 Issue |
 
 `npm run typecheck`、`npm test`、`npm run build` 是每次 PR 的必过门槛（见 `.github/workflows/ci.yml`）。
@@ -125,7 +142,8 @@ Stage 2（已完成）: Monaco 编辑器（懒加载/本地 Worker）→ 执行�
 Stage 3（已完成）: callStack 协议落地 → Python @tracked 递归追踪 → 调用栈面板与作用域变量 → 阶乘/斐波那契端到端 → 时间轴重置与索引钳制修复
 Stage 3B（已完成）: Lesson 数据层（类型/Zod/注册表）→ `lessonStepId` 协议扩展与执行时记录 → 教学面板 → 步骤 ⇄ 时间轴双向联动 → 冒泡/阶乘课程
 Stage 4（已完成）: 格式规范与限额 → 路径白名单 → 有界 ZIP 读取 → manifest/Lesson/冲突校验与预览 → IndexedDB 单事务安装 → 课程目录组合（内置优先）→ 管理页 → 官方示例包与真实 Trace 同步
-后续             : MCP Agent 适配层（课程查询 / Trace 读取）、树/图与动态规划可视化、练习页 Monaco、a11y / axe、AI 渐进式教学、远程包市场与签名
+Stage 5A（已完成）: 共享会话/上下文格式 → 课程与包工具 → stdio MCP Adapter 与目录/路径安全边界 → 会话文件生成 → 网页导入（不自动运行）→ 真实帧导出与上下文回读 → 五级教学 Prompt → 协议测试 / stdio 冒烟 / 真实浏览器双流程
+后续             : 网页 AI 导师与渐进式教学、Agent ⇄ 浏览器实时同步（Stage 5B 候选）、树/图与动态规划可视化、练习页 Monaco、a11y / axe、远程包市场与签名
 ```
 
 `Trace Event Schema v1` 是编辑器诊断、递归栈动画与后续树/图可视化的共同前置：Monaco 需要根据 `event.sourceLocation` 高亮，调用栈读取 `callStack`，任何新结构都必须先扩展协议再改渲染，不允许渲染层自己发明字段。

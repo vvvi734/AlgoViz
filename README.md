@@ -4,8 +4,8 @@
 
 面向大学生与 408 考研学生的浏览器端算法学习平台：**Python 在浏览器内运行**，根据真实执行结果生成逐帧动画，并同步展示代码位置、变量值与步骤讲解。完全本地运行，无需租服务器。
 
-> **当前版本：v0.5 Stage 4。** 刚完成「可安装教学知识包系统（`.algopack` MVP）」：知识包是 ZIP 容器里的纯内容（`manifest.json` + JSON 课程 + UTF-8 Python 示例 + LICENSE），导入时先做路径白名单、条目数/单文件/总解压/压缩比限额与有界流式解压，再跑 manifest、Lesson Schema、算法与冲突校验，**预览确认后**才以 IndexedDB 单事务安装；刷新可恢复，卸载只删本包课程，内置课程永不可被覆盖。新增「知识包」页面、官方示例包 `packs/algolens-search-basics.algopack`（`binary` 二分查找 5 步课程 + 真实 Pyodide 教学示例）、打包/校验 CLI 与三份文档。新增 77 项单测与 2 条真实浏览器 E2E（共 298 项 / 11 条）。
-> 定位已收敛：**Python 为主要教学语言**，JavaScript 作为前端实现语言继续支持既有 12 个算法演示；**C / C++ 与在线判题已从规划中取消**。详见 [阶段一总结](docs/STAGE1_REPORT.md)、[阶段二总结](docs/STAGE2_REPORT.md)、[阶段三总结](docs/STAGE3_REPORT.md)、[阶段 3B 总结](docs/STAGE3B_REPORT.md) 与 [阶段四总结](docs/STAGE4_REPORT.md)；知识包格式与作者指引见 [PACK_FORMAT_V1](docs/PACK_FORMAT_V1.md)、[PACK_AUTHOR_GUIDE](docs/PACK_AUTHOR_GUIDE.md)；参考来源与许可见 [REFERENCES](docs/REFERENCES.md)。
+> **当前版本：v0.6 Stage 5A。** 在 Stage 4 知识包基础上交付第一个**本地 MCP Agent 插件**：`packages/mcp-server` 用官方 TS SDK（1.32.2）走 stdio，提供 6 个工具（课程查询、知识包查询、学习会话生成、学习上下文读取）与 `teach_algorithm` 五级启发式 Prompt；网页新增「学习会话」面板，可导入 Agent 生成的 `.algosession.json`、导出当前真实帧为 `.algocontext.json`。两种文件由共享域层严格校验：导入不会自动运行（时间轴保持 `0 / 0`），导出不会重新执行。新增 44 项单测与 2 条真实浏览器 E2E（共 342 项 / 13 条）。
+> 定位已收敛：**Python 为主要教学语言**，JavaScript 作为前端实现语言继续支持既有 12 个算法演示；**C / C++ 与在线判题已从规划中取消**。详见 [阶段一总结](docs/STAGE1_REPORT.md)、[阶段二总结](docs/STAGE2_REPORT.md)、[阶段三总结](docs/STAGE3_REPORT.md)、[阶段 3B 总结](docs/STAGE3B_REPORT.md)、[阶段四总结](docs/STAGE4_REPORT.md) 与 [阶段 5A 总结](docs/STAGE5A_REPORT.md)；知识包格式与作者指引见 [PACK_FORMAT_V1](docs/PACK_FORMAT_V1.md)、[PACK_AUTHOR_GUIDE](docs/PACK_AUTHOR_GUIDE.md)；MCP 安装与宿主配置见 [MCP_INSTALL](docs/MCP_INSTALL.md)；参考来源与许可见 [REFERENCES](docs/REFERENCES.md)。
 
 ---
 
@@ -32,6 +32,15 @@
 | 知识包管理界面 | ✅ 已实现 | 「知识包」页：已装列表、导入、预览确认、版本替换提示、卸载确认、空态与错误态，中英双语 + 三态主题 |
 | 课程注册表组合 | ✅ 已实现 | `createLessonCatalog`：内置优先，包课程同 Schema 校验，非法包内容跳过而非崩溃；卸载即失效 |
 | 官方示例知识包 | ✅ 已实现 | `packs/algolens-search-basics.algopack`（5 条目 / 6100 B）：`binary` 二分查找 5 步双语课程 + 真实 Pyodide 示例 |
+| 学习会话格式（`.algosession.json`） | ✅ 已实现 | `domain/sessions`：严格 Zod、`sessionFormatVersion=1`、96 KiB / 40k 源码字符 / 8 KiB 输入；`lessonOrigin` 记录课程来源 |
+| 学习上下文格式（`.algocontext.json`） | ✅ 已实现 | 真实帧 + 变量 + 调用栈 + 教学阶段；128 KiB；源码仅在用户勾选时写入；导出不重跑 |
+| Agent 学习会话导入 | ✅ 已实现 | 网页「学习会话」面板：选文件 → 预览（课程/阶段/是否含源码）→ 确认应用；不自动运行、不覆盖草稿前需确认 |
+| 学习上下文导出 | ✅ 已实现 | 一键下载当前帧，含源码为显式勾选；不重新执行、不上传网络 |
+| 本地 MCP Server（stdio） | ✅ 已实现 | `packages/mcp-server`，官方 SDK 1.32.2；`npm run mcp:build` / `mcp:start` / `mcp:smoke`；stdout 仅协议 |
+| MCP 工具：课程 / 知识包 / 会话 / 上下文 | ✅ 已实现 | 6 个工具：`list_lessons`、`get_lesson`、`get_lesson_step`、`list_available_packs`、`create_learning_session`、`inspect_learning_context` |
+| MCP 启发式教学 Prompt | ✅ 已实现 | `teach_algorithm` LEVEL 1–5；课程文本按不可信数据包裹；不调用任何模型 API、无 Key |
+| MCP 本地安全边界 | ✅ 已实现 | 三个目录必须显式配置（flag/env，绝对路径）；裸文件名 + realpath 容器 + 拒符号链接 + 大小预检 + 独占写不覆盖 |
+| 真实宿主接入 | ⚠️ 部分 | 协议层已用官方 Client + stdio 子进程 + Inspector CLI 实测；Claude Code / Cursor / VS Code **仅有配置模板，未实测** |
 | Python 递归调用栈 | ✅ 已实现 | `@tracked` 装饰器捕获真实调用/返回事件、唯一 frameId、逐层局部变量与返回值 |
 | 调用栈面板 | ✅ 已实现 | 栈式展示调用帧、高亮活跃帧、点击帧切换变量作用域、时间轴回退恢复历史栈 |
 | 同步观察面板 | ✅ 已实现 | 代码位置高亮 + 变量观察器 + 步骤讲解，四区随 `currentEvent` 联动 |
@@ -46,9 +55,9 @@
 | C / C++ | 🚫 已取消 | 语言入口、占位模板与 `/api/execute` 执行后端均已移除 |
 | 在线 Judge / 自动判题 | 🚫 已取消 | 相关入口与宣传已清理 |
 | 中英文界面 / 移动端适配 | ⚠️ 部分 | 覆盖全部现有文案；未做触控尺寸与可访问性审计 |
-| 自动化测试 | ✅ 已实现 | 298 项单测 / 帧回归 / jsdom 冒烟 + 11 条真实浏览器 E2E（Playwright + Edge，含真实 Pyodide 教学同步与知识包安装） |
+| 自动化测试 | ✅ 已实现 | 342 项单测 / 帧回归 / jsdom 冒烟 + 13 条真实浏览器 E2E（Playwright + Edge，含真实 Pyodide 教学同步、知识包安装、会话导入与上下文导出）；另有 MCP 协议测试 20 项与 stdio 冒烟 10 项 |
 | 知识包远程市场 / 包签名 | ⏳ 后续 | 本版只有本地文件导入；无远程仓库、无自动下载、无签名校验 |
-| MCP Agent / AI 助教 | ⏳ 后续 | 课程与 Trace 已可被外部查询，但尚未提供 Agent 适配层 |
+| 网页 AI 助教 / 实时 Agent 同步 | ⏳ 后续 | MCP 已能提供课程与真实帧，但网页侧仍无 AI 后端、无 WebSocket/HTTP 实时通道 |
 | 练习页编辑器 | ⏳ 后续 | 练习页仍为 textarea；Monaco 仅用于实验室主编辑器 |
 | GitHub Pages 部署 | ✅ 已实现 | workflow 构建 `dist/` 后发布 |
 | 开源贡献规范 | ✅ 基础版 | [CONTRIBUTING.md](CONTRIBUTING.md)、[行为准则](CODE_OF_CONDUCT.md) |
@@ -59,12 +68,22 @@
 npm ci
 npm run dev            # 开发服务器
 npm run typecheck      # TypeScript 严格检查
-npm test               # Vitest（298 项）
+npm test               # Vitest（342 项）
 npm run build          # tsc -b && vite build → dist/
 npm run preview        # 预览构建产物
-npm run test:e2e       # Playwright E2E（默认驱动本机 Microsoft Edge，11 条）
+npm run test:e2e       # Playwright E2E（默认驱动本机 Microsoft Edge，13 条）
 npm run pack:build     # 从 packs/src/<name>/ 构建 .algopack
 npm run pack -- packs/algolens-search-basics.algopack   # 校验知识包（与浏览器同一条校验链）
+```
+
+MCP（可选，独立依赖与产物，不影响网页；详见 [docs/MCP_INSTALL.md](docs/MCP_INSTALL.md)）：
+
+```sh
+npm run mcp:install    # 只装 packages/mcp-server 依赖（需 Node ≥ 20）
+npm run mcp:build      # esbuild → packages/mcp-server/dist/server.mjs
+npm run mcp:start -- --help                                     # 看用法（输出到 stderr）
+npm run mcp:smoke      # 真实 stdio 子进程冒烟（6 工具 + 1 prompt）
+npm run mcp:typecheck  # 子包类型检查
 ```
 
 浏览器打开 Vite 提示的地址。不要用 `file://` 直接打开：Worker 与模块加载会受限。
@@ -80,17 +99,19 @@ npm run sync:legacy
 ```
 src/
   app/         视图编排
-  features/    lab（含 SyncPanel 同步观察）/ packs（知识包页与管理控制器）/ practice / ai
-  domain/      algorithms / problems / lessons（教学课程数据 + catalog 组合）/ packs（容器、manifest、路径、校验）/ trace（schema + adapter + player）/ visualization
+  features/    lab（含 SyncPanel 同步观察 + SessionPanel 学习会话）/ packs（知识包页与管理控制器）/ practice / ai
+  domain/      algorithms / problems / lessons（教学课程数据 + catalog 组合）/ packs（容器、manifest、路径、校验）/ trace（schema + adapter + player）/ visualization / sessions（.algosession.json 与 .algocontext.json 格式）
   runtime/     js worker / python（Pyodide + 结构化诊断）/ packs（有界 ZIP 读取 + IndexedDB 存储）/ monaco（懒加载 + 主题）/ ai / url / storage / drafts
   theme/       三态主题解析与 Provider
   i18n/        中英词典与 Provider
   styles/      tokens.css（唯一颜色源）+ app.css
   test/        setup 与 legacy 帧快照
-e2e/            Playwright 真实浏览器测试（lab.spec.ts / packs.spec.ts）
+e2e/            Playwright 真实浏览器测试（lab.spec.ts / packs.spec.ts / session.spec.ts）
+packages/
+  mcp-server/   本地 MCP Adapter（stdio、官方 SDK、6 工具 + teach_algorithm；依赖与产物独立）
 packs/          知识包：src/<packId>/（源）+ <packId>.algopack（构建产物）
 legacy/        迁移前数据定义（回归基线来源，应用运行时不引用）
-docs/          ARCHITECTURE.md、阶段报告、PACK_FORMAT_V1.md、PACK_AUTHOR_GUIDE.md
+docs/          ARCHITECTURE.md、阶段报告、PACK_FORMAT_V1.md、PACK_AUTHOR_GUIDE.md、STAGE5A_REPORT.md、MCP_INSTALL.md
 scripts/       从 legacy 定义生成类型化数据、build-pack.mjs、validate-pack.ts
 ```
 
@@ -106,6 +127,12 @@ scripts/       从 legacy 定义生成类型化数据、build-pack.mjs、validat
 
 旧版 `frames[{state,message}]` 由 `src/domain/trace/adapter.ts` 无损转换为新协议；旧算法没有变量/行号时展示空态，**不编造数据**。
 
+### 与 MCP Agent 的两种文件（Web ⇄ Agent）
+
+- `.algosession.json`：Agent 写的**学习意图**（`sessionFormatVersion: 1`、`lessonId/algorithmId`、可选 `selectedStepId`、可选 Python `source`、可选 `input`、`lessonOrigin`）。上限 96 KiB，`.strict()` 拒绝未知键；网页导入后**不会**自动运行。
+- `.algocontext.json`：网页导出的**当前真实帧**（`contextFormatVersion: 1`、`stepIndex`、`totalEvents`、`lessonStepId`、真实 `event`、可选 `source`）。上限 128 KiB；导出不重跑；MCP 只从用户配置的目录读取裸文件名。
+- 两者都由 `src/domain/sessions/` 定义并被网页与 MCP 共用；MCP 看不到浏览器 IndexedDB，工具输出显式标注 `browserIndexedDbVisible: false`。
+
 ### AI 接口约定（协议，非实现）
 
 `POST /api/ai`：`{"action":"review_code","payload":{"code":"..."},"language":"zh"}` → `{"reply":"..."}`；
@@ -119,6 +146,8 @@ scripts/       从 legacy 定义生成类型化数据、build-pack.mjs、validat
 - 知识包是**纯内容**：ZIP 内只接受 `manifest.json` / `LICENSE` / `README.md` / `lessons/*.json` / `examples/*.py`，导入时不解压到磁盘、不执行包内代码、不渲染不可信 HTML（课程文本按纯文本/Markdown 安全显示）。
 - 包内 Python 示例在导入时只是惰性文本；只有用户在课程里点击「载入示例」再点击「运行」才会进入既有 Pyodide Worker。**Pyodide 不是针对恶意 Python 的完整沙箱**，请只运行你信任的包。
 - 安装数据保存在浏览器 IndexedDB，不上传服务器；清理站点数据/隐私模式会导致已装包丢失，这是存储边界。
+- MCP Server 是**独立本地进程**：只走 stdio（stdout 仅协议、日志走 stderr），不监听端口、不联网、不扫描磁盘。三个目录（包 / 会话输出 / 上下文输入）必须由用户显式配置，且只接受裸文件名、拒绝路径穿越与符号链接；写入永不覆盖已有文件。
+- MCP 读不到浏览器 IndexedDB 里安装的包，也不假装读到；反之浏览器也不会自动接收 Agent 的会话文件，必须用户手工导入。**Pyodide 不是恶意 Python 沙箱**，MCP 从不执行任何 Python。
 - 练习「运行并查看输出」是学习辅助，**不做成绩判定**。
 - AI 生成的代码必须由学习者检查后再运行。
 
@@ -129,7 +158,8 @@ Stage 2（已完成）：Monaco 编辑器 + 执行行高亮联动 + Python 错�
 Stage 3（已完成）：Python 递归调用栈 + 局部变量同步可视化（`@tracked` + 调用栈面板 + 作用域变量 + 阶乘/斐波那契演示）；收尾修复时间轴在切换 Trace 后不归零的缺陷。
 Stage 3B（已完成）：教学课程数据层（Lesson Schema / 注册表 / 双向查询）+ `lessonStepId` 教学阶段关联 + 教学面板与时间轴双向联动 + 冒泡/阶乘两门双语课程。
 Stage 4（已完成）：可安装教学知识包（`.algopack`）：ZIP 格式规范 + Pack Schema/校验 + 安全导入（路径穿越/ZIP Bomb/资源限额）+ IndexedDB 本地安装/刷新恢复/卸载 + 课程注册表组合（内置优先）+ 知识包管理页 + 官方示例包（二分查找）+ 真实 Pyodide 教学同步。
-后续：MCP Agent 适配层（课程查询 / 教学步骤 / 真实 Trace / 学习会话）、AI 渐进式教学、题库扩充、练习页 Monaco 迁移、远程包市场与包签名、axe 可访问性。
+Stage 5A（已完成）：本地 MCP Agent 插件（stdio、官方 SDK、6 工具 + `teach_algorithm` 五级 Prompt）+ `.algosession.json` / `.algocontext.json` 两种共享文件 + 网页会话导入与上下文导出 + 目录/路径/大小安全边界 + 真实浏览器双流程 E2E。**未在第三方宿主实测**（仅配置模板）。
+后续：网页 AI 导师与渐进式教学、Agent ↔ 浏览器实时同步（Stage 5B 候选）、题库扩充、练习页 Monaco 迁移、远程包市场与包签名、axe 可访问性。
 
 ### License
 
@@ -141,16 +171,18 @@ MIT（见 [LICENSE](LICENSE)）。题目与算法说明均为原创示例，不�
 
 AlgoLens is a browser-first algorithm visualization learning platform where **Python runs in the browser** and every animation frame is driven by real execution results, synchronised with the source line, variable values and a step explanation. It runs entirely locally — no server required.
 
-**Stage 4** adds installable teaching packs. A `.algopack` is a plain ZIP holding only content: `manifest.json`, JSON lessons, UTF-8 Python examples (stored as inert text) and a `LICENSE`. Import is bounded and checked before anything is written — entry-count, per-file and total decompression limits, a 200:1 compression-ratio ceiling, an exact-path allow-list (no `..`, no absolute paths, no duplicates, no encrypted entries, no ZIP64) — then manifest, Lesson Schema, algorithm and conflict validation run, and the user confirms a preview before a single IndexedDB transaction installs the pack. Packs survive a reload, uninstall removes only their own lessons, and a pack can never override a built-in course. The official pack `packs/algolens-search-basics.algopack` ships a bilingual 5-step binary search course plus a real Pyodide example.
+**Stage 5A** ships the first local MCP agent plugin. `packages/mcp-server` is a stdio server built on the official TypeScript SDK (1.32.2) exposing six tools — `list_lessons`, `get_lesson`, `get_lesson_step`, `list_available_packs`, `create_learning_session`, `inspect_learning_context` — plus a five-level `teach_algorithm` prompt. The web app gains a learning-session panel that imports an Agent-written `.algosession.json` (preview first, nothing runs until the user presses Run) and exports the current real frame as `.algocontext.json` (no re-execution, source only on explicit opt-in). Both formats are validated by shared domain schemas. MCP cannot see browser IndexedDB and says so; it reads only the directories you configure, by bare file name, refusing traversal and symlinks. No AI API key is involved — the host agent's own model does the teaching.
 
 ```sh
 npm ci
 npm run dev
 npm run typecheck
-npm test          # 298 tests
+npm test          # 342 tests (incl. 20 MCP protocol tests)
 npm run build
-npm run test:e2e  # 11 Playwright tests (local Microsoft Edge)
+npm run test:e2e  # 13 Playwright tests (local Microsoft Edge)
 npm run pack -- packs/algolens-search-basics.algopack   # validate a pack (same chain as the browser)
+npm run mcp:install && npm run mcp:build                 # optional MCP server (Node >= 20)
+npm run mcp:smoke                                        # real stdio child-process smoke test
 ```
 
-See [docs/STAGE4_REPORT.md](docs/STAGE4_REPORT.md) for this stage, [docs/PACK_FORMAT_V1.md](docs/PACK_FORMAT_V1.md) for the container spec, [docs/PACK_AUTHOR_GUIDE.md](docs/PACK_AUTHOR_GUIDE.md) for authoring, [docs/STAGE3B_REPORT.md](docs/STAGE3B_REPORT.md) for the lesson system, [docs/STAGE3_REPORT.md](docs/STAGE3_REPORT.md) for recursion, [docs/REFERENCES.md](docs/REFERENCES.md) for sources and licences, and [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for module boundaries. Never put provider API keys in the browser. MIT licensed; all exercises and lesson copy are original, not official past exam questions.
+See [docs/STAGE5A_REPORT.md](docs/STAGE5A_REPORT.md) for this stage, [docs/MCP_INSTALL.md](docs/MCP_INSTALL.md) for host configuration (templates only — no third-party host was tested), [docs/STAGE4_REPORT.md](docs/STAGE4_REPORT.md) for packs, [docs/PACK_FORMAT_V1.md](docs/PACK_FORMAT_V1.md) for the container spec, [docs/PACK_AUTHOR_GUIDE.md](docs/PACK_AUTHOR_GUIDE.md) for authoring, [docs/STAGE3B_REPORT.md](docs/STAGE3B_REPORT.md) for the lesson system, [docs/STAGE3_REPORT.md](docs/STAGE3_REPORT.md) for recursion, [docs/REFERENCES.md](docs/REFERENCES.md) for sources and licences, and [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for module boundaries. Never put provider API keys in the browser. MIT licensed; all exercises and lesson copy are original, not official past exam questions.
