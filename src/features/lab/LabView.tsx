@@ -18,14 +18,12 @@ import { useTheme } from '../../theme/ThemeProvider';
 
 export function LabView({
   lab,
-  apiUrl,
   lessons,
   packOrigin,
   courseExample,
   session,
 }: {
   lab: LabController;
-  apiUrl: string;
   /** Built-in + installed-pack courses; never a hard-coded singleton. */
   lessons: LessonCatalog;
   /** Name of the pack the current course came from, if any. */
@@ -144,9 +142,13 @@ export function LabView({
           onSeek={lab.playback.seek}
         />
         <AiMentor
-          apiUrl={apiUrl}
-          algorithmName={entry ? pick(entry.name) : ''}
-          currentFrameMessage={currentEvent?.message}
+          algorithmId={lab.currentAlgo}
+          algorithmName={entry ? pick(entry.name) : lab.currentAlgo}
+          lesson={lesson}
+          event={currentEvent}
+          events={lab.events}
+          stepIndex={lab.playback.index}
+          traceStale={lab.traceStale}
           code={lab.editorCode}
         />
       </aside>

@@ -5,6 +5,8 @@ import { ExecutionError, type ExecutionDiagnostic } from '../../domain/trace/dia
 export const PYODIDE_VERSION = '0.27.7';
 export const PYODIDE_CDN = `https://cdn.jsdelivr.net/pyodide/v${PYODIDE_VERSION}/full/pyodide.js`;
 export const PYODIDE_TIMEOUT_MS = 30000;
+/** CDN download + interpreter boot gets its own budget; user code keeps 30 s. */
+export const PYODIDE_INIT_TIMEOUT_MS = 120000;
 
 /**
  * Python-side snapshot helper: deep-copies JSON-compatible values and converts
@@ -206,7 +208,8 @@ const PYTHON_TEST_BOOTSTRAP = [
 ].join('\n');
 
 interface WorkerReply {
-  ok: boolean;
+  type?: 'ready';
+  ok?: boolean;
   frames?: RawTraceFrame[];
   result?: TestCaseResult[];
   error?: string;
@@ -222,6 +225,11 @@ export function buildWorkerSource(): string {
     'let runtime;',
     'self.onmessage = async ({ data }) => {',
     '  try {',
+    "    if (data.type === 'init') {",
+    '      runtime = runtime || await loadPyodide();',
+    "      self.postMessage({ type: 'ready' });",
+    '      return;',
+    '    }',
     '    runtime = runtime || await loadPyodide();',
     '    const frames = [];',
     '    let diagnostic = null;',
@@ -272,14 +280,24 @@ export function executePython(
       worker.terminate();
       URL.revokeObjectURL(url);
     };
-    const timer = setTimeout(() => {
+    let timer = setTimeout(() => {
       cleanup();
       reject(new ExecutionError(timeoutMessage));
-    }, PYODIDE_TIMEOUT_MS);
+    }, PYODIDE_INIT_TIMEOUT_MS);
 
     worker.onmessage = (event: MessageEvent<WorkerReply>) => {
-      cleanup();
       const data = event.data;
+      if (data.type === 'ready') {
+        if (ended) return;
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+          cleanup();
+          reject(new ExecutionError(timeoutMessage));
+        }, PYODIDE_TIMEOUT_MS);
+        worker.postMessage({ type: 'run', mode, code, input, tests });
+        return;
+      }
+      cleanup();
       if (!data.ok) {
         return reject(new ExecutionError(data.error || 'Pyodide error', data.diagnostic));
       }
@@ -294,6 +312,6 @@ export function executePython(
       cleanup();
       reject(new ExecutionError(event.message || 'Pyodide worker error'));
     };
-    worker.postMessage({ mode, code, input, tests });
+    worker.postMessage({ type: 'init' });
   });
 }

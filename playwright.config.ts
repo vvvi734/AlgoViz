@@ -5,6 +5,11 @@ import { defineConfig } from '@playwright/test';
  * CI-free, sandbox-free runs need no browser download. The `dist/` build is
  * served by `vite preview`; Pyodide is fetched from jsdelivr at runtime.
  *
+ * Stage 6A adds a second web server: the real local AI Gateway, launched from
+ * TypeScript with vite-node so E2E does not depend on a prior `ai:build`.
+ * `ALGOLENS_AI_MOCK=1` registers the deterministic provider only. This is a
+ * fixture, not a real Ollama/cloud test.
+ *
  * `--disable-quic` is a transport workaround, not a test relaxation: on some
  * networks Edge negotiates HTTP/3 with jsdelivr and the 10 MB `pyodide.asm.wasm`
  * body is aborted mid-flight (`net::ERR_QUIC_PROTOCOL_ERROR`), which starves
@@ -24,10 +29,23 @@ export default defineConfig({
     actionTimeout: 20_000,
     launchOptions: { args: ['--disable-quic'] },
   },
-  webServer: {
-    command: 'node node_modules/vite/bin/vite.js preview --port 4173 --strictPort --host 127.0.0.1',
-    url: 'http://127.0.0.1:4173',
-    reuseExistingServer: true,
-    timeout: 60_000,
-  },
+  webServer: [
+    {
+      command: 'node node_modules/vite/bin/vite.js preview --port 4173 --strictPort --host 127.0.0.1',
+      url: 'http://127.0.0.1:4173',
+      reuseExistingServer: true,
+      timeout: 60_000,
+    },
+    {
+      command: 'node node_modules/vite-node/vite-node.mjs packages/ai-gateway/src/main.ts',
+      url: 'http://127.0.0.1:8787/api/health',
+      reuseExistingServer: false,
+      timeout: 60_000,
+      env: {
+        ALGOLENS_AI_MOCK: '1',
+        ALGOLENS_AI_PORT: '8787',
+        ALGOLENS_AI_RATE_LIMIT: '200',
+      },
+    },
+  ],
 });

@@ -1,7 +1,7 @@
 {
   "name": "algolens",
   "private": true,
-  "version": "0.6.0-phase5a",
+  "version": "0.7.0-phase6a",
   "type": "module",
   "license": "MIT",
   "description": "AlgoLens - a browser-first, multi-language algorithm visualization learning platform",
@@ -21,7 +21,12 @@
     "mcp:start": "node packages/mcp-server/dist/server.mjs",
     "mcp:typecheck": "tsc -p packages/mcp-server/tsconfig.json --noEmit --pretty false",
     "mcp:smoke": "node packages/mcp-server/scripts/smoke.mjs",
-    "mcp:install": "npm install --prefix packages/mcp-server"
+    "mcp:install": "npm install --prefix packages/mcp-server",
+    "ai:build": "node packages/ai-gateway/scripts/build.mjs",
+    "ai:start": "node --env-file-if-exists=.env packages/ai-gateway/dist/server.mjs",
+    "ai:dev": "node --env-file-if-exists=.env node_modules/vite-node/vite-node.mjs packages/ai-gateway/src/main.ts",
+    "ai:typecheck": "tsc -p packages/ai-gateway/tsconfig.json --noEmit --pretty false",
+    "ai:install": "npm install --prefix packages/ai-gateway"
   },
   "dependencies": {
     "fflate": "^0.8.3",

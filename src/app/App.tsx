@@ -62,7 +62,6 @@ export function App() {
       <div className={view === 'learn' ? '' : 'hidden'}>
         <LabView
           lab={lab}
-          apiUrl={apiUrl}
           lessons={packs.catalog}
           packOrigin={installedPack?.manifest.name}
           courseExample={courseExample}

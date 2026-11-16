@@ -1,8 +1,8 @@
-# AlgoLens 架构方案（v0.6 / Stage 5A）
+# AlgoLens 架构方案（v0.7 / Stage 6A）
 
 本文描述从单文件原型（`index.html`，296 行 / ~70 KB）迁移到 React + TypeScript + Vite 后的模块边界、数据流与演进约束。
 
-**定位已收敛**：Python 为主要教学语言；JavaScript 作为前端实现语言继续支持既有 12 个算法演示。**C/C++ 与在线判题已从规划中取消**，相关入口与执行后端已移除。Stage 1 落地「统一 Trace Event Schema v1 + 旧动画兼容 + Python 冒泡排序同步演示」；Stage 2 落地「Monaco Editor + 执行行高亮 + Python 错误诊断 + 本地代码保存 + 真实浏览器 E2E」；Stage 3 落地「Python 递归调用栈 + 作用域感知变量观察 + 时间轴重置修复」；Stage 3B 落地「教学课程数据层 + 教学阶段关联 + 教学面板与时间轴双向联动」；Stage 4 落地「可安装教学知识包 `.algopack`（容器规范 + 安全导入 + 本地安装 + 注册表组合 + 管理页）」；Stage 5A 落地「本地 MCP Agent 插件（stdio、6 工具 + 五级 Prompt）+ `.algosession.json` / `.algocontext.json` 双文件桥 + 网页导入/导出」，详见 [STAGE1_REPORT.md](./STAGE1_REPORT.md)、[STAGE2_REPORT.md](./STAGE2_REPORT.md)、[STAGE3_REPORT.md](./STAGE3_REPORT.md)、[STAGE3B_REPORT.md](./STAGE3B_REPORT.md)、[STAGE4_REPORT.md](./STAGE4_REPORT.md)、[STAGE5A_REPORT.md](./STAGE5A_REPORT.md)、[PACK_FORMAT_V1.md](./PACK_FORMAT_V1.md) 与 [MCP_INSTALL.md](./MCP_INSTALL.md)。
+**定位已收敛**：Python 为主要教学语言；JavaScript 作为前端实现语言继续支持既有 12 个算法演示。**C/C++ 与在线判题已从规划中取消**，相关入口与执行后端已移除。Stage 1 落地「统一 Trace Event Schema v1 + 旧动画兼容 + Python 冒泡排序同步演示」；Stage 2 落地「Monaco Editor + 执行行高亮 + Python 错误诊断 + 本地代码保存 + 真实浏览器 E2E」；Stage 3 落地「Python 递归调用栈 + 作用域感知变量观察 + 时间轴重置修复」；Stage 3B 落地「教学课程数据层 + 教学阶段关联 + 教学面板与时间轴双向联动」；Stage 4 落地「可安装教学知识包 `.algopack`（容器规范 + 安全导入 + 本地安装 + 注册表组合 + 管理页）」；Stage 5A 落地「本地 MCP Agent 插件（stdio、6 工具 + 五级 Prompt）+ `.algosession.json` / `.algocontext.json` 双文件桥 + 网页导入/导出」；Stage 6A 落地「本地 AI Gateway（仅 127.0.0.1）+ Ollama / OpenAI Chat Completions Provider + 共享五级 Mentor Schema 与防剧透降级 + 网页 AI 导师面板」，详见 [STAGE1_REPORT.md](./STAGE1_REPORT.md)、[STAGE2_REPORT.md](./STAGE2_REPORT.md)、[STAGE3_REPORT.md](./STAGE3_REPORT.md)、[STAGE3B_REPORT.md](./STAGE3B_REPORT.md)、[STAGE4_REPORT.md](./STAGE4_REPORT.md)、[STAGE5A_REPORT.md](./STAGE5A_REPORT.md)、[STAGE6A_REPORT.md](./STAGE6A_REPORT.md)、[AI_GATEWAY.md](./AI_GATEWAY.md)、[PACK_FORMAT_V1.md](./PACK_FORMAT_V1.md) 与 [MCP_INSTALL.md](./MCP_INSTALL.md)。
 
 ## 1. 现状盘点（迁移前）
 
@@ -29,6 +29,11 @@ flowchart TD
   M[packages/mcp-server · stdio MCP Adapter] --> C
   M --> D
   D -. ".algosession / .algocontext 文件交换（无实时通道）" .-> M
+  N[features/lab AiMentor] --> O[runtime/ai/mentorClient · 同源 /api/mentor]
+  O --> P[packages/ai-gateway · 仅 127.0.0.1]
+  P --> Q[Ollama 127.0.0.1:11434]
+  P --> R[OpenAI Chat Completions · Key 仅 Gateway env]
+  C --> P
   E --> G[styles/tokens.css 唯一颜色源]
   G --> H[styles/app.css 只引用 var(--token)]
 ```
@@ -43,6 +48,7 @@ flowchart TD
 | `src/domain/lessons` | 教学课程数据：类型、Zod 校验、注册表、课程 ⇄ Trace 的**纯查找函数**、内置 + 知识包课程的组合目录（`catalog.ts`） | 不引用 React / Worker；不执行代码；不从 message 推断教学阶段 |
 | `src/domain/packs` | 知识包纯逻辑：格式常量与限额、路径白名单、manifest Zod 解析、中央目录策略、内容校验与预览 | 不解压、不写存储、不执行包内代码 |
 | `src/domain/sessions` | Stage 5A 两种桥接文件的**唯一定义**：`.algosession.json` / `.algocontext.json` 的类型、Zod 严格校验、builder/parser、限额、IssueCode | 不读写文件、不碰浏览器存储、不执行代码；不保存密钥/聊天/环境路径 |
+| `src/domain/mentor` | Stage 6A 网页与 Gateway **共用**的 Mentor 契约：上下文/回复/meta Schema、五级披露契约、纯函数 `buildMentorContext`（只接受真实帧） | 不引用 React / fetch；不伪造变量或帧；不读取源码以外的用户数据 |
 | `src/domain/visualization` | `TraceState → VisualModel` 纯映射、日志窗口 | 不写 `innerHTML` |
 | `src/runtime/js` | Worker 客户端 + 与 Worker 共用的纯执行体 | 不在主线程 `new Function` |
 | `src/runtime/python` | Pyodide classic worker（按需 CDN）+ 扩展版 `trace()` | 不内置 Pyodide 到 bundle |
@@ -50,11 +56,12 @@ flowchart TD
 | `src/runtime/monaco` | Monaco 懒加载、本地 Worker 打包、`algolens` 主题映射 | 不打包到主 bundle（`import()` 拆包） |
 | `src/runtime/drafts` | localStorage 代码草稿（按算法 × 语言） | 不缓存敏感信息；由 `features` 通过接口调用 |
 | `src/runtime/url` | HTTP(S) 地址校验 | 不承载业务逻辑 |
-| `src/runtime/ai` | `/api/ai` 客户端与响应校验 | 不保存任何 API key |
+| `src/runtime/ai` | `/api/ai` legacy 客户端 + Stage 6A `mentorClient`（同源 `/api/providers`、`/api/mentor`，响应用共享 Schema 复验） | 不保存任何 API key；不接受任意目标 URL |
 | `src/theme` | 偏好解析、媒体查询监听、根元素属性 | 不写组件颜色 |
 | `src/i18n` | 词典、翻译、语言持久化 | 不放业务文案以外的逻辑 |
 | `src/features/*` | React 组件 + 状态 hook | 不直接摸 DOM / 存储 |
 | `packages/mcp-server` | Stage 5A 本地 MCP Adapter：stdio 生命周期、目录配置与 `fsSafe`、课程/包/会话/上下文 6 个工具、五级教学 Prompt | 不引用 React / DOM / IndexedDB；不执行 Python；不联网；不扫描磁盘；不复制第二套校验规则 |
+| `packages/ai-gateway` | Stage 6A 本地 HTTP Gateway：provider 适配（Ollama/OpenAI/Mock）、请求 Schema、五级 Prompt 组装、回复校验与降级、Origin/体积/速率/超时控制 | 不引用 React/DOM；不读文件；不执行 Shell/Python；不监听非 loopback；目标地址只能来自启动配置 |
 | `legacy/` | 迁移前数据定义，作为回归基线来源 | 不被应用运行时引用 |
 | `src/test/fixtures` | 由 `npm run sync:legacy` 生成的帧快照 | 不随测试运行自动更新 |
 
@@ -73,12 +80,13 @@ flowchart TD
 
 ### 3.3 运行时：统一事件协议，不假装支持
 - 统一入口 `runtime/execute.ts` 的 `runForLanguage(mode, code, input, tests, language, messages)`。
-- JS → 3 秒限时 Worker；Python → 30 秒限时 Pyodide Worker（CDN 按需加载），`trace()` 支持真实变量快照与显式行号。
+- JS → 3 秒限时 Worker；Python → Pyodide Worker（CDN 按需加载）：初始化/下载单独给 120 秒预算，用户代码执行仍限 30 秒；`trace()` 支持真实变量快照与显式行号。
 - 两个 runner 产出的 `frames` 统一由 `domain/trace/adapter.ts` 转为 Trace Event Schema v1，再由 `schema.ts`（Zod）校验后才进入播放/同步面板。
 - README 与界面文案都明确写出哪些能力是「协议 / 占位」，避免把未实现标记成已支持。
 
 ### 3.4 安全边界
-- 浏览器不保存任何模型厂商密钥；AI 请求只发到用户自部署的同源/HTTPS 代理。
+- 浏览器不保存任何模型厂商密钥；AI 请求只发到同源 Gateway（Stage 6A），或用户自部署的 legacy `/api/ai` 代理（练习/自定义导入）。
+- Stage 6A Gateway 固定 `127.0.0.1`，要求 Origin 允许列表 + 自定义 `x-algolens-client` 头，拒绝跨站 `Sec-Fetch-Site`，不使用 CORS `*`；请求体/响应/超时/速率均有上限。Provider 目标地址只来自启动配置，请求体不能改 URL；无文件读取、无 Shell、无 Python 控制。
 - 用户 JS 只在 Worker 内 `new Function`；Python 只在 Pyodide Worker 内执行，均不经过服务器，绝无远程代码执行。
 - 练习「运行并查看输出」是学习辅助，**不做成绩判定**；完成状态由用户手动标记。
 
@@ -113,6 +121,14 @@ flowchart TD
 - **导入不执行，导出不重跑**：`useSessionTransfer` 的 apply 只做 stop → flush → 切语言 → 写编辑器/输入 → 清空事件；导出只序列化 `events[index]`，不调用 `runForLanguage`。App 级测试用"运行次数不变"与"帧号不变"断言这两条。
 - **Prompt 不给 AI，只给宿主**：`teach_algorithm` 组装课程与真实帧，并硬性区分"数据/指令"、"真实帧/推断"；不内置模型调用，也不需要任何 API Key。Prompt 约束是模板，不承诺绝对防剧透。
 
+### 3.9 AI 导师：Gateway 拥有模型，页面只有真实帧（Stage 6A）
+- **一个契约两处执行**：`src/domain/mentor/schema.ts` 同时被浏览器与 Gateway 引用。`mentorContextSchema` 内嵌 Trace Event Schema v1 并强制 `stepIndex === event.step`；`mentorReplySchema` 限制每个字段长度/条数；浏览器收到回复后再次复验，失败就拒绝展示。
+- **真实帧是唯一输入**：`buildMentorContext` 是纯函数，只从 `lab.events[lab.playback.index]`、课程阶段与 `traceStale` 构造，不重新执行、不猜测变量；源码默认不发送，勾选后才带 40k 上限。
+- **Provider 是边界**：`AIProvider` 只有 `status/generate`；Ollama 走 `/api/tags` + `/api/chat (stream:false, format:json)`，云端只实现 OpenAI Chat Completions。目标 URL、Key、超时全在 Gateway 启动配置里；请求体无法改变目标。
+- **五级 + 确定性降级**：Prompt 约束是软约束，所以 `parseMentorReply` 还做硬处理：Level 1–3 隐藏所有代码围栏，Level 4 隐藏实现型围栏，披露等级超契约就降级，并记录 `guardrails`。Level 5 必须前后端双重确认。
+- **请求与步骤绑定**：组件用 requestId + 快照元数据（algorithmId、stepIndex、totalEvents）记录每条回答；切换帧会 abort 在途请求并清空对话，历史回答即使在返回后也只属于它自己的帧，卡片显示“来自之前的步骤”。模型不能改播放位置、Monaco、变量或 Trace。
+- **静态与本地分界**：GitHub Pages 无 `/api/*`，面板进入离线态并显示标注“非 AI”的本地提示；算法、课程、Python、知识包与 MCP 不受影响。完整 AI 只在本地 `npm run dev` + `npm run ai:dev`。
+
 ## 4. 测试策略
 
 | 层次 | 工具 | 覆盖 |
@@ -122,6 +138,8 @@ flowchart TD
 | 存储单测 | Vitest + fake-indexeddb | 安装成功、刷新恢复、卸载隔离、重复安装、版本冲突/显式替换、写事务失败回滚、配额映射、存储不可用 |
 | 会话/上下文格式 | Vitest（node + jsdom） | 两文件 Schema、格式版本、未知键拒绝、`stepIndex === event.step`、大小限额、篡改检测、导出不重跑 |
 | MCP 协议 | Vitest + 官方 SDK `Client` + `InMemoryTransport` | 工具/提示词发现、参数校验、内置+包课程、中英 stepId、未知 lesson/step、会话写盘复验且从不覆盖、上下文读取（穿越/绝对路径/符号链接/超限/篡改/坏 JSON）、恶意包文本、Prompt 五级 |
+| AI Gateway（Stage 6A） | Vitest + 真实 `http` 临时端口 + 注入 fake provider + `fetch` stub | 请求 Schema、Origin/自定义头/跨站、体积/速率、Level 5 授权、Provider 401/404/429/超时/无效 JSON、防剧透降级、Mock 显式开启、错误不泄 Key；Ollama/OpenAI 适配器分别用 fetch stub 覆盖 |
+| AI 导师组件 | Vitest + jsdom + Testing Library | 连接状态、发送真实帧、切换步骤后旧回答不冒充新步骤、中止、离线本地提示、Level 5 确认、模型结构化字段渲染 |
 | stdio 子进程 | Node + `StdioClientTransport` | 真实 `dist/server.mjs` 启动、握手、6 工具、真实上下文回读、stderr 诊断（`scripts/smoke.mjs`） |
 | 组件冒烟 | Vitest + jsdom + Testing Library | 14 个算法入口、时间轴交互与 **Trace 切换重置**、三态主题、语言切换、视图切换、调用栈面板与作用域变量、教学面板（高亮/禁用/跳转/空态）、知识包页（预览/确认/卸载/错误文案）、**App 级导入→课程→卸载** |
 | 令牌契约 | Vitest 读 CSS 文本 | 两套主题 token 完整性、无硬编码颜色 |
@@ -143,7 +161,8 @@ Stage 3（已完成）: callStack 协议落地 → Python @tracked 递归追踪 
 Stage 3B（已完成）: Lesson 数据层（类型/Zod/注册表）→ `lessonStepId` 协议扩展与执行时记录 → 教学面板 → 步骤 ⇄ 时间轴双向联动 → 冒泡/阶乘课程
 Stage 4（已完成）: 格式规范与限额 → 路径白名单 → 有界 ZIP 读取 → manifest/Lesson/冲突校验与预览 → IndexedDB 单事务安装 → 课程目录组合（内置优先）→ 管理页 → 官方示例包与真实 Trace 同步
 Stage 5A（已完成）: 共享会话/上下文格式 → 课程与包工具 → stdio MCP Adapter 与目录/路径安全边界 → 会话文件生成 → 网页导入（不自动运行）→ 真实帧导出与上下文回读 → 五级教学 Prompt → 协议测试 / stdio 冒烟 / 真实浏览器双流程
-后续             : 网页 AI 导师与渐进式教学、Agent ⇄ 浏览器实时同步（Stage 5B 候选）、树/图与动态规划可视化、练习页 Monaco、a11y / axe、远程包市场与签名
+Stage 6A（已完成 MVP）: 共享 Mentor Schema（真实帧/五级/限额）→ 本地 Gateway（loopback/Origin/限额/超时）→ Ollama + OpenAI Provider → Prompt 与防剧透降级 → 网页面板（连接状态/预设提问/中止/Level 5 确认/旧步骤隔离）→ Mock E2E。真实模型另需手动验证
+后续             : Agent ⇄ 浏览器实时同步（Stage 5B 候选）、RAG / 多轮记忆、树/图与动态规划可视化、练习页 Monaco、a11y / axe、远程包市场与签名
 ```
 
 `Trace Event Schema v1` 是编辑器诊断、递归栈动画与后续树/图可视化的共同前置：Monaco 需要根据 `event.sourceLocation` 高亮，调用栈读取 `callStack`，任何新结构都必须先扩展协议再改渲染，不允许渲染层自己发明字段。
