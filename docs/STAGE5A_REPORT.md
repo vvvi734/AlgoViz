@@ -415,14 +415,14 @@ packages/mcp-server/            ← MCP Adapter（唯一 Node 专属层）
 
 - 分支：`main`
 - 本阶段起点：`89b35cc`（Stage 4 收尾提交）
-- 工作区：提交前含 9 个修改 + 7 个新增（详见下表）；构建产物 `dist/`、`node_modules/`、`test-results/` 均被忽略，未进入提交。
+- 工作区：提交前含 13 个修改 + 8 个新增（详见下表）；构建产物 `dist/`、`node_modules/`、`test-results/` 均被忽略，未进入提交。
 - 提交拆分（便于审阅）：
-  1. `feat(phase-5a): …` —— 共享域层 + Web 会话面板 + MCP 子包 + 测试 + 脚本 + 版本升级
-  2. `docs(phase-5a): …` —— STAGE5A_REPORT / MCP_INSTALL / README / ARCHITECTURE / REFERENCES
-  3. `docs(phase-5a): …` —— 回填提交 Hash 与推送结果
-- 推送：`origin` → `https://gitee.com/vvvI734/algolens.git`；结果见下方"回填"。
-
-（提交 Hash 与 push 结果在最后的 docs 回填提交中记录，本报告不预填未知值。）
+  1. `4c6cec8` — `feat(phase-5a): local stdio MCP server and web learning-session bridge`（共享域层 + Web 会话面板 + MCP 子包 + 测试 + 脚本 + 版本升级）
+  2. `cf363ca` — `docs(phase-5a): stage 5A report, MCP install guide and architecture notes`（STAGE5A_REPORT / MCP_INSTALL / README / ARCHITECTURE / REFERENCES）
+  3. 第三笔（本报告的 Hash 回填提交）—— 记录以上两个 Hash 与推送结果
+- 推送：`origin` → `https://gitee.com/vvvi734/algolens.git`（实际 `git remote -v` 原文，注意是小写 `vvvi734`）。
+  `git push origin main` 输出：`89b35cc..cf363ca  main -> main`，**推送成功**。
+- 远端与本地一致：`main` 已指向回填提交；无 force push、无历史改写、未删除任何用户文件。
 
 主要变更清单：
 
