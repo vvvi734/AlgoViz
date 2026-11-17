@@ -52,13 +52,24 @@ function valueText(value: unknown): string {
   }
 }
 
-export function StackVisual({ model }: { model: StructureModel }) {
+export function StackVisual({
+  model,
+  operationLabel,
+  hint,
+  compact,
+}: {
+  model: StructureModel;
+  /** Stage 7E graph frontier: override the container operation headline. */
+  operationLabel?: string;
+  hint?: string | null;
+  compact?: boolean;
+}) {
   const { t, lang } = useI18n();
   const topFirst = [...model.items].reverse();
   const top = model.items[model.items.length - 1];
   return (
     <div
-      className="structure-visual stack-visual"
+      className={`structure-visual stack-visual${compact ? ' is-compact' : ''}`}
       data-testid="stack-visual"
       data-operation={model.operation}
       data-empty={model.empty ? 'true' : 'false'}
@@ -67,9 +78,9 @@ export function StackVisual({ model }: { model: StructureModel }) {
     >
       <div className="structure-op-row">
         <span className="structure-op" data-testid="stack-op-label">
-          {operationText(model.operation, lang)}
+          {operationLabel ?? operationText(model.operation, lang)}
         </span>
-        <span className="structure-hint">{hintText(model.operation, lang)}</span>
+        <span className="structure-hint">{hint ?? hintText(model.operation, lang)}</span>
       </div>
 
       <div className="stack-tank" data-testid="stack-tank">
@@ -83,6 +94,7 @@ export function StackVisual({ model }: { model: StructureModel }) {
               className="structure-item stack-item stack-leaving"
               data-testid="stack-leaving"
               data-element-id={model.removed.id}
+              data-node-id={model.removed.nodeId}
               data-value={valueText(model.removed.value)}
               data-status="leaving"
             >
@@ -105,6 +117,7 @@ export function StackVisual({ model }: { model: StructureModel }) {
                   className={`structure-item stack-item${item.state === 'entering' ? ' is-entering' : ''}${item.state === 'peeking' ? ' is-peeking' : ''}${item.active ? ' is-active' : ''}${isTop ? ' is-top' : ''}`}
                   data-testid="stack-item"
                   data-element-id={item.id}
+                  data-node-id={item.nodeId}
                   data-value={valueText(item.value)}
                   data-role={isTop ? 'top' : 'member'}
                   data-status={item.state}
@@ -129,13 +142,24 @@ export function StackVisual({ model }: { model: StructureModel }) {
   );
 }
 
-export function QueueVisual({ model }: { model: StructureModel }) {
+export function QueueVisual({
+  model,
+  operationLabel,
+  hint,
+  compact,
+}: {
+  model: StructureModel;
+  /** Stage 7E graph frontier: override the container operation headline. */
+  operationLabel?: string;
+  hint?: string | null;
+  compact?: boolean;
+}) {
   const { t, lang } = useI18n();
   const activeFront = model.operation === 'front' || model.operation === 'dequeue';
   const activeRear = model.operation === 'enqueue';
   return (
     <div
-      className="structure-visual queue-visual"
+      className={`structure-visual queue-visual${compact ? ' is-compact' : ''}`}
       data-testid="queue-visual"
       data-operation={model.operation}
       data-empty={model.empty ? 'true' : 'false'}
@@ -144,9 +168,9 @@ export function QueueVisual({ model }: { model: StructureModel }) {
     >
       <div className="structure-op-row">
         <span className="structure-op" data-testid="queue-op-label">
-          {operationText(model.operation, lang)}
+          {operationLabel ?? operationText(model.operation, lang)}
         </span>
-        <span className="structure-hint">{hintText(model.operation, lang)}</span>
+        <span className="structure-hint">{hint ?? hintText(model.operation, lang)}</span>
       </div>
 
       {model.removed && (
@@ -155,6 +179,7 @@ export function QueueVisual({ model }: { model: StructureModel }) {
             className="structure-item queue-item queue-leaving"
             data-testid="queue-leaving"
             data-element-id={model.removed.id}
+            data-node-id={model.removed.nodeId}
             data-value={valueText(model.removed.value)}
             data-status="leaving"
           >
@@ -185,6 +210,7 @@ export function QueueVisual({ model }: { model: StructureModel }) {
                 className={`structure-item queue-item${item.state === 'entering' ? ' is-entering' : ''}${item.active ? ' is-active' : ''} queue-${item.role}`}
                 data-testid="queue-item"
                 data-element-id={item.id}
+                data-node-id={item.nodeId}
                 data-value={valueText(item.value)}
                 data-role={item.role}
                 data-status={item.state}

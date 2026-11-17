@@ -585,11 +585,562 @@ export const binaryTreeSnapshotSchema = z
   });
 export type BinaryTreeSnapshot = z.infer<typeof binaryTreeSnapshotSchema>;
 
-/** Stage 7B stack/queue + Stage 7C linked-list + Stage 7D binary-tree. */
+/**
+ * Stage 7E graph traversal.
+ *
+ * The graph is an UNDIRECTED SIMPLE GRAPH. Node ids are the stable teaching
+ * identity; duplicate undirected edges are normalised by the Python input
+ * builder and self-loops are rejected before a run starts. Cycles are valid.
+ *
+ * `discoveredIds` are nodes that entered the discovered set at least once,
+ * `frontierItems` are the subset still waiting in the queue/stack, and
+ * `visitedIds` are nodes that completed their formal visit. The runner marks
+ * BFS discovered at enqueue and DFS discovered at push; `visited` happens only
+ * after dequeue/pop. All three states are snapshotted on the SAME trace frame.
+ */
+export const GRAPH_ALGORITHMS = ['bfs', 'dfs'] as const;
+export type GraphAlgorithm = (typeof GRAPH_ALGORITHMS)[number];
+
+export const GRAPH_OPERATIONS = [
+  'init', 'enqueue', 'dequeue', 'push', 'pop', 'inspect-edge', 'discover', 'visit', 'skip', 'done',
+] as const;
+export type GraphOperation = (typeof GRAPH_OPERATIONS)[number];
+
+export const GRAPH_FRONTIER_KINDS = ['queue', 'stack'] as const;
+export type GraphFrontierKind = (typeof GRAPH_FRONTIER_KINDS)[number];
+
+const GRAPH_OPERATIONS_BY_ALGORITHM: Record<GraphAlgorithm, readonly GraphOperation[]> = {
+  bfs: ['init', 'enqueue', 'dequeue', 'inspect-edge', 'discover', 'visit', 'skip', 'done'],
+  dfs: ['init', 'push', 'pop', 'inspect-edge', 'discover', 'visit', 'skip', 'done'],
+};
+
+export const GRAPH_LIMITS = {
+  MAX_NODES: 20,
+  MAX_EDGES: 40,
+  MAX_FRONTIER: 20,
+} as const;
+
+export const graphNodeSchema = z.object({
+  id: z.string().min(1).max(LIMITS.MAX_NAME_CHARS),
+  value: jsonValueSchema.refine(
+    (value) => JSON.stringify(value).length <= LIMITS.MAX_VARIABLE_VALUE_JSON_BYTES,
+    'graph node value too large',
+  ),
+});
+export type GraphNode = z.infer<typeof graphNodeSchema>;
+
+export const graphEdgeSchema = z.object({
+  id: z.string().min(1).max(LIMITS.MAX_NAME_CHARS),
+  fromId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS),
+  toId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS),
+});
+export type GraphEdge = z.infer<typeof graphEdgeSchema>;
+
+export const graphFrontierItemSchema = z.object({
+  id: z.string().min(1).max(LIMITS.MAX_NAME_CHARS),
+  nodeId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS),
+});
+export type GraphFrontierItem = z.infer<typeof graphFrontierItemSchema>;
+
+export const graphSnapshotSchema = z
+  .object({
+    kind: z.literal('graph'),
+    algorithm: z.enum(GRAPH_ALGORITHMS),
+    operation: z.enum(GRAPH_OPERATIONS),
+    nodes: z.array(graphNodeSchema).max(GRAPH_LIMITS.MAX_NODES),
+    edges: z.array(graphEdgeSchema).max(GRAPH_LIMITS.MAX_EDGES),
+    startNodeId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+    currentNodeId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+    currentEdgeId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+    /** The neighbor currently looked at; null unless an edge is being handled. */
+    neighborNodeId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+    discoveredIds: z.array(z.string().min(1).max(LIMITS.MAX_NAME_CHARS)).max(GRAPH_LIMITS.MAX_NODES),
+    visitedIds: z.array(z.string().min(1).max(LIMITS.MAX_NAME_CHARS)).max(GRAPH_LIMITS.MAX_NODES),
+    visitOrder: z.array(z.string().min(1).max(LIMITS.MAX_NAME_CHARS)).max(GRAPH_LIMITS.MAX_NODES),
+    frontierKind: z.enum(GRAPH_FRONTIER_KINDS),
+    frontierItems: z.array(graphFrontierItemSchema).max(GRAPH_LIMITS.MAX_FRONTIER),
+    /** The element that just left the frontier; non-null only for dequeue/pop. */
+    frontierRemoved: graphFrontierItemSchema.nullable(),
+  })
+  .superRefine((snapshot, ctx) => {
+    const ids = new Set<string>();
+    snapshot.nodes.forEach((node, index) => {
+      if (ids.has(node.id)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['nodes', index, 'id'],
+          message: `duplicate graph node id "${node.id}"`,
+        });
+      }
+      ids.add(node.id);
+    });
+
+    const edgeIds = new Set<string>();
+    const pairs = new Set<string>();
+    const edgeById = new Map<string, GraphEdge>();
+    snapshot.edges.forEach((edge, index) => {
+      if (edgeIds.has(edge.id)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['edges', index, 'id'],
+          message: `duplicate graph edge id "${edge.id}"`,
+        });
+      }
+      edgeIds.add(edge.id);
+      edgeById.set(edge.id, edge);
+      if (!ids.has(edge.fromId)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['edges', index, 'fromId'],
+          message: `edge "${edge.id}" starts at unknown node "${edge.fromId}"`,
+        });
+      }
+      if (!ids.has(edge.toId)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['edges', index, 'toId'],
+          message: `edge "${edge.id}" ends at unknown node "${edge.toId}"`,
+        });
+      }
+      if (edge.fromId === edge.toId) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['edges', index],
+          message: 'self-loops are not supported in the Stage 7E teaching graph',
+        });
+      }
+      if (ids.has(edge.fromId) && ids.has(edge.toId) && edge.fromId !== edge.toId) {
+        const pair = [edge.fromId, edge.toId].sort().join('\u0000');
+        if (pairs.has(pair)) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['edges', index],
+            message: `duplicate undirected edge "${edge.fromId}"–"${edge.toId}"`,
+          });
+        }
+        pairs.add(pair);
+      }
+    });
+
+    if (!GRAPH_OPERATIONS_BY_ALGORITHM[snapshot.algorithm].includes(snapshot.operation)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['operation'],
+        message: `operation "${snapshot.operation}" is not valid for ${snapshot.algorithm}`,
+      });
+    }
+    const expectedFrontier: GraphFrontierKind = snapshot.algorithm === 'bfs' ? 'queue' : 'stack';
+    if (snapshot.frontierKind !== expectedFrontier) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['frontierKind'],
+        message: `${snapshot.algorithm} must use a ${expectedFrontier} frontier`,
+      });
+    }
+
+    if (snapshot.nodes.length === 0) {
+      if (snapshot.startNodeId !== null) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['startNodeId'],
+          message: 'an empty graph must have startNodeId = null',
+        });
+      }
+      if (snapshot.operation !== 'init' && snapshot.operation !== 'done') {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['operation'],
+          message: 'an empty graph may only emit init or done',
+        });
+      }
+      if (snapshot.currentNodeId !== null || snapshot.currentEdgeId !== null || snapshot.neighborNodeId !== null) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['currentNodeId'],
+          message: 'an empty graph has no current node or edge',
+        });
+      }
+      if (snapshot.discoveredIds.length || snapshot.visitedIds.length || snapshot.visitOrder.length) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['discoveredIds'],
+          message: 'an empty graph has no discovered or visited nodes',
+        });
+      }
+      if (snapshot.frontierItems.length || snapshot.frontierRemoved !== null) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['frontierItems'],
+          message: 'an empty graph has an empty frontier',
+        });
+      }
+      return;
+    }
+
+    if (snapshot.startNodeId === null || !ids.has(snapshot.startNodeId)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['startNodeId'],
+        message: 'startNodeId must refer to a real node in a non-empty graph',
+      });
+    }
+
+    const uniqueRefList = (values: string[], path: string, label: string): Set<string> => {
+      const seen = new Set<string>();
+      values.forEach((value, index) => {
+        if (!ids.has(value)) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: [path, index],
+            message: `${label} "${value}" does not refer to a node`,
+          });
+        }
+        if (seen.has(value)) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: [path, index],
+            message: `${label} contains duplicate node "${value}"`,
+          });
+        }
+        seen.add(value);
+      });
+      return seen;
+    };
+
+    const discovered = uniqueRefList(snapshot.discoveredIds, 'discoveredIds', 'discoveredIds');
+    const visited = uniqueRefList(snapshot.visitedIds, 'visitedIds', 'visitedIds');
+    uniqueRefList(snapshot.visitOrder, 'visitOrder', 'visitOrder');
+    for (const id of visited) {
+      if (!discovered.has(id)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['visitedIds'],
+          message: `visited node "${id}" was never discovered`,
+        });
+      }
+    }
+    if (
+      snapshot.visitedIds.length !== snapshot.visitOrder.length ||
+      snapshot.visitedIds.some((id, index) => snapshot.visitOrder[index] !== id)
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['visitOrder'],
+        message: 'visitOrder must equal visitedIds in the real visit order',
+      });
+    }
+
+    const current = snapshot.currentNodeId;
+    if (snapshot.operation !== 'init' && snapshot.operation !== 'done') {
+      if (current === null || !ids.has(current)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['currentNodeId'],
+          message: 'a non-terminal graph frame must name the current node',
+        });
+      }
+    }
+    if (snapshot.operation === 'init') {
+      if (current !== null) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['currentNodeId'],
+          message: 'init must not name a current node',
+        });
+      }
+      if (snapshot.discoveredIds.length || snapshot.visitedIds.length || snapshot.frontierItems.length) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['discoveredIds'],
+          message: 'init happens before any node is discovered',
+        });
+      }
+    }
+    if (snapshot.operation === 'done') {
+      if (current !== null) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['currentNodeId'],
+          message: 'done must not name a current node',
+        });
+      }
+      if (snapshot.frontierItems.length) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['frontierItems'],
+          message: 'done requires an empty frontier',
+        });
+      }
+    }
+
+    if (current !== null && snapshot.operation !== 'init' && snapshot.operation !== 'done') {
+      if (!discovered.has(current)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['currentNodeId'],
+          message: `current node "${current}" is not discovered`,
+        });
+      }
+    }
+
+    if (snapshot.operation !== 'init' && snapshot.startNodeId !== null && !discovered.has(snapshot.startNodeId)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['startNodeId'],
+        message: 'startNodeId must be discovered once traversal begins',
+      });
+    }
+
+    if (snapshot.operation === 'visit' && current !== null) {
+      if (!visited.has(current)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['visitedIds'],
+          message: 'visit must already include currentNodeId in visitedIds',
+        });
+      }
+      if (snapshot.visitOrder[snapshot.visitOrder.length - 1] !== current) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['visitOrder'],
+          message: 'visit must append currentNodeId to visitOrder',
+        });
+      }
+      if (snapshot.currentEdgeId !== null) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['currentEdgeId'],
+          message: 'a visit frame must not keep an edge highlighted',
+        });
+      }
+    }
+    if (['dequeue', 'pop'].includes(snapshot.operation) && current !== null && visited.has(current)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['visitedIds'],
+        message: `${snapshot.operation} must happen before the node is visited`,
+      });
+    }
+    if (
+      ['inspect-edge', 'discover', 'skip'].includes(snapshot.operation) &&
+      current !== null &&
+      !visited.has(current)
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['visitedIds'],
+        message: `${snapshot.operation} happens while the current node is being processed`,
+      });
+    }
+
+    if (snapshot.currentEdgeId !== null) {
+      const edge = edgeById.get(snapshot.currentEdgeId);
+      if (!edge) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['currentEdgeId'],
+          message: `currentEdgeId "${snapshot.currentEdgeId}" does not refer to an edge`,
+        });
+      } else if (current !== null && edge.fromId !== current && edge.toId !== current) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['currentEdgeId'],
+          message: 'the highlighted edge must touch the current node',
+        });
+      }
+      if (['init', 'done', 'dequeue', 'pop', 'visit'].includes(snapshot.operation)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['currentEdgeId'],
+          message: `${snapshot.operation} must not keep an edge highlighted`,
+        });
+      }
+    } else if (['inspect-edge', 'discover', 'skip'].includes(snapshot.operation)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['currentEdgeId'],
+        message: `${snapshot.operation} requires a real edge`,
+      });
+    }
+
+    const neighbor = snapshot.neighborNodeId;
+    if (neighbor !== null && !ids.has(neighbor)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['neighborNodeId'],
+        message: `neighborNodeId "${neighbor}" does not refer to a node`,
+      });
+    }
+    if (neighbor !== null && current !== null && neighbor === current) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['neighborNodeId'],
+        message: 'the neighbor cannot be the current node',
+      });
+    }
+    if (['inspect-edge', 'discover', 'skip'].includes(snapshot.operation) && neighbor === null) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['neighborNodeId'],
+        message: `${snapshot.operation} requires the neighbor being examined`,
+      });
+    }
+    if (['dequeue', 'pop', 'visit', 'init', 'done'].includes(snapshot.operation) && neighbor !== null) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['neighborNodeId'],
+        message: `${snapshot.operation} must not name a neighbor`,
+      });
+    }
+    if (snapshot.currentEdgeId !== null && neighbor !== null) {
+      const edge = edgeById.get(snapshot.currentEdgeId);
+      if (edge && edge.fromId !== neighbor && edge.toId !== neighbor) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['neighborNodeId'],
+          message: 'the neighbor must be an endpoint of currentEdgeId',
+        });
+      }
+    }
+
+    if (snapshot.operation === 'discover' && neighbor !== null) {
+      if (!discovered.has(neighbor)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['discoveredIds'],
+          message: 'discover must include the newly discovered neighbor',
+        });
+      }
+      if (visited.has(neighbor)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['visitedIds'],
+          message: 'a newly discovered neighbor cannot already be visited',
+        });
+      }
+    }
+    if (snapshot.operation === 'skip' && neighbor !== null && !discovered.has(neighbor)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['neighborNodeId'],
+        message: 'skip requires the neighbor to be already discovered',
+      });
+    }
+
+    const frontierIds = new Set<string>();
+    const frontierNodes = new Set<string>();
+    snapshot.frontierItems.forEach((item, index) => {
+      if (frontierIds.has(item.id)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['frontierItems', index, 'id'],
+          message: `duplicate frontier entry id "${item.id}"`,
+        });
+      }
+      frontierIds.add(item.id);
+      if (!ids.has(item.nodeId)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['frontierItems', index, 'nodeId'],
+          message: `frontier node "${item.nodeId}" does not refer to a node`,
+        });
+      }
+      if (frontierNodes.has(item.nodeId)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['frontierItems', index, 'nodeId'],
+          message: `frontier contains node "${item.nodeId}" more than once`,
+        });
+      }
+      frontierNodes.add(item.nodeId);
+      if (!discovered.has(item.nodeId)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['frontierItems', index, 'nodeId'],
+          message: `frontier node "${item.nodeId}" was never discovered`,
+        });
+      }
+      if (visited.has(item.nodeId)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['frontierItems', index, 'nodeId'],
+          message: `visited node "${item.nodeId}" cannot remain in the frontier`,
+        });
+      }
+    });
+
+    const removed = snapshot.frontierRemoved;
+    if (['dequeue', 'pop'].includes(snapshot.operation)) {
+      if (removed === null) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['frontierRemoved'],
+          message: `${snapshot.operation} must record the removed frontier element`,
+        });
+      } else {
+        if (removed.nodeId !== current) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['frontierRemoved', 'nodeId'],
+            message: 'the removed frontier element must be currentNodeId',
+          });
+        }
+        if (frontierNodes.has(removed.nodeId)) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['frontierRemoved', 'nodeId'],
+            message: 'the removed element cannot still be in frontierItems',
+          });
+        }
+        if (!discovered.has(removed.nodeId)) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['frontierRemoved', 'nodeId'],
+            message: 'the removed element was not discovered',
+          });
+        }
+      }
+    } else if (removed !== null) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['frontierRemoved'],
+        message: 'only dequeue/pop may record a removed frontier element',
+      });
+    }
+
+    if (snapshot.operation === 'enqueue' || snapshot.operation === 'push') {
+      if (snapshot.currentEdgeId === null) {
+        if (current !== snapshot.startNodeId || snapshot.visitedIds.length > 0) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['currentEdgeId'],
+            message: 'an edge-less push/enqueue is only the first start-node operation',
+          });
+        }
+        if (snapshot.startNodeId !== null && !frontierNodes.has(snapshot.startNodeId)) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['frontierItems'],
+            message: 'the start node must be in the frontier after its first push/enqueue',
+          });
+        }
+      } else if (neighbor === null || !frontierNodes.has(neighbor)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['frontierItems'],
+          message: 'a new node push/enqueue must include the neighbor in the frontier',
+        });
+      }
+    }
+  });
+export type GraphSnapshot = z.infer<typeof graphSnapshotSchema>;
+
+/** Stage 7B stack/queue + Stage 7C linked-list + Stage 7D binary-tree + Stage 7E graph. */
 export const structureSchema = z.union([
   structureSnapshotSchema,
   linkedListSnapshotSchema,
   binaryTreeSnapshotSchema,
+  graphSnapshotSchema,
 ]);
 export type AnyStructureSnapshot = z.infer<typeof structureSchema>;
 

@@ -221,17 +221,18 @@ body {
 .lessonpanel.is-compact .lesson-meta { margin-bottom: 4px; }
 .lessonpanel.is-compact .lessonsteps {
   display: flex;
+  flex-wrap: wrap;
   gap: 6px;
-  max-height: none;
-  overflow-x: auto;
-  overflow-y: hidden;
+  max-height: 320px;
+  overflow-y: auto;
+  overflow-x: hidden;
   padding-bottom: 4px;
   scrollbar-width: thin;
 }
 .lessonpanel.is-compact .lessonstep {
-  flex: 0 0 auto;
-  width: auto;
-  max-width: 260px;
+  flex: 0 0 204px;
+  width: 204px;
+  max-width: 204px;
   grid-template-columns: 22px minmax(0, 1fr) auto;
   padding: 7px 9px;
 }

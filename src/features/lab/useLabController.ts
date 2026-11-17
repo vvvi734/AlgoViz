@@ -28,6 +28,34 @@ import { usePlayback, type Playback } from './usePlayback';
 const CODE_LANG_KEY = 'algolens-code-language';
 const DRAFT_DEBOUNCE_MS = 600;
 
+function isGraphAlgorithm(id: string): boolean {
+  return id === 'bfs' || id === 'dfs';
+}
+
+function graphStartOf(value: unknown): string {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return 'A';
+  const start = (value as { start?: unknown }).start;
+  return typeof start === 'string' ? start : 'A';
+}
+
+/** Stage 7E: Python uses the rich {start, nodes, edges} contract, while the
+ * legacy JS demo keeps reading only {start}. Switching language converts the
+ * INPUT visibly; nothing is executed until the user presses Run. */
+function graphInputForLanguage(value: unknown, language: CodeLanguage, fallback: unknown): unknown {
+  const start = graphStartOf(value);
+  if (language === 'js') return { start };
+  const parsed = value && typeof value === 'object' && !Array.isArray(value)
+    ? value as { nodes?: unknown }
+    : null;
+  if (parsed && Array.isArray(parsed.nodes)) return value;
+  if (!fallback || typeof fallback !== 'object' || Array.isArray(fallback)) return value;
+  const graph = JSON.parse(JSON.stringify(fallback)) as { start?: string; nodes?: unknown };
+  if (Array.isArray(graph.nodes) && graph.nodes.includes(start)) {
+    graph.start = start;
+  }
+  return graph;
+}
+
 export interface StatusMessage {
   text: string;
   error: boolean;
@@ -238,7 +266,7 @@ export function useLabController(): LabController {
     // real Python presets. Default those courses to Python; the user can still
     // switch to JS (legacy frames remain available).
     const preferredLang: CodeLanguage =
-      id === 'stack' || id === 'queue' || id === 'linked' || id === 'inorder' ? 'python' : codeLang;
+      id === 'stack' || id === 'queue' || id === 'linked' || id === 'inorder' || isGraphAlgorithm(id) ? 'python' : codeLang;
     if (preferredLang !== codeLang) {
       setCodeLangState(preferredLang);
       safeSet(CODE_LANG_KEY, preferredLang);
@@ -274,6 +302,15 @@ export function useLabController(): LabController {
       }
       setInputJson(JSON.stringify(treeValuesFromInput(parsed)));
     }
+    if (isGraphAlgorithm(currentAlgo)) {
+      let parsed: unknown;
+      try {
+        parsed = JSON.parse(inputJson);
+      } catch {
+        parsed = null;
+      }
+      setInputJson(JSON.stringify(graphInputForLanguage(parsed, next, defaultInputFor(currentAlgo))));
+    }
     setDiagnostics([]);
   }, [codeLang, currentAlgo, flushCurrent, applyCode, inputJson]);
 
@@ -293,7 +330,13 @@ export function useLabController(): LabController {
     const entry = catalog[currentAlgo];
     if (!entry) return;
     const code = exampleFor(currentAlgo, codeLang);
-    const rawInput = JSON.stringify(defaultInputFor(currentAlgo));
+    // The legacy JS graph demo still receives its original {start} input; the
+    // Python demo uses the richer graph contract from the same Restore action.
+    const rawInput = JSON.stringify(
+      isGraphAlgorithm(currentAlgo) && codeLang === 'js'
+        ? entry.input
+        : defaultInputFor(currentAlgo),
+    );
     applyCode(code);
     writeDraft(currentAlgo, codeLang, code);
     setInputJson(rawInput);

@@ -2,6 +2,7 @@ import type { TraceState } from '../trace/types';
 import type { AnyStructureSnapshot, StructureOperation, StructureSnapshot } from '../trace/schema';
 import { buildBinaryTreeModel, type BinaryTreeVisualModel } from './binaryTreeModel';
 import { buildLinkedListModel, type LinkedListVisualModel } from './linkedListModel';
+import { buildGraphVisualModel, type GraphVisualModel } from './graphModel';
 
 /**
  * Pure mapping from a trace state to a renderable model. React components only
@@ -43,6 +44,8 @@ export interface StructureItemModel {
   role: 'top' | 'front' | 'rear' | 'member';
   active: boolean;
   state: StructureItemState;
+  /** Stage 7E: the graph node this frontier entry refers to, never inferred from text. */
+  nodeId?: string;
 }
 
 export type VisualModel =
@@ -53,6 +56,7 @@ export type VisualModel =
   | { kind: 'queue'; operation: StructureOperation; items: StructureItemModel[]; removed?: StructureItemModel; empty: boolean; label: string }
   | LinkedListVisualModel
   | BinaryTreeVisualModel
+  | GraphVisualModel
   | { kind: 'graph'; edges: Array<[number, number]>; nodes: GraphNodeModel[]; isTree: boolean }
   | { kind: 'raw'; text: string };
 
@@ -63,6 +67,7 @@ export interface VisualLabels {
   emptyQueue?: string;
   emptyLinked?: string;
   emptyTree?: string;
+  emptyGraph?: string;
 }
 
 const TREE_COORDS: Array<[number, number]> = [
@@ -205,6 +210,13 @@ export function buildVisualModel(
   if (structure !== undefined && structure.kind === 'binary-tree') {
     if (kind !== 'tree') return { kind: 'raw', text: labels.invalid };
     const model = buildBinaryTreeModel(structure, labels.emptyTree ?? labels.emptyStructure);
+    if (!model) return { kind: 'raw', text: labels.invalid };
+    return model;
+  }
+
+  if (structure !== undefined && structure.kind === 'graph') {
+    if (kind !== 'graph') return { kind: 'raw', text: labels.invalid };
+    const model = buildGraphVisualModel(structure, labels.emptyGraph ?? labels.emptyStructure);
     if (!model) return { kind: 'raw', text: labels.invalid };
     return model;
   }

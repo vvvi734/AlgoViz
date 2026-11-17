@@ -30,6 +30,8 @@ describe('Lesson registry (Stage 3B)', () => {
       'queue-fifo-basics',
       'linked-list-pointer-basics',
       'binary-tree-traversal-basics',
+      'graph-bfs-queue-basics',
+      'graph-dfs-stack-basics',
     ]);
   });
 
@@ -65,6 +67,6 @@ describe('Lesson registry (Stage 3B)', () => {
     const covered = lessonRegistry.lessons.map((lesson) => lesson.algorithmId);
     const uncovered = catalogIds.filter((id) => !covered.includes(id));
     expect(catalogIds.length).toBe(14);
-    expect(uncovered.length).toBe(8);
+    expect(uncovered.length).toBe(6);
   });
 });

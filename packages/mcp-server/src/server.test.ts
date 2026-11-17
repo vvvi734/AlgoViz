@@ -464,7 +464,7 @@ describe('teach_algorithm prompt', () => {
 
   it('says plainly when no course exists for the algorithm', async () => {
     const { client } = await connect(config());
-    const prompt = await client.getPrompt({ name: 'teach_algorithm', arguments: { algorithmId: 'dfs' } });
+    const prompt = await client.getPrompt({ name: 'teach_algorithm', arguments: { algorithmId: 'dijkstra' } });
     const text = (prompt.messages[0].content as { text: string }).text;
     expect(text).toContain('No AlgoLens course is available');
   });

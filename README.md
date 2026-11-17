@@ -4,8 +4,8 @@
 
 面向学生的浏览器端数据结构与算法学习平台：**Python 在浏览器内运行**，根据真实执行结果生成逐帧动画，并同步展示代码位置、变量值与步骤讲解。完全本地运行，无需租服务器。
 
-> **当前版本：v0.9 Stage 7D。** 用户可见品牌为 **AlgoViz**，旧 localStorage / IndexedDB / `.algopack` / `.algosession.json` / `.algocontext.json` / MCP Tool / AI Gateway 标识保持兼容。栈是顶部开放的竖直桶（LIFO），队列是左 FRONT、右 REAR 的横向排队（FIFO）；单链表以真实 Python `Node` 对象的 `node_id` 作为身份，用数据格、`next` 格、有向箭头、HEAD / NULL、临时节点托盘与指针变化徽章，逐步展示中间插入、删除重连和遍历。全部由真实 Python/Pyodide Trace 与结构化操作语义驱动，不使用消息文本猜测。学习实验室沿用 Stage 7A 的同屏工作区、按需标签与渐进课程。二叉树用真实 Python `TreeNode` 的 `left/right` 引用构建层级画布，前序/中序/后序共用同一棵 7 节点树，可切换模式并观察真实递归调用栈、根到当前路径、访问序号与源码行。当前门禁：**458 项单测 / 39 条真实浏览器 E2E**；真实 Ollama / 云端模型仍未实测。
-> 定位已收敛：**Python 为主要教学语言**，JavaScript 作为前端实现语言继续支持既有 12 个算法演示；**C / C++ 与在线判题已从规划中取消**。详见 [阶段一总结](docs/STAGE1_REPORT.md)、[阶段二总结](docs/STAGE2_REPORT.md)、[阶段三总结](docs/STAGE3_REPORT.md)、[阶段 3B 总结](docs/STAGE3B_REPORT.md)、[阶段四总结](docs/STAGE4_REPORT.md)、[阶段 5A 总结](docs/STAGE5A_REPORT.md)、[阶段 6A 总结](docs/STAGE6A_REPORT.md)、[阶段 7A 总结](docs/STAGE7A_REPORT.md)、[阶段 7B 总结](docs/STAGE7B_REPORT.md) 与 [阶段 7C 总结](docs/STAGE7C_REPORT.md)；品牌边界见 [BRAND_MIGRATION](docs/BRAND_MIGRATION.md)；知识包格式与作者指引见 [PACK_FORMAT_V1](docs/PACK_FORMAT_V1.md)、[PACK_AUTHOR_GUIDE](docs/PACK_AUTHOR_GUIDE.md)；MCP 安装与宿主配置见 [MCP_INSTALL](docs/MCP_INSTALL.md)；AI Gateway 安装与安全边界见 [AI_GATEWAY](docs/AI_GATEWAY.md)。
+> **当前版本：v0.9 Stage 7E。** 用户可见品牌为 **AlgoViz**，旧 localStorage / IndexedDB / `.algopack` / `.algosession.json` / `.algocontext.json` / MCP Tool / AI Gateway 标识保持兼容。栈是顶部开放的竖直桶（LIFO），队列是左 FRONT、右 REAR 的横向排队（FIFO）；单链表以真实 Python `Node` 对象的 `node_id` 作为身份；二叉树用真实 Python `TreeNode` 的 `left/right` 引用构建层级画布。Stage 7E 让 BFS/DFS 共用一张真实无向图：节点、边、`discovered / visited / visitOrder`、当前节点/当前边与 BFS 队列或 DFS 显式栈全部来自同一条真实 Python Trace；图和 Frontier 共用 `currentEvent`，没有第二套播放器。当前门禁：**512 项单测 / 46 条真实浏览器 E2E**；真实 Ollama / 云端模型仍未实测。
+> 定位已收敛：**Python 为主要教学语言**，JavaScript 作为前端实现语言继续支持既有 12 个算法演示；**C / C++ 与在线判题已从规划中取消**。详见 [阶段一总结](docs/STAGE1_REPORT.md)、[阶段二总结](docs/STAGE2_REPORT.md)、[阶段三总结](docs/STAGE3_REPORT.md)、[阶段 3B 总结](docs/STAGE3B_REPORT.md)、[阶段四总结](docs/STAGE4_REPORT.md)、[阶段 5A 总结](docs/STAGE5A_REPORT.md)、[阶段 6A 总结](docs/STAGE6A_REPORT.md)、[阶段 7A 总结](docs/STAGE7A_REPORT.md)、[阶段 7B 总结](docs/STAGE7B_REPORT.md)、[阶段 7C 总结](docs/STAGE7C_REPORT.md)、[阶段 7D 总结](docs/STAGE7D_REPORT.md) 与 [阶段 7E 总结](docs/STAGE7E_REPORT.md)；品牌边界见 [BRAND_MIGRATION](docs/BRAND_MIGRATION.md)；知识包格式与作者指引见 [PACK_FORMAT_V1](docs/PACK_FORMAT_V1.md)、[PACK_AUTHOR_GUIDE](docs/PACK_AUTHOR_GUIDE.md)；MCP 安装与宿主配置见 [MCP_INSTALL](docs/MCP_INSTALL.md)；AI Gateway 安装与安全边界见 [AI_GATEWAY](docs/AI_GATEWAY.md)。
 
 ---
 
@@ -20,12 +20,12 @@
 | 14 个算法逐帧动画 | ✅ 已实现 | 12 个原有（冒泡/插入/选择/快排、二分/线性查找、栈/队列/链表、BFS/DFS、树中序）+ 阶乘 / 斐波那契递归 |
 | 播放 / 暂停 / 回退 / 单步 / 拖动 / 速度 | ✅ 已实现 | 纯函数状态机 + 逐帧回归；新 Trace 加载即回到第 0 帧并停止播放，索引恒在合法范围内 |
 | JavaScript 本地执行 | ✅ 已实现 | 3 秒限时 Web Worker，可离线 |
-| Python 执行（Pyodide） | ✅ 已实现 | Worker 内运行；`trace()` 支持真实变量快照、源码行号与可选的 stack/queue/linked-list 结构语义 |
-| 统一 Trace Event Schema v1 | ✅ 已实现 | Zod 运行时校验：`schemaVersion/step/eventType/visualType/state/message/sourceLocation/variables/callStack/lessonStepId` + Stage 7B/7C/7D 可选 `structure`（stack / queue / linked-list / binary-tree union）+ 事件/帧/变量限额；旧 Trace 无 `structure` 时继续走 legacy 视图 |
+| Python 执行（Pyodide） | ✅ 已实现 | Worker 内运行；`trace()` 支持真实变量快照、源码行号与可选的 stack/queue/linked-list/binary-tree/graph 结构语义 |
+| 统一 Trace Event Schema v1 | ✅ 已实现 | Zod 运行时校验：`schemaVersion/step/eventType/visualType/state/message/sourceLocation/variables/callStack/lessonStepId` + Stage 7B/7C/7D/7E 可选 `structure`（stack / queue / linked-list / binary-tree / graph union）+ 事件/帧/变量限额；旧 Trace 无 `structure` 时继续走 legacy 视图 |
 | 教学课程数据层 | ✅ 已实现 | `domain/lessons/`：Lesson 类型 + Zod 校验 + 注册表 + 纯同步函数；与 React / Worker 完全解耦，可校验、可查询 |
 | 教学面板（LessonPanel） | ✅ 已实现 | 算法介绍 / 前置知识 / 复杂度 / 教学阶段（含帧数徽标）/ 当前执行解释 / 常见错误；中英双语 |
 | 教学步骤 ⇄ 时间轴双向联动 | ✅ 已实现 | 同一 `currentEvent`：时间轴驱动高亮，点击步骤跳到真实执行帧（向后找 → 回绕首帧 → 不可用则禁用） |
-| 算法课程内容 | ⚠️ 6 / 14 内置 | 内置冒泡排序、阶乘、栈、队列、单链表、二叉树遍历六门完整双语课程；其余算法显示"尚未提供教学课程"空态，可由知识包补充 |
+| 算法课程内容 | ✅ 8 / 14 内置 | 内置冒泡排序、阶乘、栈、队列、单链表、二叉树遍历、BFS、DFS 八门完整双语课程；其余算法显示"尚未提供教学课程"空态，可由知识包补充 |
 | 可安装知识包（`.algopack`） | ✅ 已实现 | ZIP 容器 + manifest v1 + 有界解压 + 路径白名单；导入 → 预览 → 确认 → 本地安装 |
 | 知识包安全校验 | ✅ 已实现 | 6 MiB / 64 条目 / 512 KiB 单文件 / 3 MiB 总量 / 200:1 压缩比；拒绝路径穿越、绝对路径、重复名、加密条目、ZIP64、非文本 |
 | 知识包本地持久化 | ✅ 已实现 | IndexedDB `algolens-packs` 三 store 单事务安装/替换/卸载；刷新恢复；配额失败有明确错误 |
@@ -49,6 +49,7 @@
 | 队列专属教学可视化 | ✅ Stage 7B | 左 FRONT / 右 REAR 的横向排队；Enqueue 从右进入、Dequeue 从左离开；出队后剩余元素补位；空队列、7 帧真实 Python、DOM 前到后顺序可测 |
 | 单链表专属教学可视化 | ✅ Stage 7C | 真实 Python `Node` + `next` 引用；数据格/next 格、SVG 有向箭头、HEAD 向下箭头、尾部 NULL、临时/断开节点托盘、指针变化徽章；中间插入三阶段、删除重连、遍历与回退均有真实帧；`node_id` 区分同值节点 |
 | 二叉树专属教学可视化 | ✅ Stage 7D | 真实 Python `TreeNode` + `left/right` 引用；根在顶部、左孩子在左下、右孩子在右下的层级画布，SVG 父子边与箭头；前序/中序/后序共用 `inorder` 算法条目和同一棵树，通过模式选择器切换后由明确 Run 生成新 Trace；当前节点、已访问序号、递归路径、调用栈、源码行与 9 步双语课程同步；`node_id` 区分同值节点 |
+| 图 BFS / DFS 专属可视化 | ✅ Stage 7E | 同一张真实无向图（7 节点/7 边，含环）由真实 Python `deque` / list 栈驱动；节点/边稳定 ID、确定性布局、当前节点环、当前检查边、discovered/visited/visitOrder、BFS 队列与 DFS 显式栈全部来自同一条 `currentEvent`；回退与任意跳帧同时恢复图、Frontier、变量和步骤；9 步双语课程 |
 | 品牌迁移与兼容 | ✅ Stage 7B | 界面/标题/元数据/README 使用 AlgoViz；旧持久化 key、packId、MCP Tool、AI Gateway 环境变量与协议头保持不变，见 `docs/BRAND_MIGRATION.md` |
 | Monaco 代码编辑器 | ✅ 已实现 | Python/JS 语法高亮、行号、缩进、折叠、撤销/重做、自适应尺寸 |
 | 执行行高亮联动 | ✅ 已实现 | `currentEvent.sourceLocation.line` 驱动 Monaco 高亮；时间轴/单步/回退/拖动同步 |
@@ -60,7 +61,7 @@
 | C / C++ | 🚫 已取消 | 语言入口、占位模板与 `/api/execute` 执行后端均已移除 |
 | 在线 Judge / 自动判题 | 🚫 已取消 | 相关入口与宣传已清理 |
 | 中英文界面 / 移动端适配 | ⚠️ 部分 | Stage 7A 修复 390–1920 横向溢出与 1024 布局；Stage 7B 栈/队列在 1440/1024/390 与 Light/Dark 下实测无页面横向溢出；仍未安装 axe-core，触控尺寸未逐项审计 |
-| 自动化测试 | ✅ 已实现 | 458 项单测 / 帧回归 / jsdom 冒烟 + 39 条真实浏览器 E2E（Playwright + Edge，含真实 Pyodide、知识包、会话文件、AI 导师真实帧/离线/防剧透、Stage 7A 布局与标签状态、Stage 7B 栈/队列、Stage 7C 链表节点/箭头/回退、Stage 7D 二叉树三模式/递归调用栈/回退与 106 张截图）；另有 MCP 协议测试 20 项与 stdio 冒烟 9 项通过 + 1 项按配置跳过 |
+| 自动化测试 | ✅ 已实现 | 512 项单测 / 帧回归 / jsdom 冒烟 + 46 条真实浏览器 E2E（Playwright + Edge，含真实 Pyodide、知识包、会话文件、AI 导师真实帧/离线/防剧透、Stage 7A 布局与标签状态、Stage 7B 栈/队列、Stage 7C 链表节点/箭头/回退、Stage 7D 二叉树三模式/递归调用栈/回退、Stage 7E BFS/DFS 图与 Frontier/回退/跳帧/空图/非连通/重复边/响应式与 90 张截图）；另有 MCP 协议测试 20 项与 stdio 冒烟 9 项通过 + 1 项按配置跳过 |
 | 知识包远程市场 / 包签名 | ⏳ 后续 | 本版只有本地文件导入；无远程仓库、无自动下载、无签名校验 |
 | 网页 AI 导师（本地 Gateway） | ✅ 已实现（真机未验证） | Stage 7A 将其收进工作区标签页，连接状态与错误详情保留；Stage 6A：Ollama + OpenAI Chat Completions 适配、五级教学 Schema、防剧透降级、同源代理；本机无 Ollama/云端 Key，真实模型未验证 |
 | AI Gateway 安全边界 | ✅ 已实现 | 仅 127.0.0.1、Origin + 自定义头、96 KiB 请求 / 30s / 20 rpm、严格 Zod、目标地址仅启动配置、密钥只存 Gateway 环境变量 |
@@ -75,10 +76,10 @@
 npm ci
 npm run dev            # 开发服务器
 npm run typecheck      # TypeScript 严格检查
-npm test               # Vitest（434 项）
+npm test               # Vitest（512 项）
 npm run build          # tsc -b && vite build → dist/
 npm run preview        # 预览构建产物
-npm run test:e2e       # Playwright E2E（默认驱动本机 Microsoft Edge，32 条）
+npm run test:e2e       # Playwright E2E（默认驱动本机 Microsoft Edge，46 条）
 npm run pack:build     # 从 packs/src/<name>/ 构建 .algopack
 npm run pack -- packs/algolens-search-basics.algopack   # 校验知识包（与浏览器同一条校验链）
 ```
@@ -125,7 +126,7 @@ src/
   i18n/        中英词典与 Provider
   styles/      tokens.css（唯一颜色源）+ app.css
   test/        setup 与 legacy 帧快照
-e2e/            Playwright 真实浏览器测试（lab.spec.ts / packs.spec.ts / session.spec.ts / mentor.spec.ts / stage7b.spec.ts / stage7c.spec.ts）
+e2e/            Playwright 真实浏览器测试（lab.spec.ts / packs.spec.ts / session.spec.ts / mentor.spec.ts / stage7b.spec.ts / stage7c.spec.ts / stage7d.spec.ts / stage7e.spec.ts）
 packages/
   mcp-server/   本地 MCP Adapter（stdio、官方 SDK、6 工具 + teach_algorithm；依赖与产物独立）
   ai-gateway/   本地 AI Gateway（仅 127.0.0.1；Ollama + OpenAI Chat Completions；共享 mentor Schema）
@@ -197,6 +198,7 @@ Stage 7A（已完成）：学习实验室信息架构重构（动画 + Monaco + 
 Stage 7B（已完成）：AlgoViz 品牌迁移与旧 key 兼容、可选 structure Trace、栈桶状/队列排队专属渲染、真实 Python 栈/队列课程与截图。
 Stage 7C（已完成）：单链表结构化 Trace、真实 Python Node 示例（插入/删除/遍历）、纯链表 VisualModel、节点/箭头/HEAD/NULL/断开节点渲染、双语课程、6 条真实 Pyodide E2E 与 60 张截图。
 Stage 7D（已完成）：二叉树结构化 Trace、真实 Python TreeNode 三模式递归（前序/中序/后序）、纯树布局与模型、层级画布/递归路径/访问序号、调用栈联动、9 步双语课程、6 条真实 Pyodide E2E 与 106 张截图。
+Stage 7E（已完成）：图 BFS/DFS 结构化 Trace、真实 Python deque 队列与显式 list 栈、确定性图布局与纯 GraphVisualModel、节点/边/当前边/访问序号、同帧 QueueVisual/StackVisual、图与 Frontier 的回退/跳帧同步、9 步双语课程、6 条真实 Pyodide E2E 与 90 张截图。
 后续：Agent ↔ 浏览器实时同步（Stage 5B 候选）、RAG、题库扩充、练习页 Monaco 迁移、远程包市场与包签名、axe 可访问性。
 
 ### License
@@ -221,17 +223,19 @@ AlgoViz is a browser-first algorithm visualization learning platform where **Pyt
 
 **Stage 7C** adds a real singly linked-list teaching visualization: actual Python `Node` objects with a stable `node_id`, real `next` references, HEAD/NULL markers, SVG arrows, a detached-node tray and a pointer-change badge. Middle insertion is shown as create → `new.next = previous.next` → `previous.next = new`; deletion first bypasses the target and then clears `target.next`; traversal highlights the current Node while Monaco, variables and the lesson step stay on the same frame. Every frame is a full snapshot, so scrubbing and arbitrary jumps restore the exact chain. Screenshots and limits are recorded in [docs/STAGE7C_REPORT.md](docs/STAGE7C_REPORT.md).
 
+**Stage 7E** adds a real graph BFS/DFS lab. One undirected teaching graph (A–G, seven edges, including a cycle) is traversed by genuine Python code: `collections.deque` for BFS and an explicit `list` stack for DFS. Every frame carries stable node/edge ids, `discovered` / `visited` / `visitOrder`, the current node and inspected edge, and the exact frontier snapshot. The graph canvas and the compact queue/stack below it are built from the same `currentEvent`; there is no second player, no index and no message parsing. Scrubbing or jumping restores the graph, frontier, variables and lesson step together, while a theme or viewport change keeps the same frame. Nine bilingual steps explain why FIFO expands layer by layer and LIFO goes deep before backtracking. Screenshots and limits are recorded in [docs/STAGE7E_REPORT.md](docs/STAGE7E_REPORT.md).
+
 ```sh
 npm ci
 npm run dev
 npm run typecheck
-npm test          # 434 tests (incl. 20 MCP protocol tests + gateway tests)
+npm test          # 512 tests (incl. 20 MCP protocol tests + gateway tests)
 npm run build
-npm run test:e2e  # 32 Playwright tests (local Microsoft Edge; mock provider)
+npm run test:e2e  # 46 Playwright tests (local Microsoft Edge; mock provider)
 npm run pack -- packs/algolens-search-basics.algopack   # validate a pack (same chain as the browser)
 npm run mcp:install && npm run mcp:build                 # optional MCP server (Node >= 20)
 npm run mcp:smoke                                        # real stdio child-process smoke test
 npm run ai:install && npm run ai:dev                     # optional loopback AI Gateway
 ```
 
-See [docs/STAGE7C_REPORT.md](docs/STAGE7C_REPORT.md) for this stage, [docs/STAGE5A_REPORT.md](docs/STAGE5A_REPORT.md), [docs/MCP_INSTALL.md](docs/MCP_INSTALL.md) for host configuration (templates only — no third-party host was tested), [docs/STAGE4_REPORT.md](docs/STAGE4_REPORT.md) for packs, [docs/PACK_FORMAT_V1.md](docs/PACK_FORMAT_V1.md) for the container spec, [docs/PACK_AUTHOR_GUIDE.md](docs/PACK_AUTHOR_GUIDE.md) for authoring, [docs/STAGE3B_REPORT.md](docs/STAGE3B_REPORT.md) for the lesson system, [docs/STAGE3_REPORT.md](docs/STAGE3_REPORT.md) for recursion, [docs/REFERENCES.md](docs/REFERENCES.md) for sources and licences, and [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for module boundaries. Never put provider API keys in the browser. MIT licensed; all exercises and lesson copy are original, not official past exam questions.
+See [docs/STAGE7E_REPORT.md](docs/STAGE7E_REPORT.md) for this stage, [docs/STAGE7D_REPORT.md](docs/STAGE7D_REPORT.md) for the tree lab, [docs/STAGE7C_REPORT.md](docs/STAGE7C_REPORT.md) for the linked list, [docs/STAGE5A_REPORT.md](docs/STAGE5A_REPORT.md), [docs/MCP_INSTALL.md](docs/MCP_INSTALL.md) for host configuration (templates only — no third-party host was tested), [docs/STAGE4_REPORT.md](docs/STAGE4_REPORT.md) for packs, [docs/PACK_FORMAT_V1.md](docs/PACK_FORMAT_V1.md) for the container spec, [docs/PACK_AUTHOR_GUIDE.md](docs/PACK_AUTHOR_GUIDE.md) for authoring, [docs/STAGE3B_REPORT.md](docs/STAGE3B_REPORT.md) for the lesson system, [docs/STAGE3_REPORT.md](docs/STAGE3_REPORT.md) for recursion, [docs/REFERENCES.md](docs/REFERENCES.md) for sources and licences, and [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for module boundaries. Never put provider API keys in the browser. MIT licensed; all exercises and lesson copy are original, not official past exam questions.

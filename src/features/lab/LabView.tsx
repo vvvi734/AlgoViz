@@ -55,6 +55,7 @@ export function LabView({
   const actualTreeTraversal =
     currentEvent?.structure?.kind === 'binary-tree' ? currentEvent.structure.traversal : null;
   const showTreePicker = lab.currentAlgo === 'inorder' && lab.codeLang === 'python';
+  const showGraphStepPeek = lab.currentAlgo === 'bfs' || lab.currentAlgo === 'dfs';
   const highlightLine = !lab.traceStale && currentEvent?.sourceLocation?.line
     ? currentEvent.sourceLocation.line
     : null;
@@ -208,6 +209,12 @@ export function LabView({
                 <div className="eyebrow">{t('visualization')}</div>
                 <h2>{t('algorithmStage')}</h2>
               </div>
+              {showGraphStepPeek && activeStep ? (
+                <div className="stage-step-peek" data-testid="stage-step-peek">
+                  <span className="stage-step-peek-label">{t('currentStep')}</span>
+                  <span className="stage-step-peek-text">{activeStep.title[lang]}</span>
+                </div>
+              ) : null}
               {lab.traceStale && <span className="tag orange">{t('traceStaleShort')}</span>}
             </div>
             <VisualStage event={currentEvent} />
