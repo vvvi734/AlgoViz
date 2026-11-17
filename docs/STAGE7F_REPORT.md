@@ -4,6 +4,7 @@
 - **分支**：`stage7f-dijkstra`（从 Stage 7E 提交 `6512118ad006715b549a6043792d838edd32ce22` 创建）
 - **基线远端**：`https://gitee.com/vvvi734/algolens.git`
 - **范围**：Dijkstra + 带权图可视化；本阶段不开发 Floyd / Prim / Bellman-Ford / MST / 拓扑排序。
+- **实现提交**：`de13dda`（`feat(stage7f): add real heapq Dijkstra weighted-graph lab`）。
 - **交付状态**：功能、真实 Python、双语课程、单测、真实 Pyodide E2E、62 张截图、全量门禁完成。分支独立，未合并 `main`。
 
 ## 1. 验收对照
@@ -254,7 +255,8 @@ Stage 7F 专项测试：
 - 工作树：`D:/Desktop/algolens_github_starter/algolens-github`，分支 `stage7f-dijkstra`，基线 `6512118`。
 - 另一 Agent 的独立工作树：`D:/Desktop/algolens_github_starter/algolens-ui01`，分支 `feat/sidebar`。本阶段未读写该目录、未修改侧边栏布局/导航组件，只按现有 catalog 机制注册 `dijkstra`。
 - `main` 未被合并，7F 未合入 `main`。
-- 提交信息与最终 hash 见交付说明；推送目标为 `origin/stage7f-dijkstra`。
+- 实现提交：`de13dda`；本报告所在提交为后续文档提交。
+- 推送目标为 `origin/stage7f-dijkstra`；不合并 `main`。
 
 ## 11. 停止点
 
