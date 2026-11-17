@@ -33,11 +33,14 @@ export default defineConfig({
   reporter: [['list']],
   use: {
     baseURL: PREVIEW_URL,
-    channel: 'msedge',
+    channel: process.env.PLAYWRIGHT_CHANNEL ?? (process.env.PLAYWRIGHT_EXECUTABLE_PATH ? undefined : 'msedge'),
     headless: true,
     viewport: { width: 1280, height: 900 },
     actionTimeout: 20_000,
-    launchOptions: { args: ['--disable-quic'] },
+    launchOptions: {
+      args: ['--disable-quic'],
+      ...(process.env.PLAYWRIGHT_EXECUTABLE_PATH ? { executablePath: process.env.PLAYWRIGHT_EXECUTABLE_PATH } : {}),
+    },
   },
   webServer: [
     {

@@ -1555,13 +1555,411 @@ export const weightedGraphSnapshotSchema = z
   });
 export type WeightedGraphSnapshot = z.infer<typeof weightedGraphSnapshotSchema>;
 
-/** Stage 7B stack/queue + Stage 7C linked-list + Stage 7D binary-tree + Stage 7E/7F graphs. */
+/**
+ * G1 shortest-path batch: Floyd-Warshall and Bellman-Ford.
+ *
+ * Both use signed edge weights. The existing Dijkstra schema deliberately
+ * rejects negatives, so these are separate snapshots instead of weakening the
+ * Dijkstra contract. Every distance matrix/table is copied from the real
+ * Python execution; `null` remains the JSON-safe representation of infinity.
+ */
+export const FLOYD_OPERATIONS = ['init', 'k-advance', 'update', 'skip', 'negative-cycle', 'done'] as const;
+export type FloydOperation = (typeof FLOYD_OPERATIONS)[number];
+
+export const BELLMAN_OPERATIONS = [
+  'init', 'round-start', 'inspect-edge', 'relax', 'skip', 'round-end', 'early-exit', 'negative-cycle', 'done',
+] as const;
+export type BellmanOperation = (typeof BELLMAN_OPERATIONS)[number];
+
+const signedWeightEdgeSchema = graphEdgeSchema.extend({
+  weight: z.number().finite(),
+});
+
+const shortestPathDistanceCellSchema = z.object({
+  fromId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS),
+  toId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS),
+  distance: z.number().finite().nullable(),
+});
+
+const shortestPathPreviousCellSchema = z.object({
+  fromId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS),
+  toId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS),
+  previousId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+});
+
+const floydCompareSchema = z.object({
+  iNodeId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS),
+  jNodeId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS),
+  kNodeId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS),
+  throughIK: z.number().finite().nullable(),
+  throughKJ: z.number().finite().nullable(),
+  candidate: z.number().finite().nullable(),
+  oldDistance: z.number().finite().nullable(),
+  updated: z.boolean(),
+  newDistance: z.number().finite().nullable(),
+});
+
+const negativeCycleSchema = z.object({
+  hasCycle: z.boolean(),
+  /** Reachable-from-start cycle nodes for Bellman-Ford; negative diagonal nodes for Floyd. */
+  nodeIds: z.array(z.string().min(1).max(LIMITS.MAX_NAME_CHARS)).max(GRAPH_LIMITS.MAX_NODES),
+});
+
+function validateSignedGraph(
+  snapshot: {
+    nodes: Array<{ id: string }>;
+    edges: Array<{ id: string; fromId: string; toId: string; weight: number }>;
+    directed: boolean;
+  },
+  add: (path: Array<string | number>, message: string) => void,
+): Set<string> {
+  const ids = new Set<string>();
+  snapshot.nodes.forEach((node, index) => {
+    if (ids.has(node.id)) add(['nodes', index, 'id'], `duplicate graph node id "${node.id}"`);
+    ids.add(node.id);
+  });
+  const edgeIds = new Set<string>();
+  const edgePairs = new Set<string>();
+  snapshot.edges.forEach((edge, index) => {
+    if (edgeIds.has(edge.id)) add(['edges', index, 'id'], `duplicate graph edge id "${edge.id}"`);
+    edgeIds.add(edge.id);
+    if (!ids.has(edge.fromId)) add(['edges', index, 'fromId'], `edge "${edge.id}" starts at unknown node "${edge.fromId}"`);
+    if (!ids.has(edge.toId)) add(['edges', index, 'toId'], `edge "${edge.id}" ends at unknown node "${edge.toId}"`);
+    if (edge.fromId === edge.toId) add(['edges', index], 'self-loops are not supported in this teaching graph');
+    if (ids.has(edge.fromId) && ids.has(edge.toId) && edge.fromId !== edge.toId) {
+      const pair = snapshot.directed
+        ? `${edge.fromId}\u0000${edge.toId}`
+        : [edge.fromId, edge.toId].sort().join('\u0000');
+      if (edgePairs.has(pair)) {
+        add(['edges', index], snapshot.directed
+          ? `duplicate directed edge "${edge.fromId}"→"${edge.toId}"`
+          : `duplicate undirected edge "${edge.fromId}"–"${edge.toId}"`);
+      }
+      edgePairs.add(pair);
+    }
+  });
+  return ids;
+}
+
+function validatePath(
+  snapshot: {
+    edges: Array<{ fromId: string; toId: string }>;
+    directed: boolean;
+    previous?: Array<{ fromId: string; toId: string; previousId: string | null }>;
+    pathNodeIds: string[] | null;
+    pathDistance: number | null;
+    targetNodeId: string | null;
+    distanceOf?: (from: string, to: string) => number | null | undefined;
+  },
+  add: (path: Array<string | number>, message: string) => void,
+): void {
+  const path = snapshot.pathNodeIds ?? [];
+  if (!path.length) {
+    if (snapshot.pathDistance !== null) add(['pathDistance'], 'an empty path has no path distance');
+    return;
+  }
+  const seen = new Set<string>();
+  path.forEach((id, index) => {
+    if (seen.has(id)) add(['pathNodeIds', index], `path repeats node "${id}"`);
+    seen.add(id);
+  });
+  if (snapshot.targetNodeId !== null && path[path.length - 1] !== snapshot.targetNodeId) {
+    add(['pathNodeIds'], 'a path must end at targetNodeId');
+  }
+  const targetDistance = snapshot.distanceOf?.(path[0] ?? '', snapshot.targetNodeId ?? '');
+  if (snapshot.pathDistance !== null && targetDistance !== undefined && snapshot.pathDistance !== targetDistance) {
+    add(['pathDistance'], 'pathDistance must equal the target distance');
+  }
+  for (let index = 0; index + 1 < path.length; index += 1) {
+    const from = path[index];
+    const to = path[index + 1];
+    if (from === undefined || to === undefined) continue;
+    const found = snapshot.edges.some((edge) =>
+      snapshot.directed
+        ? edge.fromId === from && edge.toId === to
+        : (edge.fromId === from && edge.toId === to) || (edge.fromId === to && edge.toId === from),
+    );
+    if (!found) add(['pathNodeIds', index + 1], `no edge connects path nodes "${from}" and "${to}"`);
+    if (snapshot.previous) {
+      const previous = snapshot.previous.find((cell) => cell.fromId === path[0] && cell.toId === to);
+      if (previous && previous.previousId !== from) add(['pathNodeIds', index + 1], `previous[${to}] must be ${from}`);
+    }
+  }
+}
+
+export const floydWarshallSnapshotSchema = z
+  .object({
+    kind: z.literal('floyd-warshall'),
+    algorithm: z.literal('floyd-warshall'),
+    operation: z.enum(FLOYD_OPERATIONS),
+    nodes: z.array(graphNodeSchema).max(GRAPH_LIMITS.MAX_NODES),
+    edges: z.array(signedWeightEdgeSchema).max(GRAPH_LIMITS.MAX_EDGES),
+    directed: z.boolean(),
+    startNodeId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+    targetNodeId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+    /** Current intermediate node k; absent only before the first k. */
+    kNodeId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+    /** Current matrix row i and column j for a comparison frame. */
+    iNodeId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+    jNodeId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+    /** Current i→j comparison, copied from the real triple loop. */
+    compare: floydCompareSchema.nullable(),
+    /** Complete V×V matrix, ordered by nodes. */
+    distances: z.array(shortestPathDistanceCellSchema).max(GRAPH_LIMITS.MAX_NODES * GRAPH_LIMITS.MAX_NODES),
+    /** Complete V×V previous matrix (predecessor on the best known path). */
+    previous: z.array(shortestPathPreviousCellSchema).max(GRAPH_LIMITS.MAX_NODES * GRAPH_LIMITS.MAX_NODES),
+    negativeCycle: negativeCycleSchema.nullable(),
+    pathNodeIds: z.array(z.string().min(1).max(LIMITS.MAX_NAME_CHARS)).max(GRAPH_LIMITS.MAX_NODES).nullable(),
+    pathDistance: z.number().finite().nullable(),
+  })
+  .superRefine((snapshot, ctx) => {
+    const add = (path: Array<string | number>, message: string) => {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path, message });
+    };
+    const ids = validateSignedGraph(snapshot, add);
+    const n = snapshot.nodes.length;
+    if (n === 0) {
+      if (snapshot.startNodeId !== null || snapshot.targetNodeId !== null) add(['startNodeId'], 'an empty graph has no start/target');
+      if (snapshot.operation !== 'init' && snapshot.operation !== 'done') add(['operation'], 'an empty graph may only emit init or done');
+      if (snapshot.kNodeId !== null || snapshot.iNodeId !== null || snapshot.jNodeId !== null || snapshot.compare) {
+        add(['kNodeId'], 'an empty graph has no current comparison');
+      }
+      if (snapshot.distances.length || snapshot.previous.length || snapshot.negativeCycle) add(['distances'], 'an empty graph has no matrix');
+      if (snapshot.pathNodeIds && snapshot.pathNodeIds.length) add(['pathNodeIds'], 'an empty graph has no path');
+      if (snapshot.pathDistance !== null) add(['pathDistance'], 'an empty graph has no path distance');
+      return;
+    }
+    if (snapshot.startNodeId === null || !ids.has(snapshot.startNodeId)) add(['startNodeId'], 'startNodeId must name a real node');
+    if (snapshot.targetNodeId === null || !ids.has(snapshot.targetNodeId)) add(['targetNodeId'], 'targetNodeId must name a real node');
+    if (snapshot.kNodeId !== null && !ids.has(snapshot.kNodeId)) add(['kNodeId'], 'kNodeId must name a real node');
+    if (snapshot.iNodeId !== null && !ids.has(snapshot.iNodeId)) add(['iNodeId'], 'iNodeId must name a real node');
+    if (snapshot.jNodeId !== null && !ids.has(snapshot.jNodeId)) add(['jNodeId'], 'jNodeId must name a real node');
+
+    const cells = new Map<string, number | null>();
+    snapshot.distances.forEach((cell, index) => {
+      if (!ids.has(cell.fromId) || !ids.has(cell.toId)) add(['distances', index], 'matrix cell refers to an unknown node');
+      const key = `${cell.fromId}\u0000${cell.toId}`;
+      if (cells.has(key)) add(['distances', index], 'duplicate matrix cell');
+      cells.set(key, cell.distance);
+    });
+    if (cells.size !== n * n) add(['distances'], 'the distance matrix must cover every ordered node pair');
+    const previous = new Set<string>();
+    snapshot.previous.forEach((cell, index) => {
+      if (!ids.has(cell.fromId) || !ids.has(cell.toId)) add(['previous', index], 'previous cell refers to an unknown node');
+      if (cell.previousId !== null && !ids.has(cell.previousId)) add(['previous', index, 'previousId'], 'previousId must name a real node');
+      const key = `${cell.fromId}\u0000${cell.toId}`;
+      if (previous.has(key)) add(['previous', index], 'duplicate previous cell');
+      previous.add(key);
+    });
+    if (previous.size !== n * n) add(['previous'], 'the previous matrix must cover every ordered node pair');
+
+    const compare = snapshot.compare;
+    if (snapshot.operation === 'update' || snapshot.operation === 'skip') {
+      if (!compare) add(['compare'], `${snapshot.operation} must include the current comparison`);
+      if (!snapshot.iNodeId || !snapshot.jNodeId || !snapshot.kNodeId) add(['compare'], 'a comparison frame must name i, j and k');
+      if (snapshot.operation === 'update' && compare && !compare.updated) add(['compare', 'updated'], 'update frames must report updated=true');
+      if (snapshot.operation === 'skip' && compare && compare.updated) add(['compare', 'updated'], 'skip frames must report updated=false');
+    } else if (compare) {
+      add(['compare'], 'only update/skip frames carry a comparison');
+    }
+    if (snapshot.operation === 'k-advance' && snapshot.kNodeId === null) add(['kNodeId'], 'k-advance must name k');
+    if (compare) {
+      const cell = cells.get(`${compare.iNodeId}\u0000${compare.jNodeId}`) ?? null;
+      if (snapshot.operation === 'skip' && cell !== compare.oldDistance) {
+        add(['compare', 'oldDistance'], 'a skipped cell must still hold oldDistance');
+      }
+      if (compare.newDistance !== cell) add(['compare', 'newDistance'], 'newDistance must be the post-comparison cell');
+      const throughIK = cells.get(`${compare.iNodeId}\u0000${compare.kNodeId}`) ?? null;
+      const throughKJ = cells.get(`${compare.kNodeId}\u0000${compare.jNodeId}`) ?? null;
+      if (throughIK !== compare.throughIK || throughKJ !== compare.throughKJ) add(['compare'], 'through values must come from the matrix');
+      if (compare.candidate !== (throughIK === null || throughKJ === null ? null : throughIK + throughKJ)) {
+        add(['compare', 'candidate'], 'candidate must be throughIK + throughKJ');
+      }
+      if (compare.newDistance !== (compare.updated ? compare.candidate : compare.oldDistance)) {
+        add(['compare', 'newDistance'], 'newDistance must describe the post-comparison cell');
+      }
+    }
+
+    if (snapshot.negativeCycle) {
+      if (snapshot.operation !== 'negative-cycle' && snapshot.operation !== 'done') add(['negativeCycle'], 'only the final frames report cycle detection');
+      snapshot.negativeCycle.nodeIds.forEach((id) => {
+        if (!ids.has(id)) add(['negativeCycle', 'nodeIds'], 'cycle node is unknown');
+      });
+      if (snapshot.negativeCycle.hasCycle) {
+        if (!snapshot.negativeCycle.nodeIds.length) add(['negativeCycle', 'nodeIds'], 'a detected negative cycle needs at least one node');
+      } else if (snapshot.negativeCycle.nodeIds.length) {
+        add(['negativeCycle', 'nodeIds'], 'a false cycle result must not list nodes');
+      }
+    }
+    const diagonalNegative = snapshot.nodes.filter((node) => (cells.get(`${node.id}\u0000${node.id}`) ?? 0) < 0);
+    if (snapshot.negativeCycle?.hasCycle && diagonalNegative.length === 0) {
+      add(['negativeCycle'], 'a negative cycle must leave a negative diagonal cell');
+    }
+    if (snapshot.operation === 'negative-cycle' && !snapshot.negativeCycle?.hasCycle) {
+      add(['negativeCycle'], 'a negative-cycle frame must report a real cycle');
+    }
+    if (snapshot.operation === 'done') {
+      validatePath({
+        edges: snapshot.edges,
+        directed: snapshot.directed,
+        previous: snapshot.previous.filter((cell) => cell.fromId === snapshot.startNodeId),
+        pathNodeIds: snapshot.pathNodeIds,
+        pathDistance: snapshot.pathDistance,
+        targetNodeId: snapshot.targetNodeId,
+        distanceOf: (from, to) => cells.get(`${from}\u0000${to}`),
+      }, add);
+      if (snapshot.negativeCycle?.hasCycle && snapshot.pathDistance !== null) {
+        add(['pathDistance'], 'a negative cycle makes the shortest distance undefined');
+      }
+    } else if (snapshot.pathDistance !== null || (snapshot.pathNodeIds && snapshot.pathNodeIds.length)) {
+      add(['pathNodeIds'], 'only the done frame reports a path');
+    }
+  });
+export type FloydWarshallSnapshot = z.infer<typeof floydWarshallSnapshotSchema>;
+
+export const bellmanFordSnapshotSchema = z
+  .object({
+    kind: z.literal('bellman-ford'),
+    algorithm: z.literal('bellman-ford'),
+    operation: z.enum(BELLMAN_OPERATIONS),
+    nodes: z.array(graphNodeSchema).max(GRAPH_LIMITS.MAX_NODES),
+    edges: z.array(signedWeightEdgeSchema).max(GRAPH_LIMITS.MAX_EDGES),
+    directed: z.boolean(),
+    startNodeId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+    targetNodeId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+    round: z.number().int().nonnegative().max(GRAPH_LIMITS.MAX_NODES),
+    maxRounds: z.number().int().nonnegative().max(GRAPH_LIMITS.MAX_NODES),
+    currentNodeId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+    currentEdgeId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+    neighborNodeId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+    distances: z.array(shortestPathDistanceCellSchema).max(GRAPH_LIMITS.MAX_NODES),
+    previous: z.array(shortestPathPreviousCellSchema).max(GRAPH_LIMITS.MAX_NODES),
+    relax: z.object({
+      nodeId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS),
+      oldDistance: z.number().finite().nullable(),
+      newDistance: z.number().finite(),
+      oldPreviousId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+      newPreviousId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS),
+    }).nullable(),
+    updatedInRound: z.boolean(),
+    earlyExit: z.boolean(),
+    negativeCycle: negativeCycleSchema.nullable(),
+    pathNodeIds: z.array(z.string().min(1).max(LIMITS.MAX_NAME_CHARS)).max(GRAPH_LIMITS.MAX_NODES).nullable(),
+    pathDistance: z.number().finite().nullable(),
+  })
+  .superRefine((snapshot, ctx) => {
+    const add = (path: Array<string | number>, message: string) => {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path, message });
+    };
+    const ids = validateSignedGraph(snapshot, add);
+    const edgeById = new Map(snapshot.edges.map((edge) => [edge.id, edge]));
+    const n = snapshot.nodes.length;
+    if (n === 0) {
+      if (snapshot.startNodeId !== null || snapshot.targetNodeId !== null) add(['startNodeId'], 'an empty graph has no start/target');
+      if (snapshot.operation !== 'init' && snapshot.operation !== 'done') add(['operation'], 'an empty graph may only emit init or done');
+      if (snapshot.round !== 0 || snapshot.maxRounds !== 0) add(['round'], 'an empty graph has no rounds');
+      if (snapshot.distances.length || snapshot.previous.length || snapshot.relax || snapshot.negativeCycle) {
+        add(['distances'], 'an empty graph has no distances');
+      }
+      if (snapshot.pathNodeIds && snapshot.pathNodeIds.length) add(['pathNodeIds'], 'an empty graph has no path');
+      if (snapshot.pathDistance !== null) add(['pathDistance'], 'an empty graph has no path distance');
+      return;
+    }
+    if (snapshot.startNodeId === null || !ids.has(snapshot.startNodeId)) add(['startNodeId'], 'startNodeId must name a real node');
+    if (snapshot.targetNodeId === null || !ids.has(snapshot.targetNodeId)) add(['targetNodeId'], 'targetNodeId must name a real node');
+    if (snapshot.maxRounds !== n - 1) add(['maxRounds'], 'maxRounds must equal V-1');
+    if (snapshot.operation === 'init' && snapshot.round !== 0) add(['round'], 'init is round 0');
+    if (snapshot.operation !== 'init' && snapshot.round === 0) add(['round'], 'only init may use round 0');
+    if (snapshot.round > snapshot.maxRounds && snapshot.operation !== 'done' && snapshot.operation !== 'negative-cycle') {
+      add(['round'], 'round exceeds V-1');
+    }
+
+    const distance = new Map<string, number | null>();
+    snapshot.distances.forEach((cell, index) => {
+      if (cell.fromId !== snapshot.startNodeId || !ids.has(cell.toId)) {
+        add(['distances', index], 'Bellman-Ford distance rows must be from startNodeId to every node');
+      }
+      if (distance.has(cell.toId)) add(['distances', index], 'duplicate distance row');
+      distance.set(cell.toId, cell.distance);
+    });
+    if (distance.size !== n) add(['distances'], 'the distance table must cover every node');
+    const previous = new Map<string, string | null>();
+    snapshot.previous.forEach((cell, index) => {
+      if (cell.fromId !== snapshot.startNodeId || !ids.has(cell.toId)) add(['previous', index], 'previous rows must be from startNodeId');
+      if (!ids.has(cell.toId)) add(['previous', index, 'toId'], 'previous target is unknown');
+      if (cell.previousId !== null && !ids.has(cell.previousId)) add(['previous', index, 'previousId'], 'previousId must name a node');
+      if (previous.has(cell.toId)) add(['previous', index], 'duplicate previous row');
+      previous.set(cell.toId, cell.previousId);
+    });
+    if (previous.size !== n) add(['previous'], 'the previous table must cover every node');
+
+    const edge = snapshot.currentEdgeId ? edgeById.get(snapshot.currentEdgeId) : undefined;
+    const edgeOperation = ['inspect-edge', 'relax', 'skip'].includes(snapshot.operation);
+    if (edgeOperation) {
+      if (!edge) add(['currentEdgeId'], `${snapshot.operation} must name a real edge`);
+      if (!edge) return;
+      if (snapshot.currentNodeId !== edge.fromId) add(['currentNodeId'], 'currentNodeId must be edge.fromId');
+      if (snapshot.neighborNodeId !== edge.toId) add(['neighborNodeId'], 'neighborNodeId must be edge.toId');
+    } else if (snapshot.currentEdgeId) {
+      add(['currentEdgeId'], `${snapshot.operation} must not carry an edge`);
+    }
+    if (snapshot.operation === 'relax') {
+      if (!snapshot.relax) add(['relax'], 'relax frames must carry a relax change');
+      if (edge && snapshot.relax) {
+        if (snapshot.relax.nodeId !== edge.toId) add(['relax', 'nodeId'], 'relax must update the edge target');
+        if (snapshot.relax.newDistance !== distance.get(edge.toId)) add(['relax', 'newDistance'], 'relax newDistance must be the table value');
+        if (snapshot.relax.oldDistance !== null && snapshot.relax.oldDistance! <= snapshot.relax.newDistance) {
+          add(['relax', 'oldDistance'], 'relax must strictly improve the distance');
+        }
+        if (snapshot.relax.newPreviousId !== edge.fromId) add(['relax', 'newPreviousId'], 'relax must set previous to edge.fromId');
+      }
+      if (!snapshot.updatedInRound) add(['updatedInRound'], 'a relax frame sets updatedInRound');
+    } else if (snapshot.relax) {
+      add(['relax'], 'only relax frames carry a relax change');
+    }
+    if (snapshot.operation === 'round-start') {
+      if (snapshot.updatedInRound) add(['updatedInRound'], 'round-start begins with no updates');
+      if (snapshot.earlyExit) add(['earlyExit'], 'round-start is not an early exit');
+    }
+    if (snapshot.operation === 'early-exit' && !snapshot.earlyExit) add(['earlyExit'], 'early-exit must set earlyExit');
+    if (snapshot.operation === 'negative-cycle') {
+      if (!snapshot.negativeCycle?.hasCycle) add(['negativeCycle'], 'negative-cycle must report a real reachable cycle');
+      if (snapshot.pathDistance !== null) add(['pathDistance'], 'an undefined shortest path has no distance');
+    }
+    if (snapshot.negativeCycle) {
+      if (snapshot.operation !== 'negative-cycle' && snapshot.operation !== 'done') add(['negativeCycle'], 'cycle result belongs to the final frames');
+      snapshot.negativeCycle.nodeIds.forEach((id) => {
+        if (!ids.has(id)) add(['negativeCycle', 'nodeIds'], 'cycle node is unknown');
+      });
+    }
+    if (snapshot.operation === 'done') {
+      validatePath({
+        edges: snapshot.edges,
+        directed: snapshot.directed,
+        previous: snapshot.previous,
+        pathNodeIds: snapshot.pathNodeIds,
+        pathDistance: snapshot.pathDistance,
+        targetNodeId: snapshot.targetNodeId,
+        distanceOf: (_from, to) => distance.get(to),
+      }, add);
+      if (snapshot.negativeCycle?.hasCycle && snapshot.pathDistance !== null) {
+        add(['pathDistance'], 'a negative cycle makes the shortest distance undefined');
+      }
+    } else if (snapshot.pathDistance !== null || (snapshot.pathNodeIds && snapshot.pathNodeIds.length)) {
+      add(['pathNodeIds'], 'only the done frame reports a path');
+    }
+  });
+export type BellmanFordSnapshot = z.infer<typeof bellmanFordSnapshotSchema>;
+
+/** Stage 7B stack/queue + Stage 7C linked-list + Stage 7D binary-tree + Stage 7E/7F/G1 graphs. */
 export const structureSchema = z.union([
   structureSnapshotSchema,
   linkedListSnapshotSchema,
   binaryTreeSnapshotSchema,
   graphSnapshotSchema,
   weightedGraphSnapshotSchema,
+  floydWarshallSnapshotSchema,
+  bellmanFordSnapshotSchema,
 ]);
 export type AnyStructureSnapshot = z.infer<typeof structureSchema>;
 

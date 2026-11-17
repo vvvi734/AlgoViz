@@ -1,0 +1,5797 @@
+{
+  "frames": [
+    {
+      "state": {
+        "type": "graph",
+        "values": [
+          "A",
+          "B",
+          "C",
+          "D",
+          "E"
+        ],
+        "focus": []
+      },
+      "message": "\u521d\u59cb\u5316\uff1a\u8d77\u70b9\u8ddd\u79bb 0\uff0c\u5176\u4f59 \u221e / Init: start 0, all others \u221e",
+      "line": 148,
+      "variables": {
+        "round": 0,
+        "current": null,
+        "neighbor": null,
+        "candidate": null,
+        "updated": false
+      },
+      "lessonStepId": "init",
+      "structure": {
+        "kind": "bellman-ford",
+        "algorithm": "bellman-ford",
+        "operation": "init",
+        "nodes": [
+          {
+            "id": "A",
+            "value": "A"
+          },
+          {
+            "id": "B",
+            "value": "B"
+          },
+          {
+            "id": "C",
+            "value": "C"
+          },
+          {
+            "id": "D",
+            "value": "D"
+          },
+          {
+            "id": "E",
+            "value": "E"
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "fromId": "A",
+            "toId": "B",
+            "weight": 4
+          },
+          {
+            "id": "e2",
+            "fromId": "A",
+            "toId": "C",
+            "weight": 1
+          },
+          {
+            "id": "e3",
+            "fromId": "C",
+            "toId": "B",
+            "weight": -2
+          },
+          {
+            "id": "e4",
+            "fromId": "B",
+            "toId": "D",
+            "weight": 2
+          },
+          {
+            "id": "e5",
+            "fromId": "C",
+            "toId": "D",
+            "weight": 5
+          },
+          {
+            "id": "e6",
+            "fromId": "D",
+            "toId": "E",
+            "weight": 1
+          },
+          {
+            "id": "e7",
+            "fromId": "C",
+            "toId": "E",
+            "weight": 8
+          }
+        ],
+        "directed": true,
+        "startNodeId": "A",
+        "targetNodeId": "E",
+        "round": 0,
+        "maxRounds": 4,
+        "currentNodeId": null,
+        "currentEdgeId": null,
+        "neighborNodeId": null,
+        "distances": [
+          {
+            "fromId": "A",
+            "toId": "A",
+            "distance": null
+          },
+          {
+            "fromId": "A",
+            "toId": "B",
+            "distance": null
+          },
+          {
+            "fromId": "A",
+            "toId": "C",
+            "distance": null
+          },
+          {
+            "fromId": "A",
+            "toId": "D",
+            "distance": null
+          },
+          {
+            "fromId": "A",
+            "toId": "E",
+            "distance": null
+          }
+        ],
+        "previous": [
+          {
+            "fromId": "A",
+            "toId": "A",
+            "previousId": null
+          },
+          {
+            "fromId": "A",
+            "toId": "B",
+            "previousId": null
+          },
+          {
+            "fromId": "A",
+            "toId": "C",
+            "previousId": null
+          },
+          {
+            "fromId": "A",
+            "toId": "D",
+            "previousId": null
+          },
+          {
+            "fromId": "A",
+            "toId": "E",
+            "previousId": null
+          }
+        ],
+        "relax": null,
+        "updatedInRound": false,
+        "earlyExit": false,
+        "negativeCycle": null,
+        "pathNodeIds": [],
+        "pathDistance": null
+      }
+    },
+    {
+      "state": {
+        "type": "graph",
+        "values": [
+          "A",
+          "B",
+          "C",
+          "D",
+          "E"
+        ],
+        "focus": []
+      },
+      "message": "\u7b2c 1 / 4 \u8f6e\u677e\u5f1b\u5f00\u59cb / Relaxation round begins",
+      "line": 159,
+      "variables": {
+        "round": 1,
+        "current": null,
+        "neighbor": null,
+        "candidate": null,
+        "updated": false
+      },
+      "lessonStepId": "round",
+      "structure": {
+        "kind": "bellman-ford",
+        "algorithm": "bellman-ford",
+        "operation": "round-start",
+        "nodes": [
+          {
+            "id": "A",
+            "value": "A"
+          },
+          {
+            "id": "B",
+            "value": "B"
+          },
+          {
+            "id": "C",
+            "value": "C"
+          },
+          {
+            "id": "D",
+            "value": "D"
+          },
+          {
+            "id": "E",
+            "value": "E"
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "fromId": "A",
+            "toId": "B",
+            "weight": 4
+          },
+          {
+            "id": "e2",
+            "fromId": "A",
+            "toId": "C",
+            "weight": 1
+          },
+          {
+            "id": "e3",
+            "fromId": "C",
+            "toId": "B",
+            "weight": -2
+          },
+          {
+            "id": "e4",
+            "fromId": "B",
+            "toId": "D",
+            "weight": 2
+          },
+          {
+            "id": "e5",
+            "fromId": "C",
+            "toId": "D",
+            "weight": 5
+          },
+          {
+            "id": "e6",
+            "fromId": "D",
+            "toId": "E",
+            "weight": 1
+          },
+          {
+            "id": "e7",
+            "fromId": "C",
+            "toId": "E",
+            "weight": 8
+          }
+        ],
+        "directed": true,
+        "startNodeId": "A",
+        "targetNodeId": "E",
+        "round": 1,
+        "maxRounds": 4,
+        "currentNodeId": null,
+        "currentEdgeId": null,
+        "neighborNodeId": null,
+        "distances": [
+          {
+            "fromId": "A",
+            "toId": "A",
+            "distance": 0
+          },
+          {
+            "fromId": "A",
+            "toId": "B",
+            "distance": null
+          },
+          {
+            "fromId": "A",
+            "toId": "C",
+            "distance": null
+          },
+          {
+            "fromId": "A",
+            "toId": "D",
+            "distance": null
+          },
+          {
+            "fromId": "A",
+            "toId": "E",
+            "distance": null
+          }
+        ],
+        "previous": [
+          {
+            "fromId": "A",
+            "toId": "A",
+            "previousId": null
+          },
+          {
+            "fromId": "A",
+            "toId": "B",
+            "previousId": null
+          },
+          {
+            "fromId": "A",
+            "toId": "C",
+            "previousId": null
+          },
+          {
+            "fromId": "A",
+            "toId": "D",
+            "previousId": null
+          },
+          {
+            "fromId": "A",
+            "toId": "E",
+            "previousId": null
+          }
+        ],
+        "relax": null,
+        "updatedInRound": false,
+        "earlyExit": false,
+        "negativeCycle": null,
+        "pathNodeIds": [],
+        "pathDistance": null
+      }
+    },
+    {
+      "state": {
+        "type": "graph",
+        "values": [
+          "A",
+          "B",
+          "C",
+          "D",
+          "E"
+        ],
+        "focus": [
+          "A",
+          "B"
+        ]
+      },
+      "message": "\u68c0\u67e5\u8fb9 A->B\uff0c\u6743\u91cd 4 / Inspect edge",
+      "line": 164,
+      "variables": {
+        "round": 1,
+        "current": "A",
+        "neighbor": "B",
+        "candidate": 4,
+        "updated": false
+      },
+      "lessonStepId": "inspect",
+      "structure": {
+        "kind": "bellman-ford",
+        "algorithm": "bellman-ford",
+        "operation": "inspect-edge",
+        "nodes": [
+          {
+            "id": "A",
+            "value": "A"
+          },
+          {
+            "id": "B",
+            "value": "B"
+          },
+          {
+            "id": "C",
+            "value": "C"
+          },
+          {
+            "id": "D",
+            "value": "D"
+          },
+          {
+            "id": "E",
+            "value": "E"
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "fromId": "A",
+            "toId": "B",
+            "weight": 4
+          },
+          {
+            "id": "e2",
+            "fromId": "A",
+            "toId": "C",
+            "weight": 1
+          },
+          {
+            "id": "e3",
+            "fromId": "C",
+            "toId": "B",
+            "weight": -2
+          },
+          {
+            "id": "e4",
+            "fromId": "B",
+            "toId": "D",
+            "weight": 2
+          },
+          {
+            "id": "e5",
+            "fromId": "C",
+            "toId": "D",
+            "weight": 5
+          },
+          {
+            "id": "e6",
+            "fromId": "D",
+            "toId": "E",
+            "weight": 1
+          },
+          {
+            "id": "e7",
+            "fromId": "C",
+            "toId": "E",
+            "weight": 8
+          }
+        ],
+        "directed": true,
+        "startNodeId": "A",
+        "targetNodeId": "E",
+        "round": 1,
+        "maxRounds": 4,
+        "currentNodeId": "A",
+        "currentEdgeId": "e1",
+        "neighborNodeId": "B",
+        "distances": [
+          {
+            "fromId": "A",
+            "toId": "A",
+            "distance": 0
+          },
+          {
+            "fromId": "A",
+            "toId": "B",
+            "distance": null
+          },
+          {
+            "fromId": "A",
+            "toId": "C",
+            "distance": null
+          },
+          {
+            "fromId": "A",
+            "toId": "D",
+            "distance": null
+          },
+          {
+            "fromId": "A",
+            "toId": "E",
+            "distance": null
+          }
+        ],
+        "previous": [
+          {
+            "fromId": "A",
+            "toId": "A",
+            "previousId": null
+          },
+          {
+            "fromId": "A",
+            "toId": "B",
+            "previousId": null
+          },
+          {
+            "fromId": "A",
+            "toId": "C",
+            "previousId": null
+          },
+          {
+            "fromId": "A",
+            "toId": "D",
+            "previousId": null
+          },
+          {
+            "fromId": "A",
+            "toId": "E",
+            "previousId": null
+          }
+        ],
+        "relax": null,
+        "updatedInRound": false,
+        "earlyExit": false,
+        "negativeCycle": null,
+        "pathNodeIds": [],
+        "pathDistance": null
+      }
+    },
+    {
+      "state": {
+        "type": "graph",
+        "values": [
+          "A",
+          "B",
+          "C",
+          "D",
+          "E"
+        ],
+        "focus": [
+          "A",
+          "B"
+        ]
+      },
+      "message": "\u677e\u5f1b B\uff1a\u221e \u2192 4 / Relax succeeds",
+      "line": 177,
+      "variables": {
+        "round": 1,
+        "current": "A",
+        "neighbor": "B",
+        "candidate": 4,
+        "updated": true
+      },
+      "lessonStepId": "relax",
+      "structure": {
+        "kind": "bellman-ford",
+        "algorithm": "bellman-ford",
+        "operation": "relax",
+        "nodes": [
+          {
+            "id": "A",
+            "value": "A"
+          },
+          {
+            "id": "B",
+            "value": "B"
+          },
+          {
+            "id": "C",
+            "value": "C"
+          },
+          {
+            "id": "D",
+            "value": "D"
+          },
+          {
+            "id": "E",
+            "value": "E"
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "fromId": "A",
+            "toId": "B",
+            "weight": 4
+          },
+          {
+            "id": "e2",
+            "fromId": "A",
+            "toId": "C",
+            "weight": 1
+          },
+          {
+            "id": "e3",
+            "fromId": "C",
+            "toId": "B",
+            "weight": -2
+          },
+          {
+            "id": "e4",
+            "fromId": "B",
+            "toId": "D",
+            "weight": 2
+          },
+          {
+            "id": "e5",
+            "fromId": "C",
+            "toId": "D",
+            "weight": 5
+          },
+          {
+            "id": "e6",
+            "fromId": "D",
+            "toId": "E",
+            "weight": 1
+          },
+          {
+            "id": "e7",
+            "fromId": "C",
+            "toId": "E",
+            "weight": 8
+          }
+        ],
+        "directed": true,
+        "startNodeId": "A",
+        "targetNodeId": "E",
+        "round": 1,
+        "maxRounds": 4,
+        "currentNodeId": "A",
+        "currentEdgeId": "e1",
+        "neighborNodeId": "B",
+        "distances": [
+          {
+            "fromId": "A",
+            "toId": "A",
+            "distance": 0
+          },
+          {
+            "fromId": "A",
+            "toId": "B",
+            "distance": 4
+          },
+          {
+            "fromId": "A",
+            "toId": "C",
+            "distance": null
+          },
+          {
+            "fromId": "A",
+            "toId": "D",
+            "distance": null
+          },
+          {
+            "fromId": "A",
+            "toId": "E",
+            "distance": null
+          }
+        ],
+        "previous": [
+          {
+            "fromId": "A",
+            "toId": "A",
+            "previousId": null
+          },
+          {
+            "fromId": "A",
+            "toId": "B",
+            "previousId": "A"
+          },
+          {
+            "fromId": "A",
+            "toId": "C",
+            "previousId": null
+          },
+          {
+            "fromId": "A",
+            "toId": "D",
+            "previousId": null
+          },
+          {
+            "fromId": "A",
+            "toId": "E",
+            "previousId": null
+          }
+        ],
+        "relax": {
+          "nodeId": "B",
+          "oldDistance": null,
+          "newDistance": 4,
+          "oldPreviousId": null,
+          "newPreviousId": "A"
+        },
+        "updatedInRound": true,
+        "earlyExit": false,
+        "negativeCycle": null,
+        "pathNodeIds": [],
+        "pathDistance": null
+      }
+    },
+    {
+      "state": {
+        "type": "graph",
+        "values": [
+          "A",
+          "B",
+          "C",
+          "D",
+          "E"
+        ],
+        "focus": [
+          "A",
+          "C"
+        ]
+      },
+      "message": "\u68c0\u67e5\u8fb9 A->C\uff0c\u6743\u91cd 1 / Inspect edge",
+      "line": 164,
+      "variables": {
+        "round": 1,
+        "current": "A",
+        "neighbor": "C",
+        "candidate": 1,
+        "updated": false
+      },
+      "lessonStepId": "inspect",
+      "structure": {
+        "kind": "bellman-ford",
+        "algorithm": "bellman-ford",
+        "operation": "inspect-edge",
+        "nodes": [
+          {
+            "id": "A",
+            "value": "A"
+          },
+          {
+            "id": "B",
+            "value": "B"
+          },
+          {
+            "id": "C",
+            "value": "C"
+          },
+          {
+            "id": "D",
+            "value": "D"
+          },
+          {
+            "id": "E",
+            "value": "E"
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "fromId": "A",
+            "toId": "B",
+            "weight": 4
+          },
+          {
+            "id": "e2",
+            "fromId": "A",
+            "toId": "C",
+            "weight": 1
+          },
+          {
+            "id": "e3",
+            "fromId": "C",
+            "toId": "B",
+            "weight": -2
+          },
+          {
+            "id": "e4",
+            "fromId": "B",
+            "toId": "D",
+            "weight": 2
+          },
+          {
+            "id": "e5",
+            "fromId": "C",
+            "toId": "D",
+            "weight": 5
+          },
+          {
+            "id": "e6",
+            "fromId": "D",
+            "toId": "E",
+            "weight": 1
+          },
+          {
+            "id": "e7",
+            "fromId": "C",
+            "toId": "E",
+            "weight": 8
+          }
+        ],
+        "directed": true,
+        "startNodeId": "A",
+        "targetNodeId": "E",
+        "round": 1,
+        "maxRounds": 4,
+        "currentNodeId": "A",
+        "currentEdgeId": "e2",
+        "neighborNodeId": "C",
+        "distances": [
+          {
+            "fromId": "A",
+            "toId": "A",
+            "distance": 0
+          },
+          {
+            "fromId": "A",
+            "toId": "B",
+            "distance": 4
+          },
+          {
+            "fromId": "A",
+            "toId": "C",
+            "distance": null
+          },
+          {
+            "fromId": "A",
+            "toId": "D",
+            "distance": null
+          },
+          {
+            "fromId": "A",
+            "toId": "E",
+            "distance": null
+          }
+        ],
+        "previous": [
+          {
+            "fromId": "A",
+            "toId": "A",
+            "previousId": null
+          },
+          {
+            "fromId": "A",
+            "toId": "B",
+            "previousId": "A"
+          },
+          {
+            "fromId": "A",
+            "toId": "C",
+            "previousId": null
+          },
+          {
+            "fromId": "A",
+            "toId": "D",
+            "previousId": null
+          },
+          {
+            "fromId": "A",
+            "toId": "E",
+            "previousId": null
+          }
+        ],
+        "relax": null,
+        "updatedInRound": true,
+        "earlyExit": false,
+        "negativeCycle": null,
+        "pathNodeIds": [],
+        "pathDistance": null
+      }
+    },
+    {
+      "state": {
+        "type": "graph",
+        "values": [
+          "A",
+          "B",
+          "C",
+          "D",
+          "E"
+        ],
+        "focus": [
+          "A",
+          "C"
+        ]
+      },
+      "message": "\u677e\u5f1b C\uff1a\u221e \u2192 1 / Relax succeeds",
+      "line": 177,
+      "variables": {
+        "round": 1,
+        "current": "A",
+        "neighbor": "C",
+        "candidate": 1,
+        "updated": true
+      },
+      "lessonStepId": "relax",
+      "structure": {
+        "kind": "bellman-ford",
+        "algorithm": "bellman-ford",
+        "operation": "relax",
+        "nodes": [
+          {
+            "id": "A",
+            "value": "A"
+          },
+          {
+            "id": "B",
+            "value": "B"
+          },
+          {
+            "id": "C",
+            "value": "C"
+          },
+          {
+            "id": "D",
+            "value": "D"
+          },
+          {
+            "id": "E",
+            "value": "E"
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "fromId": "A",
+            "toId": "B",
+            "weight": 4
+          },
+          {
+            "id": "e2",
+            "fromId": "A",
+            "toId": "C",
+            "weight": 1
+          },
+          {
+            "id": "e3",
+            "fromId": "C",
+            "toId": "B",
+            "weight": -2
+          },
+          {
+            "id": "e4",
+            "fromId": "B",
+            "toId": "D",
+            "weight": 2
+          },
+          {
+            "id": "e5",
+            "fromId": "C",
+            "toId": "D",
+            "weight": 5
+          },
+          {
+            "id": "e6",
+            "fromId": "D",
+            "toId": "E",
+            "weight": 1
+          },
+          {
+            "id": "e7",
+            "fromId": "C",
+            "toId": "E",
+            "weight": 8
+          }
+        ],
+        "directed": true,
+        "startNodeId": "A",
+        "targetNodeId": "E",
+        "round": 1,
+        "maxRounds": 4,
+        "currentNodeId": "A",
+        "currentEdgeId": "e2",
+        "neighborNodeId": "C",
+        "distances": [
+          {
+            "fromId": "A",
+            "toId": "A",
+            "distance": 0
+          },
+          {
+            "fromId": "A",
+            "toId": "B",
+            "distance": 4
+          },
+          {
+            "fromId": "A",
+            "toId": "C",
+            "distance": 1
+          },
+          {
+            "fromId": "A",
+            "toId": "D",
+            "distance": null
+          },
+          {
+            "fromId": "A",
+            "toId": "E",
+            "distance": null
+          }
+        ],
+        "previous": [
+          {
+            "fromId": "A",
+            "toId": "A",
+            "previousId": null
+          },
+          {
+            "fromId": "A",
+            "toId": "B",
+            "previousId": "A"
+          },
+          {
+            "fromId": "A",
+            "toId": "C",
+            "previousId": "A"
+          },
+          {
+            "fromId": "A",
+            "toId": "D",
+            "previousId": null
+          },
+          {
+            "fromId": "A",
+            "toId": "E",
+            "previousId": null
+          }
+        ],
+        "relax": {
+          "nodeId": "C",
+          "oldDistance": null,
+          "newDistance": 1,
+          "oldPreviousId": null,
+          "newPreviousId": "A"
+        },
+        "updatedInRound": true,
+        "earlyExit": false,
+        "negativeCycle": null,
+        "pathNodeIds": [],
+        "pathDistance": null
+      }
+    },
+    {
+      "state": {
+        "type": "graph",
+        "values": [
+          "A",
+          "B",
+          "C",
+          "D",
+          "E"
+        ],
+        "focus": [
+          "C",
+          "B"
+        ]
+      },
+      "message": "\u68c0\u67e5\u8fb9 C->B\uff0c\u6743\u91cd -2 / Inspect edge",
+      "line": 164,
+      "variables": {
+        "round": 1,
+        "current": "C",
+        "neighbor": "B",
+        "candidate": -1,
+        "updated": false
+      },
+      "lessonStepId": "inspect",
+      "structure": {
+        "kind": "bellman-ford",
+        "algorithm": "bellman-ford",
+        "operation": "inspect-edge",
+        "nodes": [
+          {
+            "id": "A",
+            "value": "A"
+          },
+          {
+            "id": "B",
+            "value": "B"
+          },
+          {
+            "id": "C",
+            "value": "C"
+          },
+          {
+            "id": "D",
+            "value": "D"
+          },
+          {
+            "id": "E",
+            "value": "E"
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "fromId": "A",
+            "toId": "B",
+            "weight": 4
+          },
+          {
+            "id": "e2",
+            "fromId": "A",
+            "toId": "C",
+            "weight": 1
+          },
+          {
+            "id": "e3",
+            "fromId": "C",
+            "toId": "B",
+            "weight": -2
+          },
+          {
+            "id": "e4",
+            "fromId": "B",
+            "toId": "D",
+            "weight": 2
+          },
+          {
+            "id": "e5",
+            "fromId": "C",
+            "toId": "D",
+            "weight": 5
+          },
+          {
+            "id": "e6",
+            "fromId": "D",
+            "toId": "E",
+            "weight": 1
+          },
+          {
+            "id": "e7",
+            "fromId": "C",
+            "toId": "E",
+            "weight": 8
+          }
+        ],
+        "directed": true,
+        "startNodeId": "A",
+        "targetNodeId": "E",
+        "round": 1,
+        "maxRounds": 4,
+        "currentNodeId": "C",
+        "currentEdgeId": "e3",
+        "neighborNodeId": "B",
+        "distances": [
+          {
+            "fromId": "A",
+            "toId": "A",
+            "distance": 0
+          },
+          {
+            "fromId": "A",
+            "toId": "B",
+            "distance": 4
+          },
+          {
+            "fromId": "A",
+            "toId": "C",
+            "distance": 1
+          },
+          {
+            "fromId": "A",
+            "toId": "D",
+            "distance": null
+          },
+          {
+            "fromId": "A",
+            "toId": "E",
+            "distance": null
+          }
+        ],
+        "previous": [
+          {
+            "fromId": "A",
+            "toId": "A",
+            "previousId": null
+          },
+          {
+            "fromId": "A",
+            "toId": "B",
+            "previousId": "A"
+          },
+          {
+            "fromId": "A",
+            "toId": "C",
+            "previousId": "A"
+          },
+          {
+            "fromId": "A",
+            "toId": "D",
+            "previousId": null
+          },
+          {
+            "fromId": "A",
+            "toId": "E",
+            "previousId": null
+          }
+        ],
+        "relax": null,
+        "updatedInRound": true,
+        "earlyExit": false,
+        "negativeCycle": null,
+        "pathNodeIds": [],
+        "pathDistance": null
+      }
+    },
+    {
+      "state": {
+        "type": "graph",
+        "values": [
+          "A",
+          "B",
+          "C",
+          "D",
+          "E"
+        ],
+        "focus": [
+          "C",
+          "B"
+        ]
+      },
+      "message": "\u677e\u5f1b B\uff1a4 \u2192 -1 / Relax succeeds",
+      "line": 177,
+      "variables": {
+        "round": 1,
+        "current": "C",
+        "neighbor": "B",
+        "candidate": -1,
+        "updated": true
+      },
+      "lessonStepId": "relax",
+      "structure": {
+        "kind": "bellman-ford",
+        "algorithm": "bellman-ford",
+        "operation": "relax",
+        "nodes": [
+          {
+            "id": "A",
+            "value": "A"
+          },
+          {
+            "id": "B",
+            "value": "B"
+          },
+          {
+            "id": "C",
+            "value": "C"
+          },
+          {
+            "id": "D",
+            "value": "D"
+          },
+          {
+            "id": "E",
+            "value": "E"
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "fromId": "A",
+            "toId": "B",
+            "weight": 4
+          },
+          {
+            "id": "e2",
+            "fromId": "A",
+            "toId": "C",
+            "weight": 1
+          },
+          {
+            "id": "e3",
+            "fromId": "C",
+            "toId": "B",
+            "weight": -2
+          },
+          {
+            "id": "e4",
+            "fromId": "B",
+            "toId": "D",
+            "weight": 2
+          },
+          {
+            "id": "e5",
+            "fromId": "C",
+            "toId": "D",
+            "weight": 5
+          },
+          {
+            "id": "e6",
+            "fromId": "D",
+            "toId": "E",
+            "weight": 1
+          },
+          {
+            "id": "e7",
+            "fromId": "C",
+            "toId": "E",
+            "weight": 8
+          }
+        ],
+        "directed": true,
+        "startNodeId": "A",
+        "targetNodeId": "E",
+        "round": 1,
+        "maxRounds": 4,
+        "currentNodeId": "C",
+        "currentEdgeId": "e3",
+        "neighborNodeId": "B",
+        "distances": [
+          {
+            "fromId": "A",
+            "toId": "A",
+            "distance": 0
+          },
+          {
+            "fromId": "A",
+            "toId": "B",
+            "distance": -1
+          },
+          {
+            "fromId": "A",
+            "toId": "C",
+            "distance": 1
+          },
+          {
+            "fromId": "A",
+            "toId": "D",
+            "distance": null
+          },
+          {
+            "fromId": "A",
+            "toId": "E",
+            "distance": null
+          }
+        ],
+        "previous": [
+          {
+            "fromId": "A",
+            "toId": "A",
+            "previousId": null
+          },
+          {
+            "fromId": "A",
+            "toId": "B",
+            "previousId": "C"
+          },
+          {
+            "fromId": "A",
+            "toId": "C",
+            "previousId": "A"
+          },
+          {
+            "fromId": "A",
+            "toId": "D",
+            "previousId": null
+          },
+          {
+            "fromId": "A",
+            "toId": "E",
+            "previousId": null
+          }
+        ],
+        "relax": {
+          "nodeId": "B",
+          "oldDistance": 4,
+          "newDistance": -1,
+          "oldPreviousId": "A",
+          "newPreviousId": "C"
+        },
+        "updatedInRound": true,
+        "earlyExit": false,
+        "negativeCycle": null,
+        "pathNodeIds": [],
+        "pathDistance": null
+      }
+    },
+    {
+      "state": {
+        "type": "graph",
+        "values": [
+          "A",
+          "B",
+          "C",
+          "D",
+          "E"
+        ],
+        "focus": [
+          "B",
+          "D"
+        ]
+      },
+      "message": "\u68c0\u67e5\u8fb9 B->D\uff0c\u6743\u91cd 2 / Inspect edge",
+      "line": 164,
+      "variables": {
+        "round": 1,
+        "current": "B",
+        "neighbor": "D",
+        "candidate": 1,
+        "updated": false
+      },
+      "lessonStepId": "inspect",
+      "structure": {
+        "kind": "bellman-ford",
+        "algorithm": "bellman-ford",
+        "operation": "inspect-edge",
+        "nodes": [
+          {
+            "id": "A",
+            "value": "A"
+          },
+          {
+            "id": "B",
+            "value": "B"
+          },
+          {
+            "id": "C",
+            "value": "C"
+          },
+          {
+            "id": "D",
+            "value": "D"
+          },
+          {
+            "id": "E",
+            "value": "E"
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "fromId": "A",
+            "toId": "B",
+            "weight": 4
+          },
+          {
+            "id": "e2",
+            "fromId": "A",
+            "toId": "C",
+            "weight": 1
+          },
+          {
+            "id": "e3",
+            "fromId": "C",
+            "toId": "B",
+            "weight": -2
+          },
+          {
+            "id": "e4",
+            "fromId": "B",
+            "toId": "D",
+            "weight": 2
+          },
+          {
+            "id": "e5",
+            "fromId": "C",
+            "toId": "D",
+            "weight": 5
+          },
+          {
+            "id": "e6",
+            "fromId": "D",
+            "toId": "E",
+            "weight": 1
+          },
+          {
+            "id": "e7",
+            "fromId": "C",
+            "toId": "E",
+            "weight": 8
+          }
+        ],
+        "directed": true,
+        "startNodeId": "A",
+        "targetNodeId": "E",
+        "round": 1,
+        "maxRounds": 4,
+        "currentNodeId": "B",
+        "currentEdgeId": "e4",
+        "neighborNodeId": "D",
+        "distances": [
+          {
+            "fromId": "A",
+            "toId": "A",
+            "distance": 0
+          },
+          {
+            "fromId": "A",
+            "toId": "B",
+            "distance": -1
+          },
+          {
+            "fromId": "A",
+            "toId": "C",
+            "distance": 1
+          },
+          {
+            "fromId": "A",
+            "toId": "D",
+            "distance": null
+          },
+          {
+            "fromId": "A",
+            "toId": "E",
+            "distance": null
+          }
+        ],
+        "previous": [
+          {
+            "fromId": "A",
+            "toId": "A",
+            "previousId": null
+          },
+          {
+            "fromId": "A",
+            "toId": "B",
+            "previousId": "C"
+          },
+          {
+            "fromId": "A",
+            "toId": "C",
+            "previousId": "A"
+          },
+          {
+            "fromId": "A",
+            "toId": "D",
+            "previousId": null
+          },
+          {
+            "fromId": "A",
+            "toId": "E",
+            "previousId": null
+          }
+        ],
+        "relax": null,
+        "updatedInRound": true,
+        "earlyExit": false,
+        "negativeCycle": null,
+        "pathNodeIds": [],
+        "pathDistance": null
+      }
+    },
+    {
+      "state": {
+        "type": "graph",
+        "values": [
+          "A",
+          "B",
+          "C",
+          "D",
+          "E"
+        ],
+        "focus": [
+          "B",
+          "D"
+        ]
+      },
+      "message": "\u677e\u5f1b D\uff1a\u221e \u2192 1 / Relax succeeds",
+      "line": 177,
+      "variables": {
+        "round": 1,
+        "current": "B",
+        "neighbor": "D",
+        "candidate": 1,
+        "updated": true
+      },
+      "lessonStepId": "relax",
+      "structure": {
+        "kind": "bellman-ford",
+        "algorithm": "bellman-ford",
+        "operation": "relax",
+        "nodes": [
+          {
+            "id": "A",
+            "value": "A"
+          },
+          {
+            "id": "B",
+            "value": "B"
+          },
+          {
+            "id": "C",
+            "value": "C"
+          },
+          {
+            "id": "D",
+            "value": "D"
+          },
+          {
+            "id": "E",
+            "value": "E"
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "fromId": "A",
+            "toId": "B",
+            "weight": 4
+          },
+          {
+            "id": "e2",
+            "fromId": "A",
+            "toId": "C",
+            "weight": 1
+          },
+          {
+            "id": "e3",
+            "fromId": "C",
+            "toId": "B",
+            "weight": -2
+          },
+          {
+            "id": "e4",
+            "fromId": "B",
+            "toId": "D",
+            "weight": 2
+          },
+          {
+            "id": "e5",
+            "fromId": "C",
+            "toId": "D",
+            "weight": 5
+          },
+          {
+            "id": "e6",
+            "fromId": "D",
+            "toId": "E",
+            "weight": 1
+          },
+          {
+            "id": "e7",
+            "fromId": "C",
+            "toId": "E",
+            "weight": 8
+          }
+        ],
+        "directed": true,
+        "startNodeId": "A",
+        "targetNodeId": "E",
+        "round": 1,
+        "maxRounds": 4,
+        "currentNodeId": "B",
+        "currentEdgeId": "e4",
+        "neighborNodeId": "D",
+        "distances": [
+          {
+            "fromId": "A",
+            "toId": "A",
+            "distance": 0
+          },
+          {
+            "fromId": "A",
+            "toId": "B",
+            "distance": -1
+          },
+          {
+            "fromId": "A",
+            "toId": "C",
+            "distance": 1
+          },
+          {
+            "fromId": "A",
+            "toId": "D",
+            "distance": 1
+          },
+          {
+            "fromId": "A",
+            "toId": "E",
+            "distance": null
+          }
+        ],
+        "previous": [
+          {
+            "fromId": "A",
+            "toId": "A",
+            "previousId": null
+          },
+          {
+            "fromId": "A",
+            "toId": "B",
+            "previousId": "C"
+          },
+          {
+            "fromId": "A",
+            "toId": "C",
+            "previousId": "A"
+          },
+          {
+            "fromId": "A",
+            "toId": "D",
+            "previousId": "B"
+          },
+          {
+            "fromId": "A",
+            "toId": "E",
+            "previousId": null
+          }
+        ],
+        "relax": {
+          "nodeId": "D",
+          "oldDistance": null,
+          "newDistance": 1,
+          "oldPreviousId": null,
+          "newPreviousId": "B"
+        },
+        "updatedInRound": true,
+        "earlyExit": false,
+        "negativeCycle": null,
+        "pathNodeIds": [],
+        "pathDistance": null
+      }
+    },
+    {
+      "state": {
+        "type": "graph",
+        "values": [
+          "A",
+          "B",
+          "C",
+          "D",
+          "E"
+        ],
+        "focus": [
+          "C",
+          "D"
+        ]
+      },
+      "message": "\u68c0\u67e5\u8fb9 C->D\uff0c\u6743\u91cd 5 / Inspect edge",
+      "line": 164,
+      "variables": {
+        "round": 1,
+        "current": "C",
+        "neighbor": "D",
+        "candidate": 6,
+        "updated": false
+      },
+      "lessonStepId": "inspect",
+      "structure": {
+        "kind": "bellman-ford",
+        "algorithm": "bellman-ford",
+        "operation": "inspect-edge",
+        "nodes": [
+          {
+            "id": "A",
+            "value": "A"
+          },
+          {
+            "id": "B",
+            "value": "B"
+          },
+          {
+            "id": "C",
+            "value": "C"
+          },
+          {
+            "id": "D",
+            "value": "D"
+          },
+          {
+            "id": "E",
+            "value": "E"
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "fromId": "A",
+            "toId": "B",
+            "weight": 4
+          },
+          {
+            "id": "e2",
+            "fromId": "A",
+            "toId": "C",
+            "weight": 1
+          },
+          {
+            "id": "e3",
+            "fromId": "C",
+            "toId": "B",
+            "weight": -2
+          },
+          {
+            "id": "e4",
+            "fromId": "B",
+            "toId": "D",
+            "weight": 2
+          },
+          {
+            "id": "e5",
+            "fromId": "C",
+            "toId": "D",
+            "weight": 5
+          },
+          {
+            "id": "e6",
+            "fromId": "D",
+            "toId": "E",
+            "weight": 1
+          },
+          {
+            "id": "e7",
+            "fromId": "C",
+            "toId": "E",
+            "weight": 8
+          }
+        ],
+        "directed": true,
+        "startNodeId": "A",
+        "targetNodeId": "E",
+        "round": 1,
+        "maxRounds": 4,
+        "currentNodeId": "C",
+        "currentEdgeId": "e5",
+        "neighborNodeId": "D",
+        "distances": [
+          {
+            "fromId": "A",
+            "toId": "A",
+            "distance": 0
+          },
+          {
+            "fromId": "A",
+            "toId": "B",
+            "distance": -1
+          },
+          {
+            "fromId": "A",
+            "toId": "C",
+            "distance": 1
+          },
+          {
+            "fromId": "A",
+            "toId": "D",
+            "distance": 1
+          },
+          {
+            "fromId": "A",
+            "toId": "E",
+            "distance": null
+          }
+        ],
+        "previous": [
+          {
+            "fromId": "A",
+            "toId": "A",
+            "previousId": null
+          },
+          {
+            "fromId": "A",
+            "toId": "B",
+            "previousId": "C"
+          },
+          {
+            "fromId": "A",
+            "toId": "C",
+            "previousId": "A"
+          },
+          {
+            "fromId": "A",
+            "toId": "D",
+            "previousId": "B"
+          },
+          {
+            "fromId": "A",
+            "toId": "E",
+            "previousId": null
+          }
+        ],
+        "relax": null,
+        "updatedInRound": true,
+        "earlyExit": false,
+        "negativeCycle": null,
+        "pathNodeIds": [],
+        "pathDistance": null
+      }
+    },
+    {
+      "state": {
+        "type": "graph",
+        "values": [
+          "A",
+          "B",
+          "C",
+          "D",
+          "E"
+        ],
+        "focus": [
+          "C",
+          "D"
+        ]
+      },
+      "message": "D\uff1a\u5019\u9009 6 \u6ca1\u6709\u4e25\u683c\u66f4\u5c0f / No strict improvement",
+      "line": 183,
+      "variables": {
+        "round": 1,
+        "current": "C",
+        "neighbor": "D",
+        "candidate": 6,
+        "updated": false
+      },
+      "lessonStepId": "skip",
+      "structure": {
+        "kind": "bellman-ford",
+        "algorithm": "bellman-ford",
+        "operation": "skip",
+        "nodes": [
+          {
+            "id": "A",
+            "value": "A"
+          },
+          {
+            "id": "B",
+            "value": "B"
+          },
+          {
+            "id": "C",
+            "value": "C"
+          },
+          {
+            "id": "D",
+            "value": "D"
+          },
+          {
+            "id": "E",
+            "value": "E"
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "fromId": "A",
+            "toId": "B",
+            "weight": 4
+          },
+          {
+            "id": "e2",
+            "fromId": "A",
+            "toId": "C",
+            "weight": 1
+          },
+          {
+            "id": "e3",
+            "fromId": "C",
+            "toId": "B",
+            "weight": -2
+          },
+          {
+            "id": "e4",
+            "fromId": "B",
+            "toId": "D",
+            "weight": 2
+          },
+          {
+            "id": "e5",
+            "fromId": "C",
+            "toId": "D",
+            "weight": 5
+          },
+          {
+            "id": "e6",
+            "fromId": "D",
+            "toId": "E",
+            "weight": 1
+          },
+          {
+            "id": "e7",
+            "fromId": "C",
+            "toId": "E",
+            "weight": 8
+          }
+        ],
+        "directed": true,
+        "startNodeId": "A",
+        "targetNodeId": "E",
+        "round": 1,
+        "maxRounds": 4,
+        "currentNodeId": "C",
+        "currentEdgeId": "e5",
+        "neighborNodeId": "D",
+        "distances": [
+          {
+            "fromId": "A",
+            "toId": "A",
+            "distance": 0
+          },
+          {
+            "fromId": "A",
+            "toId": "B",
+            "distance": -1
+          },
+          {
+            "fromId": "A",
+            "toId": "C",
+            "distance": 1
+          },
+          {
+            "fromId": "A",
+            "toId": "D",
+            "distance": 1
+          },
+          {
+            "fromId": "A",
+            "toId": "E",
+            "distance": null
+          }
+        ],
+        "previous": [
+          {
+            "fromId": "A",
+            "toId": "A",
+            "previousId": null
+          },
+          {
+            "fromId": "A",
+            "toId": "B",
+            "previousId": "C"
+          },
+          {
+            "fromId": "A",
+            "toId": "C",
+            "previousId": "A"
+          },
+          {
+            "fromId": "A",
+            "toId": "D",
+            "previousId": "B"
+          },
+          {
+            "fromId": "A",
+            "toId": "E",
+            "previousId": null
+          }
+        ],
+        "relax": null,
+        "updatedInRound": true,
+        "earlyExit": false,
+        "negativeCycle": null,
+        "pathNodeIds": [],
+        "pathDistance": null
+      }
+    },
+    {
+      "state": {
+        "type": "graph",
+        "values": [
+          "A",
+          "B",
+          "C",
+          "D",
+          "E"
+        ],
+        "focus": [
+          "D",
+          "E"
+        ]
+      },
+      "message": "\u68c0\u67e5\u8fb9 D->E\uff0c\u6743\u91cd 1 / Inspect edge",
+      "line": 164,
+      "variables": {
+        "round": 1,
+        "current": "D",
+        "neighbor": "E",
+        "candidate": 2,
+        "updated": false
+      },
+      "lessonStepId": "inspect",
+      "structure": {
+        "kind": "bellman-ford",
+        "algorithm": "bellman-ford",
+        "operation": "inspect-edge",
+        "nodes": [
+          {
+            "id": "A",
+            "value": "A"
+          },
+          {
+            "id": "B",
+            "value": "B"
+          },
+          {
+            "id": "C",
+            "value": "C"
+          },
+          {
+            "id": "D",
+            "value": "D"
+          },
+          {
+            "id": "E",
+            "value": "E"
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "fromId": "A",
+            "toId": "B",
+            "weight": 4
+          },
+          {
+            "id": "e2",
+            "fromId": "A",
+            "toId": "C",
+            "weight": 1
+          },
+          {
+            "id": "e3",
+            "fromId": "C",
+            "toId": "B",
+            "weight": -2
+          },
+          {
+            "id": "e4",
+            "fromId": "B",
+            "toId": "D",
+            "weight": 2
+          },
+          {
+            "id": "e5",
+            "fromId": "C",
+            "toId": "D",
+            "weight": 5
+          },
+          {
+            "id": "e6",
+            "fromId": "D",
+            "toId": "E",
+            "weight": 1
+          },
+          {
+            "id": "e7",
+            "fromId": "C",
+            "toId": "E",
+            "weight": 8
+          }
+        ],
+        "directed": true,
+        "startNodeId": "A",
+        "targetNodeId": "E",
+        "round": 1,
+        "maxRounds": 4,
+        "currentNodeId": "D",
+        "currentEdgeId": "e6",
+        "neighborNodeId": "E",
+        "distances": [
+          {
+            "fromId": "A",
+            "toId": "A",
+            "distance": 0
+          },
+          {
+            "fromId": "A",
+            "toId": "B",
+            "distance": -1
+          },
+          {
+            "fromId": "A",
+            "toId": "C",
+            "distance": 1
+          },
+          {
+            "fromId": "A",
+            "toId": "D",
+            "distance": 1
+          },
+          {
+            "fromId": "A",
+            "toId": "E",
+            "distance": null
+          }
+        ],
+        "previous": [
+          {
+            "fromId": "A",
+            "toId": "A",
+            "previousId": null
+          },
+          {
+            "fromId": "A",
+            "toId": "B",
+            "previousId": "C"
+          },
+          {
+            "fromId": "A",
+            "toId": "C",
+            "previousId": "A"
+          },
+          {
+            "fromId": "A",
+            "toId": "D",
+            "previousId": "B"
+          },
+          {
+            "fromId": "A",
+            "toId": "E",
+            "previousId": null
+          }
+        ],
+        "relax": null,
+        "updatedInRound": true,
+        "earlyExit": false,
+        "negativeCycle": null,
+        "pathNodeIds": [],
+        "pathDistance": null
+      }
+    },
+    {
+      "state": {
+        "type": "graph",
+        "values": [
+          "A",
+          "B",
+          "C",
+          "D",
+          "E"
+        ],
+        "focus": [
+          "D",
+          "E"
+        ]
+      },
+      "message": "\u677e\u5f1b E\uff1a\u221e \u2192 2 / Relax succeeds",
+      "line": 177,
+      "variables": {
+        "round": 1,
+        "current": "D",
+        "neighbor": "E",
+        "candidate": 2,
+        "updated": true
+      },
+      "lessonStepId": "relax",
+      "structure": {
+        "kind": "bellman-ford",
+        "algorithm": "bellman-ford",
+        "operation": "relax",
+        "nodes": [
+          {
+            "id": "A",
+            "value": "A"
+          },
+          {
+            "id": "B",
+            "value": "B"
+          },
+          {
+            "id": "C",
+            "value": "C"
+          },
+          {
+            "id": "D",
+            "value": "D"
+          },
+          {
+            "id": "E",
+            "value": "E"
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "fromId": "A",
+            "toId": "B",
+            "weight": 4
+          },
+          {
+            "id": "e2",
+            "fromId": "A",
+            "toId": "C",
+            "weight": 1
+          },
+          {
+            "id": "e3",
+            "fromId": "C",
+            "toId": "B",
+            "weight": -2
+          },
+          {
+            "id": "e4",
+            "fromId": "B",
+            "toId": "D",
+            "weight": 2
+          },
+          {
+            "id": "e5",
+            "fromId": "C",
+            "toId": "D",
+            "weight": 5
+          },
+          {
+            "id": "e6",
+            "fromId": "D",
+            "toId": "E",
+            "weight": 1
+          },
+          {
+            "id": "e7",
+            "fromId": "C",
+            "toId": "E",
+            "weight": 8
+          }
+        ],
+        "directed": true,
+        "startNodeId": "A",
+        "targetNodeId": "E",
+        "round": 1,
+        "maxRounds": 4,
+        "currentNodeId": "D",
+        "currentEdgeId": "e6",
+        "neighborNodeId": "E",
+        "distances": [
+          {
+            "fromId": "A",
+            "toId": "A",
+            "distance": 0
+          },
+          {
+            "fromId": "A",
+            "toId": "B",
+            "distance": -1
+          },
+          {
+            "fromId": "A",
+            "toId": "C",
+            "distance": 1
+          },
+          {
+            "fromId": "A",
+            "toId": "D",
+            "distance": 1
+          },
+          {
+            "fromId": "A",
+            "toId": "E",
+            "distance": 2
+          }
+        ],
+        "previous": [
+          {
+            "fromId": "A",
+            "toId": "A",
+            "previousId": null
+          },
+          {
+            "fromId": "A",
+            "toId": "B",
+            "previousId": "C"
+          },
+          {
+            "fromId": "A",
+            "toId": "C",
+            "previousId": "A"
+          },
+          {
+            "fromId": "A",
+            "toId": "D",
+            "previousId": "B"
+          },
+          {
+            "fromId": "A",
+            "toId": "E",
+            "previousId": "D"
+          }
+        ],
+        "relax": {
+          "nodeId": "E",
+          "oldDistance": null,
+          "newDistance": 2,
+          "oldPreviousId": null,
+          "newPreviousId": "D"
+        },
+        "updatedInRound": true,
+        "earlyExit": false,
+        "negativeCycle": null,
+        "pathNodeIds": [],
+        "pathDistance": null
+      }
+    },
+    {
+      "state": {
+        "type": "graph",
+        "values": [
+          "A",
+          "B",
+          "C",
+          "D",
+          "E"
+        ],
+        "focus": [
+          "C",
+          "E"
+        ]
+      },
+      "message": "\u68c0\u67e5\u8fb9 C->E\uff0c\u6743\u91cd 8 / Inspect edge",
+      "line": 164,
+      "variables": {
+        "round": 1,
+        "current": "C",
+        "neighbor": "E",
+        "candidate": 9,
+        "updated": false
+      },
+      "lessonStepId": "inspect",
+      "structure": {
+        "kind": "bellman-ford",
+        "algorithm": "bellman-ford",
+        "operation": "inspect-edge",
+        "nodes": [
+          {
+            "id": "A",
+            "value": "A"
+          },
+          {
+            "id": "B",
+            "value": "B"
+          },
+          {
+            "id": "C",
+            "value": "C"
+          },
+          {
+            "id": "D",
+            "value": "D"
+          },
+          {
+            "id": "E",
+            "value": "E"
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "fromId": "A",
+            "toId": "B",
+            "weight": 4
+          },
+          {
+            "id": "e2",
+            "fromId": "A",
+            "toId": "C",
+            "weight": 1
+          },
+          {
+            "id": "e3",
+            "fromId": "C",
+            "toId": "B",
+            "weight": -2
+          },
+          {
+            "id": "e4",
+            "fromId": "B",
+            "toId": "D",
+            "weight": 2
+          },
+          {
+            "id": "e5",
+            "fromId": "C",
+            "toId": "D",
+            "weight": 5
+          },
+          {
+            "id": "e6",
+            "fromId": "D",
+            "toId": "E",
+            "weight": 1
+          },
+          {
+            "id": "e7",
+            "fromId": "C",
+            "toId": "E",
+            "weight": 8
+          }
+        ],
+        "directed": true,
+        "startNodeId": "A",
+        "targetNodeId": "E",
+        "round": 1,
+        "maxRounds": 4,
+        "currentNodeId": "C",
+        "currentEdgeId": "e7",
+        "neighborNodeId": "E",
+        "distances": [
+          {
+            "fromId": "A",
+            "toId": "A",
+            "distance": 0
+          },
+          {
+            "fromId": "A",
+            "toId": "B",
+            "distance": -1
+          },
+          {
+            "fromId": "A",
+            "toId": "C",
+            "distance": 1
+          },
+          {
+            "fromId": "A",
+            "toId": "D",
+            "distance": 1
+          },
+          {
+            "fromId": "A",
+            "toId": "E",
+            "distance": 2
+          }
+        ],
+        "previous": [
+          {
+            "fromId": "A",
+            "toId": "A",
+            "previousId": null
+          },
+          {
+            "fromId": "A",
+            "toId": "B",
+            "previousId": "C"
+          },
+          {
+            "fromId": "A",
+            "toId": "C",
+            "previousId": "A"
+          },
+          {
+            "fromId": "A",
+            "toId": "D",
+            "previousId": "B"
+          },
+          {
+            "fromId": "A",
+            "toId": "E",
+            "previousId": "D"
+          }
+        ],
+        "relax": null,
+        "updatedInRound": true,
+        "earlyExit": false,
+        "negativeCycle": null,
+        "pathNodeIds": [],
+        "pathDistance": null
+      }
+    },
+    {
+      "state": {
+        "type": "graph",
+        "values": [
+          "A",
+          "B",
+          "C",
+          "D",
+          "E"
+        ],
+        "focus": [
+          "C",
+          "E"
+        ]
+      },
+      "message": "E\uff1a\u5019\u9009 9 \u6ca1\u6709\u4e25\u683c\u66f4\u5c0f / No strict improvement",
+      "line": 183,
+      "variables": {
+        "round": 1,
+        "current": "C",
+        "neighbor": "E",
+        "candidate": 9,
+        "updated": false
+      },
+      "lessonStepId": "skip",
+      "structure": {
+        "kind": "bellman-ford",
+        "algorithm": "bellman-ford",
+        "operation": "skip",
+        "nodes": [
+          {
+            "id": "A",
+            "value": "A"
+          },
+          {
+            "id": "B",
+            "value": "B"
+          },
+          {
+            "id": "C",
+            "value": "C"
+          },
+          {
+            "id": "D",
+            "value": "D"
+          },
+          {
+            "id": "E",
+            "value": "E"
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "fromId": "A",
+            "toId": "B",
+            "weight": 4
+          },
+          {
+            "id": "e2",
+            "fromId": "A",
+            "toId": "C",
+            "weight": 1
+          },
+          {
+            "id": "e3",
+            "fromId": "C",
+            "toId": "B",
+            "weight": -2
+          },
+          {
+            "id": "e4",
+            "fromId": "B",
+            "toId": "D",
+            "weight": 2
+          },
+          {
+            "id": "e5",
+            "fromId": "C",
+            "toId": "D",
+            "weight": 5
+          },
+          {
+            "id": "e6",
+            "fromId": "D",
+            "toId": "E",
+            "weight": 1
+          },
+          {
+            "id": "e7",
+            "fromId": "C",
+            "toId": "E",
+            "weight": 8
+          }
+        ],
+        "directed": true,
+        "startNodeId": "A",
+        "targetNodeId": "E",
+        "round": 1,
+        "maxRounds": 4,
+        "currentNodeId": "C",
+        "currentEdgeId": "e7",
+        "neighborNodeId": "E",
+        "distances": [
+          {
+            "fromId": "A",
+            "toId": "A",
+            "distance": 0
+          },
+          {
+            "fromId": "A",
+            "toId": "B",
+            "distance": -1
+          },
+          {
+            "fromId": "A",
+            "toId": "C",
+            "distance": 1
+          },
+          {
+            "fromId": "A",
+            "toId": "D",
+            "distance": 1
+          },
+          {
+            "fromId": "A",
+            "toId": "E",
+            "distance": 2
+          }
+        ],
+        "previous": [
+          {
+            "fromId": "A",
+            "toId": "A",
+            "previousId": null
+          },
+          {
+            "fromId": "A",
+            "toId": "B",
+            "previousId": "C"
+          },
+          {
+            "fromId": "A",
+            "toId": "C",
+            "previousId": "A"
+          },
+          {
+            "fromId": "A",
+            "toId": "D",
+            "previousId": "B"
+          },
+          {
+            "fromId": "A",
+            "toId": "E",
+            "previousId": "D"
+          }
+        ],
+        "relax": null,
+        "updatedInRound": true,
+        "earlyExit": false,
+        "negativeCycle": null,
+        "pathNodeIds": [],
+        "pathDistance": null
+      }
+    },
+    {
+      "state": {
+        "type": "graph",
+        "values": [
+          "A",
+          "B",
+          "C",
+          "D",
+          "E"
+        ],
+        "focus": []
+      },
+      "message": "\u7b2c 1 \u8f6e\u7ed3\u675f\uff0c\u672c\u8f6e\u6709\u66f4\u65b0 / updates occurred",
+      "line": 185,
+      "variables": {
+        "round": 1,
+        "current": null,
+        "neighbor": null,
+        "candidate": null,
+        "updated": false
+      },
+      "lessonStepId": "round",
+      "structure": {
+        "kind": "bellman-ford",
+        "algorithm": "bellman-ford",
+        "operation": "round-end",
+        "nodes": [
+          {
+            "id": "A",
+            "value": "A"
+          },
+          {
+            "id": "B",
+            "value": "B"
+          },
+          {
+            "id": "C",
+            "value": "C"
+          },
+          {
+            "id": "D",
+            "value": "D"
+          },
+          {
+            "id": "E",
+            "value": "E"
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "fromId": "A",
+            "toId": "B",
+            "weight": 4
+          },
+          {
+            "id": "e2",
+            "fromId": "A",
+            "toId": "C",
+            "weight": 1
+          },
+          {
+            "id": "e3",
+            "fromId": "C",
+            "toId": "B",
+            "weight": -2
+          },
+          {
+            "id": "e4",
+            "fromId": "B",
+            "toId": "D",
+            "weight": 2
+          },
+          {
+            "id": "e5",
+            "fromId": "C",
+            "toId": "D",
+            "weight": 5
+          },
+          {
+            "id": "e6",
+            "fromId": "D",
+            "toId": "E",
+            "weight": 1
+          },
+          {
+            "id": "e7",
+            "fromId": "C",
+            "toId": "E",
+            "weight": 8
+          }
+        ],
+        "directed": true,
+        "startNodeId": "A",
+        "targetNodeId": "E",
+        "round": 1,
+        "maxRounds": 4,
+        "currentNodeId": null,
+        "currentEdgeId": null,
+        "neighborNodeId": null,
+        "distances": [
+          {
+            "fromId": "A",
+            "toId": "A",
+            "distance": 0
+          },
+          {
+            "fromId": "A",
+            "toId": "B",
+            "distance": -1
+          },
+          {
+            "fromId": "A",
+            "toId": "C",
+            "distance": 1
+          },
+          {
+            "fromId": "A",
+            "toId": "D",
+            "distance": 1
+          },
+          {
+            "fromId": "A",
+            "toId": "E",
+            "distance": 2
+          }
+        ],
+        "previous": [
+          {
+            "fromId": "A",
+            "toId": "A",
+            "previousId": null
+          },
+          {
+            "fromId": "A",
+            "toId": "B",
+            "previousId": "C"
+          },
+          {
+            "fromId": "A",
+            "toId": "C",
+            "previousId": "A"
+          },
+          {
+            "fromId": "A",
+            "toId": "D",
+            "previousId": "B"
+          },
+          {
+            "fromId": "A",
+            "toId": "E",
+            "previousId": "D"
+          }
+        ],
+        "relax": null,
+        "updatedInRound": true,
+        "earlyExit": false,
+        "negativeCycle": null,
+        "pathNodeIds": [],
+        "pathDistance": null
+      }
+    },
+    {
+      "state": {
+        "type": "graph",
+        "values": [
+          "A",
+          "B",
+          "C",
+          "D",
+          "E"
+        ],
+        "focus": []
+      },
+      "message": "\u7b2c 2 / 4 \u8f6e\u677e\u5f1b\u5f00\u59cb / Relaxation round begins",
+      "line": 159,
+      "variables": {
+        "round": 2,
+        "current": null,
+        "neighbor": null,
+        "candidate": null,
+        "updated": false
+      },
+      "lessonStepId": "round",
+      "structure": {
+        "kind": "bellman-ford",
+        "algorithm": "bellman-ford",
+        "operation": "round-start",
+        "nodes": [
+          {
+            "id": "A",
+            "value": "A"
+          },
+          {
+            "id": "B",
+            "value": "B"
+          },
+          {
+            "id": "C",
+            "value": "C"
+          },
+          {
+            "id": "D",
+            "value": "D"
+          },
+          {
+            "id": "E",
+            "value": "E"
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "fromId": "A",
+            "toId": "B",
+            "weight": 4
+          },
+          {
+            "id": "e2",
+            "fromId": "A",
+            "toId": "C",
+            "weight": 1
+          },
+          {
+            "id": "e3",
+            "fromId": "C",
+            "toId": "B",
+            "weight": -2
+          },
+          {
+            "id": "e4",
+            "fromId": "B",
+            "toId": "D",
+            "weight": 2
+          },
+          {
+            "id": "e5",
+            "fromId": "C",
+            "toId": "D",
+            "weight": 5
+          },
+          {
+            "id": "e6",
+            "fromId": "D",
+            "toId": "E",
+            "weight": 1
+          },
+          {
+            "id": "e7",
+            "fromId": "C",
+            "toId": "E",
+            "weight": 8
+          }
+        ],
+        "directed": true,
+        "startNodeId": "A",
+        "targetNodeId": "E",
+        "round": 2,
+        "maxRounds": 4,
+        "currentNodeId": null,
+        "currentEdgeId": null,
+        "neighborNodeId": null,
+        "distances": [
+          {
+            "fromId": "A",
+            "toId": "A",
+            "distance": 0
+          },
+          {
+            "fromId": "A",
+            "toId": "B",
+            "distance": -1
+          },
+          {
+            "fromId": "A",
+            "toId": "C",
+            "distance": 1
+          },
+          {
+            "fromId": "A",
+            "toId": "D",
+            "distance": 1
+          },
+          {
+            "fromId": "A",
+            "toId": "E",
+            "distance": 2
+          }
+        ],
+        "previous": [
+          {
+            "fromId": "A",
+            "toId": "A",
+            "previousId": null
+          },
+          {
+            "fromId": "A",
+            "toId": "B",
+            "previousId": "C"
+          },
+          {
+            "fromId": "A",
+            "toId": "C",
+            "previousId": "A"
+          },
+          {
+            "fromId": "A",
+            "toId": "D",
+            "previousId": "B"
+          },
+          {
+            "fromId": "A",
+            "toId": "E",
+            "previousId": "D"
+          }
+        ],
+        "relax": null,
+        "updatedInRound": false,
+        "earlyExit": false,
+        "negativeCycle": null,
+        "pathNodeIds": [],
+        "pathDistance": null
+      }
+    },
+    {
+      "state": {
+        "type": "graph",
+        "values": [
+          "A",
+          "B",
+          "C",
+          "D",
+          "E"
+        ],
+        "focus": [
+          "A",
+          "B"
+        ]
+      },
+      "message": "\u68c0\u67e5\u8fb9 A->B\uff0c\u6743\u91cd 4 / Inspect edge",
+      "line": 164,
+      "variables": {
+        "round": 2,
+        "current": "A",
+        "neighbor": "B",
+        "candidate": 4,
+        "updated": false
+      },
+      "lessonStepId": "inspect",
+      "structure": {
+        "kind": "bellman-ford",
+        "algorithm": "bellman-ford",
+        "operation": "inspect-edge",
+        "nodes": [
+          {
+            "id": "A",
+            "value": "A"
+          },
+          {
+            "id": "B",
+            "value": "B"
+          },
+          {
+            "id": "C",
+            "value": "C"
+          },
+          {
+            "id": "D",
+            "value": "D"
+          },
+          {
+            "id": "E",
+            "value": "E"
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "fromId": "A",
+            "toId": "B",
+            "weight": 4
+          },
+          {
+            "id": "e2",
+            "fromId": "A",
+            "toId": "C",
+            "weight": 1
+          },
+          {
+            "id": "e3",
+            "fromId": "C",
+            "toId": "B",
+            "weight": -2
+          },
+          {
+            "id": "e4",
+            "fromId": "B",
+            "toId": "D",
+            "weight": 2
+          },
+          {
+            "id": "e5",
+            "fromId": "C",
+            "toId": "D",
+            "weight": 5
+          },
+          {
+            "id": "e6",
+            "fromId": "D",
+            "toId": "E",
+            "weight": 1
+          },
+          {
+            "id": "e7",
+            "fromId": "C",
+            "toId": "E",
+            "weight": 8
+          }
+        ],
+        "directed": true,
+        "startNodeId": "A",
+        "targetNodeId": "E",
+        "round": 2,
+        "maxRounds": 4,
+        "currentNodeId": "A",
+        "currentEdgeId": "e1",
+        "neighborNodeId": "B",
+        "distances": [
+          {
+            "fromId": "A",
+            "toId": "A",
+            "distance": 0
+          },
+          {
+            "fromId": "A",
+            "toId": "B",
+            "distance": -1
+          },
+          {
+            "fromId": "A",
+            "toId": "C",
+            "distance": 1
+          },
+          {
+            "fromId": "A",
+            "toId": "D",
+            "distance": 1
+          },
+          {
+            "fromId": "A",
+            "toId": "E",
+            "distance": 2
+          }
+        ],
+        "previous": [
+          {
+            "fromId": "A",
+            "toId": "A",
+            "previousId": null
+          },
+          {
+            "fromId": "A",
+            "toId": "B",
+            "previousId": "C"
+          },
+          {
+            "fromId": "A",
+            "toId": "C",
+            "previousId": "A"
+          },
+          {
+            "fromId": "A",
+            "toId": "D",
+            "previousId": "B"
+          },
+          {
+            "fromId": "A",
+            "toId": "E",
+            "previousId": "D"
+          }
+        ],
+        "relax": null,
+        "updatedInRound": false,
+        "earlyExit": false,
+        "negativeCycle": null,
+        "pathNodeIds": [],
+        "pathDistance": null
+      }
+    },
+    {
+      "state": {
+        "type": "graph",
+        "values": [
+          "A",
+          "B",
+          "C",
+          "D",
+          "E"
+        ],
+        "focus": [
+          "A",
+          "B"
+        ]
+      },
+      "message": "B\uff1a\u5019\u9009 4 \u6ca1\u6709\u4e25\u683c\u66f4\u5c0f / No strict improvement",
+      "line": 183,
+      "variables": {
+        "round": 2,
+        "current": "A",
+        "neighbor": "B",
+        "candidate": 4,
+        "updated": false
+      },
+      "lessonStepId": "skip",
+      "structure": {
+        "kind": "bellman-ford",
+        "algorithm": "bellman-ford",
+        "operation": "skip",
+        "nodes": [
+          {
+            "id": "A",
+            "value": "A"
+          },
+          {
+            "id": "B",
+            "value": "B"
+          },
+          {
+            "id": "C",
+            "value": "C"
+          },
+          {
+            "id": "D",
+            "value": "D"
+          },
+          {
+            "id": "E",
+            "value": "E"
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "fromId": "A",
+            "toId": "B",
+            "weight": 4
+          },
+          {
+            "id": "e2",
+            "fromId": "A",
+            "toId": "C",
+            "weight": 1
+          },
+          {
+            "id": "e3",
+            "fromId": "C",
+            "toId": "B",
+            "weight": -2
+          },
+          {
+            "id": "e4",
+            "fromId": "B",
+            "toId": "D",
+            "weight": 2
+          },
+          {
+            "id": "e5",
+            "fromId": "C",
+            "toId": "D",
+            "weight": 5
+          },
+          {
+            "id": "e6",
+            "fromId": "D",
+            "toId": "E",
+            "weight": 1
+          },
+          {
+            "id": "e7",
+            "fromId": "C",
+            "toId": "E",
+            "weight": 8
+          }
+        ],
+        "directed": true,
+        "startNodeId": "A",
+        "targetNodeId": "E",
+        "round": 2,
+        "maxRounds": 4,
+        "currentNodeId": "A",
+        "currentEdgeId": "e1",
+        "neighborNodeId": "B",
+        "distances": [
+          {
+            "fromId": "A",
+            "toId": "A",
+            "distance": 0
+          },
+          {
+            "fromId": "A",
+            "toId": "B",
+            "distance": -1
+          },
+          {
+            "fromId": "A",
+            "toId": "C",
+            "distance": 1
+          },
+          {
+            "fromId": "A",
+            "toId": "D",
+            "distance": 1
+          },
+          {
+            "fromId": "A",
+            "toId": "E",
+            "distance": 2
+          }
+        ],
+        "previous": [
+          {
+            "fromId": "A",
+            "toId": "A",
+            "previousId": null
+          },
+          {
+            "fromId": "A",
+            "toId": "B",
+            "previousId": "C"
+          },
+          {
+            "fromId": "A",
+            "toId": "C",
+            "previousId": "A"
+          },
+          {
+            "fromId": "A",
+            "toId": "D",
+            "previousId": "B"
+          },
+          {
+            "fromId": "A",
+            "toId": "E",
+            "previousId": "D"
+          }
+        ],
+        "relax": null,
+        "updatedInRound": false,
+        "earlyExit": false,
+        "negativeCycle": null,
+        "pathNodeIds": [],
+        "pathDistance": null
+      }
+    },
+    {
+      "state": {
+        "type": "graph",
+        "values": [
+          "A",
+          "B",
+          "C",
+          "D",
+          "E"
+        ],
+        "focus": [
+          "A",
+          "C"
+        ]
+      },
+      "message": "\u68c0\u67e5\u8fb9 A->C\uff0c\u6743\u91cd 1 / Inspect edge",
+      "line": 164,
+      "variables": {
+        "round": 2,
+        "current": "A",
+        "neighbor": "C",
+        "candidate": 1,
+        "updated": false
+      },
+      "lessonStepId": "inspect",
+      "structure": {
+        "kind": "bellman-ford",
+        "algorithm": "bellman-ford",
+        "operation": "inspect-edge",
+        "nodes": [
+          {
+            "id": "A",
+            "value": "A"
+          },
+          {
+            "id": "B",
+            "value": "B"
+          },
+          {
+            "id": "C",
+            "value": "C"
+          },
+          {
+            "id": "D",
+            "value": "D"
+          },
+          {
+            "id": "E",
+            "value": "E"
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "fromId": "A",
+            "toId": "B",
+            "weight": 4
+          },
+          {
+            "id": "e2",
+            "fromId": "A",
+            "toId": "C",
+            "weight": 1
+          },
+          {
+            "id": "e3",
+            "fromId": "C",
+            "toId": "B",
+            "weight": -2
+          },
+          {
+            "id": "e4",
+            "fromId": "B",
+            "toId": "D",
+            "weight": 2
+          },
+          {
+            "id": "e5",
+            "fromId": "C",
+            "toId": "D",
+            "weight": 5
+          },
+          {
+            "id": "e6",
+            "fromId": "D",
+            "toId": "E",
+            "weight": 1
+          },
+          {
+            "id": "e7",
+            "fromId": "C",
+            "toId": "E",
+            "weight": 8
+          }
+        ],
+        "directed": true,
+        "startNodeId": "A",
+        "targetNodeId": "E",
+        "round": 2,
+        "maxRounds": 4,
+        "currentNodeId": "A",
+        "currentEdgeId": "e2",
+        "neighborNodeId": "C",
+        "distances": [
+          {
+            "fromId": "A",
+            "toId": "A",
+            "distance": 0
+          },
+          {
+            "fromId": "A",
+            "toId": "B",
+            "distance": -1
+          },
+          {
+            "fromId": "A",
+            "toId": "C",
+            "distance": 1
+          },
+          {
+            "fromId": "A",
+            "toId": "D",
+            "distance": 1
+          },
+          {
+            "fromId": "A",
+            "toId": "E",
+            "distance": 2
+          }
+        ],
+        "previous": [
+          {
+            "fromId": "A",
+            "toId": "A",
+            "previousId": null
+          },
+          {
+            "fromId": "A",
+            "toId": "B",
+            "previousId": "C"
+          },
+          {
+            "fromId": "A",
+            "toId": "C",
+            "previousId": "A"
+          },
+          {
+            "fromId": "A",
+            "toId": "D",
+            "previousId": "B"
+          },
+          {
+            "fromId": "A",
+            "toId": "E",
+            "previousId": "D"
+          }
+        ],
+        "relax": null,
+        "updatedInRound": false,
+        "earlyExit": false,
+        "negativeCycle": null,
+        "pathNodeIds": [],
+        "pathDistance": null
+      }
+    },
+    {
+      "state": {
+        "type": "graph",
+        "values": [
+          "A",
+          "B",
+          "C",
+          "D",
+          "E"
+        ],
+        "focus": [
+          "A",
+          "C"
+        ]
+      },
+      "message": "C\uff1a\u5019\u9009 1 \u6ca1\u6709\u4e25\u683c\u66f4\u5c0f / No strict improvement",
+      "line": 183,
+      "variables": {
+        "round": 2,
+        "current": "A",
+        "neighbor": "C",
+        "candidate": 1,
+        "updated": false
+      },
+      "lessonStepId": "skip",
+      "structure": {
+        "kind": "bellman-ford",
+        "algorithm": "bellman-ford",
+        "operation": "skip",
+        "nodes": [
+          {
+            "id": "A",
+            "value": "A"
+          },
+          {
+            "id": "B",
+            "value": "B"
+          },
+          {
+            "id": "C",
+            "value": "C"
+          },
+          {
+            "id": "D",
+            "value": "D"
+          },
+          {
+            "id": "E",
+            "value": "E"
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "fromId": "A",
+            "toId": "B",
+            "weight": 4
+          },
+          {
+            "id": "e2",
+            "fromId": "A",
+            "toId": "C",
+            "weight": 1
+          },
+          {
+            "id": "e3",
+            "fromId": "C",
+            "toId": "B",
+            "weight": -2
+          },
+          {
+            "id": "e4",
+            "fromId": "B",
+            "toId": "D",
+            "weight": 2
+          },
+          {
+            "id": "e5",
+            "fromId": "C",
+            "toId": "D",
+            "weight": 5
+          },
+          {
+            "id": "e6",
+            "fromId": "D",
+            "toId": "E",
+            "weight": 1
+          },
+          {
+            "id": "e7",
+            "fromId": "C",
+            "toId": "E",
+            "weight": 8
+          }
+        ],
+        "directed": true,
+        "startNodeId": "A",
+        "targetNodeId": "E",
+        "round": 2,
+        "maxRounds": 4,
+        "currentNodeId": "A",
+        "currentEdgeId": "e2",
+        "neighborNodeId": "C",
+        "distances": [
+          {
+            "fromId": "A",
+            "toId": "A",
+            "distance": 0
+          },
+          {
+            "fromId": "A",
+            "toId": "B",
+            "distance": -1
+          },
+          {
+            "fromId": "A",
+            "toId": "C",
+            "distance": 1
+          },
+          {
+            "fromId": "A",
+            "toId": "D",
+            "distance": 1
+          },
+          {
+            "fromId": "A",
+            "toId": "E",
+            "distance": 2
+          }
+        ],
+        "previous": [
+          {
+            "fromId": "A",
+            "toId": "A",
+            "previousId": null
+          },
+          {
+            "fromId": "A",
+            "toId": "B",
+            "previousId": "C"
+          },
+          {
+            "fromId": "A",
+            "toId": "C",
+            "previousId": "A"
+          },
+          {
+            "fromId": "A",
+            "toId": "D",
+            "previousId": "B"
+          },
+          {
+            "fromId": "A",
+            "toId": "E",
+            "previousId": "D"
+          }
+        ],
+        "relax": null,
+        "updatedInRound": false,
+        "earlyExit": false,
+        "negativeCycle": null,
+        "pathNodeIds": [],
+        "pathDistance": null
+      }
+    },
+    {
+      "state": {
+        "type": "graph",
+        "values": [
+          "A",
+          "B",
+          "C",
+          "D",
+          "E"
+        ],
+        "focus": [
+          "C",
+          "B"
+        ]
+      },
+      "message": "\u68c0\u67e5\u8fb9 C->B\uff0c\u6743\u91cd -2 / Inspect edge",
+      "line": 164,
+      "variables": {
+        "round": 2,
+        "current": "C",
+        "neighbor": "B",
+        "candidate": -1,
+        "updated": false
+      },
+      "lessonStepId": "inspect",
+      "structure": {
+        "kind": "bellman-ford",
+        "algorithm": "bellman-ford",
+        "operation": "inspect-edge",
+        "nodes": [
+          {
+            "id": "A",
+            "value": "A"
+          },
+          {
+            "id": "B",
+            "value": "B"
+          },
+          {
+            "id": "C",
+            "value": "C"
+          },
+          {
+            "id": "D",
+            "value": "D"
+          },
+          {
+            "id": "E",
+            "value": "E"
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "fromId": "A",
+            "toId": "B",
+            "weight": 4
+          },
+          {
+            "id": "e2",
+            "fromId": "A",
+            "toId": "C",
+            "weight": 1
+          },
+          {
+            "id": "e3",
+            "fromId": "C",
+            "toId": "B",
+            "weight": -2
+          },
+          {
+            "id": "e4",
+            "fromId": "B",
+            "toId": "D",
+            "weight": 2
+          },
+          {
+            "id": "e5",
+            "fromId": "C",
+            "toId": "D",
+            "weight": 5
+          },
+          {
+            "id": "e6",
+            "fromId": "D",
+            "toId": "E",
+            "weight": 1
+          },
+          {
+            "id": "e7",
+            "fromId": "C",
+            "toId": "E",
+            "weight": 8
+          }
+        ],
+        "directed": true,
+        "startNodeId": "A",
+        "targetNodeId": "E",
+        "round": 2,
+        "maxRounds": 4,
+        "currentNodeId": "C",
+        "currentEdgeId": "e3",
+        "neighborNodeId": "B",
+        "distances": [
+          {
+            "fromId": "A",
+            "toId": "A",
+            "distance": 0
+          },
+          {
+            "fromId": "A",
+            "toId": "B",
+            "distance": -1
+          },
+          {
+            "fromId": "A",
+            "toId": "C",
+            "distance": 1
+          },
+          {
+            "fromId": "A",
+            "toId": "D",
+            "distance": 1
+          },
+          {
+            "fromId": "A",
+            "toId": "E",
+            "distance": 2
+          }
+        ],
+        "previous": [
+          {
+            "fromId": "A",
+            "toId": "A",
+            "previousId": null
+          },
+          {
+            "fromId": "A",
+            "toId": "B",
+            "previousId": "C"
+          },
+          {
+            "fromId": "A",
+            "toId": "C",
+            "previousId": "A"
+          },
+          {
+            "fromId": "A",
+            "toId": "D",
+            "previousId": "B"
+          },
+          {
+            "fromId": "A",
+            "toId": "E",
+            "previousId": "D"
+          }
+        ],
+        "relax": null,
+        "updatedInRound": false,
+        "earlyExit": false,
+        "negativeCycle": null,
+        "pathNodeIds": [],
+        "pathDistance": null
+      }
+    },
+    {
+      "state": {
+        "type": "graph",
+        "values": [
+          "A",
+          "B",
+          "C",
+          "D",
+          "E"
+        ],
+        "focus": [
+          "C",
+          "B"
+        ]
+      },
+      "message": "B\uff1a\u5019\u9009 -1 \u6ca1\u6709\u4e25\u683c\u66f4\u5c0f / No strict improvement",
+      "line": 183,
+      "variables": {
+        "round": 2,
+        "current": "C",
+        "neighbor": "B",
+        "candidate": -1,
+        "updated": false
+      },
+      "lessonStepId": "skip",
+      "structure": {
+        "kind": "bellman-ford",
+        "algorithm": "bellman-ford",
+        "operation": "skip",
+        "nodes": [
+          {
+            "id": "A",
+            "value": "A"
+          },
+          {
+            "id": "B",
+            "value": "B"
+          },
+          {
+            "id": "C",
+            "value": "C"
+          },
+          {
+            "id": "D",
+            "value": "D"
+          },
+          {
+            "id": "E",
+            "value": "E"
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "fromId": "A",
+            "toId": "B",
+            "weight": 4
+          },
+          {
+            "id": "e2",
+            "fromId": "A",
+            "toId": "C",
+            "weight": 1
+          },
+          {
+            "id": "e3",
+            "fromId": "C",
+            "toId": "B",
+            "weight": -2
+          },
+          {
+            "id": "e4",
+            "fromId": "B",
+            "toId": "D",
+            "weight": 2
+          },
+          {
+            "id": "e5",
+            "fromId": "C",
+            "toId": "D",
+            "weight": 5
+          },
+          {
+            "id": "e6",
+            "fromId": "D",
+            "toId": "E",
+            "weight": 1
+          },
+          {
+            "id": "e7",
+            "fromId": "C",
+            "toId": "E",
+            "weight": 8
+          }
+        ],
+        "directed": true,
+        "startNodeId": "A",
+        "targetNodeId": "E",
+        "round": 2,
+        "maxRounds": 4,
+        "currentNodeId": "C",
+        "currentEdgeId": "e3",
+        "neighborNodeId": "B",
+        "distances": [
+          {
+            "fromId": "A",
+            "toId": "A",
+            "distance": 0
+          },
+          {
+            "fromId": "A",
+            "toId": "B",
+            "distance": -1
+          },
+          {
+            "fromId": "A",
+            "toId": "C",
+            "distance": 1
+          },
+          {
+            "fromId": "A",
+            "toId": "D",
+            "distance": 1
+          },
+          {
+            "fromId": "A",
+            "toId": "E",
+            "distance": 2
+          }
+        ],
+        "previous": [
+          {
+            "fromId": "A",
+            "toId": "A",
+            "previousId": null
+          },
+          {
+            "fromId": "A",
+            "toId": "B",
+            "previousId": "C"
+          },
+          {
+            "fromId": "A",
+            "toId": "C",
+            "previousId": "A"
+          },
+          {
+            "fromId": "A",
+            "toId": "D",
+            "previousId": "B"
+          },
+          {
+            "fromId": "A",
+            "toId": "E",
+            "previousId": "D"
+          }
+        ],
+        "relax": null,
+        "updatedInRound": false,
+        "earlyExit": false,
+        "negativeCycle": null,
+        "pathNodeIds": [],
+        "pathDistance": null
+      }
+    },
+    {
+      "state": {
+        "type": "graph",
+        "values": [
+          "A",
+          "B",
+          "C",
+          "D",
+          "E"
+        ],
+        "focus": [
+          "B",
+          "D"
+        ]
+      },
+      "message": "\u68c0\u67e5\u8fb9 B->D\uff0c\u6743\u91cd 2 / Inspect edge",
+      "line": 164,
+      "variables": {
+        "round": 2,
+        "current": "B",
+        "neighbor": "D",
+        "candidate": 1,
+        "updated": false
+      },
+      "lessonStepId": "inspect",
+      "structure": {
+        "kind": "bellman-ford",
+        "algorithm": "bellman-ford",
+        "operation": "inspect-edge",
+        "nodes": [
+          {
+            "id": "A",
+            "value": "A"
+          },
+          {
+            "id": "B",
+            "value": "B"
+          },
+          {
+            "id": "C",
+            "value": "C"
+          },
+          {
+            "id": "D",
+            "value": "D"
+          },
+          {
+            "id": "E",
+            "value": "E"
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "fromId": "A",
+            "toId": "B",
+            "weight": 4
+          },
+          {
+            "id": "e2",
+            "fromId": "A",
+            "toId": "C",
+            "weight": 1
+          },
+          {
+            "id": "e3",
+            "fromId": "C",
+            "toId": "B",
+            "weight": -2
+          },
+          {
+            "id": "e4",
+            "fromId": "B",
+            "toId": "D",
+            "weight": 2
+          },
+          {
+            "id": "e5",
+            "fromId": "C",
+            "toId": "D",
+            "weight": 5
+          },
+          {
+            "id": "e6",
+            "fromId": "D",
+            "toId": "E",
+            "weight": 1
+          },
+          {
+            "id": "e7",
+            "fromId": "C",
+            "toId": "E",
+            "weight": 8
+          }
+        ],
+        "directed": true,
+        "startNodeId": "A",
+        "targetNodeId": "E",
+        "round": 2,
+        "maxRounds": 4,
+        "currentNodeId": "B",
+        "currentEdgeId": "e4",
+        "neighborNodeId": "D",
+        "distances": [
+          {
+            "fromId": "A",
+            "toId": "A",
+            "distance": 0
+          },
+          {
+            "fromId": "A",
+            "toId": "B",
+            "distance": -1
+          },
+          {
+            "fromId": "A",
+            "toId": "C",
+            "distance": 1
+          },
+          {
+            "fromId": "A",
+            "toId": "D",
+            "distance": 1
+          },
+          {
+            "fromId": "A",
+            "toId": "E",
+            "distance": 2
+          }
+        ],
+        "previous": [
+          {
+            "fromId": "A",
+            "toId": "A",
+            "previousId": null
+          },
+          {
+            "fromId": "A",
+            "toId": "B",
+            "previousId": "C"
+          },
+          {
+            "fromId": "A",
+            "toId": "C",
+            "previousId": "A"
+          },
+          {
+            "fromId": "A",
+            "toId": "D",
+            "previousId": "B"
+          },
+          {
+            "fromId": "A",
+            "toId": "E",
+            "previousId": "D"
+          }
+        ],
+        "relax": null,
+        "updatedInRound": false,
+        "earlyExit": false,
+        "negativeCycle": null,
+        "pathNodeIds": [],
+        "pathDistance": null
+      }
+    },
+    {
+      "state": {
+        "type": "graph",
+        "values": [
+          "A",
+          "B",
+          "C",
+          "D",
+          "E"
+        ],
+        "focus": [
+          "B",
+          "D"
+        ]
+      },
+      "message": "D\uff1a\u5019\u9009 1 \u6ca1\u6709\u4e25\u683c\u66f4\u5c0f / No strict improvement",
+      "line": 183,
+      "variables": {
+        "round": 2,
+        "current": "B",
+        "neighbor": "D",
+        "candidate": 1,
+        "updated": false
+      },
+      "lessonStepId": "skip",
+      "structure": {
+        "kind": "bellman-ford",
+        "algorithm": "bellman-ford",
+        "operation": "skip",
+        "nodes": [
+          {
+            "id": "A",
+            "value": "A"
+          },
+          {
+            "id": "B",
+            "value": "B"
+          },
+          {
+            "id": "C",
+            "value": "C"
+          },
+          {
+            "id": "D",
+            "value": "D"
+          },
+          {
+            "id": "E",
+            "value": "E"
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "fromId": "A",
+            "toId": "B",
+            "weight": 4
+          },
+          {
+            "id": "e2",
+            "fromId": "A",
+            "toId": "C",
+            "weight": 1
+          },
+          {
+            "id": "e3",
+            "fromId": "C",
+            "toId": "B",
+            "weight": -2
+          },
+          {
+            "id": "e4",
+            "fromId": "B",
+            "toId": "D",
+            "weight": 2
+          },
+          {
+            "id": "e5",
+            "fromId": "C",
+            "toId": "D",
+            "weight": 5
+          },
+          {
+            "id": "e6",
+            "fromId": "D",
+            "toId": "E",
+            "weight": 1
+          },
+          {
+            "id": "e7",
+            "fromId": "C",
+            "toId": "E",
+            "weight": 8
+          }
+        ],
+        "directed": true,
+        "startNodeId": "A",
+        "targetNodeId": "E",
+        "round": 2,
+        "maxRounds": 4,
+        "currentNodeId": "B",
+        "currentEdgeId": "e4",
+        "neighborNodeId": "D",
+        "distances": [
+          {
+            "fromId": "A",
+            "toId": "A",
+            "distance": 0
+          },
+          {
+            "fromId": "A",
+            "toId": "B",
+            "distance": -1
+          },
+          {
+            "fromId": "A",
+            "toId": "C",
+            "distance": 1
+          },
+          {
+            "fromId": "A",
+            "toId": "D",
+            "distance": 1
+          },
+          {
+            "fromId": "A",
+            "toId": "E",
+            "distance": 2
+          }
+        ],
+        "previous": [
+          {
+            "fromId": "A",
+            "toId": "A",
+            "previousId": null
+          },
+          {
+            "fromId": "A",
+            "toId": "B",
+            "previousId": "C"
+          },
+          {
+            "fromId": "A",
+            "toId": "C",
+            "previousId": "A"
+          },
+          {
+            "fromId": "A",
+            "toId": "D",
+            "previousId": "B"
+          },
+          {
+            "fromId": "A",
+            "toId": "E",
+            "previousId": "D"
+          }
+        ],
+        "relax": null,
+        "updatedInRound": false,
+        "earlyExit": false,
+        "negativeCycle": null,
+        "pathNodeIds": [],
+        "pathDistance": null
+      }
+    },
+    {
+      "state": {
+        "type": "graph",
+        "values": [
+          "A",
+          "B",
+          "C",
+          "D",
+          "E"
+        ],
+        "focus": [
+          "C",
+          "D"
+        ]
+      },
+      "message": "\u68c0\u67e5\u8fb9 C->D\uff0c\u6743\u91cd 5 / Inspect edge",
+      "line": 164,
+      "variables": {
+        "round": 2,
+        "current": "C",
+        "neighbor": "D",
+        "candidate": 6,
+        "updated": false
+      },
+      "lessonStepId": "inspect",
+      "structure": {
+        "kind": "bellman-ford",
+        "algorithm": "bellman-ford",
+        "operation": "inspect-edge",
+        "nodes": [
+          {
+            "id": "A",
+            "value": "A"
+          },
+          {
+            "id": "B",
+            "value": "B"
+          },
+          {
+            "id": "C",
+            "value": "C"
+          },
+          {
+            "id": "D",
+            "value": "D"
+          },
+          {
+            "id": "E",
+            "value": "E"
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "fromId": "A",
+            "toId": "B",
+            "weight": 4
+          },
+          {
+            "id": "e2",
+            "fromId": "A",
+            "toId": "C",
+            "weight": 1
+          },
+          {
+            "id": "e3",
+            "fromId": "C",
+            "toId": "B",
+            "weight": -2
+          },
+          {
+            "id": "e4",
+            "fromId": "B",
+            "toId": "D",
+            "weight": 2
+          },
+          {
+            "id": "e5",
+            "fromId": "C",
+            "toId": "D",
+            "weight": 5
+          },
+          {
+            "id": "e6",
+            "fromId": "D",
+            "toId": "E",
+            "weight": 1
+          },
+          {
+            "id": "e7",
+            "fromId": "C",
+            "toId": "E",
+            "weight": 8
+          }
+        ],
+        "directed": true,
+        "startNodeId": "A",
+        "targetNodeId": "E",
+        "round": 2,
+        "maxRounds": 4,
+        "currentNodeId": "C",
+        "currentEdgeId": "e5",
+        "neighborNodeId": "D",
+        "distances": [
+          {
+            "fromId": "A",
+            "toId": "A",
+            "distance": 0
+          },
+          {
+            "fromId": "A",
+            "toId": "B",
+            "distance": -1
+          },
+          {
+            "fromId": "A",
+            "toId": "C",
+            "distance": 1
+          },
+          {
+            "fromId": "A",
+            "toId": "D",
+            "distance": 1
+          },
+          {
+            "fromId": "A",
+            "toId": "E",
+            "distance": 2
+          }
+        ],
+        "previous": [
+          {
+            "fromId": "A",
+            "toId": "A",
+            "previousId": null
+          },
+          {
+            "fromId": "A",
+            "toId": "B",
+            "previousId": "C"
+          },
+          {
+            "fromId": "A",
+            "toId": "C",
+            "previousId": "A"
+          },
+          {
+            "fromId": "A",
+            "toId": "D",
+            "previousId": "B"
+          },
+          {
+            "fromId": "A",
+            "toId": "E",
+            "previousId": "D"
+          }
+        ],
+        "relax": null,
+        "updatedInRound": false,
+        "earlyExit": false,
+        "negativeCycle": null,
+        "pathNodeIds": [],
+        "pathDistance": null
+      }
+    },
+    {
+      "state": {
+        "type": "graph",
+        "values": [
+          "A",
+          "B",
+          "C",
+          "D",
+          "E"
+        ],
+        "focus": [
+          "C",
+          "D"
+        ]
+      },
+      "message": "D\uff1a\u5019\u9009 6 \u6ca1\u6709\u4e25\u683c\u66f4\u5c0f / No strict improvement",
+      "line": 183,
+      "variables": {
+        "round": 2,
+        "current": "C",
+        "neighbor": "D",
+        "candidate": 6,
+        "updated": false
+      },
+      "lessonStepId": "skip",
+      "structure": {
+        "kind": "bellman-ford",
+        "algorithm": "bellman-ford",
+        "operation": "skip",
+        "nodes": [
+          {
+            "id": "A",
+            "value": "A"
+          },
+          {
+            "id": "B",
+            "value": "B"
+          },
+          {
+            "id": "C",
+            "value": "C"
+          },
+          {
+            "id": "D",
+            "value": "D"
+          },
+          {
+            "id": "E",
+            "value": "E"
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "fromId": "A",
+            "toId": "B",
+            "weight": 4
+          },
+          {
+            "id": "e2",
+            "fromId": "A",
+            "toId": "C",
+            "weight": 1
+          },
+          {
+            "id": "e3",
+            "fromId": "C",
+            "toId": "B",
+            "weight": -2
+          },
+          {
+            "id": "e4",
+            "fromId": "B",
+            "toId": "D",
+            "weight": 2
+          },
+          {
+            "id": "e5",
+            "fromId": "C",
+            "toId": "D",
+            "weight": 5
+          },
+          {
+            "id": "e6",
+            "fromId": "D",
+            "toId": "E",
+            "weight": 1
+          },
+          {
+            "id": "e7",
+            "fromId": "C",
+            "toId": "E",
+            "weight": 8
+          }
+        ],
+        "directed": true,
+        "startNodeId": "A",
+        "targetNodeId": "E",
+        "round": 2,
+        "maxRounds": 4,
+        "currentNodeId": "C",
+        "currentEdgeId": "e5",
+        "neighborNodeId": "D",
+        "distances": [
+          {
+            "fromId": "A",
+            "toId": "A",
+            "distance": 0
+          },
+          {
+            "fromId": "A",
+            "toId": "B",
+            "distance": -1
+          },
+          {
+            "fromId": "A",
+            "toId": "C",
+            "distance": 1
+          },
+          {
+            "fromId": "A",
+            "toId": "D",
+            "distance": 1
+          },
+          {
+            "fromId": "A",
+            "toId": "E",
+            "distance": 2
+          }
+        ],
+        "previous": [
+          {
+            "fromId": "A",
+            "toId": "A",
+            "previousId": null
+          },
+          {
+            "fromId": "A",
+            "toId": "B",
+            "previousId": "C"
+          },
+          {
+            "fromId": "A",
+            "toId": "C",
+            "previousId": "A"
+          },
+          {
+            "fromId": "A",
+            "toId": "D",
+            "previousId": "B"
+          },
+          {
+            "fromId": "A",
+            "toId": "E",
+            "previousId": "D"
+          }
+        ],
+        "relax": null,
+        "updatedInRound": false,
+        "earlyExit": false,
+        "negativeCycle": null,
+        "pathNodeIds": [],
+        "pathDistance": null
+      }
+    },
+    {
+      "state": {
+        "type": "graph",
+        "values": [
+          "A",
+          "B",
+          "C",
+          "D",
+          "E"
+        ],
+        "focus": [
+          "D",
+          "E"
+        ]
+      },
+      "message": "\u68c0\u67e5\u8fb9 D->E\uff0c\u6743\u91cd 1 / Inspect edge",
+      "line": 164,
+      "variables": {
+        "round": 2,
+        "current": "D",
+        "neighbor": "E",
+        "candidate": 2,
+        "updated": false
+      },
+      "lessonStepId": "inspect",
+      "structure": {
+        "kind": "bellman-ford",
+        "algorithm": "bellman-ford",
+        "operation": "inspect-edge",
+        "nodes": [
+          {
+            "id": "A",
+            "value": "A"
+          },
+          {
+            "id": "B",
+            "value": "B"
+          },
+          {
+            "id": "C",
+            "value": "C"
+          },
+          {
+            "id": "D",
+            "value": "D"
+          },
+          {
+            "id": "E",
+            "value": "E"
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "fromId": "A",
+            "toId": "B",
+            "weight": 4
+          },
+          {
+            "id": "e2",
+            "fromId": "A",
+            "toId": "C",
+            "weight": 1
+          },
+          {
+            "id": "e3",
+            "fromId": "C",
+            "toId": "B",
+            "weight": -2
+          },
+          {
+            "id": "e4",
+            "fromId": "B",
+            "toId": "D",
+            "weight": 2
+          },
+          {
+            "id": "e5",
+            "fromId": "C",
+            "toId": "D",
+            "weight": 5
+          },
+          {
+            "id": "e6",
+            "fromId": "D",
+            "toId": "E",
+            "weight": 1
+          },
+          {
+            "id": "e7",
+            "fromId": "C",
+            "toId": "E",
+            "weight": 8
+          }
+        ],
+        "directed": true,
+        "startNodeId": "A",
+        "targetNodeId": "E",
+        "round": 2,
+        "maxRounds": 4,
+        "currentNodeId": "D",
+        "currentEdgeId": "e6",
+        "neighborNodeId": "E",
+        "distances": [
+          {
+            "fromId": "A",
+            "toId": "A",
+            "distance": 0
+          },
+          {
+            "fromId": "A",
+            "toId": "B",
+            "distance": -1
+          },
+          {
+            "fromId": "A",
+            "toId": "C",
+            "distance": 1
+          },
+          {
+            "fromId": "A",
+            "toId": "D",
+            "distance": 1
+          },
+          {
+            "fromId": "A",
+            "toId": "E",
+            "distance": 2
+          }
+        ],
+        "previous": [
+          {
+            "fromId": "A",
+            "toId": "A",
+            "previousId": null
+          },
+          {
+            "fromId": "A",
+            "toId": "B",
+            "previousId": "C"
+          },
+          {
+            "fromId": "A",
+            "toId": "C",
+            "previousId": "A"
+          },
+          {
+            "fromId": "A",
+            "toId": "D",
+            "previousId": "B"
+          },
+          {
+            "fromId": "A",
+            "toId": "E",
+            "previousId": "D"
+          }
+        ],
+        "relax": null,
+        "updatedInRound": false,
+        "earlyExit": false,
+        "negativeCycle": null,
+        "pathNodeIds": [],
+        "pathDistance": null
+      }
+    },
+    {
+      "state": {
+        "type": "graph",
+        "values": [
+          "A",
+          "B",
+          "C",
+          "D",
+          "E"
+        ],
+        "focus": [
+          "D",
+          "E"
+        ]
+      },
+      "message": "E\uff1a\u5019\u9009 2 \u6ca1\u6709\u4e25\u683c\u66f4\u5c0f / No strict improvement",
+      "line": 183,
+      "variables": {
+        "round": 2,
+        "current": "D",
+        "neighbor": "E",
+        "candidate": 2,
+        "updated": false
+      },
+      "lessonStepId": "skip",
+      "structure": {
+        "kind": "bellman-ford",
+        "algorithm": "bellman-ford",
+        "operation": "skip",
+        "nodes": [
+          {
+            "id": "A",
+            "value": "A"
+          },
+          {
+            "id": "B",
+            "value": "B"
+          },
+          {
+            "id": "C",
+            "value": "C"
+          },
+          {
+            "id": "D",
+            "value": "D"
+          },
+          {
+            "id": "E",
+            "value": "E"
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "fromId": "A",
+            "toId": "B",
+            "weight": 4
+          },
+          {
+            "id": "e2",
+            "fromId": "A",
+            "toId": "C",
+            "weight": 1
+          },
+          {
+            "id": "e3",
+            "fromId": "C",
+            "toId": "B",
+            "weight": -2
+          },
+          {
+            "id": "e4",
+            "fromId": "B",
+            "toId": "D",
+            "weight": 2
+          },
+          {
+            "id": "e5",
+            "fromId": "C",
+            "toId": "D",
+            "weight": 5
+          },
+          {
+            "id": "e6",
+            "fromId": "D",
+            "toId": "E",
+            "weight": 1
+          },
+          {
+            "id": "e7",
+            "fromId": "C",
+            "toId": "E",
+            "weight": 8
+          }
+        ],
+        "directed": true,
+        "startNodeId": "A",
+        "targetNodeId": "E",
+        "round": 2,
+        "maxRounds": 4,
+        "currentNodeId": "D",
+        "currentEdgeId": "e6",
+        "neighborNodeId": "E",
+        "distances": [
+          {
+            "fromId": "A",
+            "toId": "A",
+            "distance": 0
+          },
+          {
+            "fromId": "A",
+            "toId": "B",
+            "distance": -1
+          },
+          {
+            "fromId": "A",
+            "toId": "C",
+            "distance": 1
+          },
+          {
+            "fromId": "A",
+            "toId": "D",
+            "distance": 1
+          },
+          {
+            "fromId": "A",
+            "toId": "E",
+            "distance": 2
+          }
+        ],
+        "previous": [
+          {
+            "fromId": "A",
+            "toId": "A",
+            "previousId": null
+          },
+          {
+            "fromId": "A",
+            "toId": "B",
+            "previousId": "C"
+          },
+          {
+            "fromId": "A",
+            "toId": "C",
+            "previousId": "A"
+          },
+          {
+            "fromId": "A",
+            "toId": "D",
+            "previousId": "B"
+          },
+          {
+            "fromId": "A",
+            "toId": "E",
+            "previousId": "D"
+          }
+        ],
+        "relax": null,
+        "updatedInRound": false,
+        "earlyExit": false,
+        "negativeCycle": null,
+        "pathNodeIds": [],
+        "pathDistance": null
+      }
+    },
+    {
+      "state": {
+        "type": "graph",
+        "values": [
+          "A",
+          "B",
+          "C",
+          "D",
+          "E"
+        ],
+        "focus": [
+          "C",
+          "E"
+        ]
+      },
+      "message": "\u68c0\u67e5\u8fb9 C->E\uff0c\u6743\u91cd 8 / Inspect edge",
+      "line": 164,
+      "variables": {
+        "round": 2,
+        "current": "C",
+        "neighbor": "E",
+        "candidate": 9,
+        "updated": false
+      },
+      "lessonStepId": "inspect",
+      "structure": {
+        "kind": "bellman-ford",
+        "algorithm": "bellman-ford",
+        "operation": "inspect-edge",
+        "nodes": [
+          {
+            "id": "A",
+            "value": "A"
+          },
+          {
+            "id": "B",
+            "value": "B"
+          },
+          {
+            "id": "C",
+            "value": "C"
+          },
+          {
+            "id": "D",
+            "value": "D"
+          },
+          {
+            "id": "E",
+            "value": "E"
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "fromId": "A",
+            "toId": "B",
+            "weight": 4
+          },
+          {
+            "id": "e2",
+            "fromId": "A",
+            "toId": "C",
+            "weight": 1
+          },
+          {
+            "id": "e3",
+            "fromId": "C",
+            "toId": "B",
+            "weight": -2
+          },
+          {
+            "id": "e4",
+            "fromId": "B",
+            "toId": "D",
+            "weight": 2
+          },
+          {
+            "id": "e5",
+            "fromId": "C",
+            "toId": "D",
+            "weight": 5
+          },
+          {
+            "id": "e6",
+            "fromId": "D",
+            "toId": "E",
+            "weight": 1
+          },
+          {
+            "id": "e7",
+            "fromId": "C",
+            "toId": "E",
+            "weight": 8
+          }
+        ],
+        "directed": true,
+        "startNodeId": "A",
+        "targetNodeId": "E",
+        "round": 2,
+        "maxRounds": 4,
+        "currentNodeId": "C",
+        "currentEdgeId": "e7",
+        "neighborNodeId": "E",
+        "distances": [
+          {
+            "fromId": "A",
+            "toId": "A",
+            "distance": 0
+          },
+          {
+            "fromId": "A",
+            "toId": "B",
+            "distance": -1
+          },
+          {
+            "fromId": "A",
+            "toId": "C",
+            "distance": 1
+          },
+          {
+            "fromId": "A",
+            "toId": "D",
+            "distance": 1
+          },
+          {
+            "fromId": "A",
+            "toId": "E",
+            "distance": 2
+          }
+        ],
+        "previous": [
+          {
+            "fromId": "A",
+            "toId": "A",
+            "previousId": null
+          },
+          {
+            "fromId": "A",
+            "toId": "B",
+            "previousId": "C"
+          },
+          {
+            "fromId": "A",
+            "toId": "C",
+            "previousId": "A"
+          },
+          {
+            "fromId": "A",
+            "toId": "D",
+            "previousId": "B"
+          },
+          {
+            "fromId": "A",
+            "toId": "E",
+            "previousId": "D"
+          }
+        ],
+        "relax": null,
+        "updatedInRound": false,
+        "earlyExit": false,
+        "negativeCycle": null,
+        "pathNodeIds": [],
+        "pathDistance": null
+      }
+    },
+    {
+      "state": {
+        "type": "graph",
+        "values": [
+          "A",
+          "B",
+          "C",
+          "D",
+          "E"
+        ],
+        "focus": [
+          "C",
+          "E"
+        ]
+      },
+      "message": "E\uff1a\u5019\u9009 9 \u6ca1\u6709\u4e25\u683c\u66f4\u5c0f / No strict improvement",
+      "line": 183,
+      "variables": {
+        "round": 2,
+        "current": "C",
+        "neighbor": "E",
+        "candidate": 9,
+        "updated": false
+      },
+      "lessonStepId": "skip",
+      "structure": {
+        "kind": "bellman-ford",
+        "algorithm": "bellman-ford",
+        "operation": "skip",
+        "nodes": [
+          {
+            "id": "A",
+            "value": "A"
+          },
+          {
+            "id": "B",
+            "value": "B"
+          },
+          {
+            "id": "C",
+            "value": "C"
+          },
+          {
+            "id": "D",
+            "value": "D"
+          },
+          {
+            "id": "E",
+            "value": "E"
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "fromId": "A",
+            "toId": "B",
+            "weight": 4
+          },
+          {
+            "id": "e2",
+            "fromId": "A",
+            "toId": "C",
+            "weight": 1
+          },
+          {
+            "id": "e3",
+            "fromId": "C",
+            "toId": "B",
+            "weight": -2
+          },
+          {
+            "id": "e4",
+            "fromId": "B",
+            "toId": "D",
+            "weight": 2
+          },
+          {
+            "id": "e5",
+            "fromId": "C",
+            "toId": "D",
+            "weight": 5
+          },
+          {
+            "id": "e6",
+            "fromId": "D",
+            "toId": "E",
+            "weight": 1
+          },
+          {
+            "id": "e7",
+            "fromId": "C",
+            "toId": "E",
+            "weight": 8
+          }
+        ],
+        "directed": true,
+        "startNodeId": "A",
+        "targetNodeId": "E",
+        "round": 2,
+        "maxRounds": 4,
+        "currentNodeId": "C",
+        "currentEdgeId": "e7",
+        "neighborNodeId": "E",
+        "distances": [
+          {
+            "fromId": "A",
+            "toId": "A",
+            "distance": 0
+          },
+          {
+            "fromId": "A",
+            "toId": "B",
+            "distance": -1
+          },
+          {
+            "fromId": "A",
+            "toId": "C",
+            "distance": 1
+          },
+          {
+            "fromId": "A",
+            "toId": "D",
+            "distance": 1
+          },
+          {
+            "fromId": "A",
+            "toId": "E",
+            "distance": 2
+          }
+        ],
+        "previous": [
+          {
+            "fromId": "A",
+            "toId": "A",
+            "previousId": null
+          },
+          {
+            "fromId": "A",
+            "toId": "B",
+            "previousId": "C"
+          },
+          {
+            "fromId": "A",
+            "toId": "C",
+            "previousId": "A"
+          },
+          {
+            "fromId": "A",
+            "toId": "D",
+            "previousId": "B"
+          },
+          {
+            "fromId": "A",
+            "toId": "E",
+            "previousId": "D"
+          }
+        ],
+        "relax": null,
+        "updatedInRound": false,
+        "earlyExit": false,
+        "negativeCycle": null,
+        "pathNodeIds": [],
+        "pathDistance": null
+      }
+    },
+    {
+      "state": {
+        "type": "graph",
+        "values": [
+          "A",
+          "B",
+          "C",
+          "D",
+          "E"
+        ],
+        "focus": []
+      },
+      "message": "\u7b2c 2 \u8f6e\u7ed3\u675f\uff0c\u672c\u8f6e\u6ca1\u6709\u66f4\u65b0 / no update",
+      "line": 185,
+      "variables": {
+        "round": 2,
+        "current": null,
+        "neighbor": null,
+        "candidate": null,
+        "updated": false
+      },
+      "lessonStepId": "round",
+      "structure": {
+        "kind": "bellman-ford",
+        "algorithm": "bellman-ford",
+        "operation": "round-end",
+        "nodes": [
+          {
+            "id": "A",
+            "value": "A"
+          },
+          {
+            "id": "B",
+            "value": "B"
+          },
+          {
+            "id": "C",
+            "value": "C"
+          },
+          {
+            "id": "D",
+            "value": "D"
+          },
+          {
+            "id": "E",
+            "value": "E"
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "fromId": "A",
+            "toId": "B",
+            "weight": 4
+          },
+          {
+            "id": "e2",
+            "fromId": "A",
+            "toId": "C",
+            "weight": 1
+          },
+          {
+            "id": "e3",
+            "fromId": "C",
+            "toId": "B",
+            "weight": -2
+          },
+          {
+            "id": "e4",
+            "fromId": "B",
+            "toId": "D",
+            "weight": 2
+          },
+          {
+            "id": "e5",
+            "fromId": "C",
+            "toId": "D",
+            "weight": 5
+          },
+          {
+            "id": "e6",
+            "fromId": "D",
+            "toId": "E",
+            "weight": 1
+          },
+          {
+            "id": "e7",
+            "fromId": "C",
+            "toId": "E",
+            "weight": 8
+          }
+        ],
+        "directed": true,
+        "startNodeId": "A",
+        "targetNodeId": "E",
+        "round": 2,
+        "maxRounds": 4,
+        "currentNodeId": null,
+        "currentEdgeId": null,
+        "neighborNodeId": null,
+        "distances": [
+          {
+            "fromId": "A",
+            "toId": "A",
+            "distance": 0
+          },
+          {
+            "fromId": "A",
+            "toId": "B",
+            "distance": -1
+          },
+          {
+            "fromId": "A",
+            "toId": "C",
+            "distance": 1
+          },
+          {
+            "fromId": "A",
+            "toId": "D",
+            "distance": 1
+          },
+          {
+            "fromId": "A",
+            "toId": "E",
+            "distance": 2
+          }
+        ],
+        "previous": [
+          {
+            "fromId": "A",
+            "toId": "A",
+            "previousId": null
+          },
+          {
+            "fromId": "A",
+            "toId": "B",
+            "previousId": "C"
+          },
+          {
+            "fromId": "A",
+            "toId": "C",
+            "previousId": "A"
+          },
+          {
+            "fromId": "A",
+            "toId": "D",
+            "previousId": "B"
+          },
+          {
+            "fromId": "A",
+            "toId": "E",
+            "previousId": "D"
+          }
+        ],
+        "relax": null,
+        "updatedInRound": false,
+        "earlyExit": false,
+        "negativeCycle": null,
+        "pathNodeIds": [],
+        "pathDistance": null
+      }
+    },
+    {
+      "state": {
+        "type": "graph",
+        "values": [
+          "A",
+          "B",
+          "C",
+          "D",
+          "E"
+        ],
+        "focus": []
+      },
+      "message": "\u672c\u8f6e\u6ca1\u6709\u66f4\u65b0\uff0c\u63d0\u524d\u7ed3\u675f / Early exit: no update",
+      "line": 190,
+      "variables": {
+        "round": 2,
+        "current": null,
+        "neighbor": null,
+        "candidate": null,
+        "updated": false
+      },
+      "lessonStepId": "early-exit",
+      "structure": {
+        "kind": "bellman-ford",
+        "algorithm": "bellman-ford",
+        "operation": "early-exit",
+        "nodes": [
+          {
+            "id": "A",
+            "value": "A"
+          },
+          {
+            "id": "B",
+            "value": "B"
+          },
+          {
+            "id": "C",
+            "value": "C"
+          },
+          {
+            "id": "D",
+            "value": "D"
+          },
+          {
+            "id": "E",
+            "value": "E"
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "fromId": "A",
+            "toId": "B",
+            "weight": 4
+          },
+          {
+            "id": "e2",
+            "fromId": "A",
+            "toId": "C",
+            "weight": 1
+          },
+          {
+            "id": "e3",
+            "fromId": "C",
+            "toId": "B",
+            "weight": -2
+          },
+          {
+            "id": "e4",
+            "fromId": "B",
+            "toId": "D",
+            "weight": 2
+          },
+          {
+            "id": "e5",
+            "fromId": "C",
+            "toId": "D",
+            "weight": 5
+          },
+          {
+            "id": "e6",
+            "fromId": "D",
+            "toId": "E",
+            "weight": 1
+          },
+          {
+            "id": "e7",
+            "fromId": "C",
+            "toId": "E",
+            "weight": 8
+          }
+        ],
+        "directed": true,
+        "startNodeId": "A",
+        "targetNodeId": "E",
+        "round": 2,
+        "maxRounds": 4,
+        "currentNodeId": null,
+        "currentEdgeId": null,
+        "neighborNodeId": null,
+        "distances": [
+          {
+            "fromId": "A",
+            "toId": "A",
+            "distance": 0
+          },
+          {
+            "fromId": "A",
+            "toId": "B",
+            "distance": -1
+          },
+          {
+            "fromId": "A",
+            "toId": "C",
+            "distance": 1
+          },
+          {
+            "fromId": "A",
+            "toId": "D",
+            "distance": 1
+          },
+          {
+            "fromId": "A",
+            "toId": "E",
+            "distance": 2
+          }
+        ],
+        "previous": [
+          {
+            "fromId": "A",
+            "toId": "A",
+            "previousId": null
+          },
+          {
+            "fromId": "A",
+            "toId": "B",
+            "previousId": "C"
+          },
+          {
+            "fromId": "A",
+            "toId": "C",
+            "previousId": "A"
+          },
+          {
+            "fromId": "A",
+            "toId": "D",
+            "previousId": "B"
+          },
+          {
+            "fromId": "A",
+            "toId": "E",
+            "previousId": "D"
+          }
+        ],
+        "relax": null,
+        "updatedInRound": false,
+        "earlyExit": true,
+        "negativeCycle": null,
+        "pathNodeIds": [],
+        "pathDistance": null
+      }
+    },
+    {
+      "state": {
+        "type": "graph",
+        "values": [
+          "A",
+          "B",
+          "C",
+          "D",
+          "E"
+        ],
+        "focus": []
+      },
+      "message": "\u5b8c\u6210\uff1b\u6062\u590d\u8def\u5f84 A \u2192 C \u2192 B \u2192 D \u2192 E / Bellman-Ford complete",
+      "line": 213,
+      "variables": {
+        "round": 2,
+        "current": null,
+        "neighbor": null,
+        "candidate": null,
+        "updated": false
+      },
+      "lessonStepId": "done",
+      "structure": {
+        "kind": "bellman-ford",
+        "algorithm": "bellman-ford",
+        "operation": "done",
+        "nodes": [
+          {
+            "id": "A",
+            "value": "A"
+          },
+          {
+            "id": "B",
+            "value": "B"
+          },
+          {
+            "id": "C",
+            "value": "C"
+          },
+          {
+            "id": "D",
+            "value": "D"
+          },
+          {
+            "id": "E",
+            "value": "E"
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "fromId": "A",
+            "toId": "B",
+            "weight": 4
+          },
+          {
+            "id": "e2",
+            "fromId": "A",
+            "toId": "C",
+            "weight": 1
+          },
+          {
+            "id": "e3",
+            "fromId": "C",
+            "toId": "B",
+            "weight": -2
+          },
+          {
+            "id": "e4",
+            "fromId": "B",
+            "toId": "D",
+            "weight": 2
+          },
+          {
+            "id": "e5",
+            "fromId": "C",
+            "toId": "D",
+            "weight": 5
+          },
+          {
+            "id": "e6",
+            "fromId": "D",
+            "toId": "E",
+            "weight": 1
+          },
+          {
+            "id": "e7",
+            "fromId": "C",
+            "toId": "E",
+            "weight": 8
+          }
+        ],
+        "directed": true,
+        "startNodeId": "A",
+        "targetNodeId": "E",
+        "round": 2,
+        "maxRounds": 4,
+        "currentNodeId": null,
+        "currentEdgeId": null,
+        "neighborNodeId": null,
+        "distances": [
+          {
+            "fromId": "A",
+            "toId": "A",
+            "distance": 0
+          },
+          {
+            "fromId": "A",
+            "toId": "B",
+            "distance": -1
+          },
+          {
+            "fromId": "A",
+            "toId": "C",
+            "distance": 1
+          },
+          {
+            "fromId": "A",
+            "toId": "D",
+            "distance": 1
+          },
+          {
+            "fromId": "A",
+            "toId": "E",
+            "distance": 2
+          }
+        ],
+        "previous": [
+          {
+            "fromId": "A",
+            "toId": "A",
+            "previousId": null
+          },
+          {
+            "fromId": "A",
+            "toId": "B",
+            "previousId": "C"
+          },
+          {
+            "fromId": "A",
+            "toId": "C",
+            "previousId": "A"
+          },
+          {
+            "fromId": "A",
+            "toId": "D",
+            "previousId": "B"
+          },
+          {
+            "fromId": "A",
+            "toId": "E",
+            "previousId": "D"
+          }
+        ],
+        "relax": null,
+        "updatedInRound": false,
+        "earlyExit": true,
+        "negativeCycle": {
+          "hasCycle": false,
+          "nodeIds": []
+        },
+        "pathNodeIds": [
+          "A",
+          "C",
+          "B",
+          "D",
+          "E"
+        ],
+        "pathDistance": 2
+      }
+    }
+  ]
+}

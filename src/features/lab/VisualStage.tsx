@@ -1,7 +1,8 @@
 import type { ReactNode } from 'react';
 import { buildVisualModel } from '../../domain/visualization/model';
 import type { GraphVisualModel } from '../../domain/visualization/graphModel';
-import type { DijkstraOperation } from '../../domain/trace/schema';
+import type { BellmanVisualModel, FloydVisualModel } from '../../domain/visualization/shortestPathModel';
+import type { BellmanOperation, DijkstraOperation, FloydOperation } from '../../domain/trace/schema';
 import type { GraphOperation } from '../../domain/trace/schema';
 import type { StructureOperation } from '../../domain/trace/schema';
 import type { TraceEvent } from '../../domain/trace/schema';
@@ -9,6 +10,7 @@ import { useI18n } from '../../i18n/I18nProvider';
 import { QueueVisual, StackVisual } from './StructureVisuals';import { LinkedListVisual } from './LinkedListVisual';
 import { BinaryTreeVisual } from './BinaryTreeVisual';
 import { GraphVisual } from './GraphVisual';
+import { BellmanFordVisual, FloydVisual } from './G1Visuals';
 
 const GRAPH_OPERATION_KEYS: Record<GraphOperation, string> = {
   init: 'graphOpInit',
@@ -58,6 +60,48 @@ const DIJKSTRA_HINT_KEYS: Record<DijkstraOperation, string> = {
   relax: 'dijkstraHintRelax',
   skip: 'dijkstraHintSkip',
   done: 'dijkstraHintDone',
+};
+
+const FLOYD_OPERATION_KEYS: Record<FloydOperation, string> = {
+  init: 'floydOpInit',
+  'k-advance': 'floydOpK',
+  update: 'floydOpUpdate',
+  skip: 'floydOpSkip',
+  'negative-cycle': 'floydOpCycle',
+  done: 'floydOpDone',
+};
+
+const FLOYD_HINT_KEYS: Record<FloydOperation, string> = {
+  init: 'floydHintInit',
+  'k-advance': 'floydHintK',
+  update: 'floydHintUpdate',
+  skip: 'floydHintSkip',
+  'negative-cycle': 'floydHintCycle',
+  done: 'floydHintDone',
+};
+
+const BELLMAN_OPERATION_KEYS: Record<BellmanOperation, string> = {
+  init: 'bellmanOpInit',
+  'round-start': 'bellmanOpRound',
+  'inspect-edge': 'bellmanOpInspect',
+  relax: 'bellmanOpRelax',
+  skip: 'bellmanOpSkip',
+  'round-end': 'bellmanOpRoundEnd',
+  'early-exit': 'bellmanOpEarlyExit',
+  'negative-cycle': 'bellmanOpCycle',
+  done: 'bellmanOpDone',
+};
+
+const BELLMAN_HINT_KEYS: Record<BellmanOperation, string> = {
+  init: 'bellmanHintInit',
+  'round-start': 'bellmanHintRound',
+  'inspect-edge': 'bellmanHintInspect',
+  relax: 'bellmanHintRelax',
+  skip: 'bellmanHintSkip',
+  'round-end': 'bellmanHintRoundEnd',
+  'early-exit': 'bellmanHintEarlyExit',
+  'negative-cycle': 'bellmanHintCycle',
+  done: 'bellmanHintDone',
 };
 
 function graphOperationText(model: GraphVisualModel, t: (key: string) => string): string {
@@ -221,6 +265,24 @@ export function VisualStage({ event }: { event: TraceEvent | undefined }) {
     case 'binary-tree':
       content = <BinaryTreeVisual model={model} />;
       break;
+    case 'floyd-matrix':
+      content = (
+        <FloydVisual
+          model={model as FloydVisualModel}
+          operationText={t(FLOYD_OPERATION_KEYS[model.operation])}
+          hint={t(FLOYD_HINT_KEYS[model.operation])}
+        />
+      );
+      break;
+    case 'bellman-table':
+      content = (
+        <BellmanFordVisual
+          model={model as BellmanVisualModel}
+          operationText={t(BELLMAN_OPERATION_KEYS[model.operation])}
+          hint={t(BELLMAN_HINT_KEYS[model.operation])}
+        />
+      );
+      break;
     case 'graph-traversal': {
       const operationText = graphOperationText(model, t);
       if (model.algorithm === 'dijkstra') {
@@ -337,7 +399,9 @@ export function VisualStage({ event }: { event: TraceEvent | undefined }) {
     model.kind === 'queue' ||
     model.kind === 'linked-list' ||
     model.kind === 'binary-tree' ||
-    model.kind === 'graph-traversal';
+    model.kind === 'graph-traversal' ||
+    model.kind === 'floyd-matrix' ||
+    model.kind === 'bellman-table';
   return (
     <div
       className={`stage${structured ? ' has-structure' : ''}`}

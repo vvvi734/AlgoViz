@@ -2659,5 +2659,29 @@
       },
       "message": "请在 Python 模式运行 / Run the Python preset"
     }
+  ],
+  "floyd-warshall": [
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          "Floyd-Warshall: use the Python preset"
+        ],
+        "done": true
+      },
+      "message": "请在 Python 模式运行 / Run the Python preset"
+    }
+  ],
+  "bellman-ford": [
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          "Bellman-Ford: use the Python preset"
+        ],
+        "done": true
+      },
+      "message": "请在 Python 模式运行 / Run the Python preset"
+    }
   ]
 }

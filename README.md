@@ -5,7 +5,7 @@
 面向学生的浏览器端数据结构与算法学习平台：**Python 在浏览器内运行**，根据真实执行结果生成逐帧动画，并同步展示代码位置、变量值与步骤讲解。完全本地运行，无需租服务器。
 
 > **当前版本：v0.10 Stage 7F。** 用户可见品牌为 **AlgoViz**，旧 localStorage / IndexedDB / `.algopack` / `.algosession.json` / `.algocontext.json` / MCP Tool / AI Gateway 标识保持兼容。Stage 7F 在 Stage 7E 的真实图基础上加入 **Dijkstra 带权最短路径**：真实 Python `heapq` 逐帧记录距离表、前驱、优先队列（含过期条目）、松弛操作和最终路径；带权图画布、距离表、优先队列、Monaco、变量与课程步骤全部从同一条 Trace Event 派生，没有第二套播放器。当前门禁：**542 项单测 / 50 条真实浏览器 E2E / 62 张视觉截图**；真实 Ollama / 云端模型仍未实测。
-> 定位已收敛：**Python 为主要教学语言**，JavaScript 作为前端实现语言继续支持 15 个算法入口（Dijkstra 的 JS 入口只提示使用 Python）；**C / C++ 与在线判题已从规划中取消**。详见 [阶段一总结](docs/STAGE1_REPORT.md)、[阶段二总结](docs/STAGE2_REPORT.md)、[阶段三总结](docs/STAGE3_REPORT.md)、[阶段 3B 总结](docs/STAGE3B_REPORT.md)、[阶段四总结](docs/STAGE4_REPORT.md)、[阶段 5A 总结](docs/STAGE5A_REPORT.md)、[阶段 6A 总结](docs/STAGE6A_REPORT.md)、[阶段 7A 总结](docs/STAGE7A_REPORT.md)、[阶段 7B 总结](docs/STAGE7B_REPORT.md)、[阶段 7C 总结](docs/STAGE7C_REPORT.md)、[阶段 7D 总结](docs/STAGE7D_REPORT.md)、[阶段 7E 总结](docs/STAGE7E_REPORT.md) 与 [阶段 7F 总结](docs/STAGE7F_REPORT.md)；课程与算法覆盖见 [COVERAGE](docs/COVERAGE.md)；品牌边界见 [BRAND_MIGRATION](docs/BRAND_MIGRATION.md)；知识包格式与作者指引见 [PACK_FORMAT_V1](docs/PACK_FORMAT_V1.md)、[PACK_AUTHOR_GUIDE](docs/PACK_AUTHOR_GUIDE.md)；MCP 安装与宿主配置见 [MCP_INSTALL](docs/MCP_INSTALL.md)；AI Gateway 安装与安全边界见 [AI_GATEWAY](docs/AI_GATEWAY.md)。
+> 定位已收敛：**Python 为主要教学语言**，JavaScript 作为前端实现语言继续支持 17 个算法入口（Dijkstra / Floyd-Warshall / Bellman-Ford 的 JS 入口只提示使用 Python）；**C / C++ 与在线判题已从规划中取消**。详见 [阶段一总结](docs/STAGE1_REPORT.md)、[阶段二总结](docs/STAGE2_REPORT.md)、[阶段三总结](docs/STAGE3_REPORT.md)、[阶段 3B 总结](docs/STAGE3B_REPORT.md)、[阶段四总结](docs/STAGE4_REPORT.md)、[阶段 5A 总结](docs/STAGE5A_REPORT.md)、[阶段 6A 总结](docs/STAGE6A_REPORT.md)、[阶段 7A 总结](docs/STAGE7A_REPORT.md)、[阶段 7B 总结](docs/STAGE7B_REPORT.md)、[阶段 7C 总结](docs/STAGE7C_REPORT.md)、[阶段 7D 总结](docs/STAGE7D_REPORT.md)、[阶段 7E 总结](docs/STAGE7E_REPORT.md) 与 [阶段 7F 总结](docs/STAGE7F_REPORT.md)；课程与算法覆盖见 [COVERAGE](docs/COVERAGE.md)；品牌边界见 [BRAND_MIGRATION](docs/BRAND_MIGRATION.md)；知识包格式与作者指引见 [PACK_FORMAT_V1](docs/PACK_FORMAT_V1.md)、[PACK_AUTHOR_GUIDE](docs/PACK_AUTHOR_GUIDE.md)；MCP 安装与宿主配置见 [MCP_INSTALL](docs/MCP_INSTALL.md)；AI Gateway 安装与安全边界见 [AI_GATEWAY](docs/AI_GATEWAY.md)。
 
 ---
 
@@ -17,7 +17,7 @@
 | --- | --- | --- |
 | React + TypeScript + Vite 工程结构 | ✅ 已实现 | 严格类型检查、模块边界清晰 |
 | Light / Dark / System 三态主题 | ✅ 已实现 | 跟随系统实时响应；首屏无闪屏；偏好持久化 |
-| 15 个算法逐帧动画 | ✅ 已实现 | 12 个原有（冒泡/插入/选择/快排、二分/线性查找、栈/队列/链表、BFS/DFS、树中序）+ 阶乘 / 斐波那契递归 + Dijkstra |
+| 17 个算法逐帧动画 | ✅ 已实现 | 12 个原有（冒泡/插入/选择/快排、二分/线性查找、栈/队列/链表、BFS/DFS、树中序）+ 阶乘 / 斐波那契递归 + Dijkstra + Floyd-Warshall + Bellman-Ford |
 | 播放 / 暂停 / 回退 / 单步 / 拖动 / 速度 | ✅ 已实现 | 纯函数状态机 + 逐帧回归；新 Trace 加载即回到第 0 帧并停止播放，索引恒在合法范围内 |
 | JavaScript 本地执行 | ✅ 已实现 | 3 秒限时 Web Worker，可离线 |
 | Python 执行（Pyodide） | ✅ 已实现 | Worker 内运行；`trace()` 支持真实变量快照、源码行号与可选的 stack/queue/linked-list/binary-tree/graph/weighted-graph 结构语义 |

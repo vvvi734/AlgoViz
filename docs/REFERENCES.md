@@ -46,3 +46,13 @@ Stage 5A 关于 MCP 的设计取向（不涉及任何第三方代码）：
 ## 若未来引入第三方内容
 
 必须分别确认：仓库根许可证、子模块/第三方素材的独立许可证、示例数据的授权范围；保留所要求的版权与许可声明；教学文案一律重新撰写，不复用原文。
+
+## G1 参考记录（2026-11-17）
+
+| 项目 | 默认分支 | 许可证 | 使用方式 |
+| --- | --- | --- | --- |
+| TheAlgorithms/Python | `master` | MIT | 仅参考算法实现与测试思路，未复制代码/文案 |
+| trekhleb/javascript-algorithms | `master` | MIT | 仅参考算法说明与测试组织，未复制代码/文案 |
+| algorithm-visualizer/algorithm-visualizer | `master` | MIT | 仅参考“执行轨迹与渲染器分离”的设计思想，未复制代码/素材 |
+
+三个仓库均未作为依赖或子模块引入；AlgoViz 的 Floyd/Bellman 实现、Trace、课程与视觉组件均为自研。
