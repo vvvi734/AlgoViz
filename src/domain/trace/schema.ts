@@ -618,6 +618,9 @@ export const GRAPH_LIMITS = {
   MAX_NODES: 20,
   MAX_EDGES: 40,
   MAX_FRONTIER: 20,
+  /** A heap can hold one entry per successful relax, so it needs more room
+   * than a BFS/DFS frontier while the same 20-node / 40-edge cap holds. */
+  MAX_PRIORITY_QUEUE: 64,
 } as const;
 
 export const graphNodeSchema = z.object({
@@ -1135,12 +1138,430 @@ export const graphSnapshotSchema = z
   });
 export type GraphSnapshot = z.infer<typeof graphSnapshotSchema>;
 
-/** Stage 7B stack/queue + Stage 7C linked-list + Stage 7D binary-tree + Stage 7E graph. */
+/**
+ * Stage 7F weighted graph / Dijkstra.
+ *
+ * A sibling of the Stage 7E graph snapshot instead of extra optional fields on
+ * it. That keeps the BFS/DFS contract byte-for-byte unchanged while Dijkstra
+ * gets a genuinely different frontier: a heap may contain duplicate node ids
+ * and stale entries, which the queue/stack schema deliberately forbids.
+ *
+ * `visitedIds` / `visitOrder` are the settled nodes here. A node is settled
+ * only after its smallest heap entry is popped; tentative distances and
+ * previous pointers live in `distances` / `previous`. `null` distance means
+ * unreachable/infinite — Python `float("inf")` never enters JSON.
+ */
+export const DIJKSTRA_OPERATIONS = [
+  'init', 'push', 'pop', 'stale', 'settle', 'inspect-edge', 'relax', 'skip', 'done',
+] as const;
+export type DijkstraOperation = (typeof DIJKSTRA_OPERATIONS)[number];
+
+const weightedGraphEdgeSchema = graphEdgeSchema.extend({
+  weight: z.number().finite().nonnegative(),
+});
+
+const weightedDistanceRowSchema = z.object({
+  nodeId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS),
+  /** null = unreachable / infinity; never a JSON Infinity or a magic string. */
+  distance: z.number().finite().nonnegative().nullable(),
+});
+
+const weightedPreviousRowSchema = z.object({
+  nodeId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS),
+  previousId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+});
+
+const priorityQueueItemSchema = z.object({
+  id: z.string().min(1).max(LIMITS.MAX_NAME_CHARS),
+  nodeId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS),
+  distance: z.number().finite().nonnegative(),
+  stale: z.boolean(),
+});
+
+const relaxChangeSchema = z.object({
+  nodeId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS),
+  oldDistance: z.number().finite().nonnegative().nullable(),
+  newDistance: z.number().finite().nonnegative(),
+  oldPreviousId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+  newPreviousId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS),
+});
+
+export const weightedGraphSnapshotSchema = z
+  .object({
+    kind: z.literal('weighted-graph'),
+    algorithm: z.literal('dijkstra'),
+    operation: z.enum(DIJKSTRA_OPERATIONS),
+    nodes: z.array(graphNodeSchema).max(GRAPH_LIMITS.MAX_NODES),
+    edges: z.array(weightedGraphEdgeSchema).max(GRAPH_LIMITS.MAX_EDGES),
+    /** false = undirected; true = directed (outgoing adjacency only). */
+    directed: z.boolean(),
+    startNodeId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+    targetNodeId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+    currentNodeId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+    currentEdgeId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+    neighborNodeId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+    discoveredIds: z.array(z.string().min(1).max(LIMITS.MAX_NAME_CHARS)).max(GRAPH_LIMITS.MAX_NODES),
+    /** Dijkstra's settled set; kept in the same fields as BFS/DFS visited. */
+    visitedIds: z.array(z.string().min(1).max(LIMITS.MAX_NAME_CHARS)).max(GRAPH_LIMITS.MAX_NODES),
+    visitOrder: z.array(z.string().min(1).max(LIMITS.MAX_NAME_CHARS)).max(GRAPH_LIMITS.MAX_NODES),
+    distances: z.array(weightedDistanceRowSchema).max(GRAPH_LIMITS.MAX_NODES),
+    previous: z.array(weightedPreviousRowSchema).max(GRAPH_LIMITS.MAX_NODES),
+    frontierKind: z.literal('priority-queue'),
+    /** Heap entries may repeat a node id; entry ids stay unique. */
+    frontierItems: z.array(priorityQueueItemSchema).max(GRAPH_LIMITS.MAX_PRIORITY_QUEUE),
+    frontierRemoved: priorityQueueItemSchema.nullable(),
+    frontierAdded: priorityQueueItemSchema.nullable(),
+    relax: relaxChangeSchema.nullable(),
+    /** Empty array means no path (unreachable, or not the final frame yet). */
+    pathNodeIds: z.array(z.string().min(1).max(LIMITS.MAX_NAME_CHARS)).max(GRAPH_LIMITS.MAX_NODES).nullable(),
+    pathDistance: z.number().finite().nonnegative().nullable(),
+  })
+  .superRefine((snapshot, ctx) => {
+    const add = (path: Array<string | number>, message: string) => {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path, message });
+    };
+    const ids = new Set<string>();
+    snapshot.nodes.forEach((node, index) => {
+      if (ids.has(node.id)) add(['nodes', index, 'id'], `duplicate graph node id "${node.id}"`);
+      ids.add(node.id);
+    });
+
+    const edgeIds = new Set<string>();
+    const edgeById = new Map<string, z.infer<typeof weightedGraphEdgeSchema>>();
+    const edgePairs = new Set<string>();
+    snapshot.edges.forEach((edge, index) => {
+      if (edgeIds.has(edge.id)) add(['edges', index, 'id'], `duplicate graph edge id "${edge.id}"`);
+      edgeIds.add(edge.id);
+      edgeById.set(edge.id, edge);
+      if (!ids.has(edge.fromId)) add(['edges', index, 'fromId'], `edge "${edge.id}" starts at unknown node "${edge.fromId}"`);
+      if (!ids.has(edge.toId)) add(['edges', index, 'toId'], `edge "${edge.id}" ends at unknown node "${edge.toId}"`);
+      if (edge.fromId === edge.toId) add(['edges', index], 'self-loops are not supported in the Dijkstra teaching graph');
+      if (ids.has(edge.fromId) && ids.has(edge.toId) && edge.fromId !== edge.toId) {
+        const pair = snapshot.directed
+          ? `${edge.fromId}\u0000${edge.toId}`
+          : [edge.fromId, edge.toId].sort().join('\u0000');
+        if (edgePairs.has(pair)) {
+          add(
+            ['edges', index],
+            snapshot.directed
+              ? `duplicate directed edge "${edge.fromId}"→"${edge.toId}"`
+              : `duplicate undirected edge "${edge.fromId}"–"${edge.toId}"`,
+          );
+        }
+        edgePairs.add(pair);
+      }
+    });
+
+    if (snapshot.nodes.length === 0) {
+      if (snapshot.startNodeId !== null || snapshot.targetNodeId !== null) {
+        add(['startNodeId'], 'an empty graph must have startNodeId and targetNodeId = null');
+      }
+      if (snapshot.operation !== 'init' && snapshot.operation !== 'done') {
+        add(['operation'], 'an empty graph may only emit init or done');
+      }
+      if (snapshot.currentNodeId !== null || snapshot.currentEdgeId !== null || snapshot.neighborNodeId !== null) {
+        add(['currentNodeId'], 'an empty graph has no current node or edge');
+      }
+      if (
+        snapshot.discoveredIds.length ||
+        snapshot.visitedIds.length ||
+        snapshot.visitOrder.length ||
+        snapshot.distances.length ||
+        snapshot.previous.length ||
+        snapshot.frontierItems.length ||
+        snapshot.frontierRemoved ||
+        snapshot.frontierAdded ||
+        snapshot.relax
+      ) {
+        add(['discoveredIds'], 'an empty graph has no state');
+      }
+      if (snapshot.pathNodeIds && snapshot.pathNodeIds.length) add(['pathNodeIds'], 'an empty graph has no path');
+      if (snapshot.pathDistance !== null) add(['pathDistance'], 'an empty graph has no path distance');
+      return;
+    }
+
+    if (snapshot.startNodeId === null || !ids.has(snapshot.startNodeId)) {
+      add(['startNodeId'], 'startNodeId must refer to a real node in a non-empty graph');
+    }
+    if (snapshot.targetNodeId === null || !ids.has(snapshot.targetNodeId)) {
+      add(['targetNodeId'], 'targetNodeId must refer to a real node in a non-empty graph');
+    }
+
+    const uniqueRefList = (values: string[], path: string, label: string): Set<string> => {
+      const seen = new Set<string>();
+      values.forEach((value, index) => {
+        if (!ids.has(value)) add([path, index], `${label} "${value}" does not refer to a node`);
+        if (seen.has(value)) add([path, index], `${label} contains duplicate node "${value}"`);
+        seen.add(value);
+      });
+      return seen;
+    };
+
+    const discovered = uniqueRefList(snapshot.discoveredIds, 'discoveredIds', 'discoveredIds');
+    const visited = uniqueRefList(snapshot.visitedIds, 'visitedIds', 'visitedIds');
+    uniqueRefList(snapshot.visitOrder, 'visitOrder', 'visitOrder');
+    for (const id of visited) {
+      if (!discovered.has(id)) add(['visitedIds'], `settled node "${id}" was never discovered`);
+    }
+    if (
+      snapshot.visitedIds.length !== snapshot.visitOrder.length ||
+      snapshot.visitedIds.some((id, index) => snapshot.visitOrder[index] !== id)
+    ) {
+      add(['visitOrder'], 'visitOrder must equal visitedIds in the real settlement order');
+    }
+
+    const distanceById = new Map<string, number | null>();
+    snapshot.distances.forEach((row, index) => {
+      if (!ids.has(row.nodeId)) add(['distances', index, 'nodeId'], `distance row "${row.nodeId}" does not refer to a node`);
+      if (distanceById.has(row.nodeId)) add(['distances', index, 'nodeId'], `duplicate distance row for "${row.nodeId}"`);
+      distanceById.set(row.nodeId, row.distance);
+    });
+    snapshot.nodes.forEach((node) => {
+      if (!distanceById.has(node.id)) add(['distances'], `missing distance row for node "${node.id}"`);
+    });
+
+    const previousById = new Map<string, string | null>();
+    snapshot.previous.forEach((row, index) => {
+      if (!ids.has(row.nodeId)) add(['previous', index, 'nodeId'], `previous row "${row.nodeId}" does not refer to a node`);
+      if (previousById.has(row.nodeId)) add(['previous', index, 'nodeId'], `duplicate previous row for "${row.nodeId}"`);
+      if (row.previousId !== null && !ids.has(row.previousId)) {
+        add(['previous', index, 'previousId'], `previous node "${row.previousId}" does not exist`);
+      }
+      if (row.previousId === row.nodeId) add(['previous', index, 'previousId'], 'a node cannot be its own previous node');
+      previousById.set(row.nodeId, row.previousId);
+    });
+    snapshot.nodes.forEach((node) => {
+      if (!previousById.has(node.id)) add(['previous'], `missing previous row for node "${node.id}"`);
+    });
+    // Every finite-distance node must climb the previous chain back to the start
+    // without a cycle; otherwise the final path reconstruction would be a lie.
+    snapshot.nodes.forEach((node) => {
+      const distance = distanceById.get(node.id);
+      if (node.id === snapshot.startNodeId || distance === null || distance === undefined) return;
+      const seen = new Set<string>([node.id]);
+      let cursor = previousById.get(node.id) ?? null;
+      let steps = 0;
+      while (cursor !== null && cursor !== snapshot.startNodeId) {
+        if (seen.has(cursor) || steps > snapshot.nodes.length) {
+          add(['previous'], `previous pointers form a cycle at node "${node.id}"`);
+          return;
+        }
+        seen.add(cursor);
+        cursor = previousById.get(cursor) ?? null;
+        steps += 1;
+      }
+      if (cursor !== snapshot.startNodeId) {
+        add(['previous'], `previous chain for "${node.id}" does not reach the start node`);
+      }
+    });
+    snapshot.nodes.forEach((node) => {
+      const distance = distanceById.get(node.id);
+      const previous = previousById.get(node.id);
+      if (distance === null || distance === undefined) {
+        if (previous !== null) add(['previous'], `unreachable node "${node.id}" must have previousId = null`);
+      } else if (node.id !== snapshot.startNodeId && previous === null) {
+        add(['previous'], `reachable non-start node "${node.id}" needs a previous node`);
+      }
+      if (node.id === snapshot.startNodeId && distance !== null && distance !== 0) {
+        add(['distances'], 'the start node must have distance 0 once discovered');
+      }
+    });
+
+    if (snapshot.operation === 'init') {
+      if (snapshot.distances.some((row) => row.distance !== null)) add(['distances'], 'init has no finite distances');
+      if (snapshot.previous.some((row) => row.previousId !== null)) add(['previous'], 'init has no previous nodes');
+      if (snapshot.currentNodeId !== null) add(['currentNodeId'], 'init must not name a current node');
+      if (snapshot.discoveredIds.length || snapshot.visitedIds.length || snapshot.frontierItems.length) {
+        add(['discoveredIds'], 'init happens before any node is discovered');
+      }
+    } else if (snapshot.startNodeId !== null && !discovered.has(snapshot.startNodeId)) {
+      add(['startNodeId'], 'startNodeId must be discovered once Dijkstra begins');
+    }
+
+    const current = snapshot.currentNodeId;
+    if (snapshot.operation !== 'init' && snapshot.operation !== 'done') {
+      if (current === null || !ids.has(current)) {
+        add(['currentNodeId'], 'a non-terminal Dijkstra frame must name the current node');
+      }
+    }
+    if (snapshot.operation === 'done') {
+      if (current !== null) add(['currentNodeId'], 'done must not name a current node');
+      if (snapshot.currentEdgeId !== null || snapshot.neighborNodeId !== null) {
+        add(['currentEdgeId'], 'done must not keep an edge or neighbour highlighted');
+      }
+      if (snapshot.frontierItems.length || snapshot.frontierRemoved || snapshot.frontierAdded) {
+        add(['frontierItems'], 'done requires an empty priority queue');
+      }
+      if (snapshot.relax) add(['relax'], 'done must not report a relax change');
+      if (!snapshot.pathNodeIds) add(['pathNodeIds'], 'done must report pathNodeIds (an empty array means unreachable)');
+    } else if (snapshot.pathNodeIds && snapshot.pathNodeIds.length) {
+      add(['pathNodeIds'], 'only the done frame reports the final path');
+    }
+
+    if (current !== null && snapshot.operation !== 'init' && snapshot.operation !== 'done') {
+      if (!discovered.has(current)) add(['currentNodeId'], `current node "${current}" is not discovered`);
+    }
+
+    const edgeNeighbourOps = ['inspect-edge', 'relax', 'skip'];
+    if (edgeNeighbourOps.includes(snapshot.operation)) {
+      if (snapshot.currentEdgeId === null) add(['currentEdgeId'], `${snapshot.operation} requires a real edge`);
+      if (snapshot.neighborNodeId === null) add(['neighborNodeId'], `${snapshot.operation} requires a neighbour`);
+      if (current !== null && !visited.has(current)) {
+        add(['visitedIds'], `${snapshot.operation} happens while the current node is being processed`);
+      }
+    } else if (snapshot.operation !== 'done' && snapshot.currentEdgeId !== null) {
+      add(['currentEdgeId'], `${snapshot.operation} must not keep an edge highlighted`);
+    }
+    if (!edgeNeighbourOps.includes(snapshot.operation) && snapshot.neighborNodeId !== null) {
+      add(['neighborNodeId'], `${snapshot.operation} must not name a neighbour`);
+    }
+
+    const currentEdge = snapshot.currentEdgeId === null ? null : edgeById.get(snapshot.currentEdgeId) ?? null;
+    if (snapshot.currentEdgeId !== null && currentEdge === null) {
+      add(['currentEdgeId'], `currentEdgeId "${snapshot.currentEdgeId}" does not refer to an edge`);
+    }
+    if (currentEdge && current !== null) {
+      const touches = currentEdge.fromId === current || (!snapshot.directed && currentEdge.toId === current);
+      const pointsAtNeighbour = !snapshot.directed
+        ? (currentEdge.fromId === current && currentEdge.toId === snapshot.neighborNodeId) ||
+          (currentEdge.toId === current && currentEdge.fromId === snapshot.neighborNodeId)
+        : currentEdge.fromId === current && currentEdge.toId === snapshot.neighborNodeId;
+      if (!touches) add(['currentEdgeId'], 'the highlighted edge must leave the current node');
+      if (snapshot.neighborNodeId !== null && !pointsAtNeighbour) {
+        add(['currentEdgeId'], 'the highlighted edge must point at neighborNodeId');
+      }
+    }
+
+    if (snapshot.operation === 'skip' && currentEdge && current !== null && snapshot.neighborNodeId !== null) {
+      const currentDistance = distanceById.get(current);
+      const neighbourDistance = distanceById.get(snapshot.neighborNodeId);
+      if (currentDistance === null || currentDistance === undefined || neighbourDistance === null || neighbourDistance === undefined) {
+        add(['neighborNodeId'], 'skip must involve two reachable distances');
+      } else if (currentDistance + currentEdge.weight < neighbourDistance) {
+        add(['neighborNodeId'], 'skip cannot hide a strict distance improvement');
+      }
+    }
+    if (snapshot.operation === 'relax' && currentEdge && current !== null && snapshot.neighborNodeId !== null) {
+      const change = snapshot.relax;
+      if (!change) {
+        add(['relax'], 'relax requires a relax change record');
+      } else {
+        if (change.nodeId !== snapshot.neighborNodeId) add(['relax', 'nodeId'], 'relax must target neighborNodeId');
+        if (change.newPreviousId !== current) add(['relax', 'newPreviousId'], 'a successful relax sets previous to the current node');
+        if (change.newDistance !== distanceById.get(snapshot.neighborNodeId)) {
+          add(['relax', 'newDistance'], 'relax.newDistance must equal the updated distance row');
+        }
+        if (change.oldDistance !== null && change.newDistance >= change.oldDistance) {
+          add(['relax', 'oldDistance'], 'a successful relax must strictly decrease the distance');
+        }
+        if (change.oldDistance === null && change.oldPreviousId !== null) {
+          add(['relax', 'oldPreviousId'], 'the old previous must be null when the old distance is infinite');
+        }
+      }
+      if (!visited.has(current)) add(['visitedIds'], 'relax happens while the current node is being processed');
+    } else if (snapshot.operation !== 'relax' && snapshot.relax) {
+      add(['relax'], 'only a relax frame carries a relax change record');
+    }
+
+    if (snapshot.operation === 'settle') {
+      if (current === null || !visited.has(current)) add(['visitedIds'], 'settle must already mark the current node as settled');
+      if (snapshot.visitOrder[snapshot.visitOrder.length - 1] !== current) {
+        add(['visitOrder'], 'settle must append the current node to visitOrder');
+      }
+    }
+    if (snapshot.operation === 'pop' && current !== null && visited.has(current)) {
+      add(['visitedIds'], 'pop must happen before the node is settled');
+    }
+
+    snapshot.frontierItems.forEach((item, index) => {
+      if (!ids.has(item.nodeId)) add(['frontierItems', index, 'nodeId'], `frontier item "${item.id}" points at unknown node "${item.nodeId}"`);
+      if (!discovered.has(item.nodeId)) add(['frontierItems', index, 'nodeId'], `frontier node "${item.nodeId}" was never discovered`);
+      if (!item.stale && visited.has(item.nodeId)) {
+        add(['frontierItems', index, 'stale'], `fresh frontier entry "${item.id}" points at an already settled node`);
+      }
+      if (!item.stale && item.distance !== distanceById.get(item.nodeId)) {
+        add(['frontierItems', index, 'distance'], `fresh frontier entry "${item.id}" has a non-current distance`);
+      }
+    });
+
+    if (['push', 'relax'].includes(snapshot.operation)) {
+      if (!snapshot.frontierAdded) add(['frontierAdded'], `${snapshot.operation} must report the added heap entry`);
+    } else if (snapshot.frontierAdded) {
+      add(['frontierAdded'], `${snapshot.operation} must not report an added heap entry`);
+    }
+    if (snapshot.frontierAdded) {
+      const added = snapshot.frontierAdded;
+      if (!ids.has(added.nodeId) || !discovered.has(added.nodeId)) add(['frontierAdded', 'nodeId'], 'the added entry must point at a discovered node');
+      if (added.stale) add(['frontierAdded', 'stale'], 'a newly added heap entry cannot be stale');
+      if (added.distance !== distanceById.get(added.nodeId)) add(['frontierAdded', 'distance'], 'the added entry must carry the current distance');
+      if (!snapshot.frontierItems.some((item) => item.id === added.id)) add(['frontierAdded'], 'the added entry must be present in frontierItems');
+      if (snapshot.operation === 'push' && added.nodeId !== current) add(['frontierAdded', 'nodeId'], 'the initial push adds the current start node');
+    }
+
+    if (['pop', 'stale'].includes(snapshot.operation)) {
+      if (!snapshot.frontierRemoved) add(['frontierRemoved'], `${snapshot.operation} must report the removed heap entry`);
+    } else if (snapshot.frontierRemoved) {
+      add(['frontierRemoved'], `${snapshot.operation} must not report a removed heap entry`);
+    }
+    if (snapshot.frontierRemoved) {
+      const removed = snapshot.frontierRemoved;
+      if (!ids.has(removed.nodeId) || !discovered.has(removed.nodeId)) add(['frontierRemoved', 'nodeId'], 'the removed entry must point at a discovered node');
+      if (removed.nodeId !== current) add(['frontierRemoved', 'nodeId'], 'the removed entry must be the current node');
+      if (snapshot.frontierItems.some((item) => item.id === removed.id)) add(['frontierRemoved', 'id'], 'the removed entry is still in frontierItems');
+      if (snapshot.operation === 'pop') {
+        if (removed.stale) add(['frontierRemoved', 'stale'], 'a pop frame removes a fresh heap entry');
+        if (removed.distance !== distanceById.get(removed.nodeId)) add(['frontierRemoved', 'distance'], 'a fresh pop must carry the current distance');
+      }
+      if (snapshot.operation === 'stale') {
+        if (!removed.stale) add(['frontierRemoved', 'stale'], 'a stale frame must mark the removed entry stale');
+        const currentDistance = distanceById.get(removed.nodeId);
+        if (!visited.has(removed.nodeId) && currentDistance !== null && currentDistance !== undefined && removed.distance === currentDistance) {
+          add(['frontierRemoved', 'distance'], 'a stale entry must be obsolete (settled or an older larger distance)');
+        }
+      }
+    }
+
+    if (snapshot.operation === 'done' && snapshot.pathNodeIds) {
+      const path = snapshot.pathNodeIds;
+      uniqueRefList(path, 'pathNodeIds', 'pathNodeIds');
+      const targetDistance = distanceById.get(snapshot.targetNodeId ?? '');
+      if (path.length === 0) {
+        if (snapshot.targetNodeId !== null && targetDistance !== null) {
+          add(['pathNodeIds'], 'a reachable target must have a reconstructed path');
+        }
+        if (snapshot.pathDistance !== null) add(['pathDistance'], 'an unreachable target has no path distance');
+      } else {
+        if (snapshot.startNodeId !== null && path[0] !== snapshot.startNodeId) add(['pathNodeIds'], 'a path must start at startNodeId');
+        if (snapshot.targetNodeId !== null && path[path.length - 1] !== snapshot.targetNodeId) add(['pathNodeIds'], 'a path must end at targetNodeId');
+        if (snapshot.pathDistance !== targetDistance) add(['pathDistance'], 'pathDistance must equal the target distance row');
+        for (let index = 0; index + 1 < path.length; index += 1) {
+          const from = path[index];
+          const to = path[index + 1];
+          if (from === undefined || to === undefined) continue;
+          const found = snapshot.edges.some((edge) =>
+            snapshot.directed
+              ? edge.fromId === from && edge.toId === to
+              : (edge.fromId === from && edge.toId === to) || (edge.fromId === to && edge.toId === from),
+          );
+          if (!found) add(['pathNodeIds', index + 1], `no edge connects path nodes "${from}" and "${to}"`);
+          if (previousById.get(to) !== from) {
+            add(['pathNodeIds', index + 1], `previous[${to}] must be ${from} on the reconstructed path`);
+          }
+        }
+      }
+    } else if (snapshot.pathDistance !== null) {
+      add(['pathDistance'], 'only a done frame reports pathDistance');
+    }
+  });
+export type WeightedGraphSnapshot = z.infer<typeof weightedGraphSnapshotSchema>;
+
+/** Stage 7B stack/queue + Stage 7C linked-list + Stage 7D binary-tree + Stage 7E/7F graphs. */
 export const structureSchema = z.union([
   structureSnapshotSchema,
   linkedListSnapshotSchema,
   binaryTreeSnapshotSchema,
   graphSnapshotSchema,
+  weightedGraphSnapshotSchema,
 ]);
 export type AnyStructureSnapshot = z.infer<typeof structureSchema>;
 

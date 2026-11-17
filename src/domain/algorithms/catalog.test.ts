@@ -13,10 +13,10 @@ function visualFrames(code: string, input: unknown): TraceFrame[] {
   return result.frames;
 }
 
-describe('legacy algorithm catalogue (14 presets)', () => {
-  it('ship exactly the 12 original algorithms plus 2 recursion demos', () => {
-    expect(algorithmIds()).toHaveLength(14);
-    expect(Object.keys(expected)).toHaveLength(14);
+describe('legacy algorithm catalogue (15 presets)', () => {
+  it('ship exactly the 13 original algorithms plus 2 recursion demos', () => {
+    expect(algorithmIds()).toHaveLength(15);
+    expect(Object.keys(expected)).toHaveLength(15);
   });
 
   it.each(Object.keys(catalog))('%s reproduces the pre-refactor frame stream byte-for-byte', (id) => {

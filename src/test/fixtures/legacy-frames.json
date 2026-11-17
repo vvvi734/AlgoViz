@@ -2647,5 +2647,17 @@
       },
       "message": "结果 / Result: 3"
     }
+  ],
+  "dijkstra": [
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          "Dijkstra weighted graph: use the Python preset"
+        ],
+        "done": true
+      },
+      "message": "请在 Python 模式运行 / Run the Python preset"
+    }
   ]
 }

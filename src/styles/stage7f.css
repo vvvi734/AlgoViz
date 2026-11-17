@@ -1,0 +1,422 @@
+/* ==========================================================================
+   Stage 7F — weighted graph / Dijkstra.
+   The graph, distance table and priority queue all paint the same weighted
+   frame. Nothing here owns playback state; these rules only present it.
+   ========================================================================== */
+
+.graph-mode-badge.graph-dijkstra {
+  background: var(--accent-2);
+  color: var(--panel);
+}
+
+.graph-visual.is-weighted .graph-svg {
+  max-height: 330px;
+}
+
+/* Graph canvas (all graph stages): auto margins centre the SVG when there is
+   room, but never centre an overflowing SVG into an unreachable negative
+   scroll region at narrow widths. */
+.graph-canvas-scroll { justify-content: flex-start; }
+.graph-canvas-scroll .graph-svg { margin-inline: auto; }
+
+.graph-edge.is-path {
+  stroke: var(--accent-2);
+  stroke-width: 3.4;
+  opacity: 1;
+}
+.graph-edge.is-active.is-path {
+  stroke: var(--accent);
+  stroke-width: 4.8;
+}
+.graph-arrow-head {
+  fill: var(--node-edge);
+}
+
+.graph-edge-weight rect {
+  fill: var(--panel);
+  stroke: var(--node-edge);
+  stroke-width: 1;
+}
+.graph-edge-weight text {
+  fill: var(--txt);
+  font: 850 10.5px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+
+.graph-node-settled .graph-node-body {
+  fill: var(--node-focus-bg);
+  stroke: var(--accent);
+  stroke-width: 2.6;
+}
+.graph-node-settled .graph-node-label {
+  fill: var(--node-focus-fg);
+}
+.graph-node-settled .graph-distance-tag {
+  fill: var(--node-focus-fg);
+}
+.graph-node.is-target .graph-node-body {
+  stroke: var(--accent-2);
+  stroke-width: 2.8;
+}
+.graph-node.is-on-path .graph-node-body {
+  stroke: var(--accent);
+  stroke-width: 3.1;
+  filter: drop-shadow(0 0 5px var(--node-focus-ring));
+}
+.graph-node.is-current .graph-node-body {
+  fill: var(--accent);
+  stroke: var(--accent);
+}
+.graph-node.is-current .graph-node-label,
+.graph-node.is-current .graph-distance-tag {
+  fill: var(--panel);
+}
+
+.graph-target-ring {
+  stroke: var(--accent-2);
+  stroke-width: 2;
+  stroke-dasharray: 3 3;
+}
+.graph-target-tag {
+  fill: var(--accent-2);
+  font: 850 9.5px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+  letter-spacing: 1.1px;
+}
+.graph-distance-tag {
+  fill: var(--muted);
+  font: 800 8.5px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+
+.graph-swatch-target {
+  border-radius: 50%;
+  border: 2px dashed var(--accent-2);
+  background: transparent;
+}
+.graph-swatch-path {
+  width: 15px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--accent-2);
+}
+
+.graph-relax-strip {
+  display: flex;
+  align-items: center;
+  gap: 5px 8px;
+  flex-wrap: wrap;
+  min-width: 0;
+  padding: 6px 9px;
+  border: 1px solid var(--accent);
+  border-left: 4px solid var(--accent);
+  border-radius: 7px;
+  background: var(--info-bg);
+  color: var(--txt);
+  font-size: 11px;
+  line-height: 1.35;
+}
+.graph-relax-arrow {
+  color: var(--accent);
+  font-weight: 900;
+}
+.graph-relax-strip code {
+  padding: 1px 5px;
+  border: 1px solid var(--node-edge);
+  border-radius: 4px;
+  background: var(--panel);
+  font: 850 12px/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+.graph-relax-strip code.is-new {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+.graph-relax-previous {
+  color: var(--muted);
+  font: 750 10.5px/1.35 ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+
+/* ---------- distance table ---------- */
+.dijkstra-distance-table {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid var(--node-edge);
+  border-radius: 8px;
+  background: var(--panel-2);
+  overflow: hidden;
+}
+.dijkstra-table-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 6px 12px;
+  flex-wrap: wrap;
+  padding: 7px 9px 5px;
+}
+.dijkstra-table-head b {
+  color: var(--txt);
+  font: 850 11px/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
+  letter-spacing: .7px;
+  text-transform: uppercase;
+}
+.dijkstra-table-head small {
+  color: var(--muted);
+  font-size: 10.5px;
+  line-height: 1.35;
+}
+.dijkstra-table-scroll {
+  max-height: 230px;
+  overflow: auto;
+  scrollbar-width: thin;
+}
+.dijkstra-distance-table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11.5px;
+}
+.dijkstra-distance-table th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: 4px 8px;
+  background: var(--stat-bg);
+  color: var(--muted);
+  border-top: 1px solid var(--edge);
+  border-bottom: 1px solid var(--node-edge);
+  font: 800 9.5px/1.3 ui-monospace, SFMono-Regular, Consolas, monospace;
+  letter-spacing: .4px;
+  text-align: left;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.dijkstra-distance-table td {
+  padding: 4px 8px;
+  border-bottom: 1px solid var(--edge);
+  color: var(--txt);
+  font: 700 11px/1.35 ui-monospace, SFMono-Regular, Consolas, monospace;
+  white-space: nowrap;
+}
+.dijkstra-distance-table tbody tr:last-child td { border-bottom: 0; }
+.dijkstra-distance-row.is-settled td { background: var(--node-focus-bg); }
+.dijkstra-distance-row.is-settled td:last-child { color: var(--accent); font-weight: 900; }
+.dijkstra-distance-row.is-frontier td { background: var(--panel-2); }
+.dijkstra-distance-row.is-unreached td { color: var(--muted); }
+.dijkstra-distance-value { color: var(--accent); font-weight: 900 !important; }
+
+/* ---------- priority queue ---------- */
+.graph-priority-queue {
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 7px 9px 9px;
+  border: 1px solid var(--node-edge);
+  border-left: 4px solid var(--accent-2);
+  border-radius: 8px;
+  background: var(--panel-2);
+}
+.graph-pq-operation {
+  display: flex;
+  align-items: center;
+  gap: 5px 8px;
+  flex-wrap: wrap;
+  min-width: 0;
+  font: 800 10.5px/1.35 ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+.graph-pq-op-label {
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: var(--accent);
+  color: var(--panel);
+}
+.graph-pq-added,
+.graph-pq-removed {
+  padding: 1px 6px;
+  border: 1px solid var(--edge);
+  border-radius: 4px;
+  background: var(--panel);
+  color: var(--accent);
+}
+.graph-pq-removed {
+  color: var(--danger, #b42318);
+}
+.graph-pq-removed.is-stale {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+.graph-pq-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px 7px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  max-height: 210px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+.graph-pq-entry {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  padding: 4px 6px;
+  border: 1px solid var(--node-edge);
+  border-radius: 6px;
+  background: var(--panel);
+}
+.graph-pq-entry:first-child {
+  border-color: var(--accent-2);
+  box-shadow: 0 0 0 1px var(--accent-2);
+}
+.graph-pq-entry.is-added {
+  border-color: var(--accent);
+  background: var(--info-bg);
+}
+.graph-pq-entry.is-stale {
+  opacity: .78;
+  border-style: dashed;
+}
+.graph-pq-rank {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  background: var(--stat-bg);
+  color: var(--muted);
+  font: 850 9px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+.graph-pq-key {
+  min-width: 0;
+  color: var(--txt);
+  font: 850 11.5px/1.35 ui-monospace, SFMono-Regular, Consolas, monospace;
+  overflow-wrap: anywhere;
+}
+.graph-pq-entry.is-stale .graph-pq-key {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+.graph-pq-stale-tag {
+  flex: 0 0 auto;
+  margin-left: auto;
+  padding: 0 4px;
+  border: 1px dashed var(--muted);
+  border-radius: 999px;
+  color: var(--muted);
+  font: 750 8.5px/1.5 ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+.graph-pq-empty {
+  margin: 0;
+  padding: 8px 10px;
+  border: 1px dashed var(--edge);
+  border-radius: 6px;
+  color: var(--muted);
+  font-size: 11px;
+  text-align: center;
+}
+.graph-pq-footer {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 5px 10px;
+  flex-wrap: wrap;
+  border-top: 1px dashed var(--edge);
+  padding-top: 4px;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.35;
+}
+
+/* ---------- final path ---------- */
+.dijkstra-path-summary {
+  display: flex;
+  align-items: baseline;
+  gap: 6px 10px;
+  flex-wrap: wrap;
+  min-width: 0;
+  padding: 7px 9px;
+  border: 1px solid var(--accent-2);
+  border-left: 4px solid var(--accent-2);
+  border-radius: 8px;
+  background: var(--info-bg);
+}
+.dijkstra-path-summary > b {
+  color: var(--txt);
+  font: 850 11px/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+}
+.dijkstra-path-line {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+.dijkstra-path-node {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 1px 6px;
+  border: 1px solid var(--accent-2);
+  border-radius: 999px;
+  background: var(--panel);
+  color: var(--txt);
+  font: 850 11px/1.45 ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+.dijkstra-path-node i {
+  color: var(--accent-2);
+  font-style: normal;
+  font-weight: 900;
+}
+.dijkstra-path-distance {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 10.5px;
+}
+.dijkstra-path-distance code {
+  color: var(--accent);
+  font: 850 12px/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+.dijkstra-path-empty {
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+@media (max-width: 760px) {
+  .graph-pq-list { grid-template-columns: 1fr; max-height: 230px; }
+  .graph-pq-operation { font-size: 10px; }
+  .graph-pq-key { font-size: 11px; }
+  .graph-relax-strip { font-size: 10.5px; }
+  .graph-relax-previous { font-size: 10px; }
+  .dijkstra-table-head { padding: 6px 8px 4px; }
+  .dijkstra-distance-table th,
+  .dijkstra-distance-table td { padding: 3px 6px; font-size: 10px; }
+  .dijkstra-path-summary { padding: 6px 8px; }
+  .dijkstra-path-distance { margin-left: 0; }
+}
+
+@media (max-width: 420px) {
+  .graph-visual.is-weighted .graph-svg { min-width: 440px; }
+  .graph-relax-strip { gap: 4px 6px; padding: 5px 7px; }
+  .graph-relax-previous { flex-basis: 100%; }
+  .dijkstra-table-scroll { max-height: 200px; }
+  .dijkstra-distance-table th,
+  .dijkstra-distance-table td { padding: 3px 5px; font-size: 9.5px; }
+  .graph-priority-queue { padding: 6px 7px 7px; }
+  .graph-pq-footer span:first-child { display: none; }
+  .dijkstra-path-node { font-size: 10px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .graph-node.is-on-path .graph-node-body { filter: none; }
+  .graph-edge,
+  .graph-node-body,
+  .graph-pq-entry,
+  .dijkstra-distance-row td {
+    transition: none !important;
+    animation: none !important;
+  }
+}

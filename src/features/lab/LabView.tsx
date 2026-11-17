@@ -55,7 +55,8 @@ export function LabView({
   const actualTreeTraversal =
     currentEvent?.structure?.kind === 'binary-tree' ? currentEvent.structure.traversal : null;
   const showTreePicker = lab.currentAlgo === 'inorder' && lab.codeLang === 'python';
-  const showGraphStepPeek = lab.currentAlgo === 'bfs' || lab.currentAlgo === 'dfs';
+  const showGraphStepPeek =
+    lab.currentAlgo === 'bfs' || lab.currentAlgo === 'dfs' || lab.currentAlgo === 'dijkstra';
   const highlightLine = !lab.traceStale && currentEvent?.sourceLocation?.line
     ? currentEvent.sourceLocation.line
     : null;

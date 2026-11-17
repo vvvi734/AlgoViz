@@ -93,7 +93,8 @@ trace({type:'array',values:[result],done:true},'结果 / Result: '+result);`},
 trace({type:'array',values:[n]},'计算 fib / Compute');
 function fib(x){return x<=1?x:fib(x-1)+fib(x-2);}
 const result=fib(n);
-trace({type:'array',values:[result],done:true},'结果 / Result: '+result);`}
+trace({type:'array',values:[result],done:true},'结果 / Result: '+result);`},
+ dijkstra:{group:'graph',icon:'◉',name:['Dijkstra 最短路径','Dijkstra shortest path'],desc:['带权图的单源最短路径。为了保持真实堆、距离表和前驱指针同步，完整教学演示使用 Python heapq 预设；JavaScript 入口只提示切换语言。','Single-source shortest paths on a weighted graph. The full teaching demo runs real Python heapq so the heap, distance table and previous pointers stay synchronized; the JavaScript entry asks you to switch languages.'],time:'O((V+E) log V)',space:'O(V)',input:{start:'A'},code:`trace({type:'array',values:['Dijkstra weighted graph: use the Python preset'],done:true},'请在 Python 模式运行 / Run the Python preset');`}
 };
 
 export const groups=[['sort','排序 / Sorting'],['search','查找 / Searching'],['ds','线性结构 / Linear DS'],['graph','图算法 / Graph'],['tree','树 / Trees'],['recursion','递归 / Recursion']];

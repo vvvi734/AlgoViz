@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { buildVisualModel } from '../../domain/visualization/model';
 import type { GraphVisualModel } from '../../domain/visualization/graphModel';
+import type { DijkstraOperation } from '../../domain/trace/schema';
 import type { GraphOperation } from '../../domain/trace/schema';
 import type { StructureOperation } from '../../domain/trace/schema';
 import type { TraceEvent } from '../../domain/trace/schema';
@@ -35,9 +36,39 @@ const GRAPH_HINT_KEYS: Record<GraphOperation, string> = {
   done: 'graphHintDone',
 };
 
+const DIJKSTRA_OPERATION_KEYS: Record<DijkstraOperation, string> = {
+  init: 'graphOpInit',
+  push: 'graphOpHeapPush',
+  pop: 'graphOpHeapPop',
+  stale: 'graphOpHeapStale',
+  settle: 'graphOpSettle',
+  'inspect-edge': 'graphOpInspect',
+  relax: 'graphOpRelax',
+  skip: 'graphOpSkip',
+  done: 'graphOpDone',
+};
+
+const DIJKSTRA_HINT_KEYS: Record<DijkstraOperation, string> = {
+  init: 'dijkstraHintInit',
+  push: 'dijkstraHintPush',
+  pop: 'dijkstraHintPop',
+  stale: 'dijkstraHintStale',
+  settle: 'dijkstraHintSettle',
+  'inspect-edge': 'dijkstraHintInspect',
+  relax: 'dijkstraHintRelax',
+  skip: 'dijkstraHintSkip',
+  done: 'dijkstraHintDone',
+};
+
+function graphOperationText(model: GraphVisualModel, t: (key: string) => string): string {
+  if (model.algorithm === 'dijkstra') return t(DIJKSTRA_OPERATION_KEYS[model.operation as DijkstraOperation]);
+  return t(GRAPH_OPERATION_KEYS[model.operation as GraphOperation]);
+}
+
 function graphHint(model: GraphVisualModel, t: (key: string) => string): string {
   if (model.empty && model.operation === 'done') return t('graphHintEmpty');
-  return t(GRAPH_HINT_KEYS[model.operation]);
+  if (model.algorithm === 'dijkstra') return t(DIJKSTRA_HINT_KEYS[model.operation as DijkstraOperation]);
+  return t(GRAPH_HINT_KEYS[model.operation as GraphOperation]);
 }
 
 /** The SAME frontierItems array that paints the graph also paints the compact
@@ -83,6 +114,81 @@ function graphFrontierModel(model: GraphVisualModel, t: (key: string) => string)
   };
 }
 
+function formatPqDistance(distance: number | null | undefined): string {
+  if (distance === null || distance === undefined) return '∞';
+  return Number.isInteger(distance) ? String(distance) : distance.toFixed(2);
+}
+
+/** Visualises the real heapq contents of one weighted-graph frame. */
+function PriorityQueuePanel({ model, operationText }: { model: GraphVisualModel; operationText: string }) {
+  const { t } = useI18n();
+  const removed = model.frontierRemoved;
+  return (
+    <section
+      className="graph-priority-queue"
+      data-testid="graph-priority-queue-panel"
+      data-frontier-kind="priority-queue"
+      data-algorithm="dijkstra"
+    >
+      <header className="graph-frontier-head">
+        <b>{t('graphPriorityQueue')}</b>
+        <small>{t('graphPriorityQueueNote')}</small>
+      </header>
+      <div className="graph-pq-operation" data-testid="graph-pq-operation">
+        <span className="graph-pq-op-label">{operationText}</span>
+        {model.frontierAdded && (
+          <span className="graph-pq-added" data-testid="graph-pq-added">
+            + ({formatPqDistance(model.frontierAdded.distance)}, {model.frontierAdded.nodeId})
+          </span>
+        )}
+        {removed && (
+          <span
+            className={`graph-pq-removed${removed.stale ? ' is-stale' : ''}`}
+            data-testid="graph-pq-removed"
+            data-stale={removed.stale ? 'true' : 'false'}
+          >
+            − ({formatPqDistance(removed.distance)}, {removed.nodeId})
+            {removed.stale ? ` · ${t('graphPqStale')}` : ''}
+          </span>
+        )}
+      </div>
+      {model.frontierItems.length ? (
+        <ol className="graph-pq-list" data-testid="graph-pq-list">
+          {model.frontierItems.map((item, index) => (
+            <li
+              key={item.id}
+              className={`graph-pq-entry${item.stale ? ' is-stale' : ''}${
+                model.frontierAdded?.id === item.id ? ' is-added' : ''
+              }`}
+              data-testid="graph-pq-entry"
+              data-entry-id={item.id}
+              data-node-id={item.nodeId}
+              data-distance={item.distance ?? ''}
+              data-stale={item.stale ? 'true' : 'false'}
+            >
+              <span className="graph-pq-rank">{index + 1}</span>
+              <code className="graph-pq-key">
+                ({formatPqDistance(item.distance)}, {item.nodeId})
+              </code>
+              {item.stale && <span className="graph-pq-stale-tag">{t('graphPqStale')}</span>}
+            </li>
+          ))}
+        </ol>
+      ) : (
+        <p className="graph-pq-empty" data-testid="graph-pq-empty">
+          {t('graphPriorityQueueEmpty')}
+        </p>
+      )}
+      <footer className="graph-pq-footer">
+        <span>{t('graphPqOrderNote')}</span>
+        <span data-testid="graph-pq-size">
+          {t('graphPqSize')}: {model.frontierItems.length}
+        </span>
+      </footer>
+    </section>
+  );
+}
+
 export function VisualStage({ event }: { event: TraceEvent | undefined }) {
   const { t } = useI18n();
   const model = event
@@ -116,14 +222,20 @@ export function VisualStage({ event }: { event: TraceEvent | undefined }) {
       content = <BinaryTreeVisual model={model} />;
       break;
     case 'graph-traversal': {
+      const operationText = graphOperationText(model, t);
+      if (model.algorithm === 'dijkstra') {
+        content = (
+          <div className="graph-traversal-stage is-weighted" data-testid="graph-traversal-stage">
+            <GraphVisual model={model} operationText={operationText} hint={graphHint(model, t)} />
+            <PriorityQueuePanel model={model} operationText={operationText} />
+          </div>
+        );
+        break;
+      }
       const frontier = graphFrontierModel(model, t);
       content = (
         <div className="graph-traversal-stage" data-testid="graph-traversal-stage">
-          <GraphVisual
-            model={model}
-            operationText={t(GRAPH_OPERATION_KEYS[model.operation])}
-            hint={graphHint(model, t)}
-          />
+          <GraphVisual model={model} operationText={operationText} hint={graphHint(model, t)} />
           <section
             className={`graph-frontier-panel graph-frontier-${model.frontierKind}`}
             data-testid="graph-frontier-panel"
@@ -142,14 +254,14 @@ export function VisualStage({ event }: { event: TraceEvent | undefined }) {
               <QueueVisual
                 compact
                 model={frontier}
-                operationLabel={t(GRAPH_OPERATION_KEYS[model.operation])}
+                operationLabel={operationText}
                 hint={null}
               />
             ) : (
               <StackVisual
                 compact
                 model={frontier}
-                operationLabel={t(GRAPH_OPERATION_KEYS[model.operation])}
+                operationLabel={operationText}
                 hint={null}
               />
             )}

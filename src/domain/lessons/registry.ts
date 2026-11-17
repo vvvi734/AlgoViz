@@ -13,6 +13,7 @@ import { factorialLesson } from './factorial';
 import { linkedListLesson } from './linkedList';
 import { binaryTreeLesson } from './binaryTree';
 import { bfsLesson, dfsLesson } from './graphLessons';
+import { dijkstraLesson } from './dijkstraLesson';
 import { validateLessonSet } from './schema';
 import type { Lesson, LessonValidationResult } from './types';
 
@@ -54,6 +55,7 @@ const BUNDLED: unknown[] = [
   binaryTreeLesson,
   bfsLesson,
   dfsLesson,
+  dijkstraLesson,
 ];
 
 /** Courses shipped with the app itself (bubble, factorial, stack, queue, linked-list, binary-tree). */
