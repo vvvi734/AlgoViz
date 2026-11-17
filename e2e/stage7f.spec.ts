@@ -1,10 +1,10 @@
-import { expect, test, type Page } from './fixtures';
+import { expect, openCodePanel, test, type Page } from './fixtures';
 
 const TOTAL = 46;
 
 async function openApp(page: Page) {
   await page.goto('/');
-  await expect(page.locator('.monaco-editor')).toBeVisible({ timeout: 45_000 });
+  await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
 }
 
 async function selectDijkstra(page: Page) {
@@ -38,6 +38,7 @@ function distanceRow(page: Page, nodeId: string) {
 }
 
 async function runGraphInput(page: Page, input: unknown, total: number) {
+  await openCodePanel(page);
   await page.fill('#run-input', JSON.stringify(input));
   await page.click('[data-testid="run-btn"]');
   await expect(page.locator('[data-testid="progress"]')).toHaveText(`1 / ${total}`, { timeout: 60_000 });

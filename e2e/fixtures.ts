@@ -1,4 +1,4 @@
-import { test as base, expect } from '@playwright/test';
+import { test as base, expect, type Page } from '@playwright/test';
 import { useLocalPyodide } from './pyodide-local';
 
 /**
@@ -14,4 +14,18 @@ export const test = base.extend({
 });
 
 export { expect };
-export type { Page } from '@playwright/test';
+export type { Page };
+
+/**
+ * UI-03: the code dock is collapsed by default. Tests that need to read or
+ * type into Monaco must explicitly open it first; playback must not change.
+ */
+export async function openCodePanel(page: Page) {
+  const toggle = page.getByTestId('code-dock-toggle');
+  await expect(toggle).toBeVisible({ timeout: 45_000 });
+  if ((await toggle.getAttribute('aria-expanded')) !== 'true') {
+    await toggle.click();
+  }
+  await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+  await expect(page.locator('.monaco-editor')).toBeVisible({ timeout: 45_000 });
+}

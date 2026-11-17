@@ -196,36 +196,6 @@
   margin-top: 10px;
 }
 
-/* The editor is still a right-hand surface, not a bottom section (UI-03). */
-.lab-editor-dock {
-  min-width: 0;
-  display: flex;
-}
-
-.lab-editor-dock > .code-editor-panel {
-  width: 100%;
-  min-width: 0;
-}
-
-.lab-editor-dock .monaco-wrap {
-  min-height: 230px;
-  height: 30vh;
-  max-height: 360px;
-  resize: vertical;
-}
-
-.lab-editor-dock .controls {
-  gap: 6px;
-}
-
-.lab-editor-dock .controls .btn {
-  padding: 7px 11px;
-}
-
-.lab-editor-dock .note {
-  margin-top: 9px;
-}
-
 /* Tablet / narrow desktop: single reading column, visual first, rail next. */
 @media (max-width: 1279px) {
   .lab-main {
@@ -248,11 +218,6 @@
 
   .lab-primary.ui02-workbench .stage-panel .stage {
     min-height: 330px;
-  }
-
-  .lab-editor-dock .monaco-wrap {
-    min-height: 320px;
-    height: 38vh;
   }
 
   .lab-explanation .lessonsteps.is-rail-list {
@@ -283,10 +248,5 @@
 
   .lesson-focus-title {
     font-size: 16px;
-  }
-
-  .lab-editor-dock .monaco-wrap {
-    min-height: 280px;
-    height: 38vh;
   }
 }

@@ -10,7 +10,7 @@ test.describe('UI-01 — directory screenshots', () => {
   test('expanded, section-folded and collapsed states at 1440px', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto('/');
-    await expect(page.locator('.monaco-editor')).toBeVisible({ timeout: 45_000 });
+    await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
     await page.selectOption('[data-testid="theme-select"]', 'light');
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
 
@@ -45,7 +45,7 @@ test.describe('UI-01 — directory screenshots', () => {
   test('phone keeps the selector instead of the directory', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/');
-    await expect(page.locator('.monaco-editor')).toBeVisible({ timeout: 45_000 });
+    await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
     await page.selectOption('[data-testid="theme-select"]', 'light');
     await expect(page.getByTestId('mobile-algo-select')).toBeVisible();
     await page.screenshot({ path: `${DIR}/sidebar-mobile-390-light.png` });

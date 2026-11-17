@@ -1,18 +1,18 @@
-import { expect, test, type Page } from './fixtures';
+import { expect, openCodePanel, test, type Page } from './fixtures';
 
 /**
  * Stage 7A information architecture, state retention and keyboard operation,
- * updated by UI-02 for the two-column lab: animation left, synchronized
- * explanation rail right, code editor still in the right rail.
+ * updated by UI-03: animation left, explanation rail right, and a full-width
+ * code dock below both columns.
  */
 
 async function openApp(page: Page) {
   await page.goto('/');
-  await expect(page.locator('.monaco-editor')).toBeVisible({ timeout: 45_000 });
+  await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
 }
 
-test.describe('Stage 7A — workspace UX (UI-02 layout)', () => {
-  test('A. desktop puts animation left and the lesson/editor rail right', async ({ page }) => {
+test.describe('Stage 7A — workspace UX (UI-03 layout)', () => {
+  test('A. desktop puts animation left, lesson right and a collapsed code dock below', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await openApp(page);
 
@@ -20,9 +20,10 @@ test.describe('Stage 7A — workspace UX (UI-02 layout)', () => {
     const stagePanel = await page.locator('.stage-panel').boundingBox();
     const rail = await page.locator('[data-testid="explanation-rail"]').boundingBox();
     const current = await page.locator('[data-testid="current-step"]').boundingBox();
-    const editor = await page.locator('.monaco-editor').first().boundingBox();
-    expect(stage && stagePanel && rail && current && editor).toBeTruthy();
-    if (!stage || !stagePanel || !rail || !current || !editor) return;
+    const primary = await page.locator('.lab-primary').boundingBox();
+    const dock = await page.locator('[data-testid="code-dock"]').boundingBox();
+    expect(stage && stagePanel && rail && current && primary && dock).toBeTruthy();
+    if (!stage || !stagePanel || !rail || !current || !primary || !dock) return;
 
     // The rail is a real second column, not a card under the animation.
     expect(rail.x).toBeGreaterThan(stage.x + stage.width - 10);
@@ -30,9 +31,14 @@ test.describe('Stage 7A — workspace UX (UI-02 layout)', () => {
     // The current frame is at the top of the rail and fully on the first screen.
     expect(current.y).toBeGreaterThanOrEqual(rail.y);
     expect(current.y + current.height).toBeLessThanOrEqual(900);
-    // The editor is docked below the explanation inside the same right column.
-    expect(editor.x).toBeGreaterThan(stage.x + stage.width - 10);
-    expect(editor.y).toBeGreaterThan(current.y + current.height - 10);
+    // UI-03: the editor is no longer inside the rail; the dock spans below both.
+    await expect(page.locator('[data-testid="explanation-rail"] .monaco-editor')).toHaveCount(0);
+    expect(dock.y).toBeGreaterThan(primary.y + primary.height - 12);
+    expect(dock.width).toBeGreaterThan(stage.width + rail.width - 10);
+    await expect(page.locator('[data-testid="code-dock"]')).toHaveAttribute('data-expanded', 'false');
+    await expect(page.locator('[data-testid="code-dock-toggle"]')).toHaveAttribute('aria-expanded', 'false');
+    await expect(page.locator('.monaco-editor')).toBeHidden();
+    await expect(page.locator('[data-testid="run-btn"]')).toBeVisible();
 
     await expect(page.locator('[data-testid="lesson-title"]')).toContainText('冒泡排序');
     await expect(page.locator('[data-testid="current-step-title"]')).toBeVisible();
@@ -41,6 +47,7 @@ test.describe('Stage 7A — workspace UX (UI-02 layout)', () => {
 
   test('B. switching panels keeps the Monaco draft and never runs or resets the trace', async ({ page }) => {
     await openApp(page);
+    await openCodePanel(page);
     const draft = 'const STAGE7_DRAFT = 707;';
     await page.locator('.monaco-editor').first().click();
     await page.keyboard.press('Control+a');
@@ -63,17 +70,19 @@ test.describe('Stage 7A — workspace UX (UI-02 layout)', () => {
     await expect(page.locator('.algolens-active-line')).toHaveCount(0);
   });
 
-  test('H. 1024 stacks animation, then the explanation rail, then code without page overflow', async ({ page }) => {
+  test('H. 1024 stacks animation, then the explanation rail, then the collapsed code dock without page overflow', async ({ page }) => {
     await page.setViewportSize({ width: 1024, height: 768 });
     await openApp(page);
 
     const stage = await page.locator('[data-testid="visual-stage"]').boundingBox();
     const current = await page.locator('[data-testid="current-step"]').boundingBox();
-    const editor = await page.locator('.monaco-editor').first().boundingBox();
-    expect(stage && current && editor).toBeTruthy();
-    if (!stage || !current || !editor) return;
+    const dock = await page.locator('[data-testid="code-dock"]').boundingBox();
+    expect(stage && current && dock).toBeTruthy();
+    if (!stage || !current || !dock) return;
     expect(current.y).toBeGreaterThan(stage.y + stage.height - 10);
-    expect(current.y).toBeLessThan(editor.y);
+    expect(current.y).toBeLessThan(dock.y);
+    expect(dock.width).toBeGreaterThan(600);
+    await expect(page.locator('[data-testid="code-dock"]')).toHaveAttribute('data-expanded', 'false');
 
     const layout = await page.evaluate(() => ({
       scrollWidth: document.documentElement.scrollWidth,

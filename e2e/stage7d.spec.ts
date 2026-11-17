@@ -1,8 +1,8 @@
-import { expect, test, type Page } from './fixtures';
+import { expect, openCodePanel, test, type Page } from './fixtures';
 
 async function openApp(page: Page) {
   await page.goto('/');
-  await expect(page.locator('.monaco-editor')).toBeVisible({ timeout: 45_000 });
+  await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
 }
 
 async function selectAlgo(page: Page, id: string) {
@@ -146,7 +146,7 @@ test.describe('Stage 7D — real binary-tree traversal and recursion stack', () 
     expect(await activeId(page)).toBe('n1');
     await expect(page.getByTestId('lesson-active-step')).toHaveAttribute('data-step-id', 'visit');
     await expect(page.locator('[data-testid="current-step-message"]')).toContainText('visit n1');
-    await expect(page.locator('.algolens-active-line').first()).toBeVisible();
+    await expect(page.locator('.algolens-active-line')).toHaveCount(1);
 
     await setFrame(page, 8);
     expect(await activeId(page)).toBe('n4');
@@ -227,6 +227,7 @@ test.describe('Stage 7D — real binary-tree traversal and recursion stack', () 
     await selectAlgo(page, 'inorder');
     await expect(page.locator('[data-testid="tree-visual"]')).toBeVisible({ timeout: 60_000 });
 
+    await openCodePanel(page);
     await page.fill('#run-input', '[]');
     await page.getByTestId('run-btn').click();
     await expect(page.locator('[data-testid="tree-empty"]')).toBeVisible({ timeout: 60_000 });
@@ -261,7 +262,7 @@ test.describe('Stage 7D — real binary-tree traversal and recursion stack', () 
       await expectNoPageOverflow(page);
       await expect(page.locator('[data-testid="tree-visual"]')).toBeVisible();
       await expect(page.locator('[data-testid="scrub"]')).toBeVisible();
-      await expect(page.locator('.monaco-editor')).toBeVisible();
+      await expect(page.locator('[data-testid="code-dock"]')).toBeVisible();
       if (viewport.width === 390) {
         await expect(page.locator('[data-testid="tree-scroll-hint"]')).toBeVisible();
       } else {

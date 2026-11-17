@@ -39,11 +39,18 @@ export function MonacoEditor({
   const decorationsRef = useRef<editor.IEditorDecorationsCollection | null>(null);
   const [loading, setLoading] = useState(isMonacoEnabled());
   const [failed, setFailed] = useState(false);
+  const [ready, setReady] = useState(false);
   const { t } = useI18n();
 
   // Keep the latest callback without recreating the editor.
   const onChangeRef = useRef(onChange);
   onChangeRef.current = onChange;
+
+  // The editor loads asynchronously. If a preset/language changes while Monaco
+  // is still loading, the create step must use the newest props, and the sync
+  // effects below re-run once `ready` flips so a stale model can never stick.
+  const latestRef = useRef({ value, language });
+  latestRef.current = { value, language };
 
   // Create the editor exactly once.
   useEffect(() => {
@@ -55,7 +62,7 @@ export function MonacoEditor({
         monacoRef.current = monaco;
         applyAlgoLensTheme(monaco, theme);
 
-        const model = monaco.editor.createModel(value, toMonacoLanguage(language));
+        const model = monaco.editor.createModel(latestRef.current.value, toMonacoLanguage(latestRef.current.language));
         const instance = monaco.editor.create(hostRef.current, {
           model,
           automaticLayout: true,
@@ -65,7 +72,7 @@ export function MonacoEditor({
           lineNumbers: 'on',
           renderLineHighlight: 'all',
           scrollBeyondLastLine: false,
-          tabSize: language === 'python' ? 4 : 2,
+          tabSize: latestRef.current.language === 'python' ? 4 : 2,
           insertSpaces: true,
           folding: true,
           autoIndent: 'full',
@@ -77,6 +84,7 @@ export function MonacoEditor({
         decorationsRef.current = instance.createDecorationsCollection([]);
         instance.onDidChangeModelContent(() => onChangeRef.current(model.getValue()));
         setLoading(false);
+        setReady(true);
       })
       .catch(() => {
         if (!disposed) setFailed(true);
@@ -101,14 +109,14 @@ export function MonacoEditor({
     const next = toMonacoLanguage(language);
     if (model.getLanguageId() !== next) monaco.editor.setModelLanguage(model, next);
     editorRef.current?.updateOptions({ tabSize: language === 'python' ? 4 : 2 });
-  }, [language]);
+  }, [language, ready]);
 
   // Apply external value changes (algorithm switch / restore / language swap).
   useEffect(() => {
     const model = editorRef.current?.getModel();
     if (!model) return;
     if (model.getValue() !== value) model.setValue(value);
-  }, [value]);
+  }, [value, ready]);
 
   // Re-apply the theme from the CURRENT tokens. Deferred one macrotask so the
   // ThemeProvider (an ancestor, whose effect runs after this child) has already
@@ -118,7 +126,7 @@ export function MonacoEditor({
     if (!monaco) return;
     const timer = window.setTimeout(() => applyAlgoLensTheme(monaco, theme), 0);
     return () => window.clearTimeout(timer);
-  }, [theme]);
+  }, [theme, ready]);
 
   // Sync the execution-line highlight and the diagnostic markers.
   useEffect(() => {
@@ -159,7 +167,7 @@ export function MonacoEditor({
         endColumn: (d.column ?? 1) + 1,
       }));
     monaco.editor.setModelMarkers(model, 'algolens', markers);
-  }, [highlightLine, diagnostics]);
+  }, [highlightLine, diagnostics, ready]);
 
   if (!isMonacoEnabled() || failed) {
     return (

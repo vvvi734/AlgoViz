@@ -1,11 +1,11 @@
-import { expect, test, type Page } from './fixtures';
+import { expect, openCodePanel, test, type Page } from './fixtures';
 
 const BFS_TOTAL = 51;
 const DFS_TOTAL = 51;
 
 async function openApp(page: Page) {
   await page.goto('/');
-  await expect(page.locator('.monaco-editor')).toBeVisible({ timeout: 45_000 });
+  await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
 }
 
 async function selectAlgo(page: Page, id: string) {
@@ -293,6 +293,7 @@ test.describe('Stage 7E — real graph BFS/DFS, same-frame frontier and playback
     await selectAlgo(page, 'bfs');
     await waitForGraph(page, 'bfs', BFS_TOTAL);
 
+    await openCodePanel(page);
     await page.fill('#run-input', '{"start":null,"nodes":[],"edges":[]}');
     await page.getByTestId('run-btn').click();
     await expect(page.locator('[data-testid="graph-empty"]')).toBeVisible({ timeout: 60_000 });
@@ -329,6 +330,7 @@ test.describe('Stage 7E — real graph BFS/DFS, same-frame frontier and playback
     await openApp(page);
     await selectAlgo(page, 'bfs');
     await waitForGraph(page, 'bfs', BFS_TOTAL);
+    await openCodePanel(page);
     await page.fill('#run-input', '{"start":"Z","nodes":["A","B"],"edges":[["A","B"]]}');
     await page.getByTestId('run-btn').click();
     await expect(page.locator('[data-testid="run-feedback"]')).toContainText(/start must name an existing node/);
@@ -349,7 +351,7 @@ test.describe('Stage 7E — real graph BFS/DFS, same-frame frontier and playback
       await expect(page.locator('[data-testid="graph-visual"]')).toBeVisible();
       await expect(page.locator('[data-testid="graph-frontier-panel"]')).toBeVisible();
       await expect(page.locator('[data-testid="scrub"]')).toBeVisible();
-      await expect(page.locator('.monaco-editor')).toBeVisible();
+      await expect(page.locator('[data-testid="code-dock"]')).toBeVisible();
       if (viewport.width === 390) {
         await expect(page.locator('[data-testid="graph-scroll-hint"]')).toBeVisible();
         const canvas = page.locator('.graph-canvas-scroll');

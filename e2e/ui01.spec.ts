@@ -10,7 +10,7 @@ import { expect, test, type Page } from './fixtures';
 
 async function openApp(page: Page) {
   await page.goto('/');
-  await expect(page.locator('.monaco-editor')).toBeVisible({ timeout: 45_000 });
+  await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
   await expect(page.getByTestId('progress')).toContainText('/');
 }
 
@@ -96,7 +96,7 @@ test.describe('UI-01 — collapsible grouped directory', () => {
     await page.getByTestId('sidebar-collapse').click();
     await expect(page.locator('.lab-shell')).toHaveClass(/nav-collapsed/);
     await page.reload();
-    await expect(page.locator('.monaco-editor')).toBeVisible({ timeout: 45_000 });
+    await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
     await expect(page.locator('.lab-shell')).toHaveClass(/nav-collapsed/);
     await expect(page.getByTestId('sidebar-expand')).toBeVisible();
   });

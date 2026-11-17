@@ -1,4 +1,4 @@
-import { expect, test, type Page } from './fixtures';
+import { expect, openCodePanel, test, type Page } from './fixtures';
 
 /** Replace the Monaco editor content by selecting all and typing. */
 /** Stage 7A: secondary panels live in on-demand workspace tabs. */
@@ -8,6 +8,7 @@ async function openTab(page: Page, tab: 'state' | 'mentor' | 'tools') {
 }
 
 async function setEditorCode(page: Page, code: string) {
+  await openCodePanel(page);
   // Click the visible editor surface (Monaco's hidden textarea is not clickable
   // in headless mode), then select-all and type over it.
   await page.locator('.monaco-editor').first().click();
@@ -19,7 +20,8 @@ test.describe('AlgoLens Stage 2 — Monaco + Python sync (real browser)', () => 
   test('loads Monaco, runs Python bubble sort and syncs highlight + variables', async ({ page }) => {
     await page.goto('/');
     // Monaco is lazy-loaded; wait for the real editor (not the fallback).
-    await expect(page.locator('.monaco-editor')).toBeVisible({ timeout: 45_000 });
+    await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
+    await openCodePanel(page);
 
     // Switch the teaching language to Python.
     await page.selectOption('#code-lang', 'python');
@@ -32,18 +34,18 @@ test.describe('AlgoLens Stage 2 — Monaco + Python sync (real browser)', () => 
     await expect(page.locator('[data-testid="variables-watch"]')).toContainText('i');
 
     // The current trace event highlights a source line inside Monaco.
-    await expect(page.locator('.algolens-active-line').first()).toBeVisible();
+    await expect(page.locator('.algolens-active-line')).toHaveCount(1);
 
     // Step forward must change the highlighted line and the step text.
     const stepBefore = await page.locator('[data-testid="step-desc"]').textContent();
     await page.click('[data-testid="next-btn"]');
     await expect(page.locator('[data-testid="step-desc"]')).not.toHaveText(stepBefore ?? '');
-    await expect(page.locator('.algolens-active-line').first()).toBeVisible();
+    await expect(page.locator('.algolens-active-line')).toHaveCount(1);
   });
 
   test('shows a real Python SyntaxError and clears it after fixing', async ({ page }) => {
     await page.goto('/');
-    await expect(page.locator('.monaco-editor')).toBeVisible({ timeout: 45_000 });
+    await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
     await page.selectOption('#code-lang', 'python');
 
     await setEditorCode(page, 'def broken(:\n    arr = list(input)');
@@ -66,7 +68,7 @@ test.describe('AlgoLens Stage 2 — Monaco + Python sync (real browser)', () => 
 
   test('autosaves edits and restores them after reload', async ({ page }) => {
     await page.goto('/');
-    await expect(page.locator('.monaco-editor')).toBeVisible({ timeout: 45_000 });
+    await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
 
     await setEditorCode(page, 'const CUSTOM_MARKER = 424242;');
     // The debounced autosave flushes into localStorage.
@@ -75,13 +77,14 @@ test.describe('AlgoLens Stage 2 — Monaco + Python sync (real browser)', () => 
     ).toContain('CUSTOM_MARKER', { timeout: 10_000 });
 
     await page.reload();
-    await expect(page.locator('.monaco-editor')).toBeVisible({ timeout: 45_000 });
+    await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
+    await openCodePanel(page);
     await expect(page.locator('.monaco-editor')).toContainText('CUSTOM_MARKER');
   });
 
   test('switches Light / Dark / System without losing the editor or code', async ({ page }) => {
     await page.goto('/');
-    await expect(page.locator('.monaco-editor')).toBeVisible({ timeout: 45_000 });
+    await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
     await setEditorCode(page, 'const THEME_TEST = 1;');
 
     await page.selectOption('[data-testid="theme-select"]', 'light');
@@ -99,7 +102,8 @@ test.describe('AlgoLens Stage 2 — Monaco + Python sync (real browser)', () => 
 
   test('Stage 3 — Python factorial recursion: real Pyodide call stack, result 24', async ({ page }) => {
     await page.goto('/');
-    await expect(page.locator('.monaco-editor')).toBeVisible({ timeout: 45_000 });
+    await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
+    await openCodePanel(page);
 
     // Switch to Python, then open the factorial preset (auto-runs real Pyodide).
     await page.selectOption('#code-lang', 'python');
@@ -126,7 +130,7 @@ test.describe('AlgoLens Stage 2 — Monaco + Python sync (real browser)', () => 
     await expect(page.locator('[data-testid="variables-watch"]')).toContainText('n');
 
     // Monaco highlights the recorded source line for the current event.
-    await expect(page.locator('.algolens-active-line').first()).toBeVisible();
+    await expect(page.locator('.algolens-active-line')).toHaveCount(1);
 
     // Rewind restores the historical (smaller) call stack.
     for (let i = 0; i < stepsDown; i += 1) await page.click('[data-testid="prev-btn"]');
@@ -141,7 +145,8 @@ test.describe('AlgoLens Stage 2 — Monaco + Python sync (real browser)', () => 
 
   test('Stage 3 — Python Fibonacci recursion: real Pyodide branches, result 3', async ({ page }) => {
     await page.goto('/');
-    await expect(page.locator('.monaco-editor')).toBeVisible({ timeout: 45_000 });
+    await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
+    await openCodePanel(page);
 
     await page.selectOption('#code-lang', 'python');
     await page.click('[data-testid="algo-fib"]');
@@ -171,7 +176,8 @@ test.describe('AlgoLens Stage 2 — Monaco + Python sync (real browser)', () => 
 test.describe('Stage 3B — teaching steps synced with real Pyodide execution', () => {
   test('bubble sort: lesson highlight follows the real trace and a step click seeks', async ({ page }) => {
     await page.goto('/');
-    await expect(page.locator('.monaco-editor')).toBeVisible({ timeout: 45_000 });
+    await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
+    await openCodePanel(page);
 
     await page.selectOption('#code-lang', 'python');
     await page.click('[data-testid="algo-bubble"]');
@@ -197,7 +203,7 @@ test.describe('Stage 3B — teaching steps synced with real Pyodide execution', 
     await openTab(page, 'state');
     await expect(page.locator('[data-testid="variables-watch"]')).toContainText('arr');
     await expect(page.locator('[data-testid="variables-watch"]')).toContainText('i');
-    await expect(page.locator('.algolens-active-line').first()).toBeVisible();
+    await expect(page.locator('.algolens-active-line')).toHaveCount(1);
     await expect(page.locator('[data-testid="play-btn"]')).toContainText('播放');
 
     // Timeline → lesson: stepping forward keeps a stage the run really recorded.
@@ -213,7 +219,8 @@ test.describe('Stage 3B — teaching steps synced with real Pyodide execution', 
 
   test('factorial recursion: lesson stages track the real call stack, answer stays 24', async ({ page }) => {
     await page.goto('/');
-    await expect(page.locator('.monaco-editor')).toBeVisible({ timeout: 45_000 });
+    await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
+    await openCodePanel(page);
 
     await page.selectOption('#code-lang', 'python');
     await page.click('[data-testid="algo-factorial"]');
@@ -235,7 +242,7 @@ test.describe('Stage 3B — teaching steps synced with real Pyodide execution', 
     await openTab(page, 'state');
     await expect(page.locator('[data-testid="call-stack"]')).toBeVisible();
     await expect(page.locator('[data-testid="variables-watch"]')).toContainText('n');
-    await expect(page.locator('.algolens-active-line').first()).toBeVisible();
+    await expect(page.locator('.algolens-active-line')).toHaveCount(1);
 
     // End of the trace: `done` stage, real answer 24, stack cleared.
     const last = await page.locator('[data-testid="scrub"]').evaluate((el) => (el as HTMLInputElement).max);
@@ -261,7 +268,7 @@ test.describe('Stage 3B — teaching steps synced with real Pyodide execution', 
 test.describe('Stage 3 fix — switching traces resets the timeline (JS, offline)', () => {
   test('scrubbing the 25-frame bubble sort then switching to the 5-frame binary search lands on frame 1', async ({ page }) => {
     await page.goto('/');
-    await expect(page.locator('.monaco-editor')).toBeVisible({ timeout: 45_000 });
+    await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
 
     // Bubble sort is the longest legacy trace: 25 frames.
     await expect(page.locator('[data-testid="progress"]')).toHaveText('1 / 25');

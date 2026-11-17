@@ -20,7 +20,7 @@ const THEMES = ['light', 'dark'] as const;
 
 async function openDijkstra(page: Page) {
   await page.goto('/');
-  await expect(page.locator('.monaco-editor')).toBeVisible({ timeout: 45_000 });
+  await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
   const mobile = page.locator('[data-testid="mobile-algo-select"]');
   if (await mobile.isVisible()) await mobile.selectOption('dijkstra');
   else await page.click('[data-testid="algo-dijkstra"]');

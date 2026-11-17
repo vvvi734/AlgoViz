@@ -1,4 +1,4 @@
-import { expect, test, type Page } from './fixtures';
+import { expect, openCodePanel, test, type Page } from './fixtures';
 import { mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 
@@ -14,7 +14,7 @@ const THEMES = ['light', 'dark'] as const;
 
 async function openApp(page: Page) {
   await page.goto('/');
-  await expect(page.locator('.monaco-editor')).toBeVisible({ timeout: 45_000 });
+  await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
   const mobile = page.locator('[data-testid="mobile-algo-select"]');
   if (await mobile.isVisible()) await mobile.selectOption('inorder');
   else await page.click('[data-testid="algo-inorder"]');
@@ -120,7 +120,9 @@ test.describe('Stage 7D visual evidence', () => {
       ['single', '[4]', 6],
       ['equal-values', '[7,7,7]', 14],
     ] as const) {
+      await openCodePanel(page);
       await page.fill('#run-input', input);
+      await page.getByTestId('code-dock-toggle').click();
       await page.getByTestId('run-btn').click();
       await expect(page.locator('[data-testid="progress"]')).toHaveText(`1 / ${total}`, { timeout: 60_000 });
       await expect(page.locator('[data-testid="tree-node"]')).toHaveCount(name === 'empty' ? 0 : name === 'single' ? 1 : 3);
@@ -129,7 +131,9 @@ test.describe('Stage 7D visual evidence', () => {
 
     // Recursion-stack evidence: the tree canvas and the real three-frame stack
     // must be in the same captured run, not two unrelated screenshots.
+    await openCodePanel(page);
     await page.fill('#run-input', '[4, 2, 6, 1, 3, 5, 7]');
+    await page.getByTestId('code-dock-toggle').click();
     await page.getByTestId('run-btn').click();
     await expect(page.locator('[data-testid="progress"]')).toHaveText('1 / 30', { timeout: 60_000 });
     await setFrame(page, 5, 30);

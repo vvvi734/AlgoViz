@@ -3,7 +3,7 @@ import { AlgorithmSidebar } from './AlgorithmSidebar';
 import { VisualStage } from './VisualStage';
 import { TreeTraversalPicker } from './TreeTraversalPicker';
 import { Timeline } from './Timeline';
-import { CodeEditorPanel } from './CodeEditorPanel';
+import { CodeDock } from './CodeDock';
 import { SyncPanel } from './SyncPanel';
 import { CallStackPanel } from './CallStackPanel';
 import { LessonPanel } from './LessonPanel';
@@ -24,7 +24,8 @@ import { useTheme } from '../../theme/ThemeProvider';
  *
  * Information architecture:
  *  1. primary: sidebar → [animation + playback | synchronized explanation rail];
- *     the code editor stays in the right rail, not below the animation (UI-03);
+ *     the code editor is a full-width, collapsed-by-default dock below both columns
+ *     (UI-03);
  *  2. secondary: variables/call stack, AI mentor and session/tool panels in the
  *     on-demand tab strip;
  *  3. the lesson rail and the animation read the SAME `currentEvent` and
@@ -226,28 +227,15 @@ export function LabView({
               }
               variant="rail"
             />
-            <div className="lab-editor-dock">
-              <CodeEditorPanel
-                codeLang={lab.codeLang}
-                engineText={lab.engineText}
-                code={lab.editorCode}
-                inputJson={lab.inputJson}
-                status={lab.status}
-                highlightLine={highlightLine}
-                noLocationHint={noLocationHint}
-                diagnostics={lab.diagnostics}
-                draftStatus={lab.draftStatus}
-                theme={resolved}
-                onCodeLangChange={lab.setCodeLang}
-                onCodeChange={lab.editCode}
-                onInputChange={lab.setInputJson}
-                onRun={lab.runVisualization}
-                onRestore={lab.restorePreset}
-                onRandom={lab.randomizeInput}
-              />
-            </div>
           </aside>
         </div>
+
+        <CodeDock
+          lab={lab}
+          highlightLine={highlightLine}
+          noLocationHint={noLocationHint}
+          theme={resolved}
+        />
 
         <WorkspaceTabs active={tab} onChange={setTab} labels={tabLabels} panels={tabs} />
       </div>

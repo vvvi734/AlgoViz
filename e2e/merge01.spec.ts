@@ -14,7 +14,7 @@ mkdirSync(SHOT_DIR, { recursive: true });
 
 async function openApp(page: Page) {
   await page.goto('/');
-  await expect(page.locator('.monaco-editor')).toBeVisible({ timeout: 45_000 });
+  await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
   await expect(page.getByTestId('progress')).toContainText('/');
 }
 

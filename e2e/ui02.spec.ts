@@ -8,7 +8,7 @@ import { expect, test, type Page } from './fixtures';
 
 async function openApp(page: Page) {
   await page.goto('/');
-  await expect(page.locator('.monaco-editor')).toBeVisible({ timeout: 45_000 });
+  await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
 }
 
 async function selectAlgo(page: Page, id: string) {
@@ -46,7 +46,7 @@ async function expectNoPageOverflow(page: Page) {
 }
 
 test.describe('UI-02 — left animation, right synchronized explanation', () => {
-  test('A. 1440 puts the stage left and a readable lesson rail right, editor still in the rail', async ({ page }) => {
+  test('A. 1440 puts the stage left and a readable lesson rail right, with code docked below', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await openDijkstra(page);
 
@@ -54,18 +54,21 @@ test.describe('UI-02 — left animation, right synchronized explanation', () => 
     const rail = await page.locator('[data-testid="explanation-rail"]').boundingBox();
     const current = await page.locator('[data-testid="current-step"]').boundingBox();
     const lesson = await page.locator('[data-testid="lesson-panel"]').boundingBox();
-    const editor = await page.locator('.monaco-editor').first().boundingBox();
-    expect(stage && rail && current && lesson && editor).toBeTruthy();
-    if (!stage || !rail || !current || !lesson || !editor) return;
+    const primary = await page.locator('.lab-primary').boundingBox();
+    const dock = await page.locator('[data-testid="code-dock"]').boundingBox();
+    expect(stage && rail && current && lesson && primary && dock).toBeTruthy();
+    if (!stage || !rail || !current || !lesson || !primary || !dock) return;
 
     expect(rail.x).toBeGreaterThan(stage.x + stage.width - 10);
     expect(rail.width).toBeGreaterThanOrEqual(390);
     expect(lesson.width).toBeGreaterThanOrEqual(380);
     expect(current.y).toBeLessThan(rail.y + 330);
     expect(current.y + current.height).toBeLessThanOrEqual(900);
-    // Monaco belongs to the same right column, below the explanation, not a bottom section.
-    expect(editor.x).toBeGreaterThan(stage.x + stage.width - 10);
-    expect(editor.y).toBeGreaterThan(current.y + current.height - 10);
+    // UI-03: the code editor left the rail and now sits in a collapsed dock below both columns.
+    await expect(page.locator('[data-testid="explanation-rail"] .monaco-editor')).toHaveCount(0);
+    expect(dock.y).toBeGreaterThan(primary.y + primary.height - 12);
+    expect(dock.width).toBeGreaterThan(stage.width + rail.width - 10);
+    await expect(page.locator('[data-testid="code-dock"]')).toHaveAttribute('data-expanded', 'false');
 
     await expect(page.locator('[data-testid="lesson-title"]')).toContainText(/Dijkstra|最短路径/i);
     await expect(page.locator('[data-testid="current-step-title"]')).toContainText(/带权图|Weighted graph/i);

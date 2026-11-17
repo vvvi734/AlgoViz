@@ -1,4 +1,4 @@
-import { expect, test, type Page } from './fixtures';
+import { expect, openCodePanel, test, type Page } from './fixtures';
 
 /**
  * Stage 6A browser E2E.
@@ -11,11 +11,12 @@ import { expect, test, type Page } from './fixtures';
 
 async function openApp(page: Page) {
   await page.goto('/');
-  await expect(page.locator('.monaco-editor')).toBeVisible({ timeout: 45_000 });
+  await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
 }
 
 async function runBubbleToCompare(page: Page): Promise<void> {
   await page.selectOption('#code-lang', 'python');
+  await openCodePanel(page);
   await expect(page.locator('.monaco-editor')).toContainText('lesson_step');
   await page.click('[data-testid="run-btn"]');
   await expect(page.locator('[data-testid="lesson-active-step"]')).toHaveAttribute('data-step-id', 'init', {
