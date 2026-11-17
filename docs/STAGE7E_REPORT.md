@@ -451,11 +451,11 @@ MCP stdio smoke 初次因 `packages/mcp-server/dist` 未重建而显示 6 门课
 
 ### K3. 提交与推送
 
-- 功能 + 证据提交：`STAGE7E_FEATURE_COMMIT`（提交信息 `feat(stage7e): add real graph BFS/DFS visualization`）
-- 报告回填提交：`STAGE7E_REPORT_COMMIT`（提交信息 `docs(stage7e): add delivery report with test evidence`）
-- 推送：`git push origin main`，结果 `STAGE7E_PUSH_RESULT`
-- 最终工作区：`STAGE7E_FINAL_STATUS`
-- 最终 HEAD：`STAGE7E_FINAL_HEAD`
+- 功能 + 证据提交：`f916a882c11afe279dd9e78a396cf65c3b1eca88`（`feat(stage7e): add real graph BFS/DFS visualization`）
+- 报告与文档回填提交：本提交，提交信息 `docs(stage7e): add delivery report with test evidence`；其精确哈希见 `git log -1`。
+- 推送：`git push origin main`，推送后以 `git ls-remote origin refs/heads/main` 与本地 `git rev-parse HEAD` 一致为验收。
+- 最终工作区：提交后执行 `git status --short`，预期为空。
+- 最终 HEAD：报告提交后的 `git rev-parse HEAD`；精确哈希以真实仓库为准。
 
 > 提交前已核对 `git status --short`、`git rev-parse HEAD`、`git log --oneline -4`；未使用 `push --force`，未改写历史，未丢弃用户未提交修改。全量 E2E 会重写旧阶段截图；本次已在提交前把 Stage 7B/7C/7D 的已交付截图恢复为 HEAD 版本，只保留 Stage 7E 的 90 张新证据，避免把历史阶段截图混入 7E 提交。
 
