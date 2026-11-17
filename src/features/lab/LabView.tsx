@@ -9,6 +9,7 @@ import { CallStackPanel } from './CallStackPanel';
 import { LessonPanel } from './LessonPanel';
 import { SessionPanel } from './SessionPanel';
 import { WorkspaceTabs, type WorkspaceTabId } from './WorkspaceTabs';
+import { useSidebarPreferences } from './useSidebarPreferences';
 import type { SessionTransferController } from './useSessionTransfer';
 import { AiMentor } from './AiMentor';
 import type { LabController } from './useLabController';
@@ -64,7 +65,9 @@ export function LabView({
 
   const [selectedFrameId, setSelectedFrameId] = useState<string | null>(null);
   const [tab, setTab] = useState<WorkspaceTabId>('lesson');
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  // UI-01: the directory's folded/collapsed layout is a persisted presentation
+  // preference. It never owns the algorithm, the trace or the playhead.
+  const sidebar = useSidebarPreferences();
 
   // A new run (fresh `events` array) resets the selection.
   useEffect(() => setSelectedFrameId(null), [lab.events]);
@@ -153,13 +156,18 @@ export function LabView({
   } satisfies Record<WorkspaceTabId, ReactNode>;
 
   return (
-    <div className={`lab-shell${sidebarCollapsed ? ' nav-collapsed' : ''}`} data-testid="learn-view">
+    <div className={`lab-shell${sidebar.collapsed ? ' nav-collapsed' : ''}`} data-testid="learn-view">
       <div className="lab-sidebar-wrap">
         <AlgorithmSidebar
           catalog={lab.catalog}
           groups={lab.groups}
           currentAlgo={lab.currentAlgo}
           onSelect={lab.selectAlgo}
+          collapsed={sidebar.collapsed}
+          onToggleCollapsed={sidebar.toggleCollapsed}
+          isGroupOpen={sidebar.isGroupOpen}
+          onToggleGroup={sidebar.toggleGroup}
+          onOpenGroup={sidebar.openGroup}
         />
       </div>
 
@@ -191,15 +199,6 @@ export function LabView({
                 </option>
               ))}
             </select>
-            <button
-              type="button"
-              className="btn btn-ghost sidebar-toggle"
-              aria-expanded={!sidebarCollapsed}
-              data-testid="sidebar-toggle"
-              onClick={() => setSidebarCollapsed((value) => !value)}
-            >
-              {sidebarCollapsed ? t('showDirectory') : t('hideDirectory')}
-            </button>
           </div>
         </header>
 
