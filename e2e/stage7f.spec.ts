@@ -141,7 +141,6 @@ test.describe('Stage 7F — real heapq Dijkstra, weighted graph, distance table 
       rows.map((row) => `${row.getAttribute('data-node-id')}:${row.getAttribute('data-distance')}:${row.getAttribute('data-previous-id')}`),
     )).toEqual(['A:0:', 'B:2:A', 'C:2:A', 'D:6:B', 'E:3:B', 'F:4:E', 'G:7:F']);
 
-    await page.getByRole('tab', { name: /教学步骤|Teaching steps/ }).click();
     await expect(page.getByTestId('lesson-active-step')).toHaveAttribute('data-step-id', 'done');
 
     await page.getByRole('tab', { name: /变量与调用栈|Variables & call stack/ }).click();

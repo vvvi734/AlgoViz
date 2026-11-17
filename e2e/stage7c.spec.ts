@@ -179,7 +179,6 @@ test.describe('Stage 7C — real singly linked-list visualization', () => {
     await expect(page.locator('[data-testid="code-position"]')).not.toBeEmpty();
     await expect(page.locator('[data-testid="code-position"] .codeline.active .lineno')).toHaveText('146');
     await expect(page.locator('.algolens-active-line').first()).toBeVisible();
-    await page.getByRole('tab', { name: '教学步骤' }).click();
     await setFrame(page, 21);
     await expect(page.locator('[data-testid="linked-node"][data-active="true"]')).toHaveCount(0);
     await expect(page.locator('[data-testid="lesson-active-step"]')).toHaveAttribute('data-step-id', 'done');

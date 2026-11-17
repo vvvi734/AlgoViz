@@ -15,19 +15,20 @@ import { AiMentor } from './AiMentor';
 import type { LabController } from './useLabController';
 import type { LessonCatalog } from '../../domain/lessons/catalog';
 import type { LocalizedLabel, PackExample } from '../../domain/packs/types';
-import { stepIndexForEvent, lessonStepIdOf } from '../../domain/lessons/sync';
+import { stepIndexForEvent } from '../../domain/lessons/sync';
 import { useI18n } from '../../i18n/I18nProvider';
 import { useTheme } from '../../theme/ThemeProvider';
 
 /**
- * Stage 7A learning workspace.
+ * Stage 7A learning workspace, re-laid out by UI-02.
  *
  * Information architecture:
- *  1. primary: sidebar → animation → current trace step → timeline, with
- *     Monaco beside the animation on wide screens;
- *  2. secondary: variables/call stack, teaching course, full course copy;
- *  3. auxiliary: AI mentor and session/tool panels, mounted but only shown
- *     inside on-demand tabs.
+ *  1. primary: sidebar → [animation + playback | synchronized explanation rail];
+ *     the code editor stays in the right rail, not below the animation (UI-03);
+ *  2. secondary: variables/call stack, AI mentor and session/tool panels in the
+ *     on-demand tab strip;
+ *  3. the lesson rail and the animation read the SAME `currentEvent` and
+ *     `playback.index`; the rail never owns a second playhead.
  *
  * The workspace never owns execution state. It reads the one LabController
  * (`currentEvent`, trace, playback) and only keeps presentational tab state.
@@ -64,7 +65,7 @@ export function LabView({
   const noLocationHint = !lab.traceStale && lab.events.length > 0 && currentEvent != null && !currentEvent.sourceLocation;
 
   const [selectedFrameId, setSelectedFrameId] = useState<string | null>(null);
-  const [tab, setTab] = useState<WorkspaceTabId>('lesson');
+  const [tab, setTab] = useState<WorkspaceTabId>('state');
   // UI-01: the directory's folded/collapsed layout is a persisted presentation
   // preference. It never owns the algorithm, the trace or the playhead.
   const sidebar = useSidebarPreferences();
@@ -85,33 +86,14 @@ export function LabView({
   const lesson = lessons.byAlgorithm(lab.currentAlgo);
   const activeStepIndex = lesson ? stepIndexForEvent(lesson, currentEvent) : -1;
   const activeStep = activeStepIndex >= 0 ? lesson?.steps[activeStepIndex] : undefined;
-  const eventStepId = lessonStepIdOf(currentEvent);
 
   const tabLabels: Record<WorkspaceTabId, string> = {
-    lesson: t('workspaceTeaching'),
     state: t('workspaceState'),
     mentor: t('workspaceMentor'),
     tools: t('workspaceTools'),
   };
 
   const tabs = {
-    lesson: (
-      <LessonPanel
-        lesson={lesson}
-        events={lab.events}
-        index={lab.playback.index}
-        currentEvent={currentEvent}
-        onSeek={lab.playback.seek}
-        originName={packOrigin ? packOrigin[lang] : undefined}
-        hasExample={Boolean(courseExample)}
-        onUseExample={
-          courseExample
-            ? () => lab.applyCourseExample(courseExample.code, courseExample.input)
-            : undefined
-        }
-        compact
-      />
-    ),
     state: (
       <div className="state-stack">
         {hasCallStack && (
@@ -202,7 +184,7 @@ export function LabView({
           </div>
         </header>
 
-        <div className="lab-primary">
+        <div className="lab-primary ui02-workbench" data-testid="lab-workbench">
           <section className="panel pad stage-panel">
             <div className="sectionhead stage-head">
               <div>
@@ -225,71 +207,50 @@ export function LabView({
                 onSelect={lab.selectTreeMode}
               />
             ) : null}
-            <section className="current-step stage-current-step" data-testid="current-step">
-              <div className="current-step-main">
-                <span className="tag tag-active">{t('currentStep')}</span>
-                <div className="current-step-copy">
-                  <strong data-testid="current-step-title">
-                    {activeStep ? activeStep.title[lang] : currentEvent ? t('currentStepUnlinked') : t('currentStepEmpty')}
-                  </strong>
-                  {currentEvent?.message && (
-                    <span className="current-step-message" data-testid="current-step-message">{currentEvent.message}</span>
-                  )}
-                  {activeStep?.tip && <span className="current-step-tip">💡 {activeStep.tip[lang]}</span>}
-                  {eventStepId && !activeStep && (
-                    <span className="current-step-tip">{t('lessonUnknownStep').replace('{id}', eventStepId)}</span>
-                  )}
-                </div>
-              </div>
-              {currentEvent?.variables?.length ? (
-                <div className="current-vars" aria-label={t('variablesWatch')}>
-                  {currentEvent.variables.map((variable) => (
-                    <span className="current-var" key={variable.name}>
-                      <b>{variable.name}</b>
-                      <code>{formatCompact(variable.value)}</code>
-                    </span>
-                  ))}
-                </div>
-              ) : null}
-            </section>
             <Timeline events={lab.events} playback={lab.playback} />
           </section>
 
-          <div className="code-panel">
-            <CodeEditorPanel
-              codeLang={lab.codeLang}
-              engineText={lab.engineText}
-              code={lab.editorCode}
-              inputJson={lab.inputJson}
-              status={lab.status}
-              highlightLine={highlightLine}
-              noLocationHint={noLocationHint}
-              diagnostics={lab.diagnostics}
-              draftStatus={lab.draftStatus}
-              theme={resolved}
-              onCodeLangChange={lab.setCodeLang}
-              onCodeChange={lab.editCode}
-              onInputChange={lab.setInputJson}
-              onRun={lab.runVisualization}
-              onRestore={lab.restorePreset}
-              onRandom={lab.randomizeInput}
+          <aside className="lab-explanation" data-testid="explanation-rail" aria-label={t('lessonPanel')}>
+            <LessonPanel
+              lesson={lesson}
+              events={lab.events}
+              index={lab.playback.index}
+              currentEvent={currentEvent}
+              onSeek={lab.playback.seek}
+              originName={packOrigin ? packOrigin[lang] : undefined}
+              hasExample={Boolean(courseExample)}
+              onUseExample={
+                courseExample
+                  ? () => lab.applyCourseExample(courseExample.code, courseExample.input)
+                  : undefined
+              }
+              variant="rail"
             />
-          </div>
+            <div className="lab-editor-dock">
+              <CodeEditorPanel
+                codeLang={lab.codeLang}
+                engineText={lab.engineText}
+                code={lab.editorCode}
+                inputJson={lab.inputJson}
+                status={lab.status}
+                highlightLine={highlightLine}
+                noLocationHint={noLocationHint}
+                diagnostics={lab.diagnostics}
+                draftStatus={lab.draftStatus}
+                theme={resolved}
+                onCodeLangChange={lab.setCodeLang}
+                onCodeChange={lab.editCode}
+                onInputChange={lab.setInputJson}
+                onRun={lab.runVisualization}
+                onRestore={lab.restorePreset}
+                onRandom={lab.randomizeInput}
+              />
+            </div>
+          </aside>
         </div>
 
         <WorkspaceTabs active={tab} onChange={setTab} labels={tabLabels} panels={tabs} />
       </div>
     </div>
   );
-}
-
-function formatCompact(value: unknown): string {
-  if (value === undefined) return 'undefined';
-  if (typeof value === 'string') return value;
-  try {
-    const text = JSON.stringify(value);
-    return text.length > 48 ? `${text.slice(0, 48)}…` : text;
-  } catch {
-    return String(value);
-  }
 }

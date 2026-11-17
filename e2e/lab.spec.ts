@@ -2,7 +2,7 @@ import { expect, test, type Page } from './fixtures';
 
 /** Replace the Monaco editor content by selecting all and typing. */
 /** Stage 7A: secondary panels live in on-demand workspace tabs. */
-async function openTab(page: Page, tab: 'lesson' | 'state' | 'mentor' | 'tools') {
+async function openTab(page: Page, tab: 'state' | 'mentor' | 'tools') {
   await page.click(`[data-testid="workspace-tab-${tab}"]`);
   await expect(page.locator(`[data-testid="workspace-panel-${tab}"]`)).toBeVisible();
 }
@@ -230,7 +230,6 @@ test.describe('Stage 3B — teaching steps synced with real Pyodide execution', 
 
     // Jump to the first `combine` frame: the call stack must still be on screen
     // and the variables must belong to that depth, not to a guessed state.
-    await openTab(page, 'lesson');
     await page.click('[data-testid="lesson-step-combine"]');
     await expect(page.locator('[data-testid="lesson-active-step"]')).toHaveAttribute('data-step-id', 'combine');
     await openTab(page, 'state');

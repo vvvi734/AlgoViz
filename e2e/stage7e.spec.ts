@@ -67,7 +67,8 @@ async function expectNoPageOverflow(page: Page) {
 }
 
 async function showLesson(page: Page) {
-  await page.getByRole('tab', { name: /教学步骤|Teaching steps/ }).click();
+  // UI-02: the course lives in the always-visible right rail; no tab to open.
+  await expect(page.locator('[data-testid="current-step"]')).toBeVisible();
 }
 
 async function showVariables(page: Page) {

@@ -76,7 +76,6 @@ test.describe('Stage 5A — Agent session file → AlgoLens Web', () => {
     await expect(page.locator('[data-testid="variables-watch"]')).toContainText('arr');
 
     // Lesson → timeline: jumping to `compare` lands on a real frame of that stage.
-    await page.click('[data-testid="workspace-tab-lesson"]');
     await page.click('[data-testid="lesson-step-compare"]');
     await expect(page.locator('[data-testid="lesson-active-step"]')).toHaveAttribute('data-step-id', 'compare');
     await expect(page.locator('[data-testid="step-desc"]')).toContainText('比较');

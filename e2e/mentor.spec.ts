@@ -15,7 +15,6 @@ async function openApp(page: Page) {
 }
 
 async function runBubbleToCompare(page: Page): Promise<void> {
-  await page.click('[data-testid="workspace-tab-lesson"]');
   await page.selectOption('#code-lang', 'python');
   await expect(page.locator('.monaco-editor')).toContainText('lesson_step');
   await page.click('[data-testid="run-btn"]');

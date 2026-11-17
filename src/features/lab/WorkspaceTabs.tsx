@@ -1,8 +1,12 @@
 import type { ReactNode } from 'react';
 
-export type WorkspaceTabId = 'lesson' | 'state' | 'mentor' | 'tools';
+/**
+ * UI-02: the course moved into the always-visible explanation rail, so the
+ * bottom tab strip now owns only the secondary diagnostic/tool panels.
+ */
+export type WorkspaceTabId = 'state' | 'mentor' | 'tools';
 
-const ORDER: WorkspaceTabId[] = ['lesson', 'state', 'mentor', 'tools'];
+const ORDER: WorkspaceTabId[] = ['state', 'mentor', 'tools'];
 
 /**
  * Accessible tab strip for the secondary workspace panels.
@@ -31,7 +35,7 @@ export function WorkspaceTabs({
 
   return (
     <div className="workspace-tabs" data-testid="workspace-tabs">
-      <div className="workspace-tablist" role="tablist" aria-label={labels.lesson}>
+      <div className="workspace-tablist" role="tablist" aria-label={labels.state}>
         {ORDER.map((id) => (
           <button
             key={id}

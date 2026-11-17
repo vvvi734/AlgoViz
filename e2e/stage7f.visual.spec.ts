@@ -173,7 +173,6 @@ test.describe('Stage 7F visual evidence', () => {
     });
 
     // Bilingual acceptance: one English, done-state series through the same course.
-    await page.getByRole('tab', { name: /教学步骤|Teaching steps/ }).click();
     await setFrame(page, 45);
     await expect(page.getByTestId('lesson-active-step')).toHaveAttribute('data-step-id', 'done');
     await page.getByLabel('Switch language').click();
