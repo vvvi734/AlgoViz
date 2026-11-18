@@ -11,18 +11,17 @@ import {
 import { useI18n } from '../../i18n/I18nProvider';
 
 /**
- * UX-03 — textbook directory.
+ * UX-03 → UX-03B — textbook directory.
  *
- * Three levels, authored in `domain/algorithms/textbook.ts`:
- *   chapter (nine 《大话数据结构》 chapters + extension chapter)
- *   topic   (knowledge point)
- *   algorithm (existing registry entry)
+ * Chapter order is authored in `domain/algorithms/textbook.ts`. A topic with one
+ * shipped algorithm renders as one direct row (no duplicate topic/algorithm
+ * click); a topic with several algorithms keeps its disclosure. Concepts and
+ * planned algorithms are static, explicitly non-runnable rows.
  *
- * Chapters and topics are independent disclosures; each can be open or closed
- * without disturbing another. The directory owns no execution state: selecting
- * an algorithm just calls the existing lab selector, and playback/trace stay
- * untouched. Current-path expansion is a preference concern, handled by
- * `useSidebarPreferences`, not by this component.
+ * The directory owns no execution state: selecting an algorithm just calls the
+ * existing lab selector, and playback/trace stay untouched. Current-path
+ * expansion is a preference concern, handled by `useSidebarPreferences`, not by
+ * this component.
  */
 export function AlgorithmSidebar({
   catalog,
@@ -233,30 +232,83 @@ function TextbookTopicRow({
   const { lang, pick, t } = useI18n();
   const title = textbookTitle(topic.title, lang);
 
-  if (topic.planned && topic.algorithms.length === 0) {
+  if (topic.kind === 'concept' || topic.kind === 'planned') {
+    const status = topic.kind === 'concept' ? t('textbookConcept') : t('textbookPending');
+    const accessibleStatus =
+      topic.kind === 'concept' ? t('textbookConceptPending') : t('textbookPending');
     return (
       <div
-        className="textbook-topic is-planned"
+        className={`textbook-topic is-${topic.kind}`}
         data-topic={topic.id}
+        data-kind={topic.kind}
         data-testid={`topic-${topic.id}`}
         aria-disabled="true"
+        aria-label={`${title} · ${accessibleStatus}`}
+        title={`${title} · ${accessibleStatus}`}
       >
-        <span className="textbook-topic-rail" aria-hidden="true" />
+        <span className="textbook-kind-icon" aria-hidden="true">
+          {topic.kind === 'concept' ? '◇' : '△'}
+        </span>
         <span className="textbook-topic-name">{title}</span>
-        <span className="textbook-pending">{t('textbookPending')}</span>
+        <span className="textbook-kind-status">{status}</span>
       </div>
     );
   }
 
+  if (topic.kind === 'algorithm') {
+    const algorithm = topic.algorithms[0];
+    const entry = algorithm ? catalog[algorithm.id] : undefined;
+    if (!algorithm || !entry) return null;
+    const algorithmName = pick(entry.name);
+    const active = algorithm.id === currentAlgo;
+    return (
+      <section
+        className="textbook-topic is-direct"
+        data-topic={topic.id}
+        data-kind="algorithm"
+        data-direct="true"
+        data-has-current={holdsCurrent ? 'true' : 'false'}
+        data-testid={`topic-${topic.id}`}
+      >
+        <button
+          type="button"
+          className={`alg-item textbook-direct-item${active ? ' active' : ''}`}
+          onClick={() => onSelect(algorithm.id)}
+          data-testid={`algo-${algorithm.id}`}
+          data-chapter={chapterId}
+          data-topic={topic.id}
+          data-kind="algorithm"
+          data-direct="true"
+          aria-current={active ? 'true' : undefined}
+          aria-label={`${title} · ${algorithmName} · ${t('textbookAlgorithm')}`}
+          title={algorithmName}
+        >
+          <span className="alg-icon" aria-hidden="true">{entry.icon}</span>
+          <span className="textbook-direct-copy">
+            <span className="textbook-direct-title">{title}</span>
+            {algorithmName !== title && (
+              <span className="textbook-direct-algorithm">{algorithmName}</span>
+            )}
+          </span>
+          {algorithm.extension && (
+            <span className="textbook-extension" aria-hidden="true">{t('textbookExtension')}</span>
+          )}
+          {active && <span className="textbook-current-dot" aria-hidden="true" />}
+        </button>
+      </section>
+    );
+  }
+
   return (
-    <section className="textbook-topic" data-topic={topic.id}>
+    <section className="textbook-topic" data-topic={topic.id} data-kind="group">
       <button
         type="button"
         className="textbook-topic-head"
         aria-expanded={open}
         aria-controls={`topic-${topic.id}-body`}
-        aria-label={title}
+        aria-label={`${title} · ${t('textbookAlgorithmGroup')}`}
         data-testid={`topic-${topic.id}`}
+        data-kind="group"
         data-has-current={holdsCurrent ? 'true' : 'false'}
         onClick={onToggle}
       >
@@ -292,6 +344,7 @@ function TextbookTopicRow({
                 data-testid={`algo-${algorithm.id}`}
                 data-chapter={chapterId}
                 data-topic={topic.id}
+                data-kind="algorithm"
                 aria-current={active ? 'true' : undefined}
               >
                 <span className="alg-icon">{entry.icon}</span>

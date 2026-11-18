@@ -96,6 +96,9 @@ export async function openTextbookChapter(page: Page, chapterId: string) {
 export async function openTextbookTopic(page: Page, topicId: string) {
   const topic = page.getByTestId(`topic-${topicId}`);
   await expect(topic).toBeVisible();
+  // UX-03B: a one-algorithm topic is already a direct entry; there is no
+  // disclosure to open. Multi-algorithm topics keep the original contract.
+  if ((await topic.getAttribute('data-direct')) === 'true') return;
   if ((await topic.getAttribute('aria-expanded')) !== 'true') {
     await topic.click();
   }

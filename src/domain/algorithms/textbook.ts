@@ -36,7 +36,13 @@ export interface TextbookTopic {
   id: string;
   title: TextbookTitle;
   algorithms: TextbookAlgorithmRef[];
-  /** Textbook knowledge point with no shipped algorithm yet. */
+  /**
+   * Knowledge explanation. Such a topic is never a runnable animation; it may
+   * still be awaiting its lesson page, so the sidebar shows the concept type and
+   * a pending status instead of inventing an algorithm target.
+   */
+  concept?: boolean;
+  /** Planned algorithm demonstration whose implementation is not shipped yet. */
   planned?: boolean;
   /** Whole topic is an extension beyond the book's core sequence. */
   extension?: boolean;
@@ -71,19 +77,19 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
         id: 'intro-concepts',
         title: { zh: '数据结构的基本概念', en: 'Basic concepts' },
         algorithms: [],
-        planned: true,
+        concept: true,
       },
       {
         id: 'intro-logical-physical',
         title: { zh: '逻辑结构与物理结构', en: 'Logical and physical structures' },
         algorithms: [],
-        planned: true,
+        concept: true,
       },
       {
         id: 'intro-adt',
         title: { zh: '抽象数据类型', en: 'Abstract data types' },
         algorithms: [],
-        planned: true,
+        concept: true,
       },
     ],
   },
@@ -97,13 +103,13 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
         id: 'algorithm-definition',
         title: { zh: '算法的定义与特性', en: 'Definition and properties' },
         algorithms: [],
-        planned: true,
+        concept: true,
       },
       {
         id: 'algorithm-efficiency',
         title: { zh: '算法效率的度量', en: 'Measuring algorithm efficiency' },
         algorithms: [],
-        planned: true,
+        concept: true,
       },
       {
         id: 'recursion-extension',
@@ -126,13 +132,13 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
         id: 'linear-basics',
         title: { zh: '线性表的定义与抽象数据类型', en: 'Definition and ADT' },
         algorithms: [],
-        planned: true,
+        concept: true,
       },
       {
         id: 'sequential-list',
         title: { zh: '线性表的顺序存储结构', en: 'Sequential storage' },
         algorithms: [],
-        planned: true,
+        concept: true,
       },
       {
         id: 'linked-list',
@@ -143,19 +149,19 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
         id: 'static-linked-list',
         title: { zh: '静态链表', en: 'Static linked list' },
         algorithms: [],
-        planned: true,
+        concept: true,
       },
       {
         id: 'circular-linked-list',
         title: { zh: '循环链表', en: 'Circular linked list' },
         algorithms: [],
-        planned: true,
+        concept: true,
       },
       {
         id: 'doubly-linked-list',
         title: { zh: '双向链表', en: 'Doubly linked list' },
         algorithms: [],
-        planned: true,
+        concept: true,
       },
     ],
   },
@@ -174,7 +180,7 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
         id: 'stack-recursion',
         title: { zh: '栈的应用——递归', en: 'Stack application: recursion' },
         algorithms: [],
-        planned: true,
+        concept: true,
       },
       {
         id: 'queue-basics',
@@ -185,7 +191,7 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
         id: 'circular-queue',
         title: { zh: '循环队列', en: 'Circular queue' },
         algorithms: [],
-        planned: true,
+        concept: true,
       },
     ],
   },
@@ -199,13 +205,13 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
         id: 'string-basics',
         title: { zh: '串的定义、比较与抽象数据类型', en: 'Definition, comparison and ADT' },
         algorithms: [],
-        planned: true,
+        concept: true,
       },
       {
         id: 'string-storage',
         title: { zh: '串的存储结构', en: 'String storage structures' },
         algorithms: [],
-        planned: true,
+        concept: true,
       },
       {
         id: 'naive-match',
@@ -231,13 +237,13 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
         id: 'tree-basics',
         title: { zh: '树的定义与存储结构', en: 'Tree definition and storage' },
         algorithms: [],
-        planned: true,
+        concept: true,
       },
       {
         id: 'binary-tree',
         title: { zh: '二叉树的性质与存储结构', en: 'Binary tree properties and storage' },
         algorithms: [],
-        planned: true,
+        concept: true,
       },
       {
         id: 'binary-tree-traversal',
@@ -248,13 +254,13 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
         id: 'threaded-tree',
         title: { zh: '线索二叉树', en: 'Threaded binary tree' },
         algorithms: [],
-        planned: true,
+        concept: true,
       },
       {
         id: 'forest-conversion',
         title: { zh: '树、森林与二叉树的转换', en: 'Tree, forest and binary tree conversion' },
         algorithms: [],
-        planned: true,
+        concept: true,
       },
       {
         id: 'huffman',
@@ -274,13 +280,13 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
         id: 'graph-basics',
         title: { zh: '图的基本概念', en: 'Graph fundamentals' },
         algorithms: [],
-        planned: true,
+        concept: true,
       },
       {
         id: 'graph-storage',
         title: { zh: '图的存储结构', en: 'Graph storage structures' },
         algorithms: [],
-        planned: true,
+        concept: true,
       },
       {
         id: 'graph-traversal',
@@ -375,7 +381,7 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
         id: 'sort-basics',
         title: { zh: '排序的基本概念与分类', en: 'Sorting concepts and classification' },
         algorithms: [],
-        planned: true,
+        concept: true,
       },
       {
         id: 'bubble-sort',
@@ -439,8 +445,19 @@ export interface TextbookAlgorithmNode {
   extension: boolean;
 }
 
+/**
+ * The rendered row type. It is derived from authored semantics plus the live
+ * child count, never from a hard-coded algorithm name:
+ *   concept   knowledge explanation, no animation target
+ *   planned   planned algorithm demonstration, not implemented yet
+ *   algorithm one shipped algorithm, shown as a direct entry
+ *   group     several shipped algorithms, keeps its disclosure
+ */
+export type TextbookTopicKind = 'concept' | 'planned' | 'algorithm' | 'group';
+
 export interface TextbookTopicView extends TextbookTopic {
   algorithms: TextbookAlgorithmNode[];
+  kind: TextbookTopicKind;
 }
 
 export interface TextbookChapterView extends Omit<TextbookChapter, 'topics'> {
@@ -450,6 +467,22 @@ export interface TextbookChapterView extends Omit<TextbookChapter, 'topics'> {
 
 export function textbookTitle(title: TextbookTitle, lang: Lang): string {
   return lang === 'zh' ? title.zh : title.en;
+}
+
+/**
+ * UX-03B: collapse a one-algorithm topic into a direct row, while keeping every
+ * multi-algorithm topic as a disclosure. The authored `concept` / `planned`
+ * flags carry semantics; the live child count carries the structural decision.
+ */
+function textbookTopicKind(
+  topic: TextbookTopic,
+  algorithms: readonly TextbookAlgorithmNode[],
+): TextbookTopicKind {
+  if (topic.concept) return 'concept';
+  if (topic.planned) return 'planned';
+  if (algorithms.length === 1) return 'algorithm';
+  if (algorithms.length > 1) return 'group';
+  return 'planned';
 }
 
 /**
@@ -473,7 +506,7 @@ export function buildTextbookNavigation(catalog: AlgorithmCatalog): TextbookChap
         mapped.add(ref.id);
         algorithms.push({ id: ref.id, extension: ref.extension === true });
       }
-      return { ...topic, algorithms };
+      return { ...topic, algorithms, kind: textbookTopicKind(topic, algorithms) };
     });
 
     if (chapter.extension && topics.every((topic) => topic.algorithms.length === 0)) continue;
@@ -500,6 +533,7 @@ export function buildTextbookNavigation(catalog: AlgorithmCatalog): TextbookChap
         id: 'unclassified',
         title: { zh: '其他算法', en: 'Other algorithms' },
         algorithms: unmapped.map((id) => ({ id, extension: true })),
+        kind: unmapped.length === 1 ? 'algorithm' : 'group',
         extension: true,
       });
       extension.algorithmCount += unmapped.length;

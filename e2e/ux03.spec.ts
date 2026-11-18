@@ -58,9 +58,11 @@ test.describe('UX-03 — textbook navigation', () => {
       'chapter-ch9-sort',
     ]);
 
-    // The current path is the only default expansion: chapter 9 + bubble topic.
+    // The current path is the only default expansion: chapter 9, then the
+    // single-algorithm bubble topic as one direct row.
     await expect(page.getByTestId('chapter-ch9-sort')).toHaveAttribute('aria-expanded', 'true');
-    await expect(page.getByTestId('topic-bubble-sort')).toHaveAttribute('aria-expanded', 'true');
+    await expect(page.getByTestId('topic-bubble-sort')).toHaveAttribute('data-direct', 'true');
+    await expect(page.getByTestId('topic-bubble-sort')).toHaveAttribute('data-kind', 'algorithm');
     await expect(page.getByTestId('algo-bubble')).toHaveAttribute('aria-current', 'true');
     for (const id of ['ch7-graph', 'ch8-search', 'ch2-algorithm']) {
       await expect(page.getByTestId(`chapter-${id}`)).toHaveAttribute('aria-expanded', 'false');
@@ -169,7 +171,8 @@ test.describe('UX-03 — textbook navigation', () => {
     await expect(page.getByTestId('sidebar')).toContainText('Textbook directory');
     await expect(page.getByTestId('chapter-ch7-graph')).toContainText('Graphs');
     await expect(page.getByTestId('chapter-ch9-sort')).toContainText('Sorting');
-    await expect(page.getByTestId('topic-graph-basics')).toContainText('Pending');
+    await expect(page.getByTestId('topic-graph-basics')).toContainText('Concept');
+    await expect(page.getByTestId('topic-shell-sort')).toContainText('Pending');
     await expect(page.getByTestId('topic-graph-connectivity')).toContainText('Extension');
     await expect(page.locator('.textbook-source')).toContainText('Da Hua Data Structures');
     await expectNoPageOverflow(page);

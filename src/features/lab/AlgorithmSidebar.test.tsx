@@ -93,9 +93,35 @@ describe('AlgorithmSidebar — textbook chapters (UX-03)', () => {
     expect(searchBody?.getAttribute('data-open')).toBe('false');
     expect(searchBody?.hasAttribute('inert')).toBe(true);
 
-    // The current topic is open; a sibling topic is not.
-    expect(screen.getByTestId('topic-bubble-sort').getAttribute('aria-expanded')).toBe('true');
-    expect(screen.getByTestId('topic-quick-sort').getAttribute('aria-expanded')).toBe('false');
+    // The current direct entry is visible because only its chapter needs to open.
+    expect(screen.getByTestId('topic-bubble-sort').getAttribute('data-direct')).toBe('true');
+    expect(screen.getByTestId('topic-bubble-sort').getAttribute('data-kind')).toBe('algorithm');
+    expect(screen.getByTestId('topic-bubble-sort').hasAttribute('aria-expanded')).toBe(false);
+    expect(screen.getByTestId('topic-quick-sort').getAttribute('data-direct')).toBe('true');
+  });
+
+  it('renders a single-algorithm topic as one direct row, not a duplicate hierarchy', () => {
+    render(<Harness />);
+    const bubbleTopic = screen.getByTestId('topic-bubble-sort');
+    expect(bubbleTopic.getAttribute('data-direct')).toBe('true');
+    expect(bubbleTopic.getAttribute('data-has-current')).toBe('true');
+    expect(bubbleTopic.querySelector('.textbook-topic-head')).toBeNull();
+    expect(within(bubbleTopic).getAllByText('冒泡排序')).toHaveLength(1);
+    expect(within(bubbleTopic).getByTestId('algo-bubble')).toBeTruthy();
+    expect(within(bubbleTopic).getAllByTestId(/^algo-/)).toHaveLength(1);
+  });
+
+  it('keeps multi-algorithm topics expandable and collapses them independently', () => {
+    render(<Harness />);
+    const shortest = screen.getByTestId('topic-shortest-path');
+    expect(shortest.tagName).toBe('BUTTON');
+    expect(shortest.getAttribute('data-kind')).toBe('group');
+    expect(shortest.getAttribute('aria-expanded')).toBe('false');
+    fireEvent.click(shortest);
+    expect(shortest.getAttribute('aria-expanded')).toBe('true');
+    expect(within(screen.getByTestId('topic-shortest-path').closest('section')!).getAllByTestId(/^algo-/)).toHaveLength(3);
+    fireEvent.click(shortest);
+    expect(shortest.getAttribute('aria-expanded')).toBe('false');
   });
 
   it('allows multiple chapters and topics to be open without closing siblings', () => {
@@ -105,11 +131,14 @@ describe('AlgorithmSidebar — textbook chapters (UX-03)', () => {
     fireEvent.click(search);
     expect(search.getAttribute('aria-expanded')).toBe('true');
     expect(sort.getAttribute('aria-expanded')).toBe('true');
-
-    fireEvent.click(screen.getByTestId('topic-bst'));
-    expect(screen.getByTestId('topic-bst').getAttribute('aria-expanded')).toBe('true');
-    expect(screen.getByTestId('topic-bubble-sort').getAttribute('aria-expanded')).toBe('true');
+    expect(screen.getByTestId('topic-bst').getAttribute('data-direct')).toBe('true');
     expect(screen.getByTestId('algo-bst')).toBeTruthy();
+
+    fireEvent.click(screen.getByTestId('chapter-ch7-graph'));
+    fireEvent.click(screen.getByTestId('topic-mst'));
+    expect(screen.getByTestId('topic-mst').getAttribute('aria-expanded')).toBe('true');
+    expect(screen.getByTestId('algo-prim')).toBeTruthy();
+    expect(screen.getByTestId('algo-bubble')).toBeTruthy();
 
     fireEvent.click(search);
     expect(search.getAttribute('aria-expanded')).toBe('false');
@@ -130,13 +159,21 @@ describe('AlgorithmSidebar — textbook chapters (UX-03)', () => {
     expect(screen.getAllByTestId(/^algo-/).filter((item) => item.getAttribute('aria-current') === 'true')).toHaveLength(1);
   });
 
-  it('renders planned topics as non-interactive rows with no algorithm target', () => {
+  it('renders concepts and planned topics as static rows with truthful status', () => {
     render(<Harness />);
     const huffman = screen.getByTestId('topic-huffman');
     expect(huffman.tagName).toBe('DIV');
     expect(huffman.getAttribute('aria-disabled')).toBe('true');
+    expect(huffman.getAttribute('data-kind')).toBe('planned');
     expect(huffman.textContent).toContain('待完善');
     expect(within(huffman).queryByTestId(/^algo-/)).toBeNull();
+
+    const graphBasics = screen.getByTestId('topic-graph-basics');
+    expect(graphBasics.tagName).toBe('DIV');
+    expect(graphBasics.getAttribute('data-kind')).toBe('concept');
+    expect(graphBasics.getAttribute('aria-disabled')).toBe('true');
+    expect(graphBasics.textContent).toContain('知识讲解');
+    expect(within(graphBasics).queryByRole('button')).toBeNull();
     expect(screen.getByTestId('chapter-ch5-string').textContent).toContain('待完善');
   });
 
@@ -145,17 +182,19 @@ describe('AlgorithmSidebar — textbook chapters (UX-03)', () => {
     render(<Harness onSelect={onSelect} />);
     for (const button of [
       screen.getByTestId('chapter-ch9-sort'),
-      screen.getByTestId('topic-bubble-sort'),
       screen.getByTestId('algo-bubble'),
+      screen.getByTestId('algo-quick'),
       screen.getByTestId('sidebar-collapse'),
-      screen.getByTestId('topic-quick-sort'),
     ]) {
       expect(button.tagName).toBe('BUTTON');
       expect(button.getAttribute('type')).toBe('button');
       expect(button.hasAttribute('disabled')).toBe(false);
     }
+    fireEvent.click(screen.getByTestId('algo-quick'));
+    expect(onSelect).toHaveBeenCalledWith('quick');
+    onSelect.mockClear();
     fireEvent.click(screen.getByTestId('chapter-ch9-sort'));
-    fireEvent.click(screen.getByTestId('topic-quick-sort'));
+    fireEvent.click(screen.getByTestId('sidebar-collapse'));
     expect(onSelect).not.toHaveBeenCalled();
   });
 

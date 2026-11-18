@@ -105,15 +105,69 @@ describe('textbook directory (UX-03)', () => {
   it('keeps planned entries target-free and every authored algorithm valid', () => {
     for (const chapter of TEXTBOOK_CHAPTERS) {
       for (const topic of chapter.topics) {
-        if (!topic.planned) continue;
-        expect(topic.algorithms).toHaveLength(0);
+        if (topic.concept || topic.planned) {
+          expect(topic.algorithms).toHaveLength(0);
+        }
+        // Concept and planned are distinct statuses; an authored topic cannot
+        // claim both and cannot be silently left without semantics.
+        expect(Boolean(topic.concept && topic.planned)).toBe(false);
       }
     }
     for (const chapter of nav) {
       for (const topic of chapter.topics) {
-        expect(topic.algorithms.length > 0 || topic.planned || topic.id === 'custom').toBe(true);
+        expect(
+          topic.algorithms.length > 0 ||
+            topic.kind === 'concept' ||
+            topic.kind === 'planned' ||
+            topic.id === 'custom',
+        ).toBe(true);
       }
     }
+  });
+
+  it('collapses single-algorithm topics into direct entries and keeps multi-algorithm topics expandable', () => {
+    const topics = nav.flatMap((chapter) => chapter.topics);
+    const direct = topics.filter((topic) => topic.kind === 'algorithm');
+    const groups = topics.filter((topic) => topic.kind === 'group');
+
+    expect(direct.map((topic) => topic.id)).toEqual([
+      'linked-list',
+      'stack-basics',
+      'queue-basics',
+      'binary-tree-traversal',
+      'topological',
+      'critical-path',
+      'sequential-search',
+      'ordered-search',
+      'bst',
+      'avl',
+      'bubble-sort',
+      'selection-sort',
+      'insertion-sort',
+      'quick-sort',
+    ]);
+    expect(groups.map((topic) => topic.id)).toEqual([
+      'recursion-extension',
+      'graph-traversal',
+      'mst',
+      'shortest-path',
+      'graph-connectivity',
+    ]);
+
+    for (const topic of direct) {
+      expect(topic.algorithms).toHaveLength(1);
+      expect(topic.concept).toBeUndefined();
+      expect(topic.planned).toBeUndefined();
+    }
+    for (const topic of groups) {
+      expect(topic.algorithms.length).toBeGreaterThan(1);
+    }
+
+    const graphBasics = topics.find((topic) => topic.id === 'graph-basics');
+    const shellSort = topics.find((topic) => topic.id === 'shell-sort');
+    expect(graphBasics?.kind).toBe('concept');
+    expect(shellSort?.kind).toBe('planned');
+    expect(topics.every((topic) => topic.kind !== undefined)).toBe(true);
   });
 
   it('maps the current algorithm to one chapter/topic path', () => {
