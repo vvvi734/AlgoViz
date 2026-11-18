@@ -19,12 +19,15 @@
 
 ## 测试结果
 
+本地复核环境：Windows + Microsoft Edge（Playwright `channel=msedge`）+ 真实 Pyodide 0.27.7；未使用 mock 生成 G1 帧。
+
 - `npm run typecheck`：通过。
 - `npm run build`：通过。
-- 单测：G1 相关 72 passed（`shortestPath`、`g1Lessons`、`registry`、`catalog`、`i18n`）。
-- 浏览器功能 E2E：3/3 通过；覆盖 Floyd 默认 5 节点/7 边/25 格、k=C/i=A/j=B、A→B 4→−1、done 路径、负环、不可达；Bellman 松弛 B 4→−1 previous C、第 2 轮提前结束、done 路径、不可达负环不误报。
-- 视觉 E2E：1/1 通过；生成 6 张 1440/390 真实 Chromium 截图。
-- 全量单测未在 600 s 内完成：本机 2 核 3 GB，jsdom 环境每文件约 25 s；日志中 26 个文件全部通过无失败，非 G1 全量回归仍未取得最终 summary。已单独验证既有 Dijkstra/BFS/DFS 相关 Schema/模型/课程套件未受破坏。
+- 全量单测：71 个测试文件、577 项全部通过。G1 专项覆盖 Schema、真实 fixture、课程、目录与注册表。
+- 全量 E2E：78/78 通过（4.4 分钟），包含 G1 功能 3 项、G1 视觉 1 项，以及既有 Dijkstra、BFS/DFS、Stage 7B–7F、UI-01/02/03 回归。
+- G1 功能 E2E：覆盖 Floyd 默认 5 节点/7 边/25 格、k=C/i=A/j=B、A→B 4→−1、done 路径、负环、不可达；Bellman 松弛 B 4→−1 previous C、第 2 轮提前结束、done 路径、不可达负环不误报。
+- G1 视觉 E2E：生成 6 张 1440/390 真实 Edge 截图。
+- 全量单测曾发现 `App.dom.test.tsx` 仍断言 15 个算法入口；G1 已增加到 17，现已同步修正并重跑通过。
 
 ## 截图
 
@@ -45,4 +48,8 @@
 
 ## Git
 
-本批次提交在本分支，不合并 `main`。提交哈希见最终交付消息。
+- 基线：`origin/ui03/code-panel` @ `9cc738f`。
+- G1 实现：`4a51f53`。
+- 本地 Edge 截图刷新：`83fab76`。
+- 全量回归与入口数量修正提交：见本分支最新提交。
+- 分支已推送到 Gitee：`origin/feat/g1-shortest-paths`；未合并 `main`。

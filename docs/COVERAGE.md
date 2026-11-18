@@ -1,6 +1,6 @@
 # AlgoViz 算法与课程覆盖清单
 
-快照：2026-11-17（G1 批次，分支 `feat/g1-shortest-paths`）
+快照：2026-11-18（G1 批次本地复核，分支 `feat/g1-shortest-paths`）
 
 ## 1. 口径
 
@@ -34,15 +34,19 @@
 
 ## 4. 验证
 
+本地复核环境：Windows + Microsoft Edge + 真实 Pyodide 0.27.7。
+
 | 项 | 结果 |
 | --- | --- |
-| `npm run typecheck` | ✅ 通过（含路径面板仅在 done 帧渲染的修复） |
+| `npm run typecheck` | ✅ 通过 |
 | `npm run build` | ✅ 通过；Monaco chunk 约 4.12 MB |
-| G1 单测 + 课程/注册表单测 | ✅ 72 passed（5 个文件） |
+| 全量单测 | ✅ 71 个文件、577 tests 全部通过 |
+| G1 相关单测 | ✅ shortestPath / g1Lessons / registry / catalog / i18n 全部通过 |
+| 全量 E2E | ✅ 78/78，4.4 分钟 |
 | G1 功能 E2E | ✅ 3/3（默认矩阵与 k/i/j、负环、不可达、Bellman 松弛/提前结束/不可达负环） |
 | G1 视觉 E2E | ✅ 1/1（Floyd 更新/完成、Bellman 松弛/完成，1440 与 390） |
-| 全量单测 | ⚠️ 本机 2 核 3 GB，jsdom 每文件约 25 s；600 s 内未跑完 71 个文件。已完成的 26 个文件无失败；相关 G1/课程/Schema/模型套件单独通过。 |
-| 全量 E2E | ⚠️ 未在本轮等待中跑完；G1 两组与既有共享组件未改布局。 |
+| 回归 | ✅ Dijkstra、BFS/DFS、Stage 7B–7F、UI-01/02/03 全部通过 |
+| 入口数量 | ✅ 15→17 的旧断言已修正并复跑通过 |
 
 ## 5. 已知边界
 

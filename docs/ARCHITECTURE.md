@@ -2,7 +2,7 @@
 
 本文描述从单文件原型（`index.html`，296 行 / ~70 KB）迁移到 React + TypeScript + Vite 后的模块边界、数据流与演进约束。
 
-**定位已收敛**：Python 为主要教学语言；JavaScript 作为前端实现语言继续支持 15 个算法入口（Dijkstra 的 JS 入口只提示使用 Python）。**C/C++ 与在线判题已从规划中取消**，相关入口与执行后端已移除。Stage 1 落地「统一 Trace Event Schema v1 + 旧动画兼容 + Python 冒泡排序同步演示」；Stage 2 落地「Monaco Editor + 执行行高亮 + Python 错误诊断 + 本地代码保存 + 真实浏览器 E2E」；Stage 3 落地「Python 递归调用栈 + 作用域感知变量观察 + 时间轴重置修复」；Stage 3B 落地「教学课程数据层 + 教学阶段关联 + 教学面板与时间轴双向联动」；Stage 4 落地「可安装教学知识包 `.algopack`（容器规范 + 安全导入 + 本地安装 + 注册表组合 + 管理页）」；Stage 5A 落地「本地 MCP Agent 插件（stdio、6 工具 + 五级 Prompt）+ `.algosession.json` / `.algocontext.json` 双文件桥 + 网页导入/导出」；Stage 6A 落地「本地 AI Gateway（仅 127.0.0.1）+ Ollama / OpenAI Chat Completions Provider + 共享五级 Mentor Schema 与防剧透降级 + 网页 AI 导师面板」；Stage 7A 落地「学习实验室信息架构重构：动画 + Monaco + 当前步骤同屏，教学/变量/AI/工具按需标签，课程渐进展开，1024 与移动端单列且无横向溢出」；Stage 7B 落地「AlgoViz 品牌迁移 + 可选 structure Trace 语义 + 栈桶状/队列排队专属渲染 + 真实 Python 栈/队列课程」；Stage 7C 落地「单链表结构化 Trace + 真实 Python Node 对象 + 纯 linkedListModel + 节点/箭头/HEAD/NULL/断开节点渲染 + 双语链表课程」；Stage 7D 落地「二叉树结构化 Trace + 真实 Python TreeNode 三模式递归 + 纯树布局/模型 + 层级画布/递归路径/访问序号 + 调用栈联动 + 双语树课程」；Stage 7E 落地「图 BFS/DFS 结构化 Trace + 真实 Python deque/显式栈 + 确定性图布局 + 纯 GraphVisualModel + 节点/边/当前边/访问序号 + 同帧 QueueVisual/StackVisual + 图与 Frontier 回退/跳帧同步 + 双语图课程」；Stage 7F 落地「Dijkstra 带权图结构化 Trace + 真实 Python heapq + 距离表/前驱/优先队列/松弛/过期条目 + 目标与最终路径 + 独立 PriorityQueuePanel + 双语 Dijkstra 课程」，详见 [STAGE1_REPORT.md](./STAGE1_REPORT.md)、[STAGE2_REPORT.md](./STAGE2_REPORT.md)、[STAGE3_REPORT.md](./STAGE3_REPORT.md)、[STAGE3B_REPORT.md](./STAGE3B_REPORT.md)、[STAGE4_REPORT.md](./STAGE4_REPORT.md)、[STAGE5A_REPORT.md](./STAGE5A_REPORT.md)、[STAGE6A_REPORT.md](./STAGE6A_REPORT.md)、[STAGE7A_REPORT.md](./STAGE7A_REPORT.md)、[STAGE7B_REPORT.md](./STAGE7B_REPORT.md)、[STAGE7C_REPORT.md](./STAGE7C_REPORT.md)、[STAGE7D_REPORT.md](./STAGE7D_REPORT.md)、[STAGE7E_REPORT.md](./STAGE7E_REPORT.md)、[STAGE7F_REPORT.md](./STAGE7F_REPORT.md)、[COVERAGE.md](./COVERAGE.md)、[BRAND_MIGRATION.md](./BRAND_MIGRATION.md)、[AI_GATEWAY.md](./AI_GATEWAY.md)、[PACK_FORMAT_V1.md](./PACK_FORMAT_V1.md) 与 [MCP_INSTALL.md](./MCP_INSTALL.md)。
+**定位已收敛**：Python 为主要教学语言；JavaScript 作为前端实现语言继续支持 17 个算法入口（Dijkstra 的 JS 入口只提示使用 Python）。**C/C++ 与在线判题已从规划中取消**，相关入口与执行后端已移除。Stage 1 落地「统一 Trace Event Schema v1 + 旧动画兼容 + Python 冒泡排序同步演示」；Stage 2 落地「Monaco Editor + 执行行高亮 + Python 错误诊断 + 本地代码保存 + 真实浏览器 E2E」；Stage 3 落地「Python 递归调用栈 + 作用域感知变量观察 + 时间轴重置修复」；Stage 3B 落地「教学课程数据层 + 教学阶段关联 + 教学面板与时间轴双向联动」；Stage 4 落地「可安装教学知识包 `.algopack`（容器规范 + 安全导入 + 本地安装 + 注册表组合 + 管理页）」；Stage 5A 落地「本地 MCP Agent 插件（stdio、6 工具 + 五级 Prompt）+ `.algosession.json` / `.algocontext.json` 双文件桥 + 网页导入/导出」；Stage 6A 落地「本地 AI Gateway（仅 127.0.0.1）+ Ollama / OpenAI Chat Completions Provider + 共享五级 Mentor Schema 与防剧透降级 + 网页 AI 导师面板」；Stage 7A 落地「学习实验室信息架构重构：动画 + Monaco + 当前步骤同屏，教学/变量/AI/工具按需标签，课程渐进展开，1024 与移动端单列且无横向溢出」；Stage 7B 落地「AlgoViz 品牌迁移 + 可选 structure Trace 语义 + 栈桶状/队列排队专属渲染 + 真实 Python 栈/队列课程」；Stage 7C 落地「单链表结构化 Trace + 真实 Python Node 对象 + 纯 linkedListModel + 节点/箭头/HEAD/NULL/断开节点渲染 + 双语链表课程」；Stage 7D 落地「二叉树结构化 Trace + 真实 Python TreeNode 三模式递归 + 纯树布局/模型 + 层级画布/递归路径/访问序号 + 调用栈联动 + 双语树课程」；Stage 7E 落地「图 BFS/DFS 结构化 Trace + 真实 Python deque/显式栈 + 确定性图布局 + 纯 GraphVisualModel + 节点/边/当前边/访问序号 + 同帧 QueueVisual/StackVisual + 图与 Frontier 回退/跳帧同步 + 双语图课程」；Stage 7F 落地「Dijkstra 带权图结构化 Trace + 真实 Python heapq + 距离表/前驱/优先队列/松弛/过期条目 + 目标与最终路径 + 独立 PriorityQueuePanel + 双语 Dijkstra 课程」，详见 [STAGE1_REPORT.md](./STAGE1_REPORT.md)、[STAGE2_REPORT.md](./STAGE2_REPORT.md)、[STAGE3_REPORT.md](./STAGE3_REPORT.md)、[STAGE3B_REPORT.md](./STAGE3B_REPORT.md)、[STAGE4_REPORT.md](./STAGE4_REPORT.md)、[STAGE5A_REPORT.md](./STAGE5A_REPORT.md)、[STAGE6A_REPORT.md](./STAGE6A_REPORT.md)、[STAGE7A_REPORT.md](./STAGE7A_REPORT.md)、[STAGE7B_REPORT.md](./STAGE7B_REPORT.md)、[STAGE7C_REPORT.md](./STAGE7C_REPORT.md)、[STAGE7D_REPORT.md](./STAGE7D_REPORT.md)、[STAGE7E_REPORT.md](./STAGE7E_REPORT.md)、[STAGE7F_REPORT.md](./STAGE7F_REPORT.md)、[COVERAGE.md](./COVERAGE.md)、[BRAND_MIGRATION.md](./BRAND_MIGRATION.md)、[AI_GATEWAY.md](./AI_GATEWAY.md)、[PACK_FORMAT_V1.md](./PACK_FORMAT_V1.md) 与 [MCP_INSTALL.md](./MCP_INSTALL.md)。
 
 ## 1. 现状盘点（迁移前）
 
@@ -42,7 +42,7 @@ flowchart TD
 
 | 目录 | 职责 | 不许做什么 |
 | --- | --- | --- |
-| `src/domain/algorithms` | 15 个算法定义、按教学语言取示例 | 不执行用户代码 |
+| `src/domain/algorithms` | 17 个算法定义、按教学语言取示例 | 不执行用户代码 |
 | `src/domain/problems` | 题库数据、脚手架 | 不判题 |
 | `src/domain/trace` | Trace Event Schema（Zod 校验）、legacy 适配层、**纯函数播放状态机** | 不碰 `setInterval` / DOM；不编造变量/行号 |
 | `src/domain/lessons` | 教学课程数据：类型、Zod 校验、注册表、课程 ⇄ Trace 的**纯查找函数**、内置 + 知识包课程的组合目录（`catalog.ts`） | 不引用 React / Worker；不执行代码；不从 message 推断教学阶段 |
@@ -184,7 +184,7 @@ flowchart TD
 | 层次 | 工具 | 覆盖 |
 | --- | --- | --- |
 | 纯逻辑单测 | Vitest | 主题解析、播放状态机（含 `clampPlayback`）、可视化映射、i18n、题库数据、关键词路由、教学课程校验与阶段查找、**知识包 manifest/路径/中央目录/内容校验** |
-| 帧回归 | Vitest + legacy 快照 | 15 个 catalog 入口逐帧一致（12 个 legacy 动画 + 阶乘/斐波那契 + Dijkstra 真实 Python fixture）、空/重复/单元素输入、排序终态 |
+| 帧回归 | Vitest + legacy 快照 | 17 个 catalog 入口逐帧一致（12 个 legacy 动画 + 阶乘/斐波那契 + Dijkstra/Floyd/Bellman 真实 Python preset）、空/重复/单元素输入、排序终态 |
 | 存储单测 | Vitest + fake-indexeddb | 安装成功、刷新恢复、卸载隔离、重复安装、版本冲突/显式替换、写事务失败回滚、配额映射、存储不可用 |
 | 会话/上下文格式 | Vitest（node + jsdom） | 两文件 Schema、格式版本、未知键拒绝、`stepIndex === event.step`、大小限额、篡改检测、导出不重跑 |
 | MCP 协议 | Vitest + 官方 SDK `Client` + `InMemoryTransport` | 工具/提示词发现、参数校验、内置+包课程、中英 stepId、未知 lesson/step、会话写盘复验且从不覆盖、上下文读取（穿越/绝对路径/符号链接/超限/篡改/坏 JSON）、恶意包文本、Prompt 五级 |
@@ -194,7 +194,7 @@ flowchart TD
 | 结构语义（Stage 7B） | Vitest + Schema/模型/组件 | `structure` 合法与非法、重复 id、pop/dequeue 必带 removed、旧 Trace 兼容、栈/队列模型映射、空态、DOM 顺序与 removed 独立渲染 |
 | 单链表语义（Stage 7C） | Vitest + Schema/模型/组件/Python | linked-list 合法/空表/同值不同 ID/悬空引用/环/40 上限；主链由 nextId 而非数组顺序；HEAD/临时/断开/回退；真实 Node 示例 22 帧；DOM 节点、箭头目标、变化徽章 |
 | 工作区布局（Stage 7A） | Playwright + 真实页面 | 1440 并排 + 当前步骤落在 900 高首屏；1024/390 无页面级横向溢出；标签切换保留 Monaco 草稿、不自动运行；方向键切标签、Escape 关闭菜单；AI 错误折叠 |
-| 组件冒烟 | Vitest + jsdom + Testing Library | 15 个算法入口、时间轴交互与 **Trace 切换重置**、三态主题、语言切换、视图切换、调用栈面板与作用域变量、教学面板（高亮/禁用/跳转/空态）、知识包页（预览/确认/卸载/错误文案）、**App 级导入→课程→卸载** |
+| 组件冒烟 | Vitest + jsdom + Testing Library | 17 个算法入口、时间轴交互与 **Trace 切换重置**、三态主题、语言切换、视图切换、调用栈面板与作用域变量、教学面板（高亮/禁用/跳转/空态）、知识包页（预览/确认/卸载/错误文案）、**App 级导入→课程→卸载** |
 | 令牌契约 | Vitest 读 CSS 文本 | 两套主题 token 完整性、无硬编码颜色 |
 | E2E | Playwright（真实 Edge 无头 + `vite preview`） | Monaco 加载、Python 冒泡同步高亮、SyntaxError 波浪线出现/清除、草稿自动保存/刷新恢复、主题切换、真实 Pyodide 阶乘/斐波那契递归栈、JS 长短 Trace 切换重置、**教学步骤与真实数组/变量/调用栈同步**（`e2e/lab.spec.ts`）、**知识包导入→安装→刷新恢复→卸载**与**包内 Python 示例真实 Trace**（`e2e/packs.spec.ts`）、**Agent 会话导入→用户运行→步骤同步**与**导出真实帧→Schema 复验**（`e2e/session.spec.ts`） |
 | 栈/队列 E2E（Stage 7B） | Playwright + 真实 Pyodide | 真实 7 帧栈/队列、DOM 顶→底/前→后顺序、Peek/Front 不移除、Pop/Dequeue 与回退、1024/390 无横向溢出、Light/Dark、Reduced Motion、36 张真实截图 |
