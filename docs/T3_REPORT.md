@@ -148,4 +148,8 @@ SORTED_FROM # 堆排序已固定后缀起点，None 或等于 HEAP_SIZE
 
 ## 5. Git
 
-（提交后补充最终提交号与推送结果）
+- 实现、课程、测试与初始报告提交：`0bd6268 feat(t3): add max heap build, push, extract and heap sort lab`
+- 分支：`feat/t3-heap-sort`，从 `308d489` 建立
+- 远端：`https://gitee.com/vvvi734/algolens.git`
+- 推送：已成功创建并跟踪 `origin/feat/t3-heap-sort`
+- 报告 Git 段定稿：以分支最新 HEAD 的文档提交为准
