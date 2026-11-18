@@ -1,11 +1,25 @@
 import type { AlgorithmEntry } from '../algorithms/types';
-import type { Lesson } from '../lessons/types';
+import type { Lesson, LocalizedText } from '../lessons/types';
 import { CURATED_GUIDES } from './algorithmGuides';
-import { EMPTY_LOCALIZED_LIST, type AlgorithmGuideContent, type GuideStep } from './types';
+import {
+  EMPTY_LOCALIZED_LIST,
+  type AlgorithmGuideContent,
+  type GuideStage,
+  type GuideStep,
+} from './types';
 
 /** Some course step titles carry their own circled ordinal; the guide adds one. */
 function stripLeadingOrdinal(text: string): string {
   return text.replace(/^[\u2460-\u2473]\s*/, '').trim();
+}
+
+function firstSentence(text: LocalizedText): LocalizedText {
+  const take = (value: string) => {
+    const trimmed = value.trim();
+    const sentence = trimmed.match(/^(.+?[。！？.!?])(?:\s|$)/)?.[1] ?? trimmed;
+    return sentence;
+  };
+  return { zh: take(text.zh), en: take(text.en) };
 }
 
 function lessonSteps(lesson: Lesson): GuideStep[] {
@@ -15,6 +29,22 @@ function lessonSteps(lesson: Lesson): GuideStep[] {
       en: stripLeadingOrdinal(step.title.en),
     },
     body: step.explanation,
+  }));
+}
+
+/**
+ * A small course only gets a stage strip when its real steps are already
+ * phase-sized (3–5). Longer courses keep all steps in the expandable details
+ * instead of pretending that an arbitrary grouping is their phase structure.
+ */
+function lessonStages(lesson: Lesson): GuideStage[] {
+  if (lesson.steps.length < 3 || lesson.steps.length > 5) return [];
+  return lesson.steps.map((step) => ({
+    title: {
+      zh: stripLeadingOrdinal(step.title.zh),
+      en: stripLeadingOrdinal(step.title.en),
+    },
+    summary: firstSentence(step.explanation),
   }));
 }
 
@@ -76,7 +106,9 @@ export function buildAlgorithmGuide(
     return {
       algorithmId,
       problem: lesson.oneLiner,
+      coreHeadline: null,
       coreIdea: lesson.intuition,
+      stages: lessonStages(lesson),
       steps: lessonSteps(lesson),
       prerequisites: lesson.prerequisites,
       conditions: emptyList(),
@@ -92,7 +124,9 @@ export function buildAlgorithmGuide(
     return {
       algorithmId,
       problem: catalogProblem(entry),
+      coreHeadline: null,
       coreIdea: null,
+      stages: [],
       steps: [],
       prerequisites: emptyList(),
       conditions: emptyList(),
@@ -113,7 +147,9 @@ export function buildAlgorithmGuide(
   return {
     algorithmId,
     problem: null,
+    coreHeadline: null,
     coreIdea: null,
+    stages: [],
     steps: [],
     prerequisites: emptyList(),
     conditions: emptyList(),

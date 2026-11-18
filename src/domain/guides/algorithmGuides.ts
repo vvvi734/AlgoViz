@@ -16,10 +16,44 @@ export const CURATED_GUIDES: Record<string, CuratedGuide> = {
       zh: '在一张带权图里，每条边都有一个成本，例如距离、时间或费用。Dijkstra 要回答：从指定起点出发，到其他节点（或某个目标）的最低总成本是多少，并且具体走哪条路。',
       en: 'In a weighted graph every edge has a cost such as distance, time or price. Dijkstra answers two questions from one source: what is the cheapest total cost to each other vertex, and which route achieves it?',
     },
+    coreHeadline: {
+      zh: '贪心选最近 + 松弛出边',
+      en: 'Greedy nearest-first + edge relaxation',
+    },
     coreIdea: {
       zh: '把尚未确定的节点看成候选，把“目前已知的最便宜报价”记在距离表里。每一轮只从最小堆取出当前最便宜的候选并确定它，再用它检查出边，把更便宜的报价传给邻居。边权非负时，一个节点一旦以最小候选被确定，后面再绕路也不可能更便宜。',
       en: 'Treat unfinished vertices as candidates and store the cheapest known quote in a distance table. Each round pops the cheapest candidate from a min-heap, finalises it, then relaxes its outgoing edges. With non-negative weights, once a vertex is finalised at the smallest quote, no later detour can beat it.',
     },
+    stages: [
+      {
+        title: { zh: '初始化距离表', en: 'Initialise the distance table' },
+        summary: {
+          zh: '起点距离为 0，其余为 ∞；前驱留空，把起点连同 0 放进最小堆。',
+          en: 'Set the source to 0 and every other vertex to ∞; leave predecessors empty and push the source with key 0.',
+        },
+      },
+      {
+        title: { zh: '贪心选最近', en: 'Greedily pick the nearest' },
+        summary: {
+          zh: '弹出最小候选；若它记录的距离已经过期就跳过，否则确定这个节点。',
+          en: 'Pop the smallest candidate; discard it if its stored key is stale, otherwise finalise that vertex.',
+        },
+      },
+      {
+        title: { zh: '松弛出边', en: 'Relax outgoing edges' },
+        summary: {
+          zh: '用“当前距离 + 边权”刷新邻居；只有变小才改距离表、前驱和堆。',
+          en: 'Compare each neighbour with “current distance + edge weight”; update the table, predecessor and heap only on improvement.',
+        },
+      },
+      {
+        title: { zh: '重复并回退路径', en: 'Repeat, then walk the path back' },
+        summary: {
+          zh: '可达节点全部确定后，沿前驱从目标回溯并翻转，得到最短路径。',
+          en: 'When every reachable vertex is final, follow predecessors back from the target and reverse the list to recover the path.',
+        },
+      },
+    ],
     steps: [
       {
         title: { zh: '初始化距离表和候选堆', en: 'Initialise the distance table and candidate heap' },
@@ -86,8 +120,8 @@ export const CURATED_GUIDES: Record<string, CuratedGuide> = {
       ],
     },
     memoryHook: {
-      zh: '记忆：距离表 + 最小堆 + 松弛。每轮先弹最小候选，验过过期再确定；能变小才改距离和前驱。非负权是前提，负权请换 Bellman-Ford。',
-      en: 'Remember: distance table + min-heap + relaxation. Pop the smallest candidate, reject stale entries, finalise, then update only improved quotes. Non-negative weights are the precondition; use Bellman-Ford for negative edges.',
+      zh: '选最近，做松弛；已确定，不反悔。',
+      en: 'Pick the nearest, relax outward; once settled, never look back.',
     },
   },
 
@@ -97,10 +131,44 @@ export const CURATED_GUIDES: Record<string, CuratedGuide> = {
       zh: '有一组有依赖关系的任务，例如“先修 A 才能做 B”。拓扑排序要把它们排成一个线性顺序，使每条有向边都从左指向右：所有前置任务都排在它的后继之前。',
       en: 'A set of tasks has dependencies such as “A must finish before B”. Topological sorting arranges them in a line so every directed edge points left-to-right: each prerequisite appears before everything that depends on it.',
     },
+    coreHeadline: {
+      zh: '入度归零 + 队列推进',
+      en: 'Zero in-degree + queue-driven progress',
+    },
     coreIdea: {
       zh: '把入度看成“还没完成的前置数量”。入度为 0 的节点没有未完成依赖，可以立刻开工；把它放进队列，出队后删掉它的出边，邻居的入度就减一。不断有人减到 0，就不断有新的可开工任务。',
       en: 'Treat in-degree as the number of unfinished prerequisites. A vertex with in-degree 0 has no pending dependency and can start immediately. Queue it, remove its outgoing edges when it leaves, and each neighbour loses one prerequisite. Whenever a neighbour reaches 0, it becomes ready too.',
     },
+    stages: [
+      {
+        title: { zh: '统计入度', en: 'Count in-degrees' },
+        summary: {
+          zh: '扫描每条 from → to，把 to 的入度加一；这个数字就是它还没完成的前置数量。',
+          en: 'Scan every from → to edge and increment the target’s counter: that number is how many prerequisites remain.',
+        },
+      },
+      {
+        title: { zh: '零入度入队', en: 'Queue zero in-degrees' },
+        summary: {
+          zh: '所有入度为 0 的节点先进入 FIFO 队列；图不连通时会有多个起点。',
+          en: 'Every vertex with in-degree 0 enters a FIFO queue; a disconnected graph simply has several starting points.',
+        },
+      },
+      {
+        title: { zh: '出队，删边，减入度', en: 'Dequeue, remove edges, decrement' },
+        summary: {
+          zh: '队首加入答案；它的每条出边让邻居入度减一，表示一个前置刚完成。',
+          en: 'Move the front vertex into the answer; each outgoing edge decrements its neighbour, marking one finished prerequisite.',
+        },
+      },
+      {
+        title: { zh: '归零再入队，最后查环', en: 'Enqueue zeros, then check for a cycle' },
+        summary: {
+          zh: '邻居刚减到 0 就入队；队列空后若仍有剩余节点，说明图中有环。',
+          en: 'Queue a neighbour as soon as it reaches 0; if vertices remain when the queue empties, the graph contains a cycle.',
+        },
+      },
+    ],
     steps: [
       {
         title: { zh: '确认是有向图并统计入度', en: 'Confirm a directed graph and compute in-degrees' },
@@ -167,8 +235,8 @@ export const CURATED_GUIDES: Record<string, CuratedGuide> = {
       ],
     },
     memoryHook: {
-      zh: '记忆：入度表 + 零入度队列。出队就进答案，删边就减入度，减到零再入队；队列空了还有剩余，就说明有环。',
-      en: 'Remember: in-degree table + zero-in-degree queue. Dequeue into the answer, remove edges to decrement counters, enqueue at zero; leftovers after an empty queue mean a cycle.',
+      zh: '零入度入队，出队删边减度；减到零再入队，剩节点就是环。',
+      en: 'Queue zero indegrees, remove edges on dequeue; enqueue at zero, and leftovers mean a cycle.',
     },
   },
 
@@ -178,10 +246,51 @@ export const CURATED_GUIDES: Record<string, CuratedGuide> = {
       zh: '在有向图里，两个节点如果互相都能到达，就属于同一个强连通分量（SCC）。Kosaraju 要把整张图划分成若干个这样的最大互相可达小组。',
       en: 'In a directed graph, two vertices belong to the same strongly connected component (SCC) when each can reach the other. Kosaraju partitions the graph into these maximal mutually reachable groups.',
     },
+    coreHeadline: {
+      zh: '两遍 DFS + 完成顺序 + 反向图',
+      en: 'Two DFS passes + finish order + transpose',
+    },
     coreIdea: {
       zh: '先把每个 SCC 压缩成一个点，整张图就变成一张有向无环图。第一遍 DFS 记录“谁最后完成”，得到从汇点指向源点的顺序；在转置图里按完成顺序的逆序出发，就能一次只抓住一个 SCC，而不会顺着单向边跑到别的分量。',
       en: 'Contract each SCC to one node and the graph becomes a DAG. The first DFS records who finishes last, producing an order from sinks toward sources. Starting from that order in reverse on the transpose graph isolates one SCC at a time instead of following one-way edges into another component.',
     },
+    stages: [
+      {
+        title: { zh: '第一遍 DFS：原图', en: 'First pass: DFS the original' },
+        summary: {
+          zh: '从每个未访问节点出发，沿原始出边深入，记录这一遍的访问状态。',
+          en: 'Start from every unvisited vertex and follow original outgoing edges, recording visited state for this pass only.',
+        },
+      },
+      {
+        title: { zh: '记录完成顺序', en: 'Record the finish order' },
+        summary: {
+          zh: '一个节点的后代全部处理完，才把它加入后序列表；最后完成的节点在末尾。',
+          en: 'Append a vertex only after all descendants finish; the last finished vertex sits at the end of the postorder.',
+        },
+      },
+      {
+        title: { zh: '构造转置图', en: 'Build the transpose' },
+        summary: {
+          zh: '把每条 from → to 翻成 to → from；保留完成顺序，清空第二遍的访问标记。',
+          en: 'Reverse every from → to into to → from; keep the finish order and clear visited marks for the second pass.',
+        },
+      },
+      {
+        title: { zh: '按逆序跑第二遍 DFS', en: 'Second pass in reverse order' },
+        summary: {
+          zh: '从完成列表末尾向前选未分配节点，在转置图上 DFS，只沿反向边收集。',
+          en: 'Scan the finish list backwards for an unassigned root, then DFS the transpose and collect only along reversed edges.',
+        },
+      },
+      {
+        title: { zh: '一棵 DFS 树 = 一个 SCC', en: 'One DFS tree = one SCC' },
+        summary: {
+          zh: '这一轮收集到的节点同属一个强连通分量；标号后继续向前，直到全部分配完。',
+          en: 'Every vertex collected in this round belongs to one SCC; label it and continue until all vertices are assigned.',
+        },
+      },
+    ],
     steps: [
       {
         title: { zh: '明确有向图与 SCC 定义', en: 'Fix the directed graph and the SCC definition' },
@@ -248,8 +357,8 @@ export const CURATED_GUIDES: Record<string, CuratedGuide> = {
       ],
     },
     memoryHook: {
-      zh: '记忆：原图跑完后序，转置图按后序逆序再跑。第一遍决定“从哪个汇点开始”，第二遍在反向边上只收集同一个分量。',
-      en: 'Remember: postorder on the original, then reverse postorder on the transpose. Pass one decides which sink to start from; pass two collects one component along reversed edges.',
+      zh: '原图跑完记后序，转置图按逆序收；一棵 DFS 树，一个 SCC。',
+      en: 'Postorder on the original, reverse it on the transpose; one DFS tree, one SCC.',
     },
   },
 };

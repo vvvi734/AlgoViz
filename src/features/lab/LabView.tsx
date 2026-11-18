@@ -231,6 +231,7 @@ export function LabView({
 
         {algorithmGuide.isOpen ? (
           <AlgorithmGuide
+            key={algorithmGuideContent.algorithmId}
             guide={algorithmGuideContent}
             algorithmName={entry ? pick(entry.name) : t('customName')}
             onCollapse={algorithmGuide.toggle}

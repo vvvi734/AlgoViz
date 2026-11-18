@@ -27,6 +27,7 @@ export function GuideDiagram({ kind }: { kind?: GuideDiagramKind }) {
 }
 
 function DijkstraDiagram() {
+  const { t } = useI18n();
   const nodes = [
     { id: 'S', x: 36, y: 76, label: '0', className: 'is-source' },
     { id: 'A', x: 126, y: 38, label: '2' },
@@ -69,12 +70,13 @@ function DijkstraDiagram() {
           <text x={node.x} y={node.y + 31} className="guide-svg-dist">{node.label}</text>
         </g>
       ))}
-      <text x="12" y="158" className="guide-svg-note">距离表 · 最小堆 · 松弛</text>
+      <text x="12" y="158" className="guide-svg-note">{t('guideSvgDijkstraNote')}</text>
     </svg>
   );
 }
 
 function KahnDiagram() {
+  const { t } = useI18n();
   const nodes = [
     { id: 'A', x: 48, y: 42, indegree: '0', active: true },
     { id: 'B', x: 48, y: 108, indegree: '0', active: true },
@@ -109,19 +111,22 @@ function KahnDiagram() {
         <g key={node.id} className={`guide-svg-node${node.active ? ' is-source' : ''}`}>
           <circle cx={node.x} cy={node.y} r="19" />
           <text x={node.x} y={node.y + 1} className="guide-svg-node-name">{node.id}</text>
-          <text x={node.x} y={node.y + 32} className="guide-svg-dist">入度 {node.indegree}</text>
+          <text x={node.x} y={node.y + 32} className="guide-svg-dist">
+            {t('guideSvgIndegree').replace('{value}', node.indegree)}
+          </text>
         </g>
       ))}
       <g className="guide-svg-queue">
         <rect x="18" y="132" width="172" height="24" rx="12" />
-        <text x="30" y="148">零入度队列 [A, B]</text>
+        <text x="30" y="148">{t('guideSvgZeroQueue')}</text>
       </g>
-      <text x="222" y="148" className="guide-svg-note">出队 → 删边 → 减入度</text>
+      <text x="222" y="148" className="guide-svg-note">{t('guideSvgKahnNote')}</text>
     </svg>
   );
 }
 
 function KosarajuDiagram() {
+  const { t } = useI18n();
   return (
     <svg className="guide-svg" viewBox="0 0 352 170" aria-hidden="true">
       <defs>
@@ -129,7 +134,7 @@ function KosarajuDiagram() {
           <path d="M0 0 L6 3 L0 6 Z" className="guide-svg-arrow" />
         </marker>
       </defs>
-      <text x="16" y="20" className="guide-svg-label">原图 · 第一遍 DFS</text>
+      <text x="16" y="20" className="guide-svg-label">{t('guideSvgOriginalPass')}</text>
       <g className="guide-svg-cycle">
         <circle cx="58" cy="58" r="17" />
         <circle cx="124" cy="58" r="17" />
@@ -144,10 +149,10 @@ function KosarajuDiagram() {
       <circle cx="164" cy="112" r="15" className="guide-svg-single" />
       <text x="164" y="113" className="guide-svg-node-name">D</text>
       <line x1="106" y1="104" x2="145" y2="109" className="guide-svg-edge" markerEnd="url(#guide-arrow-s)" />
-      <text x="16" y="147" className="guide-svg-note">完成顺序 D, C, B, A</text>
+      <text x="16" y="147" className="guide-svg-note">{t('guideSvgFinishOrder')}</text>
 
       <line x1="196" y1="12" x2="196" y2="152" className="guide-svg-divider" />
-      <text x="210" y="20" className="guide-svg-label">转置图 · 按逆序收集</text>
+      <text x="210" y="20" className="guide-svg-label">{t('guideSvgTranspose')}</text>
       <g className="guide-svg-cycle is-transpose">
         <circle cx="234" cy="58" r="17" />
         <circle cx="300" cy="58" r="17" />
@@ -159,7 +164,7 @@ function KosarajuDiagram() {
         <line x1="283" y1="98" x2="296" y2="73" className="guide-svg-edge is-active" markerEnd="url(#guide-arrow-s)" />
         <line x1="238" y1="75" x2="257" y2="96" className="guide-svg-edge is-active" markerEnd="url(#guide-arrow-s)" />
       </g>
-      <text x="210" y="147" className="guide-svg-note">从 A 出发收齐一个 SCC</text>
+      <text x="210" y="147" className="guide-svg-note">{t('guideSvgSccNote')}</text>
     </svg>
   );
 }
