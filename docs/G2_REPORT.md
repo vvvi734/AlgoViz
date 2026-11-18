@@ -132,7 +132,8 @@ AlgoViz 的 MST Python 程序、Trace、并查集实现、课程与视觉组件�
 
 - 基线：`main` @ `1dcdf76`。
 - 实现提交：`c10dc25`。
-- 本报告与覆盖清单提交：见 `feat/g2-mst` 后续文档提交。
+- 文档与覆盖清单提交：`b8d1bcc docs(g2): record MST delivery, coverage and verification`。
+- 已推送 `origin/feat/g2-mst`，未合并 `main`。
 - 分支：`feat/g2-mst`，按要求不合并 `main`。
 - 版本：`0.11.0-g2`。
 - G2 完成后停止；拓扑排序、关键路径及其他算法未开发。
