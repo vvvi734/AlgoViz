@@ -61,6 +61,20 @@ export async function openLessonStepNav(page: Page) {
 }
 
 /**
+ * UX-04: variables, call stack, mentor and study tools now live behind a
+ * collapsed-by-default advanced disclosure. Open it before touching a tab.
+ */
+export async function openAdvancedPanels(page: Page) {
+  const toggle = page.getByTestId('workspace-tabs-toggle');
+  await expect(toggle).toBeVisible({ timeout: 45_000 });
+  if ((await toggle.getAttribute('aria-expanded')) !== 'true') {
+    await toggle.click();
+  }
+  await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+  await expect(page.getByTestId('workspace-tabs')).toHaveAttribute('data-expanded', 'true');
+}
+
+/**
  * UX-03: the directory opens only the current algorithm's chapter/topic. A
  * desktop click must therefore find an algorithm's authored path and expand it
  * first. The mobile select remains a single, real `selectOption` call.

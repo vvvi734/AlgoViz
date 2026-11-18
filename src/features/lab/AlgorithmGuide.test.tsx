@@ -13,13 +13,13 @@ const dijkstraGuide = buildAlgorithmGuide(
 );
 
 function renderGuide(guide = dijkstraGuide, name = 'Dijkstra') {
-  const onCollapse = vi.fn();
+  const onStart = vi.fn();
   render(
     <I18nProvider>
-      <AlgorithmGuide guide={guide} algorithmName={name} onCollapse={onCollapse} />
+      <AlgorithmGuide guide={guide} algorithmName={name} onStart={onStart} />
     </I18nProvider>,
   );
-  return onCollapse;
+  return onStart;
 }
 
 function openDetails() {

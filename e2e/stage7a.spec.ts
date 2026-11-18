@@ -1,4 +1,4 @@
-import { collapseAlgorithmGuide, expect, openCodePanel, test, type Page } from './fixtures';
+import { collapseAlgorithmGuide, expect, openAdvancedPanels, openCodePanel, test, type Page } from './fixtures';
 
 /**
  * Stage 7A information architecture, state retention and keyboard operation,
@@ -57,6 +57,7 @@ test.describe('Stage 7A — workspace UX (UI-03 layout)', () => {
 
     const progress = await page.locator('[data-testid="progress"]').textContent();
     const feedback = await page.locator('[data-testid="run-feedback"]').textContent();
+    await openAdvancedPanels(page);
     await page.click('[data-testid="workspace-tab-mentor"]');
     await expect(page.locator('[data-testid="workspace-panel-mentor"]')).toBeVisible();
     await page.click('[data-testid="workspace-tab-state"]');
@@ -122,6 +123,7 @@ test.describe('Stage 7A — workspace UX (UI-03 layout)', () => {
 
   test('I. tab strip supports arrow keys and Escape closes the More tools menu', async ({ page }) => {
     await openApp(page);
+    await openAdvancedPanels(page);
     await page.click('[data-testid="workspace-tab-state"]');
     await page.keyboard.press('ArrowRight');
     await expect(page.locator('[data-testid="workspace-tab-mentor"]')).toHaveAttribute('aria-selected', 'true');
@@ -140,6 +142,7 @@ test.describe('Stage 7A — workspace UX (UI-03 layout)', () => {
     await page.route('**/api/providers', (route) => route.abort());
     await page.route('**/api/mentor', (route) => route.abort());
     await openApp(page);
+    await openAdvancedPanels(page);
     await page.click('[data-testid="workspace-tab-mentor"]');
 
     await expect(page.locator('[data-testid="mentor-status"]')).toContainText('AI 未连接');

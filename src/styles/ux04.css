@@ -1,0 +1,847 @@
+/* ==========================================================================
+   UX-04 — desktop one-screen learning layout.
+
+   Presentation only. The lab still has one LabController, one trace and one
+   playhead. These rules reclaim vertical space from chrome and secondary
+   panels; the stage keeps a real scroll area instead of clipping content.
+   ========================================================================== */
+
+/* ---------- collapsed advanced workspace panels ---------- */
+.workspace-tabs {
+  transition: border-color 160ms ease;
+}
+
+.workspace-tabs-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 16px;
+  flex-wrap: wrap;
+  padding: 6px 12px;
+}
+
+.workspace-tabs-heading {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+.workspace-tabs-kicker {
+  color: var(--txt);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.workspace-tabs-hint {
+  color: var(--muted);
+  font-size: 11.5px;
+  line-height: 1.35;
+}
+
+.workspace-tabs-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  white-space: nowrap;
+}
+
+.workspace-tabs-chevron {
+  font-size: 11px;
+  line-height: 1;
+}
+
+.workspace-tabs-body {
+  min-width: 0;
+  border-top: 1px solid var(--edge);
+}
+
+.workspace-tabs-body[hidden] {
+  display: none;
+}
+
+.workspace-tabs.is-open .workspace-tablist {
+  padding-top: 5px;
+}
+
+@media (min-width: 1280px) and (min-height: 600px) {
+  /* The shell owns the viewport height; every child below it decides whether
+     it scrolls. Nothing hides overflow at page level. */
+  .app[data-view='learn'] {
+    display: flex;
+    flex-direction: column;
+    height: 100dvh;
+    padding: 8px 20px;
+  }
+
+  .app[data-view='learn'] .app-view-learn {
+    flex: 1 1 auto;
+    min-height: 0;
+    margin-top: 6px;
+  }
+
+  .app[data-view='learn'] .footer {
+    display: none;
+  }
+
+  .app[data-view='learn'] .topbar {
+    flex: 0 0 auto;
+    gap: 10px;
+    padding: 0 0 6px;
+  }
+
+  .app[data-view='learn'] .brand {
+    gap: 8px;
+    font-size: 19px;
+    letter-spacing: -0.5px;
+  }
+
+  .app[data-view='learn'] .logo {
+    width: 30px;
+    height: 30px;
+    border-radius: 9px;
+  }
+
+  .app[data-view='learn'] .brand small {
+    margin-top: -2px;
+    font-size: 10px;
+    letter-spacing: 1.2px;
+  }
+
+  .app[data-view='learn'] .nav {
+    flex: 0 0 auto;
+    gap: 6px;
+    margin-bottom: 0;
+  }
+
+  .app[data-view='learn'] .tab {
+    padding: 6px 13px;
+    font-size: 12.5px;
+  }
+
+  /* A closed guide is the normal one-screen state. An open guide keeps the
+     document flow and may scroll; the viewport grid never squeezes it. */
+  .app[data-view='learn'] .lab-shell:not(.guide-open) {
+    height: 100%;
+    min-height: 0;
+  }
+
+  .app[data-view='learn'] .lab-shell:not(.guide-open) .lab-sidebar-wrap {
+    height: 100%;
+    min-height: 0;
+  }
+
+  .app[data-view='learn'] .lab-shell:not(.guide-open) .sidebar {
+    position: relative;
+    top: 0;
+    height: 100%;
+    max-height: 100%;
+    overflow-y: auto;
+  }
+
+  .app[data-view='learn'] .lab-shell:not(.guide-open) .lab-main {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto auto;
+    gap: 8px;
+    height: 100%;
+    min-height: 0;
+  }
+
+  .app[data-view='learn'] .lab-shell:not(.guide-open) .lab-head {
+    gap: 8px;
+    padding: 5px 12px;
+  }
+
+  .app[data-view='learn'] .lab-shell:not(.guide-open) .lab-head .eyebrow {
+    display: none;
+  }
+
+  .app[data-view='learn'] .lab-shell:not(.guide-open) .lab-head h1 {
+    margin: 0;
+    font-size: 18px;
+    line-height: 1.2;
+  }
+
+  .app[data-view='learn'] .lab-shell:not(.guide-open) .guide-toggle {
+    padding: 4px 9px;
+  }
+
+  .app[data-view='learn'] .lab-shell:not(.guide-open) .lab-primary {
+    height: 100%;
+    min-height: 0;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .app[data-view='learn'] .lab-shell:not(.guide-open) .stage-panel {
+    height: 100%;
+    min-height: 0;
+    padding: 7px 10px 0;
+    overflow: hidden;
+  }
+
+  .app[data-view='learn'] .lab-shell:not(.guide-open) .stage-head {
+    margin-bottom: 4px;
+    align-items: center;
+    gap: 4px 10px;
+  }
+
+  .app[data-view='learn'] .lab-shell:not(.guide-open) .stage-head .eyebrow {
+    display: none;
+  }
+
+  .app[data-view='learn'] .lab-shell:not(.guide-open) .stage-head h2 {
+    font-size: 14px;
+    line-height: 1.25;
+  }
+
+  .app[data-view='learn'] .lab-shell:not(.guide-open) .stage-step-peek {
+    max-width: 62%;
+    padding: 2px 7px;
+    font-size: 10.5px;
+  }
+
+  .app[data-view='learn'] .lab-shell:not(.guide-open) .stage-panel .stage {
+    flex: 1 1 auto;
+    min-height: 0;
+    padding: 8px;
+    overflow: auto;
+  }
+
+  /* Structured visuals start at the top of their own scroll area: centred
+     overflow can put the first row above the reachable scroll origin. */
+  .app[data-view='learn'] .lab-shell:not(.guide-open) .stage.has-structure {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    width: 100%;
+  }
+
+  .app[data-view='learn'] .lab-shell:not(.guide-open) .stage.has-structure > * {
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 0;
+  }
+
+  /* Dijkstra's outer traversal card must also be the flex item that absorbs
+     the stage height; the inner grid then divides it between graph and status. */
+  .app[data-view='learn'] .stage.has-structure > .graph-traversal-stage {
+    height: auto;
+    min-height: 0;
+  }
+
+  .app[data-view='learn'] .graph-traversal-stage .graph-visual {
+    flex: 1 1 auto;
+    min-height: 0;
+    height: auto;
+  }
+
+  .app[data-view='learn'] .lab-shell:not(.guide-open) .stage-playback {
+    flex: 0 0 auto;
+    padding-top: 2px;
+  }
+
+  .app[data-view='learn'] .lab-shell:not(.guide-open) .stage-foot {
+    min-height: 0;
+    padding: 2px 0 1px;
+    gap: 8px;
+    font-size: 12px;
+  }
+
+  .app[data-view='learn'] .lab-shell:not(.guide-open) .stage-foot .muted {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app[data-view='learn'] .lab-shell:not(.guide-open) .scrub {
+    height: 14px;
+    margin: 2px 0;
+  }
+
+  .app[data-view='learn'] .lab-shell:not(.guide-open) .controls {
+    gap: 5px;
+  }
+
+  .app[data-view='learn'] .lab-shell:not(.guide-open) .controls .btn {
+    padding: 4px 8px;
+    font-size: 12px;
+  }
+
+  .app[data-view='learn'] .lab-shell:not(.guide-open) .timeline {
+    margin-top: 2px;
+    font-size: 11px;
+    line-height: 1.3;
+  }
+
+  .app[data-view='learn'] .lab-shell:not(.guide-open) .lab-explanation {
+    position: relative;
+    top: 0;
+    height: 100%;
+    max-height: 100%;
+    overflow-y: auto;
+    padding-right: 2px;
+  }
+
+  .app[data-view='learn'] .lab-shell:not(.guide-open) .lab-explanation .lessonpanel.is-rail {
+    padding: 11px 13px 12px;
+  }
+
+  /* Collapsed code dock: one readable row with the run and expand actions.
+     The editor stays mounted; expanded mode keeps its original layout. */
+  .app[data-view='learn'] .code-dock:not(.is-expanded) .code-dock-head {
+    flex-wrap: nowrap;
+    gap: 8px 12px;
+    padding: 4px 12px;
+  }
+
+  .app[data-view='learn'] .code-dock:not(.is-expanded) .code-dock-heading .eyebrow,
+  .app[data-view='learn'] .code-dock:not(.is-expanded) .code-dock-hint {
+    display: none;
+  }
+
+  .app[data-view='learn'] .code-dock:not(.is-expanded) .code-dock-heading {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    min-width: 0;
+  }
+
+  .app[data-view='learn'] .code-dock:not(.is-expanded) .code-dock-title-row {
+    gap: 8px;
+    flex-wrap: nowrap;
+  }
+
+  .app[data-view='learn'] .code-dock:not(.is-expanded) .code-dock-title-row h2 {
+    font-size: 14px;
+    white-space: nowrap;
+  }
+
+  .app[data-view='learn'] .code-dock:not(.is-expanded) .code-dock-lang {
+    min-height: 26px;
+    padding-top: 1px;
+    padding-bottom: 1px;
+  }
+
+  .app[data-view='learn'] .code-dock:not(.is-expanded) .code-dock-actions {
+    flex-wrap: nowrap;
+    gap: 6px;
+  }
+
+  .app[data-view='learn'] .code-dock:not(.is-expanded) .code-dock-status {
+    max-width: 22ch;
+  }
+
+  .app[data-view='learn'] .code-dock:not(.is-expanded) .code-dock-run,
+  .app[data-view='learn'] .code-dock:not(.is-expanded) .code-dock-toggle {
+    padding: 4px 9px;
+    font-size: 12px;
+  }
+
+  .app[data-view='learn'] .workspace-tabs-body {
+    max-height: min(42dvh, 460px);
+    overflow: auto;
+    overscroll-behavior: contain;
+  }
+
+  /* ---------- Dijkstra: graph and its state share the available h ---------- */
+  .app[data-view='learn'] .graph-visual.is-weighted {
+    display: grid;
+    grid-template-columns: minmax(0, 1.55fr) minmax(232px, 0.9fr);
+    grid-template-rows: auto auto minmax(0, 1fr) auto;
+    gap: 4px 10px;
+    flex: 1 1 auto;
+    height: auto;
+    min-height: 0;
+  }
+
+  .app[data-view='learn'] .graph-visual.is-weighted .graph-head {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  .app[data-view='learn'] .graph-visual.is-weighted .graph-head small {
+    display: none;
+  }
+
+  .app[data-view='learn'] .graph-visual.is-weighted .graph-relax-strip {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+
+  .app[data-view='learn'] .graph-visual.is-weighted .graph-canvas-scroll {
+    grid-column: 1;
+    grid-row: 3;
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .app[data-view='learn'] .graph-visual.is-weighted .graph-svg {
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    max-width: none;
+    max-height: none;
+  }
+
+  .app[data-view='learn'] .graph-data-rail {
+    min-width: 0;
+  }
+
+  .app[data-view='learn'] .graph-visual.is-weighted .graph-data-rail {
+    grid-column: 2;
+    grid-row: 3;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+  }
+
+  .app[data-view='learn'] .graph-visual.is-weighted .graph-status {
+    padding: 4px 6px;
+    gap: 3px;
+    flex: 0 0 auto;
+  }
+
+  .app[data-view='learn'] .graph-visual.is-weighted .graph-legend {
+    gap: 8px;
+    font-size: 9.5px;
+    line-height: 1.25;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 2px;
+    scrollbar-width: thin;
+    overscroll-behavior-x: contain;
+  }
+
+  .app[data-view='learn'] .graph-visual.is-weighted .graph-legend-item {
+    gap: 3px;
+    flex: 0 0 auto;
+  }
+
+  .app[data-view='learn'] .graph-visual.is-weighted .graph-swatch {
+    width: 9px;
+    height: 9px;
+  }
+
+  .app[data-view='learn'] .graph-visual.is-weighted .graph-current-copy {
+    gap: 1px;
+    font-size: 10.5px;
+    line-height: 1.35;
+  }
+
+  .app[data-view='learn'] .graph-visual.is-weighted .graph-current-copy b {
+    font-size: 11px;
+  }
+
+  .app[data-view='learn'] .graph-visual.is-weighted .graph-visit-order {
+    gap: 3px;
+    font-size: 9.5px;
+  }
+
+  .app[data-view='learn'] .graph-visual.is-weighted .graph-visit-list li {
+    width: 20px;
+    height: 20px;
+    font-size: 9px;
+  }
+
+  .app[data-view='learn'] .graph-visual.is-weighted .dijkstra-distance-table {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+
+  .app[data-view='learn'] .graph-visual.is-weighted .dijkstra-table-head {
+    padding: 5px 7px 3px;
+    gap: 2px 8px;
+  }
+
+  /* Real heapq contents stay visible, but as one horizontal strip instead of
+     a second full-height card under the graph. */
+  .app[data-view='learn'] .graph-priority-queue {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px 9px;
+    padding: 5px 8px;
+    min-height: 0;
+    flex: 0 0 auto;
+    overflow: hidden;
+  }
+
+  .app[data-view='learn'] .graph-priority-queue .graph-frontier-head {
+    flex: 0 0 auto;
+  }
+
+  .app[data-view='learn'] .graph-priority-queue .graph-frontier-head small {
+    display: none;
+  }
+
+  .app[data-view='learn'] .graph-priority-queue .graph-pq-operation {
+    margin: 0;
+    flex: 0 0 auto;
+    font-size: 9.5px;
+  }
+
+  .app[data-view='learn'] .graph-priority-queue .graph-pq-empty {
+    margin: 0;
+    font-size: 10px;
+    line-height: 1.3;
+    white-space: nowrap;
+  }
+
+  .app[data-view='learn'] .graph-priority-queue .graph-pq-list {
+    display: flex;
+    flex: 1 1 auto;
+    min-width: 0;
+    max-height: none;
+    overflow-x: auto;
+    overflow-y: hidden;
+    gap: 4px;
+  }
+
+  .app[data-view='learn'] .graph-priority-queue .graph-pq-entry {
+    flex: 0 0 auto;
+    padding: 2px 5px;
+  }
+
+  .app[data-view='learn'] .graph-priority-queue .graph-pq-footer {
+    display: none;
+  }
+
+  .app[data-view='learn'] .graph-visual.is-weighted .dijkstra-table-head b {
+    font-size: 10px;
+  }
+
+  .app[data-view='learn'] .graph-visual.is-weighted .dijkstra-table-head small {
+    font-size: 9px;
+  }
+
+  .app[data-view='learn'] .graph-visual.is-weighted .dijkstra-table-scroll {
+    flex: 1 1 auto;
+    max-height: none;
+    overflow: auto;
+  }
+
+  .app[data-view='learn'] .graph-visual.is-weighted .dijkstra-distance-table th {
+    padding: 3px 6px;
+    font-size: 9px;
+  }
+
+  .app[data-view='learn'] .graph-visual.is-weighted .dijkstra-distance-table td {
+    padding: 3px 6px;
+    font-size: 10px;
+    line-height: 1.2;
+  }
+
+  .app[data-view='learn'] .graph-visual.is-weighted .dijkstra-path-summary {
+    flex: 0 0 auto;
+    margin-top: 0;
+    padding: 5px 7px;
+  }
+
+  .app[data-view='learn'] .graph-visual.is-weighted .graph-scroll-hint {
+    grid-column: 1 / -1;
+    grid-row: 4;
+    margin: 0;
+    font-size: 9.5px;
+    line-height: 1.25;
+  }
+
+  /* ---------- graph/tree stages: keep the chart, scroll the auxiliary data ---------- */
+  .app[data-view='learn'] .mst-stage {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    height: auto;
+    min-height: 0;
+  }
+
+  .app[data-view='learn'] .mst-stage .mst-head {
+    flex: 0 0 auto;
+  }
+
+  .app[data-view='learn'] .mst-stage .mst-layout {
+    flex: 1 1 auto;
+    min-height: 0;
+    align-items: stretch;
+  }
+
+  .app[data-view='learn'] .mst-stage .mst-graph-card {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  .app[data-view='learn'] .mst-stage .mst-graph-scroll {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+  }
+
+  .app[data-view='learn'] .mst-stage .mst-graph-svg {
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
+    max-width: 100%;
+    max-height: 100%;
+  }
+
+  .app[data-view='learn'] .mst-stage .eyebrow,
+  .app[data-view='learn'] .mst-stage .mst-subtitle,
+  .app[data-view='learn'] .mst-stage .mst-hint {
+    display: none;
+  }
+
+  .app[data-view='learn'] .mst-stage .mst-current-strip {
+    flex: 0 0 auto;
+    flex-wrap: nowrap;
+    min-height: 0;
+    margin-top: 2px;
+    padding: 2px 6px;
+    overflow-x: auto;
+    font-size: 10px;
+    line-height: 1.2;
+  }
+
+  .app[data-view='learn'] .g4-phase-track {
+    flex: 0 0 auto;
+    flex-wrap: nowrap;
+    gap: 2px;
+    margin: 0;
+    overflow-x: auto;
+  }
+
+  .app[data-view='learn'] .g4-phase-track .g4-phase {
+    flex: 0 0 auto;
+    padding: 1px 5px;
+    font-size: 9px;
+    line-height: 1.3;
+  }
+
+  .app[data-view='learn'] .mst-head {
+    gap: 6px;
+    align-items: center;
+  }
+
+  .app[data-view='learn'] .mst-head h2 {
+    margin: 1px 0 2px;
+    font-size: 15px;
+  }
+
+  .app[data-view='learn'] .mst-metric {
+    min-width: 68px;
+    padding: 1px 7px;
+  }
+
+  .app[data-view='learn'] .mst-metric b {
+    margin-top: 0;
+    font-size: 13px;
+  }
+
+  .app[data-view='learn'] .g4-stage .mst-graph-svg {
+    max-height: clamp(210px, 30vh, 300px);
+  }
+
+  .app[data-view='learn'] .g3-stage .mst-graph-svg {
+    max-height: clamp(210px, 30vh, 300px);
+  }
+
+  .app[data-view='learn'] .mst-side,
+  .app[data-view='learn'] .g3-side,
+  .app[data-view='learn'] .g4-side {
+    max-height: 100%;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    padding-right: 2px;
+    gap: 4px;
+    align-content: start;
+    font-size: 10px;
+  }
+
+  .app[data-view='learn'] .mst-side .mst-panel {
+    padding: 5px 6px;
+  }
+
+  .app[data-view='learn'] .mst-side .mst-panel-head {
+    flex-wrap: nowrap;
+    margin-bottom: 2px;
+  }
+
+  .app[data-view='learn'] .mst-side .mst-panel-head small {
+    display: none;
+  }
+
+  .app[data-view='learn'] .mst-side .g4-component-list {
+    gap: 2px;
+  }
+
+  .app[data-view='learn'] .mst-side .g4-component-row {
+    gap: 4px;
+    padding: 1px 3px;
+  }
+
+  .app[data-view='learn'] .mst-side .g4-stack {
+    min-height: 18px;
+    padding: 1px 2px;
+  }
+
+  .app[data-view='learn'] .mst-side .g4-stack-chip {
+    padding: 1px 4px;
+  }
+
+  .app[data-view='learn'] .mst-side .g4-order-block {
+    gap: 2px;
+    margin-bottom: 3px;
+  }
+
+  .app[data-view='learn'] .mst-side .g4-order-chip {
+    padding: 1px 4px;
+    font-size: 9px;
+  }
+
+  .app[data-view='learn'] .mst-side .g4-node-chip {
+    padding: 0 3px;
+    font-size: 8.5px;
+  }
+
+  .app[data-view='learn'] .mst-side .g3-table th {
+    padding: 2px 6px;
+  }
+
+  .app[data-view='learn'] .mst-side .g3-table td {
+    padding: 1px 6px;
+    font-size: 9px;
+  }
+
+  .app[data-view='learn'] .mst-side .g3-queue {
+    min-height: 22px;
+    padding: 2px;
+  }
+
+  .app[data-view='learn'] .bst-visual {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(196px, 0.56fr);
+    grid-template-rows: auto auto auto minmax(0, 1fr) auto;
+    column-gap: 8px;
+    row-gap: 4px;
+    align-items: stretch;
+    flex: 1 1 auto;
+    min-height: 0;
+    max-height: 100%;
+  }
+
+  .app[data-view='learn'] .bst-visual .tree-toolbar {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    margin-bottom: 0;
+    min-width: 0;
+  }
+
+  .app[data-view='learn'] .bst-visual .tree-scroller,
+  .app[data-view='learn'] .bst-visual .tree-empty {
+    grid-column: 1;
+    grid-row: 2 / 5;
+    min-width: 0;
+    min-height: 0;
+    max-height: none;
+    overflow: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+  }
+
+  .app[data-view='learn'] .bst-visual .bst-metrics {
+    grid-column: 2;
+    grid-row: 2;
+    align-self: start;
+    margin-top: 0;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .app[data-view='learn'] .bst-visual .bst-sequences {
+    grid-column: 2;
+    grid-row: 3;
+    align-self: start;
+    min-width: 0;
+    max-height: 100%;
+    overflow: auto;
+    scrollbar-width: thin;
+  }
+
+  .app[data-view='learn'] .bst-visual .bst-details {
+    grid-column: 2;
+    grid-row: 4;
+    align-self: start;
+    min-width: 0;
+    max-height: 100%;
+    overflow: auto;
+    scrollbar-width: thin;
+  }
+
+  .app[data-view='learn'] .bst-visual .avl-rotation-panel {
+    grid-column: 2;
+    grid-row: 3 / 5;
+    align-self: stretch;
+    min-width: 0;
+    min-height: 0;
+    max-height: 100%;
+    overflow: auto;
+    scrollbar-width: thin;
+  }
+
+  .app[data-view='learn'] .bst-visual .bst-hint,
+  .app[data-view='learn'] .bst-visual .tree-scroll-hint {
+    grid-column: 1 / -1;
+    grid-row: 5;
+    margin: 0;
+  }
+
+  .app[data-view='learn'] .bst-visual {
+    gap: 3px;
+  }
+}
+
+/* 1024px and tablet landscape: keep the compact chrome but let the page flow.
+   No page-level horizontal overflow is introduced; wide graphs and trees
+   scroll inside their own containers. */
+@media (min-width: 900px) and (max-width: 1279px) {
+  .app[data-view='learn'] {
+    padding: 10px 16px;
+  }
+
+  .app[data-view='learn'] .topbar {
+    padding-bottom: 10px;
+  }
+
+  .app[data-view='learn'] .nav {
+    margin-bottom: 10px;
+  }
+
+  .app[data-view='learn'] .workspace-tabs-head {
+    padding: 6px 10px;
+  }
+
+  .app[data-view='learn'] .code-dock:not(.is-expanded) .code-dock-head {
+    padding: 6px 12px;
+  }
+}
+
+@media (max-width: 899px) {
+  .workspace-tabs-head {
+    align-items: flex-start;
+  }
+}

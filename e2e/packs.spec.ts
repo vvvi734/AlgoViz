@@ -1,5 +1,5 @@
 import path from 'node:path';
-import { expect, openCodePanel, openLessonStepNav, selectAlgorithm as chooseAlgorithm, test, type Page } from './fixtures';
+import { expect, openAdvancedPanels, openCodePanel, openLessonStepNav, selectAlgorithm as chooseAlgorithm, test, type Page } from './fixtures';
 
 /**
  * Stage 4 — the official `.algopack` end to end, in a real browser.
@@ -86,6 +86,7 @@ test.describe('Stage 4 — pack Python example produces a real trace', () => {
       'init',
       { timeout: 120_000 },
     );
+    await openAdvancedPanels(page);
     await page.click('[data-testid="workspace-tab-state"]');
     await expect(page.locator('[data-testid="variables-watch"]')).toContainText('target');
 

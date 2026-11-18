@@ -199,6 +199,7 @@ export function GraphVisual({
         </svg>
       </div>
 
+      <div className="graph-data-rail" data-testid="graph-data-rail">
       <div className="graph-status">
         <div className="graph-legend" data-testid="graph-legend" aria-label={t('graphLegendLabel')}>
           <span className="graph-legend-item">
@@ -352,6 +353,8 @@ export function GraphVisual({
           )}
         </section>
       )}
+
+      </div>
 
       {!model.empty && (
         <p className="graph-scroll-hint" data-testid="graph-scroll-hint">

@@ -1,8 +1,9 @@
-import { expect, openCodePanel, openLessonStepNav, selectAlgorithm as chooseAlgorithm, test, type Page } from './fixtures';
+import { expect, openAdvancedPanels, openCodePanel, openLessonStepNav, selectAlgorithm as chooseAlgorithm, test, type Page } from './fixtures';
 
 /** Replace the Monaco editor content by selecting all and typing. */
 /** Stage 7A: secondary panels live in on-demand workspace tabs. */
 async function openTab(page: Page, tab: 'state' | 'mentor' | 'tools') {
+  await openAdvancedPanels(page);
   await page.click(`[data-testid="workspace-tab-${tab}"]`);
   await expect(page.locator(`[data-testid="workspace-panel-${tab}"]`)).toBeVisible();
 }

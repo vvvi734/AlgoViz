@@ -1,4 +1,4 @@
-import { expect, openCodePanel, selectAlgorithm as chooseAlgorithm, test, type Page } from './fixtures';
+import { expect, openAdvancedPanels, openCodePanel, selectAlgorithm as chooseAlgorithm, test, type Page } from './fixtures';
 import { mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 
@@ -168,6 +168,7 @@ test.describe('Stage 7C — real singly linked-list visualization', () => {
       await expect(page.locator('[data-testid="variables-watch"]')).toContainText(expected);
       await expect(page.locator('.algolens-active-line')).toHaveCount(1);
     }
+    await openAdvancedPanels(page);
     await page.getByRole('tab', { name: '变量与调用栈' }).click();
     await expect(page.locator('[data-testid="variables-watch"]')).toBeVisible();
     await page.getByTestId('sync-source-toggle').click();

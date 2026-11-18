@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { expect, openCodePanel, openLessonStepNav, test, type Page } from './fixtures';
+import { expect, openAdvancedPanels, openCodePanel, openLessonStepNav, test, type Page } from './fixtures';
 import { bubbleSortLesson } from '../src/domain/lessons/bubbleSort';
 import { exampleFor } from '../src/domain/algorithms/examples';
 import { buildLearningSession, serializeLearningSession } from '../src/domain/sessions/session';
@@ -48,6 +48,7 @@ async function openApp(page: Page) {
 test.describe('Stage 5A — Agent session file → AlgoLens Web', () => {
   test('import, preview, apply, then a user-triggered real Pyodide run', async ({ page }) => {
     await openApp(page);
+    await openAdvancedPanels(page);
     await page.click('[data-testid="workspace-tab-tools"]');
 
     await page.setInputFiles('[data-testid="session-file-input"]', SESSION_FILE);
@@ -108,6 +109,7 @@ test.describe('Stage 5A — AlgoLens Web → Agent context file', () => {
     await expect(page.locator('[data-testid="lesson-active-step"]')).toHaveAttribute('data-step-id', 'compare');
     const frameBefore = await page.locator('[data-testid="step-number"]').textContent();
 
+    await openAdvancedPanels(page);
     await page.click('[data-testid="workspace-tab-tools"]');
     await page.check('[data-testid="session-export-source"]');
     const downloadPromise = page.waitForEvent('download');

@@ -55,11 +55,11 @@ export function App() {
     : undefined;
 
   return (
-    <div className="app">
+    <div className="app" data-view={view}>
       <TopBar onOpenApi={() => setApiOpen(true)} />
       <NavTabs view={view} onChange={setView} onOpenApi={() => setApiOpen(true)} />
 
-      <div className={view === 'learn' ? '' : 'hidden'}>
+      <div className={view === 'learn' ? 'app-view app-view-learn' : 'hidden'}>
         <LabView
           lab={lab}
           lessons={packs.catalog}

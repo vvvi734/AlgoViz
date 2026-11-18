@@ -1,4 +1,4 @@
-import { expect, openCodePanel, selectAlgorithm as chooseAlgorithm, test, type Page } from './fixtures';
+import { expect, openAdvancedPanels, openCodePanel, selectAlgorithm as chooseAlgorithm, test, type Page } from './fixtures';
 
 async function openApp(page: Page) {
   await page.goto('/');
@@ -99,6 +99,7 @@ test.describe('Stage 7D — real binary-tree traversal and recursion stack', () 
     await expect(page.locator('[data-testid="tree-path"]')).toHaveAttribute('data-current-id', 'n4');
     await expect(page.getByTestId('lesson-active-step')).toHaveAttribute('data-step-id', 'enter');
 
+    await openAdvancedPanels(page);
     await page.getByRole('tab', { name: '变量与调用栈' }).click();
     const frames = page.locator('[data-testid^="call-frame-f"]');
     await expect(frames).toHaveCount(3);
@@ -149,6 +150,7 @@ test.describe('Stage 7D — real binary-tree traversal and recursion stack', () 
     await setFrame(page, 8);
     expect(await activeId(page)).toBe('n4');
     expect(await visitedIds(page)).toEqual(['n1', 'n2', 'n4']);
+    await openAdvancedPanels(page);
     await page.getByRole('tab', { name: '变量与调用栈' }).click();
     await expect(page.getByTestId('variables-watch')).toContainText('n4');
     await page.getByTestId('sync-source-toggle').click();

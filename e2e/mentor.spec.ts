@@ -1,4 +1,4 @@
-import { expect, openCodePanel, openLessonStepNav, test, type Page } from './fixtures';
+import { expect, openAdvancedPanels, openCodePanel, openLessonStepNav, test, type Page } from './fixtures';
 
 /**
  * Stage 6A browser E2E.
@@ -25,6 +25,7 @@ async function runBubbleToCompare(page: Page): Promise<void> {
   await openLessonStepNav(page);
   await page.click('[data-testid="lesson-step-compare"]');
   await expect(page.locator('[data-testid="lesson-active-step"]')).toHaveAttribute('data-step-id', 'compare');
+  await openAdvancedPanels(page);
 }
 
 test.describe('Stage 6A — AI mentor with a real trace', () => {
@@ -85,6 +86,7 @@ test.describe('Stage 6A — AI mentor with a real trace', () => {
     await page.route('**/api/mentor', (route) => route.abort());
 
     await openApp(page);
+    await openAdvancedPanels(page);
     await page.click('[data-testid="workspace-tab-mentor"]');
     await expect(page.locator('[data-testid="mentor-status"]')).toContainText('AI 未连接');
     await expect(page.locator('[data-testid="mentor-local-hint"]')).toContainText('本地教学提示（非 AI）');

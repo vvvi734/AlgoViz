@@ -1,4 +1,4 @@
-import { expect, openCodePanel, selectAlgorithm as chooseAlgorithm, test, type Page } from './fixtures';
+import { expect, openAdvancedPanels, openCodePanel, selectAlgorithm as chooseAlgorithm, test, type Page } from './fixtures';
 
 const BFS_TOTAL = 51;
 const DFS_TOTAL = 51;
@@ -70,6 +70,7 @@ async function showLesson(page: Page) {
 }
 
 async function showVariables(page: Page) {
+  await openAdvancedPanels(page);
   await page.getByRole('tab', { name: /变量与调用栈|Variables & call stack/ }).click();
 }
 

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { AlgorithmSidebar } from './AlgorithmSidebar';
 import { VisualStage } from './VisualStage';
 import { TreeTraversalPicker } from './TreeTraversalPicker';
@@ -97,6 +97,7 @@ export function LabView({
 
   const [selectedFrameId, setSelectedFrameId] = useState<string | null>(null);
   const [tab, setTab] = useState<WorkspaceTabId>('state');
+  const workbenchRef = useRef<HTMLDivElement | null>(null);
   // UX-03: the directory is the authored textbook tree composed with the live
   // registry. It remains presentation-only; `currentAlgo` still owns selection.
   const textbookNav = useMemo(() => buildTextbookNavigation(lab.catalog), [lab.catalog]);
@@ -110,6 +111,28 @@ export function LabView({
   // UX-01: folding is a per-algorithm presentation preference. It is derived
   // from the current algorithm and never stored in the LabController.
   const algorithmGuide = useAlgorithmGuidePreferences(lab.currentAlgo);
+
+  // UX-04: "start animation" only folds the guide and brings the existing
+  // workbench/playback into view. It never seeks, reruns Python or owns a
+  // second playhead.
+  const startFromGuide = () => {
+    if (!algorithmGuide.isOpen) return;
+    algorithmGuide.toggle();
+    const reduceMotion =
+      typeof window.matchMedia === 'function' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        workbenchRef.current?.scrollIntoView({
+          block: 'nearest',
+          behavior: reduceMotion ? 'auto' : 'smooth',
+        });
+        document
+          .querySelector<HTMLButtonElement>('[data-testid="play-btn"]')
+          ?.focus({ preventScroll: true });
+      });
+    });
+  };
 
   // A new run (fresh `events` array) resets the selection.
   useEffect(() => setSelectedFrameId(null), [lab.events]);
@@ -180,7 +203,10 @@ export function LabView({
   } satisfies Record<WorkspaceTabId, ReactNode>;
 
   return (
-    <div className={`lab-shell${sidebar.collapsed ? ' nav-collapsed' : ''}`} data-testid="learn-view">
+    <div
+      className={`lab-shell${sidebar.collapsed ? ' nav-collapsed' : ''}${algorithmGuide.isOpen ? ' guide-open' : ''}`}
+      data-testid="learn-view"
+    >
       <div className="lab-sidebar-wrap">
         <AlgorithmSidebar
           catalog={lab.catalog}
@@ -259,11 +285,16 @@ export function LabView({
             key={algorithmGuideContent.algorithmId}
             guide={algorithmGuideContent}
             algorithmName={entry ? pick(entry.name) : t('customName')}
-            onCollapse={algorithmGuide.toggle}
+            onStart={startFromGuide}
           />
         ) : null}
 
-        <div className="lab-primary ui02-workbench" data-testid="lab-workbench">
+        <div
+          className="lab-primary ui02-workbench"
+          data-testid="lab-workbench"
+          ref={workbenchRef}
+          tabIndex={-1}
+        >
           <section className="panel pad stage-panel">
             <div className="sectionhead stage-head">
               <div>

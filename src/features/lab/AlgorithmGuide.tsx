@@ -17,11 +17,11 @@ export const ALGORITHM_GUIDE_ID = 'algorithm-guide';
 export function AlgorithmGuide({
   guide,
   algorithmName,
-  onCollapse,
+  onStart,
 }: {
   guide: AlgorithmGuideContent;
   algorithmName: string;
-  onCollapse: () => void;
+  onStart: () => void;
 }) {
   const { t, lang } = useI18n();
   const [detailsOpen, setDetailsOpen] = useState(false);
@@ -63,7 +63,7 @@ export function AlgorithmGuide({
         <CatalogGuide
           guide={guide}
           algorithmName={algorithmName}
-          onCollapse={onCollapse}
+          onStart={onStart}
         />
       ) : (
         <>
@@ -155,7 +155,7 @@ export function AlgorithmGuide({
                 type="button"
                 className="btn primary guide-start"
                 data-testid="guide-start"
-                onClick={onCollapse}
+                onClick={onStart}
               >
                 {t('guideStartAnimation')}
                 <span aria-hidden="true">→</span>
@@ -269,11 +269,11 @@ export function AlgorithmGuide({
 function CatalogGuide({
   guide,
   algorithmName,
-  onCollapse,
+  onStart,
 }: {
   guide: AlgorithmGuideContent;
   algorithmName: string;
-  onCollapse: () => void;
+  onStart: () => void;
 }) {
   const { t, lang } = useI18n();
   return (
@@ -313,7 +313,7 @@ function CatalogGuide({
             type="button"
             className="btn primary guide-start"
             data-testid="guide-start"
-            onClick={onCollapse}
+            onClick={onStart}
           >
             {t('guideStartAnimation')}
             <span aria-hidden="true">→</span>
