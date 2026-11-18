@@ -198,12 +198,23 @@ flowchart TD
 - **课程与目录**：`topological-sort-kahn` 8 步（init/seed/dequeue/inspect/decrement/enqueue/cycle/done），`aoe-critical-path` 7 步（init/topo/ve/vl/activity/cycle/done），stepId 与真实 Python `lesson_step=` 对齐。课程覆盖 DAG/入度、多合法序列、确定性、环、非连通、AOV/AOE 区别、最长路径 vs 最短路径、多源多汇、多关键路径、复杂度与常见错误。默认图没有 cycle 帧，两门课程的 cycle 步骤作为边界说明保留，步骤列表显示 0 帧。
 - **窄屏策略**：`g3.css` 在 980/560 断点把面板改为单列；390px 下 DAG 画布与表格在各自容器内滚动，页面本身无横向溢出。
 
+### 3.18 连通分量与 Kosaraju SCC：同一图骨架，两种可达性（G4）
+- **两个独立快照，不扩展 `graph`**：`connectedComponentsSnapshotSchema`（`kind:'connected-components'`）与 `kosarajuSnapshotSchema`（`kind:'kosaraju'`）进入 `structureSchema` union，union 从 11 个分支增至 13 个。连通分量快照记录无向 `nodes/edges`、`currentNodeId/currentEdgeId/neighborNodeId`、`discoveredIds/visitedIds`、`frontierItems`（显式 DFS 栈）、`currentComponentId/componentCount/components`；SCC 快照额外记录 `phase`、`reversed`、`finishOrder`、`secondPassOrder/secondPassIndex`。两个分支与 BFS/DFS 的 `graph` 语义、G1/G2/G3 快照互不影响。
+- **Schema 校验要点**：无向边按无序对拒绝重复，有向边按同向对拒绝重复；拒绝未知端点、自环、重复节点；分量 id 连续、节点不可重复分配；`visitedIds` 必须是 `discoveredIds` 子集；栈项 id 唯一，`added` 必须在栈内、`removed` 必须已不在栈内；SCC 的 `secondPassOrder` 必须严格等于完成顺序的逆序；`reverse` 帧重置第二遍 discovered/visited/栈/分量；`done` 必须覆盖全部节点且每个节点恰好属于一个完整分量。
+- **真实 Python，不是预置帧**：`componentExamples.ts` 中连通分量使用迭代 DFS，而不是递归；按节点输入顺序选择未发现根，按输入边顺序构建邻接表，栈用 Python list。`start-component` 同时发现根并入栈，`discover` 与 `push` 分成两帧，便于观察“发现”和“入栈”不是同一事件。SCC 使用迭代 Kosaraju：第一遍原图 DFS 记录真实完成顺序；`reverse` 帧反转所有边，清空第二遍状态但保留完成顺序；第二遍按完成顺序逆序扫描，在反向图 DFS，逐个 SCC 分配。迭代栈保存 `[node, nextAdjacencyIndex]`，避免回溯后重复扫描。
+- **默认教学图**：连通分量 8 节点、5 条无向边（A–B、A–C、B–C、D–E、F–G，H 孤立），50 帧，`C1={A,B,C}`、`C2={D,E}`、`C3={F,G}`、`C4={H}`。SCC 8 节点、7 条有向边（A→B、B→C、C→A、C→D、D→E、E→D、F→G），60 帧；第一遍完成顺序 `E,D,C,B,A,G,F,H`，第二遍顺序 `H,F,G,A,B,C,D,E`，5 个 SCC：`{H}`、`{F}`、`{G}`、`{A,C,B}`、`{D,E}`。
+- **为什么不能只靠忽略方向**：默认 SCC 图若按无向边连通性分组，A–E 会被并成一个 5 节点分量；Kosaraju 的真实结果把 A/B/C 与 D/E 分成两个 SCC，F→G 与 H 各自独立。`reverse` 帧的边标签保留 `rev u→v`，UI 同时显示“反向图 / 边已反转 / 阶段轨道”，不要求用户从颜色猜方向。
+- **共享基础、不同面板、同一播放器**：`ComponentVisuals.tsx` 复用 `mst-stage / mst-layout / mst-panel / mst-graph-scroll / mst-graph-svg / mst-node / mst-edge` 和 `layoutGraph`；连通分量面板是“无向图 + 显式 DFS 栈 + 当前 C + 分量结果 + 节点状态表”，SCC 面板额外有“阶段轨道 + 完成顺序 + 第二遍处理顺序 + 反向图”。两者只消费 `currentEvent.structure`，没有第二个 `currentIndex`、第二个播放器或 message 解析。
+- **视觉语义**：节点、分量行、节点状态表都带 `C1/C2/...` 文本编号与组色；颜色只是辅助，不是唯一语义。SCC 的完成序号用节点左上角小徽标；第二遍当前根用 ROOT 标签；当前节点用 ring 高亮。
+- **课程与目录**：`connected-components-dfs` 10 步（init/start/pop/visit/inspect/discover/push/skip/complete/done），`strongly-connected-components-kosaraju` 11 步（init/start-first/inspect/push/skip/finish/reverse/start-second/assign/complete/done），stepId 与真实 Python `lesson_step=` 对齐。课程覆盖无向连通分量、孤立点、DFS 确定性、普通连通 vs 强连通、边方向、转置、完成顺序、为什么两遍、复杂度 O(V+E) 与常见错误。
+- **窄屏策略**：`g4.css` 在 980/560 断点把面板改为单列；390px 下图画布与结果表在各自容器内滚动，页面本身无横向溢出。
+
 ## 4. 测试策略
 
 | 层次 | 工具 | 覆盖 |
 | --- | --- | --- |
 | 纯逻辑单测 | Vitest | 主题解析、播放状态机（含 `clampPlayback`）、可视化映射、i18n、题库数据、关键词路由、教学课程校验与阶段查找、**知识包 manifest/路径/中央目录/内容校验** |
-| 帧回归 | Vitest + legacy 快照 | 21 个 catalog 入口逐帧一致（12 个 legacy 动画 + 阶乘/斐波那契 + Dijkstra/Floyd/Bellman/Prim/Kruskal/拓扑/关键路径真实 Python preset）、空/重复/单元素输入、排序终态 |
+| 帧回归 | Vitest + legacy 快照 | 23 个 catalog 入口逐帧一致（12 个 legacy 动画 + 阶乘/斐波那契 + Dijkstra/Floyd/Bellman/Prim/Kruskal/拓扑/关键路径/连通分量/SCC 真实 Python preset）、空/重复/单元素输入、排序终态 |
 | 存储单测 | Vitest + fake-indexeddb | 安装成功、刷新恢复、卸载隔离、重复安装、版本冲突/显式替换、写事务失败回滚、配额映射、存储不可用 |
 | 会话/上下文格式 | Vitest（node + jsdom） | 两文件 Schema、格式版本、未知键拒绝、`stepIndex === event.step`、大小限额、篡改检测、导出不重跑 |
 | MCP 协议 | Vitest + 官方 SDK `Client` + `InMemoryTransport` | 工具/提示词发现、参数校验、内置+包课程、中英 stepId、未知 lesson/step、会话写盘复验且从不覆盖、上下文读取（穿越/绝对路径/符号链接/超限/篡改/坏 JSON）、恶意包文本、Prompt 五级 |
@@ -213,7 +224,7 @@ flowchart TD
 | 结构语义（Stage 7B） | Vitest + Schema/模型/组件 | `structure` 合法与非法、重复 id、pop/dequeue 必带 removed、旧 Trace 兼容、栈/队列模型映射、空态、DOM 顺序与 removed 独立渲染 |
 | 单链表语义（Stage 7C） | Vitest + Schema/模型/组件/Python | linked-list 合法/空表/同值不同 ID/悬空引用/环/40 上限；主链由 nextId 而非数组顺序；HEAD/临时/断开/回退；真实 Node 示例 22 帧；DOM 节点、箭头目标、变化徽章 |
 | 工作区布局（Stage 7A） | Playwright + 真实页面 | 1440 并排 + 当前步骤落在 900 高首屏；1024/390 无页面级横向溢出；标签切换保留 Monaco 草稿、不自动运行；方向键切标签、Escape 关闭菜单；AI 错误折叠 |
-| 组件冒烟 | Vitest + jsdom + Testing Library | 21 个算法入口、时间轴交互与 **Trace 切换重置**、三态主题、语言切换、视图切换、调用栈面板与作用域变量、教学面板（高亮/禁用/跳转/空态）、知识包页（预览/确认/卸载/错误文案）、**App 级导入→课程→卸载** |
+| 组件冒烟 | Vitest + jsdom + Testing Library | 23 个算法入口、时间轴交互与 **Trace 切换重置**、三态主题、语言切换、视图切换、调用栈面板与作用域变量、教学面板（高亮/禁用/跳转/空态）、知识包页（预览/确认/卸载/错误文案）、**App 级导入→课程→卸载** |
 | 令牌契约 | Vitest 读 CSS 文本 | 两套主题 token 完整性、无硬编码颜色 |
 | E2E | Playwright（真实 Edge 无头 + `vite preview`） | Monaco 加载、Python 冒泡同步高亮、SyntaxError 波浪线出现/清除、草稿自动保存/刷新恢复、主题切换、真实 Pyodide 阶乘/斐波那契递归栈、JS 长短 Trace 切换重置、**教学步骤与真实数组/变量/调用栈同步**（`e2e/lab.spec.ts`）、**知识包导入→安装→刷新恢复→卸载**与**包内 Python 示例真实 Trace**（`e2e/packs.spec.ts`）、**Agent 会话导入→用户运行→步骤同步**与**导出真实帧→Schema 复验**（`e2e/session.spec.ts`） |
 | 栈/队列 E2E（Stage 7B） | Playwright + 真实 Pyodide | 真实 7 帧栈/队列、DOM 顶→底/前→后顺序、Peek/Front 不移除、Pop/Dequeue 与回退、1024/390 无横向溢出、Light/Dark、Reduced Motion、36 张真实截图 |
@@ -227,6 +238,8 @@ flowchart TD
 | MST E2E（G2） | Playwright + 真实 Pyodide | Prim 21 帧 heap/树/跳过/总权重、Kruskal 15 帧排序/并查集/接受/拒绝、两算法总权重一致但边集不同、负权/单点/非连通森林/有向拒绝；回退与任意跳帧同步；1440/390 无页面溢出；8 张 G2 截图 |
 | DAG 语义（G3） | Vitest + Schema/模型/Python 契约 | 11 项 `dag.test.ts` + 10 项 `dagEdgeCases.test.ts`：默认 32/22 帧逐帧 Schema、逐边依赖、队列/入度同帧、拓扑非连通/环/单点/空图、AOE 多源/多汇/单点/空图，并以独立 ve/vl/slack/最长路径枚举交叉验证；`g3Lessons.test.ts` 6 项校验课程 stepId 与真实 fixture 一致 |
 | DAG E2E（G3） | Playwright + 真实 Pyodide | Kahn 32 帧入度/队列/减一/入队/完成、非连通多合法顺序/环/单点、AOE 22 帧 ve/vl/余量/双关键路径、多源/多汇、负持续时间与无向图拒绝；回退与任意跳帧同步；1440/390 无页面溢出；7 张 G3 截图 |
+| 连通性语义（G4） | Vitest + Schema/模型/Python 契约 | `components.test.ts` 12 项：50/60 帧逐帧 Schema、默认 4 分量/5 SCC、发现/栈/分量同帧、边界（非连通/单点/空图/完全连通/单向链/环/桥接）、SCC 双向可达性、转置帧、回退跳帧模型稳定、C 编号显示；`g4Lessons.test.ts` 6 项校验 10/11 步课程与真实 fixture stepId 一致 |
+| 连通性 E2E（G4） | Playwright + 真实 Pyodide | 连通分量 50 帧发现/栈/C 编号/4 分量、Kosaraju 60 帧第一遍/转置/第二遍/5 SCC、空图、单向链 vs 有向环；回退与任意跳帧同步；1440/390 无页面溢出；6 张 G4 截图 |
 | Dijkstra E2E（Stage 7F） | Playwright + 真实 Pyodide | 默认 46 帧图/距离表/PQ 同帧；`F=6→4` 与 previous `C→E`；路径 A→B→E→F→G=7；回退 45→27→21→3 三面板一起恢复并重跑；非连通 11 帧、相同距离 27 帧、单节点 5 帧、负权拒绝并清空图；1024/390 无页面溢出、画布内部滚动、Light/Dark；62 张截图 |
 | 单链表 E2E（Stage 7C） | Playwright + 真实 Pyodide | 真实 22 帧：中间插入三阶段（create/set-next/predecessor）、删除绕过并清空 next、回退恢复、HEAD→NULL 遍历、同值不同 ID、栈/队列切换无残留、1024/390 无页面溢出、Reduced Motion、60 张截图 |
 | a11y | axe | **未实现**，见后续 Issue |
@@ -255,6 +268,7 @@ Stage 7F（已完成）: weighted-graph union Schema → 真实 Python heapq Dij
 G1（已完成，main）: Floyd-Warshall / Bellman-Ford 独立快照 → 负环检测与提前结束 → 距离矩阵/距离表 + 同帧带权图 → 6 步/8 步双语课程 → 3 条功能 E2E + 1 条视觉 E2E
 G2（已完成，feat/g2-mst）: prim-mst / kruskal-mst 独立快照 → 真实 Python heapq / 并查集 → Prim 树扩张+堆候选、Kruskal 排序+环检测+Union-Find 面板 → 共享基础图组件与单一播放器 → 8 步/6 步双语课程 → 4 条功能 E2E + 1 条视觉 E2E
 G3（已完成，feat/g3-topo-critical-path）: topological-sort / critical-path 独立快照 → 真实 Python Kahn + AOE ve/vl/slack/path 枚举 → 有向图分层布局、入度/队列面板与事件/活动/路径面板 → 单一播放器与 8 步/7 步双语课程 → 4 条功能 E2E + 1 条视觉 E2E
+G4（已完成，feat/g4-components-scc）: connected-components / kosaraju 独立快照 → 真实 Python 迭代 DFS 与 Kosaraju 双遍 DFS + 转置 → 复用图布局与单一播放器，新增显式栈、完成顺序、反向图与 C 编号分组 → 10 步/11 步双语课程 → 4 条功能 E2E + 1 条视觉 E2E
 后续             : G4 / 树算法等更多结构化课程；Agent ⇄ 浏览器实时同步（Stage 5B 候选）、RAG / 多轮记忆、练习页 Monaco、a11y / axe、远程包市场与签名
 ```
 
