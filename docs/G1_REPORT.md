@@ -52,4 +52,5 @@
 - G1 实现：`4a51f53`。
 - 本地 Edge 截图刷新：`83fab76`。
 - 全量回归与入口数量修正提交：见本分支最新提交。
-- 分支已推送到 Gitee：`origin/feat/g1-shortest-paths`；未合并 `main`。
+- 已合并到 `main`：`14cf331`（`release/g1` 合并提交）。
+- 分支已推送到 Gitee：`origin/feat/g1-shortest-paths`、`origin/release/g1`。
