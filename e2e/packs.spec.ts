@@ -1,5 +1,5 @@
 import path from 'node:path';
-import { expect, openCodePanel, test, type Page } from './fixtures';
+import { expect, openCodePanel, openLessonStepNav, test, type Page } from './fixtures';
 
 /**
  * Stage 4 — the official `.algopack` end to end, in a real browser.
@@ -35,6 +35,7 @@ test.describe('Stage 4 — official .algopack installs, survives reload and unin
     await expect(page.locator('[data-testid="lesson-title"]')).toContainText('二分查找');
     await expect(page.locator('[data-testid="lesson-origin"]')).toBeVisible();
     await expect(page.locator('[data-testid="lesson-use-example"]')).toBeVisible();
+    await openLessonStepNav(page);
     await expect(page.locator('[data-testid="lesson-step-found"]')).toBeVisible();
 
     // Reload: IndexedDB keeps the pack, so the course must come back.
@@ -45,6 +46,7 @@ test.describe('Stage 4 — official .algopack installs, survives reload and unin
 
     await page.click('[data-testid="pack-open-binary"]');
     await expect(page.locator('[data-testid="lesson-title"]')).toContainText('二分查找');
+    await openLessonStepNav(page);
     await expect(page.locator('[data-testid="lesson-step-narrow"]')).toBeVisible();
 
     // Uninstall removes the pack course and leaves the built-in courses alone.
@@ -88,6 +90,7 @@ test.describe('Stage 4 — pack Python example produces a real trace', () => {
     await expect(page.locator('[data-testid="variables-watch"]')).toContainText('target');
 
     // Lesson → timeline: a `found` stage exists only in the real trace.
+    await openLessonStepNav(page);
     await page.click('[data-testid="lesson-step-found"]');
     await expect(page.locator('[data-testid="lesson-active-step"]')).toHaveAttribute('data-step-id', 'found');
     await expect(page.locator('.algolens-active-line')).toHaveCount(1);

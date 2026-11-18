@@ -183,7 +183,7 @@ describe('LessonPanel (Stage 3B)', () => {
         bubbleSortLesson.steps[1].title.zh,
       );
       expect(screen.getByTestId('lesson-explanation').textContent).toBe(
-        bubbleSortLesson.steps[1].explanation.zh,
+        `${bubbleSortLesson.steps[1].explanation.zh.split('。')[0]}。`,
       );
       expect(focus.compareDocumentPosition(steps) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     });
@@ -209,6 +209,46 @@ describe('LessonPanel (Stage 3B)', () => {
       expect(swap.disabled).toBe(true);
       fireEvent.click(swap);
       expect(onSeek).not.toHaveBeenCalled();
+    });
+
+    it('defaults to the compact four-part rail and folds the old data', () => {
+      renderPanel({ variant: 'rail', index: 3 });
+      expect(screen.getByTestId('current-step')).toBeTruthy();
+      expect(screen.getByTestId('current-step-title').textContent).toBe(bubbleSortLesson.steps[1].title.zh);
+      expect(screen.getByTestId('current-step-changes')).toBeTruthy();
+      expect(screen.getByTestId('current-step-tip').textContent).toContain('观察变量面板里的 j');
+      expect(screen.getByTestId('lesson-overview').hasAttribute('hidden')).toBe(true);
+      expect(screen.getByTestId('lesson-steps').closest('.lesson-steps-panel')?.hasAttribute('hidden')).toBe(true);
+      expect(screen.getByTestId('lesson-details-toggle').getAttribute('aria-expanded')).toBe('false');
+      expect(screen.getByTestId('lesson-steps-toggle').getAttribute('aria-expanded')).toBe('false');
+    });
+
+    it('keeps old course data and frame records behind the details disclosure', () => {
+      renderPanel({
+        variant: 'rail',
+        index: 1,
+        currentEvent: event(1, 'compare', {
+          message: '比较 / Compare',
+          variables: [{ name: 'i', type: 'int', value: 0 }],
+        }),
+      });
+      const toggle = screen.getByTestId('lesson-details-toggle');
+      fireEvent.click(toggle);
+      expect(toggle.getAttribute('aria-expanded')).toBe('true');
+      expect(screen.getByTestId('lesson-overview').hasAttribute('hidden')).toBe(false);
+      expect(screen.getByTestId('lesson-overview').textContent).toContain(bubbleSortLesson.overview.zh);
+      expect(screen.getByTestId('lesson-message').textContent).toContain('比较 / Compare');
+      expect(screen.getByTestId('lesson-vars').textContent).toContain('i = 0');
+    });
+
+    it('opens the step navigation without introducing another player', () => {
+      const onSeek = vi.fn();
+      renderPanel({ variant: 'rail', index: 0, onSeek });
+      fireEvent.click(screen.getByTestId('lesson-steps-toggle'));
+      expect(screen.getByTestId('lesson-steps-toggle').getAttribute('aria-expanded')).toBe('true');
+      expect(screen.getByTestId('lesson-steps').closest('.lesson-steps-panel')?.hasAttribute('hidden')).toBe(false);
+      fireEvent.click(screen.getByTestId('lesson-step-swap'));
+      expect(onSeek).toHaveBeenCalledWith(2);
     });
   });
 });

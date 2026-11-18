@@ -1,6 +1,6 @@
 # AlgoViz 算法与课程覆盖清单
 
-快照：2026-11-18（UX-01B 基于 UX-01 的 `715acc3` 在 `feat/ux01b-guide-hierarchy` 完成；G2、G3、G4、T1、T2、UX-01 与 UX-01B 均未合并 `main`）
+快照：2026-11-18（UX-02 基于 UX-01B 的 `f866baf` 在 `feat/ux02-lesson-panel` 完成；G2、G3、G4、T1、T2、UX-01、UX-01B 与 UX-02 均未合并 `main`）
 
 ## 1. 口径
 
@@ -89,9 +89,9 @@ T2 设计要点：
 
 T2 代表性截图：`docs/t2/avl-insert-ll-1440-light.png`、`avl-insert-rr-1440-light.png`、`avl-insert-lr-1440-light.png`、`avl-insert-rl-1440-light.png`、`avl-delete-cascade-rebalance-1440-light.png`、`avl-delete-cascade-390-light.png`。
 
-## 8. UX-01 / UX-01B 顶部算法导学（不新增算法）
+## 8. UX-01 / UX-01B / UX-02 导学与逐帧讲解（不新增算法）
 
-UX-01 首次加入顶部可折叠导学；UX-01B 在同一数据模型上重排阅读层级与高度。两批都没有新增算法入口，也没有修改 Python/Trace 语义；25 个算法入口与 19 门课程不变。
+UX-01 首次加入顶部可折叠导学；UX-01B 在同一数据模型上重排阅读层级与高度；UX-02 把右侧 `LessonPanel` 收敛为与当前帧同步的四段讲解，并把旧课程资料/步骤跳转折叠保留。三批都没有新增算法入口，也没有修改 Python/Trace 语义；25 个算法入口与 19 门课程不变。
 
 | 导学来源 | 覆盖 | 内容 |
 | --- | --- | --- |
@@ -109,7 +109,7 @@ UX-01 设计要点：
 
 UX-01 证据：`docs/ux01/guide-expanded-1440-light.png`、`guide-collapsed-1440-light.png`、`guide-expanded-390-light.png`。
 
-### 8.1 UX-01B 排版与视觉层级（当前）
+### 8.1 UX-01B 排版与视觉层级（基线）
 
 UX-01B 只调整导学区的排版、内容层级和静态示意图，不进入 UX-02，也不改左侧目录、右侧逐帧讲解、Trace、算法数量或整页网格。
 
@@ -121,6 +121,19 @@ UX-01B 只调整导学区的排版、内容层级和静态示意图，不进入 
 - **视觉**：复用现有 token 与按钮，不使用新 UI 库；没有大面积相同浅蓝卡片，阶段条、记忆条和详情区有明确层级；中英、Light/Dark、键盘与 390 单栏均覆盖。
 
 UX-01B 证据：`docs/ux01b/before/`（4 张优化前）与 `docs/ux01b/after/`（7 张优化后，含 Dijkstra 展开/详情/收起、Kahn 展开、Kosaraju 展开、Kosaraju Dark、390 展开）。
+
+### 8.2 UX-02 右侧逐帧讲解（当前）
+
+UX-02 只改右侧 `Teaching Course` 的默认信息架构，不改顶部导学、左侧目录、整页网格、代码编辑器、变量区或 Trace 协议。
+
+- **默认四项**：`current-step` 依次显示当前操作标题、算法阶段 pill、帧数 `n / total`、操作原因、真实状态变化和可选记忆重点。
+- **变化来源**：新增纯函数 `buildFrameInsight`。Dijkstra / Kahn / Kosaraju / BST / AVL 读取强类型 `structure` 与 `lessonStepId`；其他算法优先比较当前帧/上一帧的 `state.values`，没有结构化变化时明确说明，不解析任意 message 猜测结构。
+- **折叠保留**：课程简介、核心思想、复杂度、前置知识、常见错误、原始 message、变量进入 `课程资料`；完整步骤与 `lesson-step-<id>` 跳转进入 `步骤导航`。两个入口默认关闭，展开后仍用 `countStepFrames` / `findFrameForStep` 跳真实帧。
+- **同步**：`currentEvent.lessonStepId` 是唯一同步键；没有第二套播放器或步骤计数器。前进、回退、拖动、跳帧均立即刷新四段内容。
+- **高度**：1440×900 下 Dijkstra/Kahn 为 427px、Kosaraju 为 405px；改造前基线分别为 1153/964/1056px。390×844 下 Dijkstra 为 416px，页面无横向溢出。
+- **视觉**：当前操作标题 20px（390 下 18px），四段用虚线分隔，状态变化用 before → after、箭头、标签表达；中英、Light/Dark/System 复用现有 token。
+
+UX-02 证据：`docs/ux02/before/`（4 张基线）与 `docs/ux02/after/`（7 张本分支，含 Dijkstra 松弛/完成、Kahn 减度、Kosaraju 第二遍、BST 查找/390、Dijkstra 英文 Dark）。
 
 ## 9. 全量矩阵
 
@@ -148,22 +161,24 @@ UX-01B 证据：`docs/ux01b/before/`（4 张优化前）与 `docs/ux01b/after/`�
 | 项 | 结果 |
 | --- | --- |
 | `npm run typecheck` | ✅ 通过 |
-| `npm run build` | ✅ 通过；1433 modules；`index-BSf2Dpt6.js` 1,279.25 kB / gzip 359.41 kB；`index-C3WZL0dF.css` 127.59 kB / gzip 22.23 kB |
-| 全量单测 | ✅ 85 个文件、694 tests 全部通过 |
+| `npm run build` | ✅ 通过；1434 modules；`index-CwtbNTcD.js` 1,320.94 kB / gzip 372.59 kB；`index-cn669NMh.css` 133.05 kB / gzip 23.06 kB |
+| 全量单测 | ✅ 86 个文件、706 tests 全部通过 |
+| UX-02 相关单测 | ✅ `frameInsight.test.ts` 9 项 + `LessonPanel.test.tsx` 18 项，合计 27 项通过；覆盖四算法真实结构变化/回退与无结构降级、默认四项、资料/步骤折叠、展开后旧数据仍在、步骤跳转同步 |
 | UX-01B 相关单测 | ✅ `buildGuide.test.ts` 7 项 + `AlgorithmGuide.test.tsx` 7 项 + `useAlgorithmGuidePreferences.test.ts` 3 项，合计 17 项通过；覆盖三算法双语完整性、3～5 阶段、课程长步骤回退、目录安全回退、详情默认收起/展开、折叠不碰播放器与按算法偏好 |
 | T1 相关单测 | ✅ `bst.test.ts` 14 项 + `bstLesson.test.ts` 3 项，合计 17 项通过 |
 | T2 相关单测 | ✅ `avl.test.ts` 9 项 + `avlLesson.test.ts` 3 项，合计 12 项通过；覆盖 176 帧 Schema、稳定 ID、四种旋转/双旋两阶段、删除三案例、根变化、连续重平衡、回退视觉同步、非法快照拒绝与课程帧映射 |
-| 全量 E2E | ✅ 97/97（95 条既有 + 2 条 UX-01B 功能/视觉） |
+| 全量 E2E | ✅ 102/102（97 条既有 + 5 条 UX-02 功能/视觉） |
+| UX-02 E2E | ✅ 5/5：Dijkstra 默认四项/旧资料折叠/frame 27 relax `6→4`/frame 21 回退/frame 40 stale/frame 45 done 路径与权重/步骤导航跳转/资料展开；Kahn frame 5 入度 `2→1`、8 入队、9 出队、31 完成；Kosaraju 14/26/27/59；BST 5 比较 b5(40)、7 完成与 390 无溢出；英文 Dark 与 390 无溢出；生成 7 张 after 截图 |
 | UX-01B E2E | ✅ 2/2：1440 导学三层/阶段数/详情默认收起/展开后 7 步与知识/高度与动画首屏、Dijkstra 第 11/46 帧折叠再展开不丢帧、键盘、三算法切换、按算法偏好、英文、Dark/System、目录安全回退；390 展开/详情/收起与无横向溢出；生成 7 张 after 截图 |
 | T1 E2E | ✅ 1/1：真实 Pyodide 依次运行查找、插入、叶子/单孩子/双孩子删除；验证根 b1→b6、后继 b6 保留 ID、65 重连、前进/回退/跳帧同步、390 无页面横向溢出 |
 | T2 E2E | ✅ 1/1：真实 Pyodide 运行 10 个官方预设；验证四种旋转、双旋 chip、删除三案例/根变化/连续重平衡、节点 ID 与 height/BF、前进/回退/跳帧、390 根居中与页面无横向溢出、英文切换；并生成 6 张截图 |
 | 独立 Python 校验 | ✅ `scripts/verify_bst_python.py` 与 `scripts/verify_avl_python.py` 全部通过；AVL 覆盖 10 个官方预设、四种旋转、叶子/单孩子/双孩子/根/缺失键、空树/重复/非法值、多祖先连续平衡；逐帧检查中序严格递增、真实 height、`|BF|≤1`、无重复归属/无环/无悬空引用，并与独立参考 AVL 交叉验证 |
-| 回归 | ✅ BFS/DFS、Dijkstra、Floyd、Bellman-Ford、Prim、Kruskal、拓扑排序、关键路径、连通分量/SCC、二叉树遍历、栈/队列/链表、BST/AVL 在 97/97 全量 E2E 中通过 |
+| 回归 | ✅ BFS/DFS、Dijkstra、Floyd、Bellman-Ford、Prim、Kruskal、拓扑排序、关键路径、连通分量/SCC、二叉树遍历、栈/队列/链表、BST/AVL 在 102/102 全量 E2E 中通过 |
 | 入口数量 | ✅ 24→25、课程 18→19 的旧断言已修正并复跑通过 |
 
 ## 11. 已知边界
 
-- T1/T2/UX-01B 只保证官方 Python 示例、预设输入与内置导学内容；任意用户改写代码后的完整自动可视化或自动导学仍不在本批次范围。
+- T1/T2/UX-01B/UX-02 只保证官方 Python 示例、预设输入与内置导学/逐帧讲解内容；任意用户改写代码后的完整自动可视化或自动导学仍不在本批次范围。
 - 双孩子删除采用“物理移植中序后继”策略，不采用“复制后继值再删除后继”的显示方式；因此同一节点 ID 会换位置，教学时不要把位置变化误读为新节点。
 - 删除帧的 `current` 常为空（目标已摘除），路径/目标高亮因此清空；最终结果、摘除对象、指针与根变化仍由 `removedNode`、`oldRootId/rootId` 明确记录。
 - `delete-cascade` 的删除分类是叶子删除，但会连续触发两个不同祖先的 LR 双旋；不能把它当成双孩子删除，也不能假设删除后至多旋转一次。
@@ -171,11 +186,11 @@ UX-01B 证据：`docs/ux01b/before/`（4 张优化前）与 `docs/ux01b/after/`�
 - 390 px 下 BST/AVL 树画布在容器内横向滚动，AVL 会自动把根居中；页面本身无横向溢出，没有为了 T1/T2 调整页面主布局。
 - UX-01B 的完整原创导学仍只有 Dijkstra、Kahn、Kosaraju 三个；其余 16 门课程直接复用 Lesson 结构，6 个无课程入口只显示目录简介与复杂度。课程只有 3～5 个真实步骤时才生成阶段条；6 步及以上只显示紧凑回退，完整步骤仍可展开。
 - 导学静态示意图是教学示意，不是按真实输入计算出的图形；真实结构、指针与帧状态始终由下方 `VisualStage` 的 Trace 决定。
-- UX-01B 不改变左侧目录、右侧 LessonPanel、整页双栏比例或任一 Python/Trace 语义；这些留到 UX-02 / UX-03 / UX-04。
-- G2、G3、G4、T1、T2、UX-01 与 UX-01B 均尚未合并 `main`；T1 从包含 G1～G4 的 `94e34fa` 创建独立分支，T2 从 T1 最新文档提交 `ef0ee4f` 创建 `feat/t2-avl`，UX-01 从 T2 文档提交 `639ae33` 创建 `feat/ux01-algorithm-guide`，UX-01B 从 UX-01 提交 `715acc3` 创建 `feat/ux01b-guide-hierarchy`。
+- UX-01B 不改变左侧目录、整页双栏比例或任一 Python/Trace 语义；UX-02 只更新右侧讲解面板，同样不改这些结构。左侧目录与整页比例分别留到 UX-03 / UX-04。
+- G2、G3、G4、T1、T2、UX-01、UX-01B 与 UX-02 均尚未合并 `main`；T1 从包含 G1～G4 的 `94e34fa` 创建独立分支，T2 从 T1 最新文档提交 `ef0ee4f` 创建 `feat/t2-avl`，UX-01 从 T2 文档提交 `639ae33` 创建 `feat/ux01-algorithm-guide`，UX-01B 从 UX-01 提交 `715acc3` 创建 `feat/ux01b-guide-hierarchy`，UX-02 从 UX-01B 提交 `f866baf` 创建 `feat/ux02-lesson-panel`。
 - `BST_PYTHON` / `AVL_PYTHON` 的 `line=` 是教学用近似源码行号，Monaco 实际行号以编辑器为准。
 - AVL 节点上的 ROOT/LEAF/当前角色徽标在 T2 中隐藏，避免与 height/BF 徽标叠字；当前节点由顶部指标与描边表达。
 
 ## 12. 下一批次（不在本批次执行）
 
-UX-02（右侧教学面板精简）、UX-03（左侧目录层级）、UX-04（整页高度与双栏比例）、堆、哈夫曼树与其他算法均未在 UX-01B 中开发；后续继续复用现有单一播放器、Trace 快照、树/图布局与双语课程架构。
+UX-02 已完成并停止；UX-03（左侧目录层级）、UX-04（整页高度与双栏比例）、堆、哈夫曼树与其他算法均未在 UX-02 中开发；后续继续复用现有单一播放器、Trace 快照、树/图布局与双语课程架构。

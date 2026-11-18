@@ -45,3 +45,17 @@ export async function collapseAlgorithmGuide(page: Page) {
   await expect(toggle).toHaveAttribute('aria-expanded', 'false');
   await expect(page.getByTestId('algorithm-guide')).toHaveCount(0);
 }
+
+/**
+ * UX-02 folds the course step list by default so the rail stays short. Tests
+ * that jump by step id open this disclosure first; the jump still uses the same
+ * real trace frames and the same playback controller.
+ */
+export async function openLessonStepNav(page: Page) {
+  const toggle = page.getByTestId('lesson-steps-toggle');
+  await expect(toggle).toBeVisible({ timeout: 45_000 });
+  if ((await toggle.getAttribute('aria-expanded')) !== 'true') {
+    await toggle.click();
+  }
+  await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+}

@@ -231,6 +231,6 @@ test.describe('T2 — AVL insert, delete, imbalance detection and four rotations
     await page.getByRole('button', { name: 'Switch language' }).click();
     await expect(page.locator('[data-testid="avl-op-label"]')).toContainText('operation complete');
     await expect(page.locator('[data-testid="avl-result"]')).toContainText('Delete failed');
-    await expect(page.getByTestId('lesson-active-step')).toContainText('Complexity, common mistakes');
+    await expect(page.getByTestId('lesson-active-step')).toContainText('AVL operation complete');
   });
 });

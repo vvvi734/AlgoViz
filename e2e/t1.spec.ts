@@ -197,6 +197,6 @@ test.describe('T1 — BST search, insert and three delete cases', () => {
     await page.getByRole('button', { name: 'Switch language' }).click();
     await expect(page.locator('[data-testid="bst-op-label"]')).toContainText('operation complete');
     await expect(page.locator('[data-testid="bst-result"]')).toContainText('Deleted');
-    await expect(page.getByTestId('lesson-active-step')).toContainText('Result, complexity');
+    await expect(page.getByTestId('lesson-active-step')).toContainText('BST operation complete');
   });
 });

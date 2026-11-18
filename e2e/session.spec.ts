@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { expect, openCodePanel, test, type Page } from './fixtures';
+import { expect, openCodePanel, openLessonStepNav, test, type Page } from './fixtures';
 import { bubbleSortLesson } from '../src/domain/lessons/bubbleSort';
 import { exampleFor } from '../src/domain/algorithms/examples';
 import { buildLearningSession, serializeLearningSession } from '../src/domain/sessions/session';
@@ -77,6 +77,7 @@ test.describe('Stage 5A — Agent session file → AlgoLens Web', () => {
     await expect(page.locator('[data-testid="variables-watch"]')).toContainText('arr');
 
     // Lesson → timeline: jumping to `compare` lands on a real frame of that stage.
+    await openLessonStepNav(page);
     await page.click('[data-testid="lesson-step-compare"]');
     await expect(page.locator('[data-testid="lesson-active-step"]')).toHaveAttribute('data-step-id', 'compare');
     await expect(page.locator('[data-testid="step-desc"]')).toContainText('比较');
@@ -102,6 +103,7 @@ test.describe('Stage 5A — AlgoLens Web → Agent context file', () => {
     });
 
     // Pick a teaching stage through the lesson panel (real trace frames only).
+    await openLessonStepNav(page);
     await page.click('[data-testid="lesson-step-compare"]');
     await expect(page.locator('[data-testid="lesson-active-step"]')).toHaveAttribute('data-step-id', 'compare');
     const frameBefore = await page.locator('[data-testid="step-number"]').textContent();

@@ -1,4 +1,4 @@
-import { expect, openCodePanel, test, type Page } from './fixtures';
+import { expect, openCodePanel, openLessonStepNav, test, type Page } from './fixtures';
 
 /**
  * Stage 6A browser E2E.
@@ -22,6 +22,7 @@ async function runBubbleToCompare(page: Page): Promise<void> {
   await expect(page.locator('[data-testid="lesson-active-step"]')).toHaveAttribute('data-step-id', 'init', {
     timeout: 120_000,
   });
+  await openLessonStepNav(page);
   await page.click('[data-testid="lesson-step-compare"]');
   await expect(page.locator('[data-testid="lesson-active-step"]')).toHaveAttribute('data-step-id', 'compare');
 }

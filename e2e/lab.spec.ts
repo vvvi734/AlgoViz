@@ -1,4 +1,4 @@
-import { expect, openCodePanel, test, type Page } from './fixtures';
+import { expect, openCodePanel, openLessonStepNav, test, type Page } from './fixtures';
 
 /** Replace the Monaco editor content by selecting all and typing. */
 /** Stage 7A: secondary panels live in on-demand workspace tabs. */
@@ -198,6 +198,7 @@ test.describe('Stage 3B — teaching steps synced with real Pyodide execution', 
 
     // Lesson → timeline: clicking the step seeks to a real compare frame and
     // pauses playback; variables + Monaco line move to the same cursor.
+    await openLessonStepNav(page);
     await page.click('[data-testid="lesson-step-compare"]');
     await expect(page.locator('[data-testid="lesson-active-step"]')).toHaveAttribute('data-step-id', 'compare');
     await openTab(page, 'state');
@@ -237,6 +238,7 @@ test.describe('Stage 3B — teaching steps synced with real Pyodide execution', 
 
     // Jump to the first `combine` frame: the call stack must still be on screen
     // and the variables must belong to that depth, not to a guessed state.
+    await openLessonStepNav(page);
     await page.click('[data-testid="lesson-step-combine"]');
     await expect(page.locator('[data-testid="lesson-active-step"]')).toHaveAttribute('data-step-id', 'combine');
     await openTab(page, 'state');

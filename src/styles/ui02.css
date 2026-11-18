@@ -250,3 +250,406 @@
     font-size: 16px;
   }
 }
+
+/* ==========================================================================
+   UX-02 — four-part frame rail
+   The rail is one reading column: operation first, then purpose, real change,
+   optional memory hook. Course data and the step list are explicit disclosures.
+   ========================================================================== */
+
+.lessonpanel-compact .lesson-head-compact {
+  margin-bottom: 5px;
+}
+
+.lessonpanel-compact .lesson-head-main {
+  min-width: 0;
+}
+
+.lessonpanel-compact .lesson-head-main h2 {
+  margin: 1px 0 0;
+  font-size: 15px;
+  line-height: 1.35;
+  letter-spacing: -.1px;
+}
+
+.lessonpanel-compact .lesson-origin {
+  margin: 3px 0 0;
+  font-size: 11.5px;
+  line-height: 1.45;
+}
+
+.lesson-example-compact {
+  margin: 0 0 8px;
+}
+
+.lesson-example-compact .btn {
+  min-height: 32px;
+  padding: 4px 9px;
+  font-size: 12px;
+}
+
+.lessonpanel-compact .lesson-focus {
+  gap: 9px;
+  margin: 0 0 8px;
+  padding: 12px 13px 13px;
+  border-left-width: 3px;
+}
+
+.lesson-focus-kicker {
+  color: var(--accent);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  line-height: 1.3;
+  text-transform: uppercase;
+}
+
+.lesson-focus-context {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.lesson-stage-pill {
+  padding: 2px 6px;
+  border: 1px solid var(--edge);
+  border-radius: 6px;
+  color: var(--muted);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.lessonpanel-compact .lesson-focus-title {
+  margin: 1px 0 1px;
+  color: var(--txt);
+  font-size: 20px;
+  line-height: 1.3;
+  letter-spacing: -.3px;
+  overflow-wrap: anywhere;
+}
+
+.lesson-focus-block {
+  display: grid;
+  gap: 4px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--edge);
+}
+
+.lesson-block-label {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .02em;
+  line-height: 1.4;
+}
+
+.lessonpanel-compact .lesson-focus-explanation {
+  margin: 0;
+  color: var(--txt);
+  font-size: 13px;
+  line-height: 1.65;
+  overflow-wrap: anywhere;
+}
+
+.lesson-change-list {
+  display: grid;
+  gap: 0;
+}
+
+.lesson-change {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 5px;
+  min-width: 0;
+  padding: 4px 0;
+  border-bottom: 1px dotted var(--edge);
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
+.lesson-change:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.lesson-change-label {
+  flex: 0 0 auto;
+  min-width: 62px;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.lesson-change-before,
+.lesson-change-after {
+  min-width: 0;
+  padding: 1px 5px;
+  border-radius: 5px;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+.lesson-change-before {
+  color: var(--muted);
+  background: var(--stat-bg);
+}
+
+.lesson-change-arrow {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.lesson-change-after {
+  color: var(--txt);
+  background: var(--info-bg);
+  font-weight: 650;
+}
+
+.lesson-change[data-tone='update'] .lesson-change-after,
+.lesson-change[data-tone='success'] .lesson-change-after {
+  color: var(--accent);
+}
+
+.lesson-change[data-tone='warning'] .lesson-change-after {
+  color: var(--warn);
+}
+
+.lesson-change-detail {
+  flex: 1 1 100%;
+  color: var(--muted);
+  font-size: 11.5px;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+
+.lesson-change-empty {
+  padding: 3px 0;
+  font-size: 12px;
+}
+
+.lesson-memory {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  padding: 7px 8px;
+  border: 1px dashed var(--edge);
+  border-radius: 7px;
+  background: var(--stat-bg);
+  color: var(--txt);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.lesson-memory-label {
+  flex: 0 0 auto;
+  color: var(--accent);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: .02em;
+  line-height: 1.55;
+  white-space: nowrap;
+}
+
+.lesson-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin: 0;
+}
+
+.lesson-disclosure {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 32px;
+  max-width: 100%;
+  padding: 4px 8px;
+  border: 1px solid var(--edge);
+  border-radius: 7px;
+  background: var(--stat-bg);
+  color: var(--muted);
+  cursor: pointer;
+  font: inherit;
+  font-size: 11.5px;
+  line-height: 1.35;
+}
+
+.lesson-disclosure:hover {
+  border-color: var(--edge-hover);
+  color: var(--txt);
+}
+
+.lesson-disclosure:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.lesson-disclosure-icon {
+  color: var(--accent);
+  font-size: 11px;
+  line-height: 1;
+}
+
+.lesson-disclosure-hint {
+  max-width: 16ch;
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 10.5px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lesson-disclosure-count {
+  padding: 1px 4px;
+  border-radius: 4px;
+  background: var(--info-bg);
+  color: var(--accent);
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+}
+
+.lesson-detail-panel {
+  display: grid;
+  gap: 8px;
+  max-height: 300px;
+  margin-top: 8px;
+  padding-top: 9px;
+  border-top: 1px solid var(--edge);
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+
+.lesson-detail-panel p {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.65;
+}
+
+.lesson-detail-panel .lesson-oneliner {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.lesson-meta-compact {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin: 0;
+  padding: 7px 0;
+  border-top: 1px dashed var(--edge);
+  border-bottom: 1px dashed var(--edge);
+}
+
+.lesson-meta-compact .stat {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+}
+
+.lesson-meta-compact .stat b {
+  font-size: 13px;
+}
+
+.lesson-meta-compact .stat span {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.lesson-meta-compact + p {
+  margin-top: -1px;
+  color: var(--muted);
+}
+
+.lesson-detail-panel .lesson-chiprow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px;
+  margin: 0;
+}
+
+.lesson-detail-panel .lesson-mistakes {
+  margin-top: 2px;
+  font-size: 12.5px;
+}
+
+.lesson-tech {
+  display: grid;
+  gap: 5px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--edge);
+}
+
+.lesson-tech-title {
+  color: var(--muted);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: .04em;
+}
+
+.lesson-tech .lesson-message {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.lesson-tech .lesson-vars {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.lesson-steps-panel {
+  margin-top: 8px;
+  padding-top: 9px;
+  border-top: 1px solid var(--edge);
+}
+
+.lesson-detail-panel[hidden],
+.lesson-steps-panel[hidden] {
+  display: none !important;
+}
+
+.lesson-steps-panel .lesson-hint {
+  margin: 0 0 6px;
+  font-size: 11.5px;
+  line-height: 1.5;
+}
+
+.lesson-steps-panel .lessonsteps {
+  margin: 0;
+}
+
+@media (max-width: 760px) {
+  .lessonpanel-compact .lesson-focus {
+    gap: 8px;
+    padding: 11px 12px 12px;
+  }
+
+  .lessonpanel-compact .lesson-focus-title {
+    font-size: 18px;
+  }
+
+  .lesson-disclosure-hint {
+    display: none;
+  }
+
+  .lesson-detail-panel {
+    max-height: none;
+  }
+
+  .lesson-change-label {
+    min-width: 56px;
+  }
+
+  .lesson-memory {
+    flex-wrap: wrap;
+  }
+}
