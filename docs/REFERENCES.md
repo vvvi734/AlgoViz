@@ -56,3 +56,15 @@ Stage 5A 关于 MCP 的设计取向（不涉及任何第三方代码）：
 | algorithm-visualizer/algorithm-visualizer | `master` | MIT | 仅参考“执行轨迹与渲染器分离”的设计思想，未复制代码/素材 |
 
 三个仓库均未作为依赖或子模块引入；AlgoViz 的 Floyd/Bellman 实现、Trace、课程与视觉组件均为自研。
+
+## G2 参考记录（2026-11-18）
+
+本轮只阅读公开仓库中的 Prim/Kruskal 实现、测试组织和小图边界用例；没有复制任何代码、文案或素材，也没有作为依赖或 git submodule 引入。AlgoViz 的 MST Python 程序、Trace、并查集实现、课程与视觉组件均为自研。
+
+| 项目 | 默认分支 | 许可证 | 使用方式 |
+| --- | --- | --- | --- |
+| TheAlgorithms/Python | `master` | MIT（公开仓库页标注；本轮未复制） | 仅参考 Prim/Kruskal 的可读实现与测试思路；未复制函数、注释或测试数据 |
+| trekhleb/javascript-algorithms | `master` | MIT（`LICENSE` 原文核验：Copyright (c) 2018 Oleksii Trekhleb） | 仅参考算法说明与测试组织；未复制代码或文案 |
+| algorithm-visualizer/algorithms | `master` | 未单独核验根许可证；未复制任何内容 | 仅观察“轨迹与渲染分离”的通用设计取向；未移植整套 UI、播放器或素材 |
+
+由于没有复制第三方代码/素材，本仓库源码不需要附加第三方版权声明；若未来引用其中具体实现，必须先固定仓库、路径、版本与许可证，并补齐署名与许可文本。

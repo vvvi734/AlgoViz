@@ -4,8 +4,8 @@
 
 面向学生的浏览器端数据结构与算法学习平台：**Python 在浏览器内运行**，根据真实执行结果生成逐帧动画，并同步展示代码位置、变量值与步骤讲解。完全本地运行，无需租服务器。
 
-> **当前版本：v0.10 Stage 7F。** 用户可见品牌为 **AlgoViz**，旧 localStorage / IndexedDB / `.algopack` / `.algosession.json` / `.algocontext.json` / MCP Tool / AI Gateway 标识保持兼容。Stage 7F 在 Stage 7E 的真实图基础上加入 **Dijkstra 带权最短路径**：真实 Python `heapq` 逐帧记录距离表、前驱、优先队列（含过期条目）、松弛操作和最终路径；带权图画布、距离表、优先队列、Monaco、变量与课程步骤全部从同一条 Trace Event 派生，没有第二套播放器。当前门禁：**542 项单测 / 50 条真实浏览器 E2E / 62 张视觉截图**；真实 Ollama / 云端模型仍未实测。
-> 定位已收敛：**Python 为主要教学语言**，JavaScript 作为前端实现语言继续支持 17 个算法入口（Dijkstra / Floyd-Warshall / Bellman-Ford 的 JS 入口只提示使用 Python）；**C / C++ 与在线判题已从规划中取消**。详见 [阶段一总结](docs/STAGE1_REPORT.md)、[阶段二总结](docs/STAGE2_REPORT.md)、[阶段三总结](docs/STAGE3_REPORT.md)、[阶段 3B 总结](docs/STAGE3B_REPORT.md)、[阶段四总结](docs/STAGE4_REPORT.md)、[阶段 5A 总结](docs/STAGE5A_REPORT.md)、[阶段 6A 总结](docs/STAGE6A_REPORT.md)、[阶段 7A 总结](docs/STAGE7A_REPORT.md)、[阶段 7B 总结](docs/STAGE7B_REPORT.md)、[阶段 7C 总结](docs/STAGE7C_REPORT.md)、[阶段 7D 总结](docs/STAGE7D_REPORT.md)、[阶段 7E 总结](docs/STAGE7E_REPORT.md) 与 [阶段 7F 总结](docs/STAGE7F_REPORT.md)；课程与算法覆盖见 [COVERAGE](docs/COVERAGE.md)；品牌边界见 [BRAND_MIGRATION](docs/BRAND_MIGRATION.md)；知识包格式与作者指引见 [PACK_FORMAT_V1](docs/PACK_FORMAT_V1.md)、[PACK_AUTHOR_GUIDE](docs/PACK_AUTHOR_GUIDE.md)；MCP 安装与宿主配置见 [MCP_INSTALL](docs/MCP_INSTALL.md)；AI Gateway 安装与安全边界见 [AI_GATEWAY](docs/AI_GATEWAY.md)。
+> **当前版本：v0.11 G2。** 用户可见品牌为 **AlgoViz**，旧 localStorage / IndexedDB / `.algopack` / `.algosession.json` / `.algocontext.json` / MCP Tool / AI Gateway 标识保持兼容。G1 在 Dijkstra 的带权图基础上补齐 **Floyd-Warshall 全源最短路** 与 **Bellman-Ford 单源最短路**；G2 补齐 **Prim** 与 **Kruskal 最小生成树**：真实 Python `heapq` / 并查集逐帧记录候选边、排序边、环检测、集合合并与最终总权重；带权图画布、优先队列、并查集表、Monaco、变量与课程步骤全部从同一条 Trace Event 派生，没有第二套播放器。当前门禁：**592 项单测 / 83 条真实浏览器 E2E / G2 8 张视觉截图**；真实 Ollama / 云端模型仍未实测。
+> 定位已收敛：**Python 为主要教学语言**，JavaScript 作为前端实现语言继续支持 19 个算法入口（Dijkstra / Floyd-Warshall / Bellman-Ford / Prim / Kruskal 的 JS 入口只提示使用 Python）；**C / C++ 与在线判题已从规划中取消**。详见 [阶段一总结](docs/STAGE1_REPORT.md)、[阶段二总结](docs/STAGE2_REPORT.md)、[阶段三总结](docs/STAGE3_REPORT.md)、[阶段 3B 总结](docs/STAGE3B_REPORT.md)、[阶段四总结](docs/STAGE4_REPORT.md)、[阶段 5A 总结](docs/STAGE5A_REPORT.md)、[阶段 6A 总结](docs/STAGE6A_REPORT.md)、[阶段 7A 总结](docs/STAGE7A_REPORT.md)、[阶段 7B 总结](docs/STAGE7B_REPORT.md)、[阶段 7C 总结](docs/STAGE7C_REPORT.md)、[阶段 7D 总结](docs/STAGE7D_REPORT.md)、[阶段 7E 总结](docs/STAGE7E_REPORT.md) 与 [阶段 7F 总结](docs/STAGE7F_REPORT.md)；课程与算法覆盖见 [COVERAGE](docs/COVERAGE.md)；品牌边界见 [BRAND_MIGRATION](docs/BRAND_MIGRATION.md)；知识包格式与作者指引见 [PACK_FORMAT_V1](docs/PACK_FORMAT_V1.md)、[PACK_AUTHOR_GUIDE](docs/PACK_AUTHOR_GUIDE.md)；MCP 安装与宿主配置见 [MCP_INSTALL](docs/MCP_INSTALL.md)；AI Gateway 安装与安全边界见 [AI_GATEWAY](docs/AI_GATEWAY.md)。
 
 ---
 
@@ -17,15 +17,15 @@
 | --- | --- | --- |
 | React + TypeScript + Vite 工程结构 | ✅ 已实现 | 严格类型检查、模块边界清晰 |
 | Light / Dark / System 三态主题 | ✅ 已实现 | 跟随系统实时响应；首屏无闪屏；偏好持久化 |
-| 17 个算法逐帧动画 | ✅ 已实现 | 12 个原有（冒泡/插入/选择/快排、二分/线性查找、栈/队列/链表、BFS/DFS、树中序）+ 阶乘 / 斐波那契递归 + Dijkstra + Floyd-Warshall + Bellman-Ford |
+| 19 个算法逐帧动画 | ✅ 已实现 | 12 个原有（冒泡/插入/选择/快排、二分/线性查找、栈/队列/链表、BFS/DFS、树中序）+ 阶乘 / 斐波那契递归 + Dijkstra + Floyd-Warshall + Bellman-Ford + Prim + Kruskal |
 | 播放 / 暂停 / 回退 / 单步 / 拖动 / 速度 | ✅ 已实现 | 纯函数状态机 + 逐帧回归；新 Trace 加载即回到第 0 帧并停止播放，索引恒在合法范围内 |
 | JavaScript 本地执行 | ✅ 已实现 | 3 秒限时 Web Worker，可离线 |
 | Python 执行（Pyodide） | ✅ 已实现 | Worker 内运行；`trace()` 支持真实变量快照、源码行号与可选的 stack/queue/linked-list/binary-tree/graph/weighted-graph 结构语义 |
-| 统一 Trace Event Schema v1 | ✅ 已实现 | Zod 运行时校验：`schemaVersion/step/eventType/visualType/state/message/sourceLocation/variables/callStack/lessonStepId` + Stage 7B/7C/7D/7E/7F 可选 `structure`（stack / queue / linked-list / binary-tree / graph / weighted-graph union）+ 事件/帧/变量限额；旧 Trace 无 `structure` 时继续走 legacy 视图 |
+| 统一 Trace Event Schema v1 | ✅ 已实现 | Zod 运行时校验：`schemaVersion/step/eventType/visualType/state/message/sourceLocation/variables/callStack/lessonStepId` + Stage 7B/7C/7D/7E/7F 可选 `structure`（stack / queue / linked-list / binary-tree / graph / weighted-graph / floyd-matrix / bellman-table / prim-mst / kruskal-mst union）+ 事件/帧/变量限额；旧 Trace 无 `structure` 时继续走 legacy 视图 |
 | 教学课程数据层 | ✅ 已实现 | `domain/lessons/`：Lesson 类型 + Zod 校验 + 注册表 + 纯同步函数；与 React / Worker 完全解耦，可校验、可查询 |
 | 教学面板（LessonPanel） | ✅ 已实现 | 算法介绍 / 前置知识 / 复杂度 / 教学阶段（含帧数徽标）/ 当前执行解释 / 常见错误；中英双语 |
 | 教学步骤 ⇄ 时间轴双向联动 | ✅ 已实现 | 同一 `currentEvent`：时间轴驱动高亮，点击步骤跳到真实执行帧（向后找 → 回绕首帧 → 不可用则禁用） |
-| 算法课程内容 | ✅ 9 / 15 内置 | 内置冒泡排序、阶乘、栈、队列、单链表、二叉树遍历、BFS、DFS、Dijkstra 九门完整双语课程；其余算法显示"尚未提供教学课程"空态，可由知识包补充 |
+| 算法课程内容 | ✅ 13 / 19 内置 | 内置冒泡排序、阶乘、栈、队列、单链表、二叉树遍历、BFS、DFS、Dijkstra、Floyd-Warshall、Bellman-Ford、Prim、Kruskal 十三门完整双语课程；其余算法显示"尚未提供教学课程"空态，可由知识包补充 |
 | 可安装知识包（`.algopack`） | ✅ 已实现 | ZIP 容器 + manifest v1 + 有界解压 + 路径白名单；导入 → 预览 → 确认 → 本地安装 |
 | 知识包安全校验 | ✅ 已实现 | 6 MiB / 64 条目 / 512 KiB 单文件 / 3 MiB 总量 / 200:1 压缩比；拒绝路径穿越、绝对路径、重复名、加密条目、ZIP64、非文本 |
 | 知识包本地持久化 | ✅ 已实现 | IndexedDB `algolens-packs` 三 store 单事务安装/替换/卸载；刷新恢复；配额失败有明确错误 |
@@ -50,6 +50,8 @@
 | 单链表专属教学可视化 | ✅ Stage 7C | 真实 Python `Node` + `next` 引用；数据格/next 格、SVG 有向箭头、HEAD 向下箭头、尾部 NULL、临时/断开节点托盘、指针变化徽章；中间插入三阶段、删除重连、遍历与回退均有真实帧；`node_id` 区分同值节点 |
 | 二叉树专属教学可视化 | ✅ Stage 7D | 真实 Python `TreeNode` + `left/right` 引用；根在顶部、左孩子在左下、右孩子在右下的层级画布，SVG 父子边与箭头；前序/中序/后序共用 `inorder` 算法条目和同一棵树，通过模式选择器切换后由明确 Run 生成新 Trace；当前节点、已访问序号、递归路径、调用栈、源码行与 9 步双语课程同步；`node_id` 区分同值节点 |
 | 图 BFS / DFS 专属可视化 | ✅ Stage 7E | 同一张真实无向图（7 节点/7 边，含环）由真实 Python `deque` / list 栈驱动；节点/边稳定 ID、确定性布局、当前节点环、当前检查边、discovered/visited/visitOrder、BFS 队列与 DFS 显式栈全部来自同一条 `currentEvent`；回退与任意跳帧同时恢复图、Frontier、变量和步骤；9 步双语课程 |
+| Floyd-Warshall / Bellman-Ford | ✅ G1 | Floyd 用真实 Python 三重循环记录 k/i/j、距离矩阵、`previous`、更新/跳过与负环；Bellman-Ford 用真实轮次记录检查边、松弛、提前结束与负环，并明确复用带权图但**不继承 Dijkstra 的非负权限制**；两门课程覆盖全源与单源的区别 |
+| Prim / Kruskal 最小生成树 | ✅ G2 | Prim 用真实 `heapq` 维护横切边，逐帧展示树扩张、候选边、堆、选中/跳过与总权重；Kruskal 用真实并查集（路径压缩 + 按秩合并）逐帧展示边权排序、当前边、两端根、环检测、接受/拒绝、union 与 parent/rank 表；默认图两算法选出不同合法 MST、总权重同为 6；负权允许，有向图/自环/重复边拒绝，非连通图明确显示最小生成森林而非一棵生成树 |
 | Dijkstra 带权最短路径 | ✅ Stage 7F | 真实 Python `heapq`：带权边、起点/目标、距离表、`previous`、优先队列（含过期条目）、松弛前后距离、settled 顺序、最终路径与总权重全部同帧；不可达距离走 JSON `null`，负权/NaN/Infinity/自环/重复边在产生帧前拒绝；图、距离表、优先队列、Monaco、变量与 9 步双语课程共享同一个 `currentEvent`；46 帧真实默认 Trace、7 次松弛、1 次 stale |
 | 品牌迁移与兼容 | ✅ Stage 7B | 界面/标题/元数据/README 使用 AlgoViz；旧持久化 key、packId、MCP Tool、AI Gateway 环境变量与协议头保持不变，见 `docs/BRAND_MIGRATION.md` |
 | Monaco 代码编辑器 | ✅ 已实现 | Python/JS 语法高亮、行号、缩进、折叠、撤销/重做、自适应尺寸 |
@@ -62,7 +64,7 @@
 | C / C++ | 🚫 已取消 | 语言入口、占位模板与 `/api/execute` 执行后端均已移除 |
 | 在线 Judge / 自动判题 | 🚫 已取消 | 相关入口与宣传已清理 |
 | 中英文界面 / 移动端适配 | ⚠️ 部分 | Stage 7A 修复 390–1920 横向溢出与 1024 布局；Stage 7B 栈/队列、Stage 7F 带权图在 1440/1024/390 与 Light/Dark 下实测无页面横向溢出；390 宽图保持可读最小宽度并在画布内横向滚动；仍未安装 axe-core，触控尺寸未逐项审计 |
-| 自动化测试 | ✅ 已实现 | 542 项单测 / 帧回归 / jsdom 冒烟 + 50 条真实浏览器 E2E（Playwright + Edge，含真实 Pyodide、知识包、会话文件、AI 导师真实帧/离线/防剧透、Stage 7A 布局与标签状态、Stage 7B 栈/队列、Stage 7C 链表节点/箭头/回退、Stage 7D 二叉树三模式/递归调用栈/回退、Stage 7E BFS/DFS 图与 Frontier/回退/跳帧、Stage 7F Dijkstra 距离表/优先队列/松弛/stale/路径/非连通/相同距离/单节点/负权/响应式与 62 张截图）；另有 MCP 协议测试 20 项与 stdio 冒烟 9 项通过 + 1 项按配置跳过 |
+| 自动化测试 | ✅ 已实现 | 592 项单测 / 帧回归 / jsdom 冒烟 + 83 条真实浏览器 E2E（Playwright + Edge，含真实 Pyodide、知识包、会话文件、AI 导师真实帧/离线/防剧透、Stage 7A 布局与标签状态、Stage 7B 栈/队列、Stage 7C 链表节点/箭头/回退、Stage 7D 二叉树三模式/递归调用栈/回退、Stage 7E BFS/DFS 图与 Frontier/回退/跳帧、Stage 7F Dijkstra、G1 Floyd/Bellman-Ford、G2 Prim/Kruskal 堆/并查集/环检测/回退/跳帧/负权/单点/非连通/有向拒绝与 8 张 G2 截图）；另有 MCP 协议测试 20 项与 stdio 冒烟 9 项通过 + 1 项按配置跳过 |
 | 知识包远程市场 / 包签名 | ⏳ 后续 | 本版只有本地文件导入；无远程仓库、无自动下载、无签名校验 |
 | 网页 AI 导师（本地 Gateway） | ✅ 已实现（真机未验证） | Stage 7A 将其收进工作区标签页，连接状态与错误详情保留；Stage 6A：Ollama + OpenAI Chat Completions 适配、五级教学 Schema、防剧透降级、同源代理；本机无 Ollama/云端 Key，真实模型未验证 |
 | AI Gateway 安全边界 | ✅ 已实现 | 仅 127.0.0.1、Origin + 自定义头、96 KiB 请求 / 30s / 20 rpm、严格 Zod、目标地址仅启动配置、密钥只存 Gateway 环境变量 |
@@ -77,10 +79,10 @@
 npm ci
 npm run dev            # 开发服务器
 npm run typecheck      # TypeScript 严格检查
-npm test               # Vitest（542 项）
+npm test               # Vitest（592 项）
 npm run build          # tsc -b && vite build → dist/
 npm run preview        # 预览构建产物
-npm run test:e2e       # Playwright E2E（默认驱动本机 Microsoft Edge，50 条）
+npm run test:e2e       # Playwright E2E（默认驱动本机 Microsoft Edge，83 条）
 npm run pack:build     # 从 packs/src/<name>/ 构建 .algopack
 npm run pack -- packs/algolens-search-basics.algopack   # 校验知识包（与浏览器同一条校验链）
 ```
@@ -200,8 +202,10 @@ Stage 7B（已完成）：AlgoViz 品牌迁移与旧 key 兼容、可选 structu
 Stage 7C（已完成）：单链表结构化 Trace、真实 Python Node 示例（插入/删除/遍历）、纯链表 VisualModel、节点/箭头/HEAD/NULL/断开节点渲染、双语课程、6 条真实 Pyodide E2E 与 60 张截图。
 Stage 7D（已完成）：二叉树结构化 Trace、真实 Python TreeNode 三模式递归（前序/中序/后序）、纯树布局与模型、层级画布/递归路径/访问序号、调用栈联动、9 步双语课程、6 条真实 Pyodide E2E 与 106 张截图。
 Stage 7E（已完成）：图 BFS/DFS 结构化 Trace、真实 Python deque 队列与显式 list 栈、确定性图布局与纯 GraphVisualModel、节点/边/当前边/访问序号、同帧 QueueVisual/StackVisual、图与 Frontier 的回退/跳帧同步、9 步双语课程、6 条真实 Pyodide E2E 与 90 张截图。
-Stage 7F（已完成）：带权图 `weighted-graph` Trace Schema、真实 Python `heapq` Dijkstra（负权/NaN/Infinity 拒绝、不可达 `null`）、距离表/`previous`/优先队列/松弛/stale/最终路径、独立 PriorityQueuePanel 与同帧图渲染、9 步双语课程、3 条功能 E2E + 1 条视觉 E2E 与 62 张截图；独立分支 `stage7f-dijkstra`，未合并 main。
-后续：Floyd / Prim 等最短路径与 MST 复用本阶段带权图基础；Agent ↔ 浏览器实时同步（Stage 5B 候选）、RAG、题库扩充、练习页 Monaco 迁移、远程包市场与包签名、axe 可访问性。
+Stage 7F（已完成）：带权图 `weighted-graph` Trace Schema、真实 Python `heapq` Dijkstra（负权/NaN/Infinity 拒绝、不可达 `null`）、距离表/`previous`/优先队列/松弛/stale/最终路径、独立 PriorityQueuePanel 与同帧图渲染、9 步双语课程、3 条功能 E2E + 1 条视觉 E2E 与 62 张截图；独立分支 `stage7f-dijkstra`，已并入 main。
+G1（已完成并合并 main）：Floyd-Warshall 全源最短路与 Bellman-Ford 单源最短路，真实 Python Trace、负环检测、双语课程、3 条功能 E2E + 1 条视觉 E2E 与 6 张截图；合并提交 `14cf331`。
+G2（已完成，待合并）：Prim 与 Kruskal 最小生成树，真实 `heapq` / 并查集、共享带权图组件与各自专属面板、双语课程、4 条功能 E2E + 1 条视觉 E2E 与 8 张截图；独立分支 `feat/g2-mst`。
+后续：拓扑排序、关键路径等算法继续复用带权图与单一播放器；Agent ↔ 浏览器实时同步（Stage 5B 候选）、RAG、题库扩充、练习页 Monaco 迁移、远程包市场与包签名、axe 可访问性。
 
 ### License
 
@@ -227,19 +231,19 @@ AlgoViz is a browser-first algorithm visualization learning platform where **Pyt
 
 **Stage 7E** adds a real graph BFS/DFS lab. One undirected teaching graph (A–G, seven edges, including a cycle) is traversed by genuine Python code: `collections.deque` for BFS and an explicit `list` stack for DFS. Every frame carries stable node/edge ids, `discovered` / `visited` / `visitOrder`, the current node and inspected edge, and the exact frontier snapshot. The graph canvas and the compact queue/stack below it are built from the same `currentEvent`; there is no second player, no index and no message parsing. Scrubbing or jumping restores the graph, frontier, variables and lesson step together, while a theme or viewport change keeps the same frame. Nine bilingual steps explain why FIFO expands layer by layer and LIFO goes deep before backtracking. Screenshots and limits are recorded in [docs/STAGE7E_REPORT.md](docs/STAGE7E_REPORT.md).
 
-**Stage 7F** adds a real weighted-graph Dijkstra lab. Genuine Python `heapq` runs against the A–G weighted graph; every full snapshot carries the distance table, `previous` pointers, the priority queue including stale entries, the current edge, relax before/after values, settled order and the final path with its total weight. Unreachable distances cross the Python/JSON boundary as `null`, never Infinity, and negative, NaN, Infinity, self-loop and duplicate-edge inputs are rejected before a frame exists. The graph canvas, distance table, independent priority-queue panel, Monaco line, variables and nine bilingual lesson steps all derive from the same `currentEvent`; scrubbing restores all panels together. The default run is 46 real frames with 7 relaxations and one stale heap entry, ending at A→B→E→F→G with total weight 7. Screenshots and limits are recorded in [docs/STAGE7F_REPORT.md](docs/STAGE7F_REPORT.md).
+**G1** adds Floyd-Warshall all-pairs and Bellman-Ford single-source shortest paths with real Python traces, negative-cycle detection and bilingual lessons; it reuses the weighted-graph renderer without inheriting Dijkstra's non-negative-only input rule. **G2** adds Prim and Kruskal minimum spanning trees: Prim uses a real Python `heapq` over cut edges, Kruskal uses a real union-find with path compression and union by rank; both share the weighted-graph node/edge primitives and the single player while keeping distinct panels for the heap vs. sorted-edge/Union-Find story. The default five-vertex graph produces different valid MST edge sets with the same total weight 6; negative edges are allowed, directed graphs/self-loops/duplicate undirected edges are rejected, and a disconnected input is reported as a minimum spanning forest, never as one spanning tree. **Stage 7F** adds a real weighted-graph Dijkstra lab. Genuine Python `heapq` runs against the A–G weighted graph; every full snapshot carries the distance table, `previous` pointers, the priority queue including stale entries, the current edge, relax before/after values, settled order and the final path with its total weight. Unreachable distances cross the Python/JSON boundary as `null`, never Infinity, and negative, NaN, Infinity, self-loop and duplicate-edge inputs are rejected before a frame exists. The graph canvas, distance table, independent priority-queue panel, Monaco line, variables and nine bilingual lesson steps all derive from the same `currentEvent`; scrubbing restores all panels together. The default run is 46 real frames with 7 relaxations and one stale heap entry, ending at A→B→E→F→G with total weight 7. Screenshots and limits are recorded in [docs/STAGE7F_REPORT.md](docs/STAGE7F_REPORT.md).
 
 ```sh
 npm ci
 npm run dev
 npm run typecheck
-npm test          # 542 tests (incl. 20 MCP protocol tests + gateway tests)
+npm test          # 592 tests (incl. 20 MCP protocol tests + gateway tests)
 npm run build
-npm run test:e2e  # 50 Playwright tests (local Microsoft Edge; mock provider)
+npm run test:e2e  # 83 Playwright tests (local Microsoft Edge; mock provider)
 npm run pack -- packs/algolens-search-basics.algopack   # validate a pack (same chain as the browser)
 npm run mcp:install && npm run mcp:build                 # optional MCP server (Node >= 20)
 npm run mcp:smoke                                        # real stdio child-process smoke test
 npm run ai:install && npm run ai:dev                     # optional loopback AI Gateway
 ```
 
-See [docs/STAGE7F_REPORT.md](docs/STAGE7F_REPORT.md) for this stage, [docs/COVERAGE.md](docs/COVERAGE.md) for the course/algorithm matrix, [docs/STAGE7E_REPORT.md](docs/STAGE7E_REPORT.md) for BFS/DFS, [docs/STAGE7D_REPORT.md](docs/STAGE7D_REPORT.md) for the tree lab, [docs/STAGE7C_REPORT.md](docs/STAGE7C_REPORT.md) for the linked list, [docs/STAGE5A_REPORT.md](docs/STAGE5A_REPORT.md), [docs/MCP_INSTALL.md](docs/MCP_INSTALL.md) for host configuration (templates only — no third-party host was tested), [docs/STAGE4_REPORT.md](docs/STAGE4_REPORT.md) for packs, [docs/PACK_FORMAT_V1.md](docs/PACK_FORMAT_V1.md) for the container spec, [docs/PACK_AUTHOR_GUIDE.md](docs/PACK_AUTHOR_GUIDE.md) for authoring, [docs/STAGE3B_REPORT.md](docs/STAGE3B_REPORT.md) for the lesson system, [docs/STAGE3_REPORT.md](docs/STAGE3_REPORT.md) for recursion, [docs/REFERENCES.md](docs/REFERENCES.md) for sources and licences, and [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for module boundaries. Never put provider API keys in the browser. MIT licensed; all exercises and lesson copy are original, not official past exam questions.
+See [docs/G2_REPORT.md](docs/G2_REPORT.md) for G2, [docs/G1_REPORT.md](docs/G1_REPORT.md) for G1, [docs/STAGE7F_REPORT.md](docs/STAGE7F_REPORT.md) for the Dijkstra stage, [docs/COVERAGE.md](docs/COVERAGE.md) for the course/algorithm matrix, [docs/STAGE7E_REPORT.md](docs/STAGE7E_REPORT.md) for BFS/DFS, [docs/STAGE7D_REPORT.md](docs/STAGE7D_REPORT.md) for the tree lab, [docs/STAGE7C_REPORT.md](docs/STAGE7C_REPORT.md) for the linked list, [docs/STAGE5A_REPORT.md](docs/STAGE5A_REPORT.md), [docs/MCP_INSTALL.md](docs/MCP_INSTALL.md) for host configuration (templates only — no third-party host was tested), [docs/STAGE4_REPORT.md](docs/STAGE4_REPORT.md) for packs, [docs/PACK_FORMAT_V1.md](docs/PACK_FORMAT_V1.md) for the container spec, [docs/PACK_AUTHOR_GUIDE.md](docs/PACK_AUTHOR_GUIDE.md) for authoring, [docs/STAGE3B_REPORT.md](docs/STAGE3B_REPORT.md) for the lesson system, [docs/STAGE3_REPORT.md](docs/STAGE3_REPORT.md) for recursion, [docs/REFERENCES.md](docs/REFERENCES.md) for sources and licences, and [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for module boundaries. Never put provider API keys in the browser. MIT licensed; all exercises and lesson copy are original, not official past exam questions.
