@@ -1,6 +1,6 @@
 # AlgoViz 算法与课程覆盖清单
 
-快照：2026-11-18（T2 在 `feat/t2-avl` 完成；G2、G3、G4、T1 与 T2 均未合并 `main`）
+快照：2026-11-18（UX-01 在 `feat/ux01-algorithm-guide` 完成；G2、G3、G4、T1、T2 与 UX-01 均未合并 `main`）
 
 ## 1. 口径
 
@@ -89,7 +89,27 @@ T2 设计要点：
 
 T2 代表性截图：`docs/t2/avl-insert-ll-1440-light.png`、`avl-insert-rr-1440-light.png`、`avl-insert-lr-1440-light.png`、`avl-insert-rl-1440-light.png`、`avl-delete-cascade-rebalance-1440-light.png`、`avl-delete-cascade-390-light.png`。
 
-## 8. 全量矩阵
+## 8. UX-01 顶部算法导学（不新增算法）
+
+UX-01 没有新增算法入口，也没有修改 Python/Trace 语义；25 个算法入口与 19 门课程不变。
+
+| 导学来源 | 覆盖 | 内容 |
+| --- | --- | --- |
+| 原创精选 | Dijkstra、拓扑排序（Kahn）、强连通分量（Kosaraju），共 3 个 | 问题、核心思想与静态示意图、7～8 个真实执行步骤、必要前置、显式适用条件与关键限制、复杂度、常见错误、记忆重点；中英双语 |
+| 课程派生 | 其余 16 门有课程的算法 | 复用 Lesson 的 `oneLiner / intuition / steps / prerequisites / complexity / commonMistakes`；步骤标题去掉课程自带序号，末步 `tip` 作为记忆重点；不另写算法事实 |
+| 目录安全回退 | 插入、选择、快速、二分、线性、斐波那契，共 6 个 | 只显示 `catalog.generated.ts` 已确认的简介、时间/空间复杂度与“步骤待补充”说明；不显示虚构步骤、前置或记忆口诀 |
+
+UX-01 设计要点：
+
+- **位置与折叠**：导学位于顶部算法标题栏与 `lab-primary` 之间；展开时页面自然向下滚动，收起后只保留原 `lab-head` 标题栏与“展开算法导学”按钮。折叠偏好以算法 id 数组存入 `localStorage`，切换未折叠算法默认展开，已折叠算法保持收起。
+- **不碰播放器**：展开/收起只改组件可见性，不调用 `selectAlgo`、`stop`、`seek` 或重跑；E2E 在 Dijkstra 第 11/46 帧折叠再展开，帧号保持不变。
+- **内容来源**：独立 `domain/guides` 只组装展示数据；课程派生与目录回退共用同一 `AlgorithmGuideContent`。不扩展 Lesson Schema，不复制教材长文或插图。
+- **视觉**：复用 `lab-head`、既有 token、主题与响应式断点；导学区仅用静态 SVG 直觉图，没有第二套 Timeline/播放器。1440 两栏、390 单栏，页面无横向溢出。
+- **范围**：只保证内置课程与目录算法的官方导学；不扩展任意用户代码自动生成导学，不进入 UX-02（右侧面板精简）、UX-03（左侧目录层级）或 UX-04（整页比例）。
+
+UX-01 证据：`docs/ux01/guide-expanded-1440-light.png`、`guide-collapsed-1440-light.png`、`guide-expanded-390-light.png`。
+
+## 9. 全量矩阵
 
 | 分组 | 算法 | 课程 |
 | --- | --- | --- |
@@ -104,39 +124,45 @@ T2 代表性截图：`docs/t2/avl-insert-ll-1440-light.png`、`avl-insert-rr-144
 
 - 25 个算法入口；20 个真实 Python 入口。
 - 19 门双语课程；6 个暂无课程（插入、选择、快速、二分、线性、斐波那契）。
+- 导学覆盖：3 个原创精选、16 个课程派生、6 个目录安全回退；25 个入口全部有导学入口或明确“简介待补充”状态。
 - 结构化可视化新增 `avl`，不影响既有 `stack/queue/linked-list/graph/binary-tree/bst/weighted-graph/floyd-matrix/bellman-table/prim-mst/kruskal-mst/topological-sort/critical-path/connected-components/kosaraju`。
 - T2 默认 AVL 预设刻意覆盖四种旋转、无需旋转的普通插入、叶子/单孩子/双孩子（根）/缺失键删除，以及一次叶子删除触发两个祖先 LR 双旋的连续重平衡。
 
-## 9. 验证
+## 10. 验证
 
 本地复核环境：Windows + Microsoft Edge（Playwright `channel=msedge`）+ 真实 Pyodide 0.27.7。
 
 | 项 | 结果 |
 | --- | --- |
 | `npm run typecheck` | ✅ 通过 |
-| `npm run build` | ✅ 通过；1426 modules；`index-B3X5mSw6.js` 1,237.06 kB / gzip 344.90 kB；`index-CU3aLdJA.css` 118.78 kB / gzip 20.75 kB |
-| 全量单测 | ✅ 82 个文件、677 tests 全部通过 |
+| `npm run build` | ✅ 通过；1433 modules；`index-CEenMHGX.js` 1,270.57 kB / gzip 357.35 kB；`index-pw1hFmk8.css` 125.36 kB / gzip 21.90 kB |
+| 全量单测 | ✅ 85 个文件、691 tests 全部通过 |
+| UX-01 相关单测 | ✅ `buildGuide.test.ts` 6 项 + `AlgorithmGuide.test.tsx` 5 项 + `useAlgorithmGuidePreferences.test.ts` 3 项，合计 14 项通过；覆盖三算法双语完整性、课程派生、目录安全回退、空元数据、组件章节、折叠偏好解析与按算法持久化 |
 | T1 相关单测 | ✅ `bst.test.ts` 14 项 + `bstLesson.test.ts` 3 项，合计 17 项通过 |
 | T2 相关单测 | ✅ `avl.test.ts` 9 项 + `avlLesson.test.ts` 3 项，合计 12 项通过；覆盖 176 帧 Schema、稳定 ID、四种旋转/双旋两阶段、删除三案例、根变化、连续重平衡、回退视觉同步、非法快照拒绝与课程帧映射 |
-| 全量 E2E | ✅ 95/95（94 条既有 + 1 条 T2 功能/视觉） |
+| 全量 E2E | ✅ 97/97（95 条既有 + 2 条 UX-01 功能/视觉） |
+| UX-01 E2E | ✅ 2/2：1440 默认展开、键盘折叠/展开、帧号保持、Dijkstra/Kahn/Kosaraju 切换、按算法折叠偏好、英文、Dark/System、目录安全回退；390 展开/收起、单栏步骤、无横向溢出；生成 3 张截图 |
 | T1 E2E | ✅ 1/1：真实 Pyodide 依次运行查找、插入、叶子/单孩子/双孩子删除；验证根 b1→b6、后继 b6 保留 ID、65 重连、前进/回退/跳帧同步、390 无页面横向溢出 |
 | T2 E2E | ✅ 1/1：真实 Pyodide 运行 10 个官方预设；验证四种旋转、双旋 chip、删除三案例/根变化/连续重平衡、节点 ID 与 height/BF、前进/回退/跳帧、390 根居中与页面无横向溢出、英文切换；并生成 6 张截图 |
 | 独立 Python 校验 | ✅ `scripts/verify_bst_python.py` 与 `scripts/verify_avl_python.py` 全部通过；AVL 覆盖 10 个官方预设、四种旋转、叶子/单孩子/双孩子/根/缺失键、空树/重复/非法值、多祖先连续平衡；逐帧检查中序严格递增、真实 height、`|BF|≤1`、无重复归属/无环/无悬空引用，并与独立参考 AVL 交叉验证 |
-| 回归 | ✅ BFS/DFS、Dijkstra、Floyd、Bellman-Ford、Prim、Kruskal、拓扑排序、关键路径、连通分量/SCC、二叉树遍历、栈/队列/链表、BST 在 95/95 全量 E2E 中通过 |
+| 回归 | ✅ BFS/DFS、Dijkstra、Floyd、Bellman-Ford、Prim、Kruskal、拓扑排序、关键路径、连通分量/SCC、二叉树遍历、栈/队列/链表、BST/AVL 在 97/97 全量 E2E 中通过 |
 | 入口数量 | ✅ 24→25、课程 18→19 的旧断言已修正并复跑通过 |
 
-## 10. 已知边界
+## 11. 已知边界
 
-- T1/T2 只保证官方 Python 示例与预设输入的真实 Trace；任意用户改写代码后的完整自动可视化仍不在本批次范围。
+- T1/T2/UX-01 只保证官方 Python 示例、预设输入与内置导学内容；任意用户改写代码后的完整自动可视化或自动导学仍不在本批次范围。
 - 双孩子删除采用“物理移植中序后继”策略，不采用“复制后继值再删除后继”的显示方式；因此同一节点 ID 会换位置，教学时不要把位置变化误读为新节点。
 - 删除帧的 `current` 常为空（目标已摘除），路径/目标高亮因此清空；最终结果、摘除对象、指针与根变化仍由 `removedNode`、`oldRootId/rootId` 明确记录。
 - `delete-cascade` 的删除分类是叶子删除，但会连续触发两个不同祖先的 LR 双旋；不能把它当成双孩子删除，也不能假设删除后至多旋转一次。
 - 旋转帧在 `before/after` 之间允许 `|BF|>1`，但 `init/done` 必须满足 AVL 条件，Schema 和测试都按此校验。
 - 390 px 下 BST/AVL 树画布在容器内横向滚动，AVL 会自动把根居中；页面本身无横向溢出，没有为了 T1/T2 调整页面主布局。
-- G2、G3、G4、T1 与 T2 均尚未合并 `main`；T1 从包含 G1～G4 的 `94e34fa` 创建独立分支，T2 从 T1 最新文档提交 `ef0ee4f` 创建 `feat/t2-avl`。
+- UX-01 的完整原创导学目前只有 Dijkstra、Kahn、Kosaraju 三个；其余 16 门课程直接复用 Lesson 结构，6 个无课程入口只显示目录简介与复杂度。自定义算法若带课程会走课程派生，否则显示安全空态。
+- 导学静态示意图是教学示意，不是按真实输入计算出的图形；真实结构、指针与帧状态始终由下方 `VisualStage` 的 Trace 决定。
+- UX-01 不改变左侧目录、右侧 LessonPanel、整页双栏比例或任一 Python/Trace 语义；这些留到 UX-02 / UX-03 / UX-04。
+- G2、G3、G4、T1、T2 与 UX-01 均尚未合并 `main`；T1 从包含 G1～G4 的 `94e34fa` 创建独立分支，T2 从 T1 最新文档提交 `ef0ee4f` 创建 `feat/t2-avl`，UX-01 从 T2 文档提交 `639ae33` 创建 `feat/ux01-algorithm-guide`。
 - `BST_PYTHON` / `AVL_PYTHON` 的 `line=` 是教学用近似源码行号，Monaco 实际行号以编辑器为准。
 - AVL 节点上的 ROOT/LEAF/当前角色徽标在 T2 中隐藏，避免与 height/BF 徽标叠字；当前节点由顶部指标与描边表达。
 
-## 11. 下一批次（不在本批次执行）
+## 12. 下一批次（不在本批次执行）
 
-堆、哈夫曼树、页面主布局改造与其他算法均未在 T2 中开发；后续继续复用现有树布局、Trace 快照、单一播放器与双语课程架构。
+UX-02（右侧教学面板精简）、UX-03（左侧目录层级）、UX-04（整页高度与双栏比例）、堆、哈夫曼树与其他算法均未在 UX-01 中开发；后续继续复用现有单一播放器、Trace 快照、树/图布局与双语课程架构。

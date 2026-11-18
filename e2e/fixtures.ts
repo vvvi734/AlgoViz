@@ -29,3 +29,19 @@ export async function openCodePanel(page: Page) {
   await expect(toggle).toHaveAttribute('aria-expanded', 'true');
   await expect(page.locator('.monaco-editor')).toBeVisible({ timeout: 45_000 });
 }
+
+/**
+ * UX-01 adds an expanded guide above the old workspace. Tests that measure the
+ * pre-existing first-screen layout fold it first so they keep verifying the
+ * two-column workspace and dock rather than the new guide height.
+ */
+export async function collapseAlgorithmGuide(page: Page) {
+  const toggle = page.getByTestId('guide-toggle');
+  if ((await toggle.count()) === 0) return;
+  await expect(toggle).toBeVisible();
+  if ((await toggle.getAttribute('aria-expanded')) === 'true') {
+    await toggle.click();
+  }
+  await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+  await expect(page.getByTestId('algorithm-guide')).toHaveCount(0);
+}

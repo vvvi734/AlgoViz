@@ -1,4 +1,4 @@
-import { expect, test, type Page } from './fixtures';
+import { collapseAlgorithmGuide, expect, test, type Page } from './fixtures';
 
 /**
  * UI-02 — the learning workspace is now "animation left, synchronized lesson
@@ -24,6 +24,9 @@ async function openDijkstra(page: Page) {
     timeout: 60_000,
   });
   await expect(page.locator('[data-testid="progress"]')).toHaveText('1 / 46', { timeout: 60_000 });
+  // UX-01 keeps its guide above this legacy layout; fold it to measure the
+  // already-specified two-column workspace and first-screen rail position.
+  await collapseAlgorithmGuide(page);
 }
 
 async function setFrame(page: Page, frame: number, total = 46) {

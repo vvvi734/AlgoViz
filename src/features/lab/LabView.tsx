@@ -9,6 +9,9 @@ import { CodeDock } from './CodeDock';
 import { SyncPanel } from './SyncPanel';
 import { CallStackPanel } from './CallStackPanel';
 import { LessonPanel } from './LessonPanel';
+import { AlgorithmGuide, ALGORITHM_GUIDE_ID } from './AlgorithmGuide';
+import { useAlgorithmGuidePreferences } from './useAlgorithmGuidePreferences';
+import { buildAlgorithmGuide } from '../../domain/guides/buildGuide';
 import { SessionPanel } from './SessionPanel';
 import { WorkspaceTabs, type WorkspaceTabId } from './WorkspaceTabs';
 import { useSidebarPreferences } from './useSidebarPreferences';
@@ -92,6 +95,9 @@ export function LabView({
   // UI-01: the directory's folded/collapsed layout is a persisted presentation
   // preference. It never owns the algorithm, the trace or the playhead.
   const sidebar = useSidebarPreferences();
+  // UX-01: folding is a per-algorithm presentation preference. It is derived
+  // from the current algorithm and never stored in the LabController.
+  const algorithmGuide = useAlgorithmGuidePreferences(lab.currentAlgo);
 
   // A new run (fresh `events` array) resets the selection.
   useEffect(() => setSelectedFrameId(null), [lab.events]);
@@ -107,6 +113,7 @@ export function LabView({
 
   const hasCallStack = lab.events.some((event) => !!event.callStack?.length);
   const lesson = lessons.byAlgorithm(lab.currentAlgo);
+  const algorithmGuideContent = buildAlgorithmGuide(lab.currentAlgo, lesson, entry);
   const activeStepIndex = lesson ? stepIndexForEvent(lesson, currentEvent) : -1;
   const activeStep = activeStepIndex >= 0 ? lesson?.steps[activeStepIndex] : undefined;
 
@@ -191,6 +198,21 @@ export function LabView({
             </span>
           </div>
           <div className="lab-head-actions">
+            <button
+              type="button"
+              className="guide-toggle"
+              data-testid="guide-toggle"
+              aria-expanded={algorithmGuide.isOpen}
+              aria-controls={algorithmGuide.isOpen ? ALGORITHM_GUIDE_ID : undefined}
+              aria-label={algorithmGuide.isOpen ? t('guideCollapse') : t('guideExpand')}
+              onClick={algorithmGuide.toggle}
+            >
+              <span className="guide-toggle-mark" aria-hidden="true">▤</span>
+              {algorithmGuide.isOpen ? t('guideCollapse') : t('guideExpand')}
+              <span className="guide-toggle-chevron" aria-hidden="true">
+                {algorithmGuide.isOpen ? '▲' : '▼'}
+              </span>
+            </button>
             <select
               className="mobile-algo-select"
               aria-label={t('algorithmDirectory')}
@@ -206,6 +228,14 @@ export function LabView({
             </select>
           </div>
         </header>
+
+        {algorithmGuide.isOpen ? (
+          <AlgorithmGuide
+            guide={algorithmGuideContent}
+            algorithmName={entry ? pick(entry.name) : t('customName')}
+            onCollapse={algorithmGuide.toggle}
+          />
+        ) : null}
 
         <div className="lab-primary ui02-workbench" data-testid="lab-workbench">
           <section className="panel pad stage-panel">

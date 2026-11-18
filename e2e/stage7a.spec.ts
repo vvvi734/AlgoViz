@@ -1,4 +1,4 @@
-import { expect, openCodePanel, test, type Page } from './fixtures';
+import { collapseAlgorithmGuide, expect, openCodePanel, test, type Page } from './fixtures';
 
 /**
  * Stage 7A information architecture, state retention and keyboard operation,
@@ -9,6 +9,7 @@ import { expect, openCodePanel, test, type Page } from './fixtures';
 async function openApp(page: Page) {
   await page.goto('/');
   await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
+  await collapseAlgorithmGuide(page);
 }
 
 test.describe('Stage 7A — workspace UX (UI-03 layout)', () => {
