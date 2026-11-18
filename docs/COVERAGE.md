@@ -1,12 +1,12 @@
 # AlgoViz 算法与课程覆盖清单
 
-快照：2026-11-18（T1 在 `feat/t1-bst` 完成；G2、G3、G4 与 T1 均未合并 `main`）
+快照：2026-11-18（T2 在 `feat/t2-avl` 完成；G2、G3、G4、T1 与 T2 均未合并 `main`）
 
 ## 1. 口径
 
-- **算法入口**：`src/domain/algorithms/catalog.generated.ts` 的 24 个 id。
-- **教学课程**：`src/domain/lessons/registry.ts` 注册的 18 门内置课程；24 个入口中 18 个有课程，6 个暂无内置课程。
-- **真实 Python**：选中 Python 后由 Pyodide Worker 执行真实代码并记录结构化 Trace；Dijkstra、Floyd-Warshall、Bellman-Ford、Prim、Kruskal、拓扑排序、关键路径、连通分量、强连通分量、BST 的 JS 入口是提示桩，不伪造结构动画。
+- **算法入口**：`src/domain/algorithms/catalog.generated.ts` 的 25 个 id。
+- **教学课程**：`src/domain/lessons/registry.ts` 注册的 19 门内置课程；25 个入口中 19 个有课程，6 个暂无内置课程。
+- **真实 Python**：选中 Python 后由 Pyodide Worker 执行真实代码并记录结构化 Trace；Dijkstra、Floyd-Warshall、Bellman-Ford、Prim、Kruskal、拓扑排序、关键路径、连通分量、强连通分量、BST、AVL 的 JS 入口是提示桩，不伪造结构动画。
 
 ## 2. G1 新增算法
 
@@ -71,7 +71,25 @@ T1 设计要点：
 
 T1 代表性截图：`docs/t1/bst-find-found-1440-light.png`、`bst-insert-attach-1440-light.png`、`bst-delete-leaf-1440-light.png`、`bst-delete-one-1440-light.png`、`bst-delete-two-successor-1440-light.png`、`bst-delete-two-detach-1440-light.png`、`bst-delete-two-transplant-1440-light.png`、`bst-delete-two-done-390-light.png`。
 
-## 7. 全量矩阵
+## 7. T2 新增算法
+
+| id | 算法 | Python 示例 | Trace | 动画 | 中英课程 | 测试 |
+| --- | --- | --- | --- | --- | --- | --- |
+| `avl` | AVL 平衡二叉搜索树 · 插入 / 删除 / 四种旋转 | ✅ 真实 `AvlNode`（`node_id/value/left/right/parent/height`）与真实 `left/right` 指针变化，Pyodide 执行 | ✅ 10 个官方预设 142 帧 + 8 个边界场景 34 帧；15 种操作帧；LL/RR/LR/RL 与双旋两阶段 | ✅ 复用二叉树布局：稳定 `a1…` ID、节点高度 + 平衡因子徽标、当前/失衡/轴/上升节点、旋转 chip 与 before/after、插入/删除目标、指针/根变化、摘除对象、结果面板 | ✅ `avl-balanced-binary-search-tree`，17 步 | ✅ 独立 CPython 校验 + 12 项单测 + 真实 Pyodide E2E + 6 张截图 |
+
+T2 设计要点：
+
+- **稳定身份与真实指针**：节点是真实 Python `AvlNode` 对象，创建时分配 `a1…` 教学 ID；`rotate_left/rotate_right` 先真实修改 `parent/left/right`，再发出 before/after 两帧；视觉层只读结构快照，不先移动 SVG。回退、跳帧和重跑都恢复节点 ID、父子关系与高度。
+- **高度与平衡因子**：`refresh_heights` 在后序位置按真实子树重算 `height`；`balance_factor = height(left) − height(right)`。每帧记录节点高度与平衡因子，`imbalance` 帧允许暂时 `|BF|>1`，`init/done` 必须满足 AVL 条件。
+- **插入**：先按 BST 规则比较并寻找空位，创建新节点后真实挂接；向上刷新高度，遇到第一个 `|BF|>1` 记录失衡类型。官方覆盖 LL 右旋、RR 左旋、LR 左旋后右旋、RL 右旋后左旋，双旋是两个真实连续操作、各自有 before/after 帧，不是只展示最终树。
+- **删除**：支持叶子、单孩子、双孩子、根节点与不存在键。双孩子物理移植中序后继，后继保留自己的 ID，目标对象真正摘除（默认 `delete-two` 删除根 50，后继 `a6=60` 成为新根，`a1=50` 从树中消失）；删除后从受影响位置向上刷新高度，必要时连续调整多个祖先。`delete-cascade` 是叶子删除，但连续触发两个不同祖先的 LR 双旋，说明“删除分类”和“重平衡次数”不是同一件事。
+- **视觉复用**：复用 `layoutBinaryTree`、`tree-*` 几何/样式、唯一播放器与既有课程面板；`AvlVisual` 仅增加 AVL 专属指标/旋转面板，没有第二套 Timeline。390 px 下树画布在容器内横向滚动并自动把根居中，页面本身无横向溢出。
+- **课程**：17 步覆盖 AVL 与普通 BST 的区别、普通 BST 退化、高度与平衡因子、AVL 条件、四种失衡与旋转、单旋/双旋、插入/删除后的再平衡、O(log n)、常见错误与记忆法。第 ⑦/⑧ 步明确说明一次右旋/左旋同时是某种双旋的某一步。
+- **范围**：只保证官方示例与预设输入的真实 Trace；不扩展任意用户代码的通用追踪，也不改造页面主布局。
+
+T2 代表性截图：`docs/t2/avl-insert-ll-1440-light.png`、`avl-insert-rr-1440-light.png`、`avl-insert-lr-1440-light.png`、`avl-insert-rl-1440-light.png`、`avl-delete-cascade-rebalance-1440-light.png`、`avl-delete-cascade-390-light.png`。
+
+## 8. 全量矩阵
 
 | 分组 | 算法 | 课程 |
 | --- | --- | --- |
@@ -79,41 +97,46 @@ T1 代表性截图：`docs/t1/bst-find-found-1440-light.png`、`bst-insert-attac
 | 查找 | 二分、线性 | — |
 | 线性结构 | 栈、队列、单链表 | 栈、队列、链表 |
 | 图 | BFS、DFS、Dijkstra、Floyd-Warshall、Bellman-Ford、Prim、Kruskal、拓扑排序、关键路径、连通分量、强连通分量 | BFS、DFS、Dijkstra、Floyd、Bellman-Ford、Prim、Kruskal、拓扑排序、关键路径、连通分量、强连通分量 |
-| 树 | 二叉树中序遍历、二叉搜索树查找/插入/删除 | 中序、BST |
+| 树 | 二叉树中序遍历、二叉搜索树查找/插入/删除、AVL 插入/删除/四种旋转 | 中序、BST、AVL |
 | 递归 | 阶乘、斐波那契 | 阶乘 |
 
 ### 覆盖小结
 
-- 24 个算法入口；19 个真实 Python 入口。
-- 18 门双语课程；6 个暂无课程（插入、选择、快速、二分、线性、斐波那契）。
-- 结构化可视化新增 `bst`，不影响既有 `stack/queue/linked-list/graph/binary-tree/weighted-graph/floyd-matrix/bellman-table/prim-mst/kruskal-mst/topological-sort/critical-path/connected-components/kosaraju`。
-- T1 默认 BST 刻意覆盖查找成功/失败、插入、三种删除与根变化；双孩子样例删除根 50，便于在同一官方示例中看到“目标摘除 + 后继移植 + 根指针变化”。
+- 25 个算法入口；20 个真实 Python 入口。
+- 19 门双语课程；6 个暂无课程（插入、选择、快速、二分、线性、斐波那契）。
+- 结构化可视化新增 `avl`，不影响既有 `stack/queue/linked-list/graph/binary-tree/bst/weighted-graph/floyd-matrix/bellman-table/prim-mst/kruskal-mst/topological-sort/critical-path/connected-components/kosaraju`。
+- T2 默认 AVL 预设刻意覆盖四种旋转、无需旋转的普通插入、叶子/单孩子/双孩子（根）/缺失键删除，以及一次叶子删除触发两个祖先 LR 双旋的连续重平衡。
 
-## 8. 验证
+## 9. 验证
 
 本地复核环境：Windows + Microsoft Edge（Playwright `channel=msedge`）+ 真实 Pyodide 0.27.7。
 
 | 项 | 结果 |
 | --- | --- |
 | `npm run typecheck` | ✅ 通过 |
-| `npm run build` | ✅ 通过；1420 modules；`index-DTQmGoK0.js` 1,147.83 kB / gzip 328.65 kB；`index-D5VyLHfv.css` 116.40 kB / gzip 20.40 kB |
-| 全量单测 | ✅ 80 个文件、663 tests 全部通过 |
-| T1 相关单测 | ✅ `bst.test.ts` 14 项 + `bstLesson.test.ts` 3 项，合计 17 项通过；覆盖 97 帧 Schema、稳定 ID、查找/插入/删除三案例、根变化、空树/单点、跳帧视觉同步、非法快照拒绝与课程帧映射 |
-| 全量 E2E | ✅ 94/94（93 条既有 + 1 条 T1 功能/视觉） |
+| `npm run build` | ✅ 通过；1426 modules；`index-B3X5mSw6.js` 1,237.06 kB / gzip 344.90 kB；`index-CU3aLdJA.css` 118.78 kB / gzip 20.75 kB |
+| 全量单测 | ✅ 82 个文件、677 tests 全部通过 |
+| T1 相关单测 | ✅ `bst.test.ts` 14 项 + `bstLesson.test.ts` 3 项，合计 17 项通过 |
+| T2 相关单测 | ✅ `avl.test.ts` 9 项 + `avlLesson.test.ts` 3 项，合计 12 项通过；覆盖 176 帧 Schema、稳定 ID、四种旋转/双旋两阶段、删除三案例、根变化、连续重平衡、回退视觉同步、非法快照拒绝与课程帧映射 |
+| 全量 E2E | ✅ 95/95（94 条既有 + 1 条 T2 功能/视觉） |
 | T1 E2E | ✅ 1/1：真实 Pyodide 依次运行查找、插入、叶子/单孩子/双孩子删除；验证根 b1→b6、后继 b6 保留 ID、65 重连、前进/回退/跳帧同步、390 无页面横向溢出 |
-| 独立 Python 校验 | ✅ `scripts/verify_bst_python.py`：6 个官方预设 + 8 个边界场景；逐帧前序/中序/父子引用、无重复 ID、无悬空引用、稳定 ID；删除终态与独立 `RefBST` 比较一致 |
-| 回归 | ✅ BFS/DFS、Dijkstra、Floyd、Bellman-Ford、Prim、Kruskal、拓扑排序、关键路径、连通分量/SCC、二叉树遍历、栈/队列/链表在 94/94 全量 E2E 中通过 |
-| 入口数量 | ✅ 23→24、课程 17→18 的旧断言已修正并复跑通过 |
+| T2 E2E | ✅ 1/1：真实 Pyodide 运行 10 个官方预设；验证四种旋转、双旋 chip、删除三案例/根变化/连续重平衡、节点 ID 与 height/BF、前进/回退/跳帧、390 根居中与页面无横向溢出、英文切换；并生成 6 张截图 |
+| 独立 Python 校验 | ✅ `scripts/verify_bst_python.py` 与 `scripts/verify_avl_python.py` 全部通过；AVL 覆盖 10 个官方预设、四种旋转、叶子/单孩子/双孩子/根/缺失键、空树/重复/非法值、多祖先连续平衡；逐帧检查中序严格递增、真实 height、`|BF|≤1`、无重复归属/无环/无悬空引用，并与独立参考 AVL 交叉验证 |
+| 回归 | ✅ BFS/DFS、Dijkstra、Floyd、Bellman-Ford、Prim、Kruskal、拓扑排序、关键路径、连通分量/SCC、二叉树遍历、栈/队列/链表、BST 在 95/95 全量 E2E 中通过 |
+| 入口数量 | ✅ 24→25、课程 18→19 的旧断言已修正并复跑通过 |
 
-## 9. 已知边界
+## 10. 已知边界
 
-- T1 只保证官方 Python 示例与预设输入的真实 Trace；任意用户改写代码后的完整自动可视化仍不在本批次范围。
+- T1/T2 只保证官方 Python 示例与预设输入的真实 Trace；任意用户改写代码后的完整自动可视化仍不在本批次范围。
 - 双孩子删除采用“物理移植中序后继”策略，不采用“复制后继值再删除后继”的显示方式；因此同一节点 ID 会换位置，教学时不要把位置变化误读为新节点。
 - 删除帧的 `current` 常为空（目标已摘除），路径/目标高亮因此清空；最终结果、摘除对象、指针与根变化仍由 `removedNode`、`oldRootId/rootId` 明确记录。
-- 390 px 下 BST 树画布在容器内横向滚动，页面本身无横向溢出；没有为了 T1 调整页面主布局。
-- G2、G3、G4 与 T1 均尚未合并 `main`；T1 从包含 G1～G4 的 `94e34fa` 创建独立分支。
-- `BST_PYTHON` 的 `line=` 是教学用近似源码行号，Monaco 实际行号以编辑器为准。
+- `delete-cascade` 的删除分类是叶子删除，但会连续触发两个不同祖先的 LR 双旋；不能把它当成双孩子删除，也不能假设删除后至多旋转一次。
+- 旋转帧在 `before/after` 之间允许 `|BF|>1`，但 `init/done` 必须满足 AVL 条件，Schema 和测试都按此校验。
+- 390 px 下 BST/AVL 树画布在容器内横向滚动，AVL 会自动把根居中；页面本身无横向溢出，没有为了 T1/T2 调整页面主布局。
+- G2、G3、G4、T1 与 T2 均尚未合并 `main`；T1 从包含 G1～G4 的 `94e34fa` 创建独立分支，T2 从 T1 最新文档提交 `ef0ee4f` 创建 `feat/t2-avl`。
+- `BST_PYTHON` / `AVL_PYTHON` 的 `line=` 是教学用近似源码行号，Monaco 实际行号以编辑器为准。
+- AVL 节点上的 ROOT/LEAF/当前角色徽标在 T2 中隐藏，避免与 height/BF 徽标叠字；当前节点由顶部指标与描边表达。
 
-## 10. 下一批次（不在本批次执行）
+## 11. 下一批次（不在本批次执行）
 
-AVL、堆、哈夫曼树、页面主布局改造与其他算法均未在 T1 中开发；后续继续复用现有树布局、Trace 快照、单一播放器与双语课程架构。
+堆、哈夫曼树、页面主布局改造与其他算法均未在 T2 中开发；后续继续复用现有树布局、Trace 快照、单一播放器与双语课程架构。

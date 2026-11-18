@@ -221,12 +221,25 @@ flowchart TD
 - **课程与目录**：`binary-search-tree-search-insert-delete` 14 步（init/compare/direction/found/not-found/duplicate/insert/delete-locate/delete-leaf/delete-one/successor/successor-detach/transplant/done），stepId 与真实 Python `lesson_step=` 对齐；覆盖 BST 左小右大、查找/插入路径、重复键策略、删除三情况、中序后继、物理移植、中序有序、平均 O(log n)/最坏 O(n)、空间 O(h)、常见错误与记忆重点。
 - **窄屏策略**：`t1.css` 在 980/560 断点把 BST 面板改为单列；390px 下树画布在容器内横向滚动，页面本身无横向溢出。
 
+### 3.20 AVL 插入/删除/四种旋转：高度与平衡因子驱动真实指针（T2）
+
+- **独立快照，不扩展 `bst`**：`avlSnapshotSchema`（`kind:'avl'`）进入 `structureSchema` union，union 从 14 个分支增至 15 个。BST 没有 `height/balance` 与旋转阶段，AVL 需要额外的失衡/轴/上升节点和 before/after 语义，混在一个快照里会让删除与旋转字段互相污染。
+- **快照字段**：`preset`、`command:'insert'|'delete'`、`operation`、`deleteCase`、`targetValue`、`rootId`、`nodes[{id,value,leftId,rightId,height,balance}]`、`parentId`、`side`、`currentNodeId`、`pathIds`、`visitedIds`、`inorderIds`、`targetNodeId`、`nextNodeId`、`insertedId`、`successorId`、`replacementId`、`removedNode`、`oldRootId`、`imbalanceId`、`rotationCase:'LL'|'RR'|'LR'|'RL'`、`rotationPhase:'before'|'after'`、`pivotId`、`promotedId`、`rotationStep/rotationTotal`、`result`。
+- **Schema 校验要点**：节点 ID 唯一、根唯一、无多父、无环、全部可达；`parentId/side` 必须与真实父子关系一致；`inorderIds` 严格递增且等于真实中序；`pathIds` 从根沿真实 `left/right` 到达 `currentNodeId`；`go-left/go-right` 的 `nextNodeId` 必须是 current 的真实孩子；`targetNodeId` 值等于 `targetValue`；每个节点的 `height` 必须等于真实子树高度，`balance = height(left) − height(right)`；`init/done` 必须满足 `|BF|≤1`，旋转/失衡帧允许暂时失衡；旋转帧的 pivot/promoted 与 case/phase 必须成组出现。
+- **真实 Python，不是预置帧**：`avlExamples.ts` 用真实 `AvlNode` 对象，字段 `node_id/value/left/right/parent/height`，创建时分配稳定 `a1…` ID。初始树用 `SILENT=True` 的真实插入构建，避免构造阶段的旋转帧混进教学 Trace；`refresh_heights` 在后序位置重算真实子树高度；`rotate_right/rotate_left` 先真实修改 `parent/left/right`，再发 before/after 两帧；`perform_balance` 按 LL/RR/LR/RL 选择单旋或两个连续旋转；`balance_up(start)` 从受影响位置向上刷新高度并继续检查祖先，因此删除后可能连续调整多层。
+- **插入语义**：先按 BST 规则比较并寻找空位，真实创建节点并修改父指针；向上刷新高度，遇到第一个失衡祖先记录类型。LL 对失衡节点右旋，RR 左旋，LR 先对左孩子左旋再对失衡节点右旋，RL 先对右孩子右旋再对失衡节点左旋。双旋是两个真实连续操作，各自有 before/after 帧与 `rotationStep/rotationTotal`，不是只画最终树。
+- **删除语义**：叶子把父指针置空；单孩子让孩子接替目标位置；双孩子物理移植中序后继，后继保留自己的 ID，目标对象真正摘除；删除根时更新 `rootId`。删除后从受影响位置向上刷新高度并重新平衡，必要时连续调整多个祖先。`delete-cascade` 是叶子删除却连续触发两个不同祖先的 LR 双旋，专门说明“删除分类”与“重平衡次数”不是同一维度。
+- **默认与边界**：10 个官方预设共 142 帧（`insert-ll` 15、`insert-rr` 15、`insert-lr` 20、`insert-rl` 17、`insert-balanced` 12、`delete-leaf` 14、`delete-one` 11、`delete-two` 10、`delete-cascade` 21、`delete-missing` 7）；8 个边界场景共 34 帧。重复键明确拒绝且树不变；删除不存在键返回 `missing` 并保持原树；空树、单点、非法值均有明确结果。
+- **共享树基础、独立面板、同一播放器**：`AvlVisual.tsx` 复用 `layoutBinaryTree`、`tree-*` 几何/CSS 与唯一播放器；新增 AVL 操作/结果栏、节点 `h/BF` 徽标、当前/失衡/轴/上升节点标签、旋转 case/phase chip、旋转边高亮、比较路径、中序序列、指针/根变化、摘除对象。节点 ROOT/LEAF/当前徽标在 AVL 中隐藏，避免与 `h/BF` 叠字；当前节点由顶部指标和描边表达。没有第二个 `currentIndex`、第二个播放器或从屏幕坐标推断父子关系。
+- **课程与目录**：`avl-balanced-binary-search-tree` 17 步（init/compare/direction/insert/height/imbalance/rotate-left/rotate-right/duplicate/delete-locate/delete-leaf/delete-one/successor/successor-detach/transplant/not-found/done），stepId 与真实 Python `lesson_step=` 对齐；覆盖 AVL 与普通 BST 的区别、普通 BST 退化、高度/平衡因子、AVL 条件、四种失衡与旋转、单旋/双旋、插入与删除后的再平衡、O(log n)、常见错误与记忆方法。
+- **窄屏策略**：`t2.css` 在 980/560 断点把 AVL 面板改为单列；390px 下树画布保留可读最小比例并在容器内横向滚动，模型根/节点数/可用宽度变化时自动把滚动位置居中到根，页面本身无横向溢出。
+
 ## 4. 测试策略
 
 | 层次 | 工具 | 覆盖 |
 | --- | --- | --- |
 | 纯逻辑单测 | Vitest | 主题解析、播放状态机（含 `clampPlayback`）、可视化映射、i18n、题库数据、关键词路由、教学课程校验与阶段查找、**知识包 manifest/路径/中央目录/内容校验** |
-| 帧回归 | Vitest + legacy 快照 | 24 个 catalog 入口逐帧一致（12 个 legacy 动画 + 阶乘/斐波那契 + Dijkstra/Floyd/Bellman/Prim/Kruskal/拓扑/关键路径/连通分量/SCC/BST 真实 Python preset）、空/重复/单元素输入、排序终态 |
+| 帧回归 | Vitest + legacy 快照 | 25 个 catalog 入口逐帧一致（12 个 legacy 动画 + 阶乘/斐波那契 + Dijkstra/Floyd/Bellman/Prim/Kruskal/拓扑/关键路径/连通分量/SCC/BST/AVL 真实 Python preset）、空/重复/单元素输入、排序终态 |
 | 存储单测 | Vitest + fake-indexeddb | 安装成功、刷新恢复、卸载隔离、重复安装、版本冲突/显式替换、写事务失败回滚、配额映射、存储不可用 |
 | 会话/上下文格式 | Vitest（node + jsdom） | 两文件 Schema、格式版本、未知键拒绝、`stepIndex === event.step`、大小限额、篡改检测、导出不重跑 |
 | MCP 协议 | Vitest + 官方 SDK `Client` + `InMemoryTransport` | 工具/提示词发现、参数校验、内置+包课程、中英 stepId、未知 lesson/step、会话写盘复验且从不覆盖、上下文读取（穿越/绝对路径/符号链接/超限/篡改/坏 JSON）、恶意包文本、Prompt 五级 |
@@ -236,7 +249,7 @@ flowchart TD
 | 结构语义（Stage 7B） | Vitest + Schema/模型/组件 | `structure` 合法与非法、重复 id、pop/dequeue 必带 removed、旧 Trace 兼容、栈/队列模型映射、空态、DOM 顺序与 removed 独立渲染 |
 | 单链表语义（Stage 7C） | Vitest + Schema/模型/组件/Python | linked-list 合法/空表/同值不同 ID/悬空引用/环/40 上限；主链由 nextId 而非数组顺序；HEAD/临时/断开/回退；真实 Node 示例 22 帧；DOM 节点、箭头目标、变化徽章 |
 | 工作区布局（Stage 7A） | Playwright + 真实页面 | 1440 并排 + 当前步骤落在 900 高首屏；1024/390 无页面级横向溢出；标签切换保留 Monaco 草稿、不自动运行；方向键切标签、Escape 关闭菜单；AI 错误折叠 |
-| 组件冒烟 | Vitest + jsdom + Testing Library | 24 个算法入口、时间轴交互与 **Trace 切换重置**、三态主题、语言切换、视图切换、调用栈面板与作用域变量、教学面板（高亮/禁用/跳转/空态）、知识包页（预览/确认/卸载/错误文案）、**App 级导入→课程→卸载** |
+| 组件冒烟 | Vitest + jsdom + Testing Library | 25 个算法入口、时间轴交互与 **Trace 切换重置**、三态主题、语言切换、视图切换、调用栈面板与作用域变量、教学面板（高亮/禁用/跳转/空态）、知识包页（预览/确认/卸载/错误文案）、**App 级导入→课程→卸载** |
 | 令牌契约 | Vitest 读 CSS 文本 | 两套主题 token 完整性、无硬编码颜色 |
 | E2E | Playwright（真实 Edge 无头 + `vite preview`） | Monaco 加载、Python 冒泡同步高亮、SyntaxError 波浪线出现/清除、草稿自动保存/刷新恢复、主题切换、真实 Pyodide 阶乘/斐波那契递归栈、JS 长短 Trace 切换重置、**教学步骤与真实数组/变量/调用栈同步**（`e2e/lab.spec.ts`）、**知识包导入→安装→刷新恢复→卸载**与**包内 Python 示例真实 Trace**（`e2e/packs.spec.ts`）、**Agent 会话导入→用户运行→步骤同步**与**导出真实帧→Schema 复验**（`e2e/session.spec.ts`） |
 | 栈/队列 E2E（Stage 7B） | Playwright + 真实 Pyodide | 真实 7 帧栈/队列、DOM 顶→底/前→后顺序、Peek/Front 不移除、Pop/Dequeue 与回退、1024/390 无横向溢出、Light/Dark、Reduced Motion、36 张真实截图 |
@@ -254,6 +267,8 @@ flowchart TD
 | 连通性 E2E（G4） | Playwright + 真实 Pyodide | 连通分量 50 帧发现/栈/C 编号/4 分量、Kosaraju 60 帧第一遍/转置/第二遍/5 SCC、空图、单向链 vs 有向环；回退与任意跳帧同步；1440/390 无页面溢出；6 张 G4 截图 |
 | BST 语义（T1） | Vitest + Schema/模型/Python 契约 | `bst.test.ts` 14 项：97 帧逐帧 Schema、查找存在/不存在、插入父指针、重复插入拒绝、删除叶子/单孩子/双孩子、根叶子/根单孩子/根双孩子、空树/单点/删除不存在键、稳定 ID、跳帧视觉同步、非法快照拒绝；`bstLesson.test.ts` 3 项校验 14 步课程与真实 fixture stepId 一致 |
 | BST E2E（T1） | Playwright + 真实 Pyodide | 查找成功/回退、插入 attach、删除叶子/单孩子/双孩子三案例、后继 b6 保留 ID、根 b1→b6、65 重连、跳帧同步、390 无页面溢出、双语切换；1 条测试 / 8 张 T1 截图 |
+| AVL 语义（T2） | Vitest + Schema/模型/Python 契约 | `avl.test.ts` 9 项：142 默认帧 + 34 边界帧逐帧 Schema、稳定 ID、LL/RR/LR/RL、双旋 step1/step2、删除叶子/单孩子/双孩子/根/缺失键、根变化、连续重平衡、回退视觉同步、旋转完成后不再标记历史失衡、非法快照拒绝；`avlLesson.test.ts` 3 项校验 17 步课程与真实 fixture stepId 一致 |
+| AVL E2E（T2） | Playwright + 真实 Pyodide | LL 失衡 a2、旋转后 a1/a4 指针、RR、LR 第一段/第二段、RL 最终根 a5、删除叶子/单孩子/双孩子根/缺失键、delete-cascade 第二段 LR、完成帧全树 `|BF|≤1`、回退/跳帧结构恢复、390 根居中与页面无溢出、英文切换；1 条测试 / 6 张 T2 截图 |
 | Dijkstra E2E（Stage 7F） | Playwright + 真实 Pyodide | 默认 46 帧图/距离表/PQ 同帧；`F=6→4` 与 previous `C→E`；路径 A→B→E→F→G=7；回退 45→27→21→3 三面板一起恢复并重跑；非连通 11 帧、相同距离 27 帧、单节点 5 帧、负权拒绝并清空图；1024/390 无页面溢出、画布内部滚动、Light/Dark；62 张截图 |
 | 单链表 E2E（Stage 7C） | Playwright + 真实 Pyodide | 真实 22 帧：中间插入三阶段（create/set-next/predecessor）、删除绕过并清空 next、回退恢复、HEAD→NULL 遍历、同值不同 ID、栈/队列切换无残留、1024/390 无页面溢出、Reduced Motion、60 张截图 |
 | a11y | axe | **未实现**，见后续 Issue |
@@ -284,7 +299,8 @@ G2（已完成，feat/g2-mst）: prim-mst / kruskal-mst 独立快照 → 真实 
 G3（已完成，feat/g3-topo-critical-path）: topological-sort / critical-path 独立快照 → 真实 Python Kahn + AOE ve/vl/slack/path 枚举 → 有向图分层布局、入度/队列面板与事件/活动/路径面板 → 单一播放器与 8 步/7 步双语课程 → 4 条功能 E2E + 1 条视觉 E2E
 G4（已完成，feat/g4-components-scc）: connected-components / kosaraju 独立快照 → 真实 Python 迭代 DFS 与 Kosaraju 双遍 DFS + 转置 → 复用图布局与单一播放器，新增显式栈、完成顺序、反向图与 C 编号分组 → 10 步/11 步双语课程 → 4 条功能 E2E + 1 条视觉 E2E
 T1（已完成，feat/t1-bst）: bst 独立快照 → 真实 Python TreeNode 查找/插入/删除三案例，双孩子物理移植中序后继 → 复用树布局与稳定 ID，新增摘除对象/父指针/根指针变化 → 14 步双语课程 → 1 条真实 Pyodide E2E + 8 张截图
-后续             : AVL / 堆 / 哈夫曼树等更多树结构；Agent ⇄ 浏览器实时同步（Stage 5B 候选）、RAG / 多轮记忆、练习页 Monaco、a11y / axe、远程包市场与签名
+T2（已完成，feat/t2-avl）: avl 独立快照 → 真实 Python AvlNode 高度/平衡因子与 LL/RR/LR/RL 单旋/双旋 → 先改指针再出结构快照，新增旋转 before/after、失衡/轴/上升节点与多层祖先重平衡 → 复用树布局与单一播放器 → 17 步双语课程 → 1 条真实 Pyodide E2E + 6 张截图
+后续             : 堆 / 哈夫曼树等更多树结构；Agent ⇄ 浏览器实时同步（Stage 5B 候选）、RAG / 多轮记忆、练习页 Monaco、a11y / axe、远程包市场与签名
 ```
 
 `Trace Event Schema v1` 是编辑器诊断、递归栈动画与后续树/图可视化的共同前置：Monaco 需要根据 `event.sourceLocation` 高亮，调用栈读取 `callStack`，任何新结构都必须先扩展协议再改渲染，不允许渲染层自己发明字段。
