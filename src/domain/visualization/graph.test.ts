@@ -93,6 +93,7 @@ describe('Stage 7E graph visual model', () => {
     }), 'empty graph');
     expect(after?.nodes.map((node) => ({ id: node.id, x: node.x, y: node.y })))
       .toEqual(before?.nodes.map((node) => ({ id: node.id, x: node.x, y: node.y })));
+    expect(after?.viewBox).toEqual(before?.viewBox);
   });
 
   it('renders an empty graph without nodes or edges', () => {

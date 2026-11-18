@@ -1,7 +1,7 @@
 {
   "name": "algolens",
   "private": true,
-  "version": "0.19.1-ux03b",
+  "version": "0.19.2-ux04c",
   "type": "module",
   "license": "MIT",
   "description": "AlgoViz - interactive data structure and algorithm visualization learning platform",

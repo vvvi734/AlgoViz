@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { layoutGraph, DEFAULT_GRAPH_POSITIONS, GRAPH_LAYOUT_HEIGHT, GRAPH_LAYOUT_WIDTH } from './graphLayout';
+import {
+  layoutGraph,
+  DEFAULT_GRAPH_POSITIONS,
+  GRAPH_LAYOUT_HEIGHT,
+  GRAPH_LAYOUT_WIDTH,
+  computeGraphViewBox,
+} from './graphLayout';
 import type { GraphEdge } from '../trace/schema';
 
 const DEFAULT_NODES = ['A', 'B', 'C', 'D', 'E', 'F', 'G'].map((id) => ({ id }));
@@ -44,6 +50,42 @@ describe('Stage 7E deterministic graph layout', () => {
     const second = layoutGraph(DEFAULT_NODES, DEFAULT_EDGES);
     expect(second.nodes).toEqual(first.nodes);
     expect(second.edges).toEqual(first.edges);
+  });
+
+  it('fits the SVG viewport to the real node/edge bounds instead of a fixed sheet', () => {
+    const layout = layoutGraph(DEFAULT_NODES, DEFAULT_EDGES);
+    const viewBox = computeGraphViewBox(layout.nodes, layout.edges, layout.nodeRadius);
+    expect(viewBox.width).toBeLessThan(GRAPH_LAYOUT_WIDTH - 20);
+    expect(viewBox.height).toBeLessThan(GRAPH_LAYOUT_HEIGHT - 10);
+    expect(viewBox.width / viewBox.height).toBeGreaterThan(1.4);
+
+    for (const node of layout.nodes) {
+      expect(node.x - layout.nodeRadius).toBeGreaterThan(viewBox.x);
+      expect(node.x + layout.nodeRadius).toBeLessThan(viewBox.x + viewBox.width);
+      // START/TARGET labels and the current ring sit above the node body.
+      expect(node.y - layout.nodeRadius).toBeGreaterThan(viewBox.y);
+      expect(node.y + layout.nodeRadius).toBeLessThan(viewBox.y + viewBox.height);
+    }
+    for (const edge of layout.edges) {
+      expect(edge.x1).toBeGreaterThanOrEqual(viewBox.x);
+      expect(edge.x2).toBeGreaterThanOrEqual(viewBox.x);
+      expect(edge.y1).toBeGreaterThanOrEqual(viewBox.y);
+      expect(edge.y2).toBeGreaterThanOrEqual(viewBox.y);
+    }
+  });
+
+  it('includes weighted edge labels and keeps a minimum readable viewport', () => {
+    const layout = layoutGraph(DEFAULT_NODES, DEFAULT_EDGES);
+    const viewBox = computeGraphViewBox(
+      layout.nodes,
+      layout.edges.map((edge, index) => ({ ...edge, weight: index + 1 })),
+      layout.nodeRadius,
+    );
+    expect(viewBox.width).toBeGreaterThan(0);
+    expect(viewBox.height).toBeGreaterThan(0);
+    const tiny = computeGraphViewBox([{ x: 20, y: 20, label: 'A' }], [], layout.nodeRadius);
+    expect(tiny.width).toBeGreaterThanOrEqual(240);
+    expect(tiny.height).toBeGreaterThanOrEqual(180);
   });
 
   it('does not depend on node array order for the generic fallback', () => {

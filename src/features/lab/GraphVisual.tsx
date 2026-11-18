@@ -113,17 +113,25 @@ export function GraphVisual({
         </div>
       )}
 
-      <div className="graph-canvas-scroll" tabIndex={0} aria-label={t('graphCanvasLabel')}>
+      <div
+        className="graph-canvas-scroll"
+        data-testid="graph-canvas-scroll"
+        tabIndex={0}
+        aria-label={t('graphCanvasLabel')}
+      >
         <svg
           className="graph-svg"
-          viewBox={`0 0 ${model.width} ${model.height}`}
-          width={model.width}
-          height={model.height}
+          viewBox={`${model.viewBox.x} ${model.viewBox.y} ${model.viewBox.width} ${model.viewBox.height}`}
+          preserveAspectRatio="xMidYMid meet"
+          width={model.viewBox.width}
+          height={model.viewBox.height}
           role="img"
           aria-label={`${model.algorithm.toUpperCase()} ${t('graphCanvasLabel')}`}
           data-testid="graph-svg"
           data-node-count={model.nodes.length}
           data-edge-count={model.edges.length}
+          data-viewbox-width={model.viewBox.width}
+          data-viewbox-height={model.viewBox.height}
         >
           {model.directed && (
             <defs>
@@ -162,7 +170,7 @@ export function GraphVisual({
                     data-testid="graph-edge-weight"
                     data-edge-id={edge.id}
                   >
-                    <rect x={-15} y={-10} width={30} height={19} rx={7} />
+                    <rect x={-17} y={-10.5} width={34} height={20} rx={7} />
                     <text y={4} textAnchor="middle">
                       {edge.weight}
                     </text>
@@ -238,7 +246,7 @@ export function GraphVisual({
 
         <div className="graph-current-copy" data-testid="graph-current-copy">
           <b>{operationText}</b>
-          <span>{hint}</span>
+          <span className="graph-current-hint">{hint}</span>
           {currentNode && (
             <span className="graph-current-node" data-testid="graph-current-node">
               {t('graphCurrentNode')}: <code>{currentNode.id}</code>

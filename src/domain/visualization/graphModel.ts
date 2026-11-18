@@ -14,7 +14,12 @@ import type {
   GraphSnapshot,
   WeightedGraphSnapshot,
 } from '../trace/schema';
-import { layoutGraph, type GraphLayoutEdge } from './graphLayout';
+import {
+  computeGraphViewBox,
+  layoutGraph,
+  type GraphLayoutEdge,
+  type GraphViewBox,
+} from './graphLayout';
 
 export type GraphNodeVisualState = 'visited' | 'pending' | 'undiscovered' | 'settled';
 export type GraphVisualAlgorithm = GraphAlgorithm | 'dijkstra';
@@ -86,6 +91,8 @@ export interface GraphVisualModel {
   label: string;
   width: number;
   height: number;
+  /** Tight SVG viewport derived from the same frame's node/edge geometry. */
+  viewBox: GraphViewBox;
   nodeRadius: number;
   /** Stage 7F weighted-graph metadata; absent on every BFS/DFS model. */
   weighted?: boolean;
@@ -177,6 +184,7 @@ export function buildGraphVisualModel(
     ...edge,
     active: edge.id === snapshot.currentEdgeId,
   }));
+  const viewBox = computeGraphViewBox(nodes, edges, layout.nodeRadius);
 
   const frontierItems: GraphFrontierVisualItem[] = snapshot.frontierItems.map((item) => ({
     id: item.id,
@@ -216,6 +224,7 @@ export function buildGraphVisualModel(
     label: emptyLabel,
     width: layout.width,
     height: layout.height,
+    viewBox,
     nodeRadius: layout.nodeRadius,
   };
 }
@@ -334,6 +343,7 @@ export function buildWeightedGraphVisualModel(
     directed: snapshot.directed,
     onPath: pathEdges.includes(edge.id),
   }));
+  const viewBox = computeGraphViewBox(nodes, edges, layout.nodeRadius);
 
   const itemOf = (item: WeightedGraphSnapshot['frontierItems'][number]): GraphFrontierVisualItem => ({
     id: item.id,
@@ -378,6 +388,7 @@ export function buildWeightedGraphVisualModel(
     label: emptyLabel,
     width: layout.width,
     height: layout.height,
+    viewBox,
     nodeRadius: layout.nodeRadius,
     weighted: true,
     directed: snapshot.directed,

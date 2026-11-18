@@ -39,7 +39,7 @@
 }
 .graph-edge-weight text {
   fill: var(--txt);
-  font: 850 10.5px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font: 850 13px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
 }
 
 .graph-node-settled .graph-node-body {

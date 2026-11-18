@@ -35,21 +35,52 @@ export interface GraphLayout {
   edges: GraphLayoutEdge[];
 }
 
+/** Content-driven SVG viewport. `x`/`y` are SVG user units, not page pixels. */
+export interface GraphViewBox {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+export interface GraphViewNode {
+  x: number;
+  y: number;
+  label?: string;
+  start?: boolean;
+  target?: boolean;
+}
+
+export interface GraphViewEdge {
+  x1: number;
+  y1: number;
+  x2: number;
+  y2: number;
+  weight?: number;
+}
+
 type LayoutNodeInput = Pick<GraphLayoutNode, 'id'>;
 
 export const GRAPH_NODE_RADIUS = 23;
 export const GRAPH_LAYOUT_WIDTH = 580;
 export const GRAPH_LAYOUT_HEIGHT = 380;
+export const GRAPH_VIEW_PADDING = 10;
+export const GRAPH_VIEW_MIN_WIDTH = 240;
+export const GRAPH_VIEW_MIN_HEIGHT = 180;
 
-/** Hand-placed official teaching graph: branch, cycle and a long tail. */
+/**
+ * The official teaching graph spreads horizontally so a wide desktop canvas
+ * uses its width instead of leaving the seven nodes in a small centre block.
+ * Coordinates stay fixed and deterministic across every frame of a trace.
+ */
 export const DEFAULT_GRAPH_POSITIONS: Readonly<Record<string, Readonly<{ x: number; y: number }>>> = {
-  A: { x: 290, y: 48 },
-  B: { x: 160, y: 132 },
-  C: { x: 430, y: 132 },
-  D: { x: 80, y: 232 },
-  E: { x: 230, y: 232 },
-  F: { x: 400, y: 232 },
-  G: { x: 290, y: 332 },
+  A: { x: 300, y: 40 },
+  B: { x: 130, y: 105 },
+  C: { x: 470, y: 105 },
+  D: { x: 25, y: 175 },
+  E: { x: 215, y: 175 },
+  F: { x: 425, y: 175 },
+  G: { x: 300, y: 240 },
 };
 
 function circleLayout(nodes: LayoutNodeInput[]): GraphLayoutNode[] {
@@ -137,5 +168,70 @@ export function layoutGraph(nodes: LayoutNodeInput[], edges: GraphEdge[]): Graph
     nodeRadius: GRAPH_NODE_RADIUS,
     nodes: positions,
     edges: laidEdges,
+  };
+}
+
+function roundView(value: number): number {
+  return Math.round(value * 100) / 100;
+}
+
+/**
+ * Fit the SVG viewport to the drawn graph instead of to a fixed 580×380 sheet.
+ *
+ * The old fixed viewBox left large empty bands around the seven-node graph. This
+ * keeps every node ring, START/TARGET tag, badge, arrow endpoint and weight
+ * label inside the viewport (plus breathing room), while removing unused space.
+ * It is a pure function of the same frame data, so scrubbing cannot change the
+ * viewport or make the graph jump.
+ */
+export function computeGraphViewBox(
+  nodes: readonly GraphViewNode[],
+  edges: readonly GraphViewEdge[],
+  radius = GRAPH_NODE_RADIUS,
+): GraphViewBox {
+  if (nodes.length === 0) {
+    return { x: 0, y: 0, width: GRAPH_LAYOUT_WIDTH, height: GRAPH_LAYOUT_HEIGHT };
+  }
+
+  let minX = Infinity;
+  let maxX = -Infinity;
+  let minY = Infinity;
+  let maxY = -Infinity;
+  const include = (left: number, top: number, right: number, bottom: number) => {
+    minX = Math.min(minX, left);
+    maxX = Math.max(maxX, right);
+    minY = Math.min(minY, top);
+    maxY = Math.max(maxY, bottom);
+  };
+
+  for (const node of nodes) {
+    const labelHalf = Math.max(radius + 8, (node.label?.length ?? 0) * 5);
+    // START sits at -radius-12, TARGET at -radius-27. Text is 9.5px, so the
+    // current node needs up to radius+36 above its centre to stay visible.
+    const topOverflow = radius + 8 + (node.start ? 22 : 0) + (node.target ? 14 : 0);
+    include(node.x - labelHalf, node.y - topOverflow, node.x + labelHalf, node.y + radius + 8);
+  }
+
+  for (const edge of edges) {
+    include(edge.x1, edge.y1, edge.x2, edge.y2);
+    if (edge.weight !== undefined) {
+      const midX = (edge.x1 + edge.x2) / 2;
+      const midY = (edge.y1 + edge.y2) / 2;
+      include(midX - 17, midY - 11, midX + 17, midY + 11);
+    }
+  }
+
+  minX -= GRAPH_VIEW_PADDING;
+  maxX += GRAPH_VIEW_PADDING;
+  minY -= GRAPH_VIEW_PADDING;
+  maxY += GRAPH_VIEW_PADDING;
+
+  const width = Math.max(GRAPH_VIEW_MIN_WIDTH, maxX - minX);
+  const height = Math.max(GRAPH_VIEW_MIN_HEIGHT, maxY - minY);
+  return {
+    x: roundView((minX + maxX) / 2 - width / 2),
+    y: roundView((minY + maxY) / 2 - height / 2),
+    width: roundView(width),
+    height: roundView(height),
   };
 }

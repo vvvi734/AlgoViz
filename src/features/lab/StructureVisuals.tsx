@@ -157,6 +157,19 @@ export function QueueVisual({
   const { t, lang } = useI18n();
   const activeFront = model.operation === 'front' || model.operation === 'dequeue';
   const activeRear = model.operation === 'enqueue';
+  const leavingItem = model.removed ? (
+    <div
+      className="structure-item queue-item queue-leaving"
+      data-testid="queue-leaving"
+      data-element-id={model.removed.id}
+      data-node-id={model.removed.nodeId}
+      data-value={valueText(model.removed.value)}
+      data-status="leaving"
+    >
+      <span className="structure-value">{valueText(model.removed.value)}</span>
+      <span className="structure-tag">{t('structureLeaving')}</span>
+    </div>
+  ) : null;
   return (
     <div
       className={`structure-visual queue-visual${compact ? ' is-compact' : ''}`}
@@ -173,24 +186,19 @@ export function QueueVisual({
         <span className="structure-hint">{hint ?? hintText(model.operation, lang)}</span>
       </div>
 
-      {model.removed && (
+      {model.removed && !compact && (
         <div className="queue-exit" data-testid="queue-exit">
-          <div
-            className="structure-item queue-item queue-leaving"
-            data-testid="queue-leaving"
-            data-element-id={model.removed.id}
-            data-node-id={model.removed.nodeId}
-            data-value={valueText(model.removed.value)}
-            data-status="leaving"
-          >
-            <span className="structure-value">{valueText(model.removed.value)}</span>
-            <span className="structure-tag">{t('structureLeaving')}</span>
-          </div>
+          {leavingItem}
           <span className="queue-exit-label">{t('structureQueueFront')}</span>
         </div>
       )}
 
       <div className="queue-track" data-testid="queue-track">
+        {model.removed && compact && (
+          <div className="queue-exit-inline" data-testid="queue-exit">
+            {leavingItem}
+          </div>
+        )}
         <div className={`queue-rail queue-front${activeFront ? ' is-active' : ''}`} data-testid="queue-front">
           <b>FRONT</b>
           <small>{t('structureQueueFront')}</small>
