@@ -1,5 +1,5 @@
 import path from 'node:path';
-import { expect, test, type Page } from './fixtures';
+import { expect, openCodePanel, test, type Page } from './fixtures';
 
 /**
  * Stage 4 — the official `.algopack` end to end, in a real browser.
@@ -24,7 +24,7 @@ async function importOfficialPack(page: Page) {
 test.describe('Stage 4 — official .algopack installs, survives reload and uninstalls', () => {
   test('import → preview → install → open course → reload → uninstall', async ({ page }) => {
     await page.goto('/');
-    await expect(page.locator('.monaco-editor')).toBeVisible({ timeout: 45_000 });
+    await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
 
     await importOfficialPack(page);
     await expect(page.locator('[data-testid="pack-version-algolens-search-basics"]')).toContainText('1.0.0');
@@ -39,7 +39,7 @@ test.describe('Stage 4 — official .algopack installs, survives reload and unin
 
     // Reload: IndexedDB keeps the pack, so the course must come back.
     await page.reload();
-    await expect(page.locator('.monaco-editor')).toBeVisible({ timeout: 45_000 });
+    await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
     await page.click('[data-testid="nav-packs"]');
     await expect(page.locator('[data-testid="pack-card-algolens-search-basics"]')).toBeVisible();
 
@@ -66,7 +66,7 @@ test.describe('Stage 4 — official .algopack installs, survives reload and unin
 test.describe('Stage 4 — pack Python example produces a real trace', () => {
   test('user-triggered run syncs the teaching steps with real Pyodide frames', async ({ page }) => {
     await page.goto('/');
-    await expect(page.locator('.monaco-editor')).toBeVisible({ timeout: 45_000 });
+    await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
 
     await importOfficialPack(page);
     await page.click('[data-testid="pack-open-binary"]');
@@ -74,6 +74,7 @@ test.describe('Stage 4 — pack Python example produces a real trace', () => {
     // Loading the example only fills the editor: it must not run anything.
     await page.click('[data-testid="lesson-use-example"]');
     await expect(page.locator('#code-lang')).toHaveValue('python');
+    await openCodePanel(page);
     await expect(page.locator('.monaco-editor')).toContainText('lesson_step');
 
     // The user explicitly starts the run; Pyodide (~10 MB) downloads on first use.
@@ -87,10 +88,9 @@ test.describe('Stage 4 — pack Python example produces a real trace', () => {
     await expect(page.locator('[data-testid="variables-watch"]')).toContainText('target');
 
     // Lesson → timeline: a `found` stage exists only in the real trace.
-    await page.click('[data-testid="workspace-tab-lesson"]');
     await page.click('[data-testid="lesson-step-found"]');
     await expect(page.locator('[data-testid="lesson-active-step"]')).toHaveAttribute('data-step-id', 'found');
-    await expect(page.locator('.algolens-active-line').first()).toBeVisible();
+    await expect(page.locator('.algolens-active-line')).toHaveCount(1);
 
     // The example runs a second search that misses, so `missing` closes the trace.
     const last = await page.locator('[data-testid="scrub"]').evaluate((el) => (el as HTMLInputElement).max);

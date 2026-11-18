@@ -1,42 +1,53 @@
-import { expect, test, type Page } from './fixtures';
+import { expect, openCodePanel, test, type Page } from './fixtures';
 
 /**
- * Stage 7A — information architecture, state retention, responsive layout and
- * keyboard operation. Screenshots for visual review are captured separately by
- * `scripts/capture-ui.mjs`; these assertions guard the behaviour behind them.
+ * Stage 7A information architecture, state retention and keyboard operation,
+ * updated by UI-03: animation left, explanation rail right, and a full-width
+ * code dock below both columns.
  */
 
 async function openApp(page: Page) {
   await page.goto('/');
-  await expect(page.locator('.monaco-editor')).toBeVisible({ timeout: 45_000 });
+  await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
 }
 
-test.describe('Stage 7A — workspace UX', () => {
-  test('A. desktop puts animation and Monaco side by side with the current step underneath', async ({ page }) => {
+test.describe('Stage 7A — workspace UX (UI-03 layout)', () => {
+  test('A. desktop puts animation left, lesson right and a collapsed code dock below', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await openApp(page);
 
     const stage = await page.locator('[data-testid="visual-stage"]').boundingBox();
-    const editor = await page.locator('.monaco-editor').first().boundingBox();
+    const stagePanel = await page.locator('.stage-panel').boundingBox();
+    const rail = await page.locator('[data-testid="explanation-rail"]').boundingBox();
     const current = await page.locator('[data-testid="current-step"]').boundingBox();
-    expect(stage && editor && current).toBeTruthy();
-    if (!stage || !editor || !current) return;
+    const primary = await page.locator('.lab-primary').boundingBox();
+    const dock = await page.locator('[data-testid="code-dock"]').boundingBox();
+    expect(stage && stagePanel && rail && current && primary && dock).toBeTruthy();
+    if (!stage || !stagePanel || !rail || !current || !primary || !dock) return;
 
-    // The code editor is beside the animation, not below a stack of cards.
-    expect(editor.x).toBeGreaterThan(stage.x + stage.width - 10);
-    expect(Math.abs(editor.y - stage.y)).toBeLessThan(80);
-    // The current trace step is visible directly under the animation, fully
-    // inside a 1440×900 first screen.
-    expect(current.y).toBeGreaterThan(stage.y + stage.height - 10);
+    // The rail is a real second column, not a card under the animation.
+    expect(rail.x).toBeGreaterThan(stage.x + stage.width - 10);
+    expect(Math.abs(rail.y - stagePanel.y)).toBeLessThan(24);
+    // The current frame is at the top of the rail and fully on the first screen.
+    expect(current.y).toBeGreaterThanOrEqual(rail.y);
     expect(current.y + current.height).toBeLessThanOrEqual(900);
+    // UI-03: the editor is no longer inside the rail; the dock spans below both.
+    await expect(page.locator('[data-testid="explanation-rail"] .monaco-editor')).toHaveCount(0);
+    expect(dock.y).toBeGreaterThan(primary.y + primary.height - 12);
+    expect(dock.width).toBeGreaterThan(stage.width + rail.width - 10);
+    await expect(page.locator('[data-testid="code-dock"]')).toHaveAttribute('data-expanded', 'false');
+    await expect(page.locator('[data-testid="code-dock-toggle"]')).toHaveAttribute('aria-expanded', 'false');
+    await expect(page.locator('.monaco-editor')).toBeHidden();
+    await expect(page.locator('[data-testid="run-btn"]')).toBeVisible();
 
     await expect(page.locator('[data-testid="lesson-title"]')).toContainText('冒泡排序');
     await expect(page.locator('[data-testid="current-step-title"]')).toBeVisible();
-    await expect(page.locator('[data-testid="workspace-tab-lesson"]')).toHaveAttribute('aria-selected', 'true');
+    await expect(page.locator('[data-testid="workspace-tab-state"]')).toHaveAttribute('aria-selected', 'true');
   });
 
   test('B. switching panels keeps the Monaco draft and never runs or resets the trace', async ({ page }) => {
     await openApp(page);
+    await openCodePanel(page);
     const draft = 'const STAGE7_DRAFT = 707;';
     await page.locator('.monaco-editor').first().click();
     await page.keyboard.press('Control+a');
@@ -49,7 +60,8 @@ test.describe('Stage 7A — workspace UX', () => {
     await expect(page.locator('[data-testid="workspace-panel-mentor"]')).toBeVisible();
     await page.click('[data-testid="workspace-tab-state"]');
     await expect(page.locator('[data-testid="workspace-panel-state"]')).toBeVisible();
-    await page.click('[data-testid="workspace-tab-lesson"]');
+    await page.click('[data-testid="workspace-tab-tools"]');
+    await expect(page.locator('[data-testid="workspace-panel-tools"]')).toBeVisible();
 
     await expect(page.locator('.monaco-editor')).toContainText('STAGE7_DRAFT');
     await expect(page.locator('[data-testid="progress"]')).toHaveText(progress ?? '');
@@ -58,17 +70,19 @@ test.describe('Stage 7A — workspace UX', () => {
     await expect(page.locator('.algolens-active-line')).toHaveCount(0);
   });
 
-  test('H. 1024 stacks animation, current step and code without page overflow', async ({ page }) => {
+  test('H. 1024 stacks animation, then the explanation rail, then the collapsed code dock without page overflow', async ({ page }) => {
     await page.setViewportSize({ width: 1024, height: 768 });
     await openApp(page);
 
     const stage = await page.locator('[data-testid="visual-stage"]').boundingBox();
     const current = await page.locator('[data-testid="current-step"]').boundingBox();
-    const editor = await page.locator('.monaco-editor').first().boundingBox();
-    expect(stage && current && editor).toBeTruthy();
-    if (!stage || !current || !editor) return;
+    const dock = await page.locator('[data-testid="code-dock"]').boundingBox();
+    expect(stage && current && dock).toBeTruthy();
+    if (!stage || !current || !dock) return;
     expect(current.y).toBeGreaterThan(stage.y + stage.height - 10);
-    expect(current.y).toBeLessThan(editor.y);
+    expect(current.y).toBeLessThan(dock.y);
+    expect(dock.width).toBeGreaterThan(600);
+    await expect(page.locator('[data-testid="code-dock"]')).toHaveAttribute('data-expanded', 'false');
 
     const layout = await page.evaluate(() => ({
       scrollWidth: document.documentElement.scrollWidth,
@@ -94,18 +108,25 @@ test.describe('Stage 7A — workspace UX', () => {
     await page.selectOption('[data-testid="mobile-algo-select"]', 'binary');
     await expect(page.locator('[data-testid="lab-title"]')).toContainText('二分查找');
     await expect(page.locator('[data-testid="visual-stage"]')).toBeVisible();
+    // UI-02: an algorithm without a course shows the explicit empty state
+    // instead of a fabricated "current step".
+    await expect(page.locator('[data-testid="lesson-no-lesson"]')).toBeVisible();
+    await expect(page.locator('[data-testid="current-step"]')).toHaveCount(0);
+
+    await page.selectOption('[data-testid="mobile-algo-select"]', 'bubble');
+    await expect(page.locator('[data-testid="lab-title"]')).toContainText('冒泡排序');
     await expect(page.locator('[data-testid="current-step"]')).toBeVisible();
     await expect(page.locator('[data-testid="workspace-tabs"]')).toBeVisible();
   });
 
   test('I. tab strip supports arrow keys and Escape closes the More tools menu', async ({ page }) => {
     await openApp(page);
-    await page.click('[data-testid="workspace-tab-lesson"]');
+    await page.click('[data-testid="workspace-tab-state"]');
     await page.keyboard.press('ArrowRight');
-    await expect(page.locator('[data-testid="workspace-tab-state"]')).toHaveAttribute('aria-selected', 'true');
-    await expect(page.locator('[data-testid="workspace-panel-state"]')).toBeVisible();
+    await expect(page.locator('[data-testid="workspace-tab-mentor"]')).toHaveAttribute('aria-selected', 'true');
+    await expect(page.locator('[data-testid="workspace-panel-mentor"]')).toBeVisible();
     await page.keyboard.press('ArrowLeft');
-    await expect(page.locator('[data-testid="workspace-tab-lesson"]')).toHaveAttribute('aria-selected', 'true');
+    await expect(page.locator('[data-testid="workspace-tab-state"]')).toHaveAttribute('aria-selected', 'true');
 
     await page.click('[data-testid="nav-more"]');
     await expect(page.locator('[data-testid="nav-more-menu"]')).toBeVisible();

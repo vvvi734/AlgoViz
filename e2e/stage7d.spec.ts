@@ -1,8 +1,8 @@
-import { expect, test, type Page } from './fixtures';
+import { expect, openCodePanel, test, type Page } from './fixtures';
 
 async function openApp(page: Page) {
   await page.goto('/');
-  await expect(page.locator('.monaco-editor')).toBeVisible({ timeout: 45_000 });
+  await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
 }
 
 async function selectAlgo(page: Page, id: string) {
@@ -99,7 +99,6 @@ test.describe('Stage 7D — real binary-tree traversal and recursion stack', () 
     expect(await activeId(page)).toBe('n4');
     await expect(page.locator('[data-testid="tree-visual"]')).toHaveAttribute('data-operation', 'enter');
     await expect(page.locator('[data-testid="tree-path"]')).toHaveAttribute('data-current-id', 'n4');
-    await page.getByRole('tab', { name: '教学步骤' }).click();
     await expect(page.getByTestId('lesson-active-step')).toHaveAttribute('data-step-id', 'enter');
 
     await page.getByRole('tab', { name: '变量与调用栈' }).click();
@@ -116,12 +115,10 @@ test.describe('Stage 7D — real binary-tree traversal and recursion stack', () 
     await setFrame(page, 7);
     expect(await activeId(page)).toBe('n4');
     await expect(variables).toContainText('n4');
-    await page.getByRole('tab', { name: '教学步骤' }).click();
     await expect(page.getByTestId('lesson-active-step')).toHaveAttribute('data-step-id', 'return');
     await page.getByRole('tab', { name: '变量与调用栈' }).click();
     await setFrame(page, 8);
     expect(await activeId(page)).toBe('n2');
-    await page.getByRole('tab', { name: '教学步骤' }).click();
     await expect(page.getByTestId('lesson-active-step')).toHaveAttribute('data-step-id', 'visit');
     await page.getByRole('tab', { name: '变量与调用栈' }).click();
     await expect(frames).toHaveCount(2);
@@ -132,7 +129,6 @@ test.describe('Stage 7D — real binary-tree traversal and recursion stack', () 
     expect(await visitedIds(page)).toEqual([]);
     await expect(frames).toHaveCount(3);
     await expect(variables).toContainText('n4');
-    await page.getByRole('tab', { name: '教学步骤' }).click();
   });
 
   test('preorder visits 4 2 1 3 6 5 7 with real visits and source lines', async ({ page }) => {
@@ -150,7 +146,7 @@ test.describe('Stage 7D — real binary-tree traversal and recursion stack', () 
     expect(await activeId(page)).toBe('n1');
     await expect(page.getByTestId('lesson-active-step')).toHaveAttribute('data-step-id', 'visit');
     await expect(page.locator('[data-testid="current-step-message"]')).toContainText('visit n1');
-    await expect(page.locator('.algolens-active-line').first()).toBeVisible();
+    await expect(page.locator('.algolens-active-line')).toHaveCount(1);
 
     await setFrame(page, 8);
     expect(await activeId(page)).toBe('n4');
@@ -167,7 +163,6 @@ test.describe('Stage 7D — real binary-tree traversal and recursion stack', () 
     expect(await visitedIds(page)).toEqual(['n1', 'n2', 'n4', 'n5', 'n3', 'n6', 'n7']);
     await expect(page.getByTestId('lesson-active-step')).toHaveAttribute('data-step-id', 'order');
     await expect(page.locator('[data-testid="tree-visited-item"]')).toHaveCount(7);
-    await page.getByRole('tab', { name: '教学步骤' }).click();
   });
 
   test('postorder finishes both children before visiting the parent', async ({ page }) => {
@@ -232,6 +227,7 @@ test.describe('Stage 7D — real binary-tree traversal and recursion stack', () 
     await selectAlgo(page, 'inorder');
     await expect(page.locator('[data-testid="tree-visual"]')).toBeVisible({ timeout: 60_000 });
 
+    await openCodePanel(page);
     await page.fill('#run-input', '[]');
     await page.getByTestId('run-btn').click();
     await expect(page.locator('[data-testid="tree-empty"]')).toBeVisible({ timeout: 60_000 });
@@ -266,7 +262,7 @@ test.describe('Stage 7D — real binary-tree traversal and recursion stack', () 
       await expectNoPageOverflow(page);
       await expect(page.locator('[data-testid="tree-visual"]')).toBeVisible();
       await expect(page.locator('[data-testid="scrub"]')).toBeVisible();
-      await expect(page.locator('.monaco-editor')).toBeVisible();
+      await expect(page.locator('[data-testid="code-dock"]')).toBeVisible();
       if (viewport.width === 390) {
         await expect(page.locator('[data-testid="tree-scroll-hint"]')).toBeVisible();
       } else {

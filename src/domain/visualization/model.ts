@@ -2,7 +2,8 @@ import type { TraceState } from '../trace/types';
 import type { AnyStructureSnapshot, StructureOperation, StructureSnapshot } from '../trace/schema';
 import { buildBinaryTreeModel, type BinaryTreeVisualModel } from './binaryTreeModel';
 import { buildLinkedListModel, type LinkedListVisualModel } from './linkedListModel';
-import { buildGraphVisualModel, type GraphVisualModel } from './graphModel';
+import { buildGraphVisualModel, buildWeightedGraphVisualModel, type GraphVisualModel } from './graphModel';
+import { buildBellmanVisualModel, buildFloydVisualModel, type BellmanVisualModel, type FloydVisualModel } from './shortestPathModel';
 
 /**
  * Pure mapping from a trace state to a renderable model. React components only
@@ -57,6 +58,8 @@ export type VisualModel =
   | LinkedListVisualModel
   | BinaryTreeVisualModel
   | GraphVisualModel
+  | FloydVisualModel
+  | BellmanVisualModel
   | { kind: 'graph'; edges: Array<[number, number]>; nodes: GraphNodeModel[]; isTree: boolean }
   | { kind: 'raw'; text: string };
 
@@ -217,6 +220,27 @@ export function buildVisualModel(
   if (structure !== undefined && structure.kind === 'graph') {
     if (kind !== 'graph') return { kind: 'raw', text: labels.invalid };
     const model = buildGraphVisualModel(structure, labels.emptyGraph ?? labels.emptyStructure);
+    if (!model) return { kind: 'raw', text: labels.invalid };
+    return model;
+  }
+
+  if (structure !== undefined && structure.kind === 'weighted-graph') {
+    if (kind !== 'graph') return { kind: 'raw', text: labels.invalid };
+    const model = buildWeightedGraphVisualModel(structure, labels.emptyGraph ?? labels.emptyStructure);
+    if (!model) return { kind: 'raw', text: labels.invalid };
+    return model;
+  }
+
+  if (structure !== undefined && structure.kind === 'floyd-warshall') {
+    if (kind !== 'graph') return { kind: 'raw', text: labels.invalid };
+    const model = buildFloydVisualModel(structure, labels.emptyGraph ?? labels.emptyStructure);
+    if (!model) return { kind: 'raw', text: labels.invalid };
+    return model;
+  }
+
+  if (structure !== undefined && structure.kind === 'bellman-ford') {
+    if (kind !== 'graph') return { kind: 'raw', text: labels.invalid };
+    const model = buildBellmanVisualModel(structure, labels.emptyGraph ?? labels.emptyStructure);
     if (!model) return { kind: 'raw', text: labels.invalid };
     return model;
   }

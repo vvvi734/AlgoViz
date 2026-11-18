@@ -1,0 +1,252 @@
+/* ==========================================================================
+   UI-02 — animation on the left, synchronized explanation on the right.
+
+   The layout is presentation-only. It does not own playback, trace data or a
+   second course state: the stage and the rail both receive the LabController's
+   current frame.
+   ========================================================================== */
+
+/* Two primary columns on wide screens. The visual gets the larger share. */
+.lab-primary.ui02-workbench {
+  grid-template-columns: minmax(0, 1.55fr) minmax(390px, 0.95fr);
+  gap: 16px;
+  align-items: start;
+}
+
+.lab-primary.ui02-workbench .stage-panel {
+  align-self: start;
+  min-height: 0;
+  order: 0;
+}
+
+.lab-explanation {
+  order: 1;
+}
+
+.lab-primary.ui02-workbench .stage-panel .stage {
+  min-height: clamp(360px, 46vh, 620px);
+}
+
+/* The rail stays beside the animation on desktop. It scrolls internally so the
+   current explanation remains reachable while a tall graph/timeline is panned. */
+.lab-explanation {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+  position: sticky;
+  top: 12px;
+  max-height: calc(100vh - 24px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  padding-right: 2px;
+}
+
+.lab-explanation .lessonpanel {
+  flex: 0 0 auto;
+  border-color: var(--alg-active-edge);
+  background: linear-gradient(155deg, var(--panel-grad-a), var(--panel-grad-b));
+}
+
+.lab-explanation .lessonpanel.is-rail {
+  padding: 15px 16px 16px;
+}
+
+.lesson-head {
+  align-items: flex-start;
+}
+
+.lesson-head-tags {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+  flex: 0 0 auto;
+}
+
+.lesson-frame-tag {
+  color: var(--accent);
+  border-color: var(--tab-active-edge);
+  background: var(--tab-active-bg);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.lab-explanation .lesson-oneliner {
+  font-size: 13.5px;
+  line-height: 1.65;
+  max-width: 70ch;
+}
+
+/* The active frame is the visual anchor of the rail. */
+.lesson-focus {
+  display: grid;
+  gap: 8px;
+  margin: 4px 0 13px;
+  padding: 12px 13px;
+  border: 1px solid var(--alg-active-edge);
+  border-left: 4px solid var(--accent);
+  border-radius: 11px;
+  background: linear-gradient(100deg, var(--info-bg), var(--panel));
+  box-shadow: inset 0 0 0 1px var(--stat-bg);
+}
+
+.lesson-focus-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.lesson-focus-stage {
+  color: var(--muted);
+  font-size: 11.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+.lesson-focus-title {
+  margin: 1px 0 5px;
+  font-size: 17px;
+  line-height: 1.4;
+  letter-spacing: -.15px;
+}
+
+.lesson-focus-explanation {
+  margin: 0;
+  color: var(--txt);
+  font-size: 13.5px;
+  line-height: 1.75;
+}
+
+.lesson-focus-tip {
+  margin: 7px 0 0;
+  color: var(--muted);
+  font-size: 12.5px;
+  line-height: 1.6;
+}
+
+.lesson-focus .lesson-message {
+  margin-top: 2px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--edge);
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.lesson-focus .lesson-vars {
+  margin-top: 1px;
+}
+
+.lab-explanation .lesson-meta {
+  margin-bottom: 5px;
+}
+
+.lab-explanation .lesson-toggle {
+  font-size: 12.5px;
+}
+
+.lab-explanation .lesson-overview {
+  max-height: 240px;
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+
+.lab-explanation .lesson-overview p {
+  font-size: 13px;
+}
+
+/* A compact, scrollable course map is still the complete clickable sequence. */
+.lab-explanation .lessonsteps.is-rail-list {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 4px;
+  max-height: 250px;
+  padding: 1px 2px 2px 1px;
+  scrollbar-width: thin;
+}
+
+.lab-explanation .lessonstep {
+  padding: 7px 9px;
+  border-radius: 8px;
+  gap: 7px;
+}
+
+.lab-explanation .lessonstep-title {
+  font-size: 12.5px;
+  line-height: 1.45;
+}
+
+.lab-explanation .lessonstep-num {
+  width: 20px;
+  height: 20px;
+  font-size: 10.5px;
+}
+
+.lab-explanation .lessonstep-count {
+  font-size: 10px;
+}
+
+.lab-explanation .lesson-subhead {
+  margin-top: 12px;
+}
+
+.lab-explanation .lesson-mistakes {
+  margin-top: 10px;
+}
+
+/* Tablet / narrow desktop: single reading column, visual first, rail next. */
+@media (max-width: 1279px) {
+  .lab-main {
+    display: grid;
+    gap: 14px;
+  }
+
+  .lab-primary.ui02-workbench {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+  }
+
+  .lab-explanation {
+    position: static;
+    max-height: none;
+    overflow: visible;
+    padding-right: 0;
+  }
+
+  .lab-primary.ui02-workbench .stage-panel .stage {
+    min-height: 330px;
+  }
+
+  .lab-explanation .lessonsteps.is-rail-list {
+    max-height: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .lab-primary.ui02-workbench {
+    gap: 10px;
+  }
+
+  .lab-explanation {
+    gap: 10px;
+  }
+
+  .lab-explanation .lessonpanel.is-rail {
+    padding: 12px 13px 14px;
+  }
+
+  .lab-primary.ui02-workbench .stage-panel .stage {
+    min-height: 250px;
+  }
+
+  .lesson-focus {
+    padding: 10px 11px;
+  }
+
+  .lesson-focus-title {
+    font-size: 16px;
+  }
+}

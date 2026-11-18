@@ -13,6 +13,13 @@
 import { LINKED_DEFAULT_INPUT, LINKED_PYTHON } from './linkedListExamples';
 import { TREE_PYTHON } from './treeTraversalExamples';
 import { GRAPH_DEFAULT_INPUT, graphPythonExample } from './graphTraversalExamples';
+import { DIJKSTRA_DEFAULT_INPUT, dijkstraPythonExample } from './dijkstraExamples';
+import {
+  BELLMAN_DEFAULT_INPUT,
+  FLOYD_DEFAULT_INPUT,
+  bellmanFordPythonExample,
+  floydWarshallPythonExample,
+} from './shortestPathExamples';
 
 export const STACK_DEFAULT_INPUT: unknown = [
   ['push', 3],
@@ -125,6 +132,9 @@ const STRUCTURE_PYTHON: Record<string, string> = {
   inorder: TREE_PYTHON,
   bfs: graphPythonExample('bfs') as string,
   dfs: graphPythonExample('dfs') as string,
+  dijkstra: dijkstraPythonExample(),
+  'floyd-warshall': floydWarshallPythonExample(),
+  'bellman-ford': bellmanFordPythonExample(),
 };
 
 const STRUCTURE_INPUT: Record<string, unknown> = {
@@ -133,6 +143,9 @@ const STRUCTURE_INPUT: Record<string, unknown> = {
   linked: LINKED_DEFAULT_INPUT,
   bfs: GRAPH_DEFAULT_INPUT,
   dfs: GRAPH_DEFAULT_INPUT,
+  dijkstra: DIJKSTRA_DEFAULT_INPUT,
+  'floyd-warshall': FLOYD_DEFAULT_INPUT,
+  'bellman-ford': BELLMAN_DEFAULT_INPUT,
 };
 
 export function structurePythonExample(algorithmId: string): string | undefined {

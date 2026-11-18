@@ -37,6 +37,7 @@ function renderPanel(options: {
   index?: number;
   currentEvent?: TraceEvent;
   onSeek?: (index: number) => void;
+  variant?: 'panel' | 'rail';
 } = {}) {
   const events = options.events ?? run;
   const index = options.index ?? 0;
@@ -48,6 +49,7 @@ function renderPanel(options: {
         index={index}
         currentEvent={options.currentEvent ?? events[index]}
         onSeek={options.onSeek ?? vi.fn()}
+        variant={options.variant}
       />
     </I18nProvider>,
   );
@@ -167,5 +169,46 @@ describe('LessonPanel (Stage 3B)', () => {
       expect(screen.getByTestId(`lesson-step-${step.stepId}`)).toBeTruthy();
     }
     expect(screen.getByTestId('lesson-active-step').dataset.stepId).toBe('combine');
+  });
+
+  describe('UI-02 explanation rail variant', () => {
+    it('promotes the synchronized frame above the course map', () => {
+      renderPanel({ variant: 'rail', index: 3 });
+      const focus = screen.getByTestId('current-step');
+      const steps = screen.getByTestId('lesson-steps');
+      expect(screen.getByTestId('lesson-frame').textContent).toContain('4');
+      expect(screen.getByTestId('lesson-frame').textContent).toContain(String(run.length));
+      expect(screen.getByTestId('lesson-active-step').dataset.stepId).toBe('compare');
+      expect(screen.getByTestId('current-step-title').textContent).toBe(
+        bubbleSortLesson.steps[1].title.zh,
+      );
+      expect(screen.getByTestId('lesson-explanation').textContent).toBe(
+        bubbleSortLesson.steps[1].explanation.zh,
+      );
+      expect(focus.compareDocumentPosition(steps) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    });
+
+    it('keeps the message and variables attached to the same frame', () => {
+      renderPanel({
+        variant: 'rail',
+        index: 1,
+        currentEvent: event(1, 'compare', {
+          message: '比较 / Compare',
+          variables: [{ name: 'i', type: 'int', value: 0 }],
+        }),
+      });
+      expect(screen.getByTestId('current-step-message').textContent).toBe('比较 / Compare');
+      expect(screen.getByTestId('lesson-vars').textContent).toContain('i = 0');
+    });
+
+    it('still jumps only to frames the real run recorded', () => {
+      const onSeek = vi.fn();
+      const withoutSwap = run.filter((item) => item.lessonStepId !== 'swap');
+      renderPanel({ variant: 'rail', events: withoutSwap, onSeek });
+      const swap = screen.getByTestId('lesson-step-swap') as HTMLButtonElement;
+      expect(swap.disabled).toBe(true);
+      fireEvent.click(swap);
+      expect(onSeek).not.toHaveBeenCalled();
+    });
   });
 });

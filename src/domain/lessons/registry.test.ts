@@ -32,6 +32,9 @@ describe('Lesson registry (Stage 3B)', () => {
       'binary-tree-traversal-basics',
       'graph-bfs-queue-basics',
       'graph-dfs-stack-basics',
+      'dijkstra-weighted-shortest-path',
+      'floyd-warshall-all-pairs',
+      'bellman-ford-single-source',
     ]);
   });
 
@@ -66,7 +69,7 @@ describe('Lesson registry (Stage 3B)', () => {
   it('leaves the other algorithms without a course, and that is legal', () => {
     const covered = lessonRegistry.lessons.map((lesson) => lesson.algorithmId);
     const uncovered = catalogIds.filter((id) => !covered.includes(id));
-    expect(catalogIds.length).toBe(14);
+    expect(catalogIds.length).toBe(17);
     expect(uncovered.length).toBe(6);
   });
 });

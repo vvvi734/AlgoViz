@@ -62,9 +62,11 @@ body {
   gap: 16px;
   align-items: start;
   min-width: 0;
+  transition: grid-template-columns 0.22s ease;
 }
-.lab-shell.nav-collapsed { grid-template-columns: minmax(0, 1fr); }
-.lab-shell.nav-collapsed .lab-sidebar-wrap { display: none; }
+/* UI-01: collapsing keeps a compact icon rail instead of removing the column,
+   so the directory stays one click away and the main column gains the space. */
+.lab-shell.nav-collapsed { grid-template-columns: 64px minmax(0, 1fr); }
 .lab-main { display: grid; gap: 14px; min-width: 0; }
 .lab-sidebar-wrap { min-width: 0; }
 .lab-sidebar-wrap .sidebar {
@@ -97,6 +99,184 @@ body {
   padding: 9px 11px;
 }
 .sidebar-toggle { font-size: 13px; }
+
+/* ==========================================================================
+   UI-01 — collapsible grouped directory.
+   Sections are derived from the registry; only presentation lives here.
+   Every colour is a token so light / dark / system stay in parity.
+   ========================================================================== */
+.sidebar-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 0 0 8px;
+  padding: 1px 4px 7px;
+  border-bottom: 1px solid var(--edge);
+}
+.sidebar-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.3px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.sidebar-collapse,
+.rail-expand {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 28px;
+  flex: 0 0 auto;
+  border: 1px solid var(--edge);
+  border-radius: 9px;
+  background: var(--input-bg);
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+  transition: color .15s ease, border-color .15s ease, background .15s ease;
+}
+.sidebar-collapse:hover,
+.rail-expand:hover {
+  color: var(--txt);
+  border-color: var(--edge-hover);
+  background: var(--alg-hover);
+}
+.sidebar-collapse:focus-visible,
+.rail-expand:focus-visible,
+.alg-group-head:focus-visible,
+.rail-group:focus-visible,
+.rail-current:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.sidebar-groups { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.alg-group { min-width: 0; }
+.alg-group-head {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 12.5px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  transition: background .15s ease, color .15s ease;
+}
+.alg-group-head:hover { background: var(--alg-hover); color: var(--txt); }
+.alg-group-head[data-has-current='true'] { color: var(--txt); }
+.alg-group-chevron {
+  width: 11px;
+  flex: 0 0 auto;
+  font-size: 15px;
+  line-height: 1;
+  transition: transform .18s ease;
+  transform-origin: 50% 50%;
+}
+.alg-group-head[aria-expanded='true'] .alg-group-chevron { transform: rotate(90deg); }
+.alg-group-name { flex: 1 1 auto; min-width: 0; overflow-wrap: anywhere; }
+.alg-group-dot {
+  width: 5px;
+  height: 5px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: var(--accent);
+}
+.alg-group-count {
+  flex: 0 0 auto;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: var(--alg-hover);
+  color: var(--muted);
+  font-size: 10.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Height transition without measuring the DOM: a 0fr→1fr grid row.
+   `visibility` flips at the end of the collapse so a folded section is also
+   removed from hit-testing, Playwright visibility and the tab order. */
+.alg-group-items {
+  display: grid;
+  grid-template-rows: 0fr;
+  min-width: 0;
+  visibility: hidden;
+  transition: grid-template-rows .2s ease, visibility 0s linear .2s;
+}
+.alg-group-items[data-open='true'] {
+  grid-template-rows: 1fr;
+  visibility: visible;
+  transition: grid-template-rows .2s ease, visibility 0s linear 0s;
+}
+.alg-group-items-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-height: 0;
+  overflow: hidden;
+  padding-left: 4px;
+}
+.alg-name { min-width: 0; font-size: 13px; line-height: 1.35; overflow-wrap: anywhere; }
+
+/* Compact rail: expand button, one shortcut per registry group, current algo. */
+.sidebar-rail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 6px !important;
+}
+.rail-groups {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  margin-top: 2px;
+}
+.rail-group {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 34px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .15s ease, color .15s ease, border-color .15s ease;
+}
+.rail-group:hover { background: var(--alg-hover); border-color: var(--edge); color: var(--txt); }
+.rail-group[data-has-current='true'] {
+  background: var(--alg-active-bg);
+  border-color: var(--alg-active-edge);
+  color: var(--accent);
+}
+.rail-current {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 38px;
+  margin-top: 6px;
+  border: 1px solid var(--alg-active-edge);
+  border-radius: 11px;
+  background: var(--alg-active-bg);
+  color: var(--accent);
+  font-size: 17px;
+  cursor: pointer;
+}
+.rail-current:hover { border-color: var(--edge-hover); }
 
 /* Animation and Monaco sit side by side as the two primary learning surfaces. */
 .lab-primary {

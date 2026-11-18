@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { expect, test, type Page } from './fixtures';
+import { expect, openCodePanel, test, type Page } from './fixtures';
 import { bubbleSortLesson } from '../src/domain/lessons/bubbleSort';
 import { exampleFor } from '../src/domain/algorithms/examples';
 import { buildLearningSession, serializeLearningSession } from '../src/domain/sessions/session';
@@ -42,7 +42,7 @@ test.beforeAll(() => {
 
 async function openApp(page: Page) {
   await page.goto('/');
-  await expect(page.locator('.monaco-editor')).toBeVisible({ timeout: 45_000 });
+  await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
 }
 
 test.describe('Stage 5A — Agent session file → AlgoLens Web', () => {
@@ -60,6 +60,7 @@ test.describe('Stage 5A — Agent session file → AlgoLens Web', () => {
     await expect(page.locator('[data-testid="session-applied"]')).toBeVisible();
     await expect(page.locator('[data-testid="session-applied-step"]')).toContainText('比较');
     await expect(page.locator('#code-lang')).toHaveValue('python');
+    await openCodePanel(page);
     await expect(page.locator('.monaco-editor')).toContainText('lesson_step');
 
     // Applying clears the previous trace: the timeline starts empty, and no
@@ -76,11 +77,10 @@ test.describe('Stage 5A — Agent session file → AlgoLens Web', () => {
     await expect(page.locator('[data-testid="variables-watch"]')).toContainText('arr');
 
     // Lesson → timeline: jumping to `compare` lands on a real frame of that stage.
-    await page.click('[data-testid="workspace-tab-lesson"]');
     await page.click('[data-testid="lesson-step-compare"]');
     await expect(page.locator('[data-testid="lesson-active-step"]')).toHaveAttribute('data-step-id', 'compare');
     await expect(page.locator('[data-testid="step-desc"]')).toContainText('比较');
-    await expect(page.locator('.algolens-active-line').first()).toBeVisible();
+    await expect(page.locator('.algolens-active-line')).toHaveCount(1);
 
     // Walk to the next `compare` occurrence: the same stage repeats, as it must.
     await page.click('[data-testid="next-btn"]');
@@ -94,6 +94,7 @@ test.describe('Stage 5A — AlgoLens Web → Agent context file', () => {
     // Python is the language that records `lesson_step`; the JS example does not.
     await page.selectOption('#code-lang', 'python');
     await expect(page.locator('#code-lang')).toHaveValue('python');
+    await openCodePanel(page);
     await expect(page.locator('.monaco-editor')).toContainText('lesson_step');
     await page.click('[data-testid="run-btn"]');
     await expect(page.locator('[data-testid="lesson-active-step"]')).toHaveAttribute('data-step-id', 'init', {

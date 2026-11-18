@@ -1,4 +1,4 @@
-import { expect, test, type Page } from './fixtures';
+import { expect, openCodePanel, test, type Page } from './fixtures';
 import { mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 
@@ -7,7 +7,7 @@ mkdirSync(SHOT_DIR, { recursive: true });
 
 async function openApp(page: Page) {
   await page.goto('/');
-  await expect(page.locator('.monaco-editor')).toBeVisible({ timeout: 45_000 });
+  await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
 }
 
 async function selectAlgo(page: Page, id: string) {
@@ -91,7 +91,8 @@ test.describe('Stage 7B — AlgoViz brand and real stack/queue animation', () =>
       window.localStorage.setItem('algolens-theme', 'light');
     });
     await page.reload();
-    await expect(page.locator('.monaco-editor')).toBeVisible({ timeout: 45_000 });
+    await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
+    await openCodePanel(page);
     await expect(page.locator('.monaco-editor')).toContainText('LEGACY_DRAFT');
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
   });
@@ -119,7 +120,7 @@ test.describe('Stage 7B — AlgoViz brand and real stack/queue animation', () =>
     await expect(page.locator('[data-testid="stack-item"]').first()).toHaveAttribute('data-element-id', 's3');
     await expect(page.locator('[data-testid="stack-op-label"]')).toContainText('PUSH');
     await expect(page.locator('[data-testid="step-desc"]')).toContainText('Push 8');
-    await expect(page.locator('.algolens-active-line').first()).toBeVisible();
+    await expect(page.locator('.algolens-active-line')).toHaveCount(1);
 
     await captureStates(page, 'stack', [
       {

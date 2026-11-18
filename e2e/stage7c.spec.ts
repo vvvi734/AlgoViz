@@ -1,4 +1,4 @@
-import { expect, test, type Page } from './fixtures';
+import { expect, openCodePanel, test, type Page } from './fixtures';
 import { mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 
@@ -7,7 +7,7 @@ mkdirSync(SHOT_DIR, { recursive: true });
 
 async function openApp(page: Page) {
   await page.goto('/');
-  await expect(page.locator('.monaco-editor')).toBeVisible({ timeout: 45_000 });
+  await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
 }
 
 async function selectAlgo(page: Page, id: string) {
@@ -171,15 +171,14 @@ test.describe('Stage 7C — real singly linked-list visualization', () => {
       await expect(page.locator('[data-testid="lesson-active-step"]')).toHaveAttribute('data-step-id', 'traverse');
       await expect(page.locator('[data-testid="current-step-message"]')).toContainText('访问');
       await expect(page.locator('[data-testid="variables-watch"]')).toContainText(expected);
-      await expect(page.locator('.algolens-active-line').first()).toBeVisible();
+      await expect(page.locator('.algolens-active-line')).toHaveCount(1);
     }
     await page.getByRole('tab', { name: '变量与调用栈' }).click();
     await expect(page.locator('[data-testid="variables-watch"]')).toBeVisible();
     await page.getByTestId('sync-source-toggle').click();
     await expect(page.locator('[data-testid="code-position"]')).not.toBeEmpty();
     await expect(page.locator('[data-testid="code-position"] .codeline.active .lineno')).toHaveText('146');
-    await expect(page.locator('.algolens-active-line').first()).toBeVisible();
-    await page.getByRole('tab', { name: '教学步骤' }).click();
+    await expect(page.locator('.algolens-active-line')).toHaveCount(1);
     await setFrame(page, 21);
     await expect(page.locator('[data-testid="linked-node"][data-active="true"]')).toHaveCount(0);
     await expect(page.locator('[data-testid="lesson-active-step"]')).toHaveAttribute('data-step-id', 'done');
@@ -190,6 +189,7 @@ test.describe('Stage 7C — real singly linked-list visualization', () => {
     await selectAlgo(page, 'linked');
     await expect(page.locator('[data-testid="linked-visual"]')).toBeVisible({ timeout: 60_000 });
 
+    await openCodePanel(page);
     await page.fill('#run-input', JSON.stringify([
       ['insert_head', 3],
       ['insert_head', 5],
@@ -271,7 +271,7 @@ test.describe('Stage 7C — real singly linked-list visualization', () => {
       await expectNoPageOverflow(page);
       await expect(page.locator('[data-testid="linked-visual"]')).toBeVisible();
       await expect(page.locator('[data-testid="scrub"]')).toBeVisible();
-      await expect(page.locator('.monaco-editor')).toBeVisible();
+      await expect(page.locator('[data-testid="code-dock"]')).toBeVisible();
       if (viewport.width === 390) {
         await expect(page.locator('[data-testid="linked-scroll-hint"]')).toBeVisible();
       } else {

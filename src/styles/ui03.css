@@ -1,0 +1,230 @@
+/* ==========================================================================
+   UI-03 — the Monaco editor is a full-width dock below the two-column lab.
+   Presentation only: the dock never owns a trace, a second playhead or a
+   second editor. Collapsing only clips the already-mounted editor surface.
+   ========================================================================== */
+
+.code-dock {
+  min-width: 0;
+  padding: 0;
+  overflow: hidden;
+  border-color: var(--alg-active-edge);
+  background: linear-gradient(155deg, var(--panel-grad-a), var(--panel-grad-b));
+}
+
+.code-dock-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 18px;
+  flex-wrap: wrap;
+  padding: 12px 16px;
+}
+
+.code-dock-heading {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.code-dock-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.code-dock-title-row h2 {
+  margin: 0;
+}
+
+.code-dock-lang {
+  width: auto;
+  min-width: 94px;
+  min-height: 30px;
+  padding-top: 3px;
+  padding-bottom: 3px;
+  font-size: 12px;
+}
+
+.code-dock-heading .eyebrow {
+  margin: 0;
+  line-height: 1.2;
+}
+
+.code-dock-heading h2 {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+
+.code-dock-hint {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.code-dock-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-left: auto;
+}
+
+.code-dock-status {
+  max-width: min(34ch, 32vw);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.code-dock-status.is-error {
+  color: var(--red);
+}
+
+.code-dock-run,
+.code-dock-toggle {
+  white-space: nowrap;
+}
+
+.code-dock-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.code-dock-toggle:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.code-dock-chevron {
+  display: inline-block;
+  font-size: 11px;
+  line-height: 1;
+  transition: transform 180ms ease;
+}
+
+.code-dock.is-expanded .code-dock-chevron {
+  transform: translateY(-1px);
+}
+
+.code-dock-body {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  visibility: hidden;
+  border-top: 1px solid transparent;
+  transition: max-height 300ms ease, opacity 200ms ease, visibility 0s linear 300ms;
+}
+
+.code-dock.is-expanded .code-dock-body {
+  max-height: 1600px;
+  opacity: 1;
+  visibility: visible;
+  border-top-color: var(--line);
+  transition: max-height 340ms ease, opacity 220ms ease, visibility 0s;
+}
+
+.code-editor-embedded {
+  min-width: 0;
+  padding: 12px 16px 16px;
+}
+
+.code-editor-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.code-editor-toolbar-main {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.code-editor-toolbar-main label {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.code-editor-embedded .monaco-wrap {
+  height: clamp(300px, 34vh, 400px);
+  min-height: 300px;
+  max-height: 440px;
+  resize: vertical;
+}
+
+.code-editor-embedded .engine-note,
+.code-editor-embedded .inputline,
+.code-editor-embedded .note {
+  margin-top: 9px;
+}
+
+/* At 1366 the dock spans the single-column learning area, below the rail. */
+@media (max-width: 1279px) {
+  .code-dock-head {
+    align-items: flex-start;
+  }
+
+  .code-dock-status {
+    max-width: 46ch;
+  }
+
+  .code-editor-embedded .monaco-wrap {
+    min-height: 310px;
+    height: 36vh;
+  }
+}
+
+@media (max-width: 760px) {
+  .code-dock-head {
+    padding: 10px 12px;
+  }
+
+  .code-dock-actions {
+    width: 100%;
+    justify-content: stretch;
+  }
+
+  .code-dock-status {
+    flex: 1 1 100%;
+    max-width: none;
+    white-space: normal;
+  }
+
+  .code-dock-run,
+  .code-dock-toggle {
+    flex: 1 1 0;
+    min-height: 42px;
+  }
+
+  .code-editor-embedded {
+    padding: 10px 10px 12px;
+  }
+
+  .code-editor-embedded .monaco-wrap {
+    height: 280px;
+    min-height: 260px;
+    max-height: 52vh;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .code-dock-body,
+  .code-dock-chevron {
+    transition: none;
+  }
+}

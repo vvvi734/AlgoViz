@@ -14,7 +14,7 @@ const THEMES = ['light', 'dark'] as const;
 
 async function openApp(page: Page, id: 'bfs' | 'dfs') {
   await page.goto('/');
-  await expect(page.locator('.monaco-editor')).toBeVisible({ timeout: 45_000 });
+  await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
   const mobile = page.locator('[data-testid="mobile-algo-select"]');
   if (await mobile.isVisible()) await mobile.selectOption(id);
   else await page.click(`[data-testid="algo-${id}"]`);

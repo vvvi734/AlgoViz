@@ -18,6 +18,8 @@ export function CodeEditorPanel({
   diagnostics,
   draftStatus,
   theme,
+  embedded = false,
+  showRun = true,
   onCodeLangChange,
   onCodeChange,
   onInputChange,
@@ -35,6 +37,10 @@ export function CodeEditorPanel({
   diagnostics: ExecutionDiagnostic[];
   draftStatus: DraftStatus;
   theme: ResolvedTheme;
+  /** Render as the body of the bottom code dock without a second panel shell. */
+  embedded?: boolean;
+  /** The dock header owns the single primary run action. */
+  showRun?: boolean;
   onCodeLangChange: (lang: CodeLanguage) => void;
   onCodeChange: (code: string) => void;
   onInputChange: (input: string) => void;
@@ -63,29 +69,35 @@ export function CodeEditorPanel({
     if (confirmTimer.current != null) window.clearTimeout(confirmTimer.current);
   }, []);
 
-  return (
-    <section className="panel pad code-editor-panel">
-      <div className="sectionhead">
-        <div className="language-row">
-          <h2>{t('codeEditor')}</h2>
-          <label htmlFor="code-lang">{t('programLang')}</label>
-          <select
-            id="code-lang"
-            className="select"
-            value={codeLang}
-            aria-label="Programming language"
-            onChange={(event) => onCodeLangChange(event.target.value as CodeLanguage)}
-          >
-            {CODE_LANGUAGES.map((lang) => (
-              <option key={lang} value={lang}>{CODE_LANGUAGE_LABELS[lang]}</option>
-            ))}
-          </select>
+  const body = (
+    <>
+      <div className={embedded ? 'code-editor-toolbar' : 'sectionhead'}>
+        <div className={embedded ? 'code-editor-toolbar-main' : 'language-row'}>
+          {!embedded && <h2>{t('codeEditor')}</h2>}
+          {!embedded && (
+            <>
+              <label htmlFor="code-lang">{t('programLang')}</label>
+              <select
+                id="code-lang"
+                className="select"
+                value={codeLang}
+                aria-label="Programming language"
+                onChange={(event) => onCodeLangChange(event.target.value as CodeLanguage)}
+              >
+                {CODE_LANGUAGES.map((lang) => (
+                  <option key={lang} value={lang}>{CODE_LANGUAGE_LABELS[lang]}</option>
+                ))}
+              </select>
+            </>
+          )}
         </div>
         <div className="controls">
           <button className={`btn small${confirmRestore ? ' danger' : ''}`} onClick={handleRestore} data-testid="restore-btn">
             {confirmRestore ? t('confirmRestore') : t('restore')}
           </button>
-          <button className="btn primary" onClick={onRun} data-testid="run-btn">{t('run')}</button>
+          {showRun && (
+            <button className="btn primary" onClick={onRun} data-testid="run-btn">{t('run')}</button>
+          )}
         </div>
       </div>
       <div className="engine-note" aria-live="polite">
@@ -110,8 +122,14 @@ export function CodeEditorPanel({
       </div>
       <div className="note">{t('traceNote')}</div>
       <Feedback status={status} variant="status" testId="run-feedback" />
-    </section>
+    </>
   );
+
+  if (embedded) {
+    return <div className="code-editor-embedded" data-testid="code-editor-embedded">{body}</div>;
+  }
+
+  return <section className="panel pad code-editor-panel">{body}</section>;
 }
 
 function SaveIndicator({ status }: { status: DraftStatus }) {
