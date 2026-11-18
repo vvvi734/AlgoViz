@@ -30,6 +30,7 @@ describe('Lesson registry (Stage 3B)', () => {
       'queue-fifo-basics',
       'linked-list-pointer-basics',
       'binary-tree-traversal-basics',
+      'binary-search-tree-search-insert-delete',
       'graph-bfs-queue-basics',
       'graph-dfs-stack-basics',
       'dijkstra-weighted-shortest-path',
@@ -75,7 +76,7 @@ describe('Lesson registry (Stage 3B)', () => {
   it('leaves the other algorithms without a course, and that is legal', () => {
     const covered = lessonRegistry.lessons.map((lesson) => lesson.algorithmId);
     const uncovered = catalogIds.filter((id) => !covered.includes(id));
-    expect(catalogIds.length).toBe(23);
+    expect(catalogIds.length).toBe(24);
     expect(uncovered.length).toBe(6);
   });
 });

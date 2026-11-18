@@ -12,6 +12,10 @@
  */
 import { LINKED_DEFAULT_INPUT, LINKED_PYTHON } from './linkedListExamples';
 import { TREE_PYTHON } from './treeTraversalExamples';
+import {
+  BST_DEFAULT_INPUT,
+  bstPythonExample,
+} from './bstExamples';
 import { GRAPH_DEFAULT_INPUT, graphPythonExample } from './graphTraversalExamples';
 import { DIJKSTRA_DEFAULT_INPUT, dijkstraPythonExample } from './dijkstraExamples';
 import {
@@ -148,6 +152,7 @@ const STRUCTURE_PYTHON: Record<string, string> = {
   queue: QUEUE_PYTHON,
   linked: LINKED_PYTHON,
   inorder: TREE_PYTHON,
+  bst: bstPythonExample(),
   bfs: graphPythonExample('bfs') as string,
   dfs: graphPythonExample('dfs') as string,
   dijkstra: dijkstraPythonExample(),
@@ -165,6 +170,7 @@ const STRUCTURE_INPUT: Record<string, unknown> = {
   stack: STACK_DEFAULT_INPUT,
   queue: QUEUE_DEFAULT_INPUT,
   linked: LINKED_DEFAULT_INPUT,
+  bst: BST_DEFAULT_INPUT,
   bfs: GRAPH_DEFAULT_INPUT,
   dfs: GRAPH_DEFAULT_INPUT,
   dijkstra: DIJKSTRA_DEFAULT_INPUT,

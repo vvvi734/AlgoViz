@@ -2,6 +2,7 @@ import { useEffect, useState, type ReactNode } from 'react';
 import { AlgorithmSidebar } from './AlgorithmSidebar';
 import { VisualStage } from './VisualStage';
 import { TreeTraversalPicker } from './TreeTraversalPicker';
+import { BstPicker } from './BstPicker';
 import { Timeline } from './Timeline';
 import { CodeDock } from './CodeDock';
 import { SyncPanel } from './SyncPanel';
@@ -16,6 +17,7 @@ import type { LabController } from './useLabController';
 import type { LessonCatalog } from '../../domain/lessons/catalog';
 import type { LocalizedLabel, PackExample } from '../../domain/packs/types';
 import { stepIndexForEvent } from '../../domain/lessons/sync';
+import { bstPresetFromInput } from '../../domain/algorithms/bstExamples';
 import { useI18n } from '../../i18n/I18nProvider';
 import { useTheme } from '../../theme/ThemeProvider';
 
@@ -58,6 +60,11 @@ export function LabView({
   const actualTreeTraversal =
     currentEvent?.structure?.kind === 'binary-tree' ? currentEvent.structure.traversal : null;
   const showTreePicker = lab.currentAlgo === 'inorder' && lab.codeLang === 'python';
+  const showBstPicker = lab.currentAlgo === 'bst' && lab.codeLang === 'python';
+  const actualBstPreset =
+    currentEvent?.structure?.kind === 'bst'
+      ? bstPresetFromInput({ preset: currentEvent.structure.preset })
+      : null;
   const showGraphStepPeek =
     lab.currentAlgo === 'bfs' || lab.currentAlgo === 'dfs' || lab.currentAlgo === 'dijkstra' ||
     lab.currentAlgo === 'floyd-warshall' ||
@@ -214,6 +221,13 @@ export function LabView({
                 inputJson={lab.inputJson}
                 actualTraversal={actualTreeTraversal}
                 onSelect={lab.selectTreeMode}
+              />
+            ) : null}
+            {showBstPicker ? (
+              <BstPicker
+                inputJson={lab.inputJson}
+                actualPreset={actualBstPreset}
+                onSelect={lab.selectBstPreset}
               />
             ) : null}
             <Timeline events={lab.events} playback={lab.playback} />

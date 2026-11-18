@@ -12,6 +12,7 @@ import { stackLesson } from './stack';
 import { factorialLesson } from './factorial';
 import { linkedListLesson } from './linkedList';
 import { binaryTreeLesson } from './binaryTree';
+import { bstLesson } from './bstLesson';
 import { bfsLesson, dfsLesson } from './graphLessons';
 import { dijkstraLesson } from './dijkstraLesson';
 import { floydWarshallLesson } from './floydWarshallLesson';
@@ -61,6 +62,7 @@ const BUNDLED: unknown[] = [
   queueLesson,
   linkedListLesson,
   binaryTreeLesson,
+  bstLesson,
   bfsLesson,
   dfsLesson,
   dijkstraLesson,

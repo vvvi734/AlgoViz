@@ -318,6 +318,35 @@ export const ALGORITHM_CATALOG: AlgorithmCatalog = {
     ],
     "code": "const nodes=input;const seen=[];\ntrace({type:'tree',values:nodes,visited:[]},'开始 / Start');\nfunction walk(i){if(i>=nodes.length||nodes[i]==null)return;walk(i*2+1);\nseen.push(i);trace({type:'tree',values:nodes,visited:[...seen],focus:[i]},'访问 / Visit '+nodes[i]);\nwalk(i*2+2);}\n walk(0);trace({type:'tree',values:nodes,visited:[...seen],done:true},'完成 / Done');"
   },
+  "bst": {
+    "group": "tree",
+    "icon": "♧",
+    "name": [
+      "二叉搜索树 · 查找 / 插入 / 删除",
+      "Binary search tree · search / insert / delete"
+    ],
+    "desc": [
+      "在真实 TreeNode 上演示左小右大的查找、插入与删除。删除区分叶子、单孩子和双孩子；双孩子用中序后继节点真实接替目标位置，并显示父指针、根指针和稳定节点 ID 的变化。",
+      "Run real TreeNode search, insert and delete. Delete covers leaf, one-child and two-child cases; the two-child case physically transplants the in-order successor and shows parent/root pointer changes with stable node ids."
+    ],
+    "time": "平均 O(log n) · 最坏 O(n)",
+    "space": "O(h)",
+    "input": {
+      "preset": "find-success",
+      "operation": "find",
+      "tree": [
+        50,
+        30,
+        70,
+        20,
+        40,
+        60,
+        80
+      ],
+      "target": 40
+    },
+    "code": "trace({type:'array',values:['BST: use the Python preset'],done:true},'请在 Python 模式运行 / Run the Python preset');"
+  },
   "factorial": {
     "group": "recursion",
     "icon": "↺",

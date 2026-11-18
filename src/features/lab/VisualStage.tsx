@@ -24,9 +24,11 @@ import { BellmanFordVisual, FloydVisual } from './G1Visuals';
 import { KruskalVisual, PrimVisual } from './MSTVisuals';
 import { CriticalPathVisual, TopologicalSortVisual } from './DAGVisuals';
 import { ConnectedComponentsVisual, KosarajuVisual } from './ComponentVisuals';
+import { BstVisual } from './BstVisual';
 import type { KruskalVisualModel, PrimVisualModel } from '../../domain/visualization/mstModel';
 import type { CriticalVisualModel, TopologicalVisualModel } from '../../domain/visualization/dagModel';
 import type { ConnectedComponentsVisualModel, SccVisualModel } from '../../domain/visualization/componentsModel';
+import type { BstVisualModel } from '../../domain/visualization/bstModel';
 
 const GRAPH_OPERATION_KEYS: Record<GraphOperation, string> = {
   init: 'graphOpInit',
@@ -397,6 +399,7 @@ export function VisualStage({ event }: { event: TraceEvent | undefined }) {
           emptyQueue: t('queueEmpty'),
           emptyLinked: t('linkedEmpty'),
           emptyTree: t('treeEmpty'),
+          emptyBst: t('bstEmpty'),
           emptyGraph: t('graphEmpty'),
         },
         event.structure,
@@ -416,6 +419,9 @@ export function VisualStage({ event }: { event: TraceEvent | undefined }) {
       break;
     case 'binary-tree':
       content = <BinaryTreeVisual model={model} />;
+      break;
+    case 'bst':
+      content = <BstVisual model={model as BstVisualModel} />;
       break;
     case 'floyd-matrix':
       content = (
@@ -605,6 +611,7 @@ export function VisualStage({ event }: { event: TraceEvent | undefined }) {
     model.kind === 'queue' ||
     model.kind === 'linked-list' ||
     model.kind === 'binary-tree' ||
+    model.kind === 'bst' ||
     model.kind === 'graph-traversal' ||
     model.kind === 'floyd-matrix' ||
     model.kind === 'bellman-table' ||

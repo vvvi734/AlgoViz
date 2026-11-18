@@ -2606,6 +2606,18 @@
       "message": "完成 / Done"
     }
   ],
+  "bst": [
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          "BST: use the Python preset"
+        ],
+        "done": true
+      },
+      "message": "请在 Python 模式运行 / Run the Python preset"
+    }
+  ],
   "factorial": [
     {
       "state": {

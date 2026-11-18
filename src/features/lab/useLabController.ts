@@ -22,6 +22,10 @@ import {
   withTreeMode,
   type TreeMode,
 } from '../../domain/algorithms/treeTraversalExamples';
+import {
+  bstPresetInput,
+  type BstPresetId,
+} from '../../domain/algorithms/bstExamples';
 import { useI18n } from '../../i18n/I18nProvider';
 import { usePlayback, type Playback } from './usePlayback';
 
@@ -98,6 +102,11 @@ export interface LabController {
    * `{mode, tree}`. It never runs code; a real trace still requires Run.
    */
   selectTreeMode: (mode: TreeMode) => void;
+  /**
+   * T1: select one official BST example by rewriting the input object. It only
+   * changes the input; the real trace still requires the user to press Run.
+   */
+  selectBstPreset: (preset: BstPresetId) => void;
   runVisualization: () => void;
   restorePreset: () => void;
   randomizeInput: () => void;
@@ -266,7 +275,7 @@ export function useLabController(): LabController {
     // real Python presets. Default those courses to Python; the user can still
     // switch to JS (legacy frames remain available).
     const preferredLang: CodeLanguage =
-      id === 'stack' || id === 'queue' || id === 'linked' || id === 'inorder' || isGraphAlgorithm(id) ? 'python' : codeLang;
+      id === 'stack' || id === 'queue' || id === 'linked' || id === 'inorder' || id === 'bst' || isGraphAlgorithm(id) ? 'python' : codeLang;
     if (preferredLang !== codeLang) {
       setCodeLangState(preferredLang);
       safeSet(CODE_LANG_KEY, preferredLang);
@@ -325,6 +334,12 @@ export function useLabController(): LabController {
     setInputJson(JSON.stringify(withTreeMode(parsed, mode)));
     setStatus({ text: '', error: false });
   }, [inputJson, playback]);
+
+  const selectBstPreset = useCallback((preset: BstPresetId) => {
+    playback.stop();
+    setInputJson(JSON.stringify(bstPresetInput(preset)));
+    setStatus({ text: '', error: false });
+  }, [playback]);
 
   const restorePreset = useCallback(() => {
     const entry = catalog[currentAlgo];
@@ -449,6 +464,7 @@ export function useLabController(): LabController {
     editCode,
     setInputJson,
     selectTreeMode,
+    selectBstPreset,
     runVisualization,
     restorePreset,
     randomizeInput,

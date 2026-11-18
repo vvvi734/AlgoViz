@@ -84,6 +84,7 @@ function walk(i){if(i>=nodes.length||nodes[i]==null)return;walk(i*2+1);
 seen.push(i);trace({type:'tree',values:nodes,visited:[...seen],focus:[i]},'访问 / Visit '+nodes[i]);
 walk(i*2+2);}
  walk(0);trace({type:'tree',values:nodes,visited:[...seen],done:true},'完成 / Done');`},
+ bst:{group:'tree',icon:'♧',name:['二叉搜索树 · 查找 / 插入 / 删除','Binary search tree · search / insert / delete'],desc:['在真实 TreeNode 上演示左小右大的查找、插入与删除。删除区分叶子、单孩子和双孩子；双孩子用中序后继节点真实接替目标位置，并显示父指针、根指针和稳定节点 ID 的变化。','Run real TreeNode search, insert and delete. Delete covers leaf, one-child and two-child cases; the two-child case physically transplants the in-order successor and shows parent/root pointer changes with stable node ids.'],time:'平均 O(log n) · 最坏 O(n)',space:'O(h)',input:{preset:'find-success',operation:'find',tree:[50,30,70,20,40,60,80],target:40},code:`trace({type:'array',values:['BST: use the Python preset'],done:true},'请在 Python 模式运行 / Run the Python preset');`},
  factorial:{group:'recursion',icon:'↺',name:['阶乘','Factorial'],desc:['递归计算 n!，观察函数调用栈的压入与逐层返回。','Compute n! recursively, watching the call stack push and layered returns.'],time:'O(n)',space:'O(n)',input:4,code:`const n=input;
 trace({type:'array',values:[n]},'计算 factorial / Compute');
 function factorial(x){return x<=1?1:x*factorial(x-1);}
