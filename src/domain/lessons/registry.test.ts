@@ -37,6 +37,8 @@ describe('Lesson registry (Stage 3B)', () => {
       'bellman-ford-single-source',
       'prim-minimum-spanning-tree',
       'kruskal-minimum-spanning-tree',
+      'topological-sort-kahn',
+      'aoe-critical-path',
     ]);
   });
 
@@ -71,7 +73,7 @@ describe('Lesson registry (Stage 3B)', () => {
   it('leaves the other algorithms without a course, and that is legal', () => {
     const covered = lessonRegistry.lessons.map((lesson) => lesson.algorithmId);
     const uncovered = catalogIds.filter((id) => !covered.includes(id));
-    expect(catalogIds.length).toBe(19);
+    expect(catalogIds.length).toBe(21);
     expect(uncovered.length).toBe(6);
   });
 });

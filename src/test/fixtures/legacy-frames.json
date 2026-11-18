@@ -2707,5 +2707,29 @@
       },
       "message": "请在 Python 模式运行 / Run the Python preset"
     }
+  ],
+  "topological": [
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          "Kahn topological sort: use the Python preset"
+        ],
+        "done": true
+      },
+      "message": "请在 Python 模式运行 / Run the Python preset"
+    }
+  ],
+  "critical-path": [
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          "AOE critical path: use the Python preset"
+        ],
+        "done": true
+      },
+      "message": "请在 Python 模式运行 / Run the Python preset"
+    }
   ]
 }

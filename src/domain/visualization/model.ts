@@ -5,6 +5,12 @@ import { buildLinkedListModel, type LinkedListVisualModel } from './linkedListMo
 import { buildGraphVisualModel, buildWeightedGraphVisualModel, type GraphVisualModel } from './graphModel';
 import { buildBellmanVisualModel, buildFloydVisualModel, type BellmanVisualModel, type FloydVisualModel } from './shortestPathModel';
 import { buildKruskalVisualModel, buildPrimVisualModel, type KruskalVisualModel, type PrimVisualModel } from './mstModel';
+import {
+  buildCriticalVisualModel,
+  buildTopologicalVisualModel,
+  type CriticalVisualModel,
+  type TopologicalVisualModel,
+} from './dagModel';
 
 /**
  * Pure mapping from a trace state to a renderable model. React components only
@@ -63,6 +69,8 @@ export type VisualModel =
   | BellmanVisualModel
   | PrimVisualModel
   | KruskalVisualModel
+  | TopologicalVisualModel
+  | CriticalVisualModel
   | { kind: 'graph'; edges: Array<[number, number]>; nodes: GraphNodeModel[]; isTree: boolean }
   | { kind: 'raw'; text: string };
 
@@ -258,6 +266,20 @@ export function buildVisualModel(
   if (structure !== undefined && structure.kind === 'kruskal-mst') {
     if (kind !== 'graph') return { kind: 'raw', text: labels.invalid };
     const model = buildKruskalVisualModel(structure, labels.emptyGraph ?? labels.emptyStructure);
+    if (!model) return { kind: 'raw', text: labels.invalid };
+    return model;
+  }
+
+  if (structure !== undefined && structure.kind === 'topological-sort') {
+    if (kind !== 'graph') return { kind: 'raw', text: labels.invalid };
+    const model = buildTopologicalVisualModel(structure, labels.emptyGraph ?? labels.emptyStructure);
+    if (!model) return { kind: 'raw', text: labels.invalid };
+    return model;
+  }
+
+  if (structure !== undefined && structure.kind === 'critical-path') {
+    if (kind !== 'graph') return { kind: 'raw', text: labels.invalid };
+    const model = buildCriticalVisualModel(structure, labels.emptyGraph ?? labels.emptyStructure);
     if (!model) return { kind: 'raw', text: labels.invalid };
     return model;
   }

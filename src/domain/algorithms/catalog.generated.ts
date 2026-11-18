@@ -441,6 +441,42 @@ export const ALGORITHM_CATALOG: AlgorithmCatalog = {
       "start": "A"
     },
     "code": "trace({type:'array',values:['Kruskal MST: use the Python preset'],done:true},'请在 Python 模式运行 / Run the Python preset');"
+  },
+  "topological": {
+    "group": "graph",
+    "icon": "◉",
+    "name": [
+      "拓扑排序（Kahn）",
+      "Topological sort (Kahn)"
+    ],
+    "desc": [
+      "用真实入度和 FIFO 候选队列逐步删除依赖，输出完整拓扑序列；专属视图同步入度表、队列与当前序列，并检测有向环。",
+      "Remove dependencies from real indegrees with a FIFO candidate queue; the dedicated view links the indegree table, queue and current order while detecting directed cycles."
+    ],
+    "time": "O(V+E)",
+    "space": "O(V)",
+    "input": {
+      "start": "A"
+    },
+    "code": "trace({type:'array',values:['Kahn topological sort: use the Python preset'],done:true},'请在 Python 模式运行 / Run the Python preset');"
+  },
+  "critical-path": {
+    "group": "graph",
+    "icon": "◉",
+    "name": [
+      "AOE 关键路径",
+      "AOE critical path"
+    ],
+    "desc": [
+      "在带活动持续时间的有向无环图上先算 ve、再逆序算 vl，逐活动求余量并标出全部关键路径；专属视图同步时间表、余量与最终路径。",
+      "On an activity-on-edge DAG, compute ve forward, vl backward, then each activity slack and every critical path; the dedicated view links the time tables, slack and final paths."
+    ],
+    "time": "O(V+E)",
+    "space": "O(V+E)",
+    "input": {
+      "start": "A"
+    },
+    "code": "trace({type:'array',values:['AOE critical path: use the Python preset'],done:true},'请在 Python 模式运行 / Run the Python preset');"
   }
 };
 

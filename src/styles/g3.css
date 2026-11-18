@@ -1,0 +1,331 @@
+/* ==========================================================================
+   G3 — Kahn topological sort / AOE critical path.
+   These rules only paint validated frames. They reuse the G2 stage shell,
+   graph card and single shared player; no second playhead is introduced.
+   ========================================================================== */
+
+.g3-stage .mst-graph-svg {
+  max-height: 318px;
+}
+
+.g3-layout {
+  grid-template-columns: minmax(0, 1.4fr) minmax(260px, 0.9fr);
+}
+
+.g3-side {
+  gap: 7px;
+}
+
+.g3-directed-edge {
+  stroke-linecap: round;
+}
+
+.g3-arrow-head {
+  fill: var(--graph-line);
+  opacity: 0.65;
+}
+
+.mst-edge.is-removed,
+.mst-legend-line.is-removed {
+  stroke: var(--muted);
+  background: var(--muted);
+  stroke-width: 1.2;
+  stroke-dasharray: 3 4;
+  opacity: 0.35;
+}
+
+.mst-edge.is-critical,
+.mst-legend-line.is-critical {
+  stroke: var(--accent);
+  background: var(--accent);
+  stroke-width: 4;
+  opacity: 1;
+}
+
+.mst-edge.is-slack,
+.mst-legend-line.is-slack {
+  stroke: var(--accent-2);
+  background: var(--accent-2);
+  stroke-width: 2;
+  stroke-dasharray: 6 4;
+  opacity: 0.75;
+}
+
+.mst-edge.is-path,
+.mst-legend-line.is-path {
+  stroke: var(--accent);
+  background: var(--accent);
+  stroke-width: 5;
+  opacity: 1;
+  filter: drop-shadow(0 0 5px var(--accent));
+}
+
+.mst-edge-weight.is-critical rect,
+.mst-edge-weight.is-path rect {
+  stroke: var(--accent);
+  stroke-width: 1.8;
+}
+
+.mst-edge-weight.is-slack rect {
+  stroke: var(--accent-2);
+  stroke-width: 1.4;
+}
+
+.g3-node.is-current .mst-node-ring {
+  stroke: var(--warn);
+  stroke-width: 3;
+  opacity: 1;
+}
+
+.g3-node.is-queued .mst-node-ring {
+  stroke: var(--accent-2);
+  stroke-width: 2.4;
+  stroke-dasharray: 4 3;
+  opacity: 0.9;
+}
+
+.g3-node.is-processed .mst-node-body {
+  fill: var(--node-focus-bg);
+  stroke: var(--graph-node-focus-edge);
+}
+
+.g3-node.is-cycle .mst-node-ring {
+  stroke: var(--red);
+  stroke-width: 3;
+  opacity: 1;
+}
+
+.g3-node.is-cycle .mst-node-body {
+  fill: var(--feedback-error-bg);
+}
+
+.g3-indegree-badge circle {
+  fill: var(--panel);
+  stroke: var(--graph-node-edge);
+  stroke-width: 1;
+}
+
+.g3-indegree-badge text {
+  fill: var(--txt);
+  font: 850 9px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+
+.g3-node-role {
+  fill: var(--accent-2);
+  font: 900 8px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+  letter-spacing: 0.08em;
+}
+
+.g3-node-role.is-sink {
+  fill: var(--muted);
+}
+
+.g3-change-pill {
+  padding: 2px 7px;
+  border: 1px solid var(--warn);
+  border-radius: 999px;
+  background: var(--tag-orange-bg);
+  color: var(--warn);
+  font: 850 10px/1.25 ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+
+.g3-table-wrap {
+  max-height: 190px;
+  overflow: auto;
+  border: 1px solid var(--info-edge);
+  border-radius: 6px;
+}
+
+.g3-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 9.5px;
+}
+
+.g3-table th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: 4px 6px;
+  background: var(--panel-2);
+  color: var(--muted);
+  font-size: 8.5px;
+  font-weight: 700;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.g3-table td {
+  padding: 3px 6px;
+  border-top: 1px solid var(--info-edge);
+  color: var(--txt);
+  font: 800 9.5px/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
+  white-space: nowrap;
+}
+
+.g3-table tr.is-current td {
+  background: var(--tag-orange-bg);
+  color: var(--warn);
+}
+
+.g3-table tr.is-critical td {
+  color: var(--accent);
+}
+
+.g3-table tr.is-cycle td {
+  color: var(--red);
+}
+
+.g3-table td code {
+  color: var(--accent);
+}
+
+.g3-event-table,
+.g3-activity-table {
+  min-width: 100%;
+}
+
+.g3-queue,
+.g3-order {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  min-height: 32px;
+  align-items: center;
+}
+
+.g3-queue-chip,
+.g3-order-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 7px;
+  border: 1px solid var(--info-edge);
+  border-radius: 5px;
+  background: var(--info-bg);
+  font-size: 10px;
+}
+
+.g3-queue-chip.is-added,
+.g3-queue-change .is-added {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--tag-green-bg);
+}
+
+.g3-queue-change .is-removed {
+  color: var(--warn);
+}
+
+.g3-queue-chip small,
+.g3-order-chip small {
+  color: var(--muted);
+  font-size: 8px;
+}
+
+.g3-queue-chip code,
+.g3-order-chip code {
+  color: var(--txt);
+  font: 850 10px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+
+.g3-queue-change {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+
+.g3-phase-track {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.g3-phase {
+  padding: 3px 7px;
+  border: 1px solid var(--info-edge);
+  border-radius: 999px;
+  background: var(--stat-bg);
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.g3-phase.is-active {
+  border-color: var(--warn);
+  background: var(--tag-orange-bg);
+  color: var(--warn);
+}
+
+.g3-phase-current {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 9.5px;
+}
+
+.g3-paths {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.g3-paths li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 6px;
+  border: 1px solid var(--accent);
+  border-radius: 5px;
+  background: var(--tag-green-bg);
+  font-size: 10px;
+}
+
+.g3-paths li span {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--panel);
+  font: 800 8px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+
+.g3-paths li code {
+  color: var(--accent);
+  font: 850 10px/1.25 ui-monospace, SFMono-Regular, Consolas, monospace;
+  overflow-wrap: anywhere;
+}
+
+.g3-cycle-note {
+  margin: 6px 0 0;
+  color: var(--red);
+  font-size: 9.5px;
+  line-height: 1.4;
+}
+
+@media (max-width: 980px) {
+  .g3-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .g3-table-wrap {
+    max-height: none;
+  }
+
+  .g3-stage .mst-graph-svg {
+    min-width: 300px;
+    max-height: 250px;
+  }
+
+  .g3-paths li code {
+    font-size: 9px;
+  }
+}

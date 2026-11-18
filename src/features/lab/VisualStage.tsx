@@ -2,7 +2,15 @@ import type { ReactNode } from 'react';
 import { buildVisualModel } from '../../domain/visualization/model';
 import type { GraphVisualModel } from '../../domain/visualization/graphModel';
 import type { BellmanVisualModel, FloydVisualModel } from '../../domain/visualization/shortestPathModel';
-import type { BellmanOperation, DijkstraOperation, FloydOperation, KruskalOperation, PrimOperation } from '../../domain/trace/schema';
+import type {
+  BellmanOperation,
+  CriticalPathOperation,
+  DijkstraOperation,
+  FloydOperation,
+  KruskalOperation,
+  PrimOperation,
+  TopologicalOperation,
+} from '../../domain/trace/schema';
 import type { GraphOperation } from '../../domain/trace/schema';
 import type { StructureOperation } from '../../domain/trace/schema';
 import type { TraceEvent } from '../../domain/trace/schema';
@@ -12,7 +20,9 @@ import { BinaryTreeVisual } from './BinaryTreeVisual';
 import { GraphVisual } from './GraphVisual';
 import { BellmanFordVisual, FloydVisual } from './G1Visuals';
 import { KruskalVisual, PrimVisual } from './MSTVisuals';
+import { CriticalPathVisual, TopologicalSortVisual } from './DAGVisuals';
 import type { KruskalVisualModel, PrimVisualModel } from '../../domain/visualization/mstModel';
+import type { CriticalVisualModel, TopologicalVisualModel } from '../../domain/visualization/dagModel';
 
 const GRAPH_OPERATION_KEYS: Record<GraphOperation, string> = {
   init: 'graphOpInit',
@@ -144,6 +154,48 @@ const KRUSKAL_HINT_KEYS: Record<KruskalOperation, string> = {
   'reject-edge': 'kruskalHintReject',
   union: 'kruskalHintUnion',
   done: 'kruskalHintDone',
+};
+
+const TOPOLOGICAL_OPERATION_KEYS: Record<TopologicalOperation, string> = {
+  init: 'topoOpInit',
+  enqueue: 'topoOpEnqueue',
+  dequeue: 'topoOpDequeue',
+  'inspect-edge': 'topoOpInspect',
+  decrement: 'topoOpDecrement',
+  'enqueue-node': 'topoOpEnqueueNode',
+  cycle: 'topoOpCycle',
+  done: 'topoOpDone',
+};
+
+const TOPOLOGICAL_HINT_KEYS: Record<TopologicalOperation, string> = {
+  init: 'topoHintInit',
+  enqueue: 'topoHintEnqueue',
+  dequeue: 'topoHintDequeue',
+  'inspect-edge': 'topoHintInspect',
+  decrement: 'topoHintDecrement',
+  'enqueue-node': 'topoHintEnqueueNode',
+  cycle: 'topoHintCycle',
+  done: 'topoHintDone',
+};
+
+const CRITICAL_OPERATION_KEYS: Record<CriticalPathOperation, string> = {
+  init: 'criticalOpInit',
+  'topo-order': 'criticalOpTopo',
+  ve: 'criticalOpVe',
+  vl: 'criticalOpVl',
+  activity: 'criticalOpActivity',
+  cycle: 'criticalOpCycle',
+  done: 'criticalOpDone',
+};
+
+const CRITICAL_HINT_KEYS: Record<CriticalPathOperation, string> = {
+  init: 'criticalHintInit',
+  'topo-order': 'criticalHintTopo',
+  ve: 'criticalHintVe',
+  vl: 'criticalHintVl',
+  activity: 'criticalHintActivity',
+  cycle: 'criticalHintCycle',
+  done: 'criticalHintDone',
 };
 
 function graphOperationText(model: GraphVisualModel, t: (key: string) => string): string {
@@ -343,6 +395,24 @@ export function VisualStage({ event }: { event: TraceEvent | undefined }) {
         />
       );
       break;
+    case 'topological-sort':
+      content = (
+        <TopologicalSortVisual
+          model={model as TopologicalVisualModel}
+          operationText={t(TOPOLOGICAL_OPERATION_KEYS[model.operation])}
+          hint={t(TOPOLOGICAL_HINT_KEYS[model.operation])}
+        />
+      );
+      break;
+    case 'critical-path':
+      content = (
+        <CriticalPathVisual
+          model={model as CriticalVisualModel}
+          operationText={t(CRITICAL_OPERATION_KEYS[model.operation])}
+          hint={t(CRITICAL_HINT_KEYS[model.operation])}
+        />
+      );
+      break;
     case 'graph-traversal': {
       const operationText = graphOperationText(model, t);
       if (model.algorithm === 'dijkstra') {
@@ -463,7 +533,9 @@ export function VisualStage({ event }: { event: TraceEvent | undefined }) {
     model.kind === 'floyd-matrix' ||
     model.kind === 'bellman-table' ||
     model.kind === 'prim-mst' ||
-    model.kind === 'kruskal-mst';
+    model.kind === 'kruskal-mst' ||
+    model.kind === 'topological-sort' ||
+    model.kind === 'critical-path';
   return (
     <div
       className={`stage${structured ? ' has-structure' : ''}`}

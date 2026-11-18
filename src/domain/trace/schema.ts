@@ -2428,8 +2428,543 @@ export const kruskalMstSnapshotSchema = z
   });
 export type KruskalMstSnapshot = z.infer<typeof kruskalMstSnapshotSchema>;
 
+/* ------------------------------------------------------------------ *
+ * G3: Kahn topological sort and AOE critical path
+ * ------------------------------------------------------------------ */
 
-/** Stage 7B stack/queue + Stage 7C linked-list + Stage 7D binary-tree + Stage 7E/7F/G1 graphs. */
+export const TOPOLOGICAL_OPERATIONS = [
+  'init', 'enqueue', 'dequeue', 'inspect-edge', 'decrement', 'enqueue-node', 'cycle', 'done',
+] as const;
+export type TopologicalOperation = (typeof TOPOLOGICAL_OPERATIONS)[number];
+
+export const CRITICAL_PATH_OPERATIONS = [
+  'init', 'topo-order', 've', 'vl', 'activity', 'cycle', 'done',
+] as const;
+export type CriticalPathOperation = (typeof CRITICAL_PATH_OPERATIONS)[number];
+
+const queueItemSchema = z.object({
+  id: z.string().min(1).max(LIMITS.MAX_NAME_CHARS),
+  nodeId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS),
+});
+
+const indegreeRowSchema = z.object({
+  nodeId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS),
+  indegree: z.number().int().nonnegative().max(GRAPH_LIMITS.MAX_EDGES),
+});
+
+const indegreeChangeSchema = z.object({
+  nodeId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS),
+  before: z.number().int().nonnegative().max(GRAPH_LIMITS.MAX_EDGES),
+  after: z.number().int().nonnegative().max(GRAPH_LIMITS.MAX_EDGES),
+});
+
+function validateDirectedDagEdges(
+  snapshot: {
+    nodes: Array<{ id: string }>;
+    edges: Array<{ id: string; fromId: string; toId: string }>;
+    directed: boolean;
+  },
+  add: (path: Array<string | number>, message: string) => void,
+): {
+  ids: Set<string>;
+  edgeById: Map<string, { id: string; fromId: string; toId: string }>;
+  indegree: Map<string, number>;
+  outdegree: Map<string, number>;
+} {
+  const ids = new Set<string>();
+  snapshot.nodes.forEach((node, index) => {
+    if (ids.has(node.id)) add(['nodes', index, 'id'], `duplicate graph node id "${node.id}"`);
+    ids.add(node.id);
+  });
+  const edgeIds = new Set<string>();
+  const edgePairs = new Set<string>();
+  const edgeById = new Map<string, { id: string; fromId: string; toId: string }>();
+  const indegree = new Map<string, number>();
+  const outdegree = new Map<string, number>();
+  for (const node of snapshot.nodes) {
+    indegree.set(node.id, 0);
+    outdegree.set(node.id, 0);
+  }
+  snapshot.edges.forEach((edge, index) => {
+    if (edgeIds.has(edge.id)) add(['edges', index, 'id'], `duplicate graph edge id "${edge.id}"`);
+    edgeIds.add(edge.id);
+    if (!ids.has(edge.fromId)) add(['edges', index, 'fromId'], `edge "${edge.id}" starts at unknown node "${edge.fromId}"`);
+    if (!ids.has(edge.toId)) add(['edges', index, 'toId'], `edge "${edge.id}" ends at unknown node "${edge.toId}"`);
+    if (edge.fromId === edge.toId) add(['edges', index], 'self-loops are not supported in this teaching DAG');
+    if (ids.has(edge.fromId) && ids.has(edge.toId) && edge.fromId !== edge.toId) {
+      const pair = `${edge.fromId}\u0000${edge.toId}`;
+      if (edgePairs.has(pair)) add(['edges', index], `duplicate directed edge "${edge.fromId}"→"${edge.toId}"`);
+      edgePairs.add(pair);
+      indegree.set(edge.toId, (indegree.get(edge.toId) ?? 0) + 1);
+      outdegree.set(edge.fromId, (outdegree.get(edge.fromId) ?? 0) + 1);
+    }
+    edgeById.set(edge.id, edge);
+  });
+  if (!snapshot.directed) add(['directed'], 'this G3 structure is always a directed DAG');
+  return { ids, edgeById, indegree, outdegree };
+}
+
+export const topologicalSortSnapshotSchema = z
+  .object({
+    kind: z.literal('topological-sort'),
+    algorithm: z.literal('kahn'),
+    operation: z.enum(TOPOLOGICAL_OPERATIONS),
+    nodes: z.array(graphNodeSchema).max(GRAPH_LIMITS.MAX_NODES),
+    edges: z.array(graphEdgeSchema).max(GRAPH_LIMITS.MAX_EDGES),
+    directed: z.literal(true),
+    indegree: z.array(indegreeRowSchema).max(GRAPH_LIMITS.MAX_NODES),
+    queue: z.array(queueItemSchema).max(GRAPH_LIMITS.MAX_NODES),
+    queueAdded: queueItemSchema.nullable(),
+    queueRemoved: queueItemSchema.nullable(),
+    currentNodeId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+    currentEdgeId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+    neighborNodeId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+    indegreeChange: indegreeChangeSchema.nullable(),
+    removedEdgeIds: z.array(z.string().min(1).max(LIMITS.MAX_NAME_CHARS)).max(GRAPH_LIMITS.MAX_EDGES),
+    topologicalOrder: z.array(z.string().min(1).max(LIMITS.MAX_NAME_CHARS)).max(GRAPH_LIMITS.MAX_NODES),
+    hasCycle: z.boolean(),
+    cycleNodeIds: z.array(z.string().min(1).max(LIMITS.MAX_NAME_CHARS)).max(GRAPH_LIMITS.MAX_NODES),
+  })
+  .superRefine((snapshot, ctx) => {
+    const add = (path: Array<string | number>, message: string) => {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path, message });
+    };
+    const { ids, edgeById, indegree } = validateDirectedDagEdges(snapshot, add);
+    const n = snapshot.nodes.length;
+    const edgeOps: TopologicalOperation[] = ['inspect-edge', 'decrement'];
+    const queueOps: TopologicalOperation[] = ['enqueue', 'enqueue-node'];
+
+    const rows = new Map<string, number>();
+    snapshot.indegree.forEach((row, index) => {
+      if (!ids.has(row.nodeId)) add(['indegree', index, 'nodeId'], 'indegree row names an unknown node');
+      if (rows.has(row.nodeId)) add(['indegree', index, 'nodeId'], `indegree repeats node "${row.nodeId}"`);
+      rows.set(row.nodeId, row.indegree);
+    });
+    if (rows.size !== n) add(['indegree'], 'indegree must contain exactly one row per node');
+    if (snapshot.operation === 'init') {
+      for (const node of snapshot.nodes) {
+        if (rows.get(node.id) !== (indegree.get(node.id) ?? 0)) {
+          add(['indegree', 'nodeId'], 'init indegree must be the real incoming edge count');
+        }
+      }
+    }
+
+    const queueNodeIds = new Set<string>();
+    const queueIds = new Set<string>();
+    snapshot.queue.forEach((item, index) => {
+      if (!ids.has(item.nodeId)) add(['queue', index, 'nodeId'], 'queue entry names an unknown node');
+      if (queueNodeIds.has(item.nodeId)) add(['queue', index, 'nodeId'], 'queue repeats a node');
+      if (queueIds.has(item.id)) add(['queue', index, 'id'], 'queue entry id is duplicated');
+      queueNodeIds.add(item.nodeId);
+      queueIds.add(item.id);
+    });
+
+    const removed = new Set<string>();
+    snapshot.removedEdgeIds.forEach((id, index) => {
+      if (!edgeById.has(id)) add(['removedEdgeIds', index], 'removed edge is unknown');
+      if (removed.has(id)) add(['removedEdgeIds', index], 'removed edge is duplicated');
+      removed.add(id);
+    });
+    const order = new Set<string>();
+    snapshot.topologicalOrder.forEach((id, index) => {
+      if (!ids.has(id)) add(['topologicalOrder', index], 'topological order names an unknown node');
+      if (order.has(id)) add(['topologicalOrder', index], 'topological order repeats a node');
+      order.add(id);
+    });
+
+    if (snapshot.currentNodeId !== null && !ids.has(snapshot.currentNodeId)) {
+      add(['currentNodeId'], 'currentNodeId must name a real node');
+    }
+    const currentEdge = snapshot.currentEdgeId ? edgeById.get(snapshot.currentEdgeId) : undefined;
+    if (edgeOps.includes(snapshot.operation)) {
+      if (!currentEdge) add(['currentEdgeId'], `${snapshot.operation} must name a real edge`);
+    } else if (snapshot.currentEdgeId) {
+      add(['currentEdgeId'], `${snapshot.operation} must not carry a current edge`);
+    }
+    if (snapshot.neighborNodeId !== null) {
+      if (!ids.has(snapshot.neighborNodeId)) add(['neighborNodeId'], 'neighborNodeId must name a real node');
+      if (currentEdge && currentEdge.toId !== snapshot.neighborNodeId) {
+        add(['neighborNodeId'], 'neighbor must be the destination of the current edge');
+      }
+    }
+    if (edgeOps.includes(snapshot.operation) && snapshot.neighborNodeId === null) {
+      add(['neighborNodeId'], `${snapshot.operation} must report the edge destination`);
+    }
+    if (snapshot.operation === 'inspect-edge' && snapshot.indegreeChange) {
+      add(['indegreeChange'], 'inspect-edge has not changed an indegree yet');
+    }
+    if (snapshot.operation === 'decrement') {
+      if (!snapshot.indegreeChange) add(['indegreeChange'], 'decrement must report the before/after indegree');
+      if (!currentEdge) add(['currentEdgeId'], 'decrement must name the removed dependency');
+      if (snapshot.indegreeChange && currentEdge) {
+        if (snapshot.indegreeChange.nodeId !== currentEdge.toId) add(['indegreeChange', 'nodeId'], 'indegree change must target the edge destination');
+        if (snapshot.indegreeChange.before !== snapshot.indegreeChange.after + 1) add(['indegreeChange', 'before'], 'decrement changes the indegree by exactly one');
+        if (rows.get(snapshot.indegreeChange.nodeId) !== snapshot.indegreeChange.after) {
+          add(['indegreeChange', 'after'], 'after must match the published indegree row');
+        }
+        if (snapshot.currentNodeId !== currentEdge.fromId) add(['currentNodeId'], 'the current node must be the edge source');
+      }
+    }
+    if (snapshot.operation !== 'decrement' && snapshot.indegreeChange) {
+      add(['indegreeChange'], 'only decrement frames carry an indegree change');
+    }
+
+    if (snapshot.queueAdded) {
+      if (!queueOps.includes(snapshot.operation)) add(['queueAdded'], 'only enqueue frames add a queue entry');
+      if (!queueIds.has(snapshot.queueAdded.id) || !queueNodeIds.has(snapshot.queueAdded.nodeId)) {
+        add(['queueAdded'], 'the added entry must be present in the queue');
+      }
+    }
+    if (queueOps.includes(snapshot.operation) && !snapshot.queueAdded) {
+      add(['queueAdded'], `${snapshot.operation} must report the added queue entry`);
+    }
+    if (snapshot.queueRemoved) {
+      if (snapshot.operation !== 'dequeue') add(['queueRemoved'], 'only dequeue frames remove a queue entry');
+      if (queueIds.has(snapshot.queueRemoved.id) || queueNodeIds.has(snapshot.queueRemoved.nodeId)) {
+        add(['queueRemoved'], 'a dequeued entry cannot remain in the queue');
+      }
+    }
+    if (snapshot.operation === 'dequeue') {
+      if (!snapshot.queueRemoved) add(['queueRemoved'], 'dequeue must report the removed queue entry');
+      if (snapshot.queueRemoved && snapshot.currentNodeId !== snapshot.queueRemoved.nodeId) {
+        add(['currentNodeId'], 'dequeue current node must be the removed queue node');
+      }
+      if (snapshot.queueRemoved && snapshot.topologicalOrder[snapshot.topologicalOrder.length - 1] !== snapshot.queueRemoved.nodeId) {
+        add(['topologicalOrder'], 'dequeue must append exactly the removed node');
+      }
+    }
+
+    if (snapshot.operation === 'init') {
+      if (snapshot.queue.length || snapshot.topologicalOrder.length || snapshot.removedEdgeIds.length) {
+        add(['queue'], 'init has an empty queue and order');
+      }
+      if (snapshot.currentNodeId || snapshot.currentEdgeId || snapshot.neighborNodeId || snapshot.queueAdded || snapshot.queueRemoved) {
+        add(['currentNodeId'], 'init has no current item');
+      }
+      if (snapshot.hasCycle || snapshot.cycleNodeIds.length) add(['hasCycle'], 'init has no cycle result');
+    }
+    if (snapshot.operation === 'cycle') {
+      if (!snapshot.hasCycle) add(['hasCycle'], 'cycle frames must set hasCycle');
+      if (snapshot.queue.length) add(['queue'], 'a cycle stops with an empty Kahn queue');
+      if (snapshot.topologicalOrder.length === n) add(['topologicalOrder'], 'a cyclic graph cannot have a complete topological order');
+    }
+    if (snapshot.operation === 'done') {
+      if (snapshot.queue.length || snapshot.queueAdded || snapshot.queueRemoved) add(['queue'], 'done requires an empty queue');
+      if (snapshot.currentNodeId || snapshot.currentEdgeId || snapshot.neighborNodeId || snapshot.indegreeChange) {
+        add(['currentNodeId'], 'done carries no current item');
+      }
+      if (!snapshot.hasCycle) {
+        if (snapshot.topologicalOrder.length !== n) add(['topologicalOrder'], 'a successful Kahn run must cover every node');
+        if (snapshot.cycleNodeIds.length) add(['cycleNodeIds'], 'a successful run has no cycle nodes');
+        if (snapshot.removedEdgeIds.length !== snapshot.edges.length) add(['removedEdgeIds'], 'a successful run removes every edge exactly once');
+      } else {
+        if (snapshot.topologicalOrder.length >= n) add(['topologicalOrder'], 'a cyclic run leaves at least one node unresolved');
+        const unresolved = new Set(snapshot.nodes.map((node) => node.id).filter((id) => !order.has(id)));
+        if (snapshot.cycleNodeIds.length !== unresolved.size || snapshot.cycleNodeIds.some((id) => !unresolved.has(id))) {
+          add(['cycleNodeIds'], 'cycleNodeIds must be exactly the nodes Kahn could not resolve');
+        }
+      }
+    }
+    if (snapshot.hasCycle && snapshot.operation !== 'cycle' && snapshot.operation !== 'done') {
+      add(['hasCycle'], 'only cycle and done may publish a cycle result');
+    }
+  });
+export type TopologicalSortSnapshot = z.infer<typeof topologicalSortSnapshotSchema>;
+
+const activityRowSchema = z.object({
+  edgeId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS),
+  fromId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS),
+  toId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS),
+  duration: z.number().finite().nonnegative(),
+  e: z.number().finite().nonnegative().nullable(),
+  l: z.number().finite().nonnegative().nullable(),
+  slack: z.number().finite().nonnegative().nullable(),
+  critical: z.boolean(),
+});
+
+const eventTimeRowSchema = z.object({
+  nodeId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS),
+  time: z.number().finite().nonnegative().nullable(),
+});
+
+const timeChangeSchema = z.object({
+  nodeId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS),
+  previousTime: z.number().finite().nonnegative().nullable(),
+  candidateTime: z.number().finite().nonnegative(),
+  newTime: z.number().finite().nonnegative(),
+});
+
+const activityChangeSchema = z.object({
+  edgeId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS),
+  e: z.number().finite().nonnegative(),
+  l: z.number().finite().nonnegative(),
+  slack: z.number().finite().nonnegative(),
+  critical: z.boolean(),
+});
+
+export const criticalPathSnapshotSchema = z
+  .object({
+    kind: z.literal('critical-path'),
+    algorithm: z.literal('aoe'),
+    operation: z.enum(CRITICAL_PATH_OPERATIONS),
+    phase: z.enum(['init', 'topo', 've', 'vl', 'activity', 'cycle', 'done']),
+    nodes: z.array(graphNodeSchema).max(GRAPH_LIMITS.MAX_NODES),
+    edges: z.array(graphEdgeSchema.extend({ duration: z.number().finite().nonnegative() })).max(GRAPH_LIMITS.MAX_EDGES),
+    directed: z.literal(true),
+    sourceNodeIds: z.array(z.string().min(1).max(LIMITS.MAX_NAME_CHARS)).max(GRAPH_LIMITS.MAX_NODES),
+    sinkNodeIds: z.array(z.string().min(1).max(LIMITS.MAX_NAME_CHARS)).max(GRAPH_LIMITS.MAX_NODES),
+    topologicalOrder: z.array(z.string().min(1).max(LIMITS.MAX_NAME_CHARS)).max(GRAPH_LIMITS.MAX_NODES),
+    veRows: z.array(eventTimeRowSchema).max(GRAPH_LIMITS.MAX_NODES),
+    vlRows: z.array(eventTimeRowSchema).max(GRAPH_LIMITS.MAX_NODES),
+    activities: z.array(activityRowSchema).max(GRAPH_LIMITS.MAX_EDGES),
+    currentNodeId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+    currentEdgeId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+    timeChange: timeChangeSchema.nullable(),
+    activityChange: activityChangeSchema.nullable(),
+    criticalEdgeIds: z.array(z.string().min(1).max(LIMITS.MAX_NAME_CHARS)).max(GRAPH_LIMITS.MAX_EDGES),
+    criticalPaths: z.array(z.array(z.string().min(1).max(LIMITS.MAX_NAME_CHARS)).max(GRAPH_LIMITS.MAX_NODES)).max(12),
+    projectDuration: z.number().finite().nonnegative().nullable(),
+    hasCycle: z.boolean(),
+    cycleNodeIds: z.array(z.string().min(1).max(LIMITS.MAX_NAME_CHARS)).max(GRAPH_LIMITS.MAX_NODES),
+  })
+  .superRefine((snapshot, ctx) => {
+    const add = (path: Array<string | number>, message: string) => {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path, message });
+    };
+    const { ids, edgeById, indegree, outdegree } = validateDirectedDagEdges(snapshot, add);
+    const durationById = new Map(snapshot.edges.map((edge) => [edge.id, edge.duration]));
+    const n = snapshot.nodes.length;
+    const activityById = new Map(snapshot.activities.map((row) => [row.edgeId, row]));
+
+    const phaseByOperation: Record<CriticalPathOperation, string> = {
+      init: 'init', 'topo-order': 'topo', ve: 've', vl: 'vl', activity: 'activity', cycle: 'cycle', done: 'done',
+    };
+    if (snapshot.phase !== phaseByOperation[snapshot.operation]) {
+      add(['phase'], 'phase must agree with the published operation');
+    }
+
+    const sources = new Set<string>();
+    snapshot.sourceNodeIds.forEach((id, index) => {
+      if (!ids.has(id)) add(['sourceNodeIds', index], 'source names an unknown node');
+      if (sources.has(id)) add(['sourceNodeIds', index], 'source is duplicated');
+      sources.add(id);
+      if ((indegree.get(id) ?? 0) !== 0) add(['sourceNodeIds', index], 'a source must have indegree 0');
+    });
+    const sinks = new Set<string>();
+    snapshot.sinkNodeIds.forEach((id, index) => {
+      if (!ids.has(id)) add(['sinkNodeIds', index], 'sink names an unknown node');
+      if (sinks.has(id)) add(['sinkNodeIds', index], 'sink is duplicated');
+      sinks.add(id);
+      if ((outdegree.get(id) ?? 0) !== 0) add(['sinkNodeIds', index], 'a sink must have outdegree 0');
+    });
+    for (const node of snapshot.nodes) {
+      if ((indegree.get(node.id) ?? 0) === 0 && !sources.has(node.id)) add(['sourceNodeIds'], 'sourceNodeIds must list every indegree-0 node');
+      if ((outdegree.get(node.id) ?? 0) === 0 && !sinks.has(node.id)) add(['sinkNodeIds'], 'sinkNodeIds must list every outdegree-0 node');
+    }
+
+    const order = new Set<string>();
+    snapshot.topologicalOrder.forEach((id, index) => {
+      if (!ids.has(id)) add(['topologicalOrder', index], 'topological order names an unknown node');
+      if (order.has(id)) add(['topologicalOrder', index], 'topological order repeats a node');
+      order.add(id);
+    });
+    if (snapshot.operation === 'init' || snapshot.hasCycle) {
+      if (snapshot.topologicalOrder.length) add(['topologicalOrder'], 'a cycle/init frame has no claimed topological order');
+    } else if (snapshot.topologicalOrder.length !== n) {
+      add(['topologicalOrder'], 'every acyclic frame must carry the complete topological order');
+    }
+
+    const veRows = new Map<string, number | null>();
+    snapshot.veRows.forEach((row, index) => {
+      if (!ids.has(row.nodeId)) add(['veRows', index, 'nodeId'], 've row names an unknown node');
+      if (veRows.has(row.nodeId)) add(['veRows', index, 'nodeId'], 've repeats a node');
+      veRows.set(row.nodeId, row.time);
+    });
+    if (veRows.size !== n) add(['veRows'], 'veRows must contain exactly one row per node');
+    const vlRows = new Map<string, number | null>();
+    snapshot.vlRows.forEach((row, index) => {
+      if (!ids.has(row.nodeId)) add(['vlRows', index, 'nodeId'], 'vl row names an unknown node');
+      if (vlRows.has(row.nodeId)) add(['vlRows', index, 'nodeId'], 'vl repeats a node');
+      vlRows.set(row.nodeId, row.time);
+    });
+    if (vlRows.size !== n) add(['vlRows'], 'vlRows must contain exactly one row per node');
+
+    if (snapshot.activities.length !== snapshot.edges.length) {
+      add(['activities'], 'activities must have exactly one row per activity edge');
+    }
+    snapshot.activities.forEach((row, index) => {
+      const edge = edgeById.get(row.edgeId);
+      if (!edge) {
+        add(['activities', index, 'edgeId'], 'activity row names an unknown edge');
+        return;
+      }
+      if (row.fromId !== edge.fromId || row.toId !== edge.toId) add(['activities', index], 'activity endpoints must copy the real edge');
+      if (row.duration !== durationById.get(row.edgeId)) add(['activities', index, 'duration'], 'activity duration must copy the real edge');
+      if (row.e !== null && row.l !== null && row.slack !== null) {
+        if (Math.abs((row.l - row.e) - row.slack) > 1e-9) add(['activities', index, 'slack'], 'slack must equal l - e');
+        if (row.critical !== (Math.abs(row.slack) <= 1e-9)) add(['activities', index, 'critical'], 'critical must mean slack 0');
+      }
+      if (row.critical && (row.e === null || row.l === null || row.slack === null)) {
+        add(['activities', index, 'critical'], 'an uncomputed activity cannot be critical');
+      }
+    });
+    if (activityById.size !== snapshot.activities.length) add(['activities'], 'activity edge ids must be unique');
+
+    if (snapshot.currentNodeId !== null && !ids.has(snapshot.currentNodeId)) add(['currentNodeId'], 'currentNodeId must name a real node');
+    if (snapshot.currentEdgeId !== null && !edgeById.has(snapshot.currentEdgeId)) add(['currentEdgeId'], 'currentEdgeId must name a real activity');
+    if (snapshot.timeChange) {
+      if (snapshot.operation !== 've' && snapshot.operation !== 'vl') add(['timeChange'], 'only ve/vl frames carry a time change');
+      if (!ids.has(snapshot.timeChange.nodeId)) add(['timeChange', 'nodeId'], 'time change names an unknown node');
+      if (snapshot.currentNodeId !== snapshot.timeChange.nodeId) add(['currentNodeId'], 'current node must match the time change');
+      const published = snapshot.operation === 've' ? veRows.get(snapshot.timeChange.nodeId) : vlRows.get(snapshot.timeChange.nodeId);
+      if (published !== snapshot.timeChange.newTime) add(['timeChange', 'newTime'], 'new time must match the published row');
+      if (snapshot.timeChange.previousTime !== null && snapshot.timeChange.previousTime === snapshot.timeChange.newTime) {
+        add(['timeChange', 'previousTime'], 'a recorded update must change the value');
+      }
+    } else if (snapshot.operation === 've' || snapshot.operation === 'vl') {
+      add(['timeChange'], `${snapshot.operation} must report the event time change`);
+    }
+    if (snapshot.activityChange) {
+      if (snapshot.operation !== 'activity') add(['activityChange'], 'only activity frames carry an activity change');
+      const row = activityById.get(snapshot.activityChange.edgeId);
+      if (!row) add(['activityChange', 'edgeId'], 'activity change names an unknown edge');
+      if (snapshot.currentEdgeId !== snapshot.activityChange.edgeId) add(['currentEdgeId'], 'current edge must match the activity change');
+      if (row) {
+        if (row.e !== snapshot.activityChange.e || row.l !== snapshot.activityChange.l || row.slack !== snapshot.activityChange.slack) {
+          add(['activityChange'], 'activity change must match the published row');
+        }
+        if (row.critical !== snapshot.activityChange.critical) add(['activityChange', 'critical'], 'critical flag must match the row');
+      }
+    } else if (snapshot.operation === 'activity') {
+      add(['activityChange'], 'activity frames must report e, l and slack');
+    }
+
+    const criticalIds = new Set<string>();
+    snapshot.criticalEdgeIds.forEach((id, index) => {
+      if (!edgeById.has(id)) add(['criticalEdgeIds', index], 'critical edge is unknown');
+      if (criticalIds.has(id)) add(['criticalEdgeIds', index], 'critical edge is duplicated');
+      criticalIds.add(id);
+      const row = activityById.get(id);
+      if (row && (row.slack === null || Math.abs(row.slack) > 1e-9 || !row.critical)) {
+        add(['criticalEdgeIds', index], 'critical edges must have zero slack');
+      }
+    });
+
+    if (snapshot.operation === 'init') {
+      if (snapshot.topologicalOrder.length || snapshot.criticalEdgeIds.length || snapshot.criticalPaths.length) {
+        add(['topologicalOrder'], 'init has no order or critical result');
+      }
+      if (snapshot.projectDuration !== null) add(['projectDuration'], 'init has no project duration');
+      if (snapshot.veRows.some((row) => row.time !== null) || snapshot.vlRows.some((row) => row.time !== null)) {
+        add(['veRows'], 'init has empty event-time tables');
+      }
+      if (snapshot.activities.some((row) => row.e !== null || row.l !== null || row.slack !== null)) {
+        add(['activities'], 'init has no activity times');
+      }
+      if (snapshot.currentNodeId || snapshot.currentEdgeId || snapshot.timeChange || snapshot.activityChange) {
+        add(['currentNodeId'], 'init has no current item');
+      }
+      if (snapshot.hasCycle || snapshot.cycleNodeIds.length) add(['hasCycle'], 'init has no cycle result');
+    }
+    if (snapshot.operation === 'topo-order') {
+      if (snapshot.projectDuration !== null) add(['projectDuration'], 'the topological pass has not set the project duration');
+      if (snapshot.activities.some((row) => row.e !== null || row.l !== null || row.slack !== null)) {
+        add(['activities'], 'the topological pass has not computed activity times');
+      }
+      if (snapshot.currentNodeId || snapshot.currentEdgeId || snapshot.timeChange || snapshot.activityChange) {
+        add(['currentNodeId'], 'the topological pass carries no current item');
+      }
+    }
+    if (snapshot.operation === 'cycle') {
+      if (!snapshot.hasCycle) add(['hasCycle'], 'cycle frames must set hasCycle');
+      if (snapshot.projectDuration !== null) add(['projectDuration'], 'a cyclic AOE network has no project duration');
+    } else if (snapshot.hasCycle && snapshot.operation !== 'done') {
+      add(['hasCycle'], 'only cycle and done may publish a cycle result');
+    }
+    if (snapshot.operation === 'done') {
+      if (snapshot.hasCycle) {
+        if (snapshot.projectDuration !== null) add(['projectDuration'], 'a cyclic AOE network has no project duration');
+        if (snapshot.criticalEdgeIds.length || snapshot.criticalPaths.length) add(['criticalEdgeIds'], 'a cyclic network has no critical path');
+        if (snapshot.activities.some((row) => row.e !== null || row.l !== null || row.slack !== null)) {
+          add(['activities'], 'a cyclic network has no activity times');
+        }
+      } else {
+        if (snapshot.projectDuration === null) add(['projectDuration'], 'done must publish the project duration');
+        if (snapshot.activities.some((row) => row.e === null || row.l === null || row.slack === null)) {
+          add(['activities'], 'done requires complete activity times');
+        }
+        if (snapshot.veRows.some((row) => row.time === null) || snapshot.vlRows.some((row) => row.time === null)) {
+          add(['veRows'], 'done requires complete event-time tables');
+        }
+        const computedVe = new Map<string, number>();
+        for (const row of snapshot.veRows) if (row.time !== null) computedVe.set(row.nodeId, row.time);
+        for (const node of snapshot.nodes) {
+          const actual = snapshot.edges
+            .filter((edge) => edge.toId === node.id)
+            .reduce((best, edge) => Math.max(best, (computedVe.get(edge.fromId) ?? 0) + edge.duration), 0);
+          if (Math.abs((computedVe.get(node.id) ?? 0) - actual) > 1e-9) {
+            add(['veRows'], `ve[${node.id}] does not satisfy ve[v] = max(ve[u] + duration)`);
+          }
+        }
+        const computedVl = new Map<string, number>();
+        for (const row of snapshot.vlRows) if (row.time !== null) computedVl.set(row.nodeId, row.time);
+        for (const node of snapshot.nodes) {
+          const actual = sinks.has(node.id)
+            ? (snapshot.projectDuration ?? 0)
+            : snapshot.edges
+                .filter((edge) => edge.fromId === node.id)
+                .reduce((best, edge) => Math.min(best, (computedVl.get(edge.toId) ?? 0) - edge.duration), Number.POSITIVE_INFINITY);
+          if (Math.abs((computedVl.get(node.id) ?? 0) - actual) > 1e-9) {
+            add(['vlRows'], `vl[${node.id}] does not satisfy vl[v] = min(vl[w] - duration)`);
+          }
+        }
+        const expectedDuration = snapshot.sinkNodeIds.reduce(
+          (best, id) => Math.max(best, computedVe.get(id) ?? 0), 0,
+        );
+        if (snapshot.projectDuration !== null && Math.abs(snapshot.projectDuration - expectedDuration) > 1e-9) {
+          add(['projectDuration'], 'projectDuration must be max ve over every sink');
+        }
+        const allCritical = snapshot.activities
+          .filter((row) => row.slack !== null && Math.abs(row.slack) <= 1e-9)
+          .map((row) => row.edgeId);
+        if (snapshot.criticalEdgeIds.length !== allCritical.length || snapshot.criticalEdgeIds.some((id) => !allCritical.includes(id))) {
+          add(['criticalEdgeIds'], 'done must list every zero-slack activity');
+        }
+        if (n > 0 && snapshot.criticalPaths.length === 0) add(['criticalPaths'], 'a non-empty acyclic network needs at least one critical path');
+        snapshot.criticalPaths.forEach((path, index) => {
+          if (!path.length) {
+            add(['criticalPaths', index], 'a critical path cannot be empty');
+            return;
+          }
+          if (!sources.has(path[0] ?? '')) add(['criticalPaths', index], 'a critical path must start at a source');
+          if (!sinks.has(path[path.length - 1] ?? '')) add(['criticalPaths', index], 'a critical path must end at a sink');
+          const pathNodes = new Set<string>();
+          path.forEach((id) => {
+            if (!ids.has(id)) add(['criticalPaths', index], 'critical path names an unknown node');
+            if (pathNodes.has(id)) add(['criticalPaths', index], 'a DAG critical path cannot repeat a node');
+            pathNodes.add(id);
+          });
+          let total = 0;
+          for (let i = 0; i + 1 < path.length; i += 1) {
+            const edge = snapshot.edges.find((candidate) => candidate.fromId === path[i] && candidate.toId === path[i + 1]);
+            if (!edge) {
+              add(['criticalPaths', index], `critical path has no activity ${path[i]}→${path[i + 1]}`);
+            } else {
+              if (!criticalIds.has(edge.id)) add(['criticalPaths', index], 'every activity on a critical path must be critical');
+              total += edge.duration;
+            }
+          }
+          if (snapshot.projectDuration !== null && Math.abs(total - snapshot.projectDuration) > 1e-9) {
+            add(['criticalPaths', index], 'critical path duration must equal the project duration');
+          }
+        });
+      }
+    }
+  });
+export type CriticalPathSnapshot = z.infer<typeof criticalPathSnapshotSchema>;
+
+
+/** Stage 7B stack/queue + Stage 7C linked-list + Stage 7D binary-tree + Stage 7E/7F/G1/G2/G3 graphs. */
 export const structureSchema = z.union([
   structureSnapshotSchema,
   linkedListSnapshotSchema,
@@ -2440,6 +2975,8 @@ export const structureSchema = z.union([
   bellmanFordSnapshotSchema,
   primMstSnapshotSchema,
   kruskalMstSnapshotSchema,
+  topologicalSortSnapshotSchema,
+  criticalPathSnapshotSchema,
 ]);
 export type AnyStructureSnapshot = z.infer<typeof structureSchema>;
 

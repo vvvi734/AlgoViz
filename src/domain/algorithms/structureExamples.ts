@@ -26,6 +26,12 @@ import {
   kruskalPythonExample,
   primPythonExample,
 } from './mstExamples';
+import {
+  CRITICAL_PATH_DEFAULT_INPUT,
+  TOPOLOGICAL_DEFAULT_INPUT,
+  criticalPathPythonExample,
+  topologicalPythonExample,
+} from './dagExamples';
 
 export const STACK_DEFAULT_INPUT: unknown = [
   ['push', 3],
@@ -143,6 +149,8 @@ const STRUCTURE_PYTHON: Record<string, string> = {
   'bellman-ford': bellmanFordPythonExample(),
   prim: primPythonExample(),
   kruskal: kruskalPythonExample(),
+  topological: topologicalPythonExample(),
+  'critical-path': criticalPathPythonExample(),
 };
 
 const STRUCTURE_INPUT: Record<string, unknown> = {
@@ -156,6 +164,8 @@ const STRUCTURE_INPUT: Record<string, unknown> = {
   'bellman-ford': BELLMAN_DEFAULT_INPUT,
   prim: PRIM_DEFAULT_INPUT,
   kruskal: KRUSKAL_DEFAULT_INPUT,
+  topological: TOPOLOGICAL_DEFAULT_INPUT,
+  'critical-path': CRITICAL_PATH_DEFAULT_INPUT,
 };
 
 export function structurePythonExample(algorithmId: string): string | undefined {
