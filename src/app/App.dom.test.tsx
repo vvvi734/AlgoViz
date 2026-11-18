@@ -31,11 +31,12 @@ function renderApp() {
 }
 
 describe('App UI regression (Phase 1)', () => {
-  it('renders all 24 presets and loads a timeline on startup', async () => {
+  it('renders all 25 presets and loads a timeline on startup', async () => {
     renderApp();
     await waitFor(() => expect(screen.getByTestId('progress').textContent).toBe('1 / 3'));
-    expect(screen.getAllByTestId(/^algo-/)).toHaveLength(24);
+    expect(screen.getAllByTestId(/^algo-/)).toHaveLength(25);
     expect(screen.getByTestId('algo-bst')).toBeTruthy();
+    expect(screen.getByTestId('algo-avl')).toBeTruthy();
     expect(screen.getByTestId('algo-prim')).toBeTruthy();
     expect(screen.getByTestId('algo-kruskal')).toBeTruthy();
     expect(screen.getByTestId('algo-topological')).toBeTruthy();
@@ -51,12 +52,12 @@ describe('App UI regression (Phase 1)', () => {
     renderApp();
     await waitFor(() => expect(screen.getByTestId('progress').textContent).toBe('1 / 3'));
     fireEvent.click(screen.getByTestId('next-btn'));
-    expect(screen.getByTestId('step-desc').textContent).toBe('STEP TWO');
+    await waitFor(() => expect(screen.getByTestId('step-desc').textContent).toBe('STEP TWO'));
     expect(screen.getByTestId('progress').textContent).toBe('2 / 3');
     fireEvent.click(screen.getByTestId('prev-btn'));
-    expect(screen.getByTestId('step-desc').textContent).toBe('STEP ONE');
+    await waitFor(() => expect(screen.getByTestId('step-desc').textContent).toBe('STEP ONE'));
     fireEvent.change(screen.getByTestId('scrub'), { target: { value: '2' } });
-    expect(screen.getByTestId('step-desc').textContent).toBe('STEP THREE');
+    await waitFor(() => expect(screen.getByTestId('step-desc').textContent).toBe('STEP THREE'));
     fireEvent.click(screen.getByTestId('play-btn'));
     expect(screen.getByTestId('play-btn').textContent).toContain('暂停');
     fireEvent.click(screen.getByTestId('play-btn'));

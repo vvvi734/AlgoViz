@@ -927,6 +927,380 @@ export const bstSnapshotSchema = z
 export type BstSnapshot = z.infer<typeof bstSnapshotSchema>;
 
 /**
+ * T2: AVL tree insert/delete. The snapshot is the REAL attached AVL tree after
+ * the frame operation. Nodes carry their real subtree height and balance
+ * factor; rotations are recorded as before/after frames around genuine pointer
+ * rewiring, never as a visual-only animation.
+ */
+export const AVL_COMMANDS = ['insert', 'delete'] as const;
+export type AvlCommand = (typeof AVL_COMMANDS)[number];
+
+export const AVL_OPERATIONS = [
+  'init', 'inspect', 'go-left', 'go-right', 'attach', 'height', 'balance',
+  'imbalance', 'rotate-left', 'rotate-right', 'duplicate', 'locate', 'not-found',
+  'delete-leaf', 'delete-one', 'successor-search', 'successor-found',
+  'successor-detach', 'transplant', 'done',
+] as const;
+export type AvlOperation = (typeof AVL_OPERATIONS)[number];
+
+export const AVL_DELETE_CASES = ['leaf', 'one-child', 'two-child'] as const;
+export type AvlDeleteCase = (typeof AVL_DELETE_CASES)[number];
+
+export const AVL_ROTATION_CASES = ['LL', 'RR', 'LR', 'RL'] as const;
+export type AvlRotationCase = (typeof AVL_ROTATION_CASES)[number];
+
+export const AVL_ROTATION_PHASES = ['before', 'after'] as const;
+export type AvlRotationPhase = (typeof AVL_ROTATION_PHASES)[number];
+
+export const AVL_RESULTS = ['inserted', 'duplicate', 'deleted', 'missing'] as const;
+export type AvlResult = (typeof AVL_RESULTS)[number];
+
+export const avlNodeSchema = z.object({
+  id: z.string().min(1).max(LIMITS.MAX_NAME_CHARS),
+  value: z.number().finite(),
+  leftId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+  rightId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+  height: z.number().int().min(1).max(40),
+  balance: z.number().int().min(-39).max(39),
+});
+export type AvlNode = z.infer<typeof avlNodeSchema>;
+
+const AVL_ID = z.string().min(1).max(LIMITS.MAX_NAME_CHARS);
+
+export const avlSnapshotSchema = z
+  .object({
+    kind: z.literal('avl'),
+    preset: z.string().max(LIMITS.MAX_NAME_CHARS).nullable(),
+    command: z.enum(AVL_COMMANDS),
+    operation: z.enum(AVL_OPERATIONS),
+    deleteCase: z.enum(AVL_DELETE_CASES).nullable(),
+    targetValue: z.number().finite(),
+    rootId: AVL_ID.nullable(),
+    nodes: z.array(avlNodeSchema).max(40),
+    currentNodeId: AVL_ID.nullable(),
+    pathIds: z.array(AVL_ID).max(40),
+    visitedIds: z.array(AVL_ID).max(40),
+    inorderIds: z.array(AVL_ID).max(40),
+    targetNodeId: AVL_ID.nullable(),
+    nextNodeId: AVL_ID.nullable(),
+    parentId: AVL_ID.nullable(),
+    side: z.enum(BST_SIDES).nullable(),
+    insertedId: AVL_ID.nullable(),
+    successorId: AVL_ID.nullable(),
+    replacementId: AVL_ID.nullable(),
+    removedNode: bstRemovedNodeSchema.nullable(),
+    oldRootId: AVL_ID.nullable(),
+    imbalanceId: AVL_ID.nullable(),
+    rotationCase: z.enum(AVL_ROTATION_CASES).nullable(),
+    rotationPhase: z.enum(AVL_ROTATION_PHASES).nullable(),
+    pivotId: AVL_ID.nullable(),
+    promotedId: AVL_ID.nullable(),
+    rotationStep: z.number().int().min(1).max(2).nullable(),
+    rotationTotal: z.number().int().min(1).max(2).nullable(),
+    result: z.enum(AVL_RESULTS).nullable(),
+  })
+  .superRefine((snapshot, ctx) => {
+    const add = (path: (string | number)[], message: string) =>
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path, message });
+    const byId = new Map<string, AvlNode>();
+    snapshot.nodes.forEach((node, index) => {
+      if (byId.has(node.id)) add(['nodes', index, 'id'], `duplicate AVL node id "${node.id}"`);
+      byId.set(node.id, node);
+    });
+
+    if (snapshot.nodes.length === 0) {
+      if (snapshot.rootId !== null) add(['rootId'], 'an empty AVL tree must have rootId = null');
+    } else if (snapshot.rootId === null || !byId.has(snapshot.rootId)) {
+      add(['rootId'], 'rootId must refer to a real node in a non-empty AVL tree');
+    }
+
+    const parentCount = new Map<string, number>();
+    snapshot.nodes.forEach((node, index) => {
+      for (const key of ['leftId', 'rightId'] as const) {
+        const ref = node[key];
+        if (ref !== null && !byId.has(ref)) {
+          add(['nodes', index, key], `${key} "${ref}" does not refer to a node`);
+        }
+      }
+      for (const ref of [node.leftId, node.rightId]) {
+        if (ref !== null) parentCount.set(ref, (parentCount.get(ref) ?? 0) + 1);
+      }
+    });
+    for (const [id, count] of parentCount) {
+      if (count > 1) add(['nodes'], `node "${id}" has multiple parents`);
+    }
+    if (snapshot.rootId !== null && (parentCount.get(snapshot.rootId) ?? 0) > 0) {
+      add(['rootId'], 'the root must not have a parent');
+    }
+    if (snapshot.nodes.length > 0 && snapshot.rootId !== null) {
+      const seen = new Set<string>();
+      const stack = [snapshot.rootId];
+      let cycle = false;
+      while (stack.length) {
+        const id = stack.pop() as string;
+        if (seen.has(id)) {
+          cycle = true;
+          break;
+        }
+        seen.add(id);
+        const node = byId.get(id);
+        if (!node) break;
+        if (node.leftId !== null) stack.push(node.leftId);
+        if (node.rightId !== null) stack.push(node.rightId);
+      }
+      if (cycle) add(['nodes'], 'cyclic AVL reference detected');
+      for (const node of snapshot.nodes) {
+        if (!seen.has(node.id)) add(['nodes'], `AVL node "${node.id}" is not reachable from the root`);
+      }
+    }
+
+    const inorder: string[] = [];
+    const stack: string[] = [];
+    let current: string | null = snapshot.rootId;
+    let guard = 0;
+    while ((current !== null || stack.length > 0) && guard < snapshot.nodes.length * 4 + 4) {
+      guard += 1;
+      while (current !== null) {
+        stack.push(current);
+        current = byId.get(current)?.leftId ?? null;
+      }
+      const id = stack.pop();
+      if (id === undefined) break;
+      inorder.push(id);
+      current = byId.get(id)?.rightId ?? null;
+    }
+    if (inorder.length !== snapshot.nodes.length) {
+      add(['nodes'], 'in-order traversal does not cover every AVL node');
+    } else {
+      for (let index = 1; index < inorder.length; index += 1) {
+        const previous = byId.get(inorder[index - 1]);
+        const next = byId.get(inorder[index]);
+        if (!previous || !next || previous.value >= next.value) {
+          add(['nodes'], 'AVL in-order values must be strictly increasing (duplicate keys are rejected)');
+          break;
+        }
+      }
+    }
+    if (snapshot.inorderIds.length !== inorder.length) {
+      add(['inorderIds'], 'inorderIds must list every attached node exactly once');
+    } else {
+      snapshot.inorderIds.forEach((id, index) => {
+        if (id !== inorder[index]) add(['inorderIds', index], 'inorderIds must equal the real in-order traversal');
+      });
+    }
+
+    // Heights and balance factors are checked against the attached left/right
+    // references, not against a separately supplied array.
+    const heightCache = new Map<string, number>();
+    const balanceCache = new Map<string, number>();
+    const heightOf = (id: string | null, visiting: Set<string>): number => {
+      if (id === null) return 0;
+      if (heightCache.has(id)) return heightCache.get(id) as number;
+      if (visiting.has(id)) return 0;
+      visiting.add(id);
+      const node = byId.get(id);
+      const value = node
+        ? 1 + Math.max(heightOf(node.leftId, visiting), heightOf(node.rightId, visiting))
+        : 0;
+      visiting.delete(id);
+      heightCache.set(id, value);
+      return value;
+    };
+    for (const node of snapshot.nodes) {
+      const actualHeight = heightOf(node.id, new Set());
+      const actualBalance = heightOf(node.leftId, new Set()) - heightOf(node.rightId, new Set());
+      heightCache.set(node.id, actualHeight);
+      balanceCache.set(node.id, actualBalance);
+      if (node.height !== actualHeight) add(['nodes'], `node "${node.id}" height must equal its real subtree height`);
+      if (node.balance !== actualBalance) add(['nodes'], `node "${node.id}" balance must equal left height - right height`);
+      if ((snapshot.operation === 'init' || snapshot.operation === 'done') && Math.abs(actualBalance) > 1) {
+        add(['nodes'], `node "${node.id}" is not AVL-balanced at ${snapshot.operation}`);
+      }
+    }
+
+    const visited = new Set<string>();
+    snapshot.visitedIds.forEach((id, index) => {
+      if (!byId.has(id)) add(['visitedIds', index], `visited id "${id}" is not an attached node`);
+      if (visited.has(id)) add(['visitedIds', index], `visitedIds contains duplicate node "${id}"`);
+      visited.add(id);
+    });
+
+    snapshot.pathIds.forEach((id, index) => {
+      if (!byId.has(id)) add(['pathIds', index], `path id "${id}" is not an attached node`);
+      if (index === 0 && id !== snapshot.rootId) add(['pathIds', 0], 'pathIds must start at rootId');
+      if (index > 0) {
+        const parent = byId.get(snapshot.pathIds[index - 1]);
+        if (!parent || (parent.leftId !== id && parent.rightId !== id)) {
+          add(['pathIds', index], 'pathIds must follow real left/right references');
+        }
+      }
+    });
+    if (snapshot.currentNodeId === null) {
+      if (snapshot.pathIds.length > 0) add(['pathIds'], 'a frame without a current node must have an empty path');
+    } else {
+      if (!byId.has(snapshot.currentNodeId)) add(['currentNodeId'], `currentNodeId "${snapshot.currentNodeId}" is not attached`);
+      const last = snapshot.pathIds[snapshot.pathIds.length - 1];
+      if (last !== snapshot.currentNodeId) add(['pathIds'], 'the path must end at currentNodeId');
+    }
+
+    if (snapshot.targetNodeId !== null) {
+      const target = byId.get(snapshot.targetNodeId);
+      if (!target) add(['targetNodeId'], 'targetNodeId must be an attached node');
+      else if (target.value !== snapshot.targetValue) add(['targetNodeId'], 'targetNodeId value must equal targetValue');
+      if (snapshot.operation === 'init' || snapshot.operation === 'done') {
+        add(['targetNodeId'], `${snapshot.operation} must not name a target node`);
+      }
+    }
+
+    if (snapshot.nextNodeId !== null) {
+      if (snapshot.operation !== 'go-left' && snapshot.operation !== 'go-right') {
+        add(['nextNodeId'], 'nextNodeId is only meaningful on go-left/go-right');
+      } else if (snapshot.currentNodeId !== null) {
+        const current = byId.get(snapshot.currentNodeId);
+        if (snapshot.operation === 'go-left' && current?.leftId !== snapshot.nextNodeId) {
+          add(['nextNodeId'], 'go-left nextNodeId must be the real left child');
+        }
+        if (snapshot.operation === 'go-right' && current?.rightId !== snapshot.nextNodeId) {
+          add(['nextNodeId'], 'go-right nextNodeId must be the real right child');
+        }
+      }
+    }
+
+    if (snapshot.operation === 'attach') {
+      if (snapshot.insertedId === null || !byId.has(snapshot.insertedId)) {
+        add(['insertedId'], 'attach must insert an attached node');
+      } else if (byId.get(snapshot.insertedId)?.value !== snapshot.targetValue) {
+        add(['insertedId'], 'the inserted node value must equal targetValue');
+      }
+      if (snapshot.removedNode !== null) add(['removedNode'], 'attach must not record a removed node');
+    } else if (snapshot.parentId !== null || snapshot.side !== null || snapshot.insertedId !== null) {
+      add(['parentId'], 'insertion details are only allowed on attach');
+    }
+
+    if (snapshot.successorId !== null && snapshot.operation !== 'successor-search' &&
+        snapshot.operation !== 'successor-found' && snapshot.operation !== 'successor-detach' &&
+        snapshot.operation !== 'transplant') {
+      add(['successorId'], 'successorId is only allowed on two-child delete frames');
+    }
+    if (snapshot.operation === 'successor-search' || snapshot.operation === 'successor-found') {
+      if (snapshot.successorId === null || !byId.has(snapshot.successorId)) {
+        add(['successorId'], 'successor search must name an attached successor');
+      }
+    }
+    if (snapshot.operation === 'transplant' && snapshot.successorId !== null && !byId.has(snapshot.successorId)) {
+      add(['successorId'], 'the transplanted successor must be attached');
+    }
+
+    if (snapshot.removedNode === null) {
+      if (snapshot.replacementId !== null) add(['replacementId'], 'replacementId requires a removed node');
+      if (snapshot.oldRootId !== null) add(['oldRootId'], 'oldRootId requires a removed node');
+    } else {
+      const removed = snapshot.removedNode;
+      if (byId.has(removed.id)) add(['removedNode', 'id'], 'a removed node must not remain attached');
+      if (removed.parentId !== null && !byId.has(removed.parentId)) {
+        add(['removedNode', 'parentId'], 'the removed node parent must still be attached');
+      }
+      if (removed.parentId === null && removed.side !== null) {
+        add(['removedNode', 'side'], 'a root removal has no side');
+      }
+      if (removed.parentId !== null && removed.side === null) {
+        add(['removedNode', 'side'], 'a non-root removal needs the parent side');
+      }
+      if (snapshot.replacementId !== removed.replacementId) {
+        add(['replacementId'], 'replacementId must match removedNode.replacementId');
+      }
+      if (removed.replacementId !== null && !byId.has(removed.replacementId)) {
+        add(['removedNode', 'replacementId'], 'the replacement node must be attached');
+      }
+      if (snapshot.oldRootId !== null) {
+        if (snapshot.oldRootId !== removed.id) add(['oldRootId'], 'oldRootId must be the removed root');
+        if (snapshot.oldRootId === snapshot.rootId) add(['oldRootId'], 'oldRootId must differ from the new root');
+      }
+    }
+
+    if (snapshot.operation === 'delete-leaf') {
+      if (snapshot.deleteCase !== 'leaf') add(['deleteCase'], 'delete-leaf must record the leaf case');
+      if (snapshot.removedNode?.role !== 'target') add(['removedNode'], 'delete-leaf must remove the target');
+      if (snapshot.removedNode?.replacementId !== null) add(['replacementId'], 'a leaf has no replacement');
+    }
+    if (snapshot.operation === 'delete-one') {
+      if (snapshot.deleteCase !== 'one-child') add(['deleteCase'], 'delete-one must record the one-child case');
+      if (snapshot.removedNode?.role !== 'target') add(['removedNode'], 'delete-one must remove the target');
+      if (snapshot.removedNode?.replacementId === null) add(['replacementId'], 'a one-child delete needs the child');
+    }
+    if (snapshot.operation === 'successor-search' || snapshot.operation === 'successor-found' ||
+        snapshot.operation === 'successor-detach' || snapshot.operation === 'transplant') {
+      if (snapshot.deleteCase !== 'two-child') add(['deleteCase'], 'two-child delete frames must record two-child');
+    }
+    if (snapshot.operation === 'successor-detach' && snapshot.removedNode?.role !== 'successor') {
+      add(['removedNode'], 'successor-detach must report the successor as removed');
+    }
+    if (snapshot.operation === 'transplant' && snapshot.removedNode?.role !== 'target') {
+      add(['removedNode'], 'transplant must report the target as removed');
+    }
+
+    const rotationOps: AvlOperation[] = ['imbalance', 'rotate-left', 'rotate-right'];
+    const isRotation = snapshot.operation === 'rotate-left' || snapshot.operation === 'rotate-right';
+    if (rotationOps.includes(snapshot.operation)) {
+      if (snapshot.imbalanceId === null || !byId.has(snapshot.imbalanceId)) {
+        add(['imbalanceId'], 'rotation frames must name an attached imbalance node');
+      }
+      if (snapshot.rotationCase === null) add(['rotationCase'], 'rotation frames need a rotation case');
+      if (snapshot.pivotId === null || !byId.has(snapshot.pivotId)) {
+        add(['pivotId'], 'rotation frames must name an attached pivot node');
+      }
+      if (snapshot.rotationStep === null || snapshot.rotationTotal === null) {
+        add(['rotationStep'], 'rotation frames need step and total');
+      } else if (snapshot.rotationStep > snapshot.rotationTotal) {
+        add(['rotationStep'], 'rotationStep must be <= rotationTotal');
+      }
+      if (isRotation) {
+        if (snapshot.rotationPhase === null) add(['rotationPhase'], 'rotate frames need a before/after phase');
+        if (snapshot.promotedId === null || !byId.has(snapshot.promotedId)) {
+          add(['promotedId'], 'rotate frames must name an attached promoted node');
+        }
+      }
+    } else {
+      if (snapshot.rotationCase !== null || snapshot.rotationPhase !== null ||
+          snapshot.pivotId !== null || snapshot.promotedId !== null ||
+          snapshot.rotationStep !== null || snapshot.rotationTotal !== null || snapshot.imbalanceId !== null) {
+        add(['rotationCase'], 'rotation details are only allowed on rotation frames');
+      }
+    }
+    if (snapshot.rotationPhase !== null && !isRotation) {
+      add(['rotationPhase'], 'only rotate frames may carry a rotation phase');
+    }
+
+    const allowed: Record<AvlCommand, AvlOperation[]> = {
+      insert: ['init', 'inspect', 'go-left', 'go-right', 'attach', 'height', 'balance',
+        'imbalance', 'rotate-left', 'rotate-right', 'duplicate', 'done'],
+      delete: ['init', 'inspect', 'go-left', 'go-right', 'locate', 'not-found', 'delete-leaf',
+        'delete-one', 'successor-search', 'successor-found', 'successor-detach', 'transplant',
+        'height', 'balance', 'imbalance', 'rotate-left', 'rotate-right', 'done'],
+    };
+    if (!allowed[snapshot.command].includes(snapshot.operation)) {
+      add(['operation'], `${snapshot.operation} is not a ${snapshot.command} operation`);
+    }
+
+    if (snapshot.operation === 'init') {
+      if (snapshot.result !== null) add(['result'], 'init has no result');
+      if (snapshot.deleteCase !== null) add(['deleteCase'], 'init has no delete case');
+      if (snapshot.removedNode !== null) add(['removedNode'], 'init has no removed node');
+    }
+    if (snapshot.operation === 'duplicate' && snapshot.result !== 'duplicate') add(['result'], 'duplicate must record duplicate');
+    if (snapshot.operation === 'attach' && snapshot.result !== 'inserted') add(['result'], 'attach must record insertion');
+    if (snapshot.operation === 'not-found') {
+      if (snapshot.result !== 'missing') add(['result'], 'not-found must record missing');
+    }
+    if (snapshot.operation === 'delete-leaf' || snapshot.operation === 'delete-one' || snapshot.operation === 'transplant') {
+      if (snapshot.result !== 'deleted') add(['result'], 'delete transition must record deletion');
+    }
+    if (snapshot.operation === 'done' && snapshot.result === null) add(['result'], 'done must record the final result');
+  });
+export type AvlSnapshot = z.infer<typeof avlSnapshotSchema>;
+
+
+/**
  * Stage 7E graph traversal.
  *
  * The graph is an UNDIRECTED SIMPLE GRAPH. Node ids are the stable teaching
@@ -3683,6 +4057,7 @@ export const structureSchema = z.union([
   linkedListSnapshotSchema,
   binaryTreeSnapshotSchema,
   bstSnapshotSchema,
+  avlSnapshotSchema,
   graphSnapshotSchema,
   weightedGraphSnapshotSchema,
   floydWarshallSnapshotSchema,

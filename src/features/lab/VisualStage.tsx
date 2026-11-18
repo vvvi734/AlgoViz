@@ -25,10 +25,12 @@ import { KruskalVisual, PrimVisual } from './MSTVisuals';
 import { CriticalPathVisual, TopologicalSortVisual } from './DAGVisuals';
 import { ConnectedComponentsVisual, KosarajuVisual } from './ComponentVisuals';
 import { BstVisual } from './BstVisual';
+import { AvlVisual } from './AvlVisual';
 import type { KruskalVisualModel, PrimVisualModel } from '../../domain/visualization/mstModel';
 import type { CriticalVisualModel, TopologicalVisualModel } from '../../domain/visualization/dagModel';
 import type { ConnectedComponentsVisualModel, SccVisualModel } from '../../domain/visualization/componentsModel';
 import type { BstVisualModel } from '../../domain/visualization/bstModel';
+import type { AvlVisualModel } from '../../domain/visualization/avlModel';
 
 const GRAPH_OPERATION_KEYS: Record<GraphOperation, string> = {
   init: 'graphOpInit',
@@ -400,6 +402,7 @@ export function VisualStage({ event }: { event: TraceEvent | undefined }) {
           emptyLinked: t('linkedEmpty'),
           emptyTree: t('treeEmpty'),
           emptyBst: t('bstEmpty'),
+          emptyAvl: t('avlEmpty'),
           emptyGraph: t('graphEmpty'),
         },
         event.structure,
@@ -422,6 +425,9 @@ export function VisualStage({ event }: { event: TraceEvent | undefined }) {
       break;
     case 'bst':
       content = <BstVisual model={model as BstVisualModel} />;
+      break;
+    case 'avl':
+      content = <AvlVisual model={model as AvlVisualModel} />;
       break;
     case 'floyd-matrix':
       content = (
@@ -612,6 +618,7 @@ export function VisualStage({ event }: { event: TraceEvent | undefined }) {
     model.kind === 'linked-list' ||
     model.kind === 'binary-tree' ||
     model.kind === 'bst' ||
+    model.kind === 'avl' ||
     model.kind === 'graph-traversal' ||
     model.kind === 'floyd-matrix' ||
     model.kind === 'bellman-table' ||

@@ -2,6 +2,7 @@ import type { TraceState } from '../trace/types';
 import type { AnyStructureSnapshot, StructureOperation, StructureSnapshot } from '../trace/schema';
 import { buildBinaryTreeModel, type BinaryTreeVisualModel } from './binaryTreeModel';
 import { buildBstModel, type BstVisualModel } from './bstModel';
+import { buildAvlModel, type AvlVisualModel } from './avlModel';
 import { buildLinkedListModel, type LinkedListVisualModel } from './linkedListModel';
 import { buildGraphVisualModel, buildWeightedGraphVisualModel, type GraphVisualModel } from './graphModel';
 import { buildBellmanVisualModel, buildFloydVisualModel, type BellmanVisualModel, type FloydVisualModel } from './shortestPathModel';
@@ -72,6 +73,7 @@ export type VisualModel =
   | LinkedListVisualModel
   | BinaryTreeVisualModel
   | BstVisualModel
+  | AvlVisualModel
   | GraphVisualModel
   | FloydVisualModel
   | BellmanVisualModel
@@ -92,6 +94,7 @@ export interface VisualLabels {
   emptyLinked?: string;
   emptyTree?: string;
   emptyBst?: string;
+  emptyAvl?: string;
   emptyGraph?: string;
 }
 
@@ -231,6 +234,13 @@ export function buildVisualModel(
   const s = state as TraceState;
   const kind = s.type || 'array';
   const focus = asFocusSet(s);
+
+  if (structure !== undefined && structure.kind === 'avl') {
+    if (kind !== 'array') return { kind: 'raw', text: labels.invalid };
+    const model = buildAvlModel(structure, labels.emptyAvl ?? labels.emptyBst ?? labels.emptyTree ?? labels.emptyStructure);
+    if (!model) return { kind: 'raw', text: labels.invalid };
+    return model;
+  }
 
   if (structure !== undefined && structure.kind === 'bst') {
     if (kind !== 'array') return { kind: 'raw', text: labels.invalid };

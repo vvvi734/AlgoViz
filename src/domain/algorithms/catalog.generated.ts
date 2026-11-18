@@ -347,6 +347,32 @@ export const ALGORITHM_CATALOG: AlgorithmCatalog = {
     },
     "code": "trace({type:'array',values:['BST: use the Python preset'],done:true},'请在 Python 模式运行 / Run the Python preset');"
   },
+  "avl": {
+    "group": "tree",
+    "icon": "♧",
+    "name": [
+      "AVL 平衡树 · 插入 / 删除 / 旋转",
+      "AVL tree · insert / delete / rotations"
+    ],
+    "desc": [
+      "在真实 AVL 节点上演示高度、平衡因子、失衡检测与 LL/RR/LR/RL 四种旋转；删除覆盖叶子、单孩子、双孩子、根节点和不存在的键，并从受影响位置向上重新平衡。",
+      "Run real AVL nodes with heights, balance factors, imbalance detection and LL/RR/LR/RL rotations. Delete covers leaf, one-child, two-child, root and missing keys, then rebalances upward."
+    ],
+    "time": "O(log n)",
+    "space": "O(n)",
+    "input": {
+      "preset": "insert-ll",
+      "operation": "insert",
+      "tree": [
+        30,
+        20,
+        40,
+        10
+      ],
+      "target": 5
+    },
+    "code": "trace({type:'array',values:['AVL: use the Python preset'],done:true},'请在 Python 模式运行 / Run the Python preset');"
+  },
   "factorial": {
     "group": "recursion",
     "icon": "↺",

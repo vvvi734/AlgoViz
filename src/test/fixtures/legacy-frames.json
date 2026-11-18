@@ -2618,6 +2618,18 @@
       "message": "请在 Python 模式运行 / Run the Python preset"
     }
   ],
+  "avl": [
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          "AVL: use the Python preset"
+        ],
+        "done": true
+      },
+      "message": "请在 Python 模式运行 / Run the Python preset"
+    }
+  ],
   "factorial": [
     {
       "state": {
