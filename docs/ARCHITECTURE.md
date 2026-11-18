@@ -189,12 +189,21 @@ flowchart TD
 - **课程与目录**：`prim-minimum-spanning-tree` 8 步（init/start/push/pop/select/skip/component/done），`kruskal-minimum-spanning-tree` 6 步（init/sort/inspect-edge/reject-edge/union/done），stepId 与真实 Python `lesson_step=` 对齐。课程明确解释 MST 定义、MST 与最短路径的区别、Prim 的横切边贪心、Kruskal 的全局排序 + 并查集、为什么不能成环、为什么不同边集可以有相同最小总权重、负权允许、非连通森林以及有向图不支持。默认连通图没有 `component-start` 帧，Prim 的 `component` 步骤作为断连边界说明保留，步骤列表显示 0 帧。
 - **窄屏策略**：`g2.css` 在 980/560 断点把面板改为单列；390px 下 `mst-graph-svg` 保留最小可读宽度并在自身容器内滚动，并查集表也在容器内滚动，页面本身无横向溢出。
 
+### 3.17 拓扑排序与 AOE 关键路径：同一有向图骨架，两种教学叙事（G3）
+- **两个独立快照，不塞进 `graph`**：`topologicalSortSnapshotSchema`（`kind:'topological-sort'`）与 `criticalPathSnapshotSchema`（`kind:'critical-path'`）进入 `structureSchema` union。拓扑快照记录 `indegree`、FIFO `queue`、`queueAdded/queueRemoved`、`currentNodeId/currentEdgeId/neighborNodeId`、`indegreeChange`、`removedEdgeIds`、`topologicalOrder`、`hasCycle/cycleNodeIds`；AOE 快照记录 `sourceNodeIds/sinkNodeIds`、`topologicalOrder`、`veRows/vlRows`、`activities`（e/l/slack/critical）、`timeChange/activityChange`、`criticalEdgeIds`、`criticalPaths`、`projectDuration`、`hasCycle/cycleNodeIds`。两分支与 G1/G2 快照字段、校验和渲染路径互不影响。
+- **真实 Python，不是预置帧**：`dagExamples.ts` 中 Kahn 使用 `collections.deque` 的 FIFO 候选队列、稳定队列 id `q1...`、真实入度与逐边移除；AOE 先用同一套依赖逻辑求拓扑序，前推 `ve[v]=max(ve[u]+duration)`，后推 `vl[v]=min(vl[w]-duration)`，逐活动求 `e/l/slack`，再沿零余量边 DFS 枚举源到汇关键路径。两者都在产生帧前拒绝无向图、自环、重复同向边、未知端点；AOE 额外拒绝负/非有限持续时间。教学上限 12 节点 / 30 条原始边 / 20 条唯一边或 20 项活动。
+- **拓扑语义**：初始源点按顶点输入顺序入队，保证同输入每次播放一致；`inspect-edge` 与 `decrement` 是两个真实帧，减一前不伪装成已移除；入度到 0 才入队。队列为空但仍有顶点时，剩余顶点入度均大于 0，进入 `cycle` 并保留 `cycleNodeIds`，不把环硬塞进序列。非连通 DAG 合法，按分量分别排序；单点输出单元素序列，空图只产生 init/done。
+- **AOE 语义**：所有入度 0 的源事件 `ve=0`；所有出度 0 的汇事件 `vl=projectDuration`；`projectDuration=max(ve[sink])`。默认图有两条关键路径 `A→B→E→F` 与 `A→C→D→E→F`，不得只标一条；B–D 余量 1，正确显示为非关键。有向环拒绝，负持续时间拒绝；关键路径是决定最短工期的**最长**路径，课程明确与 Dijkstra 最短路径对照。枚举上限 12，超过时 Python 显式 `raise ValueError`，不静默截断。
+- **共享基础、不同面板、同一播放器**：`DAGVisuals.tsx` 复用 `mst-node` / `mst-edge` 基础图组件和 `layoutDag` 的最长路径分层坐标（源在左、后继在右），但拓扑面板是“图 + 入度表 + FIFO 队列 + 当前序列”，AOE 面板是“AOE 图 + 阶段轨道 + 事件 ve/vl 表 + 活动余量表 + 全部关键路径”。两者只消费 `currentEvent.structure`，没有第二个 `currentIndex`、第二个播放器或 message 解析；回退/跳帧只替换 `currentEvent`，图、辅助面板、变量与课程一起恢复。
+- **课程与目录**：`topological-sort-kahn` 8 步（init/seed/dequeue/inspect/decrement/enqueue/cycle/done），`aoe-critical-path` 7 步（init/topo/ve/vl/activity/cycle/done），stepId 与真实 Python `lesson_step=` 对齐。课程覆盖 DAG/入度、多合法序列、确定性、环、非连通、AOV/AOE 区别、最长路径 vs 最短路径、多源多汇、多关键路径、复杂度与常见错误。默认图没有 cycle 帧，两门课程的 cycle 步骤作为边界说明保留，步骤列表显示 0 帧。
+- **窄屏策略**：`g3.css` 在 980/560 断点把面板改为单列；390px 下 DAG 画布与表格在各自容器内滚动，页面本身无横向溢出。
+
 ## 4. 测试策略
 
 | 层次 | 工具 | 覆盖 |
 | --- | --- | --- |
 | 纯逻辑单测 | Vitest | 主题解析、播放状态机（含 `clampPlayback`）、可视化映射、i18n、题库数据、关键词路由、教学课程校验与阶段查找、**知识包 manifest/路径/中央目录/内容校验** |
-| 帧回归 | Vitest + legacy 快照 | 19 个 catalog 入口逐帧一致（12 个 legacy 动画 + 阶乘/斐波那契 + Dijkstra/Floyd/Bellman/Prim/Kruskal 真实 Python preset）、空/重复/单元素输入、排序终态 |
+| 帧回归 | Vitest + legacy 快照 | 21 个 catalog 入口逐帧一致（12 个 legacy 动画 + 阶乘/斐波那契 + Dijkstra/Floyd/Bellman/Prim/Kruskal/拓扑/关键路径真实 Python preset）、空/重复/单元素输入、排序终态 |
 | 存储单测 | Vitest + fake-indexeddb | 安装成功、刷新恢复、卸载隔离、重复安装、版本冲突/显式替换、写事务失败回滚、配额映射、存储不可用 |
 | 会话/上下文格式 | Vitest（node + jsdom） | 两文件 Schema、格式版本、未知键拒绝、`stepIndex === event.step`、大小限额、篡改检测、导出不重跑 |
 | MCP 协议 | Vitest + 官方 SDK `Client` + `InMemoryTransport` | 工具/提示词发现、参数校验、内置+包课程、中英 stepId、未知 lesson/step、会话写盘复验且从不覆盖、上下文读取（穿越/绝对路径/符号链接/超限/篡改/坏 JSON）、恶意包文本、Prompt 五级 |
@@ -204,7 +213,7 @@ flowchart TD
 | 结构语义（Stage 7B） | Vitest + Schema/模型/组件 | `structure` 合法与非法、重复 id、pop/dequeue 必带 removed、旧 Trace 兼容、栈/队列模型映射、空态、DOM 顺序与 removed 独立渲染 |
 | 单链表语义（Stage 7C） | Vitest + Schema/模型/组件/Python | linked-list 合法/空表/同值不同 ID/悬空引用/环/40 上限；主链由 nextId 而非数组顺序；HEAD/临时/断开/回退；真实 Node 示例 22 帧；DOM 节点、箭头目标、变化徽章 |
 | 工作区布局（Stage 7A） | Playwright + 真实页面 | 1440 并排 + 当前步骤落在 900 高首屏；1024/390 无页面级横向溢出；标签切换保留 Monaco 草稿、不自动运行；方向键切标签、Escape 关闭菜单；AI 错误折叠 |
-| 组件冒烟 | Vitest + jsdom + Testing Library | 19 个算法入口、时间轴交互与 **Trace 切换重置**、三态主题、语言切换、视图切换、调用栈面板与作用域变量、教学面板（高亮/禁用/跳转/空态）、知识包页（预览/确认/卸载/错误文案）、**App 级导入→课程→卸载** |
+| 组件冒烟 | Vitest + jsdom + Testing Library | 21 个算法入口、时间轴交互与 **Trace 切换重置**、三态主题、语言切换、视图切换、调用栈面板与作用域变量、教学面板（高亮/禁用/跳转/空态）、知识包页（预览/确认/卸载/错误文案）、**App 级导入→课程→卸载** |
 | 令牌契约 | Vitest 读 CSS 文本 | 两套主题 token 完整性、无硬编码颜色 |
 | E2E | Playwright（真实 Edge 无头 + `vite preview`） | Monaco 加载、Python 冒泡同步高亮、SyntaxError 波浪线出现/清除、草稿自动保存/刷新恢复、主题切换、真实 Pyodide 阶乘/斐波那契递归栈、JS 长短 Trace 切换重置、**教学步骤与真实数组/变量/调用栈同步**（`e2e/lab.spec.ts`）、**知识包导入→安装→刷新恢复→卸载**与**包内 Python 示例真实 Trace**（`e2e/packs.spec.ts`）、**Agent 会话导入→用户运行→步骤同步**与**导出真实帧→Schema 复验**（`e2e/session.spec.ts`） |
 | 栈/队列 E2E（Stage 7B） | Playwright + 真实 Pyodide | 真实 7 帧栈/队列、DOM 顶→底/前→后顺序、Peek/Front 不移除、Pop/Dequeue 与回退、1024/390 无横向溢出、Light/Dark、Reduced Motion、36 张真实截图 |
@@ -216,6 +225,8 @@ flowchart TD
 | 带权图语义（Stage 7F） | Vitest + Schema/模型/Python 契约 | 16 项 Schema：空图/单节点/不可达/有向/零权/相同距离、非法松弛（不降反升）、skip 隐藏改进、previous 环/断链、路径缺边/错成本、fresh/stale 堆项、重复节点/重复边/负权/NaN/Infinity/自环；7 项纯模型：距离表、target/settled/onPath、PQ 排序副本、relax 条带；真实 heapq 46 帧、7 relax、1 stale、F 6→4、路径/权重 |
 | MST 语义（G2） | Vitest + Schema/模型/Python 契约 | 6 项 `mst.test.ts`：21+15 帧逐帧 Schema、Prim 树/堆/选中/跳过、Kruskal 根/环/拒绝/union、两算法总权重 6 但边集不同；`g2Lessons.test.ts` 5 项校验课程 stepId 与真实 fixture 一致 |
 | MST E2E（G2） | Playwright + 真实 Pyodide | Prim 21 帧 heap/树/跳过/总权重、Kruskal 15 帧排序/并查集/接受/拒绝、两算法总权重一致但边集不同、负权/单点/非连通森林/有向拒绝；回退与任意跳帧同步；1440/390 无页面溢出；8 张 G2 截图 |
+| DAG 语义（G3） | Vitest + Schema/模型/Python 契约 | 11 项 `dag.test.ts` + 10 项 `dagEdgeCases.test.ts`：默认 32/22 帧逐帧 Schema、逐边依赖、队列/入度同帧、拓扑非连通/环/单点/空图、AOE 多源/多汇/单点/空图，并以独立 ve/vl/slack/最长路径枚举交叉验证；`g3Lessons.test.ts` 6 项校验课程 stepId 与真实 fixture 一致 |
+| DAG E2E（G3） | Playwright + 真实 Pyodide | Kahn 32 帧入度/队列/减一/入队/完成、非连通多合法顺序/环/单点、AOE 22 帧 ve/vl/余量/双关键路径、多源/多汇、负持续时间与无向图拒绝；回退与任意跳帧同步；1440/390 无页面溢出；7 张 G3 截图 |
 | Dijkstra E2E（Stage 7F） | Playwright + 真实 Pyodide | 默认 46 帧图/距离表/PQ 同帧；`F=6→4` 与 previous `C→E`；路径 A→B→E→F→G=7；回退 45→27→21→3 三面板一起恢复并重跑；非连通 11 帧、相同距离 27 帧、单节点 5 帧、负权拒绝并清空图；1024/390 无页面溢出、画布内部滚动、Light/Dark；62 张截图 |
 | 单链表 E2E（Stage 7C） | Playwright + 真实 Pyodide | 真实 22 帧：中间插入三阶段（create/set-next/predecessor）、删除绕过并清空 next、回退恢复、HEAD→NULL 遍历、同值不同 ID、栈/队列切换无残留、1024/390 无页面溢出、Reduced Motion、60 张截图 |
 | a11y | axe | **未实现**，见后续 Issue |
@@ -243,7 +254,8 @@ Stage 7E（已完成）: graph union Schema → 真实 Python deque/显式栈 �
 Stage 7F（已完成）: weighted-graph union Schema → 真实 Python heapq Dijkstra（负权拒绝/不可达 null）→ 距离表/previous/PQ/relax/stale/最终路径 → 独立 PriorityQueuePanel + 加权图渲染 → 回退/跳帧三面板同步 → 9 步双语课程 → 真实 Pyodide E2E + 62 张视觉截图
 G1（已完成，main）: Floyd-Warshall / Bellman-Ford 独立快照 → 负环检测与提前结束 → 距离矩阵/距离表 + 同帧带权图 → 6 步/8 步双语课程 → 3 条功能 E2E + 1 条视觉 E2E
 G2（已完成，feat/g2-mst）: prim-mst / kruskal-mst 独立快照 → 真实 Python heapq / 并查集 → Prim 树扩张+堆候选、Kruskal 排序+环检测+Union-Find 面板 → 共享基础图组件与单一播放器 → 8 步/6 步双语课程 → 4 条功能 E2E + 1 条视觉 E2E
-后续             : 拓扑排序、关键路径等算法继续复用带权图、真实 Python Trace 与单一播放器；双向链表等更多结构化课程；Agent ⇄ 浏览器实时同步（Stage 5B 候选）、RAG / 多轮记忆、练习页 Monaco、a11y / axe、远程包市场与签名
+G3（已完成，feat/g3-topo-critical-path）: topological-sort / critical-path 独立快照 → 真实 Python Kahn + AOE ve/vl/slack/path 枚举 → 有向图分层布局、入度/队列面板与事件/活动/路径面板 → 单一播放器与 8 步/7 步双语课程 → 4 条功能 E2E + 1 条视觉 E2E
+后续             : G4 / 树算法等更多结构化课程；Agent ⇄ 浏览器实时同步（Stage 5B 候选）、RAG / 多轮记忆、练习页 Monaco、a11y / axe、远程包市场与签名
 ```
 
 `Trace Event Schema v1` 是编辑器诊断、递归栈动画与后续树/图可视化的共同前置：Monaco 需要根据 `event.sourceLocation` 高亮，调用栈读取 `callStack`，任何新结构都必须先扩展协议再改渲染，不允许渲染层自己发明字段。
