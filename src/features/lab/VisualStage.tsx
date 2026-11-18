@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { buildVisualModel } from '../../domain/visualization/model';
 import type { GraphVisualModel } from '../../domain/visualization/graphModel';
 import type { BellmanVisualModel, FloydVisualModel } from '../../domain/visualization/shortestPathModel';
-import type { BellmanOperation, DijkstraOperation, FloydOperation } from '../../domain/trace/schema';
+import type { BellmanOperation, DijkstraOperation, FloydOperation, KruskalOperation, PrimOperation } from '../../domain/trace/schema';
 import type { GraphOperation } from '../../domain/trace/schema';
 import type { StructureOperation } from '../../domain/trace/schema';
 import type { TraceEvent } from '../../domain/trace/schema';
@@ -11,6 +11,8 @@ import { QueueVisual, StackVisual } from './StructureVisuals';import { LinkedLis
 import { BinaryTreeVisual } from './BinaryTreeVisual';
 import { GraphVisual } from './GraphVisual';
 import { BellmanFordVisual, FloydVisual } from './G1Visuals';
+import { KruskalVisual, PrimVisual } from './MSTVisuals';
+import type { KruskalVisualModel, PrimVisualModel } from '../../domain/visualization/mstModel';
 
 const GRAPH_OPERATION_KEYS: Record<GraphOperation, string> = {
   init: 'graphOpInit',
@@ -102,6 +104,46 @@ const BELLMAN_HINT_KEYS: Record<BellmanOperation, string> = {
   'early-exit': 'bellmanHintEarlyExit',
   'negative-cycle': 'bellmanHintCycle',
   done: 'bellmanHintDone',
+};
+
+const PRIM_OPERATION_KEYS: Record<PrimOperation, string> = {
+  init: 'primOpInit',
+  start: 'primOpStart',
+  push: 'primOpPush',
+  pop: 'primOpPop',
+  'select-edge': 'primOpSelect',
+  skip: 'primOpSkip',
+  'component-start': 'primOpComponent',
+  done: 'primOpDone',
+};
+
+const PRIM_HINT_KEYS: Record<PrimOperation, string> = {
+  init: 'primHintInit',
+  start: 'primHintStart',
+  push: 'primHintPush',
+  pop: 'primHintPop',
+  'select-edge': 'primHintSelect',
+  skip: 'primHintSkip',
+  'component-start': 'primHintComponent',
+  done: 'primHintDone',
+};
+
+const KRUSKAL_OPERATION_KEYS: Record<KruskalOperation, string> = {
+  init: 'kruskalOpInit',
+  sort: 'kruskalOpSort',
+  'inspect-edge': 'kruskalOpInspect',
+  'reject-edge': 'kruskalOpReject',
+  union: 'kruskalOpUnion',
+  done: 'kruskalOpDone',
+};
+
+const KRUSKAL_HINT_KEYS: Record<KruskalOperation, string> = {
+  init: 'kruskalHintInit',
+  sort: 'kruskalHintSort',
+  'inspect-edge': 'kruskalHintInspect',
+  'reject-edge': 'kruskalHintReject',
+  union: 'kruskalHintUnion',
+  done: 'kruskalHintDone',
 };
 
 function graphOperationText(model: GraphVisualModel, t: (key: string) => string): string {
@@ -283,6 +325,24 @@ export function VisualStage({ event }: { event: TraceEvent | undefined }) {
         />
       );
       break;
+    case 'prim-mst':
+      content = (
+        <PrimVisual
+          model={model as PrimVisualModel}
+          operationText={t(PRIM_OPERATION_KEYS[model.operation])}
+          hint={t(PRIM_HINT_KEYS[model.operation])}
+        />
+      );
+      break;
+    case 'kruskal-mst':
+      content = (
+        <KruskalVisual
+          model={model as KruskalVisualModel}
+          operationText={t(KRUSKAL_OPERATION_KEYS[model.operation])}
+          hint={t(KRUSKAL_HINT_KEYS[model.operation])}
+        />
+      );
+      break;
     case 'graph-traversal': {
       const operationText = graphOperationText(model, t);
       if (model.algorithm === 'dijkstra') {
@@ -401,7 +461,9 @@ export function VisualStage({ event }: { event: TraceEvent | undefined }) {
     model.kind === 'binary-tree' ||
     model.kind === 'graph-traversal' ||
     model.kind === 'floyd-matrix' ||
-    model.kind === 'bellman-table';
+    model.kind === 'bellman-table' ||
+    model.kind === 'prim-mst' ||
+    model.kind === 'kruskal-mst';
   return (
     <div
       className={`stage${structured ? ' has-structure' : ''}`}

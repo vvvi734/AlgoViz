@@ -1951,6 +1951,484 @@ export const bellmanFordSnapshotSchema = z
   });
 export type BellmanFordSnapshot = z.infer<typeof bellmanFordSnapshotSchema>;
 
+/**
+ * G2 minimum spanning tree batch.
+ *
+ * MST input is undirected only. Negative weights are valid here, unlike
+ * Dijkstra, so the existing non-negative contract is not reused. Prim is a
+ * growing cut with a real heapq frontier; Kruskal is a sorted edge stream plus
+ * a live union-find parent/rank table. A disconnected graph produces a forest
+ * and both schemas enforce that it is never described as one spanning tree.
+ */
+export const PRIM_OPERATIONS = ['init', 'start', 'push', 'pop', 'select-edge', 'skip', 'component-start', 'done'] as const;
+export type PrimOperation = (typeof PRIM_OPERATIONS)[number];
+
+export const KRUSKAL_OPERATIONS = ['init', 'sort', 'inspect-edge', 'reject-edge', 'union', 'done'] as const;
+export type KruskalOperation = (typeof KRUSKAL_OPERATIONS)[number];
+
+const mstFrontierEntrySchema = z.object({
+  id: z.string().min(1).max(LIMITS.MAX_NAME_CHARS),
+  edgeId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS),
+  fromId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS),
+  toId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS),
+  weight: z.number().finite(),
+});
+
+const primSelectedEdgeSchema = z.object({
+  edgeId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS),
+  fromId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS),
+  toId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS),
+  weight: z.number().finite(),
+  newNodeId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS),
+});
+
+const unionFindRowSchema = z.object({
+  nodeId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS),
+  parentId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS),
+  rank: z.number().int().nonnegative().max(32),
+  rootId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS),
+});
+
+const kruskalUnionSchema = z.object({
+  edgeId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS),
+  rootA: z.string().min(1).max(LIMITS.MAX_NAME_CHARS),
+  rootB: z.string().min(1).max(LIMITS.MAX_NAME_CHARS),
+  mergedRoot: z.string().min(1).max(LIMITS.MAX_NAME_CHARS),
+  attachedRoot: z.string().min(1).max(LIMITS.MAX_NAME_CHARS),
+  rankBefore: z.number().int().nonnegative().max(32),
+  rankAfter: z.number().int().nonnegative().max(32),
+  parentOfAttachedBefore: z.string().min(1).max(LIMITS.MAX_NAME_CHARS),
+  parentOfAttachedAfter: z.string().min(1).max(LIMITS.MAX_NAME_CHARS),
+  componentCountBefore: z.number().int().nonnegative().max(GRAPH_LIMITS.MAX_NODES),
+  componentCountAfter: z.number().int().nonnegative().max(GRAPH_LIMITS.MAX_NODES),
+  mergedSize: z.number().int().positive().max(GRAPH_LIMITS.MAX_NODES),
+});
+
+function graphComponentCount(
+  nodes: Array<{ id: string }>,
+  edges: Array<{ fromId: string; toId: string }>,
+): number {
+  const adjacency = new Map<string, string[]>();
+  nodes.forEach((node) => adjacency.set(node.id, []));
+  edges.forEach((edge) => {
+    adjacency.get(edge.fromId)?.push(edge.toId);
+    adjacency.get(edge.toId)?.push(edge.fromId);
+  });
+  const seen = new Set<string>();
+  let count = 0;
+  for (const node of nodes) {
+    if (seen.has(node.id)) continue;
+    count += 1;
+    const stack = [node.id];
+    seen.add(node.id);
+    while (stack.length) {
+      const current = stack.pop();
+      if (current === undefined) continue;
+      for (const neighbor of adjacency.get(current) ?? []) {
+        if (!seen.has(neighbor)) {
+          seen.add(neighbor);
+          stack.push(neighbor);
+        }
+      }
+    }
+  }
+  return count;
+}
+
+export const primMstSnapshotSchema = z
+  .object({
+    kind: z.literal('prim-mst'),
+    algorithm: z.literal('prim'),
+    operation: z.enum(PRIM_OPERATIONS),
+    nodes: z.array(graphNodeSchema).max(GRAPH_LIMITS.MAX_NODES),
+    edges: z.array(signedWeightEdgeSchema).max(GRAPH_LIMITS.MAX_EDGES),
+    directed: z.literal(false),
+    startNodeId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+    /** Total connected components in the whole graph, not just opened ones. */
+    componentCount: z.number().int().nonnegative().max(GRAPH_LIMITS.MAX_NODES),
+    /** Index of the component currently being grown (0-based). */
+    componentIndex: z.number().int().nonnegative().max(GRAPH_LIMITS.MAX_NODES - 1),
+    treeNodeIds: z.array(z.string().min(1).max(LIMITS.MAX_NAME_CHARS)).max(GRAPH_LIMITS.MAX_NODES),
+    componentNodeIds: z.array(z.string().min(1).max(LIMITS.MAX_NAME_CHARS)).max(GRAPH_LIMITS.MAX_NODES),
+    visitOrder: z.array(z.string().min(1).max(LIMITS.MAX_NAME_CHARS)).max(GRAPH_LIMITS.MAX_NODES),
+    selectedEdgeIds: z.array(z.string().min(1).max(LIMITS.MAX_NAME_CHARS)).max(GRAPH_LIMITS.MAX_EDGES),
+    skippedEdgeIds: z.array(z.string().min(1).max(LIMITS.MAX_NAME_CHARS)).max(GRAPH_LIMITS.MAX_EDGES),
+    currentEdgeId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+    frontierKind: z.literal('priority-queue'),
+    frontierItems: z.array(mstFrontierEntrySchema).max(GRAPH_LIMITS.MAX_EDGES),
+    frontierAdded: mstFrontierEntrySchema.nullable(),
+    frontierRemoved: mstFrontierEntrySchema.nullable(),
+    selectedEdge: primSelectedEdgeSchema.nullable(),
+    totalWeight: z.number().finite(),
+    connected: z.boolean(),
+    forest: z.boolean(),
+  })
+  .superRefine((snapshot, ctx) => {
+    const add = (path: Array<string | number>, message: string) => {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path, message });
+    };
+    const ids = validateSignedGraph(snapshot, add);
+    const edgeById = new Map(snapshot.edges.map((edge) => [edge.id, edge]));
+    const n = snapshot.nodes.length;
+    const components = graphComponentCount(snapshot.nodes, snapshot.edges);
+    if (snapshot.componentCount !== components) add(['componentCount'], 'componentCount must match the real graph components');
+    if (snapshot.connected !== (components === 1)) add(['connected'], 'connected must be true only for one component');
+    if (snapshot.forest !== (components > 1)) add(['forest'], 'forest must be true for a disconnected graph');
+
+    if (n === 0) {
+      if (snapshot.startNodeId !== null) add(['startNodeId'], 'an empty graph has no start');
+      if (snapshot.operation !== 'init' && snapshot.operation !== 'done') add(['operation'], 'an empty graph may only emit init or done');
+      if (snapshot.componentCount !== 0 || snapshot.componentIndex !== 0) add(['componentCount'], 'an empty graph has no components');
+      if (snapshot.treeNodeIds.length || snapshot.componentNodeIds.length || snapshot.visitOrder.length) {
+        add(['treeNodeIds'], 'an empty graph has no tree');
+      }
+      if (snapshot.selectedEdgeIds.length || snapshot.skippedEdgeIds.length || snapshot.frontierItems.length) {
+        add(['selectedEdgeIds'], 'an empty graph has no edges or frontier');
+      }
+      if (snapshot.currentEdgeId || snapshot.selectedEdge || snapshot.frontierAdded || snapshot.frontierRemoved) {
+        add(['currentEdgeId'], 'an empty graph has no current edge');
+      }
+      if (snapshot.totalWeight !== 0) add(['totalWeight'], 'an empty graph has zero weight');
+      return;
+    }
+
+    if (snapshot.startNodeId === null || !ids.has(snapshot.startNodeId)) add(['startNodeId'], 'startNodeId must name a real node');
+    if (snapshot.componentIndex >= components) add(['componentIndex'], 'componentIndex exceeds the component count');
+    if (snapshot.operation === 'init' && snapshot.componentIndex !== 0) add(['componentIndex'], 'init starts at component 0');
+    const treeSet = new Set<string>();
+    snapshot.treeNodeIds.forEach((id, index) => {
+      if (!ids.has(id)) add(['treeNodeIds', index], 'tree node is unknown');
+      if (treeSet.has(id)) add(['treeNodeIds', index], `tree repeats node "${id}"`);
+      treeSet.add(id);
+    });
+    if (snapshot.visitOrder.length !== snapshot.treeNodeIds.length || snapshot.visitOrder.some((id, index) => id !== snapshot.treeNodeIds[index])) {
+      add(['visitOrder'], 'visitOrder must record the real tree insertion order');
+    }
+    const componentSet = new Set<string>();
+    snapshot.componentNodeIds.forEach((id, index) => {
+      if (!treeSet.has(id)) add(['componentNodeIds', index], 'component node must already be in the tree');
+      if (componentSet.has(id)) add(['componentNodeIds', index], `component repeats node "${id}"`);
+      componentSet.add(id);
+    });
+    if (snapshot.operation !== 'init' && snapshot.componentNodeIds.length === 0) {
+      add(['componentNodeIds'], 'an opened component must contain its start node');
+    }
+
+    const selected = new Set<string>();
+    snapshot.selectedEdgeIds.forEach((id, index) => {
+      const edge = edgeById.get(id);
+      if (!edge) add(['selectedEdgeIds', index], 'selected edge is unknown');
+      if (selected.has(id)) add(['selectedEdgeIds', index], 'selected edge is duplicated');
+      selected.add(id);
+      if (edge && (!treeSet.has(edge.fromId) || !treeSet.has(edge.toId))) {
+        add(['selectedEdgeIds', index], 'both endpoints of a selected edge must be in the tree');
+      }
+    });
+    const skipped = new Set<string>();
+    snapshot.skippedEdgeIds.forEach((id, index) => {
+      const edge = edgeById.get(id);
+      if (!edge) add(['skippedEdgeIds', index], 'skipped edge is unknown');
+      if (skipped.has(id)) add(['skippedEdgeIds', index], 'skipped edge is duplicated');
+      if (selected.has(id)) add(['skippedEdgeIds', index], 'an edge cannot be both selected and skipped');
+      skipped.add(id);
+      if (edge && (!treeSet.has(edge.fromId) || !treeSet.has(edge.toId))) {
+        add(['skippedEdgeIds', index], 'a skipped edge must be internal to the tree');
+      }
+    });
+    const openedComponents = Math.min(snapshot.componentIndex + 1, components);
+    if (snapshot.operation !== 'init' && snapshot.selectedEdgeIds.length !== snapshot.treeNodeIds.length - openedComponents) {
+      add(['selectedEdgeIds'], 'a forest with k opened components needs |tree| - k selected edges');
+    }
+    const selectedWeight = snapshot.selectedEdgeIds.reduce((sum, id) => sum + (edgeById.get(id)?.weight ?? 0), 0);
+    if (Math.abs(snapshot.totalWeight - selectedWeight) > 1e-9 * Math.max(1, Math.abs(selectedWeight))) {
+      add(['totalWeight'], 'totalWeight must equal the sum of selected edge weights');
+    }
+
+    const frontierIds = new Set<string>();
+    snapshot.frontierItems.forEach((entry, index) => {
+      const edge = edgeById.get(entry.edgeId);
+      if (!edge) add(['frontierItems', index, 'edgeId'], 'frontier edge is unknown');
+      if (frontierIds.has(entry.id)) add(['frontierItems', index, 'id'], 'frontier entry id is duplicated');
+      frontierIds.add(entry.id);
+      const sameDirection = edge && ((edge.fromId === entry.fromId && edge.toId === entry.toId) || (edge.fromId === entry.toId && edge.toId === entry.fromId));
+      if (edge && (!sameDirection || edge.weight !== entry.weight)) {
+        add(['frontierItems', index], 'frontier entry must copy the real edge');
+      }
+      if (edge && !treeSet.has(edge.fromId) && !treeSet.has(edge.toId)) {
+        add(['frontierItems', index], 'a frontier edge must touch the tree cut');
+      }
+    });
+
+    const edgeOperations: PrimOperation[] = ['pop', 'skip', 'select-edge'];
+    const currentEdge = snapshot.currentEdgeId ? edgeById.get(snapshot.currentEdgeId) : undefined;
+    if (edgeOperations.includes(snapshot.operation)) {
+      if (!currentEdge) add(['currentEdgeId'], `${snapshot.operation} must name a real edge`);
+    } else if (snapshot.currentEdgeId) {
+      add(['currentEdgeId'], `${snapshot.operation} must not carry a current edge`);
+    }
+
+    if (snapshot.operation === 'push') {
+      if (!snapshot.frontierAdded) add(['frontierAdded'], 'push must report the added heap entry');
+      if (snapshot.frontierRemoved) add(['frontierRemoved'], 'push does not remove a heap entry');
+      if (snapshot.frontierAdded && !frontierIds.has(snapshot.frontierAdded.id)) add(['frontierAdded'], 'added entry must be in the frontier');
+    } else if (snapshot.frontierAdded) {
+      add(['frontierAdded'], 'only push frames add a frontier entry');
+    }
+    if (snapshot.operation === 'pop') {
+      if (!snapshot.frontierRemoved) add(['frontierRemoved'], 'pop must report the removed heap entry');
+      if (snapshot.frontierAdded) add(['frontierAdded'], 'pop does not add a heap entry');
+      if (snapshot.frontierRemoved && snapshot.currentEdgeId !== snapshot.frontierRemoved.edgeId) {
+        add(['currentEdgeId'], 'pop currentEdgeId must equal the removed entry edge');
+      }
+      if (snapshot.frontierRemoved && frontierIds.has(snapshot.frontierRemoved.id)) {
+        add(['frontierRemoved'], 'a popped entry cannot remain in the frontier');
+      }
+    } else if (snapshot.frontierRemoved) {
+      add(['frontierRemoved'], 'only pop frames remove a frontier entry');
+    }
+
+    if (snapshot.operation === 'select-edge') {
+      if (!snapshot.selectedEdge) add(['selectedEdge'], 'select-edge must report the selected edge and new node');
+      if (snapshot.selectedEdge) {
+        if (snapshot.selectedEdge.edgeId !== snapshot.currentEdgeId) add(['selectedEdge', 'edgeId'], 'selectedEdge must match currentEdgeId');
+        if (!selected.has(snapshot.selectedEdge.edgeId)) add(['selectedEdge', 'edgeId'], 'selectedEdge must be in selectedEdgeIds');
+        if (!treeSet.has(snapshot.selectedEdge.newNodeId)) add(['selectedEdge', 'newNodeId'], 'newNodeId must be in the tree');
+        if (snapshot.selectedEdge.newNodeId !== snapshot.selectedEdge.fromId && snapshot.selectedEdge.newNodeId !== snapshot.selectedEdge.toId) {
+          add(['selectedEdge', 'newNodeId'], 'newNodeId must be one endpoint of the selected edge');
+        }
+      }
+    } else if (snapshot.selectedEdge) {
+      add(['selectedEdge'], 'only select-edge frames carry a selected edge');
+    }
+    if (snapshot.operation === 'skip' && snapshot.currentEdgeId && !skipped.has(snapshot.currentEdgeId)) {
+      add(['skippedEdgeIds'], 'a skip frame must record the skipped edge');
+    }
+    if (snapshot.operation === 'start') {
+      if (snapshot.treeNodeIds.length !== 1 || snapshot.treeNodeIds[0] !== snapshot.startNodeId) add(['treeNodeIds'], 'start adds exactly the start node');
+      if (snapshot.selectedEdgeIds.length || snapshot.skippedEdgeIds.length) add(['selectedEdgeIds'], 'start has no edges yet');
+      if (snapshot.componentIndex !== 0) add(['componentIndex'], 'the start component is index 0');
+    }
+    if (snapshot.operation === 'component-start') {
+      if (snapshot.componentIndex === 0) add(['componentIndex'], 'component-start opens a later component');
+      if (snapshot.componentNodeIds.length !== 1) add(['componentNodeIds'], 'component-start adds one node');
+      if (snapshot.currentEdgeId || snapshot.selectedEdge) add(['currentEdgeId'], 'component-start carries no edge');
+    }
+    if (snapshot.operation === 'init') {
+      if (snapshot.treeNodeIds.length || snapshot.selectedEdgeIds.length || snapshot.skippedEdgeIds.length) {
+        add(['treeNodeIds'], 'init has no tree or edges');
+      }
+      if (snapshot.totalWeight !== 0) add(['totalWeight'], 'init has zero weight');
+      if (snapshot.frontierItems.length || snapshot.frontierAdded || snapshot.frontierRemoved) add(['frontierItems'], 'init has an empty frontier');
+    }
+    if (snapshot.operation === 'done') {
+      if (snapshot.frontierItems.length) add(['frontierItems'], 'done requires an empty frontier');
+      if (snapshot.currentEdgeId || snapshot.selectedEdge) add(['currentEdgeId'], 'done carries no current edge');
+      if (snapshot.treeNodeIds.length !== n) add(['treeNodeIds'], 'done must cover every node');
+      if (snapshot.selectedEdgeIds.length !== n - components) add(['selectedEdgeIds'], 'done needs V - components edges');
+    }
+  });
+export type PrimMstSnapshot = z.infer<typeof primMstSnapshotSchema>;
+
+export const kruskalMstSnapshotSchema = z
+  .object({
+    kind: z.literal('kruskal-mst'),
+    algorithm: z.literal('kruskal'),
+    operation: z.enum(KRUSKAL_OPERATIONS),
+    nodes: z.array(graphNodeSchema).max(GRAPH_LIMITS.MAX_NODES),
+    edges: z.array(signedWeightEdgeSchema).max(GRAPH_LIMITS.MAX_EDGES),
+    directed: z.literal(false),
+    sortedEdgeIds: z.array(z.string().min(1).max(LIMITS.MAX_NAME_CHARS)).max(GRAPH_LIMITS.MAX_EDGES),
+    currentIndex: z.number().int().nonnegative().max(GRAPH_LIMITS.MAX_EDGES),
+    currentEdgeId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+    selectedEdgeIds: z.array(z.string().min(1).max(LIMITS.MAX_NAME_CHARS)).max(GRAPH_LIMITS.MAX_EDGES),
+    rejectedEdgeIds: z.array(z.string().min(1).max(LIMITS.MAX_NAME_CHARS)).max(GRAPH_LIMITS.MAX_EDGES),
+    parent: z.array(unionFindRowSchema).max(GRAPH_LIMITS.MAX_NODES),
+    componentCount: z.number().int().nonnegative().max(GRAPH_LIMITS.MAX_NODES),
+    formsCycle: z.boolean(),
+    union: kruskalUnionSchema.nullable(),
+    totalWeight: z.number().finite(),
+    connected: z.boolean(),
+    forest: z.boolean(),
+  })
+  .superRefine((snapshot, ctx) => {
+    const add = (path: Array<string | number>, message: string) => {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path, message });
+    };
+    const ids = validateSignedGraph(snapshot, add);
+    const edgeById = new Map(snapshot.edges.map((edge) => [edge.id, edge]));
+    const n = snapshot.nodes.length;
+    const edgeOperations: KruskalOperation[] = ['inspect-edge', 'reject-edge', 'union'];
+
+    if (n === 0) {
+      if (snapshot.operation !== 'init' && snapshot.operation !== 'sort' && snapshot.operation !== 'done') {
+        add(['operation'], 'an empty graph may only emit init, sort or done');
+      }
+      if (snapshot.sortedEdgeIds.length || snapshot.selectedEdgeIds.length || snapshot.rejectedEdgeIds.length) {
+        add(['sortedEdgeIds'], 'an empty graph has no edges');
+      }
+      if (snapshot.parent.length || snapshot.componentCount !== 0) add(['parent'], 'an empty graph has no union-find rows');
+      if (snapshot.currentEdgeId || snapshot.union || snapshot.currentIndex !== 0) add(['currentEdgeId'], 'an empty graph has no current edge');
+      if (snapshot.formsCycle) add(['formsCycle'], 'an empty graph cannot form a cycle');
+      if (snapshot.totalWeight !== 0) add(['totalWeight'], 'an empty graph has zero weight');
+      return;
+    }
+
+    const rowById = new Map<string, z.infer<typeof unionFindRowSchema>>();
+    snapshot.parent.forEach((row, index) => {
+      if (!ids.has(row.nodeId)) add(['parent', index, 'nodeId'], 'union-find row names an unknown node');
+      if (!ids.has(row.parentId)) add(['parent', index, 'parentId'], 'parentId names an unknown node');
+      if (rowById.has(row.nodeId)) add(['parent', index], 'duplicate union-find row');
+      rowById.set(row.nodeId, row);
+    });
+    if (rowById.size !== n) add(['parent'], 'union-find table must cover every node');
+
+    const rootOf = (nodeId: string): string | null => {
+      const chain = new Set<string>();
+      let cursor = nodeId;
+      for (let guard = 0; guard <= n; guard += 1) {
+        const row = rowById.get(cursor);
+        if (!row) return null;
+        if (row.parentId === cursor) return cursor;
+        if (chain.has(cursor)) return null;
+        chain.add(cursor);
+        cursor = row.parentId;
+      }
+      return null;
+    };
+    snapshot.parent.forEach((row, index) => {
+      const root = rootOf(row.nodeId);
+      if (!root) {
+        add(['parent', index], 'parent pointers must form an acyclic forest rooted at self');
+      } else if (row.rootId !== root) {
+        add(['parent', index, 'rootId'], 'rootId must be the real find() result');
+      }
+    });
+    const rootIds = new Set<string>();
+    snapshot.nodes.forEach((node) => {
+      const root = rootOf(node.id);
+      if (root) rootIds.add(root);
+    });
+    const roots = rootIds.size;
+    if (snapshot.componentCount !== roots) add(['componentCount'], 'componentCount must equal the number of real roots');
+    if (snapshot.connected !== (roots === 1)) add(['connected'], 'connected must be true only when one root remains');
+    if (snapshot.forest !== (roots > 1)) add(['forest'], 'forest must be true when several roots remain');
+
+    const sorted = new Set<string>();
+    snapshot.sortedEdgeIds.forEach((id, index) => {
+      if (!edgeById.has(id)) add(['sortedEdgeIds', index], 'sorted edge is unknown');
+      if (sorted.has(id)) add(['sortedEdgeIds', index], 'sorted edge is duplicated');
+      sorted.add(id);
+    });
+    if (snapshot.operation === 'init') {
+      if (snapshot.sortedEdgeIds.length) add(['sortedEdgeIds'], 'init runs before sorting');
+    } else if (snapshot.sortedEdgeIds.length !== snapshot.edges.length) {
+      add(['sortedEdgeIds'], 'after sorting, every edge must appear exactly once');
+    }
+    if ((snapshot.operation === 'init' || snapshot.operation === 'sort') && snapshot.currentIndex !== 0) {
+      add(['currentIndex'], `${snapshot.operation} starts at index 0`);
+    }
+    if (snapshot.operation !== 'done' && snapshot.currentIndex >= Math.max(1, snapshot.edges.length)) {
+      add(['currentIndex'], 'currentIndex exceeds the sorted edge list');
+    }
+
+    const selected = new Set<string>();
+    snapshot.selectedEdgeIds.forEach((id, index) => {
+      if (!edgeById.has(id)) add(['selectedEdgeIds', index], 'selected edge is unknown');
+      if (selected.has(id)) add(['selectedEdgeIds', index], 'selected edge is duplicated');
+      selected.add(id);
+    });
+    const rejected = new Set<string>();
+    snapshot.rejectedEdgeIds.forEach((id, index) => {
+      if (!edgeById.has(id)) add(['rejectedEdgeIds', index], 'rejected edge is unknown');
+      if (rejected.has(id)) add(['rejectedEdgeIds', index], 'rejected edge is duplicated');
+      if (selected.has(id)) add(['rejectedEdgeIds', index], 'an edge cannot be both accepted and rejected');
+      rejected.add(id);
+    });
+    if (snapshot.selectedEdgeIds.length !== n - roots) {
+      add(['selectedEdgeIds'], 'a union-find forest with c components needs V - c accepted edges');
+    }
+    const selectedWeight = snapshot.selectedEdgeIds.reduce((sum, id) => sum + (edgeById.get(id)?.weight ?? 0), 0);
+    if (Math.abs(snapshot.totalWeight - selectedWeight) > 1e-9 * Math.max(1, Math.abs(selectedWeight))) {
+      add(['totalWeight'], 'totalWeight must equal the sum of accepted edge weights');
+    }
+
+    const edge = snapshot.currentEdgeId ? edgeById.get(snapshot.currentEdgeId) : undefined;
+    if (edgeOperations.includes(snapshot.operation)) {
+      if (!edge) add(['currentEdgeId'], `${snapshot.operation} must name a real edge`);
+      if (edge && snapshot.sortedEdgeIds[snapshot.currentIndex] !== edge.id) {
+        add(['currentIndex'], 'currentIndex must point at currentEdgeId in sortedEdgeIds');
+      }
+    } else if (snapshot.currentEdgeId) {
+      add(['currentEdgeId'], `${snapshot.operation} must not carry a current edge`);
+    }
+    if (edge) {
+      const rowA = rowById.get(edge.fromId);
+      const rowB = rowById.get(edge.toId);
+      const same = rowA && rowB ? rowA.rootId === rowB.rootId : false;
+      // `union` records the parent table *after* the merge, so both endpoints
+      // deliberately share a root there; only inspect/reject see the pre-union roots.
+      if (snapshot.operation !== 'union' && snapshot.formsCycle !== same) {
+        add(['formsCycle'], 'formsCycle must be the real pre-union root comparison');
+      }
+      if (snapshot.operation === 'reject-edge' && !snapshot.formsCycle) add(['formsCycle'], 'reject-edge needs a real cycle');
+      if (snapshot.operation === 'union' && snapshot.formsCycle) add(['formsCycle'], 'a union must connect different roots');
+    } else if (snapshot.formsCycle) {
+      add(['formsCycle'], 'only an edge frame can form a cycle');
+    }
+
+    if (snapshot.operation === 'inspect-edge') {
+      if (edge && (selected.has(edge.id) || rejected.has(edge.id))) add(['currentEdgeId'], 'inspect-edge sees a fresh edge');
+      if (snapshot.union) add(['union'], 'inspect-edge does not union yet');
+    }
+    if (snapshot.operation === 'reject-edge') {
+      if (edge && !rejected.has(edge.id)) add(['rejectedEdgeIds'], 'reject-edge must record the rejected edge');
+      if (snapshot.union) add(['union'], 'a rejected edge does not union');
+    }
+    if (snapshot.operation === 'union') {
+      if (!edge || !selected.has(edge.id)) add(['selectedEdgeIds'], 'a union frame must accept the current edge');
+      if (!snapshot.union) add(['union'], 'a union frame must report the real parent change');
+      if (snapshot.union) {
+        const detail = snapshot.union;
+        if (detail.edgeId !== edge?.id) add(['union', 'edgeId'], 'union detail must name the current edge');
+        if (detail.rootA === detail.rootB) add(['union', 'rootA'], 'a union needs two different roots');
+        if (detail.mergedRoot !== detail.rootA && detail.mergedRoot !== detail.rootB) {
+          add(['union', 'mergedRoot'], 'mergedRoot must be one of the two roots');
+        }
+        if (detail.attachedRoot === detail.mergedRoot) add(['union', 'attachedRoot'], 'merged root cannot attach to itself');
+        if (detail.attachedRoot !== detail.rootA && detail.attachedRoot !== detail.rootB) {
+          add(['union', 'attachedRoot'], 'attachedRoot must be one of the two roots');
+        }
+        if (detail.parentOfAttachedBefore !== detail.attachedRoot) add(['union', 'parentOfAttachedBefore'], 'attached root was its own parent');
+        if (detail.parentOfAttachedAfter !== detail.mergedRoot) add(['union', 'parentOfAttachedAfter'], 'attached root must point at the merged root');
+        const attachedRow = rowById.get(detail.attachedRoot);
+        if (attachedRow && attachedRow.parentId !== detail.mergedRoot) add(['union', 'attachedRoot'], 'post-union parent must match');
+        const mergedRow = rowById.get(detail.mergedRoot);
+        if (mergedRow && mergedRow.rank !== detail.rankAfter) add(['union', 'rankAfter'], 'rankAfter must match the real merged root rank');
+        if (detail.componentCountAfter !== detail.componentCountBefore - 1) {
+          add(['union', 'componentCountAfter'], 'a union removes exactly one component');
+        }
+        if (detail.componentCountAfter !== snapshot.componentCount) add(['union', 'componentCountAfter'], 'union detail must match snapshot componentCount');
+      }
+    } else if (snapshot.union) {
+      add(['union'], 'only union frames carry union detail');
+    }
+
+    if (snapshot.operation === 'init' || snapshot.operation === 'sort') {
+      if (snapshot.currentEdgeId || snapshot.selectedEdgeIds.length || snapshot.rejectedEdgeIds.length) {
+        add(['selectedEdgeIds'], `${snapshot.operation} has not inspected an edge`);
+      }
+      if (snapshot.union) add(['union'], `${snapshot.operation} has not unioned anything`);
+      if (snapshot.totalWeight !== 0) add(['totalWeight'], `${snapshot.operation} has zero weight`);
+    }
+    if (snapshot.operation === 'done') {
+      if (snapshot.currentEdgeId) add(['currentEdgeId'], 'done carries no current edge');
+      if (snapshot.union) add(['union'], 'done carries no union change');
+      if (snapshot.currentIndex !== snapshot.edges.length) add(['currentIndex'], 'done points past the last sorted edge');
+    }
+  });
+export type KruskalMstSnapshot = z.infer<typeof kruskalMstSnapshotSchema>;
+
+
 /** Stage 7B stack/queue + Stage 7C linked-list + Stage 7D binary-tree + Stage 7E/7F/G1 graphs. */
 export const structureSchema = z.union([
   structureSnapshotSchema,
@@ -1960,6 +2438,8 @@ export const structureSchema = z.union([
   weightedGraphSnapshotSchema,
   floydWarshallSnapshotSchema,
   bellmanFordSnapshotSchema,
+  primMstSnapshotSchema,
+  kruskalMstSnapshotSchema,
 ]);
 export type AnyStructureSnapshot = z.infer<typeof structureSchema>;
 

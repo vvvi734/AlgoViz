@@ -20,6 +20,12 @@ import {
   bellmanFordPythonExample,
   floydWarshallPythonExample,
 } from './shortestPathExamples';
+import {
+  KRUSKAL_DEFAULT_INPUT,
+  PRIM_DEFAULT_INPUT,
+  kruskalPythonExample,
+  primPythonExample,
+} from './mstExamples';
 
 export const STACK_DEFAULT_INPUT: unknown = [
   ['push', 3],
@@ -135,6 +141,8 @@ const STRUCTURE_PYTHON: Record<string, string> = {
   dijkstra: dijkstraPythonExample(),
   'floyd-warshall': floydWarshallPythonExample(),
   'bellman-ford': bellmanFordPythonExample(),
+  prim: primPythonExample(),
+  kruskal: kruskalPythonExample(),
 };
 
 const STRUCTURE_INPUT: Record<string, unknown> = {
@@ -146,6 +154,8 @@ const STRUCTURE_INPUT: Record<string, unknown> = {
   dijkstra: DIJKSTRA_DEFAULT_INPUT,
   'floyd-warshall': FLOYD_DEFAULT_INPUT,
   'bellman-ford': BELLMAN_DEFAULT_INPUT,
+  prim: PRIM_DEFAULT_INPUT,
+  kruskal: KRUSKAL_DEFAULT_INPUT,
 };
 
 export function structurePythonExample(algorithmId: string): string | undefined {

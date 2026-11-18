@@ -61,7 +61,9 @@ export function LabView({
   const showGraphStepPeek =
     lab.currentAlgo === 'bfs' || lab.currentAlgo === 'dfs' || lab.currentAlgo === 'dijkstra' ||
     lab.currentAlgo === 'floyd-warshall' ||
-    lab.currentAlgo === 'bellman-ford';
+    lab.currentAlgo === 'bellman-ford' ||
+    lab.currentAlgo === 'prim' ||
+    lab.currentAlgo === 'kruskal';
   const highlightLine = !lab.traceStale && currentEvent?.sourceLocation?.line
     ? currentEvent.sourceLocation.line
     : null;

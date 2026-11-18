@@ -35,6 +35,8 @@ describe('Lesson registry (Stage 3B)', () => {
       'dijkstra-weighted-shortest-path',
       'floyd-warshall-all-pairs',
       'bellman-ford-single-source',
+      'prim-minimum-spanning-tree',
+      'kruskal-minimum-spanning-tree',
     ]);
   });
 
@@ -69,7 +71,7 @@ describe('Lesson registry (Stage 3B)', () => {
   it('leaves the other algorithms without a course, and that is legal', () => {
     const covered = lessonRegistry.lessons.map((lesson) => lesson.algorithmId);
     const uncovered = catalogIds.filter((id) => !covered.includes(id));
-    expect(catalogIds.length).toBe(17);
+    expect(catalogIds.length).toBe(19);
     expect(uncovered.length).toBe(6);
   });
 });

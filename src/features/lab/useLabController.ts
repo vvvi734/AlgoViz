@@ -29,7 +29,7 @@ const CODE_LANG_KEY = 'algolens-code-language';
 const DRAFT_DEBOUNCE_MS = 600;
 
 function isGraphAlgorithm(id: string): boolean {
-  return id === 'bfs' || id === 'dfs' || id === 'dijkstra' || id === 'floyd-warshall' || id === 'bellman-ford';
+  return id === 'bfs' || id === 'dfs' || id === 'dijkstra' || id === 'floyd-warshall' || id === 'bellman-ford' || id === 'prim' || id === 'kruskal';
 }
 
 function graphStartOf(value: unknown): string {

@@ -4,6 +4,7 @@ import { buildBinaryTreeModel, type BinaryTreeVisualModel } from './binaryTreeMo
 import { buildLinkedListModel, type LinkedListVisualModel } from './linkedListModel';
 import { buildGraphVisualModel, buildWeightedGraphVisualModel, type GraphVisualModel } from './graphModel';
 import { buildBellmanVisualModel, buildFloydVisualModel, type BellmanVisualModel, type FloydVisualModel } from './shortestPathModel';
+import { buildKruskalVisualModel, buildPrimVisualModel, type KruskalVisualModel, type PrimVisualModel } from './mstModel';
 
 /**
  * Pure mapping from a trace state to a renderable model. React components only
@@ -60,6 +61,8 @@ export type VisualModel =
   | GraphVisualModel
   | FloydVisualModel
   | BellmanVisualModel
+  | PrimVisualModel
+  | KruskalVisualModel
   | { kind: 'graph'; edges: Array<[number, number]>; nodes: GraphNodeModel[]; isTree: boolean }
   | { kind: 'raw'; text: string };
 
@@ -241,6 +244,20 @@ export function buildVisualModel(
   if (structure !== undefined && structure.kind === 'bellman-ford') {
     if (kind !== 'graph') return { kind: 'raw', text: labels.invalid };
     const model = buildBellmanVisualModel(structure, labels.emptyGraph ?? labels.emptyStructure);
+    if (!model) return { kind: 'raw', text: labels.invalid };
+    return model;
+  }
+
+  if (structure !== undefined && structure.kind === 'prim-mst') {
+    if (kind !== 'graph') return { kind: 'raw', text: labels.invalid };
+    const model = buildPrimVisualModel(structure, labels.emptyGraph ?? labels.emptyStructure);
+    if (!model) return { kind: 'raw', text: labels.invalid };
+    return model;
+  }
+
+  if (structure !== undefined && structure.kind === 'kruskal-mst') {
+    if (kind !== 'graph') return { kind: 'raw', text: labels.invalid };
+    const model = buildKruskalVisualModel(structure, labels.emptyGraph ?? labels.emptyStructure);
     if (!model) return { kind: 'raw', text: labels.invalid };
     return model;
   }

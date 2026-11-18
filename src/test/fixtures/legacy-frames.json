@@ -2683,5 +2683,29 @@
       },
       "message": "请在 Python 模式运行 / Run the Python preset"
     }
+  ],
+  "prim": [
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          "Prim MST: use the Python preset"
+        ],
+        "done": true
+      },
+      "message": "请在 Python 模式运行 / Run the Python preset"
+    }
+  ],
+  "kruskal": [
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          "Kruskal MST: use the Python preset"
+        ],
+        "done": true
+      },
+      "message": "请在 Python 模式运行 / Run the Python preset"
+    }
   ]
 }

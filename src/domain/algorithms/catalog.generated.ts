@@ -405,6 +405,42 @@ export const ALGORITHM_CATALOG: AlgorithmCatalog = {
       "target": "E"
     },
     "code": "trace({type:'array',values:['Bellman-Ford: use the Python preset'],done:true},'请在 Python 模式运行 / Run the Python preset');"
+  },
+  "prim": {
+    "group": "graph",
+    "icon": "◉",
+    "name": [
+      "Prim 最小生成树",
+      "Prim minimum spanning tree"
+    ],
+    "desc": [
+      "从起点出发，用最小堆维护横切候选边，每次安全地选最小边把一个新顶点并入生成树；专属视图同步树、候选、已选和已跳过的边。",
+      "Grow one tree from a start vertex with a min-heap of crossing edges, always adding the lightest safe edge; the dedicated view separates tree, candidate, selected and skipped edges."
+    ],
+    "time": "O((V+E) log V)",
+    "space": "O(V+E)",
+    "input": {
+      "start": "A"
+    },
+    "code": "trace({type:'array',values:['Prim MST: use the Python preset'],done:true},'请在 Python 模式运行 / Run the Python preset');"
+  },
+  "kruskal": {
+    "group": "graph",
+    "icon": "◉",
+    "name": [
+      "Kruskal 最小生成树",
+      "Kruskal minimum spanning tree"
+    ],
+    "desc": [
+      "把所有边按权重排序，用并查集判断环，依次接受或拒绝；专属视图同步排序表、当前边、集合根与合并结果。",
+      "Sort every edge by weight and use union-find to reject cycles; the dedicated view links the sorted list, current edge, roots and merges."
+    ],
+    "time": "O(E log E + E α(V))",
+    "space": "O(V+E)",
+    "input": {
+      "start": "A"
+    },
+    "code": "trace({type:'array',values:['Kruskal MST: use the Python preset'],done:true},'请在 Python 模式运行 / Run the Python preset');"
   }
 };
 

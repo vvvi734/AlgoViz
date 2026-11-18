@@ -16,6 +16,8 @@ import { bfsLesson, dfsLesson } from './graphLessons';
 import { dijkstraLesson } from './dijkstraLesson';
 import { floydWarshallLesson } from './floydWarshallLesson';
 import { bellmanFordLesson } from './bellmanFordLesson';
+import { primLesson } from './primLesson';
+import { kruskalLesson } from './kruskalLesson';
 import { validateLessonSet } from './schema';
 import type { Lesson, LessonValidationResult } from './types';
 
@@ -60,6 +62,8 @@ const BUNDLED: unknown[] = [
   dijkstraLesson,
   floydWarshallLesson,
   bellmanFordLesson,
+  primLesson,
+  kruskalLesson,
 ];
 
 /** Courses shipped with the app itself (bubble, factorial, stack, queue, linked-list, binary-tree). */
