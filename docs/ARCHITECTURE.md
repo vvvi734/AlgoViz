@@ -209,12 +209,24 @@ flowchart TD
 - **课程与目录**：`connected-components-dfs` 10 步（init/start/pop/visit/inspect/discover/push/skip/complete/done），`strongly-connected-components-kosaraju` 11 步（init/start-first/inspect/push/skip/finish/reverse/start-second/assign/complete/done），stepId 与真实 Python `lesson_step=` 对齐。课程覆盖无向连通分量、孤立点、DFS 确定性、普通连通 vs 强连通、边方向、转置、完成顺序、为什么两遍、复杂度 O(V+E) 与常见错误。
 - **窄屏策略**：`g4.css` 在 980/560 断点把面板改为单列；390px 下图画布与结果表在各自容器内滚动，页面本身无横向溢出。
 
+### 3.19 BST 查找/插入/删除：真实引用变化与稳定 ID（T1）
+
+- **独立快照，不扩展 `binary-tree`**：`bstSnapshotSchema`（`kind:'bst'`）进入 `structureSchema` union，union 从 13 个分支增至 14 个。遍历模式与 BST 三操作字段差异过大，混在同一快照会让 `traversal` 语义与删除迁移字段互相污染。
+- **快照字段**：`preset`、`command`、`operation`、`deleteCase`、`targetValue`、`rootId`、`nodes[{id,value,leftId,rightId}]`、`currentNodeId`、`pathIds`、`visitedIds`、`inorderIds`、`targetNodeId`、`nextNodeId`、`parentId`、`side`、`insertedId`、`successorId`、`replacementId`、`removedNode`、`oldRootId`、`result`。
+- **Schema 校验要点**：节点 ID 唯一、根唯一、无多父、无环、全部可达；`inorderIds` 必须严格递增且等于真实中序；`pathIds` 必须从根沿真实 `left/right` 到达 `currentNodeId`；`targetNodeId` 的值必须等于 `targetValue`；`go-left/go-right` 的 `nextNodeId` 必须是 current 的真实孩子；`attach` 的父/side 必须指向真实 `insertedId`；`removedNode` 不得仍在当前树，`replacementId` 必须仍在树中；`oldRootId` 必须是被删旧根；每个 command 只允许对应 operation 集合。
+- **真实 Python，不是预置帧**：`bstExamples.ts` 用真实 `TreeNode` 与 `left/right` 引用；输入数组按顺序执行真实 BST 插入建树，`init / inspect / go-left / go-right / found / not-found / attach / locate / delete-leaf / delete-one / successor-search / successor-found / successor-detach / transplant / duplicate / done` 全部由同一条 Python 源产生。节点 ID 在 Python 创建节点时分配，删除不会重命名幸存节点；`inorderIds` 每帧由真实中序遍历重新生成。
+- **双孩子删除策略**：采用**物理移植中序后继**，而不是“复制后继值再删后继”。默认删除根 50：`b1=50` 被真正摘除，后继 `b6=60` 保持自己的 ID 从原位置移到根，原后继的右孩子 `b8=65` 先接回 `b3=70` 的左侧，再完成移植。帧序列 `successor-search → successor-found → successor-detach → transplant` 分别展示后继查找、后继离开原位置、目标摘除与根指针变化，避免屏幕上节点凭空消失，也避免短暂出现重复值。
+- **默认与边界**：6 个官方预设（查找成功/失败、插入、删除叶子/单孩子/双孩子）共 53 帧；8 个边界场景（空树、单点、空树插入、重复插入、空树删除、删除不存在键、根单孩子、根双孩子）共 44 帧。重复插入明确拒绝且树不变；删除不存在的键返回 not-found 并保持原树。
+- **共享树基础、独立面板、同一播放器**：`BstVisual.tsx` 复用 `layoutBinaryTree`、`tree-*` 几何/CSS 与唯一播放器；只新增 BST 操作/命令栏、目标键、结果、ROOT、删除三案例、比较路径、已比较链、中序序列、节点标签、摘除对象、父/根指针变化。没有第二个 `currentIndex`、第二个播放器或从屏幕坐标推断父子关系。
+- **课程与目录**：`binary-search-tree-search-insert-delete` 14 步（init/compare/direction/found/not-found/duplicate/insert/delete-locate/delete-leaf/delete-one/successor/successor-detach/transplant/done），stepId 与真实 Python `lesson_step=` 对齐；覆盖 BST 左小右大、查找/插入路径、重复键策略、删除三情况、中序后继、物理移植、中序有序、平均 O(log n)/最坏 O(n)、空间 O(h)、常见错误与记忆重点。
+- **窄屏策略**：`t1.css` 在 980/560 断点把 BST 面板改为单列；390px 下树画布在容器内横向滚动，页面本身无横向溢出。
+
 ## 4. 测试策略
 
 | 层次 | 工具 | 覆盖 |
 | --- | --- | --- |
 | 纯逻辑单测 | Vitest | 主题解析、播放状态机（含 `clampPlayback`）、可视化映射、i18n、题库数据、关键词路由、教学课程校验与阶段查找、**知识包 manifest/路径/中央目录/内容校验** |
-| 帧回归 | Vitest + legacy 快照 | 23 个 catalog 入口逐帧一致（12 个 legacy 动画 + 阶乘/斐波那契 + Dijkstra/Floyd/Bellman/Prim/Kruskal/拓扑/关键路径/连通分量/SCC 真实 Python preset）、空/重复/单元素输入、排序终态 |
+| 帧回归 | Vitest + legacy 快照 | 24 个 catalog 入口逐帧一致（12 个 legacy 动画 + 阶乘/斐波那契 + Dijkstra/Floyd/Bellman/Prim/Kruskal/拓扑/关键路径/连通分量/SCC/BST 真实 Python preset）、空/重复/单元素输入、排序终态 |
 | 存储单测 | Vitest + fake-indexeddb | 安装成功、刷新恢复、卸载隔离、重复安装、版本冲突/显式替换、写事务失败回滚、配额映射、存储不可用 |
 | 会话/上下文格式 | Vitest（node + jsdom） | 两文件 Schema、格式版本、未知键拒绝、`stepIndex === event.step`、大小限额、篡改检测、导出不重跑 |
 | MCP 协议 | Vitest + 官方 SDK `Client` + `InMemoryTransport` | 工具/提示词发现、参数校验、内置+包课程、中英 stepId、未知 lesson/step、会话写盘复验且从不覆盖、上下文读取（穿越/绝对路径/符号链接/超限/篡改/坏 JSON）、恶意包文本、Prompt 五级 |
@@ -224,7 +236,7 @@ flowchart TD
 | 结构语义（Stage 7B） | Vitest + Schema/模型/组件 | `structure` 合法与非法、重复 id、pop/dequeue 必带 removed、旧 Trace 兼容、栈/队列模型映射、空态、DOM 顺序与 removed 独立渲染 |
 | 单链表语义（Stage 7C） | Vitest + Schema/模型/组件/Python | linked-list 合法/空表/同值不同 ID/悬空引用/环/40 上限；主链由 nextId 而非数组顺序；HEAD/临时/断开/回退；真实 Node 示例 22 帧；DOM 节点、箭头目标、变化徽章 |
 | 工作区布局（Stage 7A） | Playwright + 真实页面 | 1440 并排 + 当前步骤落在 900 高首屏；1024/390 无页面级横向溢出；标签切换保留 Monaco 草稿、不自动运行；方向键切标签、Escape 关闭菜单；AI 错误折叠 |
-| 组件冒烟 | Vitest + jsdom + Testing Library | 23 个算法入口、时间轴交互与 **Trace 切换重置**、三态主题、语言切换、视图切换、调用栈面板与作用域变量、教学面板（高亮/禁用/跳转/空态）、知识包页（预览/确认/卸载/错误文案）、**App 级导入→课程→卸载** |
+| 组件冒烟 | Vitest + jsdom + Testing Library | 24 个算法入口、时间轴交互与 **Trace 切换重置**、三态主题、语言切换、视图切换、调用栈面板与作用域变量、教学面板（高亮/禁用/跳转/空态）、知识包页（预览/确认/卸载/错误文案）、**App 级导入→课程→卸载** |
 | 令牌契约 | Vitest 读 CSS 文本 | 两套主题 token 完整性、无硬编码颜色 |
 | E2E | Playwright（真实 Edge 无头 + `vite preview`） | Monaco 加载、Python 冒泡同步高亮、SyntaxError 波浪线出现/清除、草稿自动保存/刷新恢复、主题切换、真实 Pyodide 阶乘/斐波那契递归栈、JS 长短 Trace 切换重置、**教学步骤与真实数组/变量/调用栈同步**（`e2e/lab.spec.ts`）、**知识包导入→安装→刷新恢复→卸载**与**包内 Python 示例真实 Trace**（`e2e/packs.spec.ts`）、**Agent 会话导入→用户运行→步骤同步**与**导出真实帧→Schema 复验**（`e2e/session.spec.ts`） |
 | 栈/队列 E2E（Stage 7B） | Playwright + 真实 Pyodide | 真实 7 帧栈/队列、DOM 顶→底/前→后顺序、Peek/Front 不移除、Pop/Dequeue 与回退、1024/390 无横向溢出、Light/Dark、Reduced Motion、36 张真实截图 |
@@ -240,6 +252,8 @@ flowchart TD
 | DAG E2E（G3） | Playwright + 真实 Pyodide | Kahn 32 帧入度/队列/减一/入队/完成、非连通多合法顺序/环/单点、AOE 22 帧 ve/vl/余量/双关键路径、多源/多汇、负持续时间与无向图拒绝；回退与任意跳帧同步；1440/390 无页面溢出；7 张 G3 截图 |
 | 连通性语义（G4） | Vitest + Schema/模型/Python 契约 | `components.test.ts` 12 项：50/60 帧逐帧 Schema、默认 4 分量/5 SCC、发现/栈/分量同帧、边界（非连通/单点/空图/完全连通/单向链/环/桥接）、SCC 双向可达性、转置帧、回退跳帧模型稳定、C 编号显示；`g4Lessons.test.ts` 6 项校验 10/11 步课程与真实 fixture stepId 一致 |
 | 连通性 E2E（G4） | Playwright + 真实 Pyodide | 连通分量 50 帧发现/栈/C 编号/4 分量、Kosaraju 60 帧第一遍/转置/第二遍/5 SCC、空图、单向链 vs 有向环；回退与任意跳帧同步；1440/390 无页面溢出；6 张 G4 截图 |
+| BST 语义（T1） | Vitest + Schema/模型/Python 契约 | `bst.test.ts` 14 项：97 帧逐帧 Schema、查找存在/不存在、插入父指针、重复插入拒绝、删除叶子/单孩子/双孩子、根叶子/根单孩子/根双孩子、空树/单点/删除不存在键、稳定 ID、跳帧视觉同步、非法快照拒绝；`bstLesson.test.ts` 3 项校验 14 步课程与真实 fixture stepId 一致 |
+| BST E2E（T1） | Playwright + 真实 Pyodide | 查找成功/回退、插入 attach、删除叶子/单孩子/双孩子三案例、后继 b6 保留 ID、根 b1→b6、65 重连、跳帧同步、390 无页面溢出、双语切换；1 条测试 / 8 张 T1 截图 |
 | Dijkstra E2E（Stage 7F） | Playwright + 真实 Pyodide | 默认 46 帧图/距离表/PQ 同帧；`F=6→4` 与 previous `C→E`；路径 A→B→E→F→G=7；回退 45→27→21→3 三面板一起恢复并重跑；非连通 11 帧、相同距离 27 帧、单节点 5 帧、负权拒绝并清空图；1024/390 无页面溢出、画布内部滚动、Light/Dark；62 张截图 |
 | 单链表 E2E（Stage 7C） | Playwright + 真实 Pyodide | 真实 22 帧：中间插入三阶段（create/set-next/predecessor）、删除绕过并清空 next、回退恢复、HEAD→NULL 遍历、同值不同 ID、栈/队列切换无残留、1024/390 无页面溢出、Reduced Motion、60 张截图 |
 | a11y | axe | **未实现**，见后续 Issue |
@@ -269,7 +283,8 @@ G1（已完成，main）: Floyd-Warshall / Bellman-Ford 独立快照 → 负环�
 G2（已完成，feat/g2-mst）: prim-mst / kruskal-mst 独立快照 → 真实 Python heapq / 并查集 → Prim 树扩张+堆候选、Kruskal 排序+环检测+Union-Find 面板 → 共享基础图组件与单一播放器 → 8 步/6 步双语课程 → 4 条功能 E2E + 1 条视觉 E2E
 G3（已完成，feat/g3-topo-critical-path）: topological-sort / critical-path 独立快照 → 真实 Python Kahn + AOE ve/vl/slack/path 枚举 → 有向图分层布局、入度/队列面板与事件/活动/路径面板 → 单一播放器与 8 步/7 步双语课程 → 4 条功能 E2E + 1 条视觉 E2E
 G4（已完成，feat/g4-components-scc）: connected-components / kosaraju 独立快照 → 真实 Python 迭代 DFS 与 Kosaraju 双遍 DFS + 转置 → 复用图布局与单一播放器，新增显式栈、完成顺序、反向图与 C 编号分组 → 10 步/11 步双语课程 → 4 条功能 E2E + 1 条视觉 E2E
-后续             : G4 / 树算法等更多结构化课程；Agent ⇄ 浏览器实时同步（Stage 5B 候选）、RAG / 多轮记忆、练习页 Monaco、a11y / axe、远程包市场与签名
+T1（已完成，feat/t1-bst）: bst 独立快照 → 真实 Python TreeNode 查找/插入/删除三案例，双孩子物理移植中序后继 → 复用树布局与稳定 ID，新增摘除对象/父指针/根指针变化 → 14 步双语课程 → 1 条真实 Pyodide E2E + 8 张截图
+后续             : AVL / 堆 / 哈夫曼树等更多树结构；Agent ⇄ 浏览器实时同步（Stage 5B 候选）、RAG / 多轮记忆、练习页 Monaco、a11y / axe、远程包市场与签名
 ```
 
 `Trace Event Schema v1` 是编辑器诊断、递归栈动画与后续树/图可视化的共同前置：Monaco 需要根据 `event.sourceLocation` 高亮，调用栈读取 `callStack`，任何新结构都必须先扩展协议再改渲染，不允许渲染层自己发明字段。

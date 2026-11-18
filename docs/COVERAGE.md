@@ -1,12 +1,12 @@
 # AlgoViz 算法与课程覆盖清单
 
-快照：2026-11-18（G4 在 `feat/g4-components-scc` 完成；G2、G3 与 G4 均未合并 `main`）
+快照：2026-11-18（T1 在 `feat/t1-bst` 完成；G2、G3、G4 与 T1 均未合并 `main`）
 
 ## 1. 口径
 
-- **算法入口**：`src/domain/algorithms/catalog.generated.ts` 的 23 个 id。
-- **教学课程**：`src/domain/lessons/registry.ts` 注册的 17 门内置课程；23 个入口中 17 个有课程，6 个暂无内置课程。
-- **真实 Python**：选中 Python 后由 Pyodide Worker 执行真实代码并记录结构化 Trace；Dijkstra、Floyd-Warshall、Bellman-Ford、Prim、Kruskal、拓扑排序、关键路径、连通分量、强连通分量的 JS 入口是提示桩，不伪造图动画。
+- **算法入口**：`src/domain/algorithms/catalog.generated.ts` 的 24 个 id。
+- **教学课程**：`src/domain/lessons/registry.ts` 注册的 18 门内置课程；24 个入口中 18 个有课程，6 个暂无内置课程。
+- **真实 Python**：选中 Python 后由 Pyodide Worker 执行真实代码并记录结构化 Trace；Dijkstra、Floyd-Warshall、Bellman-Ford、Prim、Kruskal、拓扑排序、关键路径、连通分量、强连通分量、BST 的 JS 入口是提示桩，不伪造结构动画。
 
 ## 2. G1 新增算法
 
@@ -52,7 +52,26 @@ G4 设计要点：
 - **课程**：`connected-components-dfs` 10 步，`strongly-connected-components-kosaraju` 11 步，均为中英双语；覆盖普通连通 vs 强连通、方向的重要性、为什么需要两遍 DFS、为什么按完成时间逆序、复杂度、常见错误与记忆重点。
 - **范围**：只保证官方示例与预设输入的真实 Trace；不扩展任意用户代码的通用追踪，也不改造页面主布局。
 
-## 6. 全量矩阵
+## 6. T1 新增算法
+
+| id | 算法 | Python 示例 | Trace | 动画 | 中英课程 | 测试 |
+| --- | --- | --- | --- | --- | --- | --- |
+| `bst` | 二叉搜索树 · 查找 / 插入 / 删除 | ✅ 真实 `TreeNode` 与真实 `left/right` 引用，Pyodide 执行 | ✅ 6 个官方预设 53 帧 + 8 个边界场景 44 帧；16 种操作帧 | ✅ 复用二叉树布局：稳定节点 ID、目标键、比较路径、已比较链、中序序列、当前/目标/后继/新节点标记、删除三案例、摘除对象、父/根指针变化、结果面板 | ✅ `binary-search-tree-search-insert-delete`，14 步 | ✅ 独立 CPython 校验 + 17 项单测 + 真实 Pyodide E2E + 8 张截图 |
+
+T1 设计要点：
+
+- **稳定身份**：节点是真实 Python `TreeNode` 对象，创建时分配 `b1…b8` 教学 ID；删除、移植、回退和跳帧都不会重命名幸存节点。父/子关系只读快照的 `leftId/rightId`，不从画布坐标推断。
+- **查找**：每帧只比较一个真实节点；`go-left/go-right` 的 `nextNodeId` 必须是当前节点的真实孩子；成功帧记录 `targetNodeId`，失败帧可带最后比较节点，空树时 current/path 为空。
+- **插入**：先走真实查找，找到空位后创建新节点并修改父节点 `left/right`；官方预设使用唯一键，重复插入明确拒绝且树不变。默认 `insert` 把 35 挂到 40 的左侧，新节点为 `b8`。
+- **删除三案例**：叶子把父指针置空并记录 `removedNode`；单孩子让孩子接替目标位置（默认删除 60，65 接回 70 左侧）；双孩子使用中序后继（默认删除根 50，后继 `b6=60` 保留自己的 ID 移植为根，`b1=50` 真正摘除，65 接回 70 左侧）。删除帧记录父节点、side、replacement、`oldRootId`，不是只让节点从屏幕消失。
+- **视觉复用**：复用 `layoutBinaryTree`、`tree-*` 几何/样式与唯一播放器；`BstVisual` 只增加 BST 专属面板，没有第二套 Timeline 或播放器。
+- **边界**：单点、空树、查找成功/失败、重复插入、删除叶子/单孩子/双孩子、删除根、删除不存在键均纳入夹具；空树显示明确空态。
+- **课程**：14 步分别覆盖查找（比较、方向、成功、失败）、插入（重复拒绝、挂接）、删除（定位、叶子、单孩子、后继查找、后继摘除、移植）与最终复杂度/常见错误；明确“双孩子不是复制值时删除后继”，而是物理移植后继对象。
+- **范围**：只保证官方示例与预设输入的真实 Trace；不扩展任意用户代码的通用追踪，也不改造页面主布局。
+
+T1 代表性截图：`docs/t1/bst-find-found-1440-light.png`、`bst-insert-attach-1440-light.png`、`bst-delete-leaf-1440-light.png`、`bst-delete-one-1440-light.png`、`bst-delete-two-successor-1440-light.png`、`bst-delete-two-detach-1440-light.png`、`bst-delete-two-transplant-1440-light.png`、`bst-delete-two-done-390-light.png`。
+
+## 7. 全量矩阵
 
 | 分组 | 算法 | 课程 |
 | --- | --- | --- |
@@ -60,44 +79,41 @@ G4 设计要点：
 | 查找 | 二分、线性 | — |
 | 线性结构 | 栈、队列、单链表 | 栈、队列、链表 |
 | 图 | BFS、DFS、Dijkstra、Floyd-Warshall、Bellman-Ford、Prim、Kruskal、拓扑排序、关键路径、连通分量、强连通分量 | BFS、DFS、Dijkstra、Floyd、Bellman-Ford、Prim、Kruskal、拓扑排序、关键路径、连通分量、强连通分量 |
-| 树 | 二叉树中序遍历 | 中序 |
+| 树 | 二叉树中序遍历、二叉搜索树查找/插入/删除 | 中序、BST |
 | 递归 | 阶乘、斐波那契 | 阶乘 |
 
 ### 覆盖小结
 
-- 23 个算法入口；18 个真实 Python 入口。
-- 17 门双语课程；6 个暂无课程（插入、选择、快速、二分、线性、斐波那契）。
-- 结构化可视化新增 `connected-components` 与 `kosaraju`，不影响既有 `stack/queue/linked-list/graph/binary-tree/weighted-graph/floyd-matrix/bellman-table/prim-mst/kruskal-mst/topological-sort/critical-path`。
-- G4 默认连通分量图刻意包含 4 个分量和 1 个孤立点；默认 SCC 图同时包含 3 节点有向环、2 节点有向环、单向边 F→G 和孤立点 H，专门用于区分 SCC 与普通连通分量。
+- 24 个算法入口；19 个真实 Python 入口。
+- 18 门双语课程；6 个暂无课程（插入、选择、快速、二分、线性、斐波那契）。
+- 结构化可视化新增 `bst`，不影响既有 `stack/queue/linked-list/graph/binary-tree/weighted-graph/floyd-matrix/bellman-table/prim-mst/kruskal-mst/topological-sort/critical-path/connected-components/kosaraju`。
+- T1 默认 BST 刻意覆盖查找成功/失败、插入、三种删除与根变化；双孩子样例删除根 50，便于在同一官方示例中看到“目标摘除 + 后继移植 + 根指针变化”。
 
-## 7. 验证
+## 8. 验证
 
 本地复核环境：Windows + Microsoft Edge（Playwright `channel=msedge`）+ 真实 Pyodide 0.27.7。
 
 | 项 | 结果 |
 | --- | --- |
 | `npm run typecheck` | ✅ 通过 |
-| `npm run build` | ✅ 通过；1414 modules；`index-Cf7Q5QtD.js` 1078.42 kB / gzip 310.49 kB；`index-D4fiU_S7.css` 110.71 kB / gzip 19.57 kB |
-| 全量单测 | ✅ 78 个文件、644 tests 全部通过 |
-| G4 相关单测 | ✅ `components.test.ts` 12 项 + `g4Lessons.test.ts` 6 项，合计 18 项通过；覆盖 Schema、默认分组、栈/发现同步、边界图、SCC 双向可达性、单向链/有向环、转置帧、回退跳帧与 C 编号显示 |
-| 全量 E2E | ✅ 93/93（88 条既有 + 4 条 G4 功能 + 1 条 G4 视觉） |
-| G4 功能 E2E | ✅ 4/4（连通分量发现/栈/C 编号/4 分量；Kosaraju 第一遍/转置/第二遍/5 SCC；空图；单向链 vs 有向环） |
-| G4 视觉 E2E | ✅ 1/1（连通分量栈与完成、Kosaraju 转置与第二遍、1440 与 390） |
-| 独立 Python 校验 | ✅ `scripts/verify_components_python.py`：默认连通 50 帧/4 分量、SCC 60 帧/5 SCC；边界 disconnected 28 帧/3、single 6 帧/1、empty 2 帧/0、complete 39 帧/1、chain 24 帧/3、cycle 24 帧/1、bridge 36 帧/2、single 8 帧/1、empty 2 帧/0；逐组核对 SCC 内双向可达与跨 SCC 不合并 |
-| 回归 | ✅ Dijkstra、Floyd、Bellman-Ford、Prim、Kruskal、BFS/DFS、拓扑排序、关键路径、Stage 7B–7F、UI-01/02/03 在 93/93 全量 E2E 中通过 |
-| 入口数量 | ✅ 21→23、课程 15→17 的旧断言已修正并复跑通过 |
+| `npm run build` | ✅ 通过；1420 modules；`index-DTQmGoK0.js` 1,147.83 kB / gzip 328.65 kB；`index-D5VyLHfv.css` 116.40 kB / gzip 20.40 kB |
+| 全量单测 | ✅ 80 个文件、663 tests 全部通过 |
+| T1 相关单测 | ✅ `bst.test.ts` 14 项 + `bstLesson.test.ts` 3 项，合计 17 项通过；覆盖 97 帧 Schema、稳定 ID、查找/插入/删除三案例、根变化、空树/单点、跳帧视觉同步、非法快照拒绝与课程帧映射 |
+| 全量 E2E | ✅ 94/94（93 条既有 + 1 条 T1 功能/视觉） |
+| T1 E2E | ✅ 1/1：真实 Pyodide 依次运行查找、插入、叶子/单孩子/双孩子删除；验证根 b1→b6、后继 b6 保留 ID、65 重连、前进/回退/跳帧同步、390 无页面横向溢出 |
+| 独立 Python 校验 | ✅ `scripts/verify_bst_python.py`：6 个官方预设 + 8 个边界场景；逐帧前序/中序/父子引用、无重复 ID、无悬空引用、稳定 ID；删除终态与独立 `RefBST` 比较一致 |
+| 回归 | ✅ BFS/DFS、Dijkstra、Floyd、Bellman-Ford、Prim、Kruskal、拓扑排序、关键路径、连通分量/SCC、二叉树遍历、栈/队列/链表在 94/94 全量 E2E 中通过 |
+| 入口数量 | ✅ 23→24、课程 17→18 的旧断言已修正并复跑通过 |
 
-## 8. 已知边界
+## 9. 已知边界
 
-- 连通分量与 SCC 输入上限一致：12 节点 / 30 条原始边 / 20 条唯一边；拒绝未知端点、自环、重复边（连通分量按无向边去重，SCC 按同向边去重）与节点 id 重复。连通分量要求无向图，SCC 要求有向图。
-- 连通分量使用迭代 DFS，不递归；邻接表按输入边顺序构建，因此同一输入每次播放顺序一致，换输入顺序会改变分量内部节点顺序。
-- SCC 的 `C1/C2/...` 编号按第二遍真实发现顺序分配，不是节点字典序；测试比较分组集合，不依赖固定编号。
-- SCC 第一遍完成顺序与第二遍顺序来自真实 Python Trace；`reverse` 帧只反转边，不重排节点。
-- 空图 SCC 的 `done` 帧 `reversed=false`（没有边可反转）；这是当前语义，不表示算法漏做转置。
-- 用户任意改代码后的完整自动可视化仍不在本批次范围；G4 只保证官方 Python 示例与预设输入的真实 Trace。
-- 390 px 下图画布与结果表在各自容器内滚动，页面本身无横向溢出；没有为了 G4 调整页面主布局。
-- G2、G3、G4 均尚未合并 `main`；G4 从 G3 的 `787d0df` 创建，不从缺少 G2/G3 的旧 `main` 开发。
+- T1 只保证官方 Python 示例与预设输入的真实 Trace；任意用户改写代码后的完整自动可视化仍不在本批次范围。
+- 双孩子删除采用“物理移植中序后继”策略，不采用“复制后继值再删除后继”的显示方式；因此同一节点 ID 会换位置，教学时不要把位置变化误读为新节点。
+- 删除帧的 `current` 常为空（目标已摘除），路径/目标高亮因此清空；最终结果、摘除对象、指针与根变化仍由 `removedNode`、`oldRootId/rootId` 明确记录。
+- 390 px 下 BST 树画布在容器内横向滚动，页面本身无横向溢出；没有为了 T1 调整页面主布局。
+- G2、G3、G4 与 T1 均尚未合并 `main`；T1 从包含 G1～G4 的 `94e34fa` 创建独立分支。
+- `BST_PYTHON` 的 `line=` 是教学用近似源码行号，Monaco 实际行号以编辑器为准。
 
-## 9. 下一批次（不在本批次执行）
+## 10. 下一批次（不在本批次执行）
 
-树算法、页面主布局改造与其他算法均未在 G4 中开发；后续继续复用现有图布局、Trace 快照、单一播放器与双语课程架构。
+AVL、堆、哈夫曼树、页面主布局改造与其他算法均未在 T1 中开发；后续继续复用现有树布局、Trace 快照、单一播放器与双语课程架构。
