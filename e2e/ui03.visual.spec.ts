@@ -1,4 +1,4 @@
-import { expect, openCodePanel, test, type Page } from './fixtures';
+import { expect, openCodePanel, selectAlgorithm as chooseAlgorithm, test, type Page } from './fixtures';
 import { mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 
@@ -8,7 +8,7 @@ mkdirSync(SHOT_DIR, { recursive: true });
 async function openDijkstra(page: Page) {
   await page.goto('/');
   await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
-  await page.getByTestId('algo-dijkstra').click();
+  await chooseAlgorithm(page, 'dijkstra');
   await expect(page.locator('[data-testid="graph-visual"]')).toHaveAttribute('data-algorithm', 'dijkstra', {
     timeout: 60_000,
   });

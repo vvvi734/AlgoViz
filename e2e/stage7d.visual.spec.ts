@@ -1,4 +1,4 @@
-import { expect, openCodePanel, test, type Page } from './fixtures';
+import { expect, openCodePanel, selectAlgorithm as chooseAlgorithm, test, type Page } from './fixtures';
 import { mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 
@@ -15,9 +15,7 @@ const THEMES = ['light', 'dark'] as const;
 async function openApp(page: Page) {
   await page.goto('/');
   await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
-  const mobile = page.locator('[data-testid="mobile-algo-select"]');
-  if (await mobile.isVisible()) await mobile.selectOption('inorder');
-  else await page.click('[data-testid="algo-inorder"]');
+  await chooseAlgorithm(page, 'inorder');
   await expect(page.locator('[data-testid="tree-visual"]')).toBeVisible({ timeout: 60_000 });
 }
 

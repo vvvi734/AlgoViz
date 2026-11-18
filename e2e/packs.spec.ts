@@ -1,5 +1,5 @@
 import path from 'node:path';
-import { expect, openCodePanel, openLessonStepNav, test, type Page } from './fixtures';
+import { expect, openCodePanel, openLessonStepNav, selectAlgorithm as chooseAlgorithm, test, type Page } from './fixtures';
 
 /**
  * Stage 4 — the official `.algopack` end to end, in a real browser.
@@ -60,7 +60,7 @@ test.describe('Stage 4 — official .algopack installs, survives reload and unin
     await page.click('[data-testid="nav-learn"]');
     await expect(page.locator('[data-testid="lesson-no-lesson"]')).toBeVisible();
     // …while the built-in bubble sort course still renders.
-    await page.click('[data-testid="algo-bubble"]');
+    await chooseAlgorithm(page, 'bubble');
     await expect(page.locator('[data-testid="lesson-title"]')).toContainText('冒泡排序');
   });
 });

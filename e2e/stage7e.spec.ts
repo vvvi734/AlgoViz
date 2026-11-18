@@ -1,4 +1,4 @@
-import { expect, openCodePanel, test, type Page } from './fixtures';
+import { expect, openCodePanel, selectAlgorithm as chooseAlgorithm, test, type Page } from './fixtures';
 
 const BFS_TOTAL = 51;
 const DFS_TOTAL = 51;
@@ -9,9 +9,7 @@ async function openApp(page: Page) {
 }
 
 async function selectAlgo(page: Page, id: string) {
-  const mobile = page.locator('[data-testid="mobile-algo-select"]');
-  if (await mobile.isVisible()) await mobile.selectOption(id);
-  else await page.click(`[data-testid="algo-${id}"]`);
+  await chooseAlgorithm(page, id);
 }
 
 async function waitForGraph(page: Page, algorithm: 'bfs' | 'dfs', total = 51) {

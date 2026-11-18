@@ -1,4 +1,4 @@
-import { expect, openCodePanel, test, type Page } from './fixtures';
+import { expect, openCodePanel, selectAlgorithm as chooseAlgorithm, test, type Page } from './fixtures';
 
 async function openApp(page: Page) {
   await page.goto('/');
@@ -6,17 +6,7 @@ async function openApp(page: Page) {
 }
 
 async function selectAlgorithm(page: Page, id: string, total: number) {
-  const mobile = page.locator('[data-testid="mobile-algo-select"]');
-  if (await mobile.isVisible()) {
-    await mobile.selectOption(id);
-  } else {
-    const item = page.locator(`[data-testid="algo-${id}"]`);
-    if (!(await item.isVisible())) {
-      const group = page.locator('[data-testid="group-graph"]');
-      if ((await group.getAttribute('aria-expanded')) !== 'true') await group.click();
-    }
-    await item.click();
-  }
+  await chooseAlgorithm(page, id);
   await expect(page.locator('[data-testid="progress"]')).toHaveText(`1 / ${total}`, { timeout: 60_000 });
 }
 

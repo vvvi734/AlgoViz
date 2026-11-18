@@ -1,4 +1,4 @@
-import { expect, test, type Page } from './fixtures';
+import { expect, selectAlgorithm as chooseAlgorithm, test, type Page } from './fixtures';
 import { mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 
@@ -8,17 +8,7 @@ mkdirSync(SHOT_DIR, { recursive: true });
 async function openAlgorithm(page: Page, id: string, total: number) {
   await page.goto('/');
   await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
-  const mobile = page.locator('[data-testid="mobile-algo-select"]');
-  if (await mobile.isVisible()) {
-    await mobile.selectOption(id);
-  } else {
-    const item = page.locator(`[data-testid="algo-${id}"]`);
-    if (!(await item.isVisible())) {
-      const group = page.locator('[data-testid="group-graph"]');
-      if ((await group.getAttribute('aria-expanded')) !== 'true') await group.click();
-    }
-    await item.click();
-  }
+  await chooseAlgorithm(page, id);
   await expect(page.locator('[data-testid="progress"]')).toHaveText(`1 / ${total}`, { timeout: 60_000 });
 }
 

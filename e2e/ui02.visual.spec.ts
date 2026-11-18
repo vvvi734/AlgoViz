@@ -1,6 +1,6 @@
 import { mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { expect, test, type Page } from './fixtures';
+import { expect, selectAlgorithm as chooseAlgorithm, test, type Page } from './fixtures';
 
 /**
  * UI-02 visual evidence, captured from the built app in real Edge with the real
@@ -21,9 +21,7 @@ const THEMES = ['light', 'dark'] as const;
 async function openDijkstra(page: Page) {
   await page.goto('/');
   await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
-  const mobile = page.locator('[data-testid="mobile-algo-select"]');
-  if (await mobile.isVisible()) await mobile.selectOption('dijkstra');
-  else await page.click('[data-testid="algo-dijkstra"]');
+  await chooseAlgorithm(page, 'dijkstra');
   await expect(page.locator('[data-testid="graph-visual"]')).toHaveAttribute('data-algorithm', 'dijkstra', {
     timeout: 60_000,
   });
@@ -65,13 +63,11 @@ test.describe('UI-02 visual evidence', () => {
     await expect(page.locator('[data-testid="lesson-active-step"]')).toHaveAttribute('data-step-id', 'relax');
     await expect(page.locator('[data-testid="current-step-title"]')).toContainText(/松弛|Relax/i);
 
-    // Keep the selected Dijkstra row on screen in the directory without
-    // scrolling the directory header away: fold the two sections above it.
-    await page.click('[data-testid="group-sort"]');
-    await page.click('[data-testid="group-search"]');
-    await expect(page.locator('[data-testid="group-sort"]')).toHaveAttribute('aria-expanded', 'false');
-    await expect(page.locator('[data-testid="group-search"]')).toHaveAttribute('aria-expanded', 'false');
-    await expect(page.locator('[data-testid="algo-dijkstra"]')).toBeVisible();
+    // UX-03 opens the current path; the graph chapter and shortest-path topic
+    // are open and Dijkstra stays visible. Earlier open chapters remain open.
+    await expect(page.getByTestId('chapter-ch7-graph')).toHaveAttribute('aria-expanded', 'true');
+    await expect(page.getByTestId('topic-shortest-path')).toHaveAttribute('aria-expanded', 'true');
+    await expect(page.getByTestId('algo-dijkstra')).toBeVisible();
 
     for (const theme of THEMES) {
       await page.selectOption('[data-testid="theme-select"]', theme);
@@ -100,12 +96,9 @@ test.describe('UI-02 visual evidence', () => {
     await shot(page, 'dijkstra-done-1440-light-firstscreen', false);
     await shot(page, 'dijkstra-done-1440-light');
 
-    // Explicit no-course empty state in the same right rail, once the old
-    // Dijkstra trace has actually been replaced by the binary-search run.
-    // Reopen the search section before selecting the no-course example.
-    await page.click('[data-testid="group-search"]');
-    await expect(page.locator('[data-testid="group-search"]')).toHaveAttribute('aria-expanded', 'true');
-    await page.click('[data-testid="algo-binary"]');
+    // No-course example in the same right rail, after the binary-search run
+    // replaces the Dijkstra trace. The search chapter opens automatically.
+    await chooseAlgorithm(page, 'binary');
     await expect(page.locator('[data-testid="lab-title"]')).toContainText('二分查找');
     await expect(page.locator('[data-testid="lesson-no-lesson"]')).toBeVisible();
     await expect(page.locator('[data-testid="current-step"]')).toHaveCount(0);

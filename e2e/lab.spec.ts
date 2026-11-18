@@ -1,4 +1,4 @@
-import { expect, openCodePanel, openLessonStepNav, test, type Page } from './fixtures';
+import { expect, openCodePanel, openLessonStepNav, selectAlgorithm as chooseAlgorithm, test, type Page } from './fixtures';
 
 /** Replace the Monaco editor content by selecting all and typing. */
 /** Stage 7A: secondary panels live in on-demand workspace tabs. */
@@ -107,7 +107,7 @@ test.describe('AlgoLens Stage 2 — Monaco + Python sync (real browser)', () => 
 
     // Switch to Python, then open the factorial preset (auto-runs real Pyodide).
     await page.selectOption('#code-lang', 'python');
-    await page.click('[data-testid="algo-factorial"]');
+    await chooseAlgorithm(page, 'factorial');
 
     // First run downloads Pyodide (~10 MB) and executes the real recursion.
     await openTab(page, 'state');
@@ -149,7 +149,7 @@ test.describe('AlgoLens Stage 2 — Monaco + Python sync (real browser)', () => 
     await openCodePanel(page);
 
     await page.selectOption('#code-lang', 'python');
-    await page.click('[data-testid="algo-fib"]');
+    await chooseAlgorithm(page, 'fib');
 
     await openTab(page, 'state');
     await expect(page.locator('[data-testid="call-stack"]')).toBeVisible({ timeout: 120_000 });
@@ -180,7 +180,7 @@ test.describe('Stage 3B — teaching steps synced with real Pyodide execution', 
     await openCodePanel(page);
 
     await page.selectOption('#code-lang', 'python');
-    await page.click('[data-testid="algo-bubble"]');
+    await chooseAlgorithm(page, 'bubble');
 
     // First frame is the real `init` stage (recorded by trace(..., lesson_step='init')).
     await expect(page.locator('[data-testid="lesson-title"]')).toContainText('冒泡排序');
@@ -224,7 +224,7 @@ test.describe('Stage 3B — teaching steps synced with real Pyodide execution', 
     await openCodePanel(page);
 
     await page.selectOption('#code-lang', 'python');
-    await page.click('[data-testid="algo-factorial"]');
+    await chooseAlgorithm(page, 'factorial');
 
     await expect(page.locator('[data-testid="lesson-title"]')).toContainText('递归阶乘');
     // Frame 0 is the decorator-emitted `call` event of factorial(4).
@@ -280,7 +280,7 @@ test.describe('Stage 3 fix — switching traces resets the timeline (JS, offline
     await expect(page.locator('[data-testid="progress"]')).toHaveText('25 / 25');
 
     // Binary search has 5 frames, so index 24 is out of range for it.
-    await page.click('[data-testid="algo-binary"]');
+    await chooseAlgorithm(page, 'binary');
     await expect(page.locator('[data-testid="progress"]')).toHaveText('1 / 5');
 
     // The stage still renders a real frame instead of the empty placeholder.

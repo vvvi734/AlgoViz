@@ -59,3 +59,50 @@ export async function openLessonStepNav(page: Page) {
   }
   await expect(toggle).toHaveAttribute('aria-expanded', 'true');
 }
+
+/**
+ * UX-03: the directory opens only the current algorithm's chapter/topic. A
+ * desktop click must therefore find an algorithm's authored path and expand it
+ * first. The mobile select remains a single, real `selectOption` call.
+ */
+export async function openTextbookChapter(page: Page, chapterId: string) {
+  const sidebar = page.getByTestId('sidebar');
+  if ((await sidebar.getAttribute('data-collapsed')) === 'true') {
+    await page.getByTestId('sidebar-expand').click();
+    await expect(sidebar).toHaveAttribute('data-collapsed', 'false');
+  }
+  const chapter = page.getByTestId(`chapter-${chapterId}`);
+  await expect(chapter).toBeVisible();
+  if ((await chapter.getAttribute('aria-expanded')) !== 'true') {
+    await chapter.click();
+  }
+  await expect(chapter).toHaveAttribute('aria-expanded', 'true');
+}
+
+export async function openTextbookTopic(page: Page, topicId: string) {
+  const topic = page.getByTestId(`topic-${topicId}`);
+  await expect(topic).toBeVisible();
+  if ((await topic.getAttribute('aria-expanded')) !== 'true') {
+    await topic.click();
+  }
+  await expect(topic).toHaveAttribute('aria-expanded', 'true');
+}
+
+/** Choose a real registry algorithm through the current textbook directory. */
+export async function selectAlgorithm(page: Page, id: string) {
+  const mobile = page.getByTestId('mobile-algo-select');
+  if (await mobile.isVisible()) {
+    await mobile.selectOption(id);
+    return;
+  }
+
+  const item = page.getByTestId(`algo-${id}`);
+  await expect(item).toHaveCount(1);
+  const chapterId = await item.getAttribute('data-chapter');
+  const topicId = await item.getAttribute('data-topic');
+  if (!chapterId || !topicId) throw new Error(`algorithm ${id} is not in the textbook directory`);
+  await openTextbookChapter(page, chapterId);
+  await openTextbookTopic(page, topicId);
+  await expect(item).toBeVisible();
+  await item.click();
+}

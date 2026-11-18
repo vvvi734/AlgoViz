@@ -3,152 +3,174 @@ import { fireEvent, render, screen, within } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { AlgorithmSidebar } from './AlgorithmSidebar';
 import { I18nProvider } from '../../i18n/I18nProvider';
-import { catalog, groups } from '../../domain/algorithms/examples';
+import { catalog } from '../../domain/algorithms/examples';
+import { buildTextbookNavigation, textbookAlgorithmIds } from '../../domain/algorithms/textbook';
 
 /**
- * UI-01 directory tests.
+ * UX-03 directory tests.
  *
- * The expected sections are computed from the registry itself, so these tests
- * keep working when an algorithm or a group is added — they assert the mapping
- * rule (catalog[].group → section), not a frozen list of names.
+ * They assert the authored chapter → topic mapping and the disclosure contract,
+ * not a frozen list of hand-written labels. Counts come from the live registry.
  */
-function expectedSections(): Array<{ id: string; count: number }> {
-  return groups
-    .map(([id]) => ({ id, count: Object.values(catalog).filter((entry) => entry.group === id).length }))
-    .filter((section) => section.count > 0);
-}
-
-function Harness({ initialCollapsed = false }: { initialCollapsed?: boolean }) {
+function Harness({
+  initialCollapsed = false,
+  selected = 'bubble',
+  onSelect = vi.fn(),
+}: {
+  initialCollapsed?: boolean;
+  selected?: string;
+  onSelect?: (id: string) => void;
+}) {
   const [collapsed, setCollapsed] = useState(initialCollapsed);
-  const [closed, setClosed] = useState<ReadonlySet<string>>(new Set());
+  const [openChapters, setOpenChapters] = useState<ReadonlySet<string>>(new Set(['ch9-sort']));
+  const [openTopics, setOpenTopics] = useState<ReadonlySet<string>>(new Set(['bubble-sort']));
   return (
     <I18nProvider>
       <AlgorithmSidebar
         catalog={catalog}
-        groups={groups}
-        currentAlgo="bubble"
-        onSelect={vi.fn()}
+        currentAlgo={selected}
+        onSelect={onSelect}
         collapsed={collapsed}
         onToggleCollapsed={() => setCollapsed((value) => !value)}
-        isGroupOpen={(groupId) => !closed.has(groupId)}
-        onToggleGroup={(groupId) =>
-          setClosed((current) => {
+        isChapterOpen={(id) => openChapters.has(id)}
+        onToggleChapter={(id) =>
+          setOpenChapters((current) => {
             const next = new Set(current);
-            if (next.has(groupId)) next.delete(groupId);
-            else next.add(groupId);
+            if (next.has(id)) next.delete(id);
+            else next.add(id);
             return next;
           })
         }
-        onOpenGroup={(groupId) =>
-          setClosed((current) => {
-            if (!current.has(groupId)) return current;
+        onOpenChapter={(id) =>
+          setOpenChapters((current) => {
+            if (current.has(id)) return current;
             const next = new Set(current);
-            next.delete(groupId);
+            next.add(id);
             return next;
           })
         }
+        isTopicOpen={(id) => openTopics.has(id)}
+        onToggleTopic={(id) =>
+          setOpenTopics((current) => {
+            const next = new Set(current);
+            if (next.has(id)) next.delete(id);
+            else next.add(id);
+            return next;
+          })}
       />
     </I18nProvider>
   );
 }
 
-describe('AlgorithmSidebar — registry-driven groups (UI-01)', () => {
-  it('renders one section per populated registry group, never a hardcoded list', () => {
+const nav = buildTextbookNavigation(catalog);
+
+describe('AlgorithmSidebar — textbook chapters (UX-03)', () => {
+  it('renders all nine book chapters in source order plus every algorithm', () => {
     render(<Harness />);
-    for (const section of expectedSections()) {
-      const head = screen.getByTestId(`group-${section.id}`);
-      expect(head).toBeTruthy();
-      // The count badge is derived from the catalogue at render time.
-      expect(within(head).getByText(String(section.count))).toBeTruthy();
+    const chapters = screen.getAllByTestId(/^chapter-/);
+    expect(chapters).toHaveLength(9);
+    for (const chapter of nav) {
+      expect(screen.getByTestId(`chapter-${chapter.id}`)).toBeTruthy();
+      const count = chapter.algorithmCount;
+      if (count > 0) {
+        expect(within(screen.getByTestId(`chapter-${chapter.id}`)).getByText(String(count))).toBeTruthy();
+      } else {
+        expect(within(screen.getByTestId(`chapter-${chapter.id}`)).getByText('待完善')).toBeTruthy();
+      }
     }
     expect(screen.getAllByTestId(/^algo-/)).toHaveLength(Object.keys(catalog).length);
+    expect(textbookAlgorithmIds(nav)).toHaveLength(Object.keys(catalog).length);
   });
 
-  it('starts fully expanded and folds only the clicked section', () => {
+  it('starts with only the current path open; other chapters stay folded', () => {
     render(<Harness />);
-    const sort = screen.getByTestId('group-sort');
-    const search = screen.getByTestId('group-search');
+    const sort = screen.getByTestId('chapter-ch9-sort');
+    const search = screen.getByTestId('chapter-ch8-search');
     expect(sort.getAttribute('aria-expanded')).toBe('true');
-    expect(search.getAttribute('aria-expanded')).toBe('true');
+    expect(search.getAttribute('aria-expanded')).toBe('false');
 
-    fireEvent.click(sort);
+    const searchBody = document.getElementById('chapter-ch8-search-body');
+    expect(searchBody?.getAttribute('data-open')).toBe('false');
+    expect(searchBody?.hasAttribute('inert')).toBe(true);
 
-    expect(sort.getAttribute('aria-expanded')).toBe('false');
-    const panel = document.getElementById('alg-group-sort');
-    expect(panel?.getAttribute('data-open')).toBe('false');
-    // Folded content leaves the tab order / hit testing.
-    expect(panel?.hasAttribute('inert')).toBe(true);
-    // Other sections stay open: multiple sections may be expanded at once.
-    expect(search.getAttribute('aria-expanded')).toBe('true');
-    expect(document.getElementById('alg-group-search')?.getAttribute('data-open')).toBe('true');
-
-    fireEvent.click(sort);
-    expect(sort.getAttribute('aria-expanded')).toBe('true');
-    expect(document.getElementById('alg-group-sort')?.getAttribute('data-open')).toBe('true');
+    // The current topic is open; a sibling topic is not.
+    expect(screen.getByTestId('topic-bubble-sort').getAttribute('aria-expanded')).toBe('true');
+    expect(screen.getByTestId('topic-quick-sort').getAttribute('aria-expanded')).toBe('false');
   });
 
-  it('marks the selected algorithm and the section that holds it', () => {
+  it('allows multiple chapters and topics to be open without closing siblings', () => {
+    render(<Harness />);
+    const sort = screen.getByTestId('chapter-ch9-sort');
+    const search = screen.getByTestId('chapter-ch8-search');
+    fireEvent.click(search);
+    expect(search.getAttribute('aria-expanded')).toBe('true');
+    expect(sort.getAttribute('aria-expanded')).toBe('true');
+
+    fireEvent.click(screen.getByTestId('topic-bst'));
+    expect(screen.getByTestId('topic-bst').getAttribute('aria-expanded')).toBe('true');
+    expect(screen.getByTestId('topic-bubble-sort').getAttribute('aria-expanded')).toBe('true');
+    expect(screen.getByTestId('algo-bst')).toBeTruthy();
+
+    fireEvent.click(search);
+    expect(search.getAttribute('aria-expanded')).toBe('false');
+    expect(document.getElementById('chapter-ch8-search-body')?.hasAttribute('inert')).toBe(true);
+    expect(sort.getAttribute('aria-expanded')).toBe('true');
+  });
+
+  it('marks exactly one current algorithm and its chapter/topic path', () => {
     render(<Harness />);
     const bubble = screen.getByTestId('algo-bubble');
     expect(bubble.className).toContain('active');
     expect(bubble.getAttribute('aria-current')).toBe('true');
-    expect(screen.getByTestId('group-sort').getAttribute('data-has-current')).toBe('true');
-    expect(screen.getByTestId('group-search').getAttribute('data-has-current')).toBe('false');
-    // Exactly one item is current.
+    expect(bubble.getAttribute('data-chapter')).toBe('ch9-sort');
+    expect(bubble.getAttribute('data-topic')).toBe('bubble-sort');
+    expect(screen.getByTestId('chapter-ch9-sort').getAttribute('data-has-current')).toBe('true');
+    expect(screen.getByTestId('topic-bubble-sort').getAttribute('data-has-current')).toBe('true');
+    expect(screen.getByTestId('chapter-ch7-graph').getAttribute('data-has-current')).toBe('false');
     expect(screen.getAllByTestId(/^algo-/).filter((item) => item.getAttribute('aria-current') === 'true')).toHaveLength(1);
   });
 
-  it('uses native buttons so every control is keyboard operable', () => {
+  it('renders planned topics as non-interactive rows with no algorithm target', () => {
     render(<Harness />);
+    const huffman = screen.getByTestId('topic-huffman');
+    expect(huffman.tagName).toBe('DIV');
+    expect(huffman.getAttribute('aria-disabled')).toBe('true');
+    expect(huffman.textContent).toContain('待完善');
+    expect(within(huffman).queryByTestId(/^algo-/)).toBeNull();
+    expect(screen.getByTestId('chapter-ch5-string').textContent).toContain('待完善');
+  });
+
+  it('uses native buttons and keeps folding presentation-only', () => {
+    const onSelect = vi.fn();
+    render(<Harness onSelect={onSelect} />);
     for (const button of [
-      screen.getByTestId('group-sort'),
+      screen.getByTestId('chapter-ch9-sort'),
+      screen.getByTestId('topic-bubble-sort'),
       screen.getByTestId('algo-bubble'),
       screen.getByTestId('sidebar-collapse'),
+      screen.getByTestId('topic-quick-sort'),
     ]) {
       expect(button.tagName).toBe('BUTTON');
       expect(button.getAttribute('type')).toBe('button');
       expect(button.hasAttribute('disabled')).toBe(false);
     }
+    fireEvent.click(screen.getByTestId('chapter-ch9-sort'));
+    fireEvent.click(screen.getByTestId('topic-quick-sort'));
+    expect(onSelect).not.toHaveBeenCalled();
   });
 
-  it('collapses to a compact rail that still exposes groups and the current algorithm', () => {
-    const { rerender } = render(<Harness />);
-    fireEvent.click(screen.getByTestId('sidebar-collapse'));
+  it('collapses to a chapter rail and re-expands the chosen chapter', () => {
+    render(<Harness initialCollapsed />);
     expect(screen.getByTestId('sidebar').getAttribute('data-collapsed')).toBe('true');
     expect(screen.getByTestId('sidebar-expand')).toBeTruthy();
     expect(screen.queryByTestId('sidebar-collapse')).toBeNull();
 
-    for (const section of expectedSections()) {
-      expect(screen.getByTestId(`rail-group-${section.id}`)).toBeTruthy();
-    }
+    expect(screen.getByTestId('rail-chapter-ch7-graph')).toBeTruthy();
+    expect(screen.getByTestId('rail-chapter-ch9-sort').getAttribute('data-has-current')).toBe('true');
     expect(screen.getByTestId('rail-current').textContent).toContain(catalog.bubble.icon);
 
-    // Clicking a rail shortcut expands the directory again.
-    fireEvent.click(screen.getByTestId('rail-group-search'));
+    fireEvent.click(screen.getByTestId('rail-chapter-ch7-graph'));
     expect(screen.getByTestId('sidebar').getAttribute('data-collapsed')).toBe('false');
-
-    rerender(<Harness />);
-  });
-
-  it('keeps group state presentation-only: no selection callback on fold', () => {
-    const onSelect = vi.fn();
-    render(
-      <I18nProvider>
-        <AlgorithmSidebar
-          catalog={catalog}
-          groups={groups}
-          currentAlgo="bubble"
-          onSelect={onSelect}
-          collapsed={false}
-          onToggleCollapsed={vi.fn()}
-          isGroupOpen={() => true}
-          onToggleGroup={vi.fn()}
-          onOpenGroup={vi.fn()}
-        />
-      </I18nProvider>,
-    );
-    fireEvent.click(screen.getByTestId('group-sort'));
-    fireEvent.click(screen.getByTestId('group-graph'));
-    expect(onSelect).not.toHaveBeenCalled();
+    expect(screen.getByTestId('chapter-ch7-graph').getAttribute('aria-expanded')).toBe('true');
   });
 });

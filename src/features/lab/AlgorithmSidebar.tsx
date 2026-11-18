@@ -1,78 +1,66 @@
-import { useEffect, useMemo, useRef } from 'react';
-import type { AlgorithmCatalog, AlgorithmEntry, AlgorithmGroup } from '../../domain/algorithms/types';
-import { groupLabel } from '../../domain/algorithms/examples';
+import { useMemo } from 'react';
+import type { AlgorithmCatalog } from '../../domain/algorithms/types';
+import {
+  buildTextbookNavigation,
+  findTextbookPath,
+  textbookTitle,
+  TEXTBOOK_REFERENCE,
+  type TextbookChapterView,
+  type TextbookTopicView,
+} from '../../domain/algorithms/textbook';
 import { useI18n } from '../../i18n/I18nProvider';
 
 /**
- * UI-01: grouped, collapsible algorithm directory.
+ * UX-03 — textbook directory.
  *
- * The section list is DERIVED from the registry on every render:
- * `groups` supplies the order and ids, `catalog[].group` decides membership and
- * `groupLabel()` supplies the localized title. No algorithm id, section id or
- * item count is written into this component, so adding an algorithm (or a whole
- * group) in the registry shows up here without touching this file.
+ * Three levels, authored in `domain/algorithms/textbook.ts`:
+ *   chapter (nine 《大话数据结构》 chapters + extension chapter)
+ *   topic   (knowledge point)
+ *   algorithm (existing registry entry)
  *
- * The directory holds no execution state. Collapsing a section or the whole
- * sidebar only changes presentation; `currentAlgo`, the trace and the playhead
- * belong to the lab controller and are passed straight through.
+ * Chapters and topics are independent disclosures; each can be open or closed
+ * without disturbing another. The directory owns no execution state: selecting
+ * an algorithm just calls the existing lab selector, and playback/trace stay
+ * untouched. Current-path expansion is a preference concern, handled by
+ * `useSidebarPreferences`, not by this component.
  */
-
-interface Section {
-  id: string;
-  label: string;
-  items: Array<[string, AlgorithmEntry]>;
-}
-
 export function AlgorithmSidebar({
   catalog,
-  groups,
   currentAlgo,
   onSelect,
   collapsed,
   onToggleCollapsed,
-  isGroupOpen,
-  onToggleGroup,
-  onOpenGroup,
+  isChapterOpen,
+  onToggleChapter,
+  onOpenChapter,
+  isTopicOpen,
+  onToggleTopic,
 }: {
   catalog: AlgorithmCatalog;
-  groups: Array<[AlgorithmGroup, string]>;
   currentAlgo: string;
   onSelect: (id: string) => void;
   collapsed: boolean;
   onToggleCollapsed: () => void;
-  isGroupOpen: (groupId: string) => boolean;
-  onToggleGroup: (groupId: string) => void;
-  onOpenGroup: (groupId: string) => void;
+  isChapterOpen: (chapterId: string) => boolean;
+  onToggleChapter: (chapterId: string) => void;
+  onOpenChapter: (chapterId: string) => void;
+  isTopicOpen: (topicId: string) => boolean;
+  onToggleTopic: (topicId: string) => void;
 }) {
   const { lang, pick, t } = useI18n();
-
-  const sections = useMemo<Section[]>(() => {
-    const order: string[] = groups.map(([groupId]) => groupId);
-    // `custom` is created by AI import at runtime and is not part of the
-    // generated registry, so append it only when the catalogue actually has it.
-    if (catalog.custom && !order.includes('custom')) order.push('custom');
-    return order
-      .map((id) => ({
-        id,
-        label: groupLabel(id, lang),
-        items: Object.entries(catalog).filter(([, entry]) => entry.group === id),
-      }))
-      .filter((section) => section.items.length > 0);
-  }, [catalog, groups, lang]);
-
+  const chapters = useMemo(() => buildTextbookNavigation(catalog), [catalog]);
+  const currentPath = useMemo(() => findTextbookPath(chapters, currentAlgo), [chapters, currentAlgo]);
   const currentEntry = catalog[currentAlgo];
-  const currentGroup = currentEntry?.group ?? null;
+  const currentTopicId = currentPath?.topicId ?? null;
+  const directoryLabel = t('textbookDirectory');
 
-  // Selecting an algorithm whose section is folded (mobile select, rail, …)
-  // reveals it. The ref keeps the learner's initial folds intact on mount.
-  const previousAlgo = useRef(currentAlgo);
-  useEffect(() => {
-    if (previousAlgo.current === currentAlgo) return;
-    previousAlgo.current = currentAlgo;
-    if (currentGroup) onOpenGroup(currentGroup);
-  }, [currentAlgo, currentGroup, onOpenGroup]);
+  const chapterNumber = (chapter: TextbookChapterView): string =>
+    chapter.extension ? '✦' : String(chapter.number).padStart(2, '0');
 
-  const directoryLabel = t('algorithmDirectory');
+  const chapterAria = (chapter: TextbookChapterView): string =>
+    chapter.extension
+      ? textbookTitle(chapter.title, lang)
+      : `${t('textbookChapterNumber').replace('{number}', String(chapter.number))} · ${textbookTitle(chapter.title, lang)}`;
 
   if (collapsed) {
     return (
@@ -96,22 +84,22 @@ export function AlgorithmSidebar({
           <span aria-hidden="true">»</span>
         </button>
 
-        <div className="rail-groups" role="group" aria-label={directoryLabel}>
-          {sections.map((section) => (
+        <div className="rail-chapters" role="group" aria-label={directoryLabel}>
+          {chapters.map((chapter) => (
             <button
-              key={section.id}
+              key={chapter.id}
               type="button"
-              className="rail-group"
-              data-testid={`rail-group-${section.id}`}
-              data-has-current={section.id === currentGroup ? 'true' : 'false'}
-              aria-label={section.label}
-              title={section.label}
+              className="rail-chapter"
+              data-testid={`rail-chapter-${chapter.id}`}
+              data-has-current={chapter.id === currentPath?.chapterId ? 'true' : 'false'}
+              aria-label={chapterAria(chapter)}
+              title={chapterAria(chapter)}
               onClick={() => {
-                onOpenGroup(section.id);
+                onOpenChapter(chapter.id);
                 onToggleCollapsed();
               }}
             >
-              <span aria-hidden="true">{section.label.slice(0, 1)}</span>
+              <span aria-hidden="true">{chapterNumber(chapter)}</span>
             </button>
           ))}
         </div>
@@ -134,7 +122,7 @@ export function AlgorithmSidebar({
 
   return (
     <aside
-      className="panel pad sidebar"
+      className="panel pad sidebar textbook-sidebar"
       id="algorithm-directory"
       aria-label={directoryLabel}
       data-testid="sidebar"
@@ -156,51 +144,63 @@ export function AlgorithmSidebar({
         </button>
       </div>
 
-      <nav className="sidebar-groups" aria-label={directoryLabel}>
-        {sections.map((section) => {
-          const open = isGroupOpen(section.id);
-          const holdsCurrent = section.id === currentGroup;
+      <div
+        className="textbook-source"
+        title={`${TEXTBOOK_REFERENCE.author}《${TEXTBOOK_REFERENCE.title.zh}》${TEXTBOOK_REFERENCE.edition.zh}`}
+      >
+        {t('textbookReference')}
+      </div>
+
+      <nav className="sidebar-groups textbook-nav" aria-label={directoryLabel}>
+        {chapters.map((chapter) => {
+          const open = isChapterOpen(chapter.id);
+          const holdsCurrent = chapter.id === currentPath?.chapterId;
           return (
-            <section className="alg-group" key={section.id} data-group={section.id}>
+            <section className="textbook-chapter" key={chapter.id} data-chapter={chapter.id}>
               <button
                 type="button"
-                className="alg-group-head"
+                className="textbook-chapter-head"
                 aria-expanded={open}
-                aria-controls={`alg-group-${section.id}`}
-                data-testid={`group-${section.id}`}
+                aria-controls={`chapter-${chapter.id}-body`}
+                aria-label={chapterAria(chapter)}
+                data-testid={`chapter-${chapter.id}`}
                 data-has-current={holdsCurrent ? 'true' : 'false'}
-                onClick={() => onToggleGroup(section.id)}
+                onClick={() => onToggleChapter(chapter.id)}
               >
-                <span className="alg-group-chevron" aria-hidden="true">›</span>
-                <span className="alg-group-name">{section.label}</span>
-                {holdsCurrent && <span className="alg-group-dot" aria-hidden="true" />}
-                <span className="alg-group-count" aria-hidden="true">{section.items.length}</span>
+                <span className="textbook-chapter-number" aria-hidden="true">
+                  {chapterNumber(chapter)}
+                </span>
+                <span className="textbook-chapter-name">{textbookTitle(chapter.title, lang)}</span>
+                {holdsCurrent && <span className="textbook-current-dot" aria-hidden="true" />}
+                {chapter.algorithmCount > 0 ? (
+                  <span className="textbook-count" aria-hidden="true">{chapter.algorithmCount}</span>
+                ) : (
+                  <span className="textbook-pending" aria-hidden="true">{t('textbookPending')}</span>
+                )}
+                <span className="textbook-chapter-chevron" aria-hidden="true">›</span>
               </button>
 
               <div
-                className="alg-group-items"
-                id={`alg-group-${section.id}`}
+                className="textbook-chapter-body"
+                id={`chapter-${chapter.id}-body`}
                 data-open={open ? 'true' : 'false'}
                 aria-hidden={!open}
                 inert={!open}
               >
-                <div className="alg-group-items-inner">
-                  {section.items.map(([id, entry]) => {
-                    const active = id === currentAlgo;
-                    return (
-                      <button
-                        key={id}
-                        type="button"
-                        className={`alg-item ${active ? 'active' : ''}`}
-                        onClick={() => onSelect(id)}
-                        data-testid={`algo-${id}`}
-                        aria-current={active ? 'true' : undefined}
-                      >
-                        <span className="alg-icon">{entry.icon}</span>
-                        <span className="alg-name">{pick(entry.name)}</span>
-                      </button>
-                    );
-                  })}
+                <div className="textbook-chapter-body-inner">
+                  {chapter.topics.map((topic) => (
+                    <TextbookTopicRow
+                      key={topic.id}
+                      chapterId={chapter.id}
+                      topic={topic}
+                      catalog={catalog}
+                      currentAlgo={currentAlgo}
+                      open={isTopicOpen(topic.id)}
+                      holdsCurrent={topic.id === currentTopicId}
+                      onToggle={() => onToggleTopic(topic.id)}
+                      onSelect={onSelect}
+                    />
+                  ))}
                 </div>
               </div>
             </section>
@@ -208,5 +208,102 @@ export function AlgorithmSidebar({
         })}
       </nav>
     </aside>
+  );
+}
+
+function TextbookTopicRow({
+  chapterId,
+  topic,
+  catalog,
+  currentAlgo,
+  open,
+  holdsCurrent,
+  onToggle,
+  onSelect,
+}: {
+  chapterId: string;
+  topic: TextbookTopicView;
+  catalog: AlgorithmCatalog;
+  currentAlgo: string;
+  open: boolean;
+  holdsCurrent: boolean;
+  onToggle: () => void;
+  onSelect: (id: string) => void;
+}) {
+  const { lang, pick, t } = useI18n();
+  const title = textbookTitle(topic.title, lang);
+
+  if (topic.planned && topic.algorithms.length === 0) {
+    return (
+      <div
+        className="textbook-topic is-planned"
+        data-topic={topic.id}
+        data-testid={`topic-${topic.id}`}
+        aria-disabled="true"
+      >
+        <span className="textbook-topic-rail" aria-hidden="true" />
+        <span className="textbook-topic-name">{title}</span>
+        <span className="textbook-pending">{t('textbookPending')}</span>
+      </div>
+    );
+  }
+
+  return (
+    <section className="textbook-topic" data-topic={topic.id}>
+      <button
+        type="button"
+        className="textbook-topic-head"
+        aria-expanded={open}
+        aria-controls={`topic-${topic.id}-body`}
+        aria-label={title}
+        data-testid={`topic-${topic.id}`}
+        data-has-current={holdsCurrent ? 'true' : 'false'}
+        onClick={onToggle}
+      >
+        <span className="textbook-topic-chevron" aria-hidden="true">›</span>
+        <span className="textbook-topic-name">{title}</span>
+        {topic.extension && (
+          <span className="textbook-extension" aria-hidden="true">{t('textbookExtension')}</span>
+        )}
+        {holdsCurrent && <span className="textbook-current-dot" aria-hidden="true" />}
+        <span className="textbook-count" aria-hidden="true">
+          {topic.algorithms.length}
+        </span>
+      </button>
+
+      <div
+        className="textbook-topic-body"
+        id={`topic-${topic.id}-body`}
+        data-open={open ? 'true' : 'false'}
+        aria-hidden={!open}
+        inert={!open}
+      >
+        <div className="textbook-topic-body-inner">
+          {topic.algorithms.map((algorithm) => {
+            const entry = catalog[algorithm.id];
+            if (!entry) return null;
+            const active = algorithm.id === currentAlgo;
+            return (
+              <button
+                key={algorithm.id}
+                type="button"
+                className={`alg-item ${active ? 'active' : ''}`}
+                onClick={() => onSelect(algorithm.id)}
+                data-testid={`algo-${algorithm.id}`}
+                data-chapter={chapterId}
+                data-topic={topic.id}
+                aria-current={active ? 'true' : undefined}
+              >
+                <span className="alg-icon">{entry.icon}</span>
+                <span className="alg-name">{pick(entry.name)}</span>
+                {algorithm.extension && (
+                  <span className="textbook-extension" aria-hidden="true">{t('textbookExtension')}</span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    </section>
   );
 }

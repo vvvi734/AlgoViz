@@ -1,4 +1,4 @@
-import { expect, openCodePanel, test, type Page } from './fixtures';
+import { expect, openCodePanel, selectAlgorithm as chooseAlgorithm, test, type Page } from './fixtures';
 
 /**
  * UI-03 — the Monaco editor is a full-width, collapsed-by-default code dock
@@ -13,9 +13,7 @@ async function openApp(page: Page) {
 }
 
 async function selectAlgo(page: Page, id: string) {
-  const mobile = page.locator('[data-testid="mobile-algo-select"]');
-  if (await mobile.isVisible()) await mobile.selectOption(id);
-  else await page.click(`[data-testid="algo-${id}"]`);
+  await chooseAlgorithm(page, id);
 }
 
 async function openDijkstra(page: Page) {
@@ -189,7 +187,7 @@ test.describe('UI-03 — bottom code dock', () => {
     await page.setViewportSize({ width: 1366, height: 768 });
     await page.goto('/');
     await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
-    await page.getByTestId('algo-dijkstra').click();
+    await chooseAlgorithm(page, 'dijkstra');
     await openCodePanel(page);
     await expect(page.locator('#code-lang')).toHaveValue('python');
     await expect(page.locator('.monaco-editor')).toContainText('def dijkstra', { timeout: 45_000 });

@@ -4,7 +4,7 @@
 
 面向学生的浏览器端数据结构与算法学习平台：**Python 在浏览器内运行**，根据真实执行结果生成逐帧动画，并同步展示代码位置、变量值与步骤讲解。完全本地运行，无需租服务器。
 
-> **当前版本：v0.17.0 UX-02。** 用户可见品牌为 **AlgoViz**，旧 localStorage / IndexedDB / `.algopack` / `.algosession.json` / `.algocontext.json` / MCP Tool / AI Gateway 标识保持兼容。G1 补齐 **Floyd-Warshall 全源最短路** 与 **Bellman-Ford 单源最短路**；G2 补齐 **Prim** 与 **Kruskal 最小生成树**；G3 补齐 **Kahn 拓扑排序** 与 **AOE 关键路径**；G4 补齐 **无向图连通分量** 与 **Kosaraju 强连通分量**；T1 补齐 **二叉搜索树（BST）查找 / 插入 / 删除**；T2 补齐 **AVL 平衡二叉搜索树插入 / 删除 / 失衡检测 / 四种旋转**：真实 Python `AvlNode`、真实 `left/right` 指针变化、稳定 `a1…` ID、节点高度与平衡因子逐帧记录，LL/RR/LR/RL 单旋与双旋都由真实连续操作驱动。UX-01B 将顶部 **算法导学** 收敛为三层阅读顺序：一句话理解与核心思想 → 3～5 个主要阶段 → 记忆重点；详细步骤、前置、复杂度解释、条件限制与常见错误默认收起，展开后完整保留；静态示意图只保留建立直觉的作用。展开/收起仍不影响 Trace 与播放位置。UX-02 将右侧 **Teaching Course** 收敛为四项逐帧讲解：当前做什么、为什么这样做、这一步产生的真实变化、可选记忆重点；课程简介、完整步骤、复杂度、前置知识与常见错误进入折叠的资料区，步骤跳转保留在折叠的步骤导航中，仍复用唯一 `currentEvent.lessonStepId` 与播放器。当前门禁：**706 项单测 / 102 条真实浏览器 E2E / UX-02 11 张前后对照截图**；真实 Ollama / 云端模型仍未实测。
+> **当前版本：v0.18.0 UX-03。** 用户可见品牌为 **AlgoViz**，旧 localStorage / IndexedDB / `.algopack` / `.algosession.json` / `.algocontext.json` / MCP Tool / AI Gateway 标识保持兼容。G1 补齐 **Floyd-Warshall 全源最短路** 与 **Bellman-Ford 单源最短路**；G2 补齐 **Prim** 与 **Kruskal 最小生成树**；G3 补齐 **Kahn 拓扑排序** 与 **AOE 关键路径**；G4 补齐 **无向图连通分量** 与 **Kosaraju 强连通分量**；T1 补齐 **二叉搜索树（BST）查找 / 插入 / 删除**；T2 补齐 **AVL 平衡二叉搜索树插入 / 删除 / 失衡检测 / 四种旋转**：真实 Python `AvlNode`、真实 `left/right` 指针变化、稳定 `a1…` ID、节点高度与平衡因子逐帧记录，LL/RR/LR/RL 单旋与双旋都由真实连续操作驱动。UX-01B 将顶部 **算法导学** 收敛为三层阅读顺序：一句话理解与核心思想 → 3～5 个主要阶段 → 记忆重点；详细步骤、前置、复杂度解释、条件限制与常见错误默认收起，展开后完整保留；静态示意图只保留建立直觉的作用。展开/收起仍不影响 Trace 与播放位置。UX-02 将右侧 **Teaching Course** 收敛为四项逐帧讲解：当前做什么、为什么这样做、这一步产生的真实变化、可选记忆重点；课程简介、完整步骤、复杂度、前置知识与常见错误进入折叠的资料区，步骤跳转保留在折叠的步骤导航中，仍复用唯一 `currentEvent.lessonStepId` 与播放器。UX-03 按程杰《大话数据结构》（清华大学出版社，2011 年 6 月第 1 版）的九章顺序，把左侧目录重构为 **章 → 专题 → 算法** 的可折叠教材目录，25 个算法入口全部唯一归属，保留 19 门课程、真实 Trace 与唯一播放器；旧 `collapsed` 偏好继续兼容。当前门禁：**718 项单测 / 107 条真实浏览器 E2E / UX-03 10 张目录与证据截图**；真实 Ollama / 云端模型仍未实测。
 > 定位已收敛：**Python 为主要教学语言**，JavaScript 作为前端实现语言继续支持 25 个算法入口（Dijkstra / Floyd-Warshall / Bellman-Ford / Prim / Kruskal / 拓扑排序 / 关键路径 / 连通分量 / 强连通分量 / BST / AVL 的 JS 入口只提示使用 Python）；**C / C++ 与在线判题已从规划中取消**。详见 [阶段一总结](docs/STAGE1_REPORT.md)、[阶段二总结](docs/STAGE2_REPORT.md)、[阶段三总结](docs/STAGE3_REPORT.md)、[阶段 3B 总结](docs/STAGE3B_REPORT.md)、[阶段四总结](docs/STAGE4_REPORT.md)、[阶段 5A 总结](docs/STAGE5A_REPORT.md)、[阶段 6A 总结](docs/STAGE6A_REPORT.md)、[阶段 7A 总结](docs/STAGE7A_REPORT.md)、[阶段 7B 总结](docs/STAGE7B_REPORT.md)、[阶段 7C 总结](docs/STAGE7C_REPORT.md)、[阶段 7D 总结](docs/STAGE7D_REPORT.md)、[阶段 7E 总结](docs/STAGE7E_REPORT.md) 与 [阶段 7F 总结](docs/STAGE7F_REPORT.md)；课程与算法覆盖见 [COVERAGE](docs/COVERAGE.md)；品牌边界见 [BRAND_MIGRATION](docs/BRAND_MIGRATION.md)；知识包格式与作者指引见 [PACK_FORMAT_V1](docs/PACK_FORMAT_V1.md)、[PACK_AUTHOR_GUIDE](docs/PACK_AUTHOR_GUIDE.md)；MCP 安装与宿主配置见 [MCP_INSTALL](docs/MCP_INSTALL.md)；AI Gateway 安装与安全边界见 [AI_GATEWAY](docs/AI_GATEWAY.md)；T1/T2 交付细节见 [T1_REPORT](docs/T1_REPORT.md)、[T2_REPORT](docs/T2_REPORT.md)；UX-01B 交付细节见 [UX01B_REPORT](docs/UX01B_REPORT.md)、UX-02 交付细节见 [UX02_REPORT](docs/UX02_REPORT.md)。
 
 ---
@@ -28,6 +28,7 @@
 | 算法课程内容 | ✅ 19 / 25 内置 | 内置冒泡排序、阶乘、栈、队列、单链表、二叉树遍历、BFS、DFS、Dijkstra、Floyd-Warshall、Bellman-Ford、Prim、Kruskal、拓扑排序、AOE 关键路径、连通分量、Kosaraju 强连通分量、BST、AVL 十九门完整双语课程；其余算法显示"尚未提供教学课程"空态，可由知识包补充 |
 | 顶部算法导学 | ✅ UX-01B | 位于标题栏与动画之间，可展开/收起且不重置 Trace；每算法保存折叠偏好；默认只显示一句话理解 + 核心思想、3～5 个主要阶段与记忆重点；详细步骤、前置、复杂度、条件与错误默认收起。Dijkstra / Kahn / Kosaraju 使用各自算法的阶段结构；其余复用课程，无课程算法只显示目录简介与复杂度，不编造步骤 |
 | 右侧逐帧讲解 | ✅ UX-02 | 与当前帧同步的四段式紧凑 rail：当前做什么、为什么这样做、真实状态变化、可选记忆重点；状态变化优先读取 Dijkstra / Kahn / Kosaraju / BST / AVL 的强类型 `structure`，其余结构按相邻帧 `state` 给出真实差异或明确无结构化变化；旧课程资料与步骤跳转折叠保留，不新增播放器或步骤计数器 |
+| 教材式算法目录 | ✅ UX-03 | 桌面侧栏按《大话数据结构》九章顺序提供 `章 → 专题 → 算法` 三级折叠；可同时展开多章/多专题，当前路径自动打开且唯一高亮；未实现知识点显示“待完善”，扩展算法带徽标；折叠后保留 `01–09` rail 与当前章/算法入口；390 宽改用按章 `optgroup` 的原生选择器，不引入第二套播放器 |
 | 可安装知识包（`.algopack`） | ✅ 已实现 | ZIP 容器 + manifest v1 + 有界解压 + 路径白名单；导入 → 预览 → 确认 → 本地安装 |
 | 知识包安全校验 | ✅ 已实现 | 6 MiB / 64 条目 / 512 KiB 单文件 / 3 MiB 总量 / 200:1 压缩比；拒绝路径穿越、绝对路径、重复名、加密条目、ZIP64、非文本 |
 | 知识包本地持久化 | ✅ 已实现 | IndexedDB `algolens-packs` 三 store 单事务安装/替换/卸载；刷新恢复；配额失败有明确错误 |
@@ -70,7 +71,7 @@
 | C / C++ | 🚫 已取消 | 语言入口、占位模板与 `/api/execute` 执行后端均已移除 |
 | 在线 Judge / 自动判题 | 🚫 已取消 | 相关入口与宣传已清理 |
 | 中英文界面 / 移动端适配 | ⚠️ 部分 | Stage 7A 修复 390–1920 横向溢出与 1024 布局；Stage 7B 栈/队列、Stage 7F 带权图在 1440/1024/390 与 Light/Dark 下实测无页面横向溢出；390 宽图保持可读最小宽度并在画布内横向滚动；仍未安装 axe-core，触控尺寸未逐项审计 |
-| 自动化测试 | ✅ 已实现 | 706 项单测 / 帧回归 / jsdom 冒烟 + 102 条真实浏览器 E2E（Playwright + Edge，含真实 Pyodide、知识包、会话文件、AI 导师真实帧/离线/防剧透、Stage 7A 布局与标签状态、Stage 7B 栈/队列、Stage 7C 链表节点/箭头/回退、Stage 7D 二叉树三模式/递归调用栈/回退、Stage 7E BFS/DFS 图与 Frontier/回退/跳帧、Stage 7F Dijkstra、G1 Floyd/Bellman-Ford、G2 Prim/Kruskal 堆/并查集/环检测/回退/跳帧/负权/单点/非连通/有向拒绝、G3 Kahn 入度/队列/减一/入队/环与 AOE ve/vl/slack/多关键路径/多源多汇、G4 连通分量发现/栈/C 编号/4 分量与 Kosaraju 第一遍/转置/第二遍/5 SCC/单向链 vs 有向环、T1 BST 查找/插入/删除三案例/根变化/回退跳帧、T2 AVL 四种旋转/双旋分段/删除三案例/根变化/连续重平衡/回退跳帧、UX-01B 三层导学/3～5 阶段/详情展开/键盘/三算法切换/按算法偏好/英文/Dark/安全回退/390 无横向溢出/首屏高度、UX-02 四段式右栏/真实状态变化/回退与步骤跳帧/课程资料折叠/英文 Dark/390 无溢出，以及 T1 8 张、T2 6 张、UX-01 3 张、UX-01B 11 张与 UX-02 11 张前后对照截图）；另有 MCP 协议测试 20 项与 stdio 冒烟 9 项通过 + 1 项按配置跳过 |
+| 自动化测试 | ✅ 已实现 | 718 项单测 / 帧回归 / jsdom 冒烟 + 107 条真实浏览器 E2E（Playwright + Edge，含真实 Pyodide、知识包、会话文件、AI 导师真实帧/离线/防剧透、Stage 7A 布局与标签状态、Stage 7B 栈/队列、Stage 7C 链表节点/箭头/回退、Stage 7D 二叉树三模式/递归调用栈/回退、Stage 7E BFS/DFS 图与 Frontier/回退/跳帧、Stage 7F Dijkstra、G1 Floyd/Bellman-Ford、G2 Prim/Kruskal 堆/并查集/环检测/回退/跳帧/负权/单点/非连通/有向拒绝、G3 Kahn 入度/队列/减一/入队/环与 AOE ve/vl/slack/多关键路径/多源多汇、G4 连通分量发现/栈/C 编号/4 分量与 Kosaraju 第一遍/转置/第二遍/5 SCC/单向链 vs 有向环、T1 BST 查找/插入/删除三案例/根变化/回退跳帧、T2 AVL 四种旋转/双旋分段/删除三案例/根变化/连续重平衡/回退跳帧、UX-01B 三层导学/3～5 阶段/详情展开/键盘/三算法切换/按算法偏好/英文/Dark/安全回退/390 无横向溢出/首屏高度、UX-02 四段式右栏/真实状态变化/回退与步骤跳帧/课程资料折叠/英文 Dark/390 无溢出、UX-03 九章顺序/25 算法唯一归属/多章多专题展开/当前路径/键盘/刷新持久化/英文 Dark/1440 无溢出/390 九个 optgroup，以及 T1 8 张、T2 6 张、UX-01 3 张、UX-01B 11 张、UX-02 11 张前后对照与 UX-03 10 张目录/证据截图）；另有 MCP 协议测试 20 项与 stdio 冒烟 9 项通过 + 1 项按配置跳过 |
 | 知识包远程市场 / 包签名 | ⏳ 后续 | 本版只有本地文件导入；无远程仓库、无自动下载、无签名校验 |
 | 网页 AI 导师（本地 Gateway） | ✅ 已实现（真机未验证） | Stage 7A 将其收进工作区标签页，连接状态与错误详情保留；Stage 6A：Ollama + OpenAI Chat Completions 适配、五级教学 Schema、防剧透降级、同源代理；本机无 Ollama/云端 Key，真实模型未验证 |
 | AI Gateway 安全边界 | ✅ 已实现 | 仅 127.0.0.1、Origin + 自定义头、96 KiB 请求 / 30s / 20 rpm、严格 Zod、目标地址仅启动配置、密钥只存 Gateway 环境变量 |
@@ -85,10 +86,10 @@
 npm ci
 npm run dev            # 开发服务器
 npm run typecheck      # TypeScript 严格检查
-npm test               # Vitest（694 项）
+npm test               # Vitest（718 项）
 npm run build          # tsc -b && vite build → dist/
 npm run preview        # 预览构建产物
-npm run test:e2e       # Playwright E2E（默认驱动本机 Microsoft Edge，97 条）
+npm run test:e2e       # Playwright E2E（默认驱动本机 Microsoft Edge，107 条）
 npm run pack:build     # 从 packs/src/<name>/ 构建 .algopack
 npm run pack -- packs/algolens-search-basics.algopack   # 校验知识包（与浏览器同一条校验链）
 ```
@@ -250,9 +251,9 @@ AlgoViz is a browser-first algorithm visualization learning platform where **Pyt
 npm ci
 npm run dev
 npm run typecheck
-npm test          # 694 tests (incl. 20 MCP protocol tests + gateway tests)
+npm test          # 718 tests (incl. 20 MCP protocol tests + gateway tests)
 npm run build
-npm run test:e2e  # 97 Playwright tests (local Microsoft Edge; mock provider)
+npm run test:e2e  # 107 Playwright tests (local Microsoft Edge; mock provider)
 npm run pack -- packs/algolens-search-basics.algopack   # validate a pack (same chain as the browser)
 npm run mcp:install && npm run mcp:build                 # optional MCP server (Node >= 20)
 npm run mcp:smoke                                        # real stdio child-process smoke test

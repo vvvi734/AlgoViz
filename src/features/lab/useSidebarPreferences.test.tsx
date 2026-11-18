@@ -3,53 +3,97 @@ import { describe, expect, it } from 'vitest';
 import { parseSidebarPreferences, useSidebarPreferences } from './useSidebarPreferences';
 
 /**
- * UI-01 preference persistence.
+ * UX-03 preference persistence.
  *
- * The key is new (`algolens-sidebar`) and namespaced, so existing learner data
- * (`algolens-theme`, `algolens-code-language`, drafts) must survive untouched.
+ * Only `algolens-sidebar` is touched. The old UI-01 key keeps its name; the
+ * new shape stores open chapter/topic ids and still honours `collapsed`.
  */
 describe('useSidebarPreferences', () => {
-  it('falls back to the expanded layout for missing or malformed storage', () => {
-    expect(parseSidebarPreferences(null)).toEqual({ collapsed: false, closedGroups: [] });
-    expect(parseSidebarPreferences('not json')).toEqual({ collapsed: false, closedGroups: [] });
-    expect(parseSidebarPreferences('{"collapsed":"yes","closedGroups":"sort"}')).toEqual({
+  it('falls back to a closed-directory default for missing or malformed storage', () => {
+    expect(parseSidebarPreferences(null)).toEqual({ collapsed: false, openChapters: [], openTopics: [] });
+    expect(parseSidebarPreferences('not json')).toEqual({ collapsed: false, openChapters: [], openTopics: [] });
+    expect(parseSidebarPreferences('{"collapsed":"yes","openChapters":"ch1"}')).toEqual({
       collapsed: false,
-      closedGroups: [],
+      openChapters: [],
+      openTopics: [],
     });
-    expect(parseSidebarPreferences('{"collapsed":true,"closedGroups":["sort","sort",7,""]}')).toEqual({
+    expect(
+      parseSidebarPreferences(
+        '{"collapsed":true,"openChapters":["ch7-graph","ch7-graph",7,""],"openTopics":["mst","mst",null]}',
+      ),
+    ).toEqual({
       collapsed: true,
-      closedGroups: ['sort'],
+      openChapters: ['ch7-graph'],
+      openTopics: ['mst'],
     });
   });
 
-  it('persists collapse and folded sections without touching other keys', () => {
+  it('honours legacy collapsed while ignoring the old closedGroups schema', () => {
+    expect(parseSidebarPreferences('{"collapsed":true,"closedGroups":["graph"]}')).toEqual({
+      collapsed: true,
+      openChapters: [],
+      openTopics: [],
+    });
+  });
+
+  it('persists chapter/topic open state without touching other learner keys', () => {
     window.localStorage.setItem('algolens-code-language', 'python');
     window.localStorage.setItem('algolens-theme', 'light');
 
     const { result } = renderHook(() => useSidebarPreferences());
     act(() => result.current.toggleCollapsed());
-    act(() => result.current.toggleGroup('sort'));
+    act(() => result.current.toggleChapter('ch9-sort'));
+    act(() => result.current.toggleTopic('bubble-sort'));
 
-    const stored = JSON.parse(window.localStorage.getItem('algolens-sidebar') ?? '{}');
-    expect(stored).toEqual({ collapsed: true, closedGroups: ['sort'] });
+    expect(JSON.parse(window.localStorage.getItem('algolens-sidebar') ?? '{}')).toEqual({
+      collapsed: true,
+      openChapters: ['ch9-sort'],
+      openTopics: ['bubble-sort'],
+    });
     expect(window.localStorage.getItem('algolens-code-language')).toBe('python');
     expect(window.localStorage.getItem('algolens-theme')).toBe('light');
 
-    act(() => result.current.openGroup('sort'));
-    expect(result.current.isGroupOpen('sort')).toBe(true);
-    // openGroup never closes an already-open section (idempotent).
-    act(() => result.current.openGroup('sort'));
-    expect(result.current.isGroupOpen('sort')).toBe(true);
+    act(() => result.current.openTopic('bubble-sort'));
+    expect(result.current.isTopicOpen('bubble-sort')).toBe(true);
+    // openTopic never closes an already-open topic (idempotent).
+    act(() => result.current.openTopic('bubble-sort'));
+    expect(result.current.isTopicOpen('bubble-sort')).toBe(true);
   });
 
-  it('restores the saved layout on the next mount', () => {
+  it('restores saved chapter/topic state on the next mount', () => {
     window.localStorage.setItem(
       'algolens-sidebar',
-      JSON.stringify({ collapsed: true, closedGroups: ['graph', 'recursion'] }),
+      JSON.stringify({
+        collapsed: true,
+        openChapters: ['ch7-graph', 'ch8-search'],
+        openTopics: ['mst', 'bst'],
+      }),
     );
     const { result } = renderHook(() => useSidebarPreferences());
     expect(result.current.collapsed).toBe(true);
-    expect(result.current.isGroupOpen('graph')).toBe(false);
-    expect(result.current.isGroupOpen('sort')).toBe(true);
+    expect(result.current.isChapterOpen('ch7-graph')).toBe(true);
+    expect(result.current.isChapterOpen('ch9-sort')).toBe(false);
+    expect(result.current.isTopicOpen('mst')).toBe(true);
+    expect(result.current.isTopicOpen('bubble-sort')).toBe(false);
+  });
+
+  it('opens the current path once, without fighting a later manual close', () => {
+    const { result, rerender } = renderHook(
+      ({ chapterId, topicId }: { chapterId: string; topicId: string }) =>
+        useSidebarPreferences({ chapterId, topicId }),
+      { initialProps: { chapterId: 'ch7-graph', topicId: 'mst' } },
+    );
+    expect(result.current.isChapterOpen('ch7-graph')).toBe(true);
+    expect(result.current.isTopicOpen('mst')).toBe(true);
+
+    // Learner folds the current chapter: no new path change, so it stays shut.
+    act(() => result.current.toggleChapter('ch7-graph'));
+    expect(result.current.isChapterOpen('ch7-graph')).toBe(false);
+
+    // Selecting another algorithm opens its new path and leaves the old fold alone.
+    rerender({ chapterId: 'ch8-search', topicId: 'avl' });
+    expect(result.current.isChapterOpen('ch8-search')).toBe(true);
+    expect(result.current.isTopicOpen('avl')).toBe(true);
+    expect(result.current.isChapterOpen('ch7-graph')).toBe(false);
   });
 });

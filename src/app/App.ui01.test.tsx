@@ -32,7 +32,7 @@ async function ready() {
   await waitFor(() => expect(screen.getByTestId('progress').textContent).toBe('1 / 3'));
 }
 
-describe('UI-01 directory collapse does not touch learning state', () => {
+describe('UX-03 textbook directory does not touch learning state', () => {
   it('collapses and restores the sidebar while the playhead stays put', async () => {
     renderApp();
     await ready();
@@ -41,12 +41,12 @@ describe('UI-01 directory collapse does not touch learning state', () => {
     fireEvent.click(screen.getByTestId('next-btn'));
     expect(screen.getByTestId('progress').textContent).toBe('3 / 3');
 
-    // Folding the section that holds the current algorithm is also layout-only.
-    fireEvent.click(screen.getByTestId('group-sort'));
-    expect(screen.getByTestId('group-sort').getAttribute('aria-expanded')).toBe('false');
+    // Folding the chapter that holds the current algorithm is also layout-only.
+    fireEvent.click(screen.getByTestId('chapter-ch9-sort'));
+    expect(screen.getByTestId('chapter-ch9-sort').getAttribute('aria-expanded')).toBe('false');
     expect(screen.getByTestId('progress').textContent).toBe('3 / 3');
     expect(screen.getByTestId('step-desc').textContent).toBe('STEP THREE');
-    fireEvent.click(screen.getByTestId('group-sort'));
+    fireEvent.click(screen.getByTestId('chapter-ch9-sort'));
 
     fireEvent.click(screen.getByTestId('sidebar-collapse'));
     expect(screen.getByTestId('sidebar').getAttribute('data-collapsed')).toBe('true');
@@ -59,18 +59,19 @@ describe('UI-01 directory collapse does not touch learning state', () => {
     expect(screen.getByTestId('step-desc').textContent).toBe('STEP THREE');
   });
 
-  it('re-opens the section that receives a newly selected algorithm', async () => {
+  it('re-opens the chapter and topic that receive a newly selected algorithm', async () => {
     renderApp();
     await ready();
 
-    fireEvent.click(screen.getByTestId('group-sort'));
-    expect(screen.getByTestId('group-sort').getAttribute('aria-expanded')).toBe('false');
+    fireEvent.click(screen.getByTestId('chapter-ch9-sort'));
+    expect(screen.getByTestId('chapter-ch9-sort').getAttribute('aria-expanded')).toBe('false');
 
     // The mobile selector is the same registry-driven entry point on narrow
-    // screens; choosing from it must reveal the algorithm's section.
+    // screens; choosing from it must reveal the algorithm's textbook path.
     fireEvent.change(screen.getByTestId('mobile-algo-select'), { target: { value: 'insertion' } });
     await waitFor(() => expect(screen.getByTestId('lab-title').textContent).toBe('插入排序'));
-    expect(screen.getByTestId('group-sort').getAttribute('aria-expanded')).toBe('true');
+    expect(screen.getByTestId('chapter-ch9-sort').getAttribute('aria-expanded')).toBe('true');
+    expect(screen.getByTestId('topic-insertion-sort').getAttribute('aria-expanded')).toBe('true');
     expect(screen.getByTestId('algo-insertion').getAttribute('aria-current')).toBe('true');
   });
 

@@ -1,4 +1,4 @@
-import { expect, test, type Page } from './fixtures';
+import { expect, selectAlgorithm as chooseAlgorithm, test, type Page } from './fixtures';
 import { mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 
@@ -11,18 +11,8 @@ async function openApp(page: Page) {
   await page.evaluate(() => window.scrollTo(0, 0));
 }
 
-async function selectAlgorithm(page: Page, id: string, group: string) {
-  const mobile = page.locator('[data-testid="mobile-algo-select"]');
-  if (await mobile.isVisible()) {
-    await mobile.selectOption(id);
-    return;
-  }
-  const item = page.locator(`[data-testid="algo-${id}"]`);
-  if (!(await item.isVisible())) {
-    const groupToggle = page.locator(`[data-testid="group-${group}"]`);
-    if ((await groupToggle.getAttribute('aria-expanded')) !== 'true') await groupToggle.click();
-  }
-  await item.click();
+async function selectAlgorithm(page: Page, id: string, _group: string) {
+  await chooseAlgorithm(page, id);
 }
 
 async function setFrame(page: Page, frame: number, total = 46) {

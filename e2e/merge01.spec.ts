@@ -1,13 +1,13 @@
-import { expect, test, type Page } from './fixtures';
+import { expect, openTextbookChapter, openTextbookTopic, selectAlgorithm as chooseAlgorithm, test, type Page } from './fixtures';
 import { mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 /**
  * MERGE-01 integration contract.
  *
- * UI-01 owns only sidebar presentation state; Stage 7F owns only the Dijkstra
- * trace/render state. This test is intentionally separate from both feature
- * suites: it proves they coexist in one page and one playback controller.
+ * UX-03 owns only the textbook directory's presentation state; Stage 7F owns
+ * only the Dijkstra trace/render state. This test proves they coexist in one
+ * page and one playback controller.
  */
 const SHOT_DIR = resolve(process.cwd(), 'docs/merge01');
 mkdirSync(SHOT_DIR, { recursive: true });
@@ -37,24 +37,29 @@ async function expectNoPageOverflow(page: Page) {
   expect(sizes.scrollWidth).toBeLessThanOrEqual(sizes.clientWidth + 1);
 }
 
-test.describe('MERGE-01 — grouped collapsible directory + real Dijkstra', () => {
-  test('discovers Dijkstra in the graph group and keeps its playhead through sidebar layout changes', async ({ page }) => {
+test.describe('MERGE-01 — textbook directory + real Dijkstra', () => {
+  test('finds Dijkstra under 图 → 最短路径 and keeps its playhead through directory layout changes', async ({ page }) => {
     test.setTimeout(180_000);
     await page.setViewportSize({ width: 1440, height: 900 });
     await openApp(page);
     await page.selectOption('[data-testid="theme-select"]', 'light');
 
-    // The directory is generated from the catalogue, so Dijkstra must be a
-    // member of the graph group without any MERGE-01-specific hardcoding.
-    const graphGroup = page.locator('#alg-group-graph');
-    await expect(graphGroup).toHaveAttribute('data-open', 'true');
-    await expect(graphGroup.getByTestId('algo-dijkstra')).toBeVisible();
-    await expect(page.getByTestId('group-graph')).toHaveAttribute('data-has-current', 'false');
+    // Bubble is the current path; the graph chapter starts folded.
+    await expect(page.getByTestId('chapter-ch9-sort')).toHaveAttribute('aria-expanded', 'true');
+    await expect(page.getByTestId('chapter-ch7-graph')).toHaveAttribute('aria-expanded', 'false');
+
+    await openTextbookChapter(page, 'ch7-graph');
+    await openTextbookTopic(page, 'shortest-path');
+    const graphBody = page.locator('#chapter-ch7-graph-body');
+    await expect(graphBody).toHaveAttribute('data-open', 'true');
+    await expect(page.getByTestId('algo-dijkstra')).toBeVisible();
+    await expect(page.getByTestId('chapter-ch7-graph')).toHaveAttribute('data-has-current', 'false');
 
     await page.getByTestId('algo-dijkstra').click();
     await expect(page.getByTestId('graph-visual')).toHaveAttribute('data-algorithm', 'dijkstra', { timeout: 60_000 });
     await expect(page.getByTestId('progress')).toHaveText('1 / 46', { timeout: 60_000 });
-    await expect(page.getByTestId('group-graph')).toHaveAttribute('data-has-current', 'true');
+    await expect(page.getByTestId('chapter-ch7-graph')).toHaveAttribute('data-has-current', 'true');
+    await expect(page.getByTestId('topic-shortest-path')).toHaveAttribute('data-has-current', 'true');
 
     // A real relaxation frame: F 6→4, previous C→E, and three heap entries.
     await setFrame(page, 27, 46);
@@ -78,22 +83,23 @@ test.describe('MERGE-01 — grouped collapsible directory + real Dijkstra', () =
     await expect(page.getByTestId('dijkstra-distance-table')).toBeVisible();
     await expect(page.getByTestId('graph-priority-queue-panel')).toBeVisible();
 
-    // Re-opening restores the directory without moving the playhead.
+    // Re-opening restores the current chapter/topic without moving the playhead.
     await page.getByTestId('sidebar-expand').click();
-    await expect(page.getByTestId('group-graph')).toHaveAttribute('data-has-current', 'true');
-    await expect(page.locator('#alg-group-graph')).toHaveAttribute('data-open', 'true');
+    await expect(page.getByTestId('chapter-ch7-graph')).toHaveAttribute('data-has-current', 'true');
+    await expect(page.locator('#chapter-ch7-graph-body')).toHaveAttribute('data-open', 'true');
+    await expect(page.getByTestId('topic-shortest-path')).toHaveAttribute('aria-expanded', 'true');
     await page.waitForTimeout(350);
     await expect(page.getByTestId('progress')).toHaveText('28 / 46');
     await expect(page.getByTestId('algo-dijkstra')).toHaveAttribute('aria-current', 'true');
 
-    // Folding the containing group is also presentation-only, then restore it.
-    await page.getByTestId('group-graph').click();
-    await expect(page.getByTestId('group-graph')).toHaveAttribute('aria-expanded', 'false');
+    // Folding the containing chapter is also presentation-only, then restore it.
+    await page.getByTestId('chapter-ch7-graph').click();
+    await expect(page.getByTestId('chapter-ch7-graph')).toHaveAttribute('aria-expanded', 'false');
     await expect(page.getByTestId('algo-dijkstra')).toBeHidden();
     await page.waitForTimeout(200);
     await expect(page.getByTestId('progress')).toHaveText('28 / 46');
-    await page.getByTestId('group-graph').click();
-    await expect(page.getByTestId('group-graph')).toHaveAttribute('aria-expanded', 'true');
+    await page.getByTestId('chapter-ch7-graph').click();
+    await expect(page.getByTestId('chapter-ch7-graph')).toHaveAttribute('aria-expanded', 'true');
     await expect(page.getByTestId('algo-dijkstra')).toBeVisible();
     await expect(page.getByTestId('progress')).toHaveText('28 / 46');
 
@@ -109,7 +115,7 @@ test.describe('MERGE-01 — grouped collapsible directory + real Dijkstra', () =
     await openApp(page);
     await page.selectOption('[data-testid="theme-select"]', 'dark');
 
-    await page.getByTestId('algo-dijkstra').click();
+    await chooseAlgorithm(page, 'dijkstra');
     await expect(page.getByTestId('progress')).toHaveText('1 / 46', { timeout: 60_000 });
 
     // Advance via the real timeline, then collapse twice; the progress must not

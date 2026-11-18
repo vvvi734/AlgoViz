@@ -1,4 +1,4 @@
-import { expect, test, type Page } from './fixtures';
+import { expect, selectAlgorithm as chooseAlgorithm, test, type Page } from './fixtures';
 import { mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 
@@ -15,9 +15,7 @@ const THEMES = ['light', 'dark'] as const;
 async function openApp(page: Page, id: 'bfs' | 'dfs') {
   await page.goto('/');
   await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
-  const mobile = page.locator('[data-testid="mobile-algo-select"]');
-  if (await mobile.isVisible()) await mobile.selectOption(id);
-  else await page.click(`[data-testid="algo-${id}"]`);
+  await chooseAlgorithm(page, id);
   await expect(page.locator('[data-testid="graph-visual"]')).toHaveAttribute('data-algorithm', id, { timeout: 60_000 });
   await expect(page.locator('[data-testid="progress"]')).toHaveText('1 / 51', { timeout: 60_000 });
 }

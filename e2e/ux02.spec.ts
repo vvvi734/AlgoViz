@@ -1,6 +1,6 @@
 import { mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { collapseAlgorithmGuide, expect, test, type Page } from './fixtures';
+import { collapseAlgorithmGuide, expect, selectAlgorithm as chooseAlgorithm, test, type Page } from './fixtures';
 
 const SHOT_DIR = resolve(process.cwd(), 'docs/ux02/after');
 mkdirSync(SHOT_DIR, { recursive: true });
@@ -10,18 +10,8 @@ async function openApp(page: Page) {
   await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
 }
 
-async function selectAlgorithm(page: Page, id: string, total: number, group: 'graph' | 'tree' = 'graph') {
-  const mobile = page.locator('[data-testid="mobile-algo-select"]');
-  if (await mobile.isVisible()) {
-    await mobile.selectOption(id);
-  } else {
-    const item = page.locator(`[data-testid="algo-${id}"]`);
-    if (!(await item.isVisible())) {
-      const groupToggle = page.locator(`[data-testid="group-${group}"]`);
-      if ((await groupToggle.getAttribute('aria-expanded')) !== 'true') await groupToggle.click();
-    }
-    await item.click();
-  }
+async function selectAlgorithm(page: Page, id: string, total: number, _group: 'graph' | 'tree' = 'graph') {
+  await chooseAlgorithm(page, id);
   await expect(page.locator('[data-testid="progress"]')).toHaveText(`1 / ${total}`, { timeout: 60_000 });
   await collapseAlgorithmGuide(page);
 }

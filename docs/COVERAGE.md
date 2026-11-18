@@ -1,6 +1,6 @@
 # AlgoViz 算法与课程覆盖清单
 
-快照：2026-11-18（UX-02 基于 UX-01B 的 `f866baf` 在 `feat/ux02-lesson-panel` 完成；G2、G3、G4、T1、T2、UX-01、UX-01B 与 UX-02 均未合并 `main`）
+快照：2026-11-18（UX-03 基于 UX-02 的 `6de3ecf` 在 `feat/ux03-textbook-nav` 完成；G2、G3、G4、T1、T2、UX-01、UX-01B、UX-02 与 UX-03 均未合并 `main`）
 
 ## 1. 口径
 

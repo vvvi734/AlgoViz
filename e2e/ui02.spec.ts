@@ -1,4 +1,4 @@
-import { collapseAlgorithmGuide, expect, test, type Page } from './fixtures';
+import { collapseAlgorithmGuide, expect, selectAlgorithm as chooseAlgorithm, test, type Page } from './fixtures';
 
 /**
  * UI-02 — the learning workspace is now "animation left, synchronized lesson
@@ -12,9 +12,7 @@ async function openApp(page: Page) {
 }
 
 async function selectAlgo(page: Page, id: string) {
-  const mobile = page.locator('[data-testid="mobile-algo-select"]');
-  if (await mobile.isVisible()) await mobile.selectOption(id);
-  else await page.click(`[data-testid="algo-${id}"]`);
+  await chooseAlgorithm(page, id);
 }
 
 async function openDijkstra(page: Page) {

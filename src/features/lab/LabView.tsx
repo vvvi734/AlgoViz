@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { AlgorithmSidebar } from './AlgorithmSidebar';
 import { VisualStage } from './VisualStage';
 import { TreeTraversalPicker } from './TreeTraversalPicker';
@@ -15,6 +15,11 @@ import { buildAlgorithmGuide } from '../../domain/guides/buildGuide';
 import { SessionPanel } from './SessionPanel';
 import { WorkspaceTabs, type WorkspaceTabId } from './WorkspaceTabs';
 import { useSidebarPreferences } from './useSidebarPreferences';
+import {
+  buildTextbookNavigation,
+  findTextbookPath,
+  textbookTitle,
+} from '../../domain/algorithms/textbook';
 import type { SessionTransferController } from './useSessionTransfer';
 import { AiMentor } from './AiMentor';
 import type { LabController } from './useLabController';
@@ -92,9 +97,16 @@ export function LabView({
 
   const [selectedFrameId, setSelectedFrameId] = useState<string | null>(null);
   const [tab, setTab] = useState<WorkspaceTabId>('state');
-  // UI-01: the directory's folded/collapsed layout is a persisted presentation
-  // preference. It never owns the algorithm, the trace or the playhead.
-  const sidebar = useSidebarPreferences();
+  // UX-03: the directory is the authored textbook tree composed with the live
+  // registry. It remains presentation-only; `currentAlgo` still owns selection.
+  const textbookNav = useMemo(() => buildTextbookNavigation(lab.catalog), [lab.catalog]);
+  const textbookPath = useMemo(
+    () => findTextbookPath(textbookNav, lab.currentAlgo),
+    [textbookNav, lab.currentAlgo],
+  );
+  // UI-01/UX-03: the directory's folded/collapsed layout is a persisted
+  // presentation preference. It never owns the algorithm, the trace or the playhead.
+  const sidebar = useSidebarPreferences(textbookPath);
   // UX-01: folding is a per-algorithm presentation preference. It is derived
   // from the current algorithm and never stored in the LabController.
   const algorithmGuide = useAlgorithmGuidePreferences(lab.currentAlgo);
@@ -172,14 +184,15 @@ export function LabView({
       <div className="lab-sidebar-wrap">
         <AlgorithmSidebar
           catalog={lab.catalog}
-          groups={lab.groups}
           currentAlgo={lab.currentAlgo}
           onSelect={lab.selectAlgo}
           collapsed={sidebar.collapsed}
           onToggleCollapsed={sidebar.toggleCollapsed}
-          isGroupOpen={sidebar.isGroupOpen}
-          onToggleGroup={sidebar.toggleGroup}
-          onOpenGroup={sidebar.openGroup}
+          isChapterOpen={sidebar.isChapterOpen}
+          onToggleChapter={sidebar.toggleChapter}
+          onOpenChapter={sidebar.openChapter}
+          isTopicOpen={sidebar.isTopicOpen}
+          onToggleTopic={sidebar.toggleTopic}
         />
       </div>
 
@@ -220,10 +233,22 @@ export function LabView({
               data-testid="mobile-algo-select"
               onChange={(change) => lab.selectAlgo(change.target.value)}
             >
-              {Object.entries(lab.catalog).map(([id, item]) => (
-                <option key={id} value={id}>
-                  {pick(item.name)}
-                </option>
+              {textbookNav.map((chapter) => (
+                <optgroup
+                  key={chapter.id}
+                  label={`${chapter.extension ? '' : `${chapter.number}. `}${textbookTitle(chapter.title, lang)}`}
+                >
+                  {chapter.topics.flatMap((topic) =>
+                    topic.algorithms.map((algorithm) => {
+                      const item = lab.catalog[algorithm.id];
+                      return item ? (
+                        <option key={algorithm.id} value={algorithm.id}>
+                          {pick(item.name)}
+                        </option>
+                      ) : null;
+                    }),
+                  )}
+                </optgroup>
               ))}
             </select>
           </div>

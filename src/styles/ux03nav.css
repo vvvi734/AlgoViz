@@ -1,0 +1,363 @@
+/* ==========================================================================
+   UX-03 — textbook directory (chapter → topic → algorithm).
+   Presentation only: all hierarchy and labels come from
+   `domain/algorithms/textbook.ts`; trace and playback are untouched.
+   Colours are tokens so Light / Dark / System keep parity.
+   ========================================================================== */
+
+.textbook-sidebar {
+  padding: 10px 9px !important;
+}
+
+.textbook-sidebar .sidebar-head {
+  margin-bottom: 5px;
+  padding: 1px 2px 7px;
+}
+
+.textbook-source {
+  margin: 0 2px 9px;
+  padding-left: 7px;
+  border-left: 2px solid var(--accent);
+  color: var(--muted);
+  font-size: 10.5px;
+  line-height: 1.4;
+  letter-spacing: .1px;
+}
+
+.textbook-nav {
+  gap: 1px;
+}
+
+.textbook-chapter {
+  min-width: 0;
+  border-bottom: 1px solid var(--edge);
+}
+.textbook-chapter:last-child {
+  border-bottom: 0;
+}
+
+.textbook-chapter-head {
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 6px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
+  text-align: left;
+  cursor: pointer;
+  transition: background .15s ease, color .15s ease, border-color .15s ease;
+}
+.textbook-chapter-head:hover {
+  background: var(--alg-hover);
+  color: var(--txt);
+}
+.textbook-chapter-head[data-has-current='true'] {
+  color: var(--txt);
+  border-color: var(--alg-active-edge);
+  background: var(--alg-active-bg);
+}
+.textbook-chapter-head[aria-expanded='true'] {
+  color: var(--txt);
+}
+
+.textbook-chapter-number {
+  flex: 0 0 auto;
+  width: 22px;
+  color: var(--accent);
+  font: 800 11px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+  letter-spacing: .2px;
+  font-variant-numeric: tabular-nums;
+}
+.textbook-chapter-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+.textbook-current-dot {
+  flex: 0 0 auto;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+.textbook-count {
+  flex: 0 0 auto;
+  min-width: 16px;
+  padding: 1px 5px;
+  border-radius: 999px;
+  background: var(--alg-hover);
+  color: var(--muted);
+  font-size: 9.5px;
+  font-weight: 700;
+  line-height: 1.4;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.textbook-pending {
+  flex: 0 0 auto;
+  color: var(--muted);
+  font-size: 9.5px;
+  font-weight: 500;
+  line-height: 1.4;
+  white-space: nowrap;
+  opacity: .78;
+}
+.textbook-chapter-chevron {
+  flex: 0 0 auto;
+  width: 10px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1;
+  text-align: center;
+  transform: rotate(0deg);
+  transition: transform .18s ease;
+}
+.textbook-chapter-head[aria-expanded='true'] .textbook-chapter-chevron {
+  transform: rotate(90deg);
+}
+
+/* 0fr → 1fr height transition. `visibility` and `inert` keep closed content
+   out of hit-testing, Playwright visibility and the tab order. */
+.textbook-chapter-body {
+  display: grid;
+  grid-template-rows: 0fr;
+  min-width: 0;
+  visibility: hidden;
+  transition: grid-template-rows .2s ease, visibility 0s linear .2s;
+}
+.textbook-chapter-body[data-open='true'] {
+  grid-template-rows: 1fr;
+  visibility: visible;
+  transition: grid-template-rows .2s ease, visibility 0s linear 0s;
+}
+.textbook-chapter-body-inner {
+  min-height: 0;
+  overflow: hidden;
+  margin-left: 16px;
+  padding-left: 5px;
+  border-left: 1px solid var(--edge);
+}
+
+/* Chromium keeps a child's own computed `visibility` while the animatable
+   parent flips; Playwright then treats a clipped 0-height child as visible.
+   Setting visibility on every descendant makes fold state unambiguous for
+   hit-testing, tab order and browser tests alike. */
+.textbook-chapter-body[data-open='false'] *,
+.textbook-topic-body[data-open='false'] * {
+  visibility: hidden;
+}
+
+.textbook-topic {
+  min-width: 0;
+}
+
+.textbook-topic.is-planned {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 28px;
+  padding: 5px 5px 5px 2px;
+  color: var(--muted);
+}
+.textbook-topic-rail {
+  flex: 0 0 auto;
+  width: 5px;
+  height: 1px;
+  background: var(--edge);
+}
+.textbook-topic.is-planned .textbook-topic-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 11px;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+  opacity: .82;
+}
+
+.textbook-topic-head {
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 5px 6px 2px;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--muted);
+  text-align: left;
+  cursor: pointer;
+  transition: background .15s ease, color .15s ease;
+}
+.textbook-topic-head:hover {
+  background: var(--alg-hover);
+  color: var(--txt);
+}
+.textbook-topic-head[data-has-current='true'] {
+  color: var(--txt);
+}
+.textbook-topic-head[aria-expanded='true'] {
+  color: var(--txt);
+}
+.textbook-topic-chevron {
+  flex: 0 0 auto;
+  width: 9px;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1;
+  transform: rotate(0deg);
+  transition: transform .18s ease;
+}
+.textbook-topic-head[aria-expanded='true'] .textbook-topic-chevron {
+  transform: rotate(90deg);
+}
+.textbook-topic-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 11px;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+.textbook-topic-head[data-has-current='true'] .textbook-topic-name {
+  font-weight: 650;
+}
+
+.textbook-extension {
+  flex: 0 0 auto;
+  padding: 1px 4px;
+  border: 1px solid var(--edge);
+  border-radius: 5px;
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 600;
+  line-height: 1.35;
+  white-space: nowrap;
+}
+
+.textbook-topic-body {
+  display: grid;
+  grid-template-rows: 0fr;
+  min-width: 0;
+  visibility: hidden;
+  transition: grid-template-rows .18s ease, visibility 0s linear .18s;
+}
+.textbook-topic-body[data-open='true'] {
+  grid-template-rows: 1fr;
+  visibility: visible;
+  transition: grid-template-rows .18s ease, visibility 0s linear 0s;
+}
+.textbook-topic-body-inner {
+  min-height: 0;
+  overflow: hidden;
+  margin-left: 6px;
+  padding-left: 6px;
+  border-left: 1px dashed var(--edge);
+}
+
+/* Third level: the existing registry item, only more compact. The current
+   algorithm keeps the same `.alg-item.active` contract as every other view. */
+.textbook-sidebar .alg-item {
+  gap: 7px;
+  padding: 6px 7px;
+  border-radius: 7px;
+  font-size: 12px;
+}
+.textbook-sidebar .alg-icon {
+  flex: 0 0 auto;
+  font-size: 12px;
+  line-height: 1;
+}
+.textbook-sidebar .alg-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 12px;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+.textbook-sidebar .alg-item[aria-current='true'] {
+  background: var(--alg-active-bg);
+  border-color: var(--alg-active-edge);
+  color: var(--accent);
+}
+.textbook-sidebar .alg-item .textbook-extension {
+  padding: 0 4px;
+  border-color: var(--alg-active-edge);
+}
+
+.textbook-chapter-head:focus-visible,
+.textbook-topic-head:focus-visible,
+.textbook-sidebar .alg-item:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Compact rail: one shortcut per chapter, then the current algorithm. */
+.rail-chapters {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  width: 100%;
+  margin-top: 2px;
+}
+.rail-chapter {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 32px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--muted);
+  font: 700 10.5px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+  cursor: pointer;
+  transition: background .15s ease, color .15s ease, border-color .15s ease;
+}
+.rail-chapter:hover {
+  background: var(--alg-hover);
+  border-color: var(--edge);
+  color: var(--txt);
+}
+.rail-chapter[data-has-current='true'] {
+  background: var(--alg-active-bg);
+  border-color: var(--alg-active-edge);
+  color: var(--accent);
+}
+.rail-chapter:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.rail-current {
+  font-size: 15px;
+}
+.rail-current:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .textbook-chapter-body,
+  .textbook-chapter-body[data-open='true'],
+  .textbook-topic-body,
+  .textbook-topic-body[data-open='true'],
+  .textbook-chapter-chevron,
+  .textbook-topic-chevron {
+    transition: none;
+  }
+}
+
+/* At 390px the sidebar is replaced by the existing mobile select; only its
+   optgroups change. Nothing here forces a second, competing directory. */
+@media (max-width: 899px) {
+  .textbook-sidebar {
+    display: none !important;
+  }
+}

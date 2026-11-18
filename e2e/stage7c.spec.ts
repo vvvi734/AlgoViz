@@ -1,4 +1,4 @@
-import { expect, openCodePanel, test, type Page } from './fixtures';
+import { expect, openCodePanel, selectAlgorithm as chooseAlgorithm, test, type Page } from './fixtures';
 import { mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 
@@ -11,12 +11,7 @@ async function openApp(page: Page) {
 }
 
 async function selectAlgo(page: Page, id: string) {
-  const mobile = page.locator('[data-testid="mobile-algo-select"]');
-  if (await mobile.isVisible()) {
-    await mobile.selectOption(id);
-  } else {
-    await page.click(`[data-testid="algo-${id}"]`);
-  }
+  await chooseAlgorithm(page, id);
 }
 
 async function setFrame(page: Page, frame: number, total = 22) {
