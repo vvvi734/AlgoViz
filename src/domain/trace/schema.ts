@@ -4050,9 +4050,432 @@ export const kosarajuSnapshotSchema = z
   });
 export type KosarajuSnapshot = z.infer<typeof kosarajuSnapshotSchema>;
 
+/**
+ * T3: max-heap snapshots.
+ *
+ * The tree is *never* the owner of element identity. Every element carries a
+ * stable id, and its `slot` is its current index in the real Python array.
+ * A swap moves the id and value to another slot; it does not reshape the
+ * complete binary tree. The array suffix at `sortedFrom` is already sorted and
+ * is excluded from the active heap `[0, heapSize)`.
+ */
+export const MAX_HEAP_LIMITS = {
+  MAX_ELEMENTS: 24,
+} as const;
 
-/** Stage 7B stack/queue + Stage 7C linked-list + Stage 7D binary-tree + T1 BST + Stage 7E/7F/G1/G2/G3 graphs. */
+export const MAX_HEAP_COMMANDS = ['build', 'push', 'extract', 'sort'] as const;
+export type MaxHeapCommand = (typeof MAX_HEAP_COMMANDS)[number];
+
+export const MAX_HEAP_OPERATIONS = [
+  'init',
+  'build-start',
+  'heapify-node',
+  'compare-parent-child',
+  'compare-children',
+  'swap',
+  'build-done',
+  'push-append',
+  'extract-select',
+  'replace-root',
+  'sort-select',
+  'swap-to-end',
+  'done',
+] as const;
+export type MaxHeapOperation = (typeof MAX_HEAP_OPERATIONS)[number];
+
+export const MAX_HEAP_RESULTS = ['built', 'pushed', 'extracted', 'sorted', 'empty'] as const;
+export type MaxHeapResult = (typeof MAX_HEAP_RESULTS)[number];
+
+const MAX_HEAP_ID = z.string().min(1).max(LIMITS.MAX_NAME_CHARS);
+
+export const maxHeapElementSchema = z.object({
+  id: MAX_HEAP_ID,
+  value: z.number().finite(),
+  /** Current array index. Elements are stored in slot order. */
+  slot: z.number().int().nonnegative().max(MAX_HEAP_LIMITS.MAX_ELEMENTS - 1),
+});
+export type MaxHeapElement = z.infer<typeof maxHeapElementSchema>;
+
+export const maxHeapParentCompareSchema = z.object({
+  parentId: MAX_HEAP_ID,
+  childId: MAX_HEAP_ID,
+});
+export type MaxHeapParentCompare = z.infer<typeof maxHeapParentCompareSchema>;
+
+export const maxHeapChildCompareSchema = z.object({
+  leftId: MAX_HEAP_ID,
+  rightId: MAX_HEAP_ID,
+});
+export type MaxHeapChildCompare = z.infer<typeof maxHeapChildCompareSchema>;
+
+export const maxHeapSwapSchema = z.object({
+  firstId: MAX_HEAP_ID,
+  secondId: MAX_HEAP_ID,
+});
+export type MaxHeapSwap = z.infer<typeof maxHeapSwapSchema>;
+
+export const maxHeapReplacementSchema = z.object({
+  id: MAX_HEAP_ID,
+  /** The old tail index before it was popped and written into slot 0. */
+  fromSlot: z.number().int().nonnegative().max(MAX_HEAP_LIMITS.MAX_ELEMENTS),
+  toSlot: z.number().int().nonnegative().max(MAX_HEAP_LIMITS.MAX_ELEMENTS - 1),
+});
+export type MaxHeapReplacement = z.infer<typeof maxHeapReplacementSchema>;
+
+const MAX_HEAP_OPERATIONS_BY_COMMAND: Record<MaxHeapCommand, readonly MaxHeapOperation[]> = {
+  build: [
+    'init',
+    'build-start',
+    'heapify-node',
+    'compare-parent-child',
+    'compare-children',
+    'swap',
+    'done',
+  ],
+  push: ['init', 'push-append', 'compare-parent-child', 'swap', 'done'],
+  extract: [
+    'init',
+    'extract-select',
+    'replace-root',
+    'compare-parent-child',
+    'compare-children',
+    'swap',
+    'done',
+  ],
+  sort: [
+    'init',
+    'build-start',
+    'heapify-node',
+    'compare-parent-child',
+    'compare-children',
+    'swap',
+    'build-done',
+    'sort-select',
+    'swap-to-end',
+    'done',
+  ],
+};
+
+export const maxHeapSnapshotSchema = z
+  .object({
+    kind: z.literal('max-heap'),
+    preset: z.string().max(LIMITS.MAX_NAME_CHARS).nullable(),
+    command: z.enum(MAX_HEAP_COMMANDS),
+    operation: z.enum(MAX_HEAP_OPERATIONS),
+    totalSize: z.number().int().nonnegative().max(MAX_HEAP_LIMITS.MAX_ELEMENTS),
+    heapSize: z.number().int().nonnegative().max(MAX_HEAP_LIMITS.MAX_ELEMENTS),
+    elements: z.array(maxHeapElementSchema).max(MAX_HEAP_LIMITS.MAX_ELEMENTS),
+    rootId: MAX_HEAP_ID.nullable(),
+    activeId: MAX_HEAP_ID.nullable(),
+    pathIds: z.array(MAX_HEAP_ID).max(MAX_HEAP_LIMITS.MAX_ELEMENTS),
+    compareParent: maxHeapParentCompareSchema.nullable(),
+    compareChildren: maxHeapChildCompareSchema.nullable(),
+    swap: maxHeapSwapSchema.nullable(),
+    addedId: MAX_HEAP_ID.nullable(),
+    removed: maxHeapElementSchema.nullable(),
+    replacement: maxHeapReplacementSchema.nullable(),
+    /** First index of the finished sorted suffix; always null or equal to heapSize. */
+    sortedFrom: z.number().int().nonnegative().max(MAX_HEAP_LIMITS.MAX_ELEMENTS).nullable(),
+    result: z.enum(MAX_HEAP_RESULTS).nullable(),
+  })
+  .superRefine((snapshot, ctx) => {
+    const add = (path: (string | number)[], message: string) =>
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path, message });
+    const byId = new Map<string, MaxHeapElement>();
+    snapshot.elements.forEach((element, index) => {
+      if (element.slot !== index) {
+        add(['elements', index, 'slot'], 'elements must be stored in contiguous slot order');
+      }
+      if (byId.has(element.id)) {
+        add(['elements', index, 'id'], `duplicate max-heap element id "${element.id}"`);
+      }
+      byId.set(element.id, element);
+    });
+
+    if (snapshot.totalSize !== snapshot.elements.length) {
+      add(['totalSize'], 'totalSize must equal the number of array elements');
+    }
+    if (snapshot.heapSize > snapshot.totalSize) {
+      add(['heapSize'], 'heapSize cannot exceed totalSize');
+    }
+    if (!MAX_HEAP_OPERATIONS_BY_COMMAND[snapshot.command].includes(snapshot.operation)) {
+      add(['operation'], `operation "${snapshot.operation}" is not valid for command "${snapshot.command}"`);
+    }
+    if (snapshot.sortedFrom !== null && snapshot.sortedFrom !== snapshot.heapSize) {
+      add(['sortedFrom'], 'the sorted suffix must start exactly where the active heap ends');
+    }
+
+    const expectedRoot = snapshot.heapSize > 0 ? snapshot.elements[0]?.id ?? null : null;
+    if (snapshot.rootId !== expectedRoot) {
+      add(['rootId'], 'rootId must be the element in slot 0 when the heap is non-empty');
+    }
+
+    if (snapshot.activeId !== null) {
+      const active = byId.get(snapshot.activeId);
+      if (!active) add(['activeId'], 'activeId must refer to an array element');
+      else if (active.slot >= snapshot.heapSize) add(['activeId'], 'activeId must lie inside the active heap');
+    }
+
+    const path = snapshot.pathIds.map((id) => byId.get(id));
+    if (path.some((element) => element === undefined)) {
+      add(['pathIds'], 'pathIds must refer to real array elements');
+    }
+    if (snapshot.activeId === null) {
+      if (snapshot.pathIds.length > 0) add(['pathIds'], 'a frame without activeId must have an empty path');
+    } else if (path.length > 0) {
+      if (snapshot.pathIds.at(-1) !== snapshot.activeId) add(['pathIds'], 'pathIds must end at activeId');
+      if (snapshot.pathIds[0] !== snapshot.rootId) add(['pathIds'], 'pathIds must start at the heap root');
+      for (let index = 1; index < path.length; index += 1) {
+        const parent = path[index - 1]!;
+        const child = path[index]!;
+        if (child.slot > 0 && Math.floor((child.slot - 1) / 2) !== parent.slot) {
+          add(['pathIds', index], 'pathIds must follow real parent-child slots');
+        }
+      }
+    } else if (snapshot.activeId !== null && snapshot.heapSize > 0) {
+      add(['pathIds'], 'an active element in a non-empty heap needs a root-to-active path');
+    }
+
+    if (snapshot.compareParent !== null) {
+      const parent = byId.get(snapshot.compareParent.parentId);
+      const child = byId.get(snapshot.compareParent.childId);
+      if (!parent || !child) add(['compareParent'], 'both compared elements must exist');
+      else if (parent.slot >= snapshot.heapSize || child.slot >= snapshot.heapSize) {
+        add(['compareParent'], 'parent/child comparison must stay inside the active heap');
+      } else if (child.slot === 0 || Math.floor((child.slot - 1) / 2) !== parent.slot) {
+        add(['compareParent'], 'compareParent must record a real parent-child pair');
+      }
+    }
+    if (snapshot.compareChildren !== null) {
+      const left = byId.get(snapshot.compareChildren.leftId);
+      const right = byId.get(snapshot.compareChildren.rightId);
+      if (!left || !right) add(['compareChildren'], 'both compared children must exist');
+      else if (left.slot >= snapshot.heapSize || right.slot >= snapshot.heapSize) {
+        add(['compareChildren'], 'sibling comparison must stay inside the active heap');
+      } else if (right.slot !== left.slot + 1 || left.slot % 2 !== 1) {
+        add(['compareChildren'], 'compareChildren must record a real left/right pair');
+      }
+    }
+    if (snapshot.swap !== null) {
+      const first = byId.get(snapshot.swap.firstId);
+      const second = byId.get(snapshot.swap.secondId);
+      if (!first || !second || first.id === second.id) add(['swap'], 'swap must name two distinct real elements');
+      if (snapshot.operation === 'swap') {
+        if (first && second && (first.slot >= snapshot.heapSize || second.slot >= snapshot.heapSize)) {
+          add(['swap'], 'a normal heap swap must stay inside the active heap');
+        }
+      } else if (snapshot.operation === 'swap-to-end') {
+        if (first?.slot !== 0 || second?.slot !== snapshot.heapSize) {
+          add(['swap'], 'swap-to-end must move the root into the first sorted slot');
+        }
+      } else {
+        add(['swap'], 'swap metadata is only valid on swap / swap-to-end frames');
+      }
+    }
+
+    if (snapshot.operation === 'compare-parent-child') {
+      if (snapshot.compareParent === null) add(['compareParent'], 'comparison frame needs parent/child metadata');
+      if (snapshot.compareChildren !== null) add(['compareChildren'], 'a parent/child frame cannot also compare siblings');
+      if (snapshot.swap !== null) add(['swap'], 'a comparison frame cannot record a completed swap');
+    } else if (snapshot.compareParent !== null) {
+      add(['compareParent'], 'parent/child metadata is only valid on compare-parent-child');
+    }
+    if (snapshot.operation === 'compare-children') {
+      if (snapshot.compareChildren === null) add(['compareChildren'], 'sibling frame needs child metadata');
+      if (snapshot.compareParent !== null) add(['compareParent'], 'a sibling frame cannot also compare a parent');
+      if (snapshot.swap !== null) add(['swap'], 'a comparison frame cannot record a completed swap');
+    } else if (snapshot.compareChildren !== null) {
+      add(['compareChildren'], 'child metadata is only valid on compare-children');
+    }
+    if (snapshot.operation === 'swap' || snapshot.operation === 'swap-to-end') {
+      if (snapshot.swap === null) add(['swap'], 'swap frame needs the two swapped element ids');
+    } else if (snapshot.swap !== null) {
+      add(['swap'], 'swap metadata is only valid on swap frames');
+    }
+
+    if (snapshot.addedId !== null) {
+      const added = byId.get(snapshot.addedId);
+      if (!added) add(['addedId'], 'addedId must refer to an array element');
+      else if (added.slot !== snapshot.totalSize - 1) add(['addedId'], 'the pushed element must occupy the last slot');
+      if (snapshot.operation !== 'push-append') add(['addedId'], 'addedId is only valid on push-append');
+    }
+
+    if (snapshot.removed !== null) {
+      if (byId.has(snapshot.removed.id)) add(['removed'], 'a removed element cannot still be in the array');
+      if (snapshot.command !== 'extract') add(['removed'], 'only extract may remove the heap root');
+      if (snapshot.operation !== 'replace-root' && snapshot.operation !== 'done') {
+        add(['removed'], 'removed metadata is only valid after the root has been replaced or at done');
+      }
+    }
+
+    if (snapshot.replacement !== null) {
+      if (snapshot.operation !== 'replace-root') {
+        add(['replacement'], 'replacement metadata is only valid on replace-root');
+      }
+      if (snapshot.totalSize > 0) {
+        if (snapshot.replacement.id !== snapshot.rootId || snapshot.replacement.toSlot !== 0) {
+          add(['replacement'], 'the tail element must become the new root at slot 0');
+        }
+        if (snapshot.replacement.fromSlot !== snapshot.totalSize) {
+          add(['replacement'], 'fromSlot must be the old tail index immediately after the pop');
+        }
+      } else {
+        add(['replacement'], 'an empty heap has no replacement element');
+      }
+    } else if (snapshot.operation === 'replace-root' && snapshot.totalSize > 0) {
+      add(['replacement'], 'replace-root needs the element that moved from the tail to slot 0');
+    }
+
+    if (snapshot.result !== null && snapshot.operation !== 'done') {
+      add(['result'], 'result is only reported on the terminal done frame');
+    }
+
+    if (snapshot.operation === 'init') {
+      if (snapshot.heapSize !== snapshot.totalSize) add(['heapSize'], 'init shows the whole array as the active heap');
+      if (snapshot.activeId !== null || snapshot.pathIds.length > 0) add(['pathIds'], 'init has no active element');
+      if (
+        snapshot.compareParent !== null ||
+        snapshot.compareChildren !== null ||
+        snapshot.swap !== null ||
+        snapshot.removed !== null ||
+        snapshot.replacement !== null ||
+        snapshot.addedId !== null
+      ) {
+        add(['operation'], 'init cannot carry mutation or comparison metadata');
+      }
+      if (snapshot.sortedFrom !== null) add(['sortedFrom'], 'init cannot start with a sorted suffix');
+      if (snapshot.result !== null) add(['result'], 'init cannot report a final result');
+    }
+    if (snapshot.operation === 'build-start') {
+      if (snapshot.heapSize !== snapshot.totalSize) add(['heapSize'], 'build starts with the whole array');
+      if (snapshot.activeId !== null || snapshot.pathIds.length > 0) add(['pathIds'], 'build-start has no active node');
+      if (snapshot.sortedFrom !== null) add(['sortedFrom'], 'building cannot start with a sorted suffix');
+    }
+    if (snapshot.operation === 'heapify-node') {
+      if (snapshot.activeId === null) add(['activeId'], 'heapify-node must select the subtree root');
+      if (snapshot.heapSize !== snapshot.totalSize) add(['heapSize'], 'heapify runs over the whole array');
+    }
+    if (snapshot.operation === 'push-append') {
+      if (snapshot.command !== 'push') add(['command'], 'push-append belongs to the push command');
+      if (snapshot.addedId === null) add(['addedId'], 'append frame must identify the new element');
+      if (snapshot.activeId !== snapshot.addedId) add(['activeId'], 'append focuses the new tail element');
+      if (snapshot.heapSize !== snapshot.totalSize) add(['heapSize'], 'before sift-up the new element is part of the heap');
+    }
+    if (snapshot.operation === 'extract-select') {
+      if (snapshot.command !== 'extract') add(['command'], 'extract-select belongs to extract');
+      if (snapshot.removed !== null) add(['removed'], 'the root is still present on extract-select');
+      if (snapshot.heapSize !== snapshot.totalSize) add(['heapSize'], 'selecting the root happens before the pop');
+      if (snapshot.heapSize > 0 && snapshot.activeId !== snapshot.rootId) {
+        add(['activeId'], 'extract-select focuses the root');
+      }
+    }
+    if (snapshot.operation === 'replace-root') {
+      if (snapshot.command !== 'extract') add(['command'], 'replace-root belongs to extract');
+      if (snapshot.removed === null) add(['removed'], 'replace-root must report the extracted maximum');
+      if (snapshot.heapSize !== snapshot.totalSize) add(['heapSize'], 'the popped tail leaves heapSize = totalSize');
+      if (snapshot.heapSize > 0 && snapshot.activeId !== snapshot.rootId) {
+        add(['activeId'], 'replace-root focuses the moved tail element at slot 0');
+      }
+    }
+    if (snapshot.operation === 'sort-select') {
+      if (snapshot.command !== 'sort') add(['command'], 'sort-select belongs to heap sort');
+      if (snapshot.heapSize === 0) add(['heapSize'], 'sort-select needs an active heap');
+      if (snapshot.activeId !== snapshot.rootId) add(['activeId'], 'sort-select focuses the maximum root');
+    }
+    if (snapshot.operation === 'swap-to-end') {
+      if (snapshot.command !== 'sort') add(['command'], 'swap-to-end belongs to heap sort');
+      if (snapshot.heapSize === 0) add(['heapSize'], 'swap-to-end must leave a non-empty heap to repair');
+      if (snapshot.sortedFrom !== snapshot.heapSize) add(['sortedFrom'], 'the swapped maximum starts the sorted suffix');
+      if (snapshot.activeId !== snapshot.rootId) add(['activeId'], 'the tail element is now the root');
+    }
+    if (snapshot.operation === 'build-done') {
+      if (snapshot.command !== 'sort') add(['command'], 'build-done marks the pre-sort heap');
+      if (snapshot.heapSize !== snapshot.totalSize) add(['heapSize'], 'build-done still covers the whole array');
+      if (snapshot.activeId !== null || snapshot.pathIds.length > 0) add(['pathIds'], 'build-done has no active node');
+      if (snapshot.sortedFrom !== null) add(['sortedFrom'], 'build-done has no sorted suffix yet');
+    }
+
+    if (snapshot.operation !== 'done') {
+      if (snapshot.result !== null) add(['result'], 'only done reports a result');
+    } else {
+      if (snapshot.result === null) add(['result'], 'done must report a final result');
+      if (snapshot.activeId !== null || snapshot.pathIds.length > 0) add(['pathIds'], 'done has no active element');
+      if (snapshot.compareParent !== null || snapshot.compareChildren !== null || snapshot.swap !== null) {
+        add(['operation'], 'done cannot carry a pending comparison or swap');
+      }
+      if (snapshot.addedId !== null) add(['addedId'], 'done has no newly added element');
+      if (snapshot.replacement !== null) add(['replacement'], 'done has no root replacement');
+      if (snapshot.command === 'sort') {
+        if (snapshot.result !== 'sorted') add(['result'], 'heap sort ends with result = sorted');
+        if (snapshot.heapSize !== 0 || snapshot.sortedFrom !== 0) {
+          add(['heapSize'], 'heap sort ends with every slot in the sorted suffix');
+        }
+        if (snapshot.removed !== null) add(['removed'], 'heap sort does not remove elements');
+      } else {
+        if (snapshot.sortedFrom !== null) add(['sortedFrom'], 'this command has no sorted suffix');
+        if (snapshot.heapSize !== snapshot.totalSize) {
+          add(['heapSize'], 'done must account for the whole remaining array');
+        }
+        if (snapshot.command === 'build' && snapshot.result !== 'built') {
+          add(['result'], 'build ends with result = built');
+        }
+        if (snapshot.command === 'push' && snapshot.result !== 'pushed') {
+          add(['result'], 'push ends with result = pushed');
+        }
+        if (snapshot.command === 'extract') {
+          if (snapshot.totalSize === 0 && snapshot.removed === null) {
+            if (snapshot.result !== 'empty') {
+              add(['result'], 'extracting from an empty heap reports empty and removes nothing');
+            }
+          } else {
+            if (snapshot.result !== 'extracted') add(['result'], 'a successful extract ends with result = extracted');
+            if (snapshot.removed === null) add(['removed'], 'a successful extract must report the maximum removed');
+          }
+        }
+      }
+    }
+
+    // The sorted suffix is by construction the final ascending array suffix.
+    if (snapshot.sortedFrom !== null) {
+      for (let slot = snapshot.sortedFrom + 1; slot < snapshot.totalSize; slot += 1) {
+        if (snapshot.elements[slot - 1]!.value > snapshot.elements[slot]!.value) {
+          add(['elements', slot], 'the sorted suffix must be non-decreasing');
+          break;
+        }
+      }
+    }
+
+    const isHeapOrdered = () => {
+      for (let parent = 0; parent < snapshot.heapSize; parent += 1) {
+        for (const child of [2 * parent + 1, 2 * parent + 2]) {
+          if (child < snapshot.heapSize && snapshot.elements[parent]!.value < snapshot.elements[child]!.value) {
+            return false;
+          }
+        }
+      }
+      return true;
+    };
+    if (
+      snapshot.operation === 'done' ||
+      snapshot.operation === 'build-done'
+    ) {
+      if (snapshot.command === 'sort' && snapshot.operation === 'done') {
+        for (let slot = 1; slot < snapshot.totalSize; slot += 1) {
+          if (snapshot.elements[slot - 1]!.value > snapshot.elements[slot]!.value) {
+            add(['elements', slot], 'heap sort done must be globally ascending');
+            break;
+          }
+        }
+      } else if (!isHeapOrdered()) {
+        add(['elements'], 'the final active heap must satisfy parent >= child');
+      }
+    }
+  });
+export type MaxHeapSnapshot = z.infer<typeof maxHeapSnapshotSchema>;
+
+/** Stage 7B stack/queue + Stage 7C linked-list + Stage 7D binary-tree + T1 BST + T2 AVL + T3 max-heap + Stage 7E/7F/G1/G2/G3/G4 graphs. */
 export const structureSchema = z.union([
+  maxHeapSnapshotSchema,
   structureSnapshotSchema,
   linkedListSnapshotSchema,
   binaryTreeSnapshotSchema,

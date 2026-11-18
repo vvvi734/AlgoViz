@@ -18,6 +18,7 @@ import type {
   BstNode,
   BstSnapshot,
   KosarajuSnapshot,
+  MaxHeapSnapshot,
   TopologicalSortSnapshot,
   TraceEvent,
   WeightedGraphSnapshot,
@@ -456,6 +457,187 @@ function treeAction(
       };
     }
   }
+}
+
+function heapElement(snapshot: MaxHeapSnapshot, id: string | null) {
+  if (!id) return null;
+  return snapshot.elements.find((element) => element.id === id) ?? null;
+}
+
+function heapElementLabel(snapshot: MaxHeapSnapshot, id: string | null): string {
+  const element = heapElement(snapshot, id);
+  return element ? `${element.id}(${element.value})@#${element.slot}` : '—';
+}
+
+function heapRootLabel(snapshot: MaxHeapSnapshot): string {
+  return snapshot.heapSize > 0 ? heapElementLabel(snapshot, snapshot.elements[0]?.id ?? null) : '∅';
+}
+
+function heapSortedLabel(snapshot: MaxHeapSnapshot): string {
+  if (snapshot.sortedFrom === null) return '—';
+  return snapshot.elements
+    .slice(snapshot.sortedFrom)
+    .map((element) => String(element.value))
+    .join(' → ') || '∅';
+}
+
+function heapPathLabel(snapshot: MaxHeapSnapshot): string {
+  return snapshot.pathIds.length
+    ? snapshot.pathIds.map((id) => heapElementLabel(snapshot, id)).join(' → ')
+    : '—';
+}
+
+function heapActionParts(snapshot: MaxHeapSnapshot, lang: LessonLang): { action: string; why: string } {
+  const root = heapRootLabel(snapshot);
+  const active = heapElementLabel(snapshot, snapshot.activeId);
+  switch (snapshot.operation) {
+    case 'init':
+      return {
+        action: tx(lang, `初始化最大堆：${snapshot.totalSize} 个元素，根 ${root}`, `Initialise max heap: ${snapshot.totalSize} elements, root ${root}`),
+        why: tx(lang, '数组按层序对应完全二叉树；槽位 i 的左孩子 2i+1、右孩子 2i+2、父节点 ⌊(i-1)/2⌋。', 'The array is a complete tree in level order: slot i has left child 2i+1, right child 2i+2, parent ⌊(i-1)/2⌋.'),
+      };
+    case 'build-start':
+      return {
+        action: tx(lang, `建堆开始：从最后一个非叶节点 #${Math.max(0, Math.floor(snapshot.totalSize / 2) - 1)} 向前`, `Build starts at the last non-leaf #${Math.max(0, Math.floor(snapshot.totalSize / 2) - 1)}`),
+        why: tx(lang, '叶子本身已是合法堆；从 n//2 - 1 向前逐个下沉子树根，自底向上建堆是 O(n)。', 'Leaves are already valid heaps; sift down each subtree root from n//2 - 1 backwards, making bottom-up build O(n).'),
+      };
+    case 'heapify-node':
+      return {
+        action: tx(lang, `下沉子树根 ${active}`, `Sift down subtree root ${active}`),
+        why: tx(lang, '先选较大的孩子，再与当前父节点比较；父不小于子就停止，否则沿这条路径继续下沉。', 'Choose the larger child, compare it with the parent, stop when parent ≥ child, otherwise continue down that path.'),
+      };
+    case 'compare-children':
+      return {
+        action: tx(lang, `比较孩子 ${heapElementLabel(snapshot, snapshot.compareChildren?.leftId ?? null)} 与 ${heapElementLabel(snapshot, snapshot.compareChildren?.rightId ?? null)}`, `Compare children ${heapElementLabel(snapshot, snapshot.compareChildren?.leftId ?? null)} and ${heapElementLabel(snapshot, snapshot.compareChildren?.rightId ?? null)}`),
+        why: tx(lang, '左槽位是 2i+1、右槽位是 2i+2；选择较大孩子，避免把更大值埋到下面。', 'The left slot is 2i+1 and right is 2i+2; choosing the larger child avoids burying a larger value.'),
+      };
+    case 'compare-parent-child':
+      return {
+        action: tx(lang, `比较父 ${heapElementLabel(snapshot, snapshot.compareParent?.parentId ?? null)} 与子 ${heapElementLabel(snapshot, snapshot.compareParent?.childId ?? null)}`, `Compare parent ${heapElementLabel(snapshot, snapshot.compareParent?.parentId ?? null)} with child ${heapElementLabel(snapshot, snapshot.compareParent?.childId ?? null)}`),
+        why: tx(lang, '最大堆要求父节点 ≥ 子节点；相等时也不交换，因为交换不会改善堆性质。', 'A max heap requires parent ≥ child; equality does not swap because it would not improve the invariant.'),
+      };
+    case 'swap': {
+      const first = heapElementLabel(snapshot, snapshot.swap?.firstId ?? null);
+      const second = heapElementLabel(snapshot, snapshot.swap?.secondId ?? null);
+      return {
+        action: tx(lang, `交换 ${first} ↔ ${second}`, `Swap ${first} ↔ ${second}`),
+        why: tx(lang, '交换只移动槽位里的元素，完全二叉树与所有父子下标公式保持不变。', 'A swap moves elements between slots; the complete tree and all parent/child formulas stay unchanged.'),
+      };
+    }
+    case 'build-done':
+      return {
+        action: tx(lang, '最大堆建立完成', 'Max heap built'),
+        why: tx(lang, '每个父节点都不小于孩子，根就是全局最大值，可以开始逐轮堆排序。', 'Every parent is at least its children, so the root is the global maximum and heap sort can start.'),
+      };
+    case 'push-append':
+      return {
+        action: tx(lang, `追加 ${heapElementLabel(snapshot, snapshot.addedId)} 到数组末尾`, `Append ${heapElementLabel(snapshot, snapshot.addedId)} at the array tail`),
+        why: tx(lang, '新元素先真实进入最后一个槽位，再沿父链上浮；最多走树高 O(log n) 层。', 'The new element really enters the last slot, then sifts up the parent chain for at most O(log n) levels.'),
+      };
+    case 'extract-select':
+      return {
+        action: tx(lang, `选中堆顶最大值 ${root}`, `Select max root ${root}`),
+        why: tx(lang, '最大堆的根就是全局最大值；先记录返回值，再准备把末尾元素补到根。', 'The root of a max heap is the global maximum; record it before moving the tail element to the root.'),
+      };
+    case 'replace-root':
+      return {
+        action: tx(lang, `末尾元素补到根：${heapElementLabel(snapshot, snapshot.replacement?.id ?? null)}`, `Tail element replaces root: ${heapElementLabel(snapshot, snapshot.replacement?.id ?? null)}`),
+        why: tx(lang, '旧根已移除，堆大小减一；末尾元素写入 #0 后，若不满足父 ≥ 子就从根下沉。', 'The old root is gone and the heap shrank by one; after the tail enters #0, sift down if parent ≥ child fails.'),
+      };
+    case 'sort-select':
+      return {
+        action: tx(lang, `堆排序：选中当前最大值 ${root}`, `Heap sort: select current maximum ${root}`),
+        why: tx(lang, '当前堆顶是剩余堆区最大值，把它交换到当前堆尾即可固定一个最终位置。', 'The root is the maximum of the remaining heap; swapping it to the current end fixes one final position.'),
+      };
+    case 'swap-to-end': {
+      const second = heapElementLabel(snapshot, snapshot.swap?.secondId ?? null);
+      return {
+        action: tx(lang, `最大值换到堆尾：${second}`, `Maximum moved to the heap end: ${second}`),
+        why: tx(lang, '交换后堆区缩小，sortedFrom 及其右侧不再参与调整；再从新根下沉恢复堆性质。', 'After the swap the heap shrinks; slots from sortedFrom onward are never adjusted again, and the new root is sifted down.'),
+      };
+    }
+    case 'done': {
+      const result = snapshot.result === 'sorted'
+        ? tx(lang, '堆排序完成，数组升序', 'heap sort complete, array ascending')
+        : snapshot.result === 'extracted'
+          ? tx(lang, `删除堆顶完成，最大值 ${snapshot.removed?.value ?? '—'}`, `extract complete, maximum ${snapshot.removed?.value ?? '—'}`)
+          : snapshot.result === 'empty'
+            ? tx(lang, '空堆，没有可删除的堆顶', 'empty heap, no maximum to extract')
+            : snapshot.result === 'pushed'
+              ? tx(lang, '插入完成，堆性质成立', 'push complete, heap invariant holds')
+              : tx(lang, '建堆完成，堆性质成立', 'build complete, heap invariant holds');
+      return {
+        action: tx(lang, `最终状态：${result}`, `Final state: ${result}`),
+        why: tx(lang, '终帧读取同一份真实数组：建堆/插入/删除检查父 ≥ 子，堆排序检查整数组升序。', 'The terminal frame reads the same real array: build/push/extract check parent ≥ child, heap sort checks the entire array is ascending.'),
+      };
+    }
+    default:
+      return { action: active, why: currentHeapWhy(lang) };
+  }
+}
+
+function currentHeapWhy(lang: LessonLang): string {
+  return tx(lang, '完全二叉树的槽位与数组下标一一对应，帧中的元素编号只表示身份。', 'Complete-tree slots map one-to-one to array indices; ids identify elements only.');
+}
+
+function heapInsight(
+  snapshot: MaxHeapSnapshot,
+  lang: LessonLang,
+  hasStep: boolean,
+  lesson: Lesson | undefined,
+  event: TraceEvent,
+  previousEvent: TraceEvent | undefined,
+): FrameInsight {
+  const previous = previousEvent?.structure?.kind === 'max-heap' ? previousEvent.structure : undefined;
+  const { action, why } = heapActionParts(snapshot, lang);
+  const changes: FrameChange[] = [];
+  const root = heapRootLabel(snapshot);
+  const previousRoot = previous ? heapRootLabel(previous) : null;
+  const previousHeapSize = previous ? previous.heapSize : null;
+  if (previousRoot !== null && previousRoot !== root) {
+    changes.push({ label: tx(lang, '根', 'root'), before: previousRoot, after: root, tone: 'update' });
+  } else {
+    changes.push({ label: tx(lang, '根', 'root'), after: root, tone: 'neutral' });
+  }
+  changes.push({
+    label: tx(lang, '堆大小', 'heap size'),
+    before: previousHeapSize === null ? undefined : `${previousHeapSize}/${previous?.totalSize ?? '—'}`,
+    after: `${snapshot.heapSize}/${snapshot.totalSize}`,
+    tone: snapshot.heapSize !== previousHeapSize ? 'update' : 'neutral',
+  });
+  if (snapshot.sortedFrom !== null) {
+    changes.push({
+      label: tx(lang, '已排序后缀', 'sorted suffix'),
+      after: heapSortedLabel(snapshot),
+      detail: `#${snapshot.sortedFrom} … #${Math.max(snapshot.sortedFrom, snapshot.totalSize - 1)}`,
+      tone: 'success',
+    });
+  } else if (snapshot.pathIds.length > 0) {
+    changes.push({ label: tx(lang, '根→当前路径', 'root → active'), after: heapPathLabel(snapshot), tone: 'neutral' });
+  }
+  if (snapshot.removed) {
+    changes.push({
+      label: tx(lang, '删除的最大值', 'removed maximum'),
+      before: `${snapshot.removed.id}(${snapshot.removed.value})`,
+      after: tx(lang, '已离开数组', 'gone from the array'),
+      tone: 'warning',
+    });
+  }
+  if (snapshot.replacement) {
+    changes.push({
+      label: tx(lang, '补根元素', 'tail to root'),
+      before: `#${snapshot.replacement.fromSlot}`,
+      after: `#${snapshot.replacement.toSlot}`,
+      tone: 'update',
+    });
+  }
+  return {
+    semantic: true,
+    action,
+    why: hasStep ? firstSentence(lesson?.steps.find((step) => step.stepId === event.lessonStepId)?.explanation[lang] ?? why) : why,
+    changes: changes.slice(0, 4),
+    memory: hasStep ? firstSentence(lesson?.steps.find((step) => step.stepId === event.lessonStepId)?.tip?.[lang] ?? '', 140) || null : null,
+  };
 }
 
 function dijkstraInsight(
@@ -948,6 +1130,8 @@ export function buildFrameInsight(
         return { semantic: true, ...treeAction(structure, lang, false), memory: activeStep?.tip ? firstSentence(activeStep.tip[lang], 140) : null };
       case 'avl':
         return { semantic: true, ...treeAction(structure, lang, true), memory: activeStep?.tip ? firstSentence(activeStep.tip[lang], 140) : null };
+      case 'max-heap':
+        return heapInsight(structure, lang, hasStep, lesson, currentEvent, previousEvent);
       default:
         break;
     }

@@ -36,7 +36,7 @@ describe('textbook directory (UX-03)', () => {
     expect(ids).toHaveLength(Object.keys(catalog).length);
     expect(new Set(ids).size).toBe(ids.length);
     expect(new Set(ids)).toEqual(new Set(Object.keys(catalog)));
-    expect(ids).toHaveLength(25);
+    expect(ids).toHaveLength(26);
   });
 
   it('places MST before shortest paths and marks Bellman-Ford / connectivity as extensions', () => {
@@ -84,7 +84,7 @@ describe('textbook directory (UX-03)', () => {
     expect(search.topics.find((topic) => topic.id === 'ordered-search')?.algorithms[0].id).toBe('binary');
   });
 
-  it('follows the textbook sorting order and keeps shell/heap/merge as planned topics', () => {
+  it('follows the textbook sorting order and keeps shell/merge as planned topics while heap is authored', () => {
     const sort = nav.find((chapter) => chapter.id === 'ch9-sort')!;
     expect(sort.topics.map((topic) => topic.id)).toEqual([
       'sort-basics',
@@ -97,7 +97,8 @@ describe('textbook directory (UX-03)', () => {
       'quick-sort',
     ]);
     expect(sort.topics.find((topic) => topic.id === 'shell-sort')?.planned).toBe(true);
-    expect(sort.topics.find((topic) => topic.id === 'heap-sort')?.planned).toBe(true);
+    expect(sort.topics.find((topic) => topic.id === 'heap-sort')?.planned).toBeUndefined();
+    expect(sort.topics.find((topic) => topic.id === 'heap-sort')?.algorithms[0].id).toBe('heap');
     expect(sort.topics.find((topic) => topic.id === 'merge-sort')?.planned).toBe(true);
     expect(sort.topics.at(-1)?.id).toBe('quick-sort');
   });
@@ -144,6 +145,7 @@ describe('textbook directory (UX-03)', () => {
       'bubble-sort',
       'selection-sort',
       'insertion-sort',
+      'heap-sort',
       'quick-sort',
     ]);
     expect(groups.map((topic) => topic.id)).toEqual([

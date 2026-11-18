@@ -46,6 +46,10 @@ import {
   connectedComponentsPythonExample,
   kosarajuPythonExample,
 } from './componentExamples';
+import {
+  HEAP_DEFAULT_INPUT,
+  HEAP_PYTHON,
+} from './heapExamples';
 
 export const STACK_DEFAULT_INPUT: unknown = [
   ['push', 3],
@@ -169,6 +173,7 @@ const STRUCTURE_PYTHON: Record<string, string> = {
   'critical-path': criticalPathPythonExample(),
   components: connectedComponentsPythonExample(),
   scc: kosarajuPythonExample(),
+  heap: HEAP_PYTHON,
 };
 
 const STRUCTURE_INPUT: Record<string, unknown> = {
@@ -188,6 +193,7 @@ const STRUCTURE_INPUT: Record<string, unknown> = {
   'critical-path': CRITICAL_PATH_DEFAULT_INPUT,
   components: CONNECTED_COMPONENTS_DEFAULT_INPUT,
   scc: SCC_DEFAULT_INPUT,
+  heap: HEAP_DEFAULT_INPUT,
 };
 
 export function structurePythonExample(algorithmId: string): string | undefined {

@@ -46,6 +46,7 @@ function sort(l,r){if(l>=r)return; const pivot=a[r];let i=l;
 for(let j=l;j<r;j++){trace({type:'array',values:[...a],focus:[j,r]},'与枢轴比较 / Compare pivot');if(a[j]<pivot){[a[i],a[j]]=[a[j],a[i]];trace({type:'array',values:[...a],focus:[i,j]},'分区交换 / Partition swap');i++;}}
 [a[i],a[r]]=[a[r],a[i]];trace({type:'array',values:[...a],focus:[i]},'枢轴归位 / Pivot placed');sort(l,i-1);sort(i+1,r);}
 sort(0,a.length-1);trace({type:'array',values:[...a],done:true},'完成 / Done');`},
+ heap:{group:'sort',icon:'◬',name:['最大堆与堆排序','Max heap & heap sort'],desc:['在真实 Python 数组中完成自底向上建堆、插入上浮、删除堆顶下沉和原地堆排序；完全二叉树与数组槽位读取同一份 Trace，稳定 id 区分元素身份与数组位置。','Build a max heap bottom-up, push with sift-up, extract the maximum with sift-down and sort in place on a real Python array; the complete tree and array slots read one Trace while stable ids separate element identity from array position.'],time:'O(n log n)',space:'O(1)',input:{preset:'build',operation:'build',heap:[4,9,2,7,5,9,1],value:null},code:`trace({type:'array',values:['Max heap: run the Python preset'],done:true},'请在 Python 模式运行 / Run the Python preset');`},
  binary:{group:'search',icon:'⌕',name:['二分查找','Binary search'],desc:['在有序数组中每次排除一半搜索范围。输入对象包含 nums 与 target。','On a sorted array, eliminate half the search interval each step. Input has nums and target.'],time:'O(log n)',space:'O(1)',input:{nums:[1,3,5,7,9,11,13],target:9},code:`const a=input.nums, target=input.target;let l=0,r=a.length-1;
 trace({type:'array',values:[...a]},'有序数组 / Sorted array');
 while(l<=r){const m=Math.floor((l+r)/2);

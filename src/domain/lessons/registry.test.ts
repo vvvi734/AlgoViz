@@ -32,6 +32,7 @@ describe('Lesson registry (Stage 3B)', () => {
       'binary-tree-traversal-basics',
       'binary-search-tree-search-insert-delete',
       'avl-balanced-binary-search-tree',
+      'max-heap-build-push-extract-sort',
       'graph-bfs-queue-basics',
       'graph-dfs-stack-basics',
       'dijkstra-weighted-shortest-path',
@@ -77,7 +78,7 @@ describe('Lesson registry (Stage 3B)', () => {
   it('leaves the other algorithms without a course, and that is legal', () => {
     const covered = lessonRegistry.lessons.map((lesson) => lesson.algorithmId);
     const uncovered = catalogIds.filter((id) => !covered.includes(id));
-    expect(catalogIds.length).toBe(25);
+    expect(catalogIds.length).toBe(26);
     expect(uncovered.length).toBe(6);
   });
 });

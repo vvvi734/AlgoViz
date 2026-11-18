@@ -26,6 +26,7 @@ import { CriticalPathVisual, TopologicalSortVisual } from './DAGVisuals';
 import { ConnectedComponentsVisual, KosarajuVisual } from './ComponentVisuals';
 import { BstVisual } from './BstVisual';
 import { AvlVisual } from './AvlVisual';
+import { HeapVisual } from './HeapVisual';
 import type { KruskalVisualModel, PrimVisualModel } from '../../domain/visualization/mstModel';
 import type { CriticalVisualModel, TopologicalVisualModel } from '../../domain/visualization/dagModel';
 import type { ConnectedComponentsVisualModel, SccVisualModel } from '../../domain/visualization/componentsModel';
@@ -404,6 +405,7 @@ export function VisualStage({ event }: { event: TraceEvent | undefined }) {
           emptyBst: t('bstEmpty'),
           emptyAvl: t('avlEmpty'),
           emptyGraph: t('graphEmpty'),
+          emptyHeap: t('heapEmpty'),
         },
         event.structure,
       )
@@ -428,6 +430,9 @@ export function VisualStage({ event }: { event: TraceEvent | undefined }) {
       break;
     case 'avl':
       content = <AvlVisual model={model as AvlVisualModel} />;
+      break;
+    case 'max-heap':
+      content = <HeapVisual model={model} />;
       break;
     case 'floyd-matrix':
       content = (
@@ -619,6 +624,7 @@ export function VisualStage({ event }: { event: TraceEvent | undefined }) {
     model.kind === 'binary-tree' ||
     model.kind === 'bst' ||
     model.kind === 'avl' ||
+    model.kind === 'max-heap' ||
     model.kind === 'graph-traversal' ||
     model.kind === 'floyd-matrix' ||
     model.kind === 'bellman-table' ||

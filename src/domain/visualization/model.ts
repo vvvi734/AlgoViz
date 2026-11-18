@@ -19,6 +19,7 @@ import {
   type ConnectedComponentsVisualModel,
   type SccVisualModel,
 } from './componentsModel';
+import { buildHeapModel, type HeapVisualModel } from './heapModel';
 
 /**
  * Pure mapping from a trace state to a renderable model. React components only
@@ -74,6 +75,7 @@ export type VisualModel =
   | BinaryTreeVisualModel
   | BstVisualModel
   | AvlVisualModel
+  | HeapVisualModel
   | GraphVisualModel
   | FloydVisualModel
   | BellmanVisualModel
@@ -96,6 +98,7 @@ export interface VisualLabels {
   emptyBst?: string;
   emptyAvl?: string;
   emptyGraph?: string;
+  emptyHeap?: string;
 }
 
 const TREE_COORDS: Array<[number, number]> = [
@@ -234,6 +237,13 @@ export function buildVisualModel(
   const s = state as TraceState;
   const kind = s.type || 'array';
   const focus = asFocusSet(s);
+
+  if (structure !== undefined && structure.kind === 'max-heap') {
+    if (kind !== 'array') return { kind: 'raw', text: labels.invalid };
+    const model = buildHeapModel(structure, labels.emptyHeap ?? labels.emptyStructure);
+    if (!model) return { kind: 'raw', text: labels.invalid };
+    return model;
+  }
 
   if (structure !== undefined && structure.kind === 'avl') {
     if (kind !== 'array') return { kind: 'raw', text: labels.invalid };

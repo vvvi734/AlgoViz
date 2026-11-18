@@ -4,6 +4,7 @@ import { VisualStage } from './VisualStage';
 import { TreeTraversalPicker } from './TreeTraversalPicker';
 import { BstPicker } from './BstPicker';
 import { AvlPicker } from './AvlPicker';
+import { HeapPicker } from './HeapPicker';
 import { Timeline } from './Timeline';
 import { CodeDock } from './CodeDock';
 import { SyncPanel } from './SyncPanel';
@@ -28,6 +29,7 @@ import type { LocalizedLabel, PackExample } from '../../domain/packs/types';
 import { stepIndexForEvent } from '../../domain/lessons/sync';
 import { bstPresetFromInput } from '../../domain/algorithms/bstExamples';
 import { avlPresetFromInput } from '../../domain/algorithms/avlExamples';
+import { heapPresetFromInput } from '../../domain/algorithms/heapExamples';
 import { useI18n } from '../../i18n/I18nProvider';
 import { useTheme } from '../../theme/ThemeProvider';
 
@@ -72,6 +74,7 @@ export function LabView({
   const showTreePicker = lab.currentAlgo === 'inorder' && lab.codeLang === 'python';
   const showBstPicker = lab.currentAlgo === 'bst' && lab.codeLang === 'python';
   const showAvlPicker = lab.currentAlgo === 'avl' && lab.codeLang === 'python';
+  const showHeapPicker = lab.currentAlgo === 'heap' && lab.codeLang === 'python';
   const actualBstPreset =
     currentEvent?.structure?.kind === 'bst'
       ? bstPresetFromInput({ preset: currentEvent.structure.preset })
@@ -79,6 +82,10 @@ export function LabView({
   const actualAvlPreset =
     currentEvent?.structure?.kind === 'avl'
       ? avlPresetFromInput({ preset: currentEvent.structure.preset })
+      : null;
+  const actualHeapPreset =
+    currentEvent?.structure?.kind === 'max-heap'
+      ? heapPresetFromInput({ preset: currentEvent.structure.preset })
       : null;
   const showGraphStepPeek =
     lab.currentAlgo === 'bfs' || lab.currentAlgo === 'dfs' || lab.currentAlgo === 'dijkstra' ||
@@ -329,6 +336,13 @@ export function LabView({
                 inputJson={lab.inputJson}
                 actualPreset={actualAvlPreset}
                 onSelect={lab.selectAvlPreset}
+              />
+            ) : null}
+            {showHeapPicker ? (
+              <HeapPicker
+                inputJson={lab.inputJson}
+                actualPreset={actualHeapPreset}
+                onSelect={lab.selectHeapPreset}
               />
             ) : null}
             <Timeline events={lab.events} playback={lab.playback} />

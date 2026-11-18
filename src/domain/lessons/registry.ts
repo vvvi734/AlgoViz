@@ -14,6 +14,7 @@ import { linkedListLesson } from './linkedList';
 import { binaryTreeLesson } from './binaryTree';
 import { bstLesson } from './bstLesson';
 import { avlLesson } from './avlLesson';
+import { heapLesson } from './heapLesson';
 import { bfsLesson, dfsLesson } from './graphLessons';
 import { dijkstraLesson } from './dijkstraLesson';
 import { floydWarshallLesson } from './floydWarshallLesson';
@@ -65,6 +66,7 @@ const BUNDLED: unknown[] = [
   binaryTreeLesson,
   bstLesson,
   avlLesson,
+  heapLesson,
   bfsLesson,
   dfsLesson,
   dijkstraLesson,

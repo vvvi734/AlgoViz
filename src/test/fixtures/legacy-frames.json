@@ -1602,6 +1602,18 @@
       "message": "完成 / Done"
     }
   ],
+  "heap": [
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          "Max heap: run the Python preset"
+        ],
+        "done": true
+      },
+      "message": "请在 Python 模式运行 / Run the Python preset"
+    }
+  ],
   "binary": [
     {
       "state": {

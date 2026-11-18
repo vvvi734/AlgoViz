@@ -30,6 +30,10 @@ import {
   avlPresetInput,
   type AvlPresetId,
 } from '../../domain/algorithms/avlExamples';
+import {
+  heapPresetInput,
+  type HeapPresetId,
+} from '../../domain/algorithms/heapExamples';
 import { useI18n } from '../../i18n/I18nProvider';
 import { usePlayback, type Playback } from './usePlayback';
 
@@ -116,6 +120,11 @@ export interface LabController {
    * changes the input; the real trace still requires the user to press Run.
    */
   selectAvlPreset: (preset: AvlPresetId) => void;
+  /**
+   * T3: select one official max-heap example (build / push / extract / sort)
+   * by rewriting the object input. It never runs code.
+   */
+  selectHeapPreset: (preset: HeapPresetId) => void;
   runVisualization: () => void;
   restorePreset: () => void;
   randomizeInput: () => void;
@@ -284,7 +293,7 @@ export function useLabController(): LabController {
     // real Python presets. Default those courses to Python; the user can still
     // switch to JS (legacy frames remain available).
     const preferredLang: CodeLanguage =
-      id === 'stack' || id === 'queue' || id === 'linked' || id === 'inorder' || id === 'bst' || id === 'avl' || isGraphAlgorithm(id) ? 'python' : codeLang;
+      id === 'stack' || id === 'queue' || id === 'linked' || id === 'inorder' || id === 'bst' || id === 'avl' || id === 'heap' || isGraphAlgorithm(id) ? 'python' : codeLang;
     if (preferredLang !== codeLang) {
       setCodeLangState(preferredLang);
       safeSet(CODE_LANG_KEY, preferredLang);
@@ -356,6 +365,12 @@ export function useLabController(): LabController {
     setStatus({ text: '', error: false });
   }, [playback]);
 
+  const selectHeapPreset = useCallback((preset: HeapPresetId) => {
+    playback.stop();
+    setInputJson(JSON.stringify(heapPresetInput(preset)));
+    setStatus({ text: '', error: false });
+  }, [playback]);
+
   const restorePreset = useCallback(() => {
     const entry = catalog[currentAlgo];
     if (!entry) return;
@@ -378,7 +393,40 @@ export function useLabController(): LabController {
     const entry = catalog[currentAlgo];
     if (!entry) return;
     let next: unknown;
-    if (entry.group === 'sort') {
+    if (currentAlgo === 'heap') {
+      let operation = 'build';
+      try {
+        const parsed = JSON.parse(inputJson) as { operation?: unknown };
+        if (parsed?.operation === 'push' || parsed?.operation === 'extract' || parsed?.operation === 'sort') {
+          operation = parsed.operation;
+        }
+      } catch {
+        operation = 'build';
+      }
+      const values = Array.from({ length: 7 }, () => 1 + Math.floor(Math.random() * 15));
+      // Push/extract need a valid starting max heap; build/sort may start from
+      // any array. Randomising never silently reuses an official preset id.
+      if (operation === 'push' || operation === 'extract') {
+        for (let parent = Math.floor(values.length / 2) - 1; parent >= 0; parent -= 1) {
+          let current = parent;
+          while (true) {
+            const left = current * 2 + 1;
+            if (left >= values.length) break;
+            const right = left + 1;
+            const child = right < values.length && values[right] > values[left] ? right : left;
+            if (values[current] >= values[child]) break;
+            [values[current], values[child]] = [values[child], values[current]];
+            current = child;
+          }
+        }
+      }
+      next = {
+        preset: null,
+        operation,
+        heap: values,
+        value: operation === 'push' ? 1 + Math.floor(Math.random() * 15) : null,
+      };
+    } else if (entry.group === 'sort') {
       next = Array.from({ length: 7 }, () => 1 + Math.floor(Math.random() * 15));
     } else if (entry.group === 'search') {
       next = { nums: [1, 3, 5, 7, 9, 11, 13], target: [3, 5, 9, 13][Math.floor(Math.random() * 4)] };
@@ -386,7 +434,7 @@ export function useLabController(): LabController {
       next = defaultInputFor(currentAlgo) ?? [5, 2, 8, 1];
     }
     setInputJson(JSON.stringify(next));
-  }, [catalog, currentAlgo]);
+  }, [catalog, currentAlgo, inputJson]);
 
   // Stage 4: a pack course example is loaded as inert text — it is NOT executed
   // here. Execution still requires the user to press "Run", so text imported
@@ -481,6 +529,7 @@ export function useLabController(): LabController {
     selectTreeMode,
     selectBstPreset,
     selectAvlPreset,
+    selectHeapPreset,
     runVisualization,
     restorePreset,
     randomizeInput,

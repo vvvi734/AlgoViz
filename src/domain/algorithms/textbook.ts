@@ -407,8 +407,7 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
       {
         id: 'heap-sort',
         title: { zh: '堆排序', en: 'Heap sort' },
-        algorithms: [],
-        planned: true,
+        algorithms: [{ id: 'heap' }],
       },
       {
         id: 'merge-sort',
