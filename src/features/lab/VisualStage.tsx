@@ -4,9 +4,11 @@ import type { GraphVisualModel } from '../../domain/visualization/graphModel';
 import type { BellmanVisualModel, FloydVisualModel } from '../../domain/visualization/shortestPathModel';
 import type {
   BellmanOperation,
+  ConnectedComponentOperation,
   CriticalPathOperation,
   DijkstraOperation,
   FloydOperation,
+  KosarajuOperation,
   KruskalOperation,
   PrimOperation,
   TopologicalOperation,
@@ -21,8 +23,10 @@ import { GraphVisual } from './GraphVisual';
 import { BellmanFordVisual, FloydVisual } from './G1Visuals';
 import { KruskalVisual, PrimVisual } from './MSTVisuals';
 import { CriticalPathVisual, TopologicalSortVisual } from './DAGVisuals';
+import { ConnectedComponentsVisual, KosarajuVisual } from './ComponentVisuals';
 import type { KruskalVisualModel, PrimVisualModel } from '../../domain/visualization/mstModel';
 import type { CriticalVisualModel, TopologicalVisualModel } from '../../domain/visualization/dagModel';
+import type { ConnectedComponentsVisualModel, SccVisualModel } from '../../domain/visualization/componentsModel';
 
 const GRAPH_OPERATION_KEYS: Record<GraphOperation, string> = {
   init: 'graphOpInit',
@@ -196,6 +200,60 @@ const CRITICAL_HINT_KEYS: Record<CriticalPathOperation, string> = {
   activity: 'criticalHintActivity',
   cycle: 'criticalHintCycle',
   done: 'criticalHintDone',
+};
+
+const CONNECTED_OPERATION_KEYS: Record<ConnectedComponentOperation, string> = {
+  init: 'g4OpInit',
+  'start-component': 'g4OpStart',
+  pop: 'g4OpPop',
+  visit: 'g4OpVisit',
+  'inspect-edge': 'g4OpInspect',
+  discover: 'g4OpDiscover',
+  push: 'g4OpPush',
+  skip: 'g4OpSkip',
+  'complete-component': 'g4OpComplete',
+  done: 'g4OpDone',
+};
+
+const CONNECTED_HINT_KEYS: Record<ConnectedComponentOperation, string> = {
+  init: 'g4HintInit',
+  'start-component': 'g4HintStart',
+  pop: 'g4HintPop',
+  visit: 'g4HintVisit',
+  'inspect-edge': 'g4HintInspect',
+  discover: 'g4HintDiscover',
+  push: 'g4HintPush',
+  skip: 'g4HintSkip',
+  'complete-component': 'g4HintComplete',
+  done: 'g4HintDone',
+};
+
+const KOSARAJU_OPERATION_KEYS: Record<KosarajuOperation, string> = {
+  init: 'g4OpInit',
+  'start-first': 'g4OpStartFirst',
+  'inspect-edge': 'g4OpInspect',
+  skip: 'g4OpSkip',
+  push: 'g4OpPush',
+  finish: 'g4OpFinish',
+  reverse: 'g4OpReverse',
+  'start-second': 'g4OpStartSecond',
+  assign: 'g4OpAssign',
+  'complete-component': 'g4OpComplete',
+  done: 'g4OpDone',
+};
+
+const KOSARAJU_HINT_KEYS: Record<KosarajuOperation, string> = {
+  init: 'g4HintInit',
+  'start-first': 'g4HintStartFirst',
+  'inspect-edge': 'g4HintInspectFirst',
+  skip: 'g4HintSkip',
+  push: 'g4HintPush',
+  finish: 'g4HintFinish',
+  reverse: 'g4HintReverse',
+  'start-second': 'g4HintStartSecond',
+  assign: 'g4HintAssign',
+  'complete-component': 'g4HintComplete',
+  done: 'g4HintSccDone',
 };
 
 function graphOperationText(model: GraphVisualModel, t: (key: string) => string): string {
@@ -413,6 +471,24 @@ export function VisualStage({ event }: { event: TraceEvent | undefined }) {
         />
       );
       break;
+    case 'connected-components':
+      content = (
+        <ConnectedComponentsVisual
+          model={model as ConnectedComponentsVisualModel}
+          operationText={t(CONNECTED_OPERATION_KEYS[model.operation])}
+          hint={t(CONNECTED_HINT_KEYS[model.operation])}
+        />
+      );
+      break;
+    case 'kosaraju':
+      content = (
+        <KosarajuVisual
+          model={model as SccVisualModel}
+          operationText={t(KOSARAJU_OPERATION_KEYS[model.operation])}
+          hint={t(KOSARAJU_HINT_KEYS[model.operation])}
+        />
+      );
+      break;
     case 'graph-traversal': {
       const operationText = graphOperationText(model, t);
       if (model.algorithm === 'dijkstra') {
@@ -535,7 +611,9 @@ export function VisualStage({ event }: { event: TraceEvent | undefined }) {
     model.kind === 'prim-mst' ||
     model.kind === 'kruskal-mst' ||
     model.kind === 'topological-sort' ||
-    model.kind === 'critical-path';
+    model.kind === 'critical-path' ||
+    model.kind === 'connected-components' ||
+    model.kind === 'kosaraju';
   return (
     <div
       className={`stage${structured ? ' has-structure' : ''}`}

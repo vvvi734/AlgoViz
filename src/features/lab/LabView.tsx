@@ -65,7 +65,9 @@ export function LabView({
     lab.currentAlgo === 'prim' ||
     lab.currentAlgo === 'kruskal' ||
     lab.currentAlgo === 'topological' ||
-    lab.currentAlgo === 'critical-path';
+    lab.currentAlgo === 'critical-path' ||
+    lab.currentAlgo === 'components' ||
+    lab.currentAlgo === 'scc';
   const highlightLine = !lab.traceStale && currentEvent?.sourceLocation?.line
     ? currentEvent.sourceLocation.line
     : null;

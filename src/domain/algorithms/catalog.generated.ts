@@ -477,6 +477,112 @@ export const ALGORITHM_CATALOG: AlgorithmCatalog = {
       "start": "A"
     },
     "code": "trace({type:'array',values:['AOE critical path: use the Python preset'],done:true},'请在 Python 模式运行 / Run the Python preset');"
+  },
+  "components": {
+    "group": "graph",
+    "icon": "◉",
+    "name": [
+      "无向图连通分量",
+      "Connected components"
+    ],
+    "desc": [
+      "用真实 DFS 扫描无向图：从每个未访问节点开始扩展，记录栈、发现顺序与每个分量；专属视图给节点和分量同时加 C1、C2…… 徽标。",
+      "Scan an undirected graph with real DFS: start at every unseen node, record the stack, discovery order and each component; the dedicated view labels both nodes and groups with C1, C2, ..."
+    ],
+    "time": "O(V+E)",
+    "space": "O(V)",
+    "input": {
+      "nodes": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F",
+        "G",
+        "H"
+      ],
+      "edges": [
+        [
+          "A",
+          "B"
+        ],
+        [
+          "A",
+          "C"
+        ],
+        [
+          "B",
+          "C"
+        ],
+        [
+          "D",
+          "E"
+        ],
+        [
+          "F",
+          "G"
+        ]
+      ]
+    },
+    "code": "trace({type:'array',values:['Connected components: use the Python preset'],done:true},'请在 Python 模式运行 / Run the Python preset');"
+  },
+  "scc": {
+    "group": "graph",
+    "icon": "◉",
+    "name": [
+      "强连通分量（Kosaraju）",
+      "Strongly connected components (Kosaraju)"
+    ],
+    "desc": [
+      "两次真实 DFS：先记录原图完成顺序，再反转边并按完成顺序的逆序扫描，逐个得到 SCC；单向链和有向环会被正确区分为不同分组。",
+      "Two real DFS passes: record finish order on the original graph, reverse every edge, then scan in reverse finish order to obtain each SCC; a one-way chain and a directed cycle are grouped correctly."
+    ],
+    "time": "O(V+E)",
+    "space": "O(V+E)",
+    "input": {
+      "nodes": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F",
+        "G",
+        "H"
+      ],
+      "edges": [
+        [
+          "A",
+          "B"
+        ],
+        [
+          "B",
+          "C"
+        ],
+        [
+          "C",
+          "A"
+        ],
+        [
+          "C",
+          "D"
+        ],
+        [
+          "D",
+          "E"
+        ],
+        [
+          "E",
+          "D"
+        ],
+        [
+          "F",
+          "G"
+        ]
+      ]
+    },
+    "code": "trace({type:'array',values:['Kosaraju SCC: use the Python preset'],done:true},'请在 Python 模式运行 / Run the Python preset');"
   }
 };
 

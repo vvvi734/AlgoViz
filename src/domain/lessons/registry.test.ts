@@ -39,6 +39,8 @@ describe('Lesson registry (Stage 3B)', () => {
       'kruskal-minimum-spanning-tree',
       'topological-sort-kahn',
       'aoe-critical-path',
+      'connected-components-dfs',
+      'strongly-connected-components-kosaraju',
     ]);
   });
 
@@ -73,7 +75,7 @@ describe('Lesson registry (Stage 3B)', () => {
   it('leaves the other algorithms without a course, and that is legal', () => {
     const covered = lessonRegistry.lessons.map((lesson) => lesson.algorithmId);
     const uncovered = catalogIds.filter((id) => !covered.includes(id));
-    expect(catalogIds.length).toBe(21);
+    expect(catalogIds.length).toBe(23);
     expect(uncovered.length).toBe(6);
   });
 });

@@ -2731,5 +2731,29 @@
       },
       "message": "请在 Python 模式运行 / Run the Python preset"
     }
+  ],
+  "components": [
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          "Connected components: use the Python preset"
+        ],
+        "done": true
+      },
+      "message": "请在 Python 模式运行 / Run the Python preset"
+    }
+  ],
+  "scc": [
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          "Kosaraju SCC: use the Python preset"
+        ],
+        "done": true
+      },
+      "message": "请在 Python 模式运行 / Run the Python preset"
+    }
   ]
 }

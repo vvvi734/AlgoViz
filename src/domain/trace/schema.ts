@@ -2964,6 +2964,378 @@ export const criticalPathSnapshotSchema = z
 export type CriticalPathSnapshot = z.infer<typeof criticalPathSnapshotSchema>;
 
 
+
+/* ------------------------------------------------------------------ *
+ * G4: undirected connected components and Kosaraju SCC
+ * ------------------------------------------------------------------ */
+
+export const CONNECTED_COMPONENT_OPERATIONS = [
+  'init', 'start-component', 'pop', 'visit', 'inspect-edge', 'discover', 'push', 'skip', 'complete-component', 'done',
+] as const;
+export type ConnectedComponentOperation = (typeof CONNECTED_COMPONENT_OPERATIONS)[number];
+
+export const KOSARAJU_OPERATIONS = [
+  'init', 'start-first', 'inspect-edge', 'skip', 'push', 'finish', 'reverse', 'start-second', 'assign', 'complete-component', 'done',
+] as const;
+export type KosarajuOperation = (typeof KOSARAJU_OPERATIONS)[number];
+
+const componentGroupSchema = z.object({
+  id: z.number().int().positive().max(GRAPH_LIMITS.MAX_NODES),
+  nodeIds: z.array(z.string().min(1).max(LIMITS.MAX_NAME_CHARS)).min(1).max(GRAPH_LIMITS.MAX_NODES),
+  complete: z.boolean(),
+});
+
+type ComponentGroup = z.infer<typeof componentGroupSchema>;
+
+function validateComponentGraph(
+  snapshot: {
+    nodes: Array<{ id: string }>;
+    edges: Array<{ id: string; fromId: string; toId: string }>;
+    directed: boolean;
+  },
+  add: (path: Array<string | number>, message: string) => void,
+): { ids: Set<string>; edgeById: Map<string, GraphEdge> } {
+  const ids = new Set<string>();
+  snapshot.nodes.forEach((node, index) => {
+    if (ids.has(node.id)) add(['nodes', index, 'id'], `duplicate graph node id "${node.id}"`);
+    ids.add(node.id);
+  });
+  const edgeIds = new Set<string>();
+  const pairs = new Set<string>();
+  const edgeById = new Map<string, GraphEdge>();
+  snapshot.edges.forEach((edge, index) => {
+    if (edgeIds.has(edge.id)) add(['edges', index, 'id'], `duplicate graph edge id "${edge.id}"`);
+    edgeIds.add(edge.id);
+    edgeById.set(edge.id, edge as GraphEdge);
+    if (!ids.has(edge.fromId)) add(['edges', index, 'fromId'], `edge "${edge.id}" starts at unknown node "${edge.fromId}"`);
+    if (!ids.has(edge.toId)) add(['edges', index, 'toId'], `edge "${edge.id}" ends at unknown node "${edge.toId}"`);
+    if (edge.fromId === edge.toId) add(['edges', index], 'self-loops are not supported in this teaching graph');
+    if (ids.has(edge.fromId) && ids.has(edge.toId) && edge.fromId !== edge.toId) {
+      const pair = snapshot.directed
+        ? `${edge.fromId}\u0000${edge.toId}`
+        : [edge.fromId, edge.toId].sort().join('\u0000');
+      if (pairs.has(pair)) {
+        add(['edges', index], snapshot.directed
+          ? `duplicate directed edge "${edge.fromId}"→"${edge.toId}"`
+          : `duplicate undirected edge "${edge.fromId}"–"${edge.toId}"`);
+      }
+      pairs.add(pair);
+    }
+  });
+  return { ids, edgeById };
+}
+
+function validateComponentGroups(
+  groups: ComponentGroup[],
+  ids: Set<string>,
+  nodeCount: number,
+  add: (path: Array<string | number>, message: string) => void,
+): { owner: Map<string, number>; groupsById: Map<number, ComponentGroup> } {
+  const owner = new Map<string, number>();
+  const groupsById = new Map<number, ComponentGroup>();
+  groups.forEach((group, index) => {
+    if (group.id !== index + 1) add(['components', index, 'id'], 'component ids must be consecutive and start at 1');
+    if (groupsById.has(group.id)) add(['components', index, 'id'], `duplicate component id ${group.id}`);
+    groupsById.set(group.id, group);
+    group.nodeIds.forEach((nodeId) => {
+      if (!ids.has(nodeId)) add(['components', index, 'nodeIds'], `component ${group.id} names unknown node "${nodeId}"`);
+      if (owner.has(nodeId)) add(['components', index, 'nodeIds'], `node "${nodeId}" belongs to more than one component`);
+      owner.set(nodeId, group.id);
+    });
+  });
+  if (owner.size > nodeCount) add(['components'], 'component membership exceeds the node count');
+  return { owner, groupsById };
+}
+
+export const connectedComponentsSnapshotSchema = z
+  .object({
+    kind: z.literal('connected-components'),
+    algorithm: z.literal('components'),
+    operation: z.enum(CONNECTED_COMPONENT_OPERATIONS),
+    nodes: z.array(graphNodeSchema).max(GRAPH_LIMITS.MAX_NODES),
+    edges: z.array(graphEdgeSchema).max(GRAPH_LIMITS.MAX_EDGES),
+    directed: z.literal(false),
+    startNodeId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+    currentNodeId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+    currentEdgeId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+    neighborNodeId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+    discoveredIds: z.array(z.string().min(1).max(LIMITS.MAX_NAME_CHARS)).max(GRAPH_LIMITS.MAX_NODES),
+    visitedIds: z.array(z.string().min(1).max(LIMITS.MAX_NAME_CHARS)).max(GRAPH_LIMITS.MAX_NODES),
+    frontierKind: z.literal('stack'),
+    frontierItems: z.array(graphFrontierItemSchema).max(GRAPH_LIMITS.MAX_NODES),
+    frontierAdded: graphFrontierItemSchema.nullable(),
+    frontierRemoved: graphFrontierItemSchema.nullable(),
+    currentComponentId: z.number().int().positive().max(GRAPH_LIMITS.MAX_NODES).nullable(),
+    componentCount: z.number().int().nonnegative().max(GRAPH_LIMITS.MAX_NODES),
+    components: z.array(componentGroupSchema).max(GRAPH_LIMITS.MAX_NODES),
+  })
+  .superRefine((snapshot, ctx) => {
+    const add = (path: Array<string | number>, message: string) => {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path, message });
+    };
+    const { ids, edgeById } = validateComponentGraph(snapshot, add);
+    const n = snapshot.nodes.length;
+    const discovered = new Set<string>();
+    snapshot.discoveredIds.forEach((id, index) => {
+      if (!ids.has(id)) add(['discoveredIds', index], 'discovered node is unknown');
+      if (discovered.has(id)) add(['discoveredIds', index], 'discovered node is repeated');
+      discovered.add(id);
+    });
+    const visited = new Set<string>();
+    snapshot.visitedIds.forEach((id, index) => {
+      if (!ids.has(id)) add(['visitedIds', index], 'visited node is unknown');
+      if (visited.has(id)) add(['visitedIds', index], 'visited node is repeated');
+      if (!discovered.has(id)) add(['visitedIds', index], 'a visited node must be discovered');
+      visited.add(id);
+    });
+    const { owner, groupsById } = validateComponentGroups(snapshot.components, ids, n, add);
+    if (snapshot.componentCount !== snapshot.components.length) {
+      add(['componentCount'], 'componentCount must equal the number of component groups');
+    }
+    if (snapshot.currentComponentId !== null) {
+      if (!groupsById.has(snapshot.currentComponentId)) add(['currentComponentId'], 'current component does not exist');
+      if (snapshot.startNodeId === null) add(['startNodeId'], 'an active component needs a start node');
+      else if (owner.get(snapshot.startNodeId) !== snapshot.currentComponentId) {
+        add(['startNodeId'], 'start node must belong to the current component');
+      }
+    }
+    if (snapshot.currentNodeId !== null && !ids.has(snapshot.currentNodeId)) {
+      add(['currentNodeId'], 'currentNodeId must name a real node');
+    }
+    const currentEdge = snapshot.currentEdgeId ? edgeById.get(snapshot.currentEdgeId) : undefined;
+    const edgeOps: ConnectedComponentOperation[] = ['inspect-edge', 'discover', 'push', 'skip'];
+    if (edgeOps.includes(snapshot.operation)) {
+      if (!currentEdge) add(['currentEdgeId'], `${snapshot.operation} must name a real edge`);
+    } else if (snapshot.currentEdgeId) {
+      add(['currentEdgeId'], `${snapshot.operation} must not carry a current edge`);
+    }
+    if (snapshot.neighborNodeId !== null) {
+      if (!ids.has(snapshot.neighborNodeId)) add(['neighborNodeId'], 'neighborNodeId must name a real node');
+      if (currentEdge && snapshot.neighborNodeId !== currentEdge.fromId && snapshot.neighborNodeId !== currentEdge.toId) {
+        add(['neighborNodeId'], 'neighbor must be an endpoint of the current edge');
+      }
+    }
+    const stackNodes = new Set<string>();
+    snapshot.frontierItems.forEach((item, index) => {
+      if (!ids.has(item.nodeId)) add(['frontierItems', index, 'nodeId'], 'stack entry names an unknown node');
+      if (stackNodes.has(item.nodeId)) add(['frontierItems', index, 'nodeId'], 'stack repeats a node');
+      stackNodes.add(item.nodeId);
+    });
+    if (snapshot.frontierAdded && !stackNodes.has(snapshot.frontierAdded.nodeId)) {
+      add(['frontierAdded'], 'the added entry must be in the stack');
+    }
+    if (snapshot.frontierRemoved && stackNodes.has(snapshot.frontierRemoved.nodeId)) {
+      add(['frontierRemoved'], 'the removed entry must no longer be in the stack');
+    }
+    if (snapshot.operation === 'start-component') {
+      if (snapshot.currentComponentId === null) add(['currentComponentId'], 'start-component needs a component id');
+      if (snapshot.startNodeId === null) add(['startNodeId'], 'start-component needs a root');
+      if (!snapshot.frontierAdded) add(['frontierAdded'], 'start-component pushes the root');
+    }
+    if (snapshot.operation === 'push' && !snapshot.frontierAdded) {
+      add(['frontierAdded'], 'push must report the new stack entry');
+    }
+    if (snapshot.operation === 'pop' && !snapshot.frontierRemoved) {
+      add(['frontierRemoved'], 'pop must report the removed stack entry');
+    }
+    if (snapshot.operation === 'complete-component') {
+      if (snapshot.currentComponentId === null) add(['currentComponentId'], 'complete-component needs a component');
+      const group = snapshot.currentComponentId ? groupsById.get(snapshot.currentComponentId) : undefined;
+      if (group && !group.complete) add(['components', 'complete'], 'complete-component must mark the group complete');
+    }
+    if (snapshot.operation === 'init' || snapshot.operation === 'done') {
+      if (snapshot.currentComponentId !== null) add(['currentComponentId'], `${snapshot.operation} has no active component`);
+      if (snapshot.startNodeId !== null) add(['startNodeId'], `${snapshot.operation} has no current root`);
+      if (snapshot.currentNodeId !== null) add(['currentNodeId'], `${snapshot.operation} has no current node`);
+      if (snapshot.currentEdgeId !== null) add(['currentEdgeId'], `${snapshot.operation} has no current edge`);
+      if (snapshot.frontierItems.length) add(['frontierItems'], `${snapshot.operation} must have an empty stack`);
+    }
+    if (snapshot.operation === 'init') {
+      if (snapshot.discoveredIds.length || snapshot.visitedIds.length || snapshot.components.length) {
+        add(['operation'], 'init must start with no discovered nodes or components');
+      }
+    }
+    if (snapshot.operation === 'done') {
+      if (snapshot.visitedIds.length !== n) add(['visitedIds'], 'done must have visited every node');
+      if (owner.size !== n) add(['components'], 'done must assign every node to a component');
+      if (snapshot.components.some((group) => !group.complete)) add(['components'], 'done groups must all be complete');
+    }
+    if (n === 0 && snapshot.operation !== 'init' && snapshot.operation !== 'done') {
+      add(['operation'], 'an empty graph may only emit init or done');
+    }
+  });
+export type ConnectedComponentsSnapshot = z.infer<typeof connectedComponentsSnapshotSchema>;
+
+export const kosarajuSnapshotSchema = z
+  .object({
+    kind: z.literal('kosaraju'),
+    algorithm: z.literal('kosaraju'),
+    operation: z.enum(KOSARAJU_OPERATIONS),
+    nodes: z.array(graphNodeSchema).max(GRAPH_LIMITS.MAX_NODES),
+    edges: z.array(graphEdgeSchema).max(GRAPH_LIMITS.MAX_EDGES),
+    directed: z.literal(true),
+    startNodeId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+    currentNodeId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+    currentEdgeId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+    neighborNodeId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+    discoveredIds: z.array(z.string().min(1).max(LIMITS.MAX_NAME_CHARS)).max(GRAPH_LIMITS.MAX_NODES),
+    visitedIds: z.array(z.string().min(1).max(LIMITS.MAX_NAME_CHARS)).max(GRAPH_LIMITS.MAX_NODES),
+    frontierKind: z.literal('stack'),
+    frontierItems: z.array(graphFrontierItemSchema).max(GRAPH_LIMITS.MAX_NODES),
+    frontierAdded: graphFrontierItemSchema.nullable(),
+    frontierRemoved: graphFrontierItemSchema.nullable(),
+    phase: z.enum(['first-pass', 'reverse', 'second-pass', 'done']),
+    reversed: z.boolean(),
+    finishOrder: z.array(z.string().min(1).max(LIMITS.MAX_NAME_CHARS)).max(GRAPH_LIMITS.MAX_NODES),
+    secondPassOrder: z.array(z.string().min(1).max(LIMITS.MAX_NAME_CHARS)).max(GRAPH_LIMITS.MAX_NODES),
+    secondPassIndex: z.number().int().nonnegative().max(GRAPH_LIMITS.MAX_NODES - 1).nullable(),
+    currentComponentId: z.number().int().positive().max(GRAPH_LIMITS.MAX_NODES).nullable(),
+    componentCount: z.number().int().nonnegative().max(GRAPH_LIMITS.MAX_NODES),
+    components: z.array(componentGroupSchema).max(GRAPH_LIMITS.MAX_NODES),
+  })
+  .superRefine((snapshot, ctx) => {
+    const add = (path: Array<string | number>, message: string) => {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path, message });
+    };
+    const { ids, edgeById } = validateComponentGraph(snapshot, add);
+    const n = snapshot.nodes.length;
+    const discovered = new Set<string>();
+    snapshot.discoveredIds.forEach((id, index) => {
+      if (!ids.has(id)) add(['discoveredIds', index], 'discovered node is unknown');
+      if (discovered.has(id)) add(['discoveredIds', index], 'discovered node is repeated');
+      discovered.add(id);
+    });
+    const visited = new Set<string>();
+    snapshot.visitedIds.forEach((id, index) => {
+      if (!ids.has(id)) add(['visitedIds', index], 'visited node is unknown');
+      if (visited.has(id)) add(['visitedIds', index], 'visited node is repeated');
+      if (!discovered.has(id)) add(['visitedIds', index], 'a visited node must be discovered');
+      visited.add(id);
+    });
+    const { owner, groupsById } = validateComponentGroups(snapshot.components, ids, n, add);
+    if (snapshot.componentCount !== snapshot.components.length) {
+      add(['componentCount'], 'componentCount must equal the number of component groups');
+    }
+    const finish = new Set<string>();
+    snapshot.finishOrder.forEach((id, index) => {
+      if (!ids.has(id)) add(['finishOrder', index], 'finish order names an unknown node');
+      if (finish.has(id)) add(['finishOrder', index], 'finish order repeats a node');
+      finish.add(id);
+    });
+    if (snapshot.secondPassOrder.length) {
+      if (snapshot.finishOrder.length !== n) add(['finishOrder'], 'a reverse pass needs every node finished');
+      const expected = [...snapshot.finishOrder].reverse();
+      if (snapshot.secondPassOrder.some((id, index) => expected[index] !== id)) {
+        add(['secondPassOrder'], 'second pass order must be the reverse of the finish order');
+      }
+    }
+    const stackNodes = new Set<string>();
+    snapshot.frontierItems.forEach((item, index) => {
+      if (!ids.has(item.nodeId)) add(['frontierItems', index, 'nodeId'], 'stack entry names an unknown node');
+      if (stackNodes.has(item.nodeId)) add(['frontierItems', index, 'nodeId'], 'stack repeats a node');
+      stackNodes.add(item.nodeId);
+    });
+    if (snapshot.frontierAdded && !stackNodes.has(snapshot.frontierAdded.nodeId)) {
+      add(['frontierAdded'], 'the added entry must be in the stack');
+    }
+    if (snapshot.frontierRemoved && stackNodes.has(snapshot.frontierRemoved.nodeId)) {
+      add(['frontierRemoved'], 'the removed entry must no longer be in the stack');
+    }
+    if (snapshot.currentNodeId !== null && !ids.has(snapshot.currentNodeId)) {
+      add(['currentNodeId'], 'currentNodeId must name a real node');
+    }
+    const currentEdge = snapshot.currentEdgeId ? edgeById.get(snapshot.currentEdgeId) : undefined;
+    const edgeOps: KosarajuOperation[] = ['inspect-edge', 'skip', 'push'];
+    if (edgeOps.includes(snapshot.operation)) {
+      if (!currentEdge) add(['currentEdgeId'], `${snapshot.operation} must name a real edge`);
+    } else if (snapshot.currentEdgeId) {
+      add(['currentEdgeId'], `${snapshot.operation} must not carry a current edge`);
+    }
+    if (snapshot.neighborNodeId !== null && !ids.has(snapshot.neighborNodeId)) {
+      add(['neighborNodeId'], 'neighborNodeId must name a real node');
+    }
+    if (snapshot.startNodeId !== null && !ids.has(snapshot.startNodeId)) {
+      add(['startNodeId'], 'startNodeId must name a real node');
+    }
+    if (snapshot.currentComponentId !== null && !groupsById.has(snapshot.currentComponentId)) {
+      add(['currentComponentId'], 'current component does not exist');
+    }
+    if (snapshot.secondPassIndex !== null && snapshot.secondPassIndex >= snapshot.secondPassOrder.length) {
+      add(['secondPassIndex'], 'secondPassIndex is outside the second pass order');
+    }
+    const firstOps: KosarajuOperation[] = ['init', 'start-first', 'inspect-edge', 'skip', 'push', 'finish'];
+    if (firstOps.includes(snapshot.operation) && snapshot.phase === 'first-pass') {
+      if (snapshot.phase !== 'first-pass') add(['phase'], `${snapshot.operation} belongs to the first pass`);
+      if (snapshot.reversed) add(['reversed'], 'the graph is not reversed during the first pass');
+      if (snapshot.secondPassOrder.length) add(['secondPassOrder'], 'second pass order must be empty during the first pass');
+      if (snapshot.components.length) add(['components'], 'no component exists during the first pass');
+      if (snapshot.currentComponentId !== null) add(['currentComponentId'], 'first pass has no SCC id');
+      if (snapshot.secondPassIndex !== null) add(['secondPassIndex'], 'first pass has no second pass index');
+    }
+    if (snapshot.operation === 'reverse') {
+      if (snapshot.phase !== 'reverse' || !snapshot.reversed) add(['phase'], 'reverse frame must set phase=reverse and reversed=true');
+      if (snapshot.finishOrder.length !== n) add(['finishOrder'], 'reverse needs every node finished');
+      if (snapshot.discoveredIds.length || snapshot.visitedIds.length) add(['reversed'], 'reverse resets the second-pass sets');
+      if (snapshot.frontierItems.length) add(['frontierItems'], 'reverse has an empty stack');
+      if (snapshot.components.length) add(['components'], 'reverse has no SCCs yet');
+      if (snapshot.currentComponentId !== null) add(['currentComponentId'], 'reverse has no current SCC');
+    }
+    if (snapshot.phase === 'second-pass' || snapshot.operation === 'start-second' || snapshot.operation === 'assign' || snapshot.operation === 'complete-component') {
+      if (snapshot.phase !== 'second-pass') add(['phase'], 'second pass operations need phase=second-pass');
+      if (!snapshot.reversed) add(['reversed'], 'second pass must use the reversed graph');
+      if (snapshot.secondPassOrder.length !== n) add(['secondPassOrder'], 'second pass needs the full reversed order');
+    }
+    if (snapshot.operation === 'start-first') {
+      if (snapshot.phase !== 'first-pass' || snapshot.startNodeId === null) add(['startNodeId'], 'start-first needs a real root');
+      if (!snapshot.frontierAdded) add(['frontierAdded'], 'start-first pushes the root');
+    }
+    if (snapshot.operation === 'start-second') {
+      if (snapshot.startNodeId === null) add(['startNodeId'], 'start-second needs a real root');
+      if (snapshot.currentComponentId === null) add(['currentComponentId'], 'start-second creates an SCC');
+      if (!snapshot.frontierAdded) add(['frontierAdded'], 'start-second pushes the root');
+      if (snapshot.secondPassIndex === null) add(['secondPassIndex'], 'start-second needs its index in the reversed order');
+    }
+    if (snapshot.operation === 'push' && !snapshot.frontierAdded) {
+      add(['frontierAdded'], 'push must report the new stack entry');
+    }
+    if ((snapshot.operation === 'finish' || snapshot.operation === 'assign') && !snapshot.frontierRemoved) {
+      add(['frontierRemoved'], `${snapshot.operation} must report the removed stack entry`);
+    }
+    if (snapshot.operation === 'complete-component') {
+      if (snapshot.currentComponentId === null) add(['currentComponentId'], 'complete-component needs an SCC');
+      const group = snapshot.currentComponentId ? groupsById.get(snapshot.currentComponentId) : undefined;
+      if (group && !group.complete) add(['components', 'complete'], 'complete-component must mark the SCC complete');
+    }
+    if (snapshot.operation === 'init') {
+      if (snapshot.phase !== 'first-pass' || snapshot.reversed) add(['phase'], 'init belongs to the unreversed first pass');
+      if (snapshot.discoveredIds.length || snapshot.visitedIds.length || snapshot.finishOrder.length || snapshot.secondPassOrder.length || snapshot.components.length) {
+        add(['operation'], 'init must start with empty state');
+      }
+      if (snapshot.currentComponentId !== null || snapshot.startNodeId !== null) {
+        add(['operation'], 'init has no current SCC or root');
+      }
+    }
+    if (snapshot.operation === 'done') {
+      if (snapshot.phase !== 'done') add(['phase'], 'done requires phase=done');
+      if (snapshot.startNodeId !== null || snapshot.currentNodeId !== null || snapshot.currentEdgeId !== null) {
+        add(['operation'], 'done has no current node or edge');
+      }
+      if (snapshot.frontierItems.length) add(['frontierItems'], 'done has an empty stack');
+      if (snapshot.finishOrder.length !== n || snapshot.secondPassOrder.length !== n) {
+        add(['finishOrder'], 'done needs both complete node orders');
+      }
+      if (owner.size !== n) add(['components'], 'done must assign every node to an SCC');
+      if (snapshot.components.some((group) => !group.complete)) add(['components'], 'done SCCs must all be complete');
+      if (snapshot.currentComponentId !== null) add(['currentComponentId'], 'done has no current SCC');
+      if (snapshot.secondPassIndex !== null) add(['secondPassIndex'], 'done has no second pass index');
+    }
+    if (n === 0 && snapshot.operation !== 'init' && snapshot.operation !== 'done') {
+      add(['operation'], 'an empty graph may only emit init or done');
+    }
+  });
+export type KosarajuSnapshot = z.infer<typeof kosarajuSnapshotSchema>;
+
+
 /** Stage 7B stack/queue + Stage 7C linked-list + Stage 7D binary-tree + Stage 7E/7F/G1/G2/G3 graphs. */
 export const structureSchema = z.union([
   structureSnapshotSchema,
@@ -2977,6 +3349,8 @@ export const structureSchema = z.union([
   kruskalMstSnapshotSchema,
   topologicalSortSnapshotSchema,
   criticalPathSnapshotSchema,
+  connectedComponentsSnapshotSchema,
+  kosarajuSnapshotSchema,
 ]);
 export type AnyStructureSnapshot = z.infer<typeof structureSchema>;
 

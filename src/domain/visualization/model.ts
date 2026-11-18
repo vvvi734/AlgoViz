@@ -11,6 +11,12 @@ import {
   type CriticalVisualModel,
   type TopologicalVisualModel,
 } from './dagModel';
+import {
+  buildConnectedComponentsVisualModel,
+  buildKosarajuVisualModel,
+  type ConnectedComponentsVisualModel,
+  type SccVisualModel,
+} from './componentsModel';
 
 /**
  * Pure mapping from a trace state to a renderable model. React components only
@@ -71,6 +77,8 @@ export type VisualModel =
   | KruskalVisualModel
   | TopologicalVisualModel
   | CriticalVisualModel
+  | ConnectedComponentsVisualModel
+  | SccVisualModel
   | { kind: 'graph'; edges: Array<[number, number]>; nodes: GraphNodeModel[]; isTree: boolean }
   | { kind: 'raw'; text: string };
 
@@ -282,6 +290,16 @@ export function buildVisualModel(
     const model = buildCriticalVisualModel(structure, labels.emptyGraph ?? labels.emptyStructure);
     if (!model) return { kind: 'raw', text: labels.invalid };
     return model;
+  }
+
+  if (structure !== undefined && structure.kind === 'connected-components') {
+    if (kind !== 'graph') return { kind: 'raw', text: labels.invalid };
+    return buildConnectedComponentsVisualModel(structure);
+  }
+
+  if (structure !== undefined && structure.kind === 'kosaraju') {
+    if (kind !== 'graph') return { kind: 'raw', text: labels.invalid };
+    return buildKosarajuVisualModel(structure);
   }
 
   if (structure !== undefined && structure.kind === 'linked-list') {

@@ -1,0 +1,389 @@
+/* ==========================================================================
+   G4 — undirected connected components / Kosaraju SCC.
+   Reuses the G2 stage shell and G3 table language. Component colour is only
+   secondary: every node, group row and table carries an explicit C1/C2 badge.
+   ========================================================================== */
+
+.g4-stage .mst-graph-svg {
+  max-height: 330px;
+}
+
+.g4-stage {
+  --g4-c1: #2f81f7;
+  --g4-c2: #d97706;
+  --g4-c3: #159570;
+  --g4-c4: #a855b7;
+  --g4-c5: #0f8fa3;
+  --g4-c6: #c24170;
+}
+
+.g4-layout {
+  grid-template-columns: minmax(0, 1.4fr) minmax(280px, 0.9fr);
+}
+
+.g4-side {
+  gap: 7px;
+  min-width: 0;
+}
+
+.g4-graph-svg {
+  min-height: 250px;
+}
+
+.g4-node .mst-node-body {
+  transition: fill 120ms ease, stroke 120ms ease;
+}
+
+.g4-node[data-component-id]:not([data-component-id='']) .mst-node-body {
+  fill: color-mix(in srgb, var(--g4-component) 20%, var(--panel));
+  stroke: var(--g4-component);
+  stroke-width: 1.8;
+}
+
+.g4-node.is-discovered .mst-node-ring {
+  stroke: var(--g4-component, var(--accent));
+  stroke-width: 2.2;
+  stroke-dasharray: 4 3;
+  opacity: 0.85;
+}
+
+.g4-node.is-visited .mst-node-ring,
+.g4-node.is-assigned .mst-node-ring {
+  stroke: var(--g4-component, var(--accent));
+  stroke-width: 2.8;
+  opacity: 0.95;
+}
+
+.g4-node.is-finished .mst-node-ring {
+  stroke: var(--muted);
+  stroke-width: 2.2;
+  stroke-dasharray: 2 3;
+  opacity: 0.8;
+}
+
+.g4-node.is-current .mst-node-ring {
+  stroke: var(--warn);
+  stroke-width: 3.2;
+  opacity: 1;
+  filter: drop-shadow(0 0 4px var(--warn));
+}
+
+.g4-node.is-start .mst-node-ring {
+  stroke-dasharray: none;
+}
+
+.g4-node.is-on-stack .mst-node-ring {
+  outline: none;
+}
+
+.g4-node.is-on-stack .mst-node-body {
+  filter: drop-shadow(0 0 3px var(--accent-2));
+}
+
+.g4-component-badge circle {
+  fill: var(--panel);
+  stroke: var(--g4-component, var(--graph-node-edge));
+  stroke-width: 1.6;
+}
+
+.g4-component-badge text {
+  fill: var(--g4-component, var(--txt));
+  font: 900 9px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+
+.g4-finish-badge circle {
+  fill: var(--tag-orange-bg);
+  stroke: var(--warn);
+  stroke-width: 1;
+}
+
+.g4-finish-badge text {
+  fill: var(--warn);
+  font: 850 9px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+
+.g4-node-role {
+  fill: var(--accent-2);
+  font: 900 8px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+  letter-spacing: 0.06em;
+}
+
+.g4-node-role.is-stack {
+  fill: var(--accent);
+}
+
+.g4-edge {
+  stroke-linecap: round;
+}
+
+.g4-edge.is-current {
+  stroke: var(--warn);
+  stroke-width: 3.4;
+  opacity: 1;
+}
+
+.g4-edge.is-reversed {
+  stroke: var(--accent-2);
+  stroke-width: 3;
+  stroke-dasharray: 7 3;
+  opacity: 0.95;
+}
+
+.g4-arrow-head {
+  fill: var(--graph-line);
+  opacity: 0.7;
+}
+
+.g4-edge-label {
+  fill: var(--muted);
+  font: 750 8px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+  opacity: 0.9;
+  pointer-events: none;
+}
+
+.g4-change-pill {
+  padding: 2px 7px;
+  border: 1px solid var(--warn);
+  border-radius: 999px;
+  background: var(--tag-orange-bg);
+  color: var(--warn);
+  font: 850 10px/1.25 ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+
+.g4-stack {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 34px;
+  padding: 4px;
+  overflow-x: auto;
+  border-bottom: 2px solid var(--info-edge);
+}
+
+.g4-stack-chip {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 7px;
+  border: 1px solid var(--info-edge);
+  border-radius: 5px;
+  background: var(--info-bg);
+  font-size: 10px;
+}
+
+.g4-stack-chip.is-added {
+  border-color: var(--accent);
+  background: var(--tag-green-bg);
+  color: var(--accent);
+}
+
+.g4-stack-chip small {
+  color: var(--muted);
+  font-size: 8px;
+}
+
+.g4-stack-chip code {
+  color: var(--txt);
+  font: 850 10px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+
+.g4-stack-change {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+  font: 800 9.5px/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+
+.g4-stack-change .is-added {
+  color: var(--accent);
+}
+
+.g4-stack-change .is-removed {
+  color: var(--warn);
+}
+
+.g4-component-list {
+  display: grid;
+  gap: 5px;
+}
+
+.g4-component-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 6px;
+  border: 1px solid var(--info-edge);
+  border-left: 4px solid var(--g4-component, var(--info-edge));
+  border-radius: 5px;
+  background: var(--stat-bg);
+}
+
+.g4-component-row.is-current {
+  background: var(--tag-orange-bg);
+}
+
+.g4-component-row.is-complete {
+  opacity: 0.98;
+}
+
+.g4-component-id {
+  display: inline-grid;
+  place-items: center;
+  min-width: 28px;
+  padding: 2px 4px;
+  border-radius: 999px;
+  background: var(--g4-component, var(--accent));
+  color: var(--panel);
+  font: 900 10px/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+
+.g4-group-chips {
+  display: flex;
+  gap: 3px;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.g4-node-chip {
+  padding: 1px 5px;
+  border: 1px solid var(--g4-component, var(--info-edge));
+  border-radius: 4px;
+  color: var(--g4-component, var(--txt));
+  background: var(--panel);
+  font: 850 9px/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+
+.g4-component-state {
+  color: var(--muted);
+  font-size: 8.5px;
+  font-weight: 750;
+  white-space: nowrap;
+}
+
+.g4-component-row.is-complete .g4-component-state {
+  color: var(--accent);
+}
+
+.g4-panel-footer {
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 9.5px;
+}
+
+.g4-table-wrap {
+  max-height: 190px;
+  overflow: auto;
+  border: 1px solid var(--info-edge);
+  border-radius: 6px;
+}
+
+.g4-table code {
+  color: var(--accent);
+}
+
+.g4-inline-component {
+  color: var(--g4-component, var(--txt));
+  font: 900 10px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+
+.g4-row-mark {
+  color: var(--accent-2);
+  font-size: 8px;
+  font-weight: 800;
+}
+
+.g4-phase-track {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin: 5px 0 2px;
+}
+
+.g4-phase {
+  padding: 3px 7px;
+  border: 1px solid var(--info-edge);
+  border-radius: 999px;
+  background: var(--stat-bg);
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 750;
+}
+
+.g4-phase.is-current {
+  border-color: var(--warn);
+  background: var(--tag-orange-bg);
+  color: var(--warn);
+}
+
+.g4-order-block {
+  display: grid;
+  gap: 4px;
+  margin-bottom: 7px;
+}
+
+.g4-order-block > label {
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 750;
+}
+
+.g4-order {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.g4-order-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 6px;
+  border: 1px solid var(--info-edge);
+  border-radius: 5px;
+  background: var(--info-bg);
+  font-size: 10px;
+}
+
+.g4-order-chip.is-current {
+  border-color: var(--warn);
+  background: var(--tag-orange-bg);
+}
+
+.g4-order-chip small {
+  color: var(--muted);
+  font-size: 8px;
+}
+
+.g4-order-chip code {
+  color: var(--txt);
+  font: 850 10px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+
+@media (max-width: 980px) {
+  .g4-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .g4-table-wrap {
+    max-height: none;
+  }
+
+  .g4-graph-svg {
+    min-width: 300px;
+    max-height: 260px;
+  }
+
+  .g4-component-row {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .g4-component-state {
+    grid-column: 2;
+  }
+}
