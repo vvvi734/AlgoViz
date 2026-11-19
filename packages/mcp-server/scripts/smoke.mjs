@@ -91,11 +91,11 @@ try {
   const lessons = payloadOf(await client.callTool({ name: 'list_lessons', arguments: {} }));
   const ids = lessons.lessons.map((lesson) => lesson.lessonId);
   assert.ok(ids.includes('bubble-sort-basics'), 'built-in bubble course must be listed');
-  assert.ok(ids.includes('binary-search-basics'), 'pack course must be listed when --pack-dir is set');
+  assert.ok(ids.includes('fibonacci-basics'), 'pack course must be listed when --pack-dir is set');
   ok('list_lessons', `${lessons.count} courses (built-in + pack)`);
 
   const lesson = payloadOf(
-    await client.callTool({ name: 'get_lesson', arguments: { lessonId: 'binary-search-basics', locale: 'en' } }),
+    await client.callTool({ name: 'get_lesson', arguments: { lessonId: 'fibonacci-basics', locale: 'en' } }),
   );
   assert.equal(lesson.steps.length, 5);
   ok('get_lesson', `${lesson.lessonId} · ${lesson.steps.length} steps`);
@@ -103,7 +103,7 @@ try {
   const step = payloadOf(
     await client.callTool({
       name: 'get_lesson_step',
-      arguments: { lessonId: 'binary-search-basics', stepId: 'compare', locale: 'zh' },
+      arguments: { lessonId: 'fibonacci-basics', stepId: 'compare', locale: 'zh' },
     }),
   );
   assert.equal(step.stepId, 'compare');
@@ -117,7 +117,7 @@ try {
   const session = payloadOf(
     await client.callTool({
       name: 'create_learning_session',
-      arguments: { lessonId: 'binary-search-basics', includePythonExample: true, selectedStepId: 'narrow' },
+      arguments: { lessonId: 'fibonacci-basics', includePythonExample: true, selectedStepId: 'combine' },
     }),
   );
   assert.equal(session.created, true);

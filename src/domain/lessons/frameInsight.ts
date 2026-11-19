@@ -20,6 +20,7 @@ import type {
   KosarajuSnapshot,
   MaxHeapSnapshot,
   HuffmanSnapshot,
+  SearchSnapshot,
   SortingSnapshot,
   TopologicalSortSnapshot,
   TraceEvent,
@@ -1683,6 +1684,197 @@ function sortingInsight(
 }
 
 /**
+ * F1: operation-specific insight for sequential and binary search. The action
+ * names the real comparison / boundary move; it does not reuse sorting wording.
+ */
+function searchInsight(
+  snapshot: SearchSnapshot,
+  lang: LessonLang,
+  lesson: Lesson | undefined,
+  event: TraceEvent,
+  previousEvent: TraceEvent | undefined,
+): FrameInsight {
+  const activeStep = resolveStep(lesson, event.lessonStepId);
+  const previous = previousEvent?.structure?.kind === 'search' ? previousEvent.structure : null;
+  const values = snapshot.elements.map((element) => element.value);
+  const valueAt = (index: number | null): string => (index === null ? '—' : String(values[index] ?? '—'));
+  const rangeText = (range: SearchSnapshot['range']): string =>
+    range ? `[${range.low}, ${range.high}]` : tx(lang, '空区间', 'empty');
+  const relation = (index: number | null): string => {
+    if (index === null) return '—';
+    const value = values[index];
+    if (value === undefined) return '—';
+    if (value === snapshot.target) return '=';
+    return value < snapshot.target ? '<' : '>';
+  };
+  const isLinear = snapshot.algorithm === 'linear';
+
+  let action = event.message;
+  let why = event.message;
+  switch (snapshot.operation) {
+    case 'init':
+      action = tx(lang, '初始化数组与目标值', 'Initialize the array and target');
+      why = isLinear
+        ? tx(lang, '顺序查找不要求有序，读入后直接从左端开始逐个检查。', 'Linear search needs no ordering; after reading the input it scans from the left.')
+        : tx(lang, '二分查找要求非递减输入；这一帧只读入，未确认有序前不会开始折半。', 'Binary search requires nondecreasing input; this frame only reads it and will not halve until sortedness is established.');
+      break;
+    case 'scan-start':
+      action = tx(lang, '从索引 0 开始顺序扫描', 'Start the scan at index 0');
+      why = tx(lang, '已检查集合为空，当前位置是唯一的候选，右侧全部尚未检查。', 'The checked set is empty; the current slot is the only candidate and everything to its right is pending.');
+      break;
+    case 'scan-compare':
+      action = tx(
+        lang,
+        `检查 a[${snapshot.index ?? '—'}]=${valueAt(snapshot.index)} 是否等于目标 ${snapshot.target}`,
+        `Check whether a[${snapshot.index ?? '—'}]=${valueAt(snapshot.index)} equals target ${snapshot.target}`,
+      );
+      why = tx(lang, '数组没有排序，不能按大小跳过元素；只能把当前值与目标做一次相等比较。', 'The array is unordered, so no value can be skipped by order; the current value is compared with the target once.');
+      break;
+    case 'scan-next':
+      action = tx(lang, `不匹配，指针移动到 p${snapshot.index ?? '—'}`, `No match; move the pointer to p${snapshot.index ?? '—'}`);
+      why = tx(lang, '刚才的位置不相等，于是它变成已检查，指针只前进一格，不能跳跃。', 'The previous slot did not match, so it becomes checked and the pointer advances exactly one slot.');
+      break;
+    case 'found':
+      action = tx(lang, `命中目标，返回索引 ${snapshot.result ?? '—'}`, `Target found; return index ${snapshot.result ?? '—'}`);
+      why = tx(lang, '第一次遇到的匹配就足以回答；顺序查找不承诺返回最后一个重复值。', 'The first match is enough; linear search does not promise the last duplicate.');
+      break;
+    case 'not-found':
+      action = tx(lang, '全部检查完毕，返回 -1', 'Every slot checked; return -1');
+      why = tx(lang, '没有元素与目标相等，已检查集合覆盖整个数组，结果为失败。', 'No element equals the target, the checked set covers the whole array, and the result is failure.');
+      break;
+    case 'binary-init':
+      action = tx(lang, `初始化闭区间 [${snapshot.left ?? '—'}, ${snapshot.right ?? '—'}]`, `Initialize the closed interval [${snapshot.left ?? '—'}, ${snapshot.right ?? '—'}]`);
+      why = tx(lang, 'left 与 right 都指向真实数组下标；区间为空时也必须保持 left > right。', 'left and right are real array indices; even an empty interval must satisfy left > right.');
+      break;
+    case 'binary-mid':
+      action = tx(
+        lang,
+        `计算 mid = (${snapshot.left ?? '—'} + ${snapshot.right ?? '—'}) // 2 = ${snapshot.mid ?? '—'}`,
+        `Compute mid = (${snapshot.left ?? '—'} + ${snapshot.right ?? '—'}) // 2 = ${snapshot.mid ?? '—'}`,
+      );
+      why = tx(lang, 'mid 必须是当前闭区间的真实中点，不能按帧数或固定位置推算。', 'mid must be the real midpoint of the current closed interval, not a frame-count guess.');
+      break;
+    case 'binary-compare':
+      action = tx(
+        lang,
+        `比较 a[${snapshot.mid ?? '—'}]=${valueAt(snapshot.mid)} 与目标 ${snapshot.target}：${relation(snapshot.mid)}`,
+        `Compare a[${snapshot.mid ?? '—'}]=${valueAt(snapshot.mid)} with target ${snapshot.target}: ${relation(snapshot.mid)}`,
+      );
+      why = tx(lang, '有序性保证：mid 左侧都不大于 arr[mid]，右侧都不小于 arr[mid]，所以一次比较足以排除一整侧。', 'Sortedness guarantees the left side is not greater and the right side is not smaller, so one comparison can eliminate an entire half.');
+      break;
+    case 'binary-exclude-right':
+      action = tx(lang, `arr[mid] 大于目标，排除右半区，right 变为 ${snapshot.right ?? '—'}`, `arr[mid] is greater; discard the right half and set right to ${snapshot.right ?? '—'}`);
+      why = tx(lang, 'mid 已经比较过且大于目标，mid 及其右侧全部不可能，必须把 right 设为 mid - 1。', 'mid was compared and is greater, so mid and everything to its right are impossible; right really becomes mid - 1.');
+      break;
+    case 'binary-exclude-left':
+      action = tx(lang, `arr[mid] 小于目标，排除左半区，left 变为 ${snapshot.left ?? '—'}`, `arr[mid] is smaller; discard the left half and set left to ${snapshot.left ?? '—'}`);
+      why = tx(lang, 'mid 已经比较过且小于目标，mid 及其左侧全部不可能，必须把 left 设为 mid + 1。', 'mid was compared and is smaller, so mid and everything to its left are impossible; left really becomes mid + 1.');
+      break;
+    case 'binary-found':
+      action = tx(lang, `命中 mid=${snapshot.mid ?? '—'}，返回该索引`, `Hit at mid=${snapshot.mid ?? '—'}; return that index`);
+      why = tx(lang, 'arr[mid] 与目标相等；重复值只保证任意一个合法匹配位置，不保证第一个或最后一个。', 'arr[mid] equals the target; with duplicates only any valid match is promised, not the first or last.');
+      break;
+    case 'binary-not-found':
+      action = tx(lang, `区间为空：left=${snapshot.left ?? '—'} > right=${snapshot.right ?? '—'}，返回 -1`, `Empty interval: left=${snapshot.left ?? '—'} > right=${snapshot.right ?? '—'}, return -1`);
+      why = tx(lang, 'while left <= right 结束时最后一个候选也已被检查和排除，所以目标不存在。', 'When while left <= right ends, even the last candidate was inspected and excluded, so the target is absent.');
+      break;
+    case 'invalid':
+      action = tx(lang, '输入不是升序，拒绝开始二分查找', 'Input is not ascending; refuse to start binary search');
+      why = tx(lang, '无序数组不能直接二分；没有偷偷排序，也没有伪造折半帧，只给出前提提示。', 'An unordered array cannot be binary-searched directly; nothing is sorted behind the scenes and no fake halving frames are emitted.');
+      break;
+    default:
+      break;
+  }
+
+  const changes: FrameChange[] = [
+    { label: tx(lang, '目标值', 'target'), after: String(snapshot.target), tone: 'neutral' },
+  ];
+  if (isLinear) {
+    changes.push({
+      label: tx(lang, '当前索引', 'current index'),
+      after: snapshot.index === null ? '—' : `p${snapshot.index} = ${valueAt(snapshot.index)}`,
+      tone: 'neutral',
+    });
+    changes.push({
+      label: tx(lang, '已检查', 'checked'),
+      after: `${snapshot.checked.length} / ${snapshot.elements.length}`,
+      tone: snapshot.checked.length > 0 ? 'update' : 'neutral',
+    });
+    if (snapshot.operation === 'scan-compare' || snapshot.operation === 'found') {
+      changes.push({
+        label: tx(lang, '相等比较', 'equality'),
+        after: `${valueAt(snapshot.index)} ${snapshot.matched ? '=' : '≠'} ${snapshot.target}`,
+        tone: snapshot.matched ? 'success' : 'neutral',
+      });
+    }
+  } else {
+    changes.push({
+      label: tx(lang, '查找区间', 'live range'),
+      before: previous ? rangeText(previous.range) : undefined,
+      after: rangeText(snapshot.range),
+      tone: 'update',
+    });
+    if (snapshot.mid !== null) {
+      changes.push({
+        label: 'MID',
+        after: `p${snapshot.mid} = ${valueAt(snapshot.mid)}`,
+        tone: 'neutral',
+      });
+    }
+    if (snapshot.comparison !== null) {
+      const comparison = snapshot.comparison === 'equal' ? '=' : snapshot.comparison === 'less' ? '<' : '>';
+      changes.push({
+        label: tx(lang, '比较结果', 'comparison'),
+        after: `arr[mid] ${comparison} target`,
+        tone: snapshot.comparison === 'equal' ? 'success' : 'neutral',
+      });
+    }
+    if (snapshot.operation === 'binary-exclude-right') {
+      changes.push({
+        label: tx(lang, '排除右半区', 'discard right half'),
+        after: `p${snapshot.mid ?? '—'}..p${snapshot.right === null ? '—' : snapshot.right + 1}`,
+        tone: 'warning',
+      });
+    }
+    if (snapshot.operation === 'binary-exclude-left') {
+      changes.push({
+        label: tx(lang, '排除左半区', 'discard left half'),
+        after: `p${snapshot.left === null ? '—' : snapshot.left - 1}..p${snapshot.mid ?? '—'}`,
+        tone: 'warning',
+      });
+    }
+  }
+  if (snapshot.result !== null) {
+    changes.push({
+      label: tx(lang, '结果', 'result'),
+      after: snapshot.result === -1 ? '-1' : `p${snapshot.result}`,
+      tone: snapshot.found ? 'success' : 'warning',
+    });
+  }
+  if (snapshot.operation === 'invalid') {
+    changes.push({
+      label: tx(lang, '输入前提', 'prerequisite'),
+      after: tx(lang, '未排序，二分查找未启动', 'not sorted, binary search not started'),
+      tone: 'warning',
+    });
+  }
+
+  const memory = activeStep?.tip
+    ? firstSentence(activeStep.tip[lang], 140)
+    : isLinear
+      ? tx(lang, '顺序查找：逐个检查，命中第一个就返回；不要求有序。', 'Linear: inspect one by one, return the first hit; no ordering required.')
+      : tx(lang, '二分查找：有序前提下，用 left/right 真实边界每轮排除一半。', 'Binary: with sorted input, real left/right boundaries discard one half each round.');
+
+  return {
+    semantic: true,
+    action,
+    why,
+    changes,
+    memory,
+  };
+}
+
+/**
  * Build the compact, frame-synchronised insight for the right rail.
  *
  * `lesson` may be undefined (algorithm without a course); `currentEvent` may be
@@ -1717,6 +1909,8 @@ export function buildFrameInsight(
         return huffmanInsight(structure, lang, hasStep, lesson, currentEvent, previousEvent);
       case 'sorting':
         return sortingInsight(structure, lang, lesson, currentEvent, previousEvent);
+      case 'search':
+        return searchInsight(structure, lang, lesson, currentEvent, previousEvent);
       default:
         break;
     }

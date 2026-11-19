@@ -106,7 +106,7 @@ describe('Stage 3B — teaching steps follow the single timeline cursor', () => 
     renderApp();
     await waitForInitialRun();
 
-    fireEvent.click(screen.getByTestId('algo-binary'));
+    fireEvent.click(screen.getByTestId('algo-fib'));
     // The course-less algorithm must render an explicit empty state, never crash.
     await waitFor(() => expect(screen.getByTestId('lesson-no-lesson')).toBeTruthy());
     expect(screen.getByTestId('lesson-no-lesson').textContent).toContain('尚未提供教学课程');

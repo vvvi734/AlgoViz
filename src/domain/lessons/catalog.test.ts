@@ -12,15 +12,16 @@ describe('composite lesson catalog', () => {
     expect(catalog.byAlgorithm('bubble')?.lessonId).toBe('bubble-sort-basics');
     expect(catalog.byAlgorithm('factorial')?.lessonId).toBe('factorial-recursion-basics');
     expect(catalog.originOf('bubble')).toEqual({ kind: 'builtin' });
-    expect(catalog.byAlgorithm('binary')).toBeUndefined();
-    expect(catalog.byAlgorithm('linear')).toBeUndefined();
+    expect(catalog.byAlgorithm('fib')).toBeUndefined();
+    expect(catalog.byAlgorithm('linear')?.lessonId).toBe('linear-search-basics');
+    expect(catalog.byAlgorithm('binary')?.lessonId).toBe('binary-search-basics');
   });
 
   it('adds pack courses next to built-in ones', () => {
     const catalog = createLessonCatalog([{ packId: 'fixture-pack', lessons: [packLesson()] }]);
-    expect(catalog.byAlgorithm('binary')?.lessonId).toBe('pack-course');
-    expect(catalog.originOf('binary')).toEqual({ kind: 'pack', packId: 'fixture-pack' });
-    expect(catalog.byId('pack-course')?.algorithmId).toBe('binary');
+    expect(catalog.byAlgorithm('fib')?.lessonId).toBe('pack-course');
+    expect(catalog.originOf('fib')).toEqual({ kind: 'pack', packId: 'fixture-pack' });
+    expect(catalog.byId('pack-course')?.algorithmId).toBe('fib');
     // Built-in courses keep their priority and panellable content.
     expect(catalog.byAlgorithm('bubble')?.lessonId).toBe('bubble-sort-basics');
     expect(catalog.lessons).toHaveLength(createLessonCatalog([]).lessons.length + 1);
@@ -39,16 +40,16 @@ describe('composite lesson catalog', () => {
   it('ignores invalid pack content instead of throwing', () => {
     const broken = { ...lessonFixture(), steps: [] } as unknown as typeof bubbleSortLesson;
     const catalog = createLessonCatalog([{ packId: 'broken', lessons: [broken] }]);
-    expect(catalog.byAlgorithm('binary')).toBeUndefined();
+    expect(catalog.byAlgorithm('fib')).toBeUndefined();
     expect(catalog.lessons).toHaveLength(createLessonCatalog([]).lessons.length);
   });
 
   it('drops a pack course as soon as the pack is not passed in', () => {
     const withPack = createLessonCatalog([{ packId: 'fixture-pack', lessons: [packLesson()] }]);
-    expect(withPack.has('binary')).toBe(true);
+    expect(withPack.has('fib')).toBe(true);
 
     const afterUninstall = createLessonCatalog([]);
-    expect(afterUninstall.has('binary')).toBe(false);
+    expect(afterUninstall.has('fib')).toBe(false);
     expect(afterUninstall.byId('pack-course')).toBeUndefined();
     expect(afterUninstall.byAlgorithm('factorial')?.lessonId).toBe(factorialLesson.lessonId);
     expect(afterUninstall.lessons).toHaveLength(createLessonCatalog([]).lessons.length);
@@ -59,7 +60,7 @@ describe('composite lesson catalog', () => {
       { packId: 'pack-a', lessons: [lessonFixture({ lessonId: 'course-a' })] },
       { packId: 'pack-b', lessons: [lessonFixture({ lessonId: 'course-b' })] },
     ]);
-    expect(catalog.byAlgorithm('binary')?.lessonId).toBe('course-a');
+    expect(catalog.byAlgorithm('fib')?.lessonId).toBe('course-a');
     expect(catalog.byId('course-b')).toBeUndefined();
     expect(catalog.byPack('pack-b')).toEqual([]);
   });

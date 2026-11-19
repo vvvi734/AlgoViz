@@ -15,10 +15,10 @@ describe('Lesson registry (Stage 3B)', () => {
   });
 
   it('returns undefined (never throws) for algorithms and ids without a course', () => {
-    expect(lessonRegistry.byAlgorithm('binary')).toBeUndefined();
+    expect(lessonRegistry.byAlgorithm('fib')).toBeUndefined();
     expect(lessonRegistry.byAlgorithm('not-an-algorithm')).toBeUndefined();
     expect(lessonRegistry.byId('missing')).toBeUndefined();
-    expect(lessonRegistry.has('binary')).toBe(false);
+    expect(lessonRegistry.has('fib')).toBe(false);
     expect(lessonRegistry.has('bubble')).toBe(true);
   });
 
@@ -50,6 +50,8 @@ describe('Lesson registry (Stage 3B)', () => {
       'aoe-critical-path',
       'connected-components-dfs',
       'strongly-connected-components-kosaraju',
+      'linear-search-basics',
+      'binary-search-basics',
     ]);
   });
 
@@ -85,6 +87,7 @@ describe('Lesson registry (Stage 3B)', () => {
     const covered = lessonRegistry.lessons.map((lesson) => lesson.algorithmId);
     const uncovered = catalogIds.filter((id) => !covered.includes(id));
     expect(catalogIds.length).toBe(29);
-    expect(uncovered.length).toBe(3);
+    expect(uncovered.length).toBe(1);
+    expect(uncovered).toEqual(['fib']);
   });
 });

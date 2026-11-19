@@ -1,0 +1,1846 @@
+{
+  "linear": [
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          6,
+          3,
+          9,
+          2,
+          7,
+          4
+        ],
+        "focus": []
+      },
+      "message": "初始化数组与目标值，尚未比较 / Initialize the array and target",
+      "variables": {
+        "nums": [
+          6,
+          3,
+          9,
+          2,
+          7,
+          4
+        ],
+        "target": 7,
+        "index": null,
+        "checked": [],
+        "result": null,
+        "found": null
+      },
+      "lessonStepId": "init",
+      "structure": {
+        "kind": "search",
+        "algorithm": "linear",
+        "operation": "init",
+        "elements": [
+          {
+            "id": "p0",
+            "value": 6
+          },
+          {
+            "id": "p1",
+            "value": 3
+          },
+          {
+            "id": "p2",
+            "value": 9
+          },
+          {
+            "id": "p3",
+            "value": 2
+          },
+          {
+            "id": "p4",
+            "value": 7
+          },
+          {
+            "id": "p5",
+            "value": 4
+          }
+        ],
+        "target": 7,
+        "phase": "init",
+        "index": null,
+        "left": null,
+        "right": null,
+        "mid": null,
+        "checked": [],
+        "range": null,
+        "comparison": null,
+        "matched": null,
+        "result": null,
+        "found": null,
+        "reason": null
+      }
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          6,
+          3,
+          9,
+          2,
+          7,
+          4
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "从索引 0 开始顺序扫描 / Start at index 0",
+      "variables": {
+        "nums": [
+          6,
+          3,
+          9,
+          2,
+          7,
+          4
+        ],
+        "target": 7,
+        "index": 0,
+        "checked": [],
+        "result": null,
+        "found": null
+      },
+      "lessonStepId": "scan-start",
+      "structure": {
+        "kind": "search",
+        "algorithm": "linear",
+        "operation": "scan-start",
+        "elements": [
+          {
+            "id": "p0",
+            "value": 6
+          },
+          {
+            "id": "p1",
+            "value": 3
+          },
+          {
+            "id": "p2",
+            "value": 9
+          },
+          {
+            "id": "p3",
+            "value": 2
+          },
+          {
+            "id": "p4",
+            "value": 7
+          },
+          {
+            "id": "p5",
+            "value": 4
+          }
+        ],
+        "target": 7,
+        "phase": "scan",
+        "index": 0,
+        "left": null,
+        "right": null,
+        "mid": null,
+        "checked": [],
+        "range": null,
+        "comparison": null,
+        "matched": null,
+        "result": null,
+        "found": null,
+        "reason": null
+      }
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          6,
+          3,
+          9,
+          2,
+          7,
+          4
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "检查 a[0]=6 是否等于目标 7 / Compare a[0] with target",
+      "variables": {
+        "nums": [
+          6,
+          3,
+          9,
+          2,
+          7,
+          4
+        ],
+        "target": 7,
+        "index": 0,
+        "checked": [],
+        "result": null,
+        "found": null
+      },
+      "lessonStepId": "scan-compare",
+      "structure": {
+        "kind": "search",
+        "algorithm": "linear",
+        "operation": "scan-compare",
+        "elements": [
+          {
+            "id": "p0",
+            "value": 6
+          },
+          {
+            "id": "p1",
+            "value": 3
+          },
+          {
+            "id": "p2",
+            "value": 9
+          },
+          {
+            "id": "p3",
+            "value": 2
+          },
+          {
+            "id": "p4",
+            "value": 7
+          },
+          {
+            "id": "p5",
+            "value": 4
+          }
+        ],
+        "target": 7,
+        "phase": "compare",
+        "index": 0,
+        "left": null,
+        "right": null,
+        "mid": null,
+        "checked": [],
+        "range": null,
+        "comparison": null,
+        "matched": false,
+        "result": null,
+        "found": null,
+        "reason": null
+      }
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          6,
+          3,
+          9,
+          2,
+          7,
+          4
+        ],
+        "focus": [
+          1
+        ]
+      },
+      "message": "不匹配，移动到索引 1 / Move to index 1",
+      "variables": {
+        "nums": [
+          6,
+          3,
+          9,
+          2,
+          7,
+          4
+        ],
+        "target": 7,
+        "index": 1,
+        "checked": [
+          0
+        ],
+        "result": null,
+        "found": null
+      },
+      "lessonStepId": "scan-next",
+      "structure": {
+        "kind": "search",
+        "algorithm": "linear",
+        "operation": "scan-next",
+        "elements": [
+          {
+            "id": "p0",
+            "value": 6
+          },
+          {
+            "id": "p1",
+            "value": 3
+          },
+          {
+            "id": "p2",
+            "value": 9
+          },
+          {
+            "id": "p3",
+            "value": 2
+          },
+          {
+            "id": "p4",
+            "value": 7
+          },
+          {
+            "id": "p5",
+            "value": 4
+          }
+        ],
+        "target": 7,
+        "phase": "scan",
+        "index": 1,
+        "left": null,
+        "right": null,
+        "mid": null,
+        "checked": [
+          0
+        ],
+        "range": null,
+        "comparison": null,
+        "matched": null,
+        "result": null,
+        "found": null,
+        "reason": null
+      }
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          6,
+          3,
+          9,
+          2,
+          7,
+          4
+        ],
+        "focus": [
+          1
+        ]
+      },
+      "message": "检查 a[1]=3 是否等于目标 7 / Compare a[1] with target",
+      "variables": {
+        "nums": [
+          6,
+          3,
+          9,
+          2,
+          7,
+          4
+        ],
+        "target": 7,
+        "index": 1,
+        "checked": [
+          0
+        ],
+        "result": null,
+        "found": null
+      },
+      "lessonStepId": "scan-compare",
+      "structure": {
+        "kind": "search",
+        "algorithm": "linear",
+        "operation": "scan-compare",
+        "elements": [
+          {
+            "id": "p0",
+            "value": 6
+          },
+          {
+            "id": "p1",
+            "value": 3
+          },
+          {
+            "id": "p2",
+            "value": 9
+          },
+          {
+            "id": "p3",
+            "value": 2
+          },
+          {
+            "id": "p4",
+            "value": 7
+          },
+          {
+            "id": "p5",
+            "value": 4
+          }
+        ],
+        "target": 7,
+        "phase": "compare",
+        "index": 1,
+        "left": null,
+        "right": null,
+        "mid": null,
+        "checked": [
+          0
+        ],
+        "range": null,
+        "comparison": null,
+        "matched": false,
+        "result": null,
+        "found": null,
+        "reason": null
+      }
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          6,
+          3,
+          9,
+          2,
+          7,
+          4
+        ],
+        "focus": [
+          2
+        ]
+      },
+      "message": "不匹配，移动到索引 2 / Move to index 2",
+      "variables": {
+        "nums": [
+          6,
+          3,
+          9,
+          2,
+          7,
+          4
+        ],
+        "target": 7,
+        "index": 2,
+        "checked": [
+          0,
+          1
+        ],
+        "result": null,
+        "found": null
+      },
+      "lessonStepId": "scan-next",
+      "structure": {
+        "kind": "search",
+        "algorithm": "linear",
+        "operation": "scan-next",
+        "elements": [
+          {
+            "id": "p0",
+            "value": 6
+          },
+          {
+            "id": "p1",
+            "value": 3
+          },
+          {
+            "id": "p2",
+            "value": 9
+          },
+          {
+            "id": "p3",
+            "value": 2
+          },
+          {
+            "id": "p4",
+            "value": 7
+          },
+          {
+            "id": "p5",
+            "value": 4
+          }
+        ],
+        "target": 7,
+        "phase": "scan",
+        "index": 2,
+        "left": null,
+        "right": null,
+        "mid": null,
+        "checked": [
+          0,
+          1
+        ],
+        "range": null,
+        "comparison": null,
+        "matched": null,
+        "result": null,
+        "found": null,
+        "reason": null
+      }
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          6,
+          3,
+          9,
+          2,
+          7,
+          4
+        ],
+        "focus": [
+          2
+        ]
+      },
+      "message": "检查 a[2]=9 是否等于目标 7 / Compare a[2] with target",
+      "variables": {
+        "nums": [
+          6,
+          3,
+          9,
+          2,
+          7,
+          4
+        ],
+        "target": 7,
+        "index": 2,
+        "checked": [
+          0,
+          1
+        ],
+        "result": null,
+        "found": null
+      },
+      "lessonStepId": "scan-compare",
+      "structure": {
+        "kind": "search",
+        "algorithm": "linear",
+        "operation": "scan-compare",
+        "elements": [
+          {
+            "id": "p0",
+            "value": 6
+          },
+          {
+            "id": "p1",
+            "value": 3
+          },
+          {
+            "id": "p2",
+            "value": 9
+          },
+          {
+            "id": "p3",
+            "value": 2
+          },
+          {
+            "id": "p4",
+            "value": 7
+          },
+          {
+            "id": "p5",
+            "value": 4
+          }
+        ],
+        "target": 7,
+        "phase": "compare",
+        "index": 2,
+        "left": null,
+        "right": null,
+        "mid": null,
+        "checked": [
+          0,
+          1
+        ],
+        "range": null,
+        "comparison": null,
+        "matched": false,
+        "result": null,
+        "found": null,
+        "reason": null
+      }
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          6,
+          3,
+          9,
+          2,
+          7,
+          4
+        ],
+        "focus": [
+          3
+        ]
+      },
+      "message": "不匹配，移动到索引 3 / Move to index 3",
+      "variables": {
+        "nums": [
+          6,
+          3,
+          9,
+          2,
+          7,
+          4
+        ],
+        "target": 7,
+        "index": 3,
+        "checked": [
+          0,
+          1,
+          2
+        ],
+        "result": null,
+        "found": null
+      },
+      "lessonStepId": "scan-next",
+      "structure": {
+        "kind": "search",
+        "algorithm": "linear",
+        "operation": "scan-next",
+        "elements": [
+          {
+            "id": "p0",
+            "value": 6
+          },
+          {
+            "id": "p1",
+            "value": 3
+          },
+          {
+            "id": "p2",
+            "value": 9
+          },
+          {
+            "id": "p3",
+            "value": 2
+          },
+          {
+            "id": "p4",
+            "value": 7
+          },
+          {
+            "id": "p5",
+            "value": 4
+          }
+        ],
+        "target": 7,
+        "phase": "scan",
+        "index": 3,
+        "left": null,
+        "right": null,
+        "mid": null,
+        "checked": [
+          0,
+          1,
+          2
+        ],
+        "range": null,
+        "comparison": null,
+        "matched": null,
+        "result": null,
+        "found": null,
+        "reason": null
+      }
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          6,
+          3,
+          9,
+          2,
+          7,
+          4
+        ],
+        "focus": [
+          3
+        ]
+      },
+      "message": "检查 a[3]=2 是否等于目标 7 / Compare a[3] with target",
+      "variables": {
+        "nums": [
+          6,
+          3,
+          9,
+          2,
+          7,
+          4
+        ],
+        "target": 7,
+        "index": 3,
+        "checked": [
+          0,
+          1,
+          2
+        ],
+        "result": null,
+        "found": null
+      },
+      "lessonStepId": "scan-compare",
+      "structure": {
+        "kind": "search",
+        "algorithm": "linear",
+        "operation": "scan-compare",
+        "elements": [
+          {
+            "id": "p0",
+            "value": 6
+          },
+          {
+            "id": "p1",
+            "value": 3
+          },
+          {
+            "id": "p2",
+            "value": 9
+          },
+          {
+            "id": "p3",
+            "value": 2
+          },
+          {
+            "id": "p4",
+            "value": 7
+          },
+          {
+            "id": "p5",
+            "value": 4
+          }
+        ],
+        "target": 7,
+        "phase": "compare",
+        "index": 3,
+        "left": null,
+        "right": null,
+        "mid": null,
+        "checked": [
+          0,
+          1,
+          2
+        ],
+        "range": null,
+        "comparison": null,
+        "matched": false,
+        "result": null,
+        "found": null,
+        "reason": null
+      }
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          6,
+          3,
+          9,
+          2,
+          7,
+          4
+        ],
+        "focus": [
+          4
+        ]
+      },
+      "message": "不匹配，移动到索引 4 / Move to index 4",
+      "variables": {
+        "nums": [
+          6,
+          3,
+          9,
+          2,
+          7,
+          4
+        ],
+        "target": 7,
+        "index": 4,
+        "checked": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "result": null,
+        "found": null
+      },
+      "lessonStepId": "scan-next",
+      "structure": {
+        "kind": "search",
+        "algorithm": "linear",
+        "operation": "scan-next",
+        "elements": [
+          {
+            "id": "p0",
+            "value": 6
+          },
+          {
+            "id": "p1",
+            "value": 3
+          },
+          {
+            "id": "p2",
+            "value": 9
+          },
+          {
+            "id": "p3",
+            "value": 2
+          },
+          {
+            "id": "p4",
+            "value": 7
+          },
+          {
+            "id": "p5",
+            "value": 4
+          }
+        ],
+        "target": 7,
+        "phase": "scan",
+        "index": 4,
+        "left": null,
+        "right": null,
+        "mid": null,
+        "checked": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "range": null,
+        "comparison": null,
+        "matched": null,
+        "result": null,
+        "found": null,
+        "reason": null
+      }
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          6,
+          3,
+          9,
+          2,
+          7,
+          4
+        ],
+        "focus": [
+          4
+        ]
+      },
+      "message": "检查 a[4]=7 是否等于目标 7 / Compare a[4] with target",
+      "variables": {
+        "nums": [
+          6,
+          3,
+          9,
+          2,
+          7,
+          4
+        ],
+        "target": 7,
+        "index": 4,
+        "checked": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "result": null,
+        "found": null
+      },
+      "lessonStepId": "scan-compare",
+      "structure": {
+        "kind": "search",
+        "algorithm": "linear",
+        "operation": "scan-compare",
+        "elements": [
+          {
+            "id": "p0",
+            "value": 6
+          },
+          {
+            "id": "p1",
+            "value": 3
+          },
+          {
+            "id": "p2",
+            "value": 9
+          },
+          {
+            "id": "p3",
+            "value": 2
+          },
+          {
+            "id": "p4",
+            "value": 7
+          },
+          {
+            "id": "p5",
+            "value": 4
+          }
+        ],
+        "target": 7,
+        "phase": "compare",
+        "index": 4,
+        "left": null,
+        "right": null,
+        "mid": null,
+        "checked": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "range": null,
+        "comparison": null,
+        "matched": true,
+        "result": null,
+        "found": null,
+        "reason": null
+      }
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          6,
+          3,
+          9,
+          2,
+          7,
+          4
+        ],
+        "focus": [
+          4
+        ]
+      },
+      "message": "找到目标：返回索引 4 / Target found at index 4",
+      "variables": {
+        "nums": [
+          6,
+          3,
+          9,
+          2,
+          7,
+          4
+        ],
+        "target": 7,
+        "index": 4,
+        "checked": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "result": 4,
+        "found": true
+      },
+      "lessonStepId": "done",
+      "structure": {
+        "kind": "search",
+        "algorithm": "linear",
+        "operation": "found",
+        "elements": [
+          {
+            "id": "p0",
+            "value": 6
+          },
+          {
+            "id": "p1",
+            "value": 3
+          },
+          {
+            "id": "p2",
+            "value": 9
+          },
+          {
+            "id": "p3",
+            "value": 2
+          },
+          {
+            "id": "p4",
+            "value": 7
+          },
+          {
+            "id": "p5",
+            "value": 4
+          }
+        ],
+        "target": 7,
+        "phase": "found",
+        "index": 4,
+        "left": null,
+        "right": null,
+        "mid": null,
+        "checked": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "range": null,
+        "comparison": null,
+        "matched": true,
+        "result": 4,
+        "found": true,
+        "reason": null
+      }
+    }
+  ],
+  "binary": [
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          3,
+          5,
+          7,
+          9,
+          11,
+          13
+        ],
+        "focus": []
+      },
+      "message": "初始化闭区间 [0, 6] / Initialize the closed interval",
+      "variables": {
+        "nums": [
+          1,
+          3,
+          5,
+          7,
+          9,
+          11,
+          13
+        ],
+        "target": 9,
+        "left": 0,
+        "right": 6,
+        "mid": null,
+        "result": null,
+        "found": null
+      },
+      "lessonStepId": "init",
+      "structure": {
+        "kind": "search",
+        "algorithm": "binary",
+        "operation": "binary-init",
+        "elements": [
+          {
+            "id": "p0",
+            "value": 1
+          },
+          {
+            "id": "p1",
+            "value": 3
+          },
+          {
+            "id": "p2",
+            "value": 5
+          },
+          {
+            "id": "p3",
+            "value": 7
+          },
+          {
+            "id": "p4",
+            "value": 9
+          },
+          {
+            "id": "p5",
+            "value": 11
+          },
+          {
+            "id": "p6",
+            "value": 13
+          }
+        ],
+        "target": 9,
+        "phase": "init",
+        "index": null,
+        "left": 0,
+        "right": 6,
+        "mid": null,
+        "checked": [],
+        "range": {
+          "low": 0,
+          "high": 6
+        },
+        "comparison": null,
+        "matched": null,
+        "result": null,
+        "found": null,
+        "reason": null
+      }
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          3,
+          5,
+          7,
+          9,
+          11,
+          13
+        ],
+        "focus": []
+      },
+      "message": "mid = (0 + 6) // 2 = 3 / Compute the midpoint",
+      "variables": {
+        "nums": [
+          1,
+          3,
+          5,
+          7,
+          9,
+          11,
+          13
+        ],
+        "target": 9,
+        "left": 0,
+        "right": 6,
+        "mid": 3,
+        "result": null,
+        "found": null
+      },
+      "lessonStepId": "binary-mid",
+      "structure": {
+        "kind": "search",
+        "algorithm": "binary",
+        "operation": "binary-mid",
+        "elements": [
+          {
+            "id": "p0",
+            "value": 1
+          },
+          {
+            "id": "p1",
+            "value": 3
+          },
+          {
+            "id": "p2",
+            "value": 5
+          },
+          {
+            "id": "p3",
+            "value": 7
+          },
+          {
+            "id": "p4",
+            "value": 9
+          },
+          {
+            "id": "p5",
+            "value": 11
+          },
+          {
+            "id": "p6",
+            "value": 13
+          }
+        ],
+        "target": 9,
+        "phase": "scan",
+        "index": null,
+        "left": 0,
+        "right": 6,
+        "mid": 3,
+        "checked": [],
+        "range": {
+          "low": 0,
+          "high": 6
+        },
+        "comparison": null,
+        "matched": null,
+        "result": null,
+        "found": null,
+        "reason": null
+      }
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          3,
+          5,
+          7,
+          9,
+          11,
+          13
+        ],
+        "focus": []
+      },
+      "message": "a[3]=7 小于目标 9 / Smaller than target",
+      "variables": {
+        "nums": [
+          1,
+          3,
+          5,
+          7,
+          9,
+          11,
+          13
+        ],
+        "target": 9,
+        "left": 0,
+        "right": 6,
+        "mid": 3,
+        "result": null,
+        "found": null
+      },
+      "lessonStepId": "binary-compare",
+      "structure": {
+        "kind": "search",
+        "algorithm": "binary",
+        "operation": "binary-compare",
+        "elements": [
+          {
+            "id": "p0",
+            "value": 1
+          },
+          {
+            "id": "p1",
+            "value": 3
+          },
+          {
+            "id": "p2",
+            "value": 5
+          },
+          {
+            "id": "p3",
+            "value": 7
+          },
+          {
+            "id": "p4",
+            "value": 9
+          },
+          {
+            "id": "p5",
+            "value": 11
+          },
+          {
+            "id": "p6",
+            "value": 13
+          }
+        ],
+        "target": 9,
+        "phase": "compare",
+        "index": null,
+        "left": 0,
+        "right": 6,
+        "mid": 3,
+        "checked": [],
+        "range": {
+          "low": 0,
+          "high": 6
+        },
+        "comparison": "less",
+        "matched": false,
+        "result": null,
+        "found": null,
+        "reason": null
+      }
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          3,
+          5,
+          7,
+          9,
+          11,
+          13
+        ],
+        "focus": []
+      },
+      "message": "排除左半区（含 mid）：left 变为 4 / Discard the left half",
+      "variables": {
+        "nums": [
+          1,
+          3,
+          5,
+          7,
+          9,
+          11,
+          13
+        ],
+        "target": 9,
+        "left": 4,
+        "right": 6,
+        "mid": 3,
+        "result": null,
+        "found": null
+      },
+      "lessonStepId": "binary-narrow",
+      "structure": {
+        "kind": "search",
+        "algorithm": "binary",
+        "operation": "binary-exclude-left",
+        "elements": [
+          {
+            "id": "p0",
+            "value": 1
+          },
+          {
+            "id": "p1",
+            "value": 3
+          },
+          {
+            "id": "p2",
+            "value": 5
+          },
+          {
+            "id": "p3",
+            "value": 7
+          },
+          {
+            "id": "p4",
+            "value": 9
+          },
+          {
+            "id": "p5",
+            "value": 11
+          },
+          {
+            "id": "p6",
+            "value": 13
+          }
+        ],
+        "target": 9,
+        "phase": "narrow",
+        "index": null,
+        "left": 4,
+        "right": 6,
+        "mid": 3,
+        "checked": [],
+        "range": {
+          "low": 4,
+          "high": 6
+        },
+        "comparison": "less",
+        "matched": false,
+        "result": null,
+        "found": null,
+        "reason": null
+      }
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          3,
+          5,
+          7,
+          9,
+          11,
+          13
+        ],
+        "focus": []
+      },
+      "message": "mid = (4 + 6) // 2 = 5 / Compute the midpoint",
+      "variables": {
+        "nums": [
+          1,
+          3,
+          5,
+          7,
+          9,
+          11,
+          13
+        ],
+        "target": 9,
+        "left": 4,
+        "right": 6,
+        "mid": 5,
+        "result": null,
+        "found": null
+      },
+      "lessonStepId": "binary-mid",
+      "structure": {
+        "kind": "search",
+        "algorithm": "binary",
+        "operation": "binary-mid",
+        "elements": [
+          {
+            "id": "p0",
+            "value": 1
+          },
+          {
+            "id": "p1",
+            "value": 3
+          },
+          {
+            "id": "p2",
+            "value": 5
+          },
+          {
+            "id": "p3",
+            "value": 7
+          },
+          {
+            "id": "p4",
+            "value": 9
+          },
+          {
+            "id": "p5",
+            "value": 11
+          },
+          {
+            "id": "p6",
+            "value": 13
+          }
+        ],
+        "target": 9,
+        "phase": "scan",
+        "index": null,
+        "left": 4,
+        "right": 6,
+        "mid": 5,
+        "checked": [],
+        "range": {
+          "low": 4,
+          "high": 6
+        },
+        "comparison": null,
+        "matched": null,
+        "result": null,
+        "found": null,
+        "reason": null
+      }
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          3,
+          5,
+          7,
+          9,
+          11,
+          13
+        ],
+        "focus": []
+      },
+      "message": "a[5]=11 大于目标 9 / Greater than target",
+      "variables": {
+        "nums": [
+          1,
+          3,
+          5,
+          7,
+          9,
+          11,
+          13
+        ],
+        "target": 9,
+        "left": 4,
+        "right": 6,
+        "mid": 5,
+        "result": null,
+        "found": null
+      },
+      "lessonStepId": "binary-compare",
+      "structure": {
+        "kind": "search",
+        "algorithm": "binary",
+        "operation": "binary-compare",
+        "elements": [
+          {
+            "id": "p0",
+            "value": 1
+          },
+          {
+            "id": "p1",
+            "value": 3
+          },
+          {
+            "id": "p2",
+            "value": 5
+          },
+          {
+            "id": "p3",
+            "value": 7
+          },
+          {
+            "id": "p4",
+            "value": 9
+          },
+          {
+            "id": "p5",
+            "value": 11
+          },
+          {
+            "id": "p6",
+            "value": 13
+          }
+        ],
+        "target": 9,
+        "phase": "compare",
+        "index": null,
+        "left": 4,
+        "right": 6,
+        "mid": 5,
+        "checked": [],
+        "range": {
+          "low": 4,
+          "high": 6
+        },
+        "comparison": "greater",
+        "matched": false,
+        "result": null,
+        "found": null,
+        "reason": null
+      }
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          3,
+          5,
+          7,
+          9,
+          11,
+          13
+        ],
+        "focus": []
+      },
+      "message": "排除右半区（含 mid）：right 变为 4 / Discard the right half",
+      "variables": {
+        "nums": [
+          1,
+          3,
+          5,
+          7,
+          9,
+          11,
+          13
+        ],
+        "target": 9,
+        "left": 4,
+        "right": 4,
+        "mid": 5,
+        "result": null,
+        "found": null
+      },
+      "lessonStepId": "binary-narrow",
+      "structure": {
+        "kind": "search",
+        "algorithm": "binary",
+        "operation": "binary-exclude-right",
+        "elements": [
+          {
+            "id": "p0",
+            "value": 1
+          },
+          {
+            "id": "p1",
+            "value": 3
+          },
+          {
+            "id": "p2",
+            "value": 5
+          },
+          {
+            "id": "p3",
+            "value": 7
+          },
+          {
+            "id": "p4",
+            "value": 9
+          },
+          {
+            "id": "p5",
+            "value": 11
+          },
+          {
+            "id": "p6",
+            "value": 13
+          }
+        ],
+        "target": 9,
+        "phase": "narrow",
+        "index": null,
+        "left": 4,
+        "right": 4,
+        "mid": 5,
+        "checked": [],
+        "range": {
+          "low": 4,
+          "high": 4
+        },
+        "comparison": "greater",
+        "matched": false,
+        "result": null,
+        "found": null,
+        "reason": null
+      }
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          3,
+          5,
+          7,
+          9,
+          11,
+          13
+        ],
+        "focus": []
+      },
+      "message": "mid = (4 + 4) // 2 = 4 / Compute the midpoint",
+      "variables": {
+        "nums": [
+          1,
+          3,
+          5,
+          7,
+          9,
+          11,
+          13
+        ],
+        "target": 9,
+        "left": 4,
+        "right": 4,
+        "mid": 4,
+        "result": null,
+        "found": null
+      },
+      "lessonStepId": "binary-mid",
+      "structure": {
+        "kind": "search",
+        "algorithm": "binary",
+        "operation": "binary-mid",
+        "elements": [
+          {
+            "id": "p0",
+            "value": 1
+          },
+          {
+            "id": "p1",
+            "value": 3
+          },
+          {
+            "id": "p2",
+            "value": 5
+          },
+          {
+            "id": "p3",
+            "value": 7
+          },
+          {
+            "id": "p4",
+            "value": 9
+          },
+          {
+            "id": "p5",
+            "value": 11
+          },
+          {
+            "id": "p6",
+            "value": 13
+          }
+        ],
+        "target": 9,
+        "phase": "scan",
+        "index": null,
+        "left": 4,
+        "right": 4,
+        "mid": 4,
+        "checked": [],
+        "range": {
+          "low": 4,
+          "high": 4
+        },
+        "comparison": null,
+        "matched": null,
+        "result": null,
+        "found": null,
+        "reason": null
+      }
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          3,
+          5,
+          7,
+          9,
+          11,
+          13
+        ],
+        "focus": []
+      },
+      "message": "a[4]=9 等于目标 9 / Equality",
+      "variables": {
+        "nums": [
+          1,
+          3,
+          5,
+          7,
+          9,
+          11,
+          13
+        ],
+        "target": 9,
+        "left": 4,
+        "right": 4,
+        "mid": 4,
+        "result": null,
+        "found": null
+      },
+      "lessonStepId": "binary-compare",
+      "structure": {
+        "kind": "search",
+        "algorithm": "binary",
+        "operation": "binary-compare",
+        "elements": [
+          {
+            "id": "p0",
+            "value": 1
+          },
+          {
+            "id": "p1",
+            "value": 3
+          },
+          {
+            "id": "p2",
+            "value": 5
+          },
+          {
+            "id": "p3",
+            "value": 7
+          },
+          {
+            "id": "p4",
+            "value": 9
+          },
+          {
+            "id": "p5",
+            "value": 11
+          },
+          {
+            "id": "p6",
+            "value": 13
+          }
+        ],
+        "target": 9,
+        "phase": "compare",
+        "index": null,
+        "left": 4,
+        "right": 4,
+        "mid": 4,
+        "checked": [],
+        "range": {
+          "low": 4,
+          "high": 4
+        },
+        "comparison": "equal",
+        "matched": true,
+        "result": null,
+        "found": null,
+        "reason": null
+      }
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          3,
+          5,
+          7,
+          9,
+          11,
+          13
+        ],
+        "focus": [
+          4
+        ]
+      },
+      "message": "找到目标：返回 mid=4 / Target found at mid=4",
+      "variables": {
+        "nums": [
+          1,
+          3,
+          5,
+          7,
+          9,
+          11,
+          13
+        ],
+        "target": 9,
+        "left": 4,
+        "right": 4,
+        "mid": 4,
+        "result": 4,
+        "found": true
+      },
+      "lessonStepId": "done",
+      "structure": {
+        "kind": "search",
+        "algorithm": "binary",
+        "operation": "binary-found",
+        "elements": [
+          {
+            "id": "p0",
+            "value": 1
+          },
+          {
+            "id": "p1",
+            "value": 3
+          },
+          {
+            "id": "p2",
+            "value": 5
+          },
+          {
+            "id": "p3",
+            "value": 7
+          },
+          {
+            "id": "p4",
+            "value": 9
+          },
+          {
+            "id": "p5",
+            "value": 11
+          },
+          {
+            "id": "p6",
+            "value": 13
+          }
+        ],
+        "target": 9,
+        "phase": "found",
+        "index": 4,
+        "left": 4,
+        "right": 4,
+        "mid": 4,
+        "checked": [],
+        "range": {
+          "low": 4,
+          "high": 4
+        },
+        "comparison": "equal",
+        "matched": true,
+        "result": 4,
+        "found": true,
+        "reason": null
+      }
+    }
+  ]
+}

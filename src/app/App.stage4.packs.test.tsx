@@ -1,4 +1,4 @@
-﻿import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { IDBFactory } from 'fake-indexeddb';
 import { ThemeProvider } from '../theme/ThemeProvider';
@@ -22,17 +22,17 @@ const frames = [
   { state: { type: 'array', values: [1, 3, 5], focus: [1] }, message: 'FRAME 1', line: 3, lessonStepId: 'compare' },
 ];
 
-/** A real `.algopack` archive targeting `binary` (which has no built-in course). */
-function packBytes(algorithmId = 'binary') {
+/** A real `.algopack` archive targeting `fib` (which has no built-in course). */
+function packBytes(algorithmId = 'fib') {
   const lesson = lessonFixture({
-    lessonId: 'binary-pack',
+    lessonId: 'fib-pack',
     algorithmId,
-    title: { zh: '二分查找（知识包）', en: 'Binary search (pack)' },
+    title: { zh: '斐波那契（知识包）', en: 'Fibonacci (pack)' },
   });
   const manifest = manifestFixture({
     packId: 'fixture-pack',
     lessons: ['lessons/pack-course.json'],
-    examples: [{ path: 'examples/pack-course.py', lessonId: 'binary-pack', language: 'python' }],
+    examples: [{ path: 'examples/pack-course.py', lessonId: 'fib-pack', language: 'python' }],
   });
   return zipOf(packFileSet({ lesson, manifest }));
 }
@@ -82,10 +82,10 @@ describe('Stage 4 — installed packs join the lab', () => {
     await importAndInstall(packFile());
     expect(screen.getByTestId('pack-version-fixture-pack').textContent).toContain('1.0.0');
 
-    fireEvent.click(screen.getByTestId('pack-open-binary'));
+    fireEvent.click(screen.getByTestId('pack-open-fib'));
     await waitFor(() => expect(screen.getByTestId('learn-view')).toBeTruthy());
     await waitFor(() =>
-      expect(screen.getByTestId('lesson-title').textContent).toContain('二分查找（知识包）'),
+      expect(screen.getByTestId('lesson-title').textContent).toContain('斐波那契（知识包）'),
     );
     expect(screen.getByTestId('lesson-origin').textContent).toContain('样例知识包');
     expect(screen.getByTestId('lesson-use-example')).toBeTruthy();
@@ -125,9 +125,9 @@ describe('Stage 4 — installed packs join the lab', () => {
     );
     const views = within(second.container);
     await waitFor(() => expect(views.getByTestId('pack-card-fixture-pack')).toBeTruthy());
-    fireEvent.click(views.getByTestId('pack-open-binary'));
+    fireEvent.click(views.getByTestId('pack-open-fib'));
     await waitFor(() =>
-      expect(views.getByTestId('lesson-title').textContent).toContain('二分查找（知识包）'),
+      expect(views.getByTestId('lesson-title').textContent).toContain('斐波那契（知识包）'),
     );
   });
 

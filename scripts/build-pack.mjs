@@ -1,7 +1,7 @@
 // Build an official `.algopack` from its source directory.
 //
 // Usage: node scripts/build-pack.mjs [sourceDir] [outFile]
-// Default: packs/src/algolens-search-basics → packs/algolens-search-basics.algopack
+// Default: packs/src/algolens-fib-basics → packs/algolens-fib-basics.algopack
 //
 // This only packs bytes; content rules are enforced by
 // `npm run pack -- <file>` (scripts/validate-pack.ts), which reuses the same
@@ -11,7 +11,7 @@ import { join, relative, sep } from 'node:path';
 import { zipSync, strToU8 } from 'fflate';
 
 const root = process.cwd();
-const sourceDir = process.argv[2] ?? join('packs', 'src', 'algolens-search-basics');
+const sourceDir = process.argv[2] ?? join('packs', 'src', 'algolens-fib-basics');
 const outFile = process.argv[3] ?? join('packs', `${sourceDir.split(/[\\/]/).pop()}.algopack`);
 
 function walk(dir) {

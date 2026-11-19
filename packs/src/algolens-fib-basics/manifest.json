@@ -1,0 +1,26 @@
+{
+  "packFormatVersion": 1,
+  "packId": "algolens-fib-basics",
+  "version": "1.0.0",
+  "name": {
+    "zh": "递归入门：斐波那契",
+    "en": "Recursion basics: Fibonacci"
+  },
+  "description": {
+    "zh": "斐波那契递归的完整教学课程：读取 n、判断递归基、展开两个子调用、合并结果并返回。附带一份可在浏览器中运行的 Python 教学示例。",
+    "en": "A complete Fibonacci recursion course: read n, test the base case, expand two sub-calls, combine the results and return. Ships a Python teaching example that runs in the browser."
+  },
+  "author": "AlgoViz",
+  "license": "MIT",
+  "requiredTraceSchema": 1,
+  "lessons": [
+    "lessons/fibonacci.json"
+  ],
+  "examples": [
+    {
+      "path": "examples/fibonacci.py",
+      "lessonId": "fibonacci-basics",
+      "language": "python"
+    }
+  ]
+}

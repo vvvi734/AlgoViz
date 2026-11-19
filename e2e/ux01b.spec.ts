@@ -161,8 +161,9 @@ test.describe('UX-01B — compact guide hierarchy', () => {
     await page.selectOption('[data-testid="theme-select"]', 'system');
     await expectNoPageOverflow(page);
 
-    // A catalog-only algorithm stays short, safe and free of empty stage cards.
-    await selectAlgorithm(page, 'binary', 'search');
+    // A catalog-only algorithm (`fib` has no built-in lesson) stays short, safe
+    // and free of empty stage cards.
+    await selectAlgorithm(page, 'fib', 'recursion');
     await expect(page.locator('[data-testid="algorithm-guide"]')).toHaveAttribute('data-source', 'catalog');
     await expect(page.locator('[data-testid="guide-no-steps"]')).toBeVisible();
     await expect(page.locator('[data-testid="guide-catalog-note"]')).toBeVisible();

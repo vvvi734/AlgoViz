@@ -42,7 +42,7 @@ function renderApp() {
 }
 
 function sessionFile(origin: SessionLessonOrigin = { kind: 'builtin' }) {
-  const lesson = origin.kind === 'pack' ? lessonFixture({ lessonId: 'binary-pack', algorithmId: 'binary' }) : bubbleSortLesson;
+  const lesson = origin.kind === 'pack' ? lessonFixture({ lessonId: 'binary-pack', algorithmId: 'fib' }) : bubbleSortLesson;
   const built = buildLearningSession({
     lesson,
     locale: 'zh',

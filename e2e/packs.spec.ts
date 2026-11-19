@@ -9,16 +9,16 @@ import { expect, openAdvancedPanels, openCodePanel, openLessonStepNav, selectAlg
  * come from real frames, not from a scripted trace.
  */
 
-const PACK_FILE = path.resolve('packs', 'algolens-search-basics.algopack');
+const PACK_FILE = path.resolve('packs', 'algolens-fib-basics.algopack');
 
 async function importOfficialPack(page: Page) {
   await page.click('[data-testid="nav-packs"]');
   await page.setInputFiles('[data-testid="pack-file-input"]', PACK_FILE);
   await expect(page.locator('[data-testid="pack-preview"]')).toBeVisible();
-  await expect(page.locator('[data-testid="pack-preview-name"]')).toContainText('查找算法入门');
-  await expect(page.locator('[data-testid="pack-preview-lesson-binary-search-basics"]')).toBeVisible();
+  await expect(page.locator('[data-testid="pack-preview-name"]')).toContainText('递归入门：斐波那契');
+  await expect(page.locator('[data-testid="pack-preview-lesson-fibonacci-basics"]')).toBeVisible();
   await page.click('[data-testid="pack-preview-confirm"]');
-  await expect(page.locator('[data-testid="pack-card-algolens-search-basics"]')).toBeVisible();
+  await expect(page.locator('[data-testid="pack-card-algolens-fib-basics"]')).toBeVisible();
 }
 
 test.describe('Stage 4 — official .algopack installs, survives reload and uninstalls', () => {
@@ -27,36 +27,36 @@ test.describe('Stage 4 — official .algopack installs, survives reload and unin
     await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
 
     await importOfficialPack(page);
-    await expect(page.locator('[data-testid="pack-version-algolens-search-basics"]')).toContainText('1.0.0');
-    await expect(page.locator('[data-testid="pack-card-algolens-search-basics"]')).toContainText('MIT');
+    await expect(page.locator('[data-testid="pack-version-algolens-fib-basics"]')).toContainText('1.0.0');
+    await expect(page.locator('[data-testid="pack-card-algolens-fib-basics"]')).toContainText('MIT');
 
-    // The installed course joins the existing catalog for `binary`.
-    await page.click('[data-testid="pack-open-binary"]');
-    await expect(page.locator('[data-testid="lesson-title"]')).toContainText('二分查找');
+    // The installed course joins the existing catalog for `fib`.
+    await page.click('[data-testid="pack-open-fib"]');
+    await expect(page.locator('[data-testid="lesson-title"]')).toContainText('斐波那契');
     await expect(page.locator('[data-testid="lesson-origin"]')).toBeVisible();
     await expect(page.locator('[data-testid="lesson-use-example"]')).toBeVisible();
     await openLessonStepNav(page);
-    await expect(page.locator('[data-testid="lesson-step-found"]')).toBeVisible();
+    await expect(page.locator('[data-testid="lesson-step-combine"]')).toBeVisible();
 
     // Reload: IndexedDB keeps the pack, so the course must come back.
     await page.reload();
     await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
     await page.click('[data-testid="nav-packs"]');
-    await expect(page.locator('[data-testid="pack-card-algolens-search-basics"]')).toBeVisible();
+    await expect(page.locator('[data-testid="pack-card-algolens-fib-basics"]')).toBeVisible();
 
-    await page.click('[data-testid="pack-open-binary"]');
-    await expect(page.locator('[data-testid="lesson-title"]')).toContainText('二分查找');
+    await page.click('[data-testid="pack-open-fib"]');
+    await expect(page.locator('[data-testid="lesson-title"]')).toContainText('斐波那契');
     await openLessonStepNav(page);
-    await expect(page.locator('[data-testid="lesson-step-narrow"]')).toBeVisible();
+    await expect(page.locator('[data-testid="lesson-step-combine"]')).toBeVisible();
 
     // Uninstall removes the pack course and leaves the built-in courses alone.
     await page.click('[data-testid="nav-packs"]');
-    await page.click('[data-testid="pack-uninstall-algolens-search-basics"]');
-    await page.click('[data-testid="pack-uninstall-yes-algolens-search-basics"]');
+    await page.click('[data-testid="pack-uninstall-algolens-fib-basics"]');
+    await page.click('[data-testid="pack-uninstall-yes-algolens-fib-basics"]');
     await expect(page.locator('[data-testid="pack-empty"]')).toBeVisible();
-    await expect(page.locator('[data-testid="pack-card-algolens-search-basics"]')).toHaveCount(0);
+    await expect(page.locator('[data-testid="pack-card-algolens-fib-basics"]')).toHaveCount(0);
 
-    // Binary falls back to the explicit "no course" state…
+    // Fib falls back to the explicit "no course" state…
     await page.click('[data-testid="nav-learn"]');
     await expect(page.locator('[data-testid="lesson-no-lesson"]')).toBeVisible();
     // …while the built-in bubble sort course still renders.
@@ -71,7 +71,7 @@ test.describe('Stage 4 — pack Python example produces a real trace', () => {
     await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
 
     await importOfficialPack(page);
-    await page.click('[data-testid="pack-open-binary"]');
+    await page.click('[data-testid="pack-open-fib"]');
 
     // Loading the example only fills the editor: it must not run anything.
     await page.click('[data-testid="lesson-use-example"]');
@@ -88,17 +88,17 @@ test.describe('Stage 4 — pack Python example produces a real trace', () => {
     );
     await openAdvancedPanels(page);
     await page.click('[data-testid="workspace-tab-state"]');
-    await expect(page.locator('[data-testid="variables-watch"]')).toContainText('target');
+    await expect(page.locator('[data-testid="variables-watch"]')).toContainText('n');
 
-    // Lesson → timeline: a `found` stage exists only in the real trace.
+    // Lesson → timeline: a `combine` stage exists only in the real trace.
     await openLessonStepNav(page);
-    await page.click('[data-testid="lesson-step-found"]');
-    await expect(page.locator('[data-testid="lesson-active-step"]')).toHaveAttribute('data-step-id', 'found');
+    await page.click('[data-testid="lesson-step-combine"]');
+    await expect(page.locator('[data-testid="lesson-active-step"]')).toHaveAttribute('data-step-id', 'combine');
     await expect(page.locator('.algolens-active-line')).toHaveCount(1);
 
-    // The example runs a second search that misses, so `missing` closes the trace.
+    // The example computes fib(n) all the way to the final `done` frame.
     const last = await page.locator('[data-testid="scrub"]').evaluate((el) => (el as HTMLInputElement).max);
     await page.locator('[data-testid="scrub"]').fill(String(last));
-    await expect(page.locator('[data-testid="lesson-active-step"]')).toHaveAttribute('data-step-id', 'missing');
+    await expect(page.locator('[data-testid="lesson-active-step"]')).toHaveAttribute('data-step-id', 'done');
   });
 });

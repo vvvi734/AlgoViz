@@ -16,14 +16,14 @@
 ## 2. 目录结构
 
 ```
-algolens-search-basics.algopack
+algolens-fib-basics.algopack
 ├── manifest.json          # 必需
 ├── LICENSE                # 必需（非空）
 ├── README.md              # 可选（给作者/审阅者看，不进 UI）
 ├── lessons/
-│   └── binary-search.json # 1..20 个，必需至少 1 个
+│   └── fibonacci.json # 1..20 个，必需至少 1 个
 └── examples/
-    └── binary-search.py   # 0..20 个，可选，惰性文本
+    └── fibonacci.py   # 0..20 个，可选，惰性文本
 ```
 
 路径白名单是**精确形状匹配**，不存在“其它文件随便放”的分支（`src/domain/packs/paths.ts`）：
@@ -43,16 +43,16 @@ algolens-search-basics.algopack
 ```json
 {
   "packFormatVersion": 1,
-  "packId": "algolens-search-basics",
+  "packId": "algolens-fib-basics",
   "version": "1.0.0",
-  "name": { "zh": "查找算法入门", "en": "Search basics" },
+  "name": { "zh": "递归入门：斐波那契", "en": "Recursion basics: Fibonacci" },
   "description": { "zh": "……", "en": "……" },
   "author": "AlgoViz",
   "license": "MIT",
   "requiredTraceSchema": 1,
-  "lessons": ["lessons/binary-search.json"],
+  "lessons": ["lessons/fibonacci.json"],
   "examples": [
-    { "path": "examples/binary-search.py", "lessonId": "binary-search-basics", "language": "python" }
+    { "path": "examples/fibonacci.py", "lessonId": "fibonacci-basics", "language": "python" }
   ]
 }
 ```

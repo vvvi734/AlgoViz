@@ -22,6 +22,7 @@ import {
 import { buildHeapModel, type HeapVisualModel } from './heapModel';
 import { buildHuffmanModel, type HuffmanVisualModel } from './huffmanModel';
 import { buildSortingModel, type SortingVisualModel } from './sortingModel';
+import { buildSearchModel, type SearchVisualModel } from './searchModel';
 
 /**
  * Pure mapping from a trace state to a renderable model. React components only
@@ -80,6 +81,7 @@ export type VisualModel =
   | HeapVisualModel
   | HuffmanVisualModel
   | SortingVisualModel
+  | SearchVisualModel
   | GraphVisualModel
   | FloydVisualModel
   | BellmanVisualModel
@@ -243,6 +245,13 @@ export function buildVisualModel(
   const s = state as TraceState;
   const kind = s.type || 'array';
   const focus = asFocusSet(s);
+
+  if (structure !== undefined && structure.kind === 'search') {
+    if (kind !== 'array') return { kind: 'raw', text: labels.invalid };
+    const model = buildSearchModel(structure, s);
+    if (!model) return { kind: 'raw', text: labels.invalid };
+    return model;
+  }
 
   if (structure !== undefined && structure.kind === 'sorting') {
     if (kind !== 'array') return { kind: 'raw', text: labels.invalid };

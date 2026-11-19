@@ -1,0 +1,124 @@
+{
+  "lessonId": "fibonacci-basics",
+  "algorithmId": "fib",
+  "contentVersion": "1.0.0",
+  "title": {
+    "zh": "斐波那契递归：把问题拆成两个子问题",
+    "en": "Fibonacci recursion: split into two sub-problems"
+  },
+  "oneLiner": {
+    "zh": "用递归计算斐波那契数列：先判断递归基，再把 fib(n) 拆成 fib(n-1) 与 fib(n-2)。",
+    "en": "Compute Fibonacci recursively: test the base case, then split fib(n) into fib(n-1) and fib(n-2)."
+  },
+  "overview": {
+    "zh": "斐波那契数列满足 F(0)=0、F(1)=1，之后每一项等于前两项之和。递归写法直接把这个定义翻译成代码：先判断参数是否已经落在递归基，否则分别计算两个更小的子问题，再把两个返回值相加。",
+    "en": "Fibonacci satisfies F(0)=0, F(1)=1, and every later term is the sum of the previous two. The recursive version translates that definition directly: test whether the argument has reached the base case, otherwise compute two smaller sub-problems and add their results."
+  },
+  "intuition": {
+    "zh": "递归函数只处理当前这一层：n 小于等于 1 时直接返回 n；否则把 fib(n-1) 和 fib(n-2) 交给同一函数继续计算。等两个子调用都返回后，当前层只负责把它们相加。",
+    "en": "A recursive function only handles its own level: when n is at most 1 it returns n directly; otherwise it delegates fib(n-1) and fib(n-2) to the same function. Once both sub-calls return, the current level only adds them."
+  },
+  "prerequisites": {
+    "zh": ["函数调用与返回值", "递归基", "调用栈"],
+    "en": ["Function calls and return values", "Base case", "Call stack"]
+  },
+  "complexity": {
+    "time": "O(2ⁿ)",
+    "space": "O(n)",
+    "note": {
+      "zh": "每个非基例都会展开两个子调用，调用树呈指数增长；递归深度最多为 n，因此调用栈占用 O(n)。使用记忆化可以把时间降到 O(n)。",
+      "en": "Every non-base call expands into two sub-calls, so the call tree grows exponentially; the recursion depth is at most n, so the call stack uses O(n). Memoisation reduces the time to O(n)."
+    }
+  },
+  "steps": [
+    {
+      "stepId": "init",
+      "title": {
+        "zh": "读取 n",
+        "en": "Read n"
+      },
+      "explanation": {
+        "zh": "从输入面板读出要计算的项数 n。n 是这一轮递归的最初参数，后续每一层都会收到更小的 n。",
+        "en": "Read the requested term n from the input panel. It is the initial argument of this recursion; every deeper level receives a smaller n."
+      },
+      "tip": {
+        "zh": "先确认 n 是非负整数，否则递归基与项数定义都会失去意义。",
+        "en": "Confirm that n is a non-negative integer; otherwise the base case and the term definition no longer make sense."
+      }
+    },
+    {
+      "stepId": "compare",
+      "title": {
+        "zh": "判断递归基",
+        "en": "Test the base case"
+      },
+      "explanation": {
+        "zh": "比较当前 n 与 1：n 小于等于 1 时直接返回 n，不再继续递归。这个判断保证递归一定会终止。",
+        "en": "Compare the current n with 1: when n is at most 1, return n immediately without recursing. This test guarantees termination."
+      },
+      "tip": {
+        "zh": "递归基必须覆盖所有终止输入，且要在递归调用之前判断。",
+        "en": "The base case must cover every terminating input and must be tested before the recursive calls."
+      }
+    },
+    {
+      "stepId": "recurse",
+      "title": {
+        "zh": "展开两个子调用",
+        "en": "Expand two sub-calls"
+      },
+      "explanation": {
+        "zh": "当前层分别调用 fib(n-1) 与 fib(n-2)。两个子调用会压入新的栈帧，各自继续判断递归基并向下展开。",
+        "en": "The current level calls fib(n-1) and fib(n-2). Each sub-call pushes a new stack frame and continues testing its own base case."
+      },
+      "tip": {
+        "zh": "两个子调用是依次执行的；不要误以为它们同时运行或共享同一个局部变量 n。",
+        "en": "The two sub-calls run one after the other; they do not run simultaneously or share the same local n."
+      }
+    },
+    {
+      "stepId": "combine",
+      "title": {
+        "zh": "合并子结果",
+        "en": "Combine the results"
+      },
+      "explanation": {
+        "zh": "两个子调用都返回后，当前层把 fib(n-1) 与 fib(n-2) 相加，得到 fib(n)，再返回给上一层。",
+        "en": "After both sub-calls return, the current level adds fib(n-1) and fib(n-2) to obtain fib(n) and returns it to its caller."
+      },
+      "tip": {
+        "zh": "当前层不重复计算子问题，只负责接收两个返回值并相加。",
+        "en": "The current level does not recompute the sub-problems; it only receives two return values and adds them."
+      }
+    },
+    {
+      "stepId": "done",
+      "title": {
+        "zh": "返回最终结果",
+        "en": "Return the final result"
+      },
+      "explanation": {
+        "zh": "最外层调用返回后，斐波那契的第 n 项计算完成，递归过程结束。",
+        "en": "When the outermost call returns, the n-th Fibonacci term is complete and the recursion ends."
+      },
+      "tip": {
+        "zh": "朴素递归会重复计算大量相同子问题；数据规模变大时应使用记忆化或迭代写法。",
+        "en": "Naive recursion recomputes many identical sub-problems; for larger inputs use memoisation or an iterative version."
+      }
+    }
+  ],
+  "commonMistakes": {
+    "zh": [
+      "漏写递归基或把递归基写错，导致无限递归。",
+      "在递归调用之前没有判断终止条件，栈帧不断累积。",
+      "把两个子调用写成只调用一个，得到错误结果。",
+      "认为朴素递归是 O(n)；实际上调用树会指数级展开。"
+    ],
+    "en": [
+      "Omitting or miswriting the base case, which causes infinite recursion.",
+      "Testing the termination condition after the recursive calls, so frames keep accumulating.",
+      "Calling only one of the two sub-problems, which produces the wrong value.",
+      "Assuming naive recursion is O(n); its call tree actually grows exponentially."
+    ]
+  }
+}

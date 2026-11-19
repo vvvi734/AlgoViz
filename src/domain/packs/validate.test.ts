@@ -25,7 +25,7 @@ describe('pack content validation', () => {
     const preview = result.value;
     expect(preview.manifest.packId).toBe('fixture-pack');
     expect(preview.lessons).toHaveLength(1);
-    expect(preview.lessons[0].algorithmId).toBe('binary');
+    expect(preview.lessons[0].algorithmId).toBe('fib');
     expect(preview.examples).toHaveLength(1);
     expect(preview.examples[0].lessonId).toBe('pack-course');
     expect(preview.totals.lessonCount).toBe(1);
@@ -79,7 +79,7 @@ describe('pack content validation', () => {
 
   it('rejects two courses for the same algorithm inside one pack', () => {
     const files = packFileSet();
-    const second = lessonFixture({ lessonId: 'pack-course-2', algorithmId: 'binary' });
+    const second = lessonFixture({ lessonId: 'pack-course-2', algorithmId: 'fib' });
     files['lessons/second.json'] = JSON.stringify(second);
     const manifest = manifestFixture({ lessons: ['lessons/pack-course.json', 'lessons/second.json'] });
     const result = run({ ...files, 'manifest.json': JSON.stringify(manifest) });
@@ -89,7 +89,7 @@ describe('pack content validation', () => {
   });
 
   it('rejects duplicate lesson ids', () => {
-    const files = packFileSet({ lesson: lessonFixture({ algorithmId: 'linear', lessonId: 'pack-course' }) });
+    const files = packFileSet({ lesson: lessonFixture({ algorithmId: 'fib', lessonId: 'pack-course' }) });
     const duplicated = { ...files, 'lessons/second.json': files['lessons/pack-course.json'] };
     const manifest = manifestFixture({ lessons: ['lessons/pack-course.json', 'lessons/second.json'] });
     const result = run({ ...duplicated, 'manifest.json': JSON.stringify(manifest) });
@@ -146,7 +146,7 @@ describe('pack content validation', () => {
 
   it('rejects an example whose lesson is claimed by another installed pack', () => {
     const result = run(packFileSet(), {
-      installed: [{ packId: 'other-pack', version: '1.0.0', algorithmIds: ['binary'] }],
+      installed: [{ packId: 'other-pack', version: '1.0.0', algorithmIds: ['fib'] }],
     });
     expect(result.ok).toBe(false);
     if (result.ok) return;
@@ -165,7 +165,7 @@ describe('pack content validation', () => {
 
   it('marks an older installed version as a replacement', () => {
     const result = run(packFileSet(), {
-      installed: [{ packId: 'fixture-pack', version: '0.9.0', algorithmIds: ['binary'] }],
+      installed: [{ packId: 'fixture-pack', version: '0.9.0', algorithmIds: ['fib'] }],
     });
     expect(result.ok).toBe(true);
     if (!result.ok) return;
@@ -173,7 +173,7 @@ describe('pack content validation', () => {
   });
 
   it('accepts a lesson for an algorithm without a built-in course', () => {
-    const result = run(packFileSet({ lesson: lessonFixture({ algorithmId: 'linear' }) }));
+    const result = run(packFileSet({ lesson: lessonFixture({ algorithmId: 'fib' }) }));
     expect(result.ok).toBe(true);
   });
 });

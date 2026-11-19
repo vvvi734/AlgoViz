@@ -26,7 +26,7 @@ function installedPack(): InstalledPack {
       lessons: ['lessons/pack-course.json'],
     },
     installedAt: 1_700_000_000_000,
-    lessons: [{ ...bubbleSortLesson, lessonId: 'pack-course', algorithmId: 'binary' }],
+    lessons: [{ ...bubbleSortLesson, lessonId: 'pack-course', algorithmId: 'fib' }],
     examples: [
       {
         lessonId: 'pack-course',
@@ -136,8 +136,8 @@ describe('PacksView', () => {
     const card = screen.getByTestId('pack-card-fixture-pack');
     expect(card.textContent).toContain('样例知识包');
     expect(card.textContent).toContain('v1.0.0');
-    fireEvent.click(screen.getByTestId('pack-open-binary'));
-    expect(onOpenCourse).toHaveBeenCalledWith('binary');
+    fireEvent.click(screen.getByTestId('pack-open-fib'));
+    expect(onOpenCourse).toHaveBeenCalledWith('fib');
   });
 
   it('asks for confirmation before uninstalling', () => {

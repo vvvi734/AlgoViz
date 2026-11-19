@@ -2,8 +2,8 @@
  * Pack fixtures for tests.
  *
  * They reuse the real built-in lesson content so a fixture is schema-valid by
- * construction, then re-target it at `binary` — the algorithm the official
- * example pack uses.
+ * construction, then re-target it at `fib` — the only catalog algorithm that
+ * still has no built-in course, so a pack is allowed to supply one.
  */
 import { zipSync } from 'fflate';
 import { bubbleSortLesson } from '../domain/lessons/bubbleSort';
@@ -13,7 +13,7 @@ export function lessonFixture(overrides: Partial<Lesson> = {}): Lesson {
   return {
     ...bubbleSortLesson,
     lessonId: 'pack-course',
-    algorithmId: 'binary',
+    algorithmId: 'fib',
     ...overrides,
   };
 }

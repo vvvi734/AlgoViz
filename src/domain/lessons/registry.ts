@@ -31,6 +31,8 @@ import { topologicalSortLesson } from './topologicalSortLesson';
 import { criticalPathLesson } from './criticalPathLesson';
 import { connectedComponentsLesson } from './connectedComponentsLesson';
 import { stronglyConnectedComponentsLesson } from './stronglyConnectedComponentsLesson';
+import { linearSearchLesson } from './linearSearchLesson';
+import { binarySearchLesson } from './binarySearchLesson';
 import { validateLessonSet } from './schema';
 import type { Lesson, LessonValidationResult } from './types';
 
@@ -90,6 +92,8 @@ const BUNDLED: unknown[] = [
   criticalPathLesson,
   connectedComponentsLesson,
   stronglyConnectedComponentsLesson,
+  linearSearchLesson,
+  binarySearchLesson,
 ];
 
 /** Courses shipped with the app itself (bubble, factorial, stack, queue, linked-list, binary-tree). */

@@ -96,10 +96,10 @@ test.describe('UI-02 visual evidence', () => {
     await shot(page, 'dijkstra-done-1440-light-firstscreen', false);
     await shot(page, 'dijkstra-done-1440-light');
 
-    // No-course example in the same right rail, after the binary-search run
-    // replaces the Dijkstra trace. The search chapter opens automatically.
-    await chooseAlgorithm(page, 'binary');
-    await expect(page.locator('[data-testid="lab-title"]')).toContainText('二分查找');
+    // No-course example in the same right rail, after the Fibonacci run
+    // replaces the Dijkstra trace. `fib` intentionally has no built-in lesson.
+    await chooseAlgorithm(page, 'fib');
+    await expect(page.locator('[data-testid="lab-title"]')).toContainText('斐波那契');
     await expect(page.locator('[data-testid="lesson-no-lesson"]')).toBeVisible();
     await expect(page.locator('[data-testid="current-step"]')).toHaveCount(0);
     await expect(page.locator('[data-testid="graph-visual"]')).toHaveCount(0, { timeout: 30_000 });

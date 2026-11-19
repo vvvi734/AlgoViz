@@ -5704,9 +5704,349 @@ export const sortingSnapshotSchema = z
   });
 export type SortingSnapshot = z.infer<typeof sortingSnapshotSchema>;
 
-/** Stage 7B stack/queue + Stage 7C linked-list + Stage 7D binary-tree + T1 BST + T2 AVL + T3 max-heap + T4 Huffman + S1/S2 sorting + Stage 7E/7F/G1/G2/G3/G4 graphs. */
+/* -------------------------------------------------------------------------
+ * F1: sequential and binary search.
+ *
+ * A search frame is not a sorting frame with extra highlights. It records the
+ * target, the current/indexed position, the live inclusive search range and the
+ * comparison that really happened. Binary search boundaries come from Python;
+ * the renderer derives excluded cells only from `left`/`right`, never from a
+ * frame counter.
+ * ------------------------------------------------------------------------- */
+export const SEARCH_ALGORITHMS = ['linear', 'binary'] as const;
+export type SearchAlgorithm = (typeof SEARCH_ALGORITHMS)[number];
+
+export const SEARCH_OPERATIONS = [
+  'init',
+  'scan-start',
+  'scan-compare',
+  'scan-next',
+  'found',
+  'not-found',
+  'binary-init',
+  'binary-mid',
+  'binary-compare',
+  'binary-exclude-right',
+  'binary-exclude-left',
+  'binary-found',
+  'binary-not-found',
+  'invalid',
+] as const;
+export type SearchOperation = (typeof SEARCH_OPERATIONS)[number];
+
+export const SEARCH_PHASES = ['init', 'scan', 'compare', 'narrow', 'found', 'failed', 'invalid'] as const;
+export type SearchPhase = (typeof SEARCH_PHASES)[number];
+
+const SEARCH_OPS_BY_ALGORITHM: Record<SearchAlgorithm, readonly SearchOperation[]> = {
+  linear: ['init', 'scan-start', 'scan-compare', 'scan-next', 'found', 'not-found'],
+  binary: [
+    'init',
+    'binary-init',
+    'binary-mid',
+    'binary-compare',
+    'binary-exclude-right',
+    'binary-exclude-left',
+    'binary-found',
+    'binary-not-found',
+    'invalid',
+  ],
+};
+
+const SEARCH_PHASE_BY_OPERATION: Record<SearchOperation, SearchPhase> = {
+  init: 'init',
+  'scan-start': 'scan',
+  'scan-compare': 'compare',
+  'scan-next': 'scan',
+  found: 'found',
+  'not-found': 'failed',
+  'binary-init': 'init',
+  'binary-mid': 'scan',
+  'binary-compare': 'compare',
+  'binary-exclude-right': 'narrow',
+  'binary-exclude-left': 'narrow',
+  'binary-found': 'found',
+  'binary-not-found': 'failed',
+  invalid: 'invalid',
+};
+
+export const SEARCH_LIMITS = {
+  MAX_VALUES: 32,
+  MAX_ABS_VALUE: 1_000_000_000_000,
+} as const;
+
+export const searchElementSchema = z.object({
+  id: z.string().regex(/^p\d+$/, 'search ids must be p0, p1, ...'),
+  value: z.number().finite().min(-SEARCH_LIMITS.MAX_ABS_VALUE).max(SEARCH_LIMITS.MAX_ABS_VALUE),
+});
+export type SearchElement = z.infer<typeof searchElementSchema>;
+
+export const searchRangeSchema = z.object({
+  low: z.number().int().nonnegative().max(SEARCH_LIMITS.MAX_VALUES - 1),
+  high: z.number().int().min(-1).max(SEARCH_LIMITS.MAX_VALUES - 1),
+});
+export type SearchRange = z.infer<typeof searchRangeSchema>;
+
+export const searchComparisonSchema = z.enum(['equal', 'less', 'greater']);
+export type SearchComparison = z.infer<typeof searchComparisonSchema>;
+
+export const searchSnapshotSchema = z
+  .object({
+    kind: z.literal('search'),
+    algorithm: z.enum(SEARCH_ALGORITHMS),
+    operation: z.enum(SEARCH_OPERATIONS),
+    elements: z.array(searchElementSchema).max(SEARCH_LIMITS.MAX_VALUES),
+    target: z.number().finite().min(-SEARCH_LIMITS.MAX_ABS_VALUE).max(SEARCH_LIMITS.MAX_ABS_VALUE),
+    phase: z.enum(SEARCH_PHASES),
+    index: z.number().int().nonnegative().max(SEARCH_LIMITS.MAX_VALUES - 1).nullable().default(null),
+    left: z.number().int().nonnegative().max(SEARCH_LIMITS.MAX_VALUES).nullable().default(null),
+    right: z.number().int().min(-1).max(SEARCH_LIMITS.MAX_VALUES - 1).nullable().default(null),
+    mid: z.number().int().nonnegative().max(SEARCH_LIMITS.MAX_VALUES - 1).nullable().default(null),
+    checked: z
+      .array(z.number().int().nonnegative().max(SEARCH_LIMITS.MAX_VALUES - 1))
+      .max(SEARCH_LIMITS.MAX_VALUES)
+      .default([]),
+    range: searchRangeSchema.nullable().default(null),
+    comparison: searchComparisonSchema.nullable().default(null),
+    matched: z.boolean().nullable().default(null),
+    result: z.number().int().min(-1).max(SEARCH_LIMITS.MAX_VALUES - 1).nullable().default(null),
+    found: z.boolean().nullable().default(null),
+    reason: z.enum(['unsorted']).nullable().default(null),
+  })
+  .superRefine((snapshot, ctx) => {
+    const add = (path: (string | number)[], message: string) =>
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path, message });
+    const n = snapshot.elements.length;
+    const values = snapshot.elements.map((element) => element.value);
+
+    if (!SEARCH_OPS_BY_ALGORITHM[snapshot.algorithm].includes(snapshot.operation)) {
+      add(['operation'], `operation "${snapshot.operation}" is not valid for ${snapshot.algorithm}`);
+    }
+    if (snapshot.phase !== SEARCH_PHASE_BY_OPERATION[snapshot.operation]) {
+      add(['phase'], `phase "${snapshot.phase}" does not match operation "${snapshot.operation}"`);
+    }
+    snapshot.elements.forEach((element, index) => {
+      if (element.id !== `p${index}`) add(['elements', index, 'id'], 'search ids must be p0..p(n-1) in order');
+    });
+
+    const validIndex = (value: number | null) => value === null || (value >= 0 && value < n);
+    if (!validIndex(snapshot.index)) add(['index'], 'index must be a real array index or null');
+    if (snapshot.result !== null && (snapshot.result < -1 || snapshot.result >= n)) {
+      add(['result'], 'result must be -1, null or a real array index');
+    }
+    const checkedOk =
+      snapshot.checked.every((value) => value >= 0 && value < n) &&
+      new Set(snapshot.checked).size === snapshot.checked.length &&
+      snapshot.checked.every((value, index) => index === 0 || value > snapshot.checked[index - 1]!);
+    if (!checkedOk) add(['checked'], 'checked must be unique, increasing real indices');
+    const rangeOk =
+      snapshot.range === null ||
+      (snapshot.range.low <= snapshot.range.high &&
+        snapshot.range.low >= 0 &&
+        snapshot.range.high >= 0 &&
+        snapshot.range.high < n);
+    if (!rangeOk) add(['range'], 'range must be a non-empty inclusive range or null');
+
+    const checkedPrefix = (length: number) =>
+      snapshot.checked.length === length && snapshot.checked.every((value, index) => value === index);
+    const rangeEquals = (low: number, high: number) =>
+      snapshot.range !== null && snapshot.range.low === low && snapshot.range.high === high;
+    const isAscending = values.every((value, index) => index === 0 || values[index - 1]! <= value);
+
+    if (snapshot.algorithm === 'linear') {
+      if (snapshot.left !== null || snapshot.right !== null || snapshot.mid !== null) {
+        add(['left'], 'linear search has no binary boundaries');
+      }
+      if (snapshot.range !== null) add(['range'], 'linear search has no binary range');
+      if (snapshot.reason !== null) add(['reason'], 'linear search has no invalid reason');
+      if (snapshot.comparison !== null) add(['comparison'], 'linear search reports equality only');
+      switch (snapshot.operation) {
+        case 'init':
+          if (snapshot.index !== null || snapshot.result !== null || snapshot.found !== null || snapshot.matched !== null) {
+            add(['operation'], 'init carries no index, result or match');
+          }
+          if (!checkedPrefix(0)) add(['checked'], 'init has checked nothing');
+          break;
+        case 'scan-start':
+          if (n === 0 || snapshot.index !== 0) add(['index'], 'scan-start begins at index 0 of a non-empty array');
+          if (!checkedPrefix(0)) add(['checked'], 'scan-start has checked nothing');
+          if (snapshot.result !== null || snapshot.found !== null || snapshot.matched !== null) {
+            add(['operation'], 'scan-start is not terminal');
+          }
+          break;
+        case 'scan-compare':
+          if (n === 0 || snapshot.index === null) add(['index'], 'scan-compare needs a current index');
+          if (snapshot.index !== null && !checkedPrefix(snapshot.index)) {
+            add(['checked'], 'scan-compare has checked exactly the slots before the current index');
+          }
+          if (snapshot.index !== null) {
+            const equal = values[snapshot.index] === snapshot.target;
+            if (snapshot.matched !== equal) add(['matched'], 'matched must equal the real comparison');
+          }
+          if (snapshot.result !== null || snapshot.found !== null) add(['operation'], 'scan-compare is not terminal');
+          break;
+        case 'scan-next':
+          if (snapshot.index === null || snapshot.index <= 0 || snapshot.index >= n) {
+            add(['index'], 'scan-next advances to a real next index');
+          }
+          if (snapshot.index !== null && !checkedPrefix(snapshot.index)) {
+            add(['checked'], 'scan-next marks every slot before the next index checked');
+          }
+          if (snapshot.result !== null || snapshot.found !== null || snapshot.matched !== null) {
+            add(['operation'], 'scan-next is not terminal');
+          }
+          break;
+        case 'found':
+          if (snapshot.index === null || values[snapshot.index] !== snapshot.target) {
+            add(['index'], 'found must point at a real matching slot');
+          }
+          if (snapshot.result !== snapshot.index || snapshot.found !== true || snapshot.matched !== true) {
+            add(['result'], 'found must report the matching index and a true match');
+          }
+          if (snapshot.index !== null && !checkedPrefix(snapshot.index)) {
+            add(['checked'], 'found has checked exactly the slots before the match');
+          }
+          break;
+        case 'not-found':
+          if (snapshot.index !== null || snapshot.result !== -1 || snapshot.found !== false) {
+            add(['result'], 'not-found needs no index, result -1 and found false');
+          }
+          if (!checkedPrefix(n)) add(['checked'], 'not-found has checked every slot');
+          break;
+        default:
+          break;
+      }
+      return;
+    }
+
+    // Binary search: every non-invalid frame must have a sorted array.
+    if (n > 0 && !isAscending) {
+      if (snapshot.operation !== 'invalid') add(['elements'], 'binary search requires a nondecreasing array');
+    }
+    if (snapshot.checked.length > 0) add(['checked'], 'binary search does not report a checked prefix');
+
+    if (snapshot.operation === 'invalid') {
+      if (snapshot.reason !== 'unsorted') add(['reason'], 'invalid binary search must state why');
+      if (isAscending) add(['reason'], 'invalid is only emitted for an unsorted array');
+      if (
+        snapshot.left !== null ||
+        snapshot.right !== null ||
+        snapshot.mid !== null ||
+        snapshot.range !== null ||
+        snapshot.index !== null ||
+        snapshot.result !== null ||
+        snapshot.found !== null ||
+        snapshot.matched !== null ||
+        snapshot.comparison !== null
+      ) {
+        add(['operation'], 'invalid carries no search progress');
+      }
+      return;
+    }
+    if (snapshot.reason !== null) add(['reason'], 'reason is reserved for invalid input');
+    if (snapshot.left === null || snapshot.right === null) {
+      add(['left'], 'binary search needs both boundaries');
+      return;
+    }
+    const left = snapshot.left;
+    const right = snapshot.right;
+    const empty = left > right;
+
+    if (snapshot.operation === 'binary-init') {
+      if (left !== 0 || right !== n - 1) add(['right'], 'binary-init starts with the full [0, n-1] range');
+      if (n > 0 ? !rangeEquals(0, n - 1) : snapshot.range !== null) add(['range'], 'binary-init range must be the full array');
+      if (snapshot.mid !== null || snapshot.index !== null || snapshot.result !== null || snapshot.found !== null) {
+        add(['operation'], 'binary-init carries no midpoint or result');
+      }
+      if (snapshot.comparison !== null || snapshot.matched !== null) add(['comparison'], 'binary-init has not compared');
+    }
+
+    if (snapshot.operation === 'binary-not-found') {
+      if (left !== right + 1) add(['right'], 'binary-not-found ends with left == right + 1');
+      if (snapshot.range !== null) add(['range'], 'binary-not-found has no live range');
+      if (snapshot.mid !== null || snapshot.index !== null || snapshot.result !== -1 || snapshot.found !== false) {
+        add(['result'], 'binary-not-found reports an empty interval and result -1');
+      }
+      if (snapshot.comparison !== null || snapshot.matched !== null) add(['comparison'], 'binary-not-found has no comparison');
+    }
+
+    if (snapshot.operation === 'binary-mid' || snapshot.operation === 'binary-compare' || snapshot.operation === 'binary-found') {
+      if (empty) add(['right'], `${snapshot.operation} cannot run on an empty interval`);
+      if (!rangeEquals(left, right)) add(['range'], 'live binary range must equal [left, right]');
+      if (snapshot.mid === null || snapshot.mid < left || snapshot.mid > right) {
+        add(['mid'], 'mid must be inside the live interval');
+      } else if (snapshot.mid !== Math.floor((left + right) / 2)) {
+        add(['mid'], 'mid must be the real floor((left + right) / 2)');
+      }
+    }
+
+    if (snapshot.operation === 'binary-mid') {
+      if (snapshot.index !== null || snapshot.result !== null || snapshot.found !== null) {
+        add(['operation'], 'binary-mid carries no result');
+      }
+      if (snapshot.comparison !== null || snapshot.matched !== null) add(['comparison'], 'binary-mid has not compared');
+    }
+
+    if (snapshot.operation === 'binary-compare') {
+      if (snapshot.mid === null) return;
+      const value = values[snapshot.mid]!;
+      const expected = value === snapshot.target ? 'equal' : value < snapshot.target ? 'less' : 'greater';
+      if (snapshot.comparison !== expected) add(['comparison'], 'comparison must equal the real arr[mid] vs target relation');
+      if (snapshot.matched !== (expected === 'equal')) add(['matched'], 'matched must equal the real comparison');
+      if (snapshot.index !== null || snapshot.result !== null || snapshot.found !== null) {
+        add(['operation'], 'binary-compare is not terminal');
+      }
+    }
+
+    if (snapshot.operation === 'binary-exclude-right') {
+      if (snapshot.mid === null || snapshot.mid < left || snapshot.mid > right + 1) {
+        add(['mid'], 'exclude-right keeps the real inspected midpoint');
+      } else {
+        if (values[snapshot.mid]! <= snapshot.target) add(['mid'], 'exclude-right only removes a midpoint greater than target');
+        if (right !== snapshot.mid - 1) add(['right'], 'exclude-right must set right = mid - 1');
+        if (left > snapshot.mid) add(['left'], 'exclude-right leaves left at or before the inspected midpoint');
+      }
+      if (left <= right ? !rangeEquals(left, right) : snapshot.range !== null) {
+        add(['range'], 'exclude-right range must be the new live interval or null');
+      }
+      if (snapshot.index !== null || snapshot.result !== null || snapshot.found !== null) add(['operation'], 'exclude-right is not terminal');
+      if (snapshot.comparison !== 'greater' || snapshot.matched !== false) {
+        add(['comparison'], 'exclude-right records arr[mid] > target');
+      }
+    }
+
+    if (snapshot.operation === 'binary-exclude-left') {
+      if (snapshot.mid === null || left !== snapshot.mid + 1 || right < snapshot.mid) {
+        add(['left'], 'exclude-left must set left = mid + 1 with the inspected mid inside the old range');
+      } else {
+        if (values[snapshot.mid]! >= snapshot.target) add(['mid'], 'exclude-left only removes a midpoint smaller than target');
+      }
+      if (left <= right ? !rangeEquals(left, right) : snapshot.range !== null) {
+        add(['range'], 'exclude-left range must be the new live interval or null');
+      }
+      if (snapshot.index !== null || snapshot.result !== null || snapshot.found !== null) add(['operation'], 'exclude-left is not terminal');
+      if (snapshot.comparison !== 'less' || snapshot.matched !== false) {
+        add(['comparison'], 'exclude-left records arr[mid] < target');
+      }
+    }
+
+    if (snapshot.operation === 'binary-found') {
+      if (snapshot.mid === null || values[snapshot.mid] !== snapshot.target) {
+        add(['mid'], 'binary-found points at a real matching midpoint');
+      }
+      if (snapshot.index !== snapshot.mid || snapshot.result !== snapshot.mid || snapshot.found !== true) {
+        add(['result'], 'binary-found reports the matching midpoint');
+      }
+      if (snapshot.comparison !== 'equal' || snapshot.matched !== true) {
+        add(['comparison'], 'binary-found records equality');
+      }
+    }
+  });
+export type SearchSnapshot = z.infer<typeof searchSnapshotSchema>;
+
+/** Stage 7B stack/queue + Stage 7C linked-list + Stage 7D binary-tree + T1 BST + T2 AVL + T3 max-heap + T4 Huffman + S1/S2 sorting + F1 search + Stage 7E/7F/G1/G2/G3/G4 graphs. */
 export const structureSchema = z.union([
   sortingSnapshotSchema,
+  searchSnapshotSchema,
   huffmanSnapshotSchema,
   maxHeapSnapshotSchema,
   structureSnapshotSchema,

@@ -184,8 +184,8 @@ test.describe('UI-02 — left animation, right synchronized explanation', () => 
   test('E. an algorithm without a course shows the empty rail, not invented steps', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await openApp(page);
-    await selectAlgo(page, 'binary');
-    await expect(page.locator('[data-testid="lab-title"]')).toContainText('二分查找');
+    await selectAlgo(page, 'fib');
+    await expect(page.locator('[data-testid="lab-title"]')).toContainText('斐波那契');
     await expect(page.locator('[data-testid="visual-stage"]')).toBeVisible();
     await expect(page.locator('[data-testid="lesson-no-lesson"]')).toBeVisible();
     await expect(page.locator('[data-testid="current-step"]')).toHaveCount(0);

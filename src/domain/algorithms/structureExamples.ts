@@ -62,6 +62,7 @@ import {
   SHELL_DEFAULT_INPUT,
   SORTING_PYTHON,
 } from './sortingExamples';
+import { BINARY_DEFAULT_INPUT, BINARY_PYTHON, LINEAR_DEFAULT_INPUT, LINEAR_PYTHON } from './searchExamples';
 
 export const STACK_DEFAULT_INPUT: unknown = [
   ['push', 3],
@@ -192,6 +193,8 @@ const STRUCTURE_PYTHON: Record<string, string> = {
   shell: SORTING_PYTHON.shell,
   quick: SORTING_PYTHON.quick,
   merge: SORTING_PYTHON.merge,
+  linear: LINEAR_PYTHON,
+  binary: BINARY_PYTHON,
 };
 
 const STRUCTURE_INPUT: Record<string, unknown> = {
@@ -218,6 +221,8 @@ const STRUCTURE_INPUT: Record<string, unknown> = {
   shell: SHELL_DEFAULT_INPUT,
   quick: QUICK_DEFAULT_INPUT,
   merge: MERGE_DEFAULT_INPUT,
+  linear: LINEAR_DEFAULT_INPUT,
+  binary: BINARY_DEFAULT_INPUT,
 };
 
 export function structurePythonExample(algorithmId: string): string | undefined {

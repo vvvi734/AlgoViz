@@ -77,13 +77,13 @@ const frame: TraceEvent = {
   eventType: 'step',
   visualType: 'array',
   state: { type: 'array', values: [1, 3, 5, 7], focus: [1, 2] },
-  message: 'COMPARE 3 and 5',
+  message: 'TEST fib(5): compare with the base case',
   sourceLocation: { line: 9 },
   variables: [
-    { name: 'lo', type: 'int', value: 0 },
-    { name: 'hi', type: 'int', value: 3 },
+    { name: 'n', type: 'int', value: 5 },
+    { name: 'k', type: 'int', value: 3 },
   ],
-  callStack: [{ name: 'binary_search', frameId: 'f1', depth: 0, line: 9, status: 'running' }],
+  callStack: [{ name: 'fib', frameId: 'f1', depth: 0, line: 9, status: 'running' }],
   lessonStepId: 'compare',
 };
 
@@ -129,16 +129,16 @@ describe('course tools', () => {
 
   it('reads a real pack course from the configured directory', async () => {
     const { client } = await connect(config({ packDir: { path: PACK_DIR, source: 'cli' } }));
-    const list = await call(client, 'list_lessons', { query: 'binary' });
+    const list = await call(client, 'list_lessons', { query: 'fib' });
     const lessons = list.payload.lessons as Array<{ lessonId: string; source: { kind: string; packId?: string } }>;
     expect(lessons.length).toBeGreaterThan(0);
-    const binary = lessons.find((lesson) => lesson.lessonId === 'binary-search-basics');
-    expect(binary?.source).toMatchObject({ kind: 'pack', packId: 'algolens-search-basics' });
+    const foundLesson = lessons.find((lesson) => lesson.lessonId === 'fibonacci-basics');
+    expect(foundLesson?.source).toMatchObject({ kind: 'pack', packId: 'algolens-fib-basics' });
 
-    const lesson = await call(client, 'get_lesson', { lessonId: 'binary-search-basics', locale: 'en' });
+    const lesson = await call(client, 'get_lesson', { lessonId: 'fibonacci-basics', locale: 'en' });
     expect(lesson.isError).toBe(false);
     const steps = lesson.payload.steps as Array<{ stepId: string; title: string }>;
-    expect(steps.map((step) => step.stepId)).toEqual(['init', 'compare', 'narrow', 'found', 'missing']);
+    expect(steps.map((step) => step.stepId)).toEqual(['init', 'compare', 'recurse', 'combine', 'done']);
     expect(steps[1].title.length).toBeGreaterThan(0);
     expect((lesson.payload.commonMistakes as string[]).length).toBeGreaterThan(0);
   });
@@ -197,7 +197,7 @@ describe('untrusted pack content', () => {
 
     const prompt = await client.getPrompt({
       name: 'teach_algorithm',
-      arguments: { algorithmId: 'binary', lessonId: 'pack-course', level: '1' },
+      arguments: { algorithmId: 'fib', lessonId: 'pack-course', level: '1' },
     });
     const text = (prompt.messages[0].content as { text: string }).text;
     const dataBlock = text.slice(
@@ -232,9 +232,9 @@ describe('pack listing', () => {
       pythonExamples: number;
     }>;
     expect(packs).toHaveLength(1);
-    expect(packs[0].packId).toBe('algolens-search-basics');
+    expect(packs[0].packId).toBe('algolens-fib-basics');
     expect(packs[0].license).toBe('MIT');
-    expect(packs[0].lessons[0].lessonId).toBe('binary-search-basics');
+    expect(packs[0].lessons[0].lessonId).toBe('fibonacci-basics');
     expect(packs[0].pythonExamples).toBe(1);
   });
 });
@@ -274,12 +274,12 @@ describe('create_learning_session', () => {
       config({ packDir: { path: PACK_DIR, source: 'cli' }, sessionDir: { path: sessionDir, source: 'cli' } }),
     );
     const { payload } = await call(client, 'create_learning_session', {
-      lessonId: 'binary-search-basics',
+      lessonId: 'fibonacci-basics',
       includePythonExample: true,
     });
     expect(payload.lessonOrigin).toEqual({
       kind: 'pack',
-      packId: 'algolens-search-basics',
+      packId: 'algolens-fib-basics',
       version: '1.0.0',
     });
     const parsed = parseLearningSession(readFileSync(String(payload.file), 'utf8'));
@@ -323,8 +323,8 @@ describe('inspect_learning_context', () => {
   function writeContext(dir: string, overrides: { stepIndex?: number; source?: string } = {}): string {
     const built = buildLearningContext({
       locale: 'zh',
-      algorithmId: 'binary',
-      lessonId: 'binary-search-basics',
+      algorithmId: 'fib',
+      lessonId: 'fibonacci-basics',
       event: overrides.stepIndex == null ? frame : { ...frame, step: overrides.stepIndex },
       stepIndex: overrides.stepIndex ?? frame.step,
       totalEvents: 12,
@@ -332,7 +332,7 @@ describe('inspect_learning_context', () => {
       ...(overrides.source ? { source: overrides.source } : {}),
     });
     if (!built.ok) throw new Error('fixture invalid');
-    const path = join(dir, 'binary.algocontext.json');
+    const path = join(dir, 'fib.algocontext.json');
     writeFileSync(path, serializeLearningContext(built.value), 'utf8');
     return path;
   }
@@ -344,7 +344,7 @@ describe('inspect_learning_context', () => {
       config({ packDir: { path: PACK_DIR, source: 'cli' }, contextDir: { path: contextDir, source: 'cli' } }),
     );
     const { isError, payload } = await call(client, 'inspect_learning_context', {
-      file: 'binary.algocontext.json',
+      file: 'fib.algocontext.json',
     });
     expect(isError).toBe(false);
     const frameOut = payload.frame as {
@@ -352,9 +352,9 @@ describe('inspect_learning_context', () => {
       variables: Array<{ name: string; value: unknown }>;
       callStack: Array<{ name: string; depth: number | null }>;
     };
-    expect(frameOut.message).toBe('COMPARE 3 and 5');
-    expect(frameOut.variables.map((variable) => variable.name)).toEqual(['lo', 'hi']);
-    expect(frameOut.callStack[0]).toMatchObject({ name: 'binary_search', depth: 0 });
+    expect(frameOut.message).toBe('TEST fib(5): compare with the base case');
+    expect(frameOut.variables.map((variable) => variable.name)).toEqual(['n', 'k']);
+    expect(frameOut.callStack[0]).toMatchObject({ name: 'fib', depth: 0 });
     expect(payload.teaching).toMatchObject({ lessonStepId: 'compare', belongsToCourse: true });
     expect(payload.sourceIncluded).toBe(false);
     expect(String(payload.note)).toContain('Nothing was re-executed');
@@ -420,11 +420,11 @@ describe('teach_algorithm prompt', () => {
     const { client } = await connect(config({ packDir: { path: PACK_DIR, source: 'cli' } }));
     const level1 = await client.getPrompt({
       name: 'teach_algorithm',
-      arguments: { algorithmId: 'binary', lessonId: 'binary-search-basics', level: '1' },
+      arguments: { algorithmId: 'fib', lessonId: 'fibonacci-basics', level: '1' },
     });
     const level5 = await client.getPrompt({
       name: 'teach_algorithm',
-      arguments: { algorithmId: 'binary', lessonId: 'binary-search-basics', level: '5' },
+      arguments: { algorithmId: 'fib', lessonId: 'fibonacci-basics', level: '5' },
     });
     const text1 = (level1.messages[0].content as { text: string }).text;
     const text5 = (level5.messages[0].content as { text: string }).text;
@@ -440,8 +440,8 @@ describe('teach_algorithm prompt', () => {
     const contextDir = tempDir('prompt-context');
     const built = buildLearningContext({
       locale: 'zh',
-      algorithmId: 'bubble',
-      lessonId: 'bubble-sort-basics',
+      algorithmId: 'fib',
+      lessonId: 'fibonacci-basics',
       event: frame,
       stepIndex: frame.step,
       totalEvents: 12,
@@ -450,21 +450,24 @@ describe('teach_algorithm prompt', () => {
     if (!built.ok) throw new Error('fixture invalid');
     writeFileSync(join(contextDir, 'frame.algocontext.json'), serializeLearningContext(built.value), 'utf8');
 
-    const { client } = await connect(config({ contextDir: { path: contextDir, source: 'cli' } }));
+    const { client } = await connect(
+      config({ packDir: { path: PACK_DIR, source: 'cli' }, contextDir: { path: contextDir, source: 'cli' } }),
+    );
     const prompt = await client.getPrompt({
       name: 'teach_algorithm',
-      arguments: { algorithmId: 'bubble', lessonId: 'bubble-sort-basics', level: '3', contextFile: 'frame.algocontext.json' },
+      arguments: { algorithmId: 'fib', lessonId: 'fibonacci-basics', level: '3', contextFile: 'frame.algocontext.json' },
     });
     const text = (prompt.messages[0].content as { text: string }).text;
-    expect(text).toContain('COMPARE 3 and 5');
-    expect(text).toContain('lo=0');
-    expect(text).toContain('binary_search@0');
+    expect(text).toContain('TEST fib(5): compare with the base case');
+    expect(text).toContain('n=5');
+    expect(text).toContain('k=3');
+    expect(text).toContain('fib@0');
     expect(text).toContain('REAL FRAME EXPORTED BY THE USER');
   });
 
   it('says plainly when no course exists for the algorithm', async () => {
     const { client } = await connect(config());
-    const prompt = await client.getPrompt({ name: 'teach_algorithm', arguments: { algorithmId: 'binary' } });
+    const prompt = await client.getPrompt({ name: 'teach_algorithm', arguments: { algorithmId: 'fib' } });
     const text = (prompt.messages[0].content as { text: string }).text;
     expect(text).toContain('No AlgoLens course is available');
   });

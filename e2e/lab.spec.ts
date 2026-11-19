@@ -268,8 +268,8 @@ test.describe('Stage 3B — teaching steps synced with real Pyodide execution', 
  *
  * Uses only JavaScript presets, so this test needs no Pyodide download.
  */
-test.describe('Stage 3 fix — switching traces resets the timeline (JS, offline)', () => {
-  test('scrubbing the 25-frame bubble sort then switching to the 5-frame binary search lands on frame 1', async ({ page }) => {
+test.describe('Stage 3 fix — switching traces resets the timeline', () => {
+  test('scrubbing the 25-frame bubble sort then switching to the 10-frame binary search lands on frame 1', async ({ page }) => {
     await page.goto('/');
     await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
 
@@ -280,14 +280,15 @@ test.describe('Stage 3 fix — switching traces resets the timeline (JS, offline
     await page.locator('[data-testid="scrub"]').fill(String(last));
     await expect(page.locator('[data-testid="progress"]')).toHaveText('25 / 25');
 
-    // Binary search has 5 frames, so index 24 is out of range for it.
+    // F1 binary search runs the real 10-frame Python trace, so index 24 is
+    // out of range for it and the playhead must reset to frame 1.
     await chooseAlgorithm(page, 'binary');
-    await expect(page.locator('[data-testid="progress"]')).toHaveText('1 / 5');
+    await expect(page.locator('[data-testid="progress"]')).toHaveText('1 / 10');
 
     // The stage still renders a real frame instead of the empty placeholder.
     await expect(page.locator('[data-testid="visual-stage"] .empty')).toHaveCount(0);
     await expect(page.locator('[data-testid="visual-stage"] .bar')).toHaveCount(7);
-    await expect(page.locator('[data-testid="step-desc"]')).toContainText('有序数组');
+    await expect(page.locator('[data-testid="step-desc"]')).toContainText('初始化闭区间');
     await expect(page.locator('[data-testid="step-number"]')).toContainText('1');
   });
 });

@@ -72,7 +72,7 @@ if(a[m]===target){trace({type:'array',values:[...a],focus:[m],done:true},'查找
 if(a[m]<target)l=m+1;else r=m-1;
 }
 if(l>r)trace({type:'array',values:[...a]},'未找到 / Not found');`},
- linear:{group:'search',icon:'⌕',name:['线性查找','Linear search'],desc:['依次扫描每一个元素，直到找到目标值。','Scan elements sequentially until the target is found.'],time:'O(n)',space:'O(1)',input:{nums:[6,2,8,4,1],target:4},code:`const a=input.nums; trace({type:'array',values:[...a]},'开始 / Start');
+ linear:{group:'search',icon:'⌕',name:['顺序查找','Linear search'],desc:['从索引 0 开始逐个比较，命中第一个匹配就返回；不要求数组有序，全部检查完仍未命中则返回 -1。','Compare from index 0 one slot at a time, return the first match; the array need not be sorted, and an exhausted scan returns -1.'],time:'O(n)',space:'O(1)',input:{nums:[6,2,8,4,1],target:4},code:`const a=input.nums; trace({type:'array',values:[...a]},'开始 / Start');
 let found=false;
 for(let i=0;i<a.length;i++){trace({type:'array',values:[...a],focus:[i]},'检查当前位置 / Inspect');if(a[i]===input.target){trace({type:'array',values:[...a],focus:[i],done:true},'找到目标 / Found');found=true;break;}}
 if(!found)trace({type:'array',values:[...a]},'未找到 / Not found');`},

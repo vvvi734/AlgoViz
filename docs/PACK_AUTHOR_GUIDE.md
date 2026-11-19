@@ -21,7 +21,7 @@ packs/src/my-pack/
     └── my-example.py
 ```
 
-参考官方示例：`packs/src/algolens-search-basics/`。
+参考官方示例：`packs/src/algolens-fib-basics/`。
 
 ## 2. 写 manifest
 
@@ -53,9 +53,9 @@ packs/src/my-pack/
 ```json
 {
   "lessonId": "my-course",
-  "algorithmId": "binary",
+  "algorithmId": "fib",
   "contentVersion": "1.0.0",
-  "title": { "zh": "二分查找：每次砍掉一半", "en": "Binary search: halve the problem" },
+  "title": { "zh": "斐波那契递归：把问题拆成两个子问题", "en": "Fibonacci recursion: split into two sub-problems" },
   "oneLiner": { "zh": "一句话说明", "en": "One sentence" },
   "overview": { "zh": "……", "en": "……" },
   "intuition": { "zh": "……", "en": "……" },
@@ -80,10 +80,10 @@ packs/src/my-pack/
 示例是一段普通 Python，但要让每个教学阶段都产生**真实帧**，否则面板会一直空着。使用 Core 提供的 `trace()`：
 
 ```python
-def search(nums, target, left, right):
-    trace({"type": "array", "values": nums, "focus": [left, right]},
-          "初始化区间", line=9, variables={"left": left, "right": right},
-          lesson_step="init")
+def fib(k):
+    trace({"type": "array", "values": [k], "focus": [0]},
+          "判断递归基", line=7, variables={"k": k},
+          lesson_step="compare")
     ...
 ```
 
@@ -91,7 +91,7 @@ def search(nums, target, left, right):
 
 1. `lesson_step` 必须是本课程 `steps[].stepId` 之一。
 2. `line` 是当前源码行号（与编辑器里的真实行对齐，便于 Monaco 高亮）。
-3. 想在单次运行里演示“命中”和“未命中”，就像官方包那样跑两轮查找（目标 9 命中、目标 10 未命中）。
+3. 官方包用斐波那契递归演示 `init` / `compare` / `recurse` / `combine` / `done` 五个阶段，每个阶段都由真实帧触发。
 4. 输入通过 `input`（编辑器里的 JSON）读取，或由 manifest 的 `examples[].input` 提供默认值；不要在导入时执行任何代码。
 
 ## 5. 打包与校验
@@ -106,10 +106,10 @@ npm run pack -- packs/<name>.algopack    # 真实解析 + 真实校验，失败 
 校验成功输出示例：
 
 ```
-OK packs/algolens-search-basics.algopack
-pack algolens-search-basics v1.0.0 (MIT)
+OK packs/algolens-fib-basics.algopack
+pack algolens-fib-basics v1.0.0 (MIT)
 files 5, bytes 11939, lessons 1, python examples 1
-lesson binary-search-basics → binary (5 steps)
+lesson fibonacci-basics → fib (5 steps)
 ```
 
 ## 6. 常见报错与修法
@@ -122,8 +122,8 @@ lesson binary-search-basics → binary (5 steps)
 | `trace-schema` | `requiredTraceSchema` 与应用不匹配 | 改成当前版本（1） |
 | `manifest-invalid` | 缺双语字段、`packId` 含大写、版本不是 SemVer | 按第 2 节逐字段核对 |
 | `lesson-invalid` | 缺 `steps`、双语不一致、`stepId` 重复 | 对照 Lesson Schema；中文和英文阶段数量必须相同 |
-| `algorithm-builtin-conflict` | 给 `bubble` / `factorial` 写课程 | 换一个没有内置课程的算法，或改为提交内置课程 PR |
-| `algorithm-unknown` | `algorithmId` 写错（如 `binarySearch`） | 用真实 id：`binary` `linear` 等 |
+| `algorithm-builtin-conflict` | 课程目标算法已有内置课程（F1 后 `binary` / `linear` 也已有） | 换一个没有内置课程的算法（当前只有 `fib`），或改为提交内置课程 PR |
+| `algorithm-unknown` | `algorithmId` 写错（如 `binarySearch`） | 用真实 id：`fib`、`bubble`、`binary` 等 |
 | `example-missing` / `example-invalid` | manifest 声明了示例但文件缺失，或 `lessonId` 不属于本包 | 补齐文件或修正 `lessonId` |
 | `compression-ratio` / `file-too-large` | 塞了大文件或高压缩比内容 | 精简文本；包是教学文本不是素材库 |
 | `already-installed` | 同版本重复安装 | 递增 `version` 后重新安装（会走替换确认） |

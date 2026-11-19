@@ -14,7 +14,7 @@ function previewOf(
   const lessonId = overrides.lessonId ?? 'pack-course';
   const lesson = lessonFixture({
     lessonId,
-    algorithmId: overrides.algorithmId ?? 'binary',
+    algorithmId: overrides.algorithmId ?? 'fib',
   });
   const manifest = manifestFixture({
     packId: overrides.packId ?? 'fixture-pack',
@@ -67,8 +67,8 @@ describe('IndexedDB pack store', () => {
 
   it('uninstalls only the requested pack', async () => {
     const store = newStore();
-    await store.install(previewOf({ packId: 'pack-a', lessonId: 'course-a', algorithmId: 'binary' }));
-    await store.install(previewOf({ packId: 'pack-b', lessonId: 'course-b', algorithmId: 'linear' }));
+    await store.install(previewOf({ packId: 'pack-a', lessonId: 'course-a', algorithmId: 'fib' }));
+    await store.install(previewOf({ packId: 'pack-b', lessonId: 'course-b', algorithmId: 'fib' }));
 
     await store.uninstall('pack-a');
     const packs = await store.list();

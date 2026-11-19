@@ -107,11 +107,11 @@ test.describe('Stage 7A — workspace UX (UI-03 layout)', () => {
     expect(layout.bodyHeight).toBeLessThan(3500);
 
     await expect(page.locator('[data-testid="mobile-algo-select"]')).toBeVisible();
-    await page.selectOption('[data-testid="mobile-algo-select"]', 'binary');
-    await expect(page.locator('[data-testid="lab-title"]')).toContainText('二分查找');
+    await page.selectOption('[data-testid="mobile-algo-select"]', 'fib');
+    await expect(page.locator('[data-testid="lab-title"]')).toContainText('斐波那契');
     await expect(page.locator('[data-testid="visual-stage"]')).toBeVisible();
-    // UI-02: an algorithm without a course shows the explicit empty state
-    // instead of a fabricated "current step".
+    // UI-02: `fib` has no built-in course, so the rail shows the explicit empty
+    // state instead of a fabricated "current step".
     await expect(page.locator('[data-testid="lesson-no-lesson"]')).toBeVisible();
     await expect(page.locator('[data-testid="current-step"]')).toHaveCount(0);
 

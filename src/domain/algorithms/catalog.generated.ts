@@ -208,12 +208,12 @@ export const ALGORITHM_CATALOG: AlgorithmCatalog = {
     "group": "search",
     "icon": "⌕",
     "name": [
-      "线性查找",
+      "顺序查找",
       "Linear search"
     ],
     "desc": [
-      "依次扫描每一个元素，直到找到目标值。",
-      "Scan elements sequentially until the target is found."
+      "从索引 0 开始逐个比较，命中第一个匹配就返回；不要求数组有序，全部检查完仍未命中则返回 -1。",
+      "Compare from index 0 one slot at a time, return the first match; the array need not be sorted, and an exhausted scan returns -1."
     ],
     "time": "O(n)",
     "space": "O(1)",
