@@ -1,4 +1,4 @@
-import { expect, openAdvancedPanels, openCodePanel, selectAlgorithm as chooseAlgorithm, test, type Page } from './fixtures';
+import { expect, openCodePanel, selectAlgorithm as chooseAlgorithm, test, type Page } from './fixtures';
 
 async function openApp(page: Page) {
   await page.goto('/');
@@ -99,10 +99,6 @@ test.describe('Stage 7D — real binary-tree traversal and recursion stack', () 
     await expect(page.locator('[data-testid="tree-path"]')).toHaveAttribute('data-current-id', 'n4');
     await expect(page.getByTestId('lesson-active-step')).toHaveAttribute('data-step-id', 'enter');
 
-    await openAdvancedPanels(page);
-    await page.getByTestId('workspace-tab-state').click();
-    await expect(page.locator('[data-testid="workspace-panel-state"] [data-testid="variables-watch"]')).toHaveCount(0);
-    await expect(page.locator('[data-testid="workspace-panel-state"] [data-testid^="call-frame-"]')).toHaveCount(0);
     const frames = page.locator('[data-testid^="call-frame-f"]');
     await expect(frames).toHaveCount(3);
     await expect(frames.nth(0)).toContainText('traverse');
@@ -151,11 +147,7 @@ test.describe('Stage 7D — real binary-tree traversal and recursion stack', () 
     await setFrame(page, 8);
     expect(await activeId(page)).toBe('n4');
     expect(await visitedIds(page)).toEqual(['n1', 'n2', 'n4']);
-    await openAdvancedPanels(page);
-    await page.getByTestId('workspace-tab-state').click();
     await expect(page.getByTestId('variables-watch')).toContainText('n4');
-    await page.getByTestId('sync-source-toggle').click();
-    await expect(page.locator('[data-testid="code-position"] .codeline.active .lineno')).toHaveText('130');
 
     await setFrame(page, 12);
     expect(await activeId(page)).toBe('n5');

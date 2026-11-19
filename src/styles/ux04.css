@@ -53,6 +53,20 @@
   line-height: 1;
 }
 
+.workspace-tabs.is-open {
+  overflow: visible;
+}
+
+/* An expanded reference panel can be thousands of pixels tall. Keep its
+   collapse control in reach without adding a second scroll trap. */
+.workspace-tabs.is-open .workspace-tabs-head {
+  position: sticky;
+  top: 0;
+  z-index: 4;
+  background: var(--panel);
+  border-radius: 15px 15px 0 0;
+}
+
 .workspace-tabs-body {
   min-width: 0;
   border-top: 1px solid var(--edge);
@@ -67,6 +81,42 @@
 }
 
 @media (min-width: 1280px) and (min-height: 600px) {
+  /* Concept lessons are a document, not a one-screen animation. The lab column
+     becomes a normal vertical scroller so the page can grow to its content. */
+  .app[data-view='learn'] .lab-shell.concept-focus .lab-main {
+    display: block;
+    height: 100%;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .app[data-view='learn'] .lab-shell.concept-focus .concept-page {
+    margin-top: 8px;
+  }
+
+  /* An opened reference-code panel grows with the source. Once it is open,
+     stop squeezing the animation into the remaining viewport: keep a usable
+     stage height and let the whole lab column scroll. */
+  .app[data-view='learn'] .lab-shell:not(.guide-open) .lab-main:has(.workspace-tabs.is-open) {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .app[data-view='learn'] .lab-shell:not(.guide-open) .lab-main:has(.workspace-tabs.is-open) .lab-primary {
+    flex: 0 0 520px;
+    min-height: 520px;
+  }
+
+  .app[data-view='learn'] .lab-shell:not(.guide-open) .lab-main:has(.workspace-tabs.is-open) .workspace-tabs {
+    flex: 0 0 auto;
+    overflow: visible;
+  }
+
   /* The shell owns the viewport height; every child below it decides whether
      it scrolls. Nothing hides overflow at page level. */
   .app[data-view='learn'] {
@@ -341,11 +391,8 @@
     font-size: var(--font-ui);
   }
 
-  .app[data-view='learn'] .workspace-tabs-body {
-    max-height: min(42dvh, 460px);
-    overflow: auto;
-    overscroll-behavior: contain;
-  }
+  /* The reference-code body is intentionally not height-capped: an expanded
+     panel grows with its source and the lab column owns the page scroll. */
 
   /* ---------- Dijkstra: graph and its state share the available h ---------- */
   .app[data-view='learn'] .graph-visual.is-weighted {

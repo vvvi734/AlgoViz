@@ -15,11 +15,15 @@ import { buildTextbookNavigation, textbookAlgorithmIds } from '../../domain/algo
 function Harness({
   initialCollapsed = false,
   selected = 'bubble',
+  conceptId = null,
   onSelect = vi.fn(),
+  onSelectConcept = vi.fn(),
 }: {
   initialCollapsed?: boolean;
   selected?: string;
+  conceptId?: string | null;
   onSelect?: (id: string) => void;
+  onSelectConcept?: (id: string) => void;
 }) {
   const [collapsed, setCollapsed] = useState(initialCollapsed);
   const [openChapters, setOpenChapters] = useState<ReadonlySet<string>>(new Set(['ch9-sort']));
@@ -29,7 +33,9 @@ function Harness({
       <AlgorithmSidebar
         catalog={catalog}
         currentAlgo={selected}
+        currentConceptId={conceptId}
         onSelect={onSelect}
+        onSelectConcept={onSelectConcept}
         collapsed={collapsed}
         onToggleCollapsed={() => setCollapsed((value) => !value)}
         isChapterOpen={(id) => openChapters.has(id)}
@@ -57,6 +63,14 @@ function Harness({
             else next.add(id);
             return next;
           })}
+        onExpandAll={(chapters, topics) => {
+          setOpenChapters(new Set(chapters));
+          setOpenTopics(new Set(topics));
+        }}
+        onCollapseAll={() => {
+          setOpenChapters(new Set());
+          setOpenTopics(new Set());
+        }}
       />
     </I18nProvider>
   );
@@ -159,8 +173,9 @@ describe('AlgorithmSidebar — textbook chapters (UX-03)', () => {
     expect(screen.getAllByTestId(/^algo-/).filter((item) => item.getAttribute('aria-current') === 'true')).toHaveLength(1);
   });
 
-  it('renders concepts and planned topics as static rows while authored sorting topics are real entries', () => {
-    render(<Harness />);
+  it('opens authored concept lessons and keeps un-authored concepts static', () => {
+    const onSelectConcept = vi.fn();
+    render(<Harness onSelectConcept={onSelectConcept} />);
     const mergeSort = screen.getByTestId('topic-merge-sort');
     expect(mergeSort.getAttribute('data-kind')).toBe('algorithm');
     expect(screen.getByTestId('algo-merge')).toBeTruthy();
@@ -174,12 +189,40 @@ describe('AlgorithmSidebar — textbook chapters (UX-03)', () => {
     expect(screen.getByTestId('algo-huffman')).toBeTruthy();
 
     const graphBasics = screen.getByTestId('topic-graph-basics');
-    expect(graphBasics.tagName).toBe('DIV');
+    expect(graphBasics.tagName).toBe('BUTTON');
     expect(graphBasics.getAttribute('data-kind')).toBe('concept');
-    expect(graphBasics.getAttribute('aria-disabled')).toBe('true');
-    expect(graphBasics.textContent).toContain('知识讲解');
-    expect(within(graphBasics).queryByRole('button')).toBeNull();
+    expect(graphBasics.getAttribute('aria-disabled')).toBeNull();
+    expect(graphBasics.textContent).toContain('阅读');
+    expect(graphBasics.getAttribute('data-concept-id')).toBe('graph-basics');
+    fireEvent.click(graphBasics);
+    expect(onSelectConcept).toHaveBeenCalledWith('graph-basics');
+
+    const sortBasics = screen.getByTestId('topic-sort-basics');
+    expect(sortBasics.tagName).toBe('DIV');
+    expect(sortBasics.getAttribute('aria-disabled')).toBe('true');
+    expect(sortBasics.textContent).toContain('知识讲解');
+    expect(within(sortBasics).queryByRole('button')).toBeNull();
     expect(screen.getByTestId('chapter-ch5-string').textContent).toContain('待完善');
+  });
+
+  it('expands every chapter and group topic, then collapses to the first level', () => {
+    render(<Harness />);
+    const sort = screen.getByTestId('chapter-ch9-sort');
+    const graph = screen.getByTestId('chapter-ch7-graph');
+    const search = screen.getByTestId('chapter-ch8-search');
+    fireEvent.click(screen.getByTestId('sidebar-collapse-all'));
+    expect(sort.getAttribute('aria-expanded')).toBe('false');
+    expect(graph.getAttribute('aria-expanded')).toBe('false');
+    expect(search.getAttribute('aria-expanded')).toBe('false');
+    expect(screen.getByTestId('topic-bubble-sort').getAttribute('data-has-current')).toBe('true');
+
+    fireEvent.click(screen.getByTestId('sidebar-expand-all'));
+    for (const chapter of nav) {
+      expect(screen.getByTestId(`chapter-${chapter.id}`).getAttribute('aria-expanded')).toBe('true');
+    }
+    expect(screen.getByTestId('topic-shortest-path').getAttribute('aria-expanded')).toBe('true');
+    expect(screen.getByTestId('topic-mst').getAttribute('aria-expanded')).toBe('true');
+    expect(screen.getByTestId('algo-prim')).toBeTruthy();
   });
 
   it('uses native buttons and keeps folding presentation-only', () => {

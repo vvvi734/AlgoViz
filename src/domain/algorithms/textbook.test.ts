@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { CONCEPT_PAGES, conceptById } from '../concepts/catalog';
 import { catalog } from './examples';
 import {
   TEXTBOOK_CHAPTERS,
@@ -29,6 +30,25 @@ describe('textbook directory (UX-03)', () => {
     ]);
     expect(TEXTBOOK_REFERENCE.author).toBe('程杰');
     expect(TEXTBOOK_REFERENCE.edition.zh).toContain('2011');
+  });
+
+  it('links every authored concept page to an existing textbook topic', () => {
+    const conceptTopics = nav
+      .flatMap((chapter) => chapter.topics)
+      .filter((topic) => topic.conceptId);
+    expect(conceptTopics.map((topic) => topic.conceptId).sort()).toEqual(
+      CONCEPT_PAGES.map((page) => page.id).sort(),
+    );
+    expect(conceptTopics.map((topic) => topic.id).sort()).toEqual([
+      'algorithm-efficiency',
+      'binary-tree',
+      'graph-basics',
+      'intro-concepts',
+      'intro-logical-physical',
+    ]);
+    for (const topic of conceptTopics) {
+      expect(conceptById(topic.conceptId!)).toBeTruthy();
+    }
   });
 
   it('gives every registered algorithm exactly one primary home', () => {
@@ -205,22 +225,7 @@ describe('textbook directory (UX-03)', () => {
     expect(findTextbookPath(nav, 'bubble')).toEqual({ chapterId: 'ch9-sort', topicId: 'bubble-sort' });
   });
 
-  it('keeps an explicit extension chapter for AI imports and appends unknown future ids', () => {
-    const withCustom = {
-      ...catalog,
-      custom: {
-        ...catalog.bubble,
-        group: 'custom' as const,
-        name: ['自定义算法', 'Custom algorithm'] as [string, string],
-      },
-    };
-    const withCustomNav = buildTextbookNavigation(withCustom);
-    expect(withCustomNav).toHaveLength(10);
-    const extension = withCustomNav.at(-1)!;
-    expect(extension.id).toBe('ext');
-    expect(extension.extension).toBe(true);
-    expect(extension.topics.find((topic) => topic.id === 'custom')?.algorithms[0].id).toBe('custom');
-
+  it('appends unknown future ids in an explicit extension chapter', () => {
     const futureNav = buildTextbookNavigation({
       ...catalog,
       future: {
@@ -228,7 +233,11 @@ describe('textbook directory (UX-03)', () => {
         name: ['未来算法', 'Future algorithm'] as [string, string],
       },
     });
-    expect(futureNav.at(-1)?.topics.find((topic) => topic.id === 'unclassified')?.algorithms[0].id).toBe(
+    const extension = futureNav.at(-1)!;
+    expect(futureNav).toHaveLength(10);
+    expect(extension.id).toBe('ext');
+    expect(extension.extension).toBe(true);
+    expect(extension.topics.find((topic) => topic.id === 'unclassified')?.algorithms[0].id).toBe(
       'future',
     );
     expect(textbookAlgorithmIds(futureNav)).toContain('future');

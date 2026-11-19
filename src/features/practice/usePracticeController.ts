@@ -3,7 +3,6 @@ import { CODE_LANGUAGES, type CodeLanguage } from '../../domain/algorithms/types
 import { problems, findProblem, practiceTemplate } from '../../domain/problems/examples';
 import { problemCategoryLabel, type PracticeProblem } from '../../domain/problems/types';
 import type { TestCaseResult } from '../../domain/trace/types';
-import { askAi, type AiReply } from '../../runtime/ai/client';
 import { runForLanguage } from '../../runtime/execute';
 import { safeGet, safeSet } from '../../runtime/storage';
 import { useI18n } from '../../i18n/I18nProvider';
@@ -43,7 +42,6 @@ export interface PracticeController {
   showHint: () => void;
   runSamples: () => Promise<void>;
   toggleSolved: () => void;
-  reviewCode: (apiUrl: string) => Promise<void>;
 }
 
 function formatValue(value: unknown): string {
@@ -62,7 +60,6 @@ export function usePracticeController(): PracticeController {
   const [currentProblem, setCurrentProblem] = useState<PracticeProblem>(() => problems[0]);
   const [practiceCode, setPracticeCode] = useState(() => practiceTemplate(problems[0], storedLanguage()));
   const [hintIndex, setHintIndex] = useState(0);
-  const [lastOutputs, setLastOutputs] = useState<SampleOutput[] | null>(null);
   const [status, setStatus] = useState<StatusMessage>({ text: '', error: false });
   const [filter, setFilter] = useState<ProblemFilter>('all');
   const [solved, setSolved] = useState<Set<string>>(() => {
@@ -86,7 +83,6 @@ export function usePracticeController(): PracticeController {
     setCurrentProblem(problem);
     setPracticeCode(practiceTemplate(problem, practiceLang));
     setHintIndex(0);
-    setLastOutputs(null);
     setStatus({ text: '', error: false });
   }, [practiceLang]);
 
@@ -95,7 +91,6 @@ export function usePracticeController(): PracticeController {
     safeSet(PRACTICE_LANG_KEY, next);
     setPracticeCode(practiceTemplate(currentProblem, next));
     setHintIndex(0);
-    setLastOutputs(null);
     setStatus({ text: '', error: false });
   }, [currentProblem]);
 
@@ -124,13 +119,11 @@ export function usePracticeController(): PracticeController {
         input,
         output: results[index]?.actual,
       }));
-      setLastOutputs(outputs);
       const message = outputs
         .map((item, index) => `样例 ${index + 1}\n  输入: ${formatValue(item.input)}\n  输出: ${formatValue(item.output)}`)
         .join('\n');
       setStatus({ text: message.trim(), error: false });
     } catch (error) {
-      setLastOutputs(null);
       setStatus({ text: `${t('error')}: ${(error as Error).message}`, error: true });
     }
   }, [practiceCode, currentProblem, practiceLang, t, b]);
@@ -150,39 +143,6 @@ export function usePracticeController(): PracticeController {
     });
   }, [currentProblem.id]);
 
-  const applyAiText = useCallback((reply: AiReply) => {
-    if (reply.kind !== 'text') return;
-    setStatus({ text: `${reply.reply}\n\n${t('answerWarn')}`, error: false });
-  }, [t]);
-
-  const localFallback = useCallback(() => {
-    const index = Math.min(hintIndex, currentProblem.hints.length - 1);
-    return currentProblem.hints[index][lang === 'zh' ? 0 : 1];
-  }, [hintIndex, currentProblem, lang]);
-
-  const reviewCode = useCallback(async (apiUrl: string) => {
-    setStatus({ text: b('请求中……', 'Requesting…'), error: false });
-    try {
-      const reply = await askAi({
-        url: apiUrl,
-        action: 'review_code',
-        language: lang,
-        payload: {
-          problem: { name: currentProblem.name[0], description: currentProblem.desc[0] },
-          code: practiceCode,
-          sampleOutputs: lastOutputs,
-          instruction: 'Use Socratic questions, identify a likely bug, and give incremental hints. Never provide a full corrected solution.',
-        },
-      });
-      applyAiText(reply);
-    } catch (error) {
-      setStatus({
-        text: `${t('aiUnavailable')}\n${localFallback()}\n\n${t('failed')}: ${(error as Error).message}`,
-        error: true,
-      });
-    }
-  }, [lang, currentProblem, practiceCode, lastOutputs, applyAiText, localFallback, t, b]);
-
   return {
     filteredProblems,
     currentProblem,
@@ -201,6 +161,5 @@ export function usePracticeController(): PracticeController {
     showHint,
     runSamples,
     toggleSolved,
-    reviewCode,
   };
 }

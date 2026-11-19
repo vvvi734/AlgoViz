@@ -1,4 +1,4 @@
-import { expect, openAdvancedPanels, openCodePanel, selectAlgorithm as chooseAlgorithm, test, type Page } from './fixtures';
+import { expect, openCodePanel, selectAlgorithm as chooseAlgorithm, test, type Page } from './fixtures';
 
 const TOTAL = 46;
 
@@ -141,14 +141,6 @@ test.describe('Stage 7F — real heapq Dijkstra, weighted graph, distance table 
     )).toEqual(['A:0:', 'B:2:A', 'C:2:A', 'D:6:B', 'E:3:B', 'F:4:E', 'G:7:F']);
 
     await expect(page.getByTestId('lesson-active-step')).toHaveAttribute('data-step-id', 'done');
-
-    await openAdvancedPanels(page);
-    await page.getByTestId('workspace-tab-state').click();
-    await page.getByTestId('sync-source-toggle').click();
-    await expect(page.locator('[data-testid="code-position"] .codeline.active .lineno')).toBeVisible();
-    const lineNo = Number(await page.locator('[data-testid="code-position"] .codeline.active .lineno').textContent());
-    expect(lineNo).toBeGreaterThan(150);
-    expect(lineNo).toBeLessThan(260);
   });
 
   test('restores graph, table and heap together on backward jumps, then reruns from scratch', async ({ page }) => {

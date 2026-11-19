@@ -1,4 +1,4 @@
-import { expect, openAdvancedPanels, openCodePanel, selectAlgorithm as chooseAlgorithm, test, type Page } from './fixtures';
+import { expect, openCodePanel, selectAlgorithm as chooseAlgorithm, test, type Page } from './fixtures';
 import { mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 
@@ -168,14 +168,6 @@ test.describe('Stage 7C — real singly linked-list visualization', () => {
       await expect(page.locator('[data-testid="variables-watch"]')).toContainText(expected);
       await expect(page.locator('.algolens-active-line')).toHaveCount(1);
     }
-    await openAdvancedPanels(page);
-    await page.getByTestId('workspace-tab-state').click();
-    await expect(page.getByTestId('workspace-panel-state')).toBeVisible();
-    await expect(page.locator('[data-testid="variables-watch"]')).toBeVisible();
-    await page.getByTestId('sync-source-toggle').click();
-    await expect(page.locator('[data-testid="code-position"]')).not.toBeEmpty();
-    await expect(page.locator('[data-testid="code-position"] .codeline.active .lineno')).toHaveText('146');
-    await expect(page.locator('.algolens-active-line')).toHaveCount(1);
     await setFrame(page, 21);
     await expect(page.locator('[data-testid="linked-node"][data-active="true"]')).toHaveCount(0);
     await expect(page.locator('[data-testid="lesson-active-step"]')).toHaveAttribute('data-step-id', 'done');

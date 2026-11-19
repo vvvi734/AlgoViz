@@ -4,7 +4,7 @@ import type { PracticeController } from './usePracticeController';
 import { Feedback } from '../../components/Feedback';
 import { useI18n } from '../../i18n/I18nProvider';
 
-export function PracticeView({ controller, apiUrl }: { controller: PracticeController; apiUrl: string }) {
+export function PracticeView({ controller }: { controller: PracticeController }) {
   const { t, pick } = useI18n();
   const isSolved = controller.solved.has(controller.currentProblem.id);
   return (
@@ -45,7 +45,6 @@ export function PracticeView({ controller, apiUrl }: { controller: PracticeContr
         <div className="controls" style={{ marginTop: 12 }}>
           <button className="btn primary" onClick={() => void controller.runSamples()} data-testid="run-samples">{t('runSamples')}</button>
           <button className="btn" onClick={controller.showHint}>{t('hint')}</button>
-          <button className="btn" onClick={() => void controller.reviewCode(apiUrl)}>{t('review')}</button>
           <button className="btn ghost" onClick={controller.resetScaffold}>{t('resetScaffold')}</button>
           <button className="btn" onClick={controller.toggleSolved} data-testid="toggle-solved">
             {isSolved ? t('unmarkDone') : t('markDone')}

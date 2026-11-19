@@ -257,7 +257,7 @@ test.describe('UX-04 — desktop one-screen learning', () => {
     await expect(page.getByTestId('algorithm-guide')).toHaveCount(0);
   });
 
-  test('advanced panels start collapsed, expand to reference code and Trace state, and preserve frame state across the toggle', async ({ page }) => {
+  test('advanced panel starts collapsed, expands to reference code and preserves frame state across the toggle', async ({ page }) => {
     test.setTimeout(180_000);
     await page.setViewportSize({ width: 1366, height: 768 });
     await page.goto('/');
@@ -269,24 +269,24 @@ test.describe('UX-04 — desktop one-screen learning', () => {
     await expect(page.getByTestId('step-number')).not.toContainText('0');
     await expect(page.getByTestId('workspace-tabs')).toHaveAttribute('data-expanded', 'false');
     await expect(page.getByTestId('workspace-tabs-toggle')).toHaveAttribute('aria-expanded', 'false');
-    await expect(page.getByTestId('workspace-panel-state')).toBeHidden();
+    await expect(page.getByTestId('workspace-panel-reference')).toBeHidden();
     const progress = await page.getByTestId('progress').innerText();
     const current = await page.getByTestId('current-step').innerText();
 
     await openAdvancedPanels(page);
     await expect(page.getByTestId('workspace-panel-reference')).toBeVisible();
+    await expect(page.getByTestId('reference-code-panel')).toBeVisible();
+    await expect(page.getByTestId('reference-lang-c')).toBeVisible();
+    await expect(page.getByTestId('reference-lang-cpp')).toBeVisible();
+    await expect(page.getByTestId('reference-lang-python')).toBeVisible();
     await expect(page.getByTestId('variables-watch')).toContainText('distances');
-    await page.getByTestId('workspace-tab-tools').click();
-    await expect(page.getByTestId('workspace-panel-tools')).toBeVisible();
     await page.getByTestId('workspace-tabs-toggle').click();
-    await expect(page.getByTestId('workspace-panel-tools')).toBeHidden();
+    await expect(page.getByTestId('workspace-panel-reference')).toBeHidden();
     expect(await page.getByTestId('progress').innerText()).toBe(progress);
     expect(await page.getByTestId('current-step').innerText()).toBe(current);
 
     await openAdvancedPanels(page);
-    await expect(page.getByTestId('workspace-panel-tools')).toBeVisible();
-    await page.getByTestId('workspace-tab-state').click();
-    await expect(page.getByTestId('workspace-panel-state')).toBeVisible();
+    await expect(page.getByTestId('workspace-panel-reference')).toBeVisible();
     await expect(page.getByTestId('variables-watch')).toContainText('distances');
   });
 
@@ -385,10 +385,11 @@ test.describe('UX-04 — desktop one-screen learning', () => {
     expect(
       await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1),
     ).toBe(true);
-    await page.getByTestId('workspace-tab-tools').click();
-    await expect(page.getByTestId('workspace-panel-tools')).toBeVisible();
+    await expect(page.getByTestId('workspace-panel-reference')).toBeVisible();
+    await expect(page.getByTestId('reference-copy')).toBeVisible();
+    await expect(page.getByTestId('workspace-tab-state')).toHaveCount(0);
     await page.getByTestId('workspace-tabs-toggle').click();
-    await expect(page.getByTestId('workspace-panel-tools')).toBeHidden();
+    await expect(page.getByTestId('workspace-panel-reference')).toBeHidden();
     expect(
       await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1),
     ).toBe(true);

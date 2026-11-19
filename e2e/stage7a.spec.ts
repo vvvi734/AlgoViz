@@ -43,29 +43,27 @@ test.describe('Stage 7A — workspace UX (UI-03 layout)', () => {
 
     await expect(page.locator('[data-testid="lesson-title"]')).toContainText('冒泡排序');
     await expect(page.locator('[data-testid="current-step-title"]')).toBeVisible();
-    await expect(page.locator('[data-testid="workspace-tab-reference"]')).toHaveAttribute('aria-selected', 'true');
+    await expect(page.locator('[data-testid="workspace-tabs"]')).toHaveAttribute('data-expanded', 'false');
   });
 
-  test('B. switching panels keeps the Monaco draft and never runs or resets the trace', async ({ page }) => {
+  test('B. opening the reference panel keeps the Monaco draft and never runs or resets the trace', async ({ page }) => {
     await openApp(page);
     await openCodePanel(page);
     const draft = 'const STAGE7_DRAFT = 707;';
-    await page.locator('.monaco-editor').first().click();
+    await page.locator('[data-testid="code-dock"] .monaco-editor').click();
     await page.keyboard.press('Control+a');
     await page.keyboard.insertText(draft);
-    await expect(page.locator('.monaco-editor')).toContainText('STAGE7_DRAFT');
+    await expect(page.locator('[data-testid="code-dock"] .monaco-editor')).toContainText('STAGE7_DRAFT');
 
     const progress = await page.locator('[data-testid="progress"]').textContent();
     const feedback = await page.locator('[data-testid="run-feedback"]').textContent();
     await openAdvancedPanels(page);
-    await page.click('[data-testid="workspace-tab-mentor"]');
-    await expect(page.locator('[data-testid="workspace-panel-mentor"]')).toBeVisible();
-    await page.click('[data-testid="workspace-tab-state"]');
-    await expect(page.locator('[data-testid="workspace-panel-state"]')).toBeVisible();
-    await page.click('[data-testid="workspace-tab-tools"]');
-    await expect(page.locator('[data-testid="workspace-panel-tools"]')).toBeVisible();
+    await expect(page.locator('[data-testid="workspace-panel-reference"]')).toBeVisible();
+    await expect(page.locator('[data-testid="workspace-tab-state"]')).toHaveCount(0);
+    await expect(page.locator('[data-testid="workspace-tab-mentor"]')).toHaveCount(0);
+    await expect(page.locator('[data-testid="workspace-tab-tools"]')).toHaveCount(0);
 
-    await expect(page.locator('.monaco-editor')).toContainText('STAGE7_DRAFT');
+    await expect(page.locator('[data-testid="code-dock"] .monaco-editor')).toContainText('STAGE7_DRAFT');
     await expect(page.locator('[data-testid="progress"]')).toHaveText(progress ?? '');
     // No execution feedback changed, and Monaco kept its draft: no run happened.
     await expect(page.locator('[data-testid="run-feedback"]')).toHaveText(feedback ?? '');
@@ -124,39 +122,14 @@ test.describe('Stage 7A — workspace UX (UI-03 layout)', () => {
     await expect(page.locator('[data-testid="workspace-tabs"]')).toBeVisible();
   });
 
-  test('I. tab strip supports arrow keys and Escape closes the More tools menu', async ({ page }) => {
+  test('I. the More tools menu supports Escape without touching the lab', async ({ page }) => {
     await openApp(page);
-    await openAdvancedPanels(page);
-    await page.click('[data-testid="workspace-tab-state"]');
-    await page.keyboard.press('ArrowRight');
-    await expect(page.locator('[data-testid="workspace-tab-mentor"]')).toHaveAttribute('aria-selected', 'true');
-    await expect(page.locator('[data-testid="workspace-panel-mentor"]')).toBeVisible();
-    await page.keyboard.press('ArrowLeft');
-    await expect(page.locator('[data-testid="workspace-tab-state"]')).toHaveAttribute('aria-selected', 'true');
-
     await page.click('[data-testid="nav-more"]');
     await expect(page.locator('[data-testid="nav-more-menu"]')).toBeVisible();
     await page.keyboard.press('Escape');
     await expect(page.locator('[data-testid="nav-more-menu"]')).toHaveCount(0);
     await expect(page.locator('[data-testid="nav-more"]')).toBeFocused();
-  });
-
-  test('E. AI failure is restrained, expandable and never blocks the lab', async ({ page }) => {
-    await page.route('**/api/providers', (route) => route.abort());
-    await page.route('**/api/mentor', (route) => route.abort());
-    await openApp(page);
-    await openAdvancedPanels(page);
-    await page.click('[data-testid="workspace-tab-mentor"]');
-
-    await expect(page.locator('[data-testid="mentor-status"]')).toContainText('AI 未连接');
-    await expect(page.locator('[data-testid="mentor-error-details"]')).toBeVisible();
-    await expect(page.locator('[data-testid="mentor-error-detail-body"]')).toHaveCount(0);
-    await page.click('[data-testid="mentor-error-details"]');
-    await expect(page.locator('[data-testid="mentor-error-detail-body"]')).toContainText('Gateway');
-
-    await expect(page.locator('[data-testid="run-btn"]')).toBeVisible();
     await expect(page.locator('[data-testid="visual-stage"]')).toBeVisible();
-    await expect(page.locator('[data-testid="current-step"]')).toBeVisible();
   });
 
   test('J. reference code opens as a read-only C / C++ / Python viewer', async ({ page }) => {
@@ -164,10 +137,6 @@ test.describe('Stage 7A — workspace UX (UI-03 layout)', () => {
     await selectAlgorithm(page, 'binary');
     await openAdvancedPanels(page);
 
-    await expect(page.locator('[data-testid="workspace-tab-reference"]')).toHaveAttribute(
-      'aria-selected',
-      'true',
-    );
     await expect(page.locator('[data-testid="reference-code-panel"]')).toBeVisible();
     await expect(page.locator('[data-testid="reference-file-name"]')).toHaveText('binary_search.c');
     await expect(page.locator('[data-testid="reference-code-viewer"] .monaco-editor')).toBeVisible({

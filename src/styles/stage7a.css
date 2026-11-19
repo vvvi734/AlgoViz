@@ -349,7 +349,6 @@ body {
 .current-var b { color: var(--accent); }
 .current-var code { color: var(--code-fg); overflow-wrap: anywhere; }
 
-/* Tabs keep secondary panels mounted but out of the primary reading path. */
 .workspace-tabs {
   background: var(--panel);
   border: 1px solid var(--edge);
@@ -357,31 +356,6 @@ body {
   box-shadow: var(--shadow);
   min-width: 0;
   overflow: hidden;
-}
-.workspace-tablist {
-  display: flex;
-  gap: 2px;
-  padding: 7px 9px 0;
-  border-bottom: 1px solid var(--edge);
-  overflow-x: auto;
-  scrollbar-width: thin;
-}
-.workspace-tab {
-  border: 1px solid transparent;
-  border-bottom: 0;
-  border-radius: 9px 9px 0 0;
-  background: transparent;
-  color: var(--muted);
-  padding: 9px 13px;
-  font-weight: 700;
-  font-size: 13px;
-  white-space: nowrap;
-}
-.workspace-tab:hover { color: var(--txt); background: var(--alg-hover); }
-.workspace-tab.active {
-  color: var(--accent);
-  background: var(--tab-active-bg);
-  border-color: var(--tab-active-edge);
 }
 .workspace-tabpanel { padding: 4px 14px 14px; min-width: 0; }
 .workspace-tabpanel[hidden] { display: none; }
@@ -392,8 +366,6 @@ body {
   padding: 12px 0 0;
 }
 .workspace-tabpanel .panel .panel { padding: 0; }
-.state-stack, .tools-stack { display: grid; gap: 6px; min-width: 0; }
-.tools-note { border-top: 1px solid var(--edge); }
 
 /* Compact teaching course: current step + clickable stage chips. */
 .lessonpanel.is-compact .sectionhead { margin-bottom: 7px; }
@@ -437,18 +409,8 @@ body {
 .sync-snapshot { display: flex; flex-direction: column; align-items: flex-start; gap: 7px; }
 .sync-snapshot .btn { align-self: flex-start; }
 
-/* AI mentor: same features, now on a full-width on-demand tab. */
-.mentor { margin-top: 0; }
-.mentor-row { grid-template-columns: repeat(2, minmax(180px, 260px)); }
-.mentor textarea.prompt { min-height: 92px; }
-.mentor-answer-body { font-size: var(--font-body); }
-.mentor-answer ul { font-size: 13.5px; }
-.mentor-offline.is-error { border-color: var(--edge); background: var(--info-bg); }
-.mentor-offline.is-error .mentor-error { color: var(--red); }
-.mentor .sectionhead .tag { font-size: var(--font-ui); }
-
 /* Reading improves without shrinking or nesting every card. */
-.info p, .note, .packbanner, .sessionwarn { line-height: 1.6; }
+.info p, .note { line-height: 1.6; }
 .btn.small { font-size: 13px; }
 .pill, .btn, .tab, .select { border-radius: 9px; }
 
@@ -495,8 +457,6 @@ body {
   .current-step { padding: 10px 12px; gap: 8px; }
   .current-step-main { flex: 1 1 100%; }
   .current-step-copy strong { font-size: 15px; }
-  .workspace-tablist { padding: 5px 7px 0; }
-  .workspace-tab { padding: 8px 10px; font-size: 12.5px; }
   .workspace-tabpanel { padding: 2px 10px 10px; }
   .lessonpanel.is-compact .lessonsteps {
     display: grid;
@@ -507,7 +467,6 @@ body {
   }
   .lessonpanel.is-compact .lessonstep { width: 100%; max-width: none; }
   .lessonpanel.is-compact .lesson-overview { max-height: none; }
-  .mentor-row { grid-template-columns: minmax(0, 1fr); }
   .modal { padding: 10px; }
   .sync-grid { grid-template-columns: minmax(0, 1fr); }
   .vartable { table-layout: fixed; }
@@ -525,7 +484,6 @@ body {
   .lab-head-actions, .mobile-algo-select { width: 100%; }
   .current-step-copy strong { font-size: 14.5px; }
   .workspace-tabpanel { padding-left: 8px; padding-right: 8px; }
-  .mentor-presets .btn, .mentor-actions .btn, .sessionactions .btn { flex: 1 1 auto; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -535,19 +493,4 @@ body {
     transition-duration: .01ms !important;
     scroll-behavior: auto !important;
   }
-}
-
-.mentor-error-line { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; margin: 4px 0; }
-.mentor-error-details {
-  margin: 6px 0;
-  padding: 9px 11px;
-  border: 1px solid var(--edge);
-  border-radius: 8px;
-  background: var(--code-bg);
-  color: var(--muted);
-  font: 13px/1.55 ui-monospace, SFMono-Regular, Consolas, monospace;
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-  max-height: 180px;
-  overflow: auto;
 }

@@ -56,8 +56,9 @@ export async function openLessonStepNav(page: Page) {
 }
 
 /**
- * UX-04: reference code, Trace state, mentor and study tools live behind a
- * collapsed-by-default advanced disclosure. Open it before touching a tab.
+ * CORE-REFINE-01: the advanced disclosure now owns only the C / C++ / Python
+ * reference-code viewer. Variables, the call stack and the trace state stay
+ * in the always-visible learning rail; open this before reading reference code.
  */
 export async function openAdvancedPanels(page: Page) {
   const toggle = page.getByTestId('workspace-tabs-toggle');

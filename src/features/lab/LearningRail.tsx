@@ -37,9 +37,6 @@ export function LearningRail({
   selectedFrameId,
   onSelectFrame,
   onSeek,
-  originName,
-  hasExample,
-  onUseExample,
 }: {
   algorithmId: string;
   lesson: Lesson | undefined;
@@ -49,9 +46,6 @@ export function LearningRail({
   selectedFrameId: string | null;
   onSelectFrame: (frameId: string | null) => void;
   onSeek: (index: number) => void;
-  originName?: string;
-  hasExample?: boolean;
-  onUseExample?: () => void;
 }) {
   const { t, lang } = useI18n();
   const activeIndex = stepIndexForEvent(lesson, currentEvent);
@@ -99,21 +93,6 @@ export function LearningRail({
             ) : (
               <p className="rail-lesson-empty" data-testid="lesson-no-lesson">{t('railNoCourse')}</p>
             )}
-            {originName ? (
-              <p className="rail-lesson-origin" data-testid="lesson-origin">
-                {t('packOrigin').replace('{pack}', originName)}
-              </p>
-            ) : null}
-            {hasExample && onUseExample ? (
-              <button
-                type="button"
-                className="btn ghost rail-example-button"
-                data-testid="lesson-use-example"
-                onClick={onUseExample}
-              >
-                {t('lessonUseExample')}
-              </button>
-            ) : null}
           </div>
           <span className="tag" data-testid="lesson-frame">{frameLabel}</span>
         </div>

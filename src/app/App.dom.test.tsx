@@ -88,17 +88,15 @@ describe('App UI regression (Phase 1)', () => {
     expect(document.documentElement.dataset.theme).toBe('dark');
   });
 
-  it('switches UI language, practice bank and AI import tabs', async () => {
+  it('switches UI language and keeps the practice bank available', async () => {
     renderApp();
     await waitFor(() => expect(screen.getByTestId('progress').textContent).toBe('1 / 3'));
     fireEvent.click(screen.getByRole('button', { name: 'Switch language' }));
     expect(screen.getByTestId('play-btn').textContent).toBe('▶ Play');
 
     fireEvent.click(screen.getByTestId('nav-more'));
+    expect(screen.queryByTestId('nav-custom')).toBeNull();
     fireEvent.click(screen.getByTestId('nav-practice'));
     expect(screen.getAllByTestId(/^problem-/)).toHaveLength(8);
-    fireEvent.click(screen.getByTestId('nav-more'));
-    fireEvent.click(screen.getByTestId('nav-custom'));
-    expect(screen.getByTestId('custom-view')).toBeTruthy();
   });
 });

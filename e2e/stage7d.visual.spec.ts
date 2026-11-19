@@ -1,4 +1,4 @@
-import { expect, openAdvancedPanels, openCodePanel, selectAlgorithm as chooseAlgorithm, test, type Page } from './fixtures';
+import { expect, openCodePanel, selectAlgorithm as chooseAlgorithm, test, type Page } from './fixtures';
 import { mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 
@@ -135,8 +135,6 @@ test.describe('Stage 7D visual evidence', () => {
     await page.getByTestId('run-btn').click();
     await expect(page.locator('[data-testid="progress"]')).toHaveText('1 / 30', { timeout: 60_000 });
     await setFrame(page, 5, 30);
-    await openAdvancedPanels(page);
-    await page.getByTestId('workspace-tab-state').click();
     await expect(page.locator('[data-testid^="call-frame-f"]')).toHaveCount(3);
     await expect(page.locator('[data-testid="variables-watch"]')).toBeVisible();
     for (const theme of THEMES) {

@@ -26,6 +26,7 @@ export function ReadOnlyCodeViewer({
   const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
   const modelRef = useRef<editor.ITextModel | null>(null);
   const monacoRef = useRef<Monaco | null>(null);
+  const resizeRef = useRef<() => void>(() => {});
   const [loading, setLoading] = useState(isMonacoEnabled());
   const [failed, setFailed] = useState(false);
   const [ready, setReady] = useState(false);
@@ -37,6 +38,7 @@ export function ReadOnlyCodeViewer({
   useEffect(() => {
     if (!isMonacoEnabled()) return;
     let disposed = false;
+    let contentListener: { dispose(): void } | null = null;
     loadMonaco()
       .then((monaco) => {
         if (disposed || !hostRef.current) return;
@@ -53,7 +55,8 @@ export function ReadOnlyCodeViewer({
           readOnly: true,
           domReadOnly: true,
           minimap: { enabled: false },
-          fontSize: 13,
+          fontSize: 14,
+          lineHeight: 21,
           fontFamily: 'ui-monospace, SFMono-Regular, Consolas, "Courier New", monospace',
           lineNumbers: 'on',
           renderLineHighlight: 'none',
@@ -62,10 +65,31 @@ export function ReadOnlyCodeViewer({
           insertSpaces: true,
           folding: true,
           wordWrap: 'off',
+          overviewRulerLanes: 0,
+          scrollbar: {
+            vertical: 'hidden',
+            horizontal: 'auto',
+          },
           bracketPairColorization: { enabled: true },
           theme: 'algolens',
           ariaLabel: t('referenceTitle'),
         });
+
+        // The reference panel must grow with the source. Monaco needs an explicit
+        // pixel height, so derive it from the model's content height instead of
+        // trapping the code in a fixed, scrollable box.
+        let lastHeight = 0;
+        const syncHeight = () => {
+          if (!hostRef.current) return;
+          const next = Math.max(180, Math.ceil(instance.getContentHeight()) + 14);
+          if (Math.abs(next - lastHeight) < 1) return;
+          lastHeight = next;
+          hostRef.current.style.height = `${next}px`;
+          instance.layout();
+        };
+        resizeRef.current = syncHeight;
+        syncHeight();
+        contentListener = instance.onDidContentSizeChange(syncHeight);
         editorRef.current = instance;
         modelRef.current = model;
         setLoading(false);
@@ -77,11 +101,13 @@ export function ReadOnlyCodeViewer({
 
     return () => {
       disposed = true;
+      contentListener?.dispose();
       editorRef.current?.dispose();
       editorRef.current = null;
       modelRef.current?.dispose();
       modelRef.current = null;
       monacoRef.current = null;
+      resizeRef.current = () => {};
     };
     // Create once; sync effects below keep the model current.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -92,7 +118,10 @@ export function ReadOnlyCodeViewer({
     const model = modelRef.current;
     if (!monaco || !model || !ready) return;
     const next = toMonacoLanguage(language);
-    if (model.getLanguageId() !== next) monaco.editor.setModelLanguage(model, next);
+    if (model.getLanguageId() !== next) {
+      monaco.editor.setModelLanguage(model, next);
+      window.requestAnimationFrame(() => resizeRef.current());
+    }
   }, [language, ready]);
 
   useEffect(() => {
@@ -100,6 +129,7 @@ export function ReadOnlyCodeViewer({
     if (!model || !ready) return;
     if (model.getValue() !== code) model.setValue(code);
     editorRef.current?.setScrollTop(0);
+    window.requestAnimationFrame(() => resizeRef.current());
   }, [code, ready]);
 
   useEffect(() => {

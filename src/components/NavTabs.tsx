@@ -2,19 +2,13 @@ import { useEffect, useRef, useState } from 'react';
 import type { ViewName } from '../app/types';
 import { useI18n } from '../i18n/I18nProvider';
 
-/**
- * Stage 7A: the primary navigation keeps only the two live destinations.
- * Problem sets / AI import remain fully working but move behind a clearly
- * labelled "More tools" menu instead of competing with the learning lab.
- */
+/** Primary navigation: the learning lab and the local practice bank. */
 export function NavTabs({
   view,
   onChange,
-  onOpenApi,
 }: {
   view: ViewName;
   onChange: (view: ViewName) => void;
-  onOpenApi?: () => void;
 }) {
   const { t } = useI18n();
   const [open, setOpen] = useState(false);
@@ -51,14 +45,6 @@ export function NavTabs({
       >
         {t('navLearn')}
       </button>
-      <button
-        className={`tab ${view === 'packs' ? 'active' : ''}`}
-        aria-current={view === 'packs' ? 'page' : undefined}
-        data-testid="nav-packs"
-        onClick={() => select('packs')}
-      >
-        {t('packs')}
-      </button>
       <div className="navmore" ref={wrap}>
         <button
           type="button"
@@ -76,23 +62,6 @@ export function NavTabs({
               <span>{t('navPractice')}</span>
               <span className="tag tag-muted">{t('navPaused')}</span>
             </button>
-            <button type="button" role="menuitem" data-testid="nav-custom" onClick={() => select('custom')}>
-              <span>{t('navCustom')}</span>
-              <span className="tag">{t('navExperimental')}</span>
-            </button>
-            {onOpenApi && (
-              <button
-                type="button"
-                role="menuitem"
-                data-testid="nav-api-settings"
-                onClick={() => {
-                  setOpen(false);
-                  onOpenApi();
-                }}
-              >
-                {t('apiConfig')}
-              </button>
-            )}
             <p className="navmore-note">{t('navMoreNote')}</p>
           </div>
         )}

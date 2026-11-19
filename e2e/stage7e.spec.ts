@@ -1,4 +1,4 @@
-import { expect, openAdvancedPanels, openCodePanel, selectAlgorithm as chooseAlgorithm, test, type Page } from './fixtures';
+import { expect, openCodePanel, selectAlgorithm as chooseAlgorithm, test, type Page } from './fixtures';
 
 const BFS_TOTAL = 51;
 const DFS_TOTAL = 51;
@@ -70,8 +70,6 @@ async function showLesson(page: Page) {
 }
 
 async function showVariables(page: Page) {
-  await openAdvancedPanels(page);
-  await page.getByTestId('workspace-tab-state').click();
   const more = page.locator('.key-vars-more summary');
   if (await more.count()) await more.click();
 }
@@ -166,11 +164,6 @@ test.describe('Stage 7E — real graph BFS/DFS, same-frame frontier and playback
     await expect(page.locator('[data-testid="graph-node"][data-node-id="D"]')).toHaveAttribute('data-visited', 'false');
 
     await showVariables(page);
-    await page.getByTestId('sync-source-toggle').click();
-    await expect(page.locator('[data-testid="code-position"] .codeline.active .lineno')).toBeVisible();
-    const lineNo = Number(await page.locator('[data-testid="code-position"] .codeline.active .lineno').textContent());
-    expect(lineNo).toBeGreaterThan(90);
-    expect(lineNo).toBeLessThan(150);
 
     await setFrame(page, 13, BFS_TOTAL);
     await expect(page.locator('[data-testid="graph-visual"]')).toHaveAttribute('data-operation', 'skip');

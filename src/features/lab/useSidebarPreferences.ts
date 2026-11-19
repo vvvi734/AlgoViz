@@ -64,6 +64,10 @@ export interface SidebarPreferenceController {
   openTopic: (topicId: string) => void;
   /** Open both levels of the current algorithm's primary directory path. */
   openPath: (path: TextbookPath | null) => void;
+  /** Open every supplied chapter and topic id, preserving authored order. */
+  expandAll: (chapterIds: readonly string[], topicIds: readonly string[]) => void;
+  /** Fold every chapter and topic, leaving only the first-level directory. */
+  collapseAll: () => void;
 }
 
 function withId(current: ReadonlySet<string>, id: string, open: boolean): ReadonlySet<string> {
@@ -99,8 +103,8 @@ export function useSidebarPreferences(currentPath?: TextbookPath | null): Sideba
   const [openChapters, setOpenChapters] = useState<ReadonlySet<string>>(initial.current.openChapters);
   const [openTopics, setOpenTopics] = useState<ReadonlySet<string>>(initial.current.openTopics);
 
-  // Selecting an algorithm (desktop click, mobile select, AI import) must reveal
-  // its chapter and topic. If the learner later folds that path by hand, this
+  // Selecting an algorithm (desktop click, mobile select) must reveal its
+  // chapter and topic. If the learner later folds that path by hand, this
   // effect does not fire again until the selected algorithm actually changes.
   const chapterId = currentPath?.chapterId ?? null;
   const topicId = currentPath?.topicId ?? null;
@@ -142,6 +146,14 @@ export function useSidebarPreferences(currentPath?: TextbookPath | null): Sideba
     setOpenChapters((current) => withId(current, path.chapterId, true));
     setOpenTopics((current) => withId(current, path.topicId, true));
   }, []);
+  const expandAll = useCallback((chapterIds: readonly string[], topicIds: readonly string[]) => {
+    setOpenChapters(new Set(chapterIds));
+    setOpenTopics(new Set(topicIds));
+  }, []);
+  const collapseAll = useCallback(() => {
+    setOpenChapters(new Set());
+    setOpenTopics(new Set());
+  }, []);
 
   return useMemo(
     () => ({
@@ -154,6 +166,8 @@ export function useSidebarPreferences(currentPath?: TextbookPath | null): Sideba
       toggleTopic,
       openTopic,
       openPath,
+      expandAll,
+      collapseAll,
     }),
     [
       collapsed,
@@ -165,6 +179,8 @@ export function useSidebarPreferences(currentPath?: TextbookPath | null): Sideba
       toggleTopic,
       openTopic,
       openPath,
+      expandAll,
+      collapseAll,
     ],
   );
 }

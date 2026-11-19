@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import type { AlgorithmCatalog } from '../../domain/algorithms/types';
 import {
   buildTextbookNavigation,
+  findConceptPath,
   findTextbookPath,
   textbookTitle,
   TEXTBOOK_REFERENCE,
@@ -26,7 +27,9 @@ import { useI18n } from '../../i18n/I18nProvider';
 export function AlgorithmSidebar({
   catalog,
   currentAlgo,
+  currentConceptId,
   onSelect,
+  onSelectConcept,
   collapsed,
   onToggleCollapsed,
   isChapterOpen,
@@ -34,10 +37,14 @@ export function AlgorithmSidebar({
   onOpenChapter,
   isTopicOpen,
   onToggleTopic,
+  onExpandAll,
+  onCollapseAll,
 }: {
   catalog: AlgorithmCatalog;
   currentAlgo: string;
+  currentConceptId?: string | null;
   onSelect: (id: string) => void;
+  onSelectConcept?: (conceptId: string) => void;
   collapsed: boolean;
   onToggleCollapsed: () => void;
   isChapterOpen: (chapterId: string) => boolean;
@@ -45,13 +52,23 @@ export function AlgorithmSidebar({
   onOpenChapter: (chapterId: string) => void;
   isTopicOpen: (topicId: string) => boolean;
   onToggleTopic: (topicId: string) => void;
+  onExpandAll: (chapterIds: readonly string[], topicIds: readonly string[]) => void;
+  onCollapseAll: () => void;
 }) {
   const { lang, pick, t } = useI18n();
   const chapters = useMemo(() => buildTextbookNavigation(catalog), [catalog]);
-  const currentPath = useMemo(() => findTextbookPath(chapters, currentAlgo), [chapters, currentAlgo]);
+  const currentPath = useMemo(
+    () => (currentConceptId
+      ? findConceptPath(chapters, currentConceptId)
+      : findTextbookPath(chapters, currentAlgo)),
+    [chapters, currentAlgo, currentConceptId],
+  );
   const currentEntry = catalog[currentAlgo];
   const currentTopicId = currentPath?.topicId ?? null;
   const directoryLabel = t('textbookDirectory');
+  const expandableTopicIds = chapters.flatMap((chapter) =>
+    chapter.topics.filter((topic) => topic.kind === 'group').map((topic) => topic.id),
+  );
 
   const chapterNumber = (chapter: TextbookChapterView): string =>
     chapter.extension ? '✦' : String(chapter.number).padStart(2, '0');
@@ -150,6 +167,25 @@ export function AlgorithmSidebar({
         {t('textbookReference')}
       </div>
 
+      <div className="sidebar-actions" role="group" aria-label={t('textbookExpandActions')}>
+        <button
+          type="button"
+          className="sidebar-action"
+          data-testid="sidebar-expand-all"
+          onClick={() => onExpandAll(chapters.map((chapter) => chapter.id), expandableTopicIds)}
+        >
+          {t('textbookExpandAll')}
+        </button>
+        <button
+          type="button"
+          className="sidebar-action"
+          data-testid="sidebar-collapse-all"
+          onClick={onCollapseAll}
+        >
+          {t('textbookCollapseAll')}
+        </button>
+      </div>
+
       <nav className="sidebar-groups textbook-nav" aria-label={directoryLabel}>
         {chapters.map((chapter) => {
           const open = isChapterOpen(chapter.id);
@@ -194,10 +230,12 @@ export function AlgorithmSidebar({
                       topic={topic}
                       catalog={catalog}
                       currentAlgo={currentAlgo}
+                      currentConceptId={currentConceptId}
                       open={isTopicOpen(topic.id)}
                       holdsCurrent={topic.id === currentTopicId}
                       onToggle={() => onToggleTopic(topic.id)}
                       onSelect={onSelect}
+                      onSelectConcept={onSelectConcept}
                     />
                   ))}
                 </div>
@@ -215,43 +253,81 @@ function TextbookTopicRow({
   topic,
   catalog,
   currentAlgo,
+  currentConceptId,
   open,
   holdsCurrent,
   onToggle,
   onSelect,
+  onSelectConcept,
 }: {
   chapterId: string;
   topic: TextbookTopicView;
   catalog: AlgorithmCatalog;
   currentAlgo: string;
+  currentConceptId?: string | null;
   open: boolean;
   holdsCurrent: boolean;
   onToggle: () => void;
   onSelect: (id: string) => void;
+  onSelectConcept?: (conceptId: string) => void;
 }) {
   const { lang, pick, t } = useI18n();
   const title = textbookTitle(topic.title, lang);
 
   if (topic.kind === 'concept' || topic.kind === 'planned') {
-    const status = topic.kind === 'concept' ? t('textbookConcept') : t('textbookPending');
-    const accessibleStatus =
-      topic.kind === 'concept' ? t('textbookConceptPending') : t('textbookPending');
+    const conceptId = topic.conceptId;
+    const hasLesson = topic.kind === 'concept' && conceptId && onSelectConcept;
+    const active = hasLesson && currentConceptId === conceptId;
+    const status = hasLesson
+      ? t('textbookConceptOpen')
+      : topic.kind === 'concept'
+        ? t('textbookConcept')
+        : t('textbookPending');
+    const accessibleStatus = hasLesson
+      ? t('textbookConceptOpen')
+      : topic.kind === 'concept'
+        ? t('textbookConceptPending')
+        : t('textbookPending');
+
+    if (!hasLesson) {
+      return (
+        <div
+          className={`textbook-topic is-${topic.kind}`}
+          data-topic={topic.id}
+          data-kind={topic.kind}
+          data-testid={`topic-${topic.id}`}
+          aria-disabled="true"
+          aria-label={`${title} · ${accessibleStatus}`}
+          title={`${title} · ${accessibleStatus}`}
+        >
+          <span className="textbook-kind-icon" aria-hidden="true">
+            {topic.kind === 'concept' ? '◇' : '△'}
+          </span>
+          <span className="textbook-topic-name">{title}</span>
+          <span className="textbook-kind-status">{status}</span>
+        </div>
+      );
+    }
+
     return (
-      <div
-        className={`textbook-topic is-${topic.kind}`}
+      <button
+        type="button"
+        className={`textbook-topic is-concept is-link${active ? ' active' : ''}`}
         data-topic={topic.id}
-        data-kind={topic.kind}
+        data-kind="concept"
+        data-concept-id={conceptId}
         data-testid={`topic-${topic.id}`}
-        aria-disabled="true"
+        aria-current={active ? 'true' : undefined}
         aria-label={`${title} · ${accessibleStatus}`}
         title={`${title} · ${accessibleStatus}`}
+        onClick={() => onSelectConcept(conceptId)}
       >
-        <span className="textbook-kind-icon" aria-hidden="true">
-          {topic.kind === 'concept' ? '◇' : '△'}
-        </span>
+        <span className="textbook-kind-icon" aria-hidden="true">◇</span>
         <span className="textbook-topic-name">{title}</span>
+        {active && <span className="textbook-current-dot" aria-hidden="true" />}
         <span className="textbook-kind-status">{status}</span>
-      </div>
+        <span className="textbook-topic-chevron" aria-hidden="true">›</span>
+      </button>
     );
   }
 

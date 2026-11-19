@@ -7,11 +7,6 @@ import { defineConfig } from '@playwright/test';
  * spec routes that URL to the local `pyodide@0.27.7` package via `fixtures.ts`,
  * so the Worker and Python execution stay real even when the CDN is blocked.
  *
- * Stage 6A adds a second web server: the real local AI Gateway, launched from
- * TypeScript with vite-node so E2E does not depend on a prior `ai:build`.
- * `ALGOLENS_AI_MOCK=1` registers the deterministic provider only. This is a
- * fixture, not a real Ollama/cloud test.
- *
  * `--disable-quic` is a transport workaround, not a test relaxation: on some
  * networks Edge negotiates HTTP/3 with jsdelivr and the 10 MB `pyodide.asm.wasm`
  * body is aborted mid-flight (`net::ERR_QUIC_PROTOCOL_ERROR`), which starves
@@ -50,20 +45,6 @@ export default defineConfig({
       // different build (and therefore different DOM) than the one under test.
       reuseExistingServer: false,
       timeout: 60_000,
-    },
-    {
-      command: 'node node_modules/vite-node/vite-node.mjs packages/ai-gateway/src/main.ts',
-      url: 'http://127.0.0.1:8787/api/health',
-      reuseExistingServer: true,
-      timeout: 60_000,
-      env: {
-        ALGOLENS_AI_MOCK: '1',
-        ALGOLENS_AI_PORT: '8787',
-        ALGOLENS_AI_RATE_LIMIT: '200',
-        // Follow the isolated preview port: the Gateway's default allow-list
-        // only knows 5173/4173, so a custom port must be declared explicitly.
-        ALGOLENS_AI_ORIGINS: `${PREVIEW_URL},http://localhost:${PREVIEW_PORT}`,
-      },
     },
   ],
 });

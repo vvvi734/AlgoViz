@@ -32,9 +32,9 @@ function makeQuery(media: string): MockMediaQueryList {
 const queries = new Map<string, MockMediaQueryList>();
 
 /**
- * The MCP protocol tests run in the node environment (no DOM) while sharing
- * this setup file, so every browser-only fixture is guarded instead of
- * dragging jsdom into them.
+ * Some domain tests run in the node environment (no DOM) while sharing this
+ * setup file, so every browser-only fixture is guarded instead of dragging
+ * jsdom into them.
  */
 const hasDom = typeof window !== 'undefined';
 

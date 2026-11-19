@@ -2,7 +2,7 @@ import { useI18n } from '../i18n/I18nProvider';
 import { useTheme } from '../theme/ThemeProvider';
 import { THEME_PREFERENCES, type ThemePreference } from '../theme/resolve';
 
-export function TopBar({ onOpenApi }: { onOpenApi: () => void }) {
+export function TopBar() {
   const { preference, setPreference } = useTheme();
   const { t, lang, toggleLang } = useI18n();
   const labels: Record<ThemePreference, string> = {
@@ -43,7 +43,6 @@ export function TopBar({ onOpenApi }: { onOpenApi: () => void }) {
         <button className="btn ghost" onClick={toggleLang} aria-label="Switch language">
           {lang === 'zh' ? 'EN / 中文' : '中文 / EN'}
         </button>
-        <button className="btn" onClick={onOpenApi}>{t('apiConfig')}</button>
       </div>
     </header>
   );

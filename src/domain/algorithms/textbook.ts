@@ -9,9 +9,8 @@ import type { AlgorithmCatalog } from './types';
  *
  * The React sidebar never hard-codes an algorithm name. It reads the generated
  * registry for icons, localized names and the actual algorithm ids, then builds
- * the tree below. A runtime algorithm that is not in this table (currently only
- * `custom`, created by AI import) still lands in the explicit extension chapter,
- * so an import can never disappear from the directory.
+ * the tree below. Runtime algorithms are always registered here; the directory
+ * never depends on imported or user-generated content.
  *
  * Reference edition (fixed before the navigation was written):
  *   程杰《大话数据结构》，清华大学出版社，2011 年 6 月第 1 版。
@@ -42,6 +41,8 @@ export interface TextbookTopic {
    * a pending status instead of inventing an algorithm target.
    */
   concept?: boolean;
+  /** Concept lesson id, when a static teaching page has been authored. */
+  conceptId?: string;
   /** Planned algorithm demonstration whose implementation is not shipped yet. */
   planned?: boolean;
   /** Whole topic is an extension beyond the book's core sequence. */
@@ -78,12 +79,14 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
         title: { zh: '数据结构的基本概念', en: 'Basic concepts' },
         algorithms: [],
         concept: true,
+        conceptId: 'data-structure-basics',
       },
       {
         id: 'intro-logical-physical',
         title: { zh: '逻辑结构与物理结构', en: 'Logical and physical structures' },
         algorithms: [],
         concept: true,
+        conceptId: 'storage-structures',
       },
       {
         id: 'intro-adt',
@@ -110,6 +113,7 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
         title: { zh: '算法效率的度量', en: 'Measuring algorithm efficiency' },
         algorithms: [],
         concept: true,
+        conceptId: 'complexity',
       },
       {
         id: 'recursion-extension',
@@ -241,6 +245,7 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
         title: { zh: '二叉树的性质与存储结构', en: 'Binary tree properties and storage' },
         algorithms: [],
         concept: true,
+        conceptId: 'tree-terms',
       },
       {
         id: 'binary-tree-traversal',
@@ -277,6 +282,7 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
         title: { zh: '图的基本概念', en: 'Graph fundamentals' },
         algorithms: [],
         concept: true,
+        conceptId: 'graph-basics',
       },
       {
         id: 'graph-storage',
@@ -421,14 +427,7 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
     title: { zh: '扩展算法', en: 'Extended algorithms' },
     shortTitle: { zh: '扩展', en: 'Extras' },
     extension: true,
-    topics: [
-      {
-        id: 'custom',
-        title: { zh: 'AI 自定义算法', en: 'AI-imported algorithms' },
-        algorithms: [{ id: 'custom', extension: true }],
-        extension: true,
-      },
-    ],
+    topics: [],
   },
 ];
 
@@ -548,6 +547,21 @@ export function findTextbookPath(
   for (const chapter of chapters) {
     for (const topic of chapter.topics) {
       if (topic.algorithms.some((algorithm) => algorithm.id === algorithmId)) {
+        return { chapterId: chapter.id, topicId: topic.id };
+      }
+    }
+  }
+  return null;
+}
+
+/** The chapter/topic path for an authored concept lesson. */
+export function findConceptPath(
+  chapters: TextbookChapterView[],
+  conceptId: string,
+): TextbookPath | null {
+  for (const chapter of chapters) {
+    for (const topic of chapter.topics) {
+      if (topic.conceptId === conceptId) {
         return { chapterId: chapter.id, topicId: topic.id };
       }
     }

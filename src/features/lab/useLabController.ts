@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   catalog as baseCatalog,
   defaultInputFor,
@@ -6,14 +6,13 @@ import {
   exampleFor,
   groups,
 } from '../../domain/algorithms/examples';
-import type { AlgorithmCatalog, AlgorithmEntry, CodeLanguage } from '../../domain/algorithms/types';
+import type { AlgorithmCatalog, CodeLanguage } from '../../domain/algorithms/types';
 import { CODE_LANGUAGES } from '../../domain/algorithms/types';
 import type { TraceEvent } from '../../domain/trace/schema';
 import { parseTraceDocument } from '../../domain/trace/schema';
 import { framesToTraceDocument } from '../../domain/trace/adapter';
 import type { VisualRunResult } from '../../domain/trace/types';
 import { ExecutionError, formatDiagnostic, type ExecutionDiagnostic } from '../../domain/trace/diagnostic';
-import type { GeneratedAlgorithm } from '../../runtime/ai/client';
 import { runForLanguage, isVisualResult } from '../../runtime/execute';
 import { safeGet, safeSet } from '../../runtime/storage';
 import { loadDraft, saveDraft } from '../../runtime/drafts';
@@ -146,29 +145,11 @@ export interface LabController {
   runVisualization: () => void;
   restorePreset: () => void;
   randomizeInput: () => void;
-  loadCustom: (generated: GeneratedAlgorithm) => void;
-  /**
-   * Stage 4: load a pack course's Python example into the editor **without
-   * running it**. Execution still requires the user to press Run, so imported
-   * text can never execute implicitly.
-   */
-  applyCourseExample: (code: string, input: unknown) => void;
-  /**
-   * Stage 5A: open an imported `.algosession.json` — switch algorithm, load the
-   * session's Python example as inert text and stop. Nothing is executed here:
-   * the trace only exists after the user presses Run. Returns `false` when the
-   * algorithm does not exist.
-   */
-  openLearningSession: (session: { algorithmId: string; source?: string; input?: unknown }) => boolean;
 }
 
 export function useLabController(): LabController {
   const { t, b, lang } = useI18n();
-  const [customEntry, setCustomEntry] = useState<AlgorithmEntry | null>(null);
-  const catalog = useMemo<AlgorithmCatalog>(
-    () => (customEntry ? { ...baseCatalog, custom: customEntry } : baseCatalog),
-    [customEntry],
-  );
+  const catalog: AlgorithmCatalog = baseCatalog;
   const [currentAlgo, setCurrentAlgo] = useState('bubble');
   const [codeLang, setCodeLangState] = useState<CodeLanguage>(storedLanguage);
   const [editorCode, setEditorCodeState] = useState(() => {
@@ -466,75 +447,6 @@ export function useLabController(): LabController {
     setInputJson(JSON.stringify(next));
   }, [catalog, currentAlgo, inputJson]);
 
-  // Stage 4: a pack course example is loaded as inert text — it is NOT executed
-  // here. Execution still requires the user to press "Run", so text imported
-  // from a pack never runs implicitly.
-  const applyCourseExample = useCallback((code: string, sampleInput: unknown) => {
-    flushCurrent();
-    setCodeLangState('python');
-    safeSet(CODE_LANG_KEY, 'python');
-    location.current = { algo: currentAlgo, lang: 'python' };
-    applyCode(code);
-    const raw = JSON.stringify(sampleInput ?? catalog[currentAlgo]?.input ?? null);
-    setInputJson(raw);
-    writeDraft(currentAlgo, 'python', code);
-    setDiagnostics([]);
-    setStatus({ text: t('lessonExampleLoaded'), error: false });
-  }, [applyCode, catalog, currentAlgo, flushCurrent, t, writeDraft]);
-
-  // Stage 5A: apply an imported learning session. Switching algorithm normally
-  // runs its preset, but an *import* must not execute anything — the session is
-  // an intent, so this path clears the frames and waits for the user's Run.
-  const openLearningSession = useCallback((session: { algorithmId: string; source?: string; input?: unknown }) => {
-    const entry = catalog[session.algorithmId];
-    if (!entry) return false;
-    playback.stop();
-    flushCurrent();
-    const targetLang: CodeLanguage = session.source ? 'python' : codeLang;
-    if (targetLang !== codeLang) {
-      setCodeLangState(targetLang);
-      safeSet(CODE_LANG_KEY, targetLang);
-    }
-    location.current = { algo: session.algorithmId, lang: targetLang };
-    setCurrentAlgo(session.algorithmId);
-    const code = session.source ?? loadDraft(session.algorithmId, targetLang) ?? exampleFor(session.algorithmId, targetLang);
-    applyCode(code);
-    setInputJson(JSON.stringify(session.input ?? defaultInputFor(session.algorithmId) ?? null));
-    if (session.source) writeDraft(session.algorithmId, 'python', session.source);
-    setEvents([]);
-    setSource('');
-    setDiagnostics([]);
-    setStatus({ text: t('sessionAppliedShort'), error: false });
-    return true;
-  }, [applyCode, catalog, codeLang, flushCurrent, playback, t, writeDraft]);
-
-  const loadCustom = useCallback((generated: GeneratedAlgorithm) => {
-
-    const note = b(
-      'AI 生成的可视化算法，请检查代码安全性与正确性。',
-      'AI-generated visualization; review code for safety and correctness.',
-    );
-    setCustomEntry({
-      group: 'custom', icon: '✦',
-      name: [generated.title, generated.title],
-      desc: [note, note],
-      time: '—', space: '—',
-      input: generated.input,
-      code: generated.code,
-    });
-    flushCurrent();
-    location.current = { algo: 'custom', lang: 'js' };
-    setCurrentAlgo('custom');
-    setCodeLangState('js');
-    safeSet(CODE_LANG_KEY, 'js');
-    applyCode(generated.code);
-    setInputJson(JSON.stringify(generated.input));
-    setEvents([]);
-    setSource('');
-    setDiagnostics([]);
-    setStatus({ text: t('generated'), error: false });
-  }, [b, t, flushCurrent, applyCode]);
-
   const traceStale = source !== '' && editorCode !== source;
 
   return {
@@ -565,8 +477,5 @@ export function useLabController(): LabController {
     runVisualization,
     restorePreset,
     randomizeInput,
-    loadCustom,
-    applyCourseExample,
-    openLearningSession,
   };
 }

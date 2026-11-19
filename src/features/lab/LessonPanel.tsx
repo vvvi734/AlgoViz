@@ -26,9 +26,6 @@ export function LessonPanel({
   index,
   currentEvent,
   onSeek,
-  originName,
-  hasExample,
-  onUseExample,
   compact = false,
   variant = 'panel',
 }: {
@@ -37,10 +34,6 @@ export function LessonPanel({
   index: number;
   currentEvent: TraceEvent | undefined;
   onSeek: (index: number) => void;
-  /** Stage 4: set when the course was installed from a `.algopack`. */
-  originName?: string;
-  hasExample?: boolean;
-  onUseExample?: () => void;
   /** Stage 7A: compress course copy so it never dominates the learning view. */
   compact?: boolean;
   /** UI-02: put the active frame and its explanation at the top of the rail. */
@@ -94,29 +87,11 @@ export function LessonPanel({
         <div className="lesson-head-main">
           <div className="eyebrow">{t('lessonEyebrow')}</div>
           <h2 data-testid="lesson-title">{lesson.title[lang]}</h2>
-          {originName && (
-            <p className="muted smalltext lesson-origin" data-testid="lesson-origin">
-              {t('packOrigin').replace('{pack}', originName)}
-            </p>
-          )}
         </div>
         <div className="lesson-head-tags">
           <span className="tag" data-testid="lesson-version">v{lesson.contentVersion}</span>
         </div>
       </div>
-
-      {hasExample && onUseExample && (
-        <div className="lesson-example lesson-example-compact">
-          <button
-            type="button"
-            className="btn small"
-            data-testid="lesson-use-example"
-            onClick={onUseExample}
-          >
-            {t('lessonUseExample')}
-          </button>
-        </div>
-      )}
 
       <section className="lesson-focus" data-testid="current-step">
         <div className="lesson-focus-head">
