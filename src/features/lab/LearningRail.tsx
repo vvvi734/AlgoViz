@@ -1,10 +1,10 @@
-import { buildFrameInsight, type FrameChange } from '../../domain/lessons/frameInsight';
 import {
   countStepFrames,
   findFrameForStep,
   stepIndexForEvent,
 } from '../../domain/lessons/sync';
-import type { Lesson, LessonLang } from '../../domain/lessons/types';
+import { buildFrameInsight } from '../../domain/lessons/frameInsight';
+import type { Lesson } from '../../domain/lessons/types';
 import { localizeTraceMessage } from '../../domain/lessons/localizeMessage';
 import type { TraceEvent } from '../../domain/trace/schema';
 import { useI18n } from '../../i18n/I18nProvider';
@@ -12,19 +12,13 @@ import { CallStackPanel } from './CallStackPanel';
 import { VariableWatch } from './VariableWatch';
 import { VisualGuide } from './VisualGuide';
 
-function changeText(changes: readonly FrameChange[], lang: LessonLang): string {
-  const sep = lang === 'zh' ? '；' : '; ';
-  const colon = lang === 'zh' ? '：' : ': ';
-  return changes
-    .slice(0, 3)
-    .map((change) => {
-      const value =
-        change.before !== undefined && change.after !== undefined
-          ? `${change.before} → ${change.after}`
-          : change.after ?? change.detail ?? '';
-      return value ? `${change.label}${colon}${value}` : change.label;
-    })
-    .join(sep);
+/** Keep one sentence; the player/timeline owns the longer frame story. */
+function oneSentence(value: string): string {
+  const trimmed = value.trim();
+  // A dot inside `previous.next` or `3.14` is not a sentence boundary: English
+  // terminators only count when followed by whitespace or the end of the text.
+  const match = trimmed.match(/^(.+?(?:[。！？]|[.!?](?=\s|$)))/)?.[1];
+  return (match ?? trimmed).trim();
 }
 
 /**
@@ -62,8 +56,6 @@ export function LearningRail({
   const { t, lang } = useI18n();
   const activeIndex = stepIndexForEvent(lesson, currentEvent);
   const activeStep = activeIndex >= 0 ? lesson?.steps[activeIndex] : undefined;
-  const previousEvent = index > 0 ? events[index - 1] : undefined;
-  const insight = buildFrameInsight(lesson, currentEvent, previousEvent, lang);
   const rawMessage = currentEvent?.message ?? '';
   const message = localizeTraceMessage(rawMessage, lang);
   const frameLabel = currentEvent
@@ -76,14 +68,23 @@ export function LearningRail({
         .replace('{current}', String(activeIndex + 1))
         .replace('{total}', String(lesson?.steps.length ?? 0))
     : null;
+  const previousEvent = index > 0 ? events[index - 1] : undefined;
+  const insight = currentEvent
+    ? buildFrameInsight(lesson, currentEvent, previousEvent, lang)
+    : null;
   const actionCandidate =
-    insight?.action ||
-    activeStep?.title[lang] ||
-    (currentEvent ? t('currentStepUnlinked') : t('currentStepEmpty'));
+    insight?.action ?? activeStep?.title[lang] ?? (currentEvent ? oneSentence(message) : t('currentStepEmpty'));
   const action = actionCandidate === rawMessage ? message : actionCandidate;
-  const whyCandidate = insight?.why || (activeStep ? activeStep.explanation[lang] : null);
-  const why = whyCandidate === rawMessage ? message : whyCandidate;
-  const changes = insight?.changes ?? [];
+  const currentNodeId =
+    currentEvent?.structure?.kind === 'binary-tree'
+      ? currentEvent.structure.currentNodeId
+      : null;
+  const baseDetail =
+    oneSentence(message) || oneSentence(activeStep?.explanation[lang] ?? '') || t('lessonRunHint');
+  const detail =
+    currentNodeId && !baseDetail.includes(currentNodeId)
+      ? `${baseDetail} ${currentNodeId}`
+      : baseDetail;
   const hasCallStack = Boolean(currentEvent?.callStack?.length);
 
   return (
@@ -120,7 +121,7 @@ export function LearningRail({
         <VariableWatch
           event={currentEvent}
           selectedFrameId={selectedFrameId}
-          relatedText={`${message} ${why ?? ''}`}
+          relatedText={`${message} ${detail}`}
         />
         {hasCallStack ? (
           <CallStackPanel
@@ -174,19 +175,8 @@ export function LearningRail({
         >
           <h2 className="rail-operation-title" data-testid="current-step-title">{action}</h2>
           <p className="rail-operation-text" data-testid="current-step-message">
-            {message || t('lessonRunHint')}
+            {detail}
           </p>
-          {changes.length > 0 ? (
-            <p className="rail-operation-change" data-testid="current-step-changes">
-              {changeText(changes, lang)}
-            </p>
-          ) : null}
-          {why ? (
-            <details className="rail-why">
-              <summary>{t('lessonWhy')}</summary>
-              <p data-testid="lesson-explanation">{why}</p>
-            </details>
-          ) : null}
         </div>
       </section>
     </section>

@@ -257,7 +257,7 @@ test.describe('UX-04 — desktop one-screen learning', () => {
     await expect(page.getByTestId('algorithm-guide')).toHaveCount(0);
   });
 
-  test('advanced panels start collapsed, expand to real variables, and preserve frame state across the toggle', async ({ page }) => {
+  test('advanced panels start collapsed, expand to reference code and Trace state, and preserve frame state across the toggle', async ({ page }) => {
     test.setTimeout(180_000);
     await page.setViewportSize({ width: 1366, height: 768 });
     await page.goto('/');
@@ -274,7 +274,7 @@ test.describe('UX-04 — desktop one-screen learning', () => {
     const current = await page.getByTestId('current-step').innerText();
 
     await openAdvancedPanels(page);
-    await expect(page.getByTestId('workspace-panel-state')).toBeVisible();
+    await expect(page.getByTestId('workspace-panel-reference')).toBeVisible();
     await expect(page.getByTestId('variables-watch')).toContainText('distances');
     await page.getByTestId('workspace-tab-tools').click();
     await expect(page.getByTestId('workspace-panel-tools')).toBeVisible();

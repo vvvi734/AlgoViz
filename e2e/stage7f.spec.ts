@@ -143,7 +143,7 @@ test.describe('Stage 7F — real heapq Dijkstra, weighted graph, distance table 
     await expect(page.getByTestId('lesson-active-step')).toHaveAttribute('data-step-id', 'done');
 
     await openAdvancedPanels(page);
-    await page.getByRole('tab', { name: /变量与调用栈|Variables & call stack/ }).click();
+    await page.getByTestId('workspace-tab-state').click();
     await page.getByTestId('sync-source-toggle').click();
     await expect(page.locator('[data-testid="code-position"] .codeline.active .lineno')).toBeVisible();
     const lineNo = Number(await page.locator('[data-testid="code-position"] .codeline.active .lineno').textContent());

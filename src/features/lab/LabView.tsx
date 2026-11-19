@@ -12,6 +12,7 @@ import { Timeline } from './Timeline';
 import { CodeDock } from './CodeDock';
 import { SyncPanel } from './SyncPanel';
 import { LearningRail } from './LearningRail';
+import { ReferenceCodePanel } from './ReferenceCodePanel';
 import { useSvgTextFloor } from './useSvgTextFloor';
 import { AlgorithmGuide, ALGORITHM_GUIDE_ID } from './AlgorithmGuide';
 import { useAlgorithmGuidePreferences } from './useAlgorithmGuidePreferences';
@@ -44,9 +45,10 @@ import { useTheme } from '../../theme/ThemeProvider';
  *  1. primary: sidebar → [animation + playback | learning rail];
  *     the code editor is a full-width, collapsed-by-default dock below both columns
  *     (UI-03);
- *  2. the rail owns real variables, the optional call stack and the current
- *     operation; advanced tabs keep AI, session and the source snapshot, without
- *     duplicating variables or call frames;
+ *  2. the rail owns real variables, the optional call stack and one concise
+ *     current operation; advanced tabs own read-only reference code, the Trace
+ *     source snapshot, AI and session tools, without duplicating variables or
+ *     call frames;
  *  3. the lesson rail and the animation read the SAME `currentEvent` and
  *     `playback.index`; the rail never owns a second playhead.
  *
@@ -117,7 +119,7 @@ export function LabView({
   const noLocationHint = !lab.traceStale && lab.events.length > 0 && currentEvent != null && !currentEvent.sourceLocation;
 
   const [selectedFrameId, setSelectedFrameId] = useState<string | null>(null);
-  const [tab, setTab] = useState<WorkspaceTabId>('state');
+  const [tab, setTab] = useState<WorkspaceTabId>('reference');
   const workbenchRef = useRef<HTMLDivElement | null>(null);
   const shellRef = useRef<HTMLDivElement | null>(null);
   useSvgTextFloor(shellRef);
@@ -175,12 +177,19 @@ export function LabView({
   const activeStep = activeStepIndex >= 0 ? lesson?.steps[activeStepIndex] : undefined;
 
   const tabLabels: Record<WorkspaceTabId, string> = {
+    reference: t('workspaceReference'),
     state: t('workspaceState'),
     mentor: t('workspaceMentor'),
     tools: t('workspaceTools'),
   };
 
   const tabs = {
+    reference: (
+      <ReferenceCodePanel
+        algorithmId={lab.currentAlgo}
+        algorithmName={entry ? pick(entry.name) : lab.currentAlgo}
+      />
+    ),
     state: (
       <div className="state-stack">
         <SyncPanel
@@ -405,7 +414,13 @@ export function LabView({
           theme={resolved}
         />
 
-        <WorkspaceTabs active={tab} onChange={setTab} labels={tabLabels} panels={tabs} />
+        <WorkspaceTabs
+          active={tab}
+          onChange={setTab}
+          labels={tabLabels}
+          panels={tabs}
+          lazyPanels={['reference']}
+        />
       </div>
     </div>
   );

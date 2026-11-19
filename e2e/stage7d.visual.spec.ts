@@ -136,7 +136,7 @@ test.describe('Stage 7D visual evidence', () => {
     await expect(page.locator('[data-testid="progress"]')).toHaveText('1 / 30', { timeout: 60_000 });
     await setFrame(page, 5, 30);
     await openAdvancedPanels(page);
-    await page.getByRole('tab', { name: '变量与调用栈' }).click();
+    await page.getByTestId('workspace-tab-state').click();
     await expect(page.locator('[data-testid^="call-frame-f"]')).toHaveCount(3);
     await expect(page.locator('[data-testid="variables-watch"]')).toBeVisible();
     for (const theme of THEMES) {

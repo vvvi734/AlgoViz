@@ -100,13 +100,16 @@ test.describe('Stage 7D — real binary-tree traversal and recursion stack', () 
     await expect(page.getByTestId('lesson-active-step')).toHaveAttribute('data-step-id', 'enter');
 
     await openAdvancedPanels(page);
-    await page.getByRole('tab', { name: '变量与调用栈' }).click();
+    await page.getByTestId('workspace-tab-state').click();
+    await expect(page.locator('[data-testid="workspace-panel-state"] [data-testid="variables-watch"]')).toHaveCount(0);
+    await expect(page.locator('[data-testid="workspace-panel-state"] [data-testid^="call-frame-"]')).toHaveCount(0);
     const frames = page.locator('[data-testid^="call-frame-f"]');
     await expect(frames).toHaveCount(3);
     await expect(frames.nth(0)).toContainText('traverse');
-    const variables = page.getByTestId('variables-watch');
+    const variables = page.getByTestId('key-vars');
     await expect(variables).toContainText('node_id');
     await expect(variables).toContainText('n4');
+    await page.locator('.key-vars-more summary').click();
     await expect(variables).toContainText('path');
     await expect(variables).toContainText('depth');
     await expect(page.getByTestId('variables-scope')).toContainText('深度 2');
@@ -115,11 +118,9 @@ test.describe('Stage 7D — real binary-tree traversal and recursion stack', () 
     expect(await activeId(page)).toBe('n4');
     await expect(variables).toContainText('n4');
     await expect(page.getByTestId('lesson-active-step')).toHaveAttribute('data-step-id', 'return');
-    await page.getByRole('tab', { name: '变量与调用栈' }).click();
     await setFrame(page, 8);
     expect(await activeId(page)).toBe('n2');
     await expect(page.getByTestId('lesson-active-step')).toHaveAttribute('data-step-id', 'visit');
-    await page.getByRole('tab', { name: '变量与调用栈' }).click();
     await expect(frames).toHaveCount(2);
     expect(await visitedIds(page)).toEqual(['n4', 'n2']);
 
@@ -144,14 +145,14 @@ test.describe('Stage 7D — real binary-tree traversal and recursion stack', () 
     await setFrame(page, 2);
     expect(await activeId(page)).toBe('n1');
     await expect(page.getByTestId('lesson-active-step')).toHaveAttribute('data-step-id', 'visit');
-    await expect(page.locator('[data-testid="current-step-message"]')).toContainText('visit n1');
+    await expect(page.locator('[data-testid="current-step-message"]')).toContainText(/访问节点 n1|visit n1/);
     await expect(page.locator('.algolens-active-line')).toHaveCount(1);
 
     await setFrame(page, 8);
     expect(await activeId(page)).toBe('n4');
     expect(await visitedIds(page)).toEqual(['n1', 'n2', 'n4']);
     await openAdvancedPanels(page);
-    await page.getByRole('tab', { name: '变量与调用栈' }).click();
+    await page.getByTestId('workspace-tab-state').click();
     await expect(page.getByTestId('variables-watch')).toContainText('n4');
     await page.getByTestId('sync-source-toggle').click();
     await expect(page.locator('[data-testid="code-position"] .codeline.active .lineno')).toHaveText('130');
@@ -274,7 +275,7 @@ test.describe('Stage 7D — real binary-tree traversal and recursion stack', () 
     await setFrame(page, 14);
     expect(await activeId(page)).toBe('n1');
     await expect(page.locator('[data-testid="tree-visited-sequence"]')).toHaveAttribute('data-visited-ids', 'n4,n2,n5,n1');
-    await expect(page.locator('[data-testid="current-step-message"]')).toContainText('visit n1');
+    await expect(page.locator('[data-testid="current-step-message"]')).toContainText(/访问节点 n1|visit n1/);
 
     await selectAlgo(page, 'stack');
     await expect(page.locator('[data-testid="stack-visual"]')).toBeVisible({ timeout: 60_000 });

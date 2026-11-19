@@ -66,16 +66,13 @@ describe('S2 quick/merge bilingual courses', () => {
     expect(mergeSortLesson.steps.map((step) => step.stepId)).toContain('merge-writeback');
   });
 
-  it('builds a five-stage guide instead of an empty stage strip', () => {
+  it('uses authored horizontal flows instead of the raw Trace captions', () => {
     for (const lesson of lessons) {
       const guide = buildAlgorithmGuide(lesson.algorithmId, lesson);
-      expect(guide.source).toBe('lesson');
-      expect(guide.problem).toEqual(lesson.oneLiner);
-      expect(guide.stages).toHaveLength(5);
-      expect(guide.steps).toHaveLength(5);
-      expect(guide.memoryHook).toEqual(lesson.steps.at(-1)?.tip);
-      expect(guide.pitfalls.zh).toEqual(lesson.commonMistakes.zh);
-      expect(guide.stages.every((stage) => stage.title.zh.length > 0 && stage.summary.zh.length > 0)).toBe(true);
+      expect(guide.source).toBe('curated');
+      expect(guide.stages.length).toBeGreaterThanOrEqual(3);
+      expect(guide.stages.every((stage) => stage.title.zh.length > 0 && stage.title.en.length > 0)).toBe(true);
+      expect(guide.conditions.zh.length).toBeGreaterThan(0);
     }
   });
 

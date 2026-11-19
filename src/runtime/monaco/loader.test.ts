@@ -4,6 +4,8 @@ import { isMonacoEnabled, toMonacoLanguage } from './loader';
 describe('Monaco loader helpers', () => {
   it('maps teaching languages to Monaco language ids', () => {
     expect(toMonacoLanguage('python')).toBe('python');
+    expect(toMonacoLanguage('c')).toBe('c');
+    expect(toMonacoLanguage('cpp')).toBe('cpp');
     expect(toMonacoLanguage('js')).toBe('javascript');
   });
 

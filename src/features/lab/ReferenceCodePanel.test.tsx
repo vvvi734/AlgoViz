@@ -1,0 +1,99 @@
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { I18nProvider } from '../../i18n/I18nProvider';
+import { ThemeProvider } from '../../theme/ThemeProvider';
+import { ReferenceCodePanel } from './ReferenceCodePanel';
+
+function panel(algorithmId: string, algorithmName: string) {
+  return (
+    <I18nProvider>
+      <ThemeProvider>
+        <ReferenceCodePanel algorithmId={algorithmId} algorithmName={algorithmName} />
+      </ThemeProvider>
+    </I18nProvider>
+  );
+}
+
+function renderPanel(algorithmId = 'binary', algorithmName = '二分查找') {
+  return render(panel(algorithmId, algorithmName));
+}
+
+async function waitForCode() {
+  await waitFor(() => expect(screen.getByTestId('reference-code-fallback')).toBeTruthy());
+  return screen.getByTestId('reference-code-fallback').textContent ?? '';
+}
+
+describe('ReferenceCodePanel', () => {
+  beforeEach(() => {
+    window.localStorage.clear();
+    Object.defineProperty(navigator, 'clipboard', {
+      configurable: true,
+      value: { writeText: vi.fn().mockResolvedValue(undefined) },
+    });
+  });
+
+  it('defaults to C, shows read-only source with line numbers and file metadata', async () => {
+    renderPanel();
+    expect(screen.getByTestId('reference-lang-c').getAttribute('aria-selected')).toBe('true');
+    expect(screen.getByTestId('reference-file-name').textContent).toBe('binary_search.c');
+    await waitForCode();
+    expect(screen.getByTestId('reference-code-viewer').getAttribute('data-readonly')).toBe('true');
+    expect(screen.getByTestId('reference-code-fallback').textContent).toContain('int binary_search');
+    expect(screen.getByTestId('reference-code-fallback').textContent).toContain('01');
+    expect(screen.queryByRole('textbox')).toBeNull();
+    expect(screen.queryByTestId('run-btn')).toBeNull();
+  });
+
+  it('switches C / C++ / Python and shows the matching implementation', async () => {
+    renderPanel();
+    await waitForCode();
+
+    fireEvent.click(screen.getByTestId('reference-lang-cpp'));
+    expect(screen.getByTestId('reference-file-name').textContent).toBe('binary_search.cpp');
+    await waitFor(() =>
+      expect(screen.getByTestId('reference-code-fallback').textContent).toContain('std::vector<int>'),
+    );
+
+    fireEvent.click(screen.getByTestId('reference-lang-python'));
+    expect(screen.getByTestId('reference-file-name').textContent).toBe('binary_search.py');
+    await waitFor(() =>
+      expect(screen.getByTestId('reference-code-fallback').textContent).toContain('def binary_search'),
+    );
+    expect(screen.getByTestId('reference-code-fallback').textContent).not.toContain('trace(');
+  });
+
+  it('copies the complete current source, not just the visible text', async () => {
+    renderPanel();
+    await waitForCode();
+    fireEvent.click(screen.getByTestId('reference-copy'));
+    await waitFor(() => expect(screen.getByTestId('reference-copy').textContent).toContain('已复制'));
+    const writeText = navigator.clipboard.writeText as unknown as ReturnType<typeof vi.fn>;
+    expect(writeText).toHaveBeenCalledTimes(1);
+    const copied = String(writeText.mock.calls[0][0]);
+    expect(copied).toContain('int binary_search');
+    expect(copied).toContain('int main(void)');
+  });
+
+  it('keeps the chosen language when switching to another algorithm that supports it', async () => {
+    const { rerender } = renderPanel('binary', '二分查找');
+    await waitForCode();
+    fireEvent.click(screen.getByTestId('reference-lang-python'));
+    await waitFor(() =>
+      expect(screen.getByTestId('reference-code-fallback').textContent).toContain('def binary_search'),
+    );
+
+    rerender(panel('linked', '单向链表'));
+    expect(screen.getByTestId('reference-file-name').textContent).toBe('singly_linked_list.py');
+    await waitFor(() =>
+      expect(screen.getByTestId('reference-code-fallback').textContent).toContain('class SinglyLinkedList'),
+    );
+    expect(screen.getByTestId('reference-lang-python').getAttribute('aria-selected')).toBe('true');
+  });
+
+  it('shows an explicit unavailable state instead of borrowing another algorithm code', () => {
+    renderPanel('bubble', '冒泡排序');
+    expect(screen.getByTestId('reference-code-unavailable').textContent).toContain('暂未收录');
+    expect(screen.queryByTestId('reference-lang-c')).toBeNull();
+    expect(screen.queryByTestId('reference-code-viewer')).toBeNull();
+  });
+});

@@ -1,4 +1,4 @@
-import { collapseAlgorithmGuide, expect, openAdvancedPanels, openCodePanel, test, type Page } from './fixtures';
+import { collapseAlgorithmGuide, expect, openAdvancedPanels, openCodePanel, selectAlgorithm, test, type Page } from './fixtures';
 
 /**
  * Stage 7A information architecture, state retention and keyboard operation,
@@ -43,7 +43,7 @@ test.describe('Stage 7A — workspace UX (UI-03 layout)', () => {
 
     await expect(page.locator('[data-testid="lesson-title"]')).toContainText('冒泡排序');
     await expect(page.locator('[data-testid="current-step-title"]')).toBeVisible();
-    await expect(page.locator('[data-testid="workspace-tab-state"]')).toHaveAttribute('aria-selected', 'true');
+    await expect(page.locator('[data-testid="workspace-tab-reference"]')).toHaveAttribute('aria-selected', 'true');
   });
 
   test('B. switching panels keeps the Monaco draft and never runs or resets the trace', async ({ page }) => {
@@ -157,5 +157,43 @@ test.describe('Stage 7A — workspace UX (UI-03 layout)', () => {
     await expect(page.locator('[data-testid="run-btn"]')).toBeVisible();
     await expect(page.locator('[data-testid="visual-stage"]')).toBeVisible();
     await expect(page.locator('[data-testid="current-step"]')).toBeVisible();
+  });
+
+  test('J. reference code opens as a read-only C / C++ / Python viewer', async ({ page }) => {
+    await openApp(page);
+    await selectAlgorithm(page, 'binary');
+    await openAdvancedPanels(page);
+
+    await expect(page.locator('[data-testid="workspace-tab-reference"]')).toHaveAttribute(
+      'aria-selected',
+      'true',
+    );
+    await expect(page.locator('[data-testid="reference-code-panel"]')).toBeVisible();
+    await expect(page.locator('[data-testid="reference-file-name"]')).toHaveText('binary_search.c');
+    await expect(page.locator('[data-testid="reference-code-viewer"] .monaco-editor')).toBeVisible({
+      timeout: 20_000,
+    });
+    await expect(page.locator('[data-testid="reference-code-viewer"]')).toHaveAttribute(
+      'data-readonly',
+      'true',
+    );
+    await expect(page.locator('[data-testid="reference-code-viewer"] [contenteditable="true"]')).toHaveCount(0);
+    await expect(page.locator('[data-testid="reference-code-panel"] [data-testid="run-btn"]')).toHaveCount(0);
+    const tokenClasses = await page.locator('.reference-code-viewer .view-lines .view-line span').evaluateAll(
+      (nodes) => nodes.map((node) => node.className).filter((name) => name.startsWith('mtk')),
+    );
+    expect(new Set(tokenClasses).size).toBeGreaterThan(1);
+
+    await page.click('[data-testid="reference-lang-cpp"]');
+    await expect(page.locator('[data-testid="reference-file-name"]')).toHaveText('binary_search.cpp');
+    await page.click('[data-testid="reference-lang-python"]');
+    await expect(page.locator('[data-testid="reference-file-name"]')).toHaveText('binary_search.py');
+    await expect(page.locator('[data-testid="reference-lang-python"]')).toHaveAttribute('aria-selected', 'true');
+
+    // Switching algorithms keeps the reference code in sync, and the runnable
+    // Python dock remains a separate surface.
+    await selectAlgorithm(page, 'dijkstra');
+    await expect(page.locator('[data-testid="reference-file-name"]')).toHaveText('dijkstra.py');
+    await expect(page.locator('[data-testid="code-dock"]')).toHaveAttribute('data-expanded', 'false');
   });
 });

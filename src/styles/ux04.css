@@ -1102,6 +1102,42 @@
     padding: 2px 6px;
   }
 
+  /* Short desktop: the AVL preset strip is secondary to the tree canvas.
+     Keep the six presets on one scrollable row and spend the saved height on
+     the tree instead of clipping the lowest nodes. */
+  .app[data-view='learn'] .avl-picker {
+    gap: 3px;
+    padding: 4px 8px;
+  }
+
+  .app[data-view='learn'] .avl-picker .bst-picker-head {
+    flex-wrap: nowrap;
+  }
+
+  .app[data-view='learn'] .avl-picker .bst-picker-actual {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app[data-view='learn'] .avl-picker .bst-picker-options {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: thin;
+  }
+
+  .app[data-view='learn'] .avl-picker .bst-preset-btn {
+    flex: 0 0 auto;
+    min-height: 28px;
+    padding: 3px 7px;
+    white-space: nowrap;
+  }
+
+  .app[data-view='learn'] .avl-picker .bst-picker-pending {
+    display: none;
+  }
+
   .app[data-view='learn'] .graph-visual:not(.is-weighted) .graph-frontier-order {
     font-size: var(--font-ui);
   }

@@ -92,16 +92,16 @@ describe('F2 hash lessons', () => {
     expect(probeInput.operations).toContainEqual(['delete', 24]);
   });
 
-  it('builds five top-guide stages rather than a metadata-only fallback', () => {
+  it('builds an authored horizontal flow rather than a metadata-only fallback', () => {
     const chain = buildAlgorithmGuide('hash-chain', hashChainingLesson, ALGORITHM_CATALOG['hash-chain']);
     const probe = buildAlgorithmGuide('hash-probe', hashProbingLesson, ALGORITHM_CATALOG['hash-probe']);
-    expect(chain.source).toBe('lesson');
-    expect(probe.source).toBe('lesson');
-    expect(chain.stages).toHaveLength(5);
+    expect(chain.source).toBe('curated');
+    expect(probe.source).toBe('curated');
+    expect(chain.stages).toHaveLength(4);
     expect(probe.stages).toHaveLength(5);
-    expect(chain.stages?.[1]?.title.zh).toContain('哈希值');
-    expect(probe.stages?.[2]?.title.zh).toContain('槽位');
-    expect(chain.pitfalls.zh.some((text) => text.includes('dict'))).toBe(true);
+    expect(chain.stages?.[0]?.title.zh).toContain('桶号');
+    expect(probe.stages?.[1]?.title.zh).toContain('探测');
+    expect(chain.pitfalls.zh.some((text) => text.includes('O(1)'))).toBe(true);
     expect(probe.pitfalls.zh.some((text) => text.includes('EMPTY'))).toBe(true);
   });
 

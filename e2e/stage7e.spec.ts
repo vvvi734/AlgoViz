@@ -71,7 +71,9 @@ async function showLesson(page: Page) {
 
 async function showVariables(page: Page) {
   await openAdvancedPanels(page);
-  await page.getByRole('tab', { name: /变量与调用栈|Variables & call stack/ }).click();
+  await page.getByTestId('workspace-tab-state').click();
+  const more = page.locator('.key-vars-more summary');
+  if (await more.count()) await more.click();
 }
 
 test.describe('Stage 7E — real graph BFS/DFS, same-frame frontier and playback', () => {
@@ -152,9 +154,9 @@ test.describe('Stage 7E — real graph BFS/DFS, same-frame frontier and playback
     expect(await queueNodeIds(page)).toEqual(['C']);
     await expect(page.locator('[data-testid="graph-current-node"]')).toContainText('B');
     await showVariables(page);
-    await expect(page.getByTestId('variables-watch')).toContainText('queue');
-    await expect(page.getByTestId('variables-watch')).toContainText('frontier_size');
-    await expect(page.getByTestId('variables-watch')).toContainText('C');
+    await expect(page.getByTestId('key-vars')).toContainText('queue');
+    await expect(page.getByTestId('key-vars')).toContainText('frontier_size');
+    await expect(page.getByTestId('key-vars')).toContainText('C');
     await showLesson(page);
     await expect(page.getByTestId('lesson-active-step')).toHaveAttribute('data-step-id', 'visit');
 
@@ -239,8 +241,8 @@ test.describe('Stage 7E — real graph BFS/DFS, same-frame frontier and playback
     await expect(page.locator('[data-testid="graph-node"][data-node-id="F"]')).toHaveAttribute('data-current', 'true');
     await expect(page.locator('[data-testid="graph-node"][data-node-id="C"]')).toHaveAttribute('data-state', 'pending');
     await showVariables(page);
-    await expect(page.getByTestId('variables-watch')).toContainText('stack');
-    await expect(page.getByTestId('variables-watch')).toContainText('frontier_size');
+    await expect(page.getByTestId('key-vars')).toContainText('stack');
+    await expect(page.getByTestId('key-vars')).toContainText('frontier_size');
     await showLesson(page);
     await expect(page.getByTestId('lesson-active-step')).toHaveAttribute('data-step-id', 'visit');
 

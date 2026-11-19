@@ -1,35 +1,12 @@
 import type { AlgorithmEntry } from '../algorithms/types';
-import type { Lesson, LocalizedText } from '../lessons/types';
-import { CURATED_GUIDES } from './algorithmGuides';
+import type { Lesson, LocalizedList, LocalizedText } from '../lessons/types';
+import { COURSE_GUIDES } from './courseGuides';
 import {
   EMPTY_LOCALIZED_LIST,
   type AlgorithmGuideContent,
-  type CuratedGuide,
   type GuideStage,
-  type GuideStep,
 } from './types';
 
-/** Some course step titles carry their own circled ordinal; the guide adds one. */
-function stripLeadingOrdinal(text: string): string {
-  return text.replace(/^[\u2460-\u2473]\s*/, '').trim();
-}
-
-function firstSentence(text: LocalizedText): LocalizedText {
-  const take = (value: string) => {
-    const trimmed = value.trim();
-    const zh = trimmed.match(/^(.+?[。！？])/)?.[1];
-    if (zh) return zh.trim();
-    const sentence = trimmed.match(/^(.+?[.!?])(?:\s|$)/)?.[1] ?? trimmed;
-    return sentence.trim();
-  };
-  return { zh: take(text.zh), en: take(text.en) };
-}
-
-/**
- * A review guide shows at most two sentences of framing. The detailed course
- * prose stays in the lesson data, but the default learning page is an outline,
- * not a second textbook.
- */
 function firstSentences(text: LocalizedText, limit = 2, maxChars = 240): LocalizedText {
   const take = (value: string) => {
     const normalized = value.replace(/\s+/g, ' ').trim();
@@ -41,128 +18,110 @@ function firstSentences(text: LocalizedText, limit = 2, maxChars = 240): Localiz
   return { zh: take(text.zh), en: take(text.en) };
 }
 
-function lessonSteps(lesson: Lesson): GuideStep[] {
-  return lesson.steps.map((step) => ({
-    title: {
-      zh: stripLeadingOrdinal(step.title.zh),
-      en: stripLeadingOrdinal(step.title.en),
-    },
-    body: step.explanation,
-  }));
-}
-
-/**
- * The overview flow is the course's real sequence, not an arbitrary 3–5
- * grouping. Each stage is one sentence; the full explanation remains in
- * `steps` for backwards compatibility but is no longer rendered by default.
- */
-function lessonStages(lesson: Lesson): GuideStage[] {
-  return lesson.steps.map((step) => ({
-    title: {
-      zh: stripLeadingOrdinal(step.title.zh),
-      en: stripLeadingOrdinal(step.title.en),
-    },
-    summary: firstSentence(step.explanation),
-  }));
-}
-
-function curatedStages(curated: CuratedGuide): GuideStage[] {
-  return curated.steps.map((step) => ({
-    title: step.title,
-    summary: firstSentence(step.body),
-  }));
-}
-
-function emptyList() {
+function emptyList(): LocalizedList {
   return { zh: [...EMPTY_LOCALIZED_LIST.zh], en: [...EMPTY_LOCALIZED_LIST.en] };
 }
 
-function catalogProblem(entry: AlgorithmEntry) {
+function catalogProblem(entry: AlgorithmEntry): LocalizedText | null {
   const zh = entry.desc[0] ?? '';
   const en = entry.desc[1] ?? zh;
   if (!zh && !en) return null;
   return { zh: zh || en, en: en || zh };
 }
 
+// A review sheet keeps only algorithm-level mistakes. Implementation details
+// that only make sense for one Python teaching harness are filtered out, while
+// the full course still keeps its complete commonMistakes list.
+const IMPLEMENTATION_SPECIFIC = /Python|RecursionError|IndexError|deque|heapq|dict|stack\[-1\]|range\(/;
+
+function teachingPitfalls(lesson: Lesson): LocalizedList {
+  const pairs = lesson.commonMistakes.zh.map((zh, index) => ({
+    zh,
+    en: lesson.commonMistakes.en[index] ?? zh,
+  }));
+  const filtered = pairs.filter((pair) => !IMPLEMENTATION_SPECIFIC.test(pair.zh));
+  const chosen = (filtered.length > 0 ? filtered : pairs).slice(0, 3);
+  return {
+    zh: chosen.map((pair) => pair.zh),
+    en: chosen.map((pair) => pair.en),
+  };
+}
+
+function memoryHook(lesson: Lesson): LocalizedText | null {
+  const tip = lesson.steps[lesson.steps.length - 1]?.tip;
+  return tip?.zh && tip.en ? tip : null;
+}
+
+function courseStages(algorithmId: string): GuideStage[] {
+  return COURSE_GUIDES[algorithmId]?.stages ?? [];
+}
+
 /**
- * Resolve the guide for one algorithm.
+ * Resolve one review guide.
  *
- * Precedence is deliberate:
- * 1. curated copy for the three UX-01 reference algorithms;
- * 2. the registered course's own overview, intuition, steps and mistakes;
- * 3. metadata-only fallback (never invented steps);
- * 4. an empty guide for a custom algorithm with no metadata.
- *
- * A guide can be rendered for a pack-provided algorithm too: it is passed the
- * same Lesson object the rest of the lab already uses, so no second content
- * store is introduced.
+ * Formal built-in courses take their authored intro/definition/flow/conditions
+ * from `COURSE_GUIDES`; the course still supplies complexity and the long
+ * mistake list. Pack-provided lessons without an authored flow never get a
+ * fabricated stage list — the UI shows that the horizontal flow is pending.
  */
 export function buildAlgorithmGuide(
   algorithmId: string,
   lesson: Lesson | null | undefined,
   entry?: AlgorithmEntry | null,
 ): AlgorithmGuideContent {
-  const curated = CURATED_GUIDES[algorithmId];
+  const authored = COURSE_GUIDES[algorithmId];
 
-  if (curated) {
+  if (authored && lesson) {
     return {
       algorithmId,
-      ...curated,
-      stages: curatedStages(curated),
-      coreIdea: firstSentences(curated.coreIdea ?? curated.problem ?? { zh: '', en: '' }),
-      prerequisites: lesson?.prerequisites ?? emptyList(),
-      complexity:
-        lesson?.complexity ??
-        (entry
-          ? {
-              time: entry.time,
-              space: entry.space,
-              note: {
-                zh: '复杂度取自算法目录；完整教学说明以课程为准。',
-                en: 'Complexity comes from the algorithm catalog; the course remains the source for fuller teaching notes.',
-              },
-            }
-          : null),
-      pitfalls: lesson?.commonMistakes ?? emptyList(),
+      intro: authored.intro,
+      definition: authored.definition,
+      plain: firstSentences(lesson.intuition, 2, 260),
+      flowKind: authored.flowKind,
+      stages: courseStages(algorithmId),
+      conditions: authored.conditions,
+      complexity: lesson.complexity,
+      pitfalls: teachingPitfalls(lesson),
+      memoryHook: memoryHook(lesson),
+      diagram: authored.diagram,
       source: 'curated',
-      lessonTitle: lesson?.title,
+      lessonTitle: lesson.title,
     };
   }
 
   if (lesson) {
     return {
       algorithmId,
-      problem: lesson.oneLiner,
-      coreHeadline: null,
-      coreIdea: firstSentences(lesson.intuition),
-      stages: lessonStages(lesson),
-      steps: lessonSteps(lesson),
-      prerequisites: lesson.prerequisites,
-      conditions: lesson.prerequisites,
+      intro: firstSentences(lesson.overview, 2, 260),
+      definition: lesson.oneLiner,
+      plain: firstSentences(lesson.intuition, 2, 260),
+      flowKind: null,
+      stages: [],
+      conditions: emptyList(),
       complexity: lesson.complexity,
-      pitfalls: lesson.commonMistakes,
-      memoryHook: lesson.steps[lesson.steps.length - 1]?.tip ?? null,
+      pitfalls: teachingPitfalls(lesson),
+      memoryHook: memoryHook(lesson),
       source: 'lesson',
       lessonTitle: lesson.title,
     };
   }
 
   if (entry) {
+    const problem = catalogProblem(entry);
     return {
       algorithmId,
-      problem: catalogProblem(entry),
-      coreHeadline: null,
-      coreIdea: null,
+      intro: problem,
+      definition: problem,
+      plain: null,
+      flowKind: null,
       stages: [],
-      steps: [],
-      prerequisites: emptyList(),
       conditions: emptyList(),
       complexity: {
         time: entry.time,
         space: entry.space,
         note: {
-          zh: '这部分只展示算法目录中已确认的简介与复杂度。结构化执行步骤尚未提供，因此不做推测。',
-          en: 'This section shows only the catalog-confirmed summary and complexity. Structured execution steps are not available yet, so none are guessed.',
+          zh: '这部分只展示算法目录中已确认的简介与复杂度。完整导学尚未提供，因此不推测流程。',
+          en: 'This section shows only the catalog-confirmed summary and complexity. The full guide is not available yet, so no flow is guessed.',
         },
       },
       pitfalls: emptyList(),
@@ -173,12 +132,11 @@ export function buildAlgorithmGuide(
 
   return {
     algorithmId,
-    problem: null,
-    coreHeadline: null,
-    coreIdea: null,
+    intro: null,
+    definition: null,
+    plain: null,
+    flowKind: null,
     stages: [],
-    steps: [],
-    prerequisites: emptyList(),
     conditions: emptyList(),
     complexity: null,
     pitfalls: emptyList(),

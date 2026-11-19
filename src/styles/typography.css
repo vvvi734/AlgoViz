@@ -11,32 +11,62 @@
  */
 
 /* ---------- Algorithm review sheet ---------- */
-.review-guide .guide-core-text,
-.review-guide .review-flow p,
-.review-guide .review-list li,
-.review-guide .review-memory span,
-.review-guide .review-muted {
+.guide-sheet .guide-intro,
+.guide-sheet .guide-definition p,
+.guide-sheet .guide-flow-title,
+.guide-sheet .guide-flow-note,
+.guide-sheet .guide-flow-pending,
+.guide-sheet .guide-pitfall-list li,
+.guide-sheet .guide-memory span,
+.guide-sheet .guide-muted,
+.guide-sheet .guide-problem,
+.guide-sheet .guide-conditions,
+.guide-sheet .guide-complexity-chips,
+.guide-sheet .guide-catalog-note {
   font-size: var(--font-body);
   line-height: 1.6;
 }
 
-.review-guide .guide-core-headline,
-.review-guide .review-flow h4,
-.review-guide .review-facts h3,
-.review-guide .review-pitfalls h3,
-.review-guide .review-section-head h3 {
+.guide-sheet .guide-definition h3,
+.guide-sheet .guide-section-head h3,
+.guide-sheet .guide-pitfalls-section h3 {
   font-size: var(--font-title);
   line-height: 1.35;
 }
 
-.review-guide .review-source,
-.review-guide .review-count,
-.review-guide .review-complexity dt,
-.review-guide .review-complexity dd,
-.review-guide .guide-kicker,
-.review-guide .guide-overline,
-.review-guide .review-memory b {
+.guide-sheet .guide-flow-kind,
+.guide-sheet .guide-kicker,
+.guide-sheet .guide-section-label,
+.guide-sheet .guide-memory b {
   font-size: var(--font-ui);
+  line-height: 1.5;
+}
+
+/* ---------- Advanced reference code ---------- */
+.reference-code-panel .reference-code-head h3 {
+  font-size: var(--font-title);
+  line-height: 1.35;
+}
+
+.reference-code-panel .reference-code-hint,
+.reference-code-panel .reference-file-name,
+.reference-code-panel .reference-license,
+.reference-code-panel .reference-source,
+.reference-code-panel .reference-language-missing {
+  font-size: var(--font-ui);
+  line-height: 1.5;
+}
+
+.reference-code-panel .reference-language-tab,
+.reference-code-panel .reference-copy {
+  font-size: var(--font-body);
+}
+
+.reference-code-panel .reference-code-empty,
+.reference-code-panel .reference-code-error,
+.reference-code-panel .reference-code-loading {
+  font-size: var(--font-body);
+  line-height: 1.6;
 }
 
 /* ---------- Learning rail ---------- */
@@ -44,7 +74,6 @@
 .learning-rail .rail-stage,
 .learning-rail .key-vars-scope,
 .learning-rail .key-vars-more summary,
-.learning-rail .rail-why summary,
 .learning-rail .callstack-hint,
 .learning-rail .key-vars-empty {
   font-size: var(--font-ui);
@@ -56,9 +85,7 @@
   line-height: 1.4;
 }
 
-.learning-rail .rail-operation-text,
-.learning-rail .rail-operation-change,
-.learning-rail .rail-why p {
+.learning-rail .rail-operation-text {
   font-size: var(--font-body);
   line-height: 1.6;
 }

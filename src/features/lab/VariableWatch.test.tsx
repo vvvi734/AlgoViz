@@ -33,9 +33,9 @@ describe('UX-SIMPLIFY-02 VariableWatch', () => {
   it('shows related variables first and folds the long tail', () => {
     renderWatch(event);
     const table = screen.getByTestId('variables-watch');
-    expect(table.querySelectorAll('tbody tr')).toHaveLength(8);
+    expect(table.querySelectorAll('tbody tr')).toHaveLength(4);
     expect(table.querySelector('tbody tr')?.textContent).toContain('dist');
-    expect(screen.getByText('其余变量（4）')).toBeTruthy();
+    expect(screen.getByText('其余变量（8）')).toBeTruthy();
   });
 
   it('keeps an explicit empty state instead of guessing variables', () => {

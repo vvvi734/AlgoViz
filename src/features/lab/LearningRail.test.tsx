@@ -91,6 +91,16 @@ describe('UX-SIMPLIFY-02 LearningRail', () => {
     expect(screen.getByTestId('current-step-title')).toBeTruthy();
     expect(screen.getByTestId('current-step-message').textContent).toContain('dist[E]');
     expect(screen.getByTestId('lesson-active-step').dataset.stepId).toBe('done');
+    // The old change list and the expandable “why” copy are no longer repeated.
+    expect(screen.queryByTestId('current-step-changes')).toBeNull();
+    expect(screen.queryByTestId('rail-why')).toBeNull();
+  });
+
+  it('does not cut a code identifier at an internal dot', () => {
+    const codeMessage = event(0, 'relax', 'Set previous.next = node. Then relink the predecessor.', []);
+    renderRail(codeMessage, [codeMessage], 0);
+    expect(screen.getByTestId('current-step-message').textContent).toContain('previous.next');
+    expect(screen.getByTestId('current-step-message').textContent).not.toBe('previous.');
   });
 
   it('keeps stage jumps compact and seeks to a real linked frame', () => {

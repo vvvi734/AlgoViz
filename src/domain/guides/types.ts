@@ -1,46 +1,38 @@
 /**
- * UX-01 algorithm guide content.
+ * Algorithm guide content — a compact, exam-oriented review sheet.
  *
- * This is presentation DATA derived from existing courses, not a second
- * lesson/player system. A guide never owns a playhead and never invents
- * execution state: curated guides add beginner-oriented framing, while all
- * other algorithms reuse their real Lesson content. When neither a curated
- * guide nor a Lesson exists, only catalog-confirmed text and complexity are
- * shown.
+ * The guide is presentation data derived from a real course, never a playhead
+ * and never a second Trace. Every formal course authors its own abstract flow
+ * from the algorithm's principles; frame-by-frame Trace messages must not be
+ * concatenated into the overview.
  */
 import type { LocalizedList, LocalizedText, LessonComplexity } from '../lessons/types';
 
 export type GuideDiagramKind = 'dijkstra' | 'kahn' | 'kosaraju';
-
+export type GuideFlowKind = 'algorithm' | 'operations';
 export type GuideSource = 'curated' | 'lesson' | 'catalog' | 'none';
 
-/** One real algorithmic step, phrased for a first-time learner. */
-export interface GuideStep {
-  title: LocalizedText;
-  body: LocalizedText;
-}
-
-/**
- * A 3–5 card overview of the algorithm's real phases. These are authored
- * summaries, not a replacement for `steps`: the detailed steps remain the
- * source of truth and stay available in the expandable section.
- */
+/** One abstract phase, not one Trace frame. */
 export interface GuideStage {
   title: LocalizedText;
-  summary: LocalizedText;
+  /** Optional single sentence; most stages need no prose at all. */
+  summary?: LocalizedText;
 }
 
 export interface AlgorithmGuideContent {
   algorithmId: string;
-  problem: LocalizedText | null;
-  /** The one line a beginner should remember from the core idea. */
-  coreHeadline: LocalizedText | null;
-  coreIdea: LocalizedText | null;
+  /** Why the algorithm/structure exists: problem, limitation, improvement. */
+  intro: LocalizedText | null;
+  /** Formal CS definition. */
+  definition: LocalizedText | null;
+  /** One or two plain-language sentences that do not repeat the definition. */
+  plain: LocalizedText | null;
+  /** Whether the horizontal row describes an algorithm flow or core operations. */
+  flowKind: GuideFlowKind | null;
   stages: GuideStage[];
-  steps: GuideStep[];
-  prerequisites: LocalizedList;
   conditions: LocalizedList;
   complexity: LessonComplexity | null;
+  /** At most three genuinely important mistakes. */
   pitfalls: LocalizedList;
   memoryHook: LocalizedText | null;
   diagram?: GuideDiagramKind;
@@ -48,10 +40,14 @@ export interface AlgorithmGuideContent {
   lessonTitle?: LocalizedText;
 }
 
-/** Authoring shape for the three curated guides. */
-export type CuratedGuide = Pick<
-  AlgorithmGuideContent,
-  'problem' | 'coreHeadline' | 'coreIdea' | 'stages' | 'steps' | 'conditions' | 'memoryHook' | 'diagram'
->;
+/** Authoring shape for one formal course. */
+export interface CourseGuide {
+  intro: LocalizedText;
+  definition: LocalizedText;
+  flowKind: GuideFlowKind;
+  stages: GuideStage[];
+  conditions: LocalizedList;
+  diagram?: GuideDiagramKind;
+}
 
 export const EMPTY_LOCALIZED_LIST: LocalizedList = { zh: [], en: [] };

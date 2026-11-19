@@ -56,7 +56,7 @@ export async function openLessonStepNav(page: Page) {
 }
 
 /**
- * UX-04: variables, call stack, mentor and study tools now live behind a
+ * UX-04: reference code, Trace state, mentor and study tools live behind a
  * collapsed-by-default advanced disclosure. Open it before touching a tab.
  */
 export async function openAdvancedPanels(page: Page) {

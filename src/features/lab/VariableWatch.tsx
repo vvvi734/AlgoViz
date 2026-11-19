@@ -2,7 +2,7 @@ import { resolveScope } from './SyncPanel';
 import type { TraceEvent } from '../../domain/trace/schema';
 import { useI18n } from '../../i18n/I18nProvider';
 
-const VISIBLE_LIMIT = 8;
+const VISIBLE_LIMIT = 4;
 
 function formatValue(value: unknown): string {
   if (value === undefined) return 'undefined';

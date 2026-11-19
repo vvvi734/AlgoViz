@@ -20,8 +20,17 @@ export function loadMonaco(): Promise<Monaco> {
 }
 
 /** Map a teaching language to Monaco's language id. */
-export function toMonacoLanguage(language: CodeLanguage): string {
-  return language === 'python' ? 'python' : 'javascript';
+export function toMonacoLanguage(language: CodeLanguage | 'c' | 'cpp'): string {
+  switch (language) {
+    case 'python':
+      return 'python';
+    case 'c':
+      return 'c';
+    case 'cpp':
+      return 'cpp';
+    default:
+      return 'javascript';
+  }
 }
 
 /**

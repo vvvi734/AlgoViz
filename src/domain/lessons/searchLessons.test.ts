@@ -73,14 +73,14 @@ describe('F1 search lessons', () => {
     expect(defaultInputFor('binary')).toEqual({ nums: [1, 3, 5, 7, 9, 11, 13], target: 9 });
   });
 
-  it('builds five top-guide stages rather than a zero-stage fallback', () => {
+  it('builds an authored horizontal flow rather than a zero-stage fallback', () => {
     const linearGuide = buildAlgorithmGuide('linear', linearSearchLesson, ALGORITHM_CATALOG.linear);
     const binaryGuide = buildAlgorithmGuide('binary', binarySearchLesson, ALGORITHM_CATALOG.binary);
-    expect(linearGuide.source).toBe('lesson');
-    expect(binaryGuide.source).toBe('lesson');
-    expect(linearGuide.stages).toHaveLength(5);
+    expect(linearGuide.source).toBe('curated');
+    expect(binaryGuide.source).toBe('curated');
+    expect(linearGuide.stages).toHaveLength(4);
     expect(binaryGuide.stages).toHaveLength(5);
-    expect(linearGuide.stages?.[0]?.title.zh).toContain('读入数组');
-    expect(binaryGuide.stages?.[1]?.title.zh).toContain('中点');
+    expect(linearGuide.stages?.[0]?.title.zh).toContain('索引');
+    expect(binaryGuide.stages?.[2]?.title.zh).toContain('中点');
   });
 });

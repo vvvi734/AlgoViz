@@ -5,28 +5,31 @@ import { useI18n } from '../../i18n/I18nProvider';
  * UI-02: the course moved into the always-visible explanation rail, so the
  * bottom tab strip now owns only the secondary diagnostic/tool panels.
  */
-export type WorkspaceTabId = 'state' | 'mentor' | 'tools';
+export type WorkspaceTabId = 'reference' | 'state' | 'mentor' | 'tools';
 
-const ORDER: WorkspaceTabId[] = ['state', 'mentor', 'tools'];
+const ORDER: WorkspaceTabId[] = ['reference', 'state', 'mentor', 'tools'];
 
 /**
  * Accessible tab strip for the secondary workspace panels.
  *
- * UX-04: the whole strip is an advanced, collapsed-by-default panel. Panels stay
- * mounted while inactive (`hidden` only toggles rendering), so the mentor's
- * answers, the selected call frame and the session preview survive tab switches
- * and collapse/expand. Monaco and the timeline live outside this component.
+ * UX-04: the whole strip is an advanced, collapsed-by-default panel. Non-lazy
+ * panels stay mounted while inactive (`hidden` only toggles rendering), so the
+ * mentor's answers and the selected call frame survive tab switches and
+ * collapse/expand. `lazyPanels` are withheld until the strip is opened, so the
+ * read-only reference viewer never loads Monaco during first paint.
  */
 export function WorkspaceTabs({
   active,
   onChange,
   labels,
   panels,
+  lazyPanels = [],
 }: {
   active: WorkspaceTabId;
   onChange: (tab: WorkspaceTabId) => void;
   labels: Record<WorkspaceTabId, string>;
   panels: Record<WorkspaceTabId, ReactNode>;
+  lazyPanels?: readonly WorkspaceTabId[];
 }) {
   const { t } = useI18n();
   const [open, setOpen] = useState(false);
@@ -65,7 +68,7 @@ export function WorkspaceTabs({
         </button>
       </header>
       <div id={bodyId} className="workspace-tabs-body" hidden={!open}>
-        <div className="workspace-tablist" role="tablist" aria-label={labels.state}>
+        <div className="workspace-tablist" role="tablist" aria-label={t('workspaceTabsAria')}>
           {ORDER.map((id) => (
             <button
               key={id}
@@ -102,7 +105,7 @@ export function WorkspaceTabs({
             className="workspace-tabpanel"
             data-testid={`workspace-panel-${id}`}
           >
-            {panels[id]}
+            {lazyPanels.includes(id) && !open ? null : panels[id]}
           </section>
         ))}
       </div>

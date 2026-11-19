@@ -169,7 +169,8 @@ test.describe('Stage 7C — real singly linked-list visualization', () => {
       await expect(page.locator('.algolens-active-line')).toHaveCount(1);
     }
     await openAdvancedPanels(page);
-    await page.getByRole('tab', { name: '变量与调用栈' }).click();
+    await page.getByTestId('workspace-tab-state').click();
+    await expect(page.getByTestId('workspace-panel-state')).toBeVisible();
     await expect(page.locator('[data-testid="variables-watch"]')).toBeVisible();
     await page.getByTestId('sync-source-toggle').click();
     await expect(page.locator('[data-testid="code-position"]')).not.toBeEmpty();

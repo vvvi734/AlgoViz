@@ -22,33 +22,55 @@ function renderGuide(guide = dijkstraGuide, name = 'Dijkstra') {
   return onStart;
 }
 
-describe('UX-SIMPLIFY-02 AlgorithmGuide review sheet', () => {
+describe('algorithm review sheet UI', () => {
   beforeEach(() => {
     window.localStorage.clear();
   });
 
-  it('shows core idea, the complete flow, complexity/conditions and memory without a details drawer', () => {
+  it('shows intro, definition/plain reading, complexity/conditions, the horizontal flow and mistakes', () => {
     renderGuide();
 
     expect(screen.getByTestId('guide-title').textContent).toContain('算法复习提纲');
     expect(screen.getByTestId('guide-title').textContent).toContain('Dijkstra');
-    expect(screen.getByTestId('guide-core-headline').textContent).toContain('贪心选最近');
-    expect(screen.getByTestId('guide-core').textContent).toContain('最小堆');
+    expect(screen.getByTestId('guide-intro').textContent).toContain('BFS');
+    expect(screen.getByTestId('guide-definition').textContent).toContain('非负边权');
+    expect(screen.getByTestId('guide-plain').textContent).toContain('报价单');
+    expect(screen.getByText('复杂度与适用条件')).toBeTruthy();
+    expect(screen.getByTestId('guide-complexity').textContent).toContain('O((V + E) log V)');
+    expect(screen.getByTestId('guide-conditions').textContent).toContain('边权必须非负');
 
     const stages = within(screen.getByTestId('guide-stage-list')).getAllByRole('listitem');
-    expect(stages).toHaveLength(7);
-    expect(stages[0].textContent).toContain('初始化距离表和候选堆');
-    expect(stages[4].textContent).toContain('能变小才松弛');
-    expect(screen.getByTestId('guide-flow-count').textContent).toContain('7 步');
-    expect(screen.getByText('复杂度与适用条件')).toBeTruthy();
-    expect(screen.getByText('O((V + E) log V)')).toBeTruthy();
-    expect(screen.getByText('边权必须非负', { exact: false })).toBeTruthy();
+    expect(stages).toHaveLength(6);
+    expect(stages[0].textContent).toContain('初始化距离表');
+    expect(stages[4].textContent).toContain('重复至堆空');
+    expect(screen.getByTestId('guide-flow-title').textContent).toBe('算法整体流程');
     expect(screen.getByText('常见错误与记忆重点')).toBeTruthy();
-    expect(screen.getByTestId('guide-memory').textContent).toContain('选最近');
+    expect(screen.getByTestId('guide-pitfalls').textContent).toContain('discovered');
+    expect(screen.getByTestId('guide-memory').textContent).toContain('负权');
 
+    // Frame-level Trace copy, the old source row and the details drawer are gone.
+    expect(screen.queryByTestId('guide-source')).toBeNull();
     expect(screen.queryByTestId('guide-details-toggle')).toBeNull();
     expect(screen.queryByTestId('guide-details')).toBeNull();
     expect(screen.queryByText('完整执行步骤')).toBeNull();
+  });
+
+  it('uses “core operations” for a data-structure course and keeps stages abstract', () => {
+    renderGuide(
+      buildAlgorithmGuide(
+        'linked',
+        lessonRegistry.byAlgorithm('linked'),
+        ALGORITHM_CATALOG.linked,
+      ),
+      '单向链表',
+    );
+
+    expect(screen.getByTestId('guide-flow-title').textContent).toBe('核心操作');
+    expect(screen.getByTestId('guide-flow-kind').textContent).toContain('按操作组织');
+    const stages = within(screen.getByTestId('guide-stage-list')).getAllByRole('listitem');
+    expect(stages).toHaveLength(5);
+    expect(screen.getByTestId('guide-stage-list').textContent).toContain('插入节点');
+    expect(screen.getByTestId('guide-stage-list').textContent).not.toContain('演示结束');
   });
 
   it('provides an explicit start action without any player controls', () => {
@@ -73,20 +95,6 @@ describe('UX-SIMPLIFY-02 AlgorithmGuide review sheet', () => {
     expect(screen.queryByText('算法整体流程')).toBeNull();
   });
 
-  it('uses every real step for a long course instead of a fallback line', () => {
-    const linkedGuide = buildAlgorithmGuide(
-      'linked',
-      lessonRegistry.byAlgorithm('linked'),
-      ALGORITHM_CATALOG.linked,
-    );
-    renderGuide(linkedGuide, '单向链表');
-
-    expect(within(screen.getByTestId('guide-stage-list')).getAllByRole('listitem')).toHaveLength(8);
-    expect(screen.getByTestId('guide-stage-list').textContent).toContain('解除引用');
-    expect(screen.queryByTestId('guide-flow-fallback')).toBeNull();
-    expect(screen.getByTestId('guide-core').textContent).toContain('next');
-  });
-
   it('renders an empty state when no guide metadata exists', () => {
     renderGuide(buildAlgorithmGuide('missing', undefined, undefined), '自定义算法');
     expect(screen.getByTestId('guide-empty').textContent).toContain('还没有可用的导学内容');
@@ -97,10 +105,11 @@ describe('UX-SIMPLIFY-02 AlgorithmGuide review sheet', () => {
     renderGuide();
     expect(screen.getByTestId('guide-title').textContent).toContain('Algorithm review sheet');
     expect(screen.getByTestId('guide-title').textContent).toContain('Dijkstra');
-    expect(screen.getByTestId('guide-core-headline').textContent).toContain('Greedy');
-    expect(screen.getByTestId('guide-stage-list').textContent).toContain('Initialise the distance table and candidate heap');
+    expect(screen.getByTestId('guide-intro').textContent).toContain('BFS');
+    expect(screen.getByTestId('guide-definition').textContent).toContain('non-negative');
+    expect(screen.getByTestId('guide-stage-list').textContent).toContain('Initialise the distance table');
     expect(screen.getByText('Complexity and applicability')).toBeTruthy();
     expect(screen.getByText('Common mistakes & memory')).toBeTruthy();
-    expect(screen.getByTestId('guide-memory').textContent).toContain('nearest');
+    expect(screen.getByTestId('guide-memory').textContent).toContain('negative');
   });
 });
