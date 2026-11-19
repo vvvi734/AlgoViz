@@ -157,5 +157,6 @@ WPL = `224`，实际编码总位数 = `224`；定长编码 `ceil(log2 6)=3` 位/
 
 - 分支：`feat/t4-huffman`，从 `f939f3e` 建立
 - 远端：`https://gitee.com/vvvi734/algolens.git`
-- 实现、课程、测试、截图与报告提交：见分支最新 HEAD
-- 推送：待执行后以 `origin/feat/t4-huffman` 为准
+- 实现、课程、测试、截图与初始报告提交：`82035b4 feat(t4): add real heapq Huffman tree and prefix coding lab`
+- 文档定稿提交：本分支最新 HEAD
+- 推送：`feat/t4-huffman` → `origin/feat/t4-huffman`；完成后以远端 HEAD 为准
