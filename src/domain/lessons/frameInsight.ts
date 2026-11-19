@@ -1262,6 +1262,96 @@ function sortingAction(snapshot: SortingSnapshot, lang: LessonLang): string {
       return tx(lang, `key=${snapshot.key?.value ?? '—'} 写回 ${value(snapshot.insertedAt)}`, `Write key=${snapshot.key?.value ?? '—'} back into ${value(snapshot.insertedAt)}`);
     case 'gap-done':
       return tx(lang, `gap=${snapshot.gap} 轮完成`, `Gap ${snapshot.gap} pass complete`);
+    case 'quick-range':
+      return tx(
+        lang,
+        `分区 ${snapshot.round}：区间 ${snapshot.range ? `[${snapshot.range.low}, ${snapshot.range.high}]` : '—'}，pivot=${value(snapshot.pivot)}`,
+        `Partition ${snapshot.round}: range ${snapshot.range ? `[${snapshot.range.low}, ${snapshot.range.high}]` : '—'}, pivot=${value(snapshot.pivot)}`,
+      );
+    case 'quick-compare': {
+      const current = snapshot.compare === null ? null : snapshot.elements[snapshot.compare]?.value ?? null;
+      const pivot = snapshot.pivot === null ? null : snapshot.elements[snapshot.pivot]?.value ?? null;
+      const relation = current !== null && pivot !== null && current <= pivot ? '≤' : '>';
+      return tx(
+        lang,
+        `a[${value(snapshot.compare)}]=${current ?? '—'} ${relation} pivot=${pivot ?? '—'}，边界 i=${snapshot.boundary ?? '—'}`,
+        `a[${value(snapshot.compare)}]=${current ?? '—'} ${relation} pivot=${pivot ?? '—'}, boundary i=${snapshot.boundary ?? '—'}`,
+      );
+    }
+    case 'quick-swap':
+      return tx(
+        lang,
+        `真实交换 ${value(snapshot.swapped?.[0] ?? null)} ⇄ ${value(snapshot.swapped?.[1] ?? null)}，边界 i=${snapshot.boundary ?? '—'}`,
+        `Real swap ${value(snapshot.swapped?.[0] ?? null)} ⇄ ${value(snapshot.swapped?.[1] ?? null)}, boundary i=${snapshot.boundary ?? '—'}`,
+      );
+    case 'quick-place':
+      return tx(
+        lang,
+        `pivot=${snapshot.pivot === null ? '—' : value(snapshot.pivot)} 归位到 ${value(snapshot.insertedAt)}`,
+        `Pivot=${snapshot.pivot === null ? '—' : value(snapshot.pivot)} lands at ${value(snapshot.insertedAt)}`,
+      );
+    case 'quick-return':
+      return snapshot.range && snapshot.range.low > snapshot.range.high
+        ? tx(lang, '空子区间直接返回，没有元素需要处理', 'Empty child range returns; there is nothing to process')
+        : tx(lang, `${value(snapshot.range?.low ?? null)} 单元素区间返回，已在最终位置`, `${value(snapshot.range?.low ?? null)} singleton returns, already final`);
+    case 'merge-range':
+      return tx(
+        lang,
+        `递归调用 ${snapshot.round}：进入区间 ${snapshot.range ? `[${snapshot.range.low}, ${snapshot.range.high}]` : '—'}`,
+        `Recursive call ${snapshot.round}: enter range ${snapshot.range ? `[${snapshot.range.low}, ${snapshot.range.high}]` : '—'}`,
+      );
+    case 'merge-split':
+      return tx(
+        lang,
+        `拆分 ${snapshot.range ? `[${snapshot.range.low}, ${snapshot.range.high}]` : '—'}：mid=${snapshot.split ?? '—'}`,
+        `Split ${snapshot.range ? `[${snapshot.range.low}, ${snapshot.range.high}]` : '—'}: mid=${snapshot.split ?? '—'}`,
+      );
+    case 'merge-return':
+      return tx(
+        lang,
+        `区间 ${snapshot.range ? `[${snapshot.range.low}, ${snapshot.range.high}]` : '—'} 单元素返回`,
+        `Range ${snapshot.range ? `[${snapshot.range.low}, ${snapshot.range.high}]` : '—'} returns as a singleton`,
+      );
+    case 'merge-start':
+      return tx(
+        lang,
+        `开始归并 ${snapshot.range ? `[${snapshot.range.low}, ${snapshot.range.high}]` : '—'}：左 ${value(snapshot.left)}，右 ${value(snapshot.right)}`,
+        `Start merging ${snapshot.range ? `[${snapshot.range.low}, ${snapshot.range.high}]` : '—'}: left ${value(snapshot.left)}, right ${value(snapshot.right)}`,
+      );
+    case 'merge-compare': {
+      const leftValue = snapshot.left === null ? null : snapshot.elements[snapshot.left]?.value ?? null;
+      const rightValue = snapshot.right === null ? null : snapshot.elements[snapshot.right]?.value ?? null;
+      const takeLeft = leftValue !== null && rightValue !== null && leftValue <= rightValue;
+      return tx(
+        lang,
+        `比较 ${value(snapshot.left)}=${leftValue ?? '—'} 与 ${value(snapshot.right)}=${rightValue ?? '—'}：取${takeLeft ? '左侧' : '右侧'}`,
+        `Compare ${value(snapshot.left)}=${leftValue ?? '—'} with ${value(snapshot.right)}=${rightValue ?? '—'}: take ${takeLeft ? 'left' : 'right'}`,
+      );
+    }
+    case 'merge-write':
+      return tx(
+        lang,
+        `将 ${value(snapshot.bufferWrite?.source ?? null)}=${snapshot.bufferWrite?.value ?? '—'} 写入缓冲区 b${snapshot.bufferWrite?.index ?? '—'}`,
+        `Write ${value(snapshot.bufferWrite?.source ?? null)}=${snapshot.bufferWrite?.value ?? '—'} into buffer b${snapshot.bufferWrite?.index ?? '—'}`,
+      );
+    case 'merge-copy':
+      return tx(
+        lang,
+        `一侧耗尽：复制 ${value(snapshot.bufferWrite?.source ?? null)}=${snapshot.bufferWrite?.value ?? '—'} 到 b${snapshot.bufferWrite?.index ?? '—'}`,
+        `One side exhausted: copy ${value(snapshot.bufferWrite?.source ?? null)}=${snapshot.bufferWrite?.value ?? '—'} into b${snapshot.bufferWrite?.index ?? '—'}`,
+      );
+    case 'merge-writeback':
+      return tx(
+        lang,
+        `缓冲区 b${snapshot.writeAt === null ? '—' : String(snapshot.writeAt - (snapshot.range?.low ?? 0))} 写回 ${value(snapshot.writeAt)}`,
+        `Buffer b${snapshot.writeAt === null ? '—' : String(snapshot.writeAt - (snapshot.range?.low ?? 0))} writes back to ${value(snapshot.writeAt)}`,
+      );
+    case 'merge-range-done':
+      return tx(
+        lang,
+        `区间 ${snapshot.range ? `[${snapshot.range.low}, ${snapshot.range.high}]` : '—'} 合并完成`,
+        `Range ${snapshot.range ? `[${snapshot.range.low}, ${snapshot.range.high}]` : '—'} is fully merged`,
+      );
     case 'done':
       return tx(lang, '排序完成：整个数组升序', 'Sorting complete: the whole array is ascending');
   }
@@ -1282,6 +1372,20 @@ function sortingWhy(snapshot: SortingSnapshot, lang: LessonLang): string {
       'Insert the key into the sorted prefix; values strictly greater than the key shift right, while equal keys do not move, so direct insertion sort is stable.',
     );
   }
+  if (snapshot.algorithm === 'quick') {
+    return tx(
+      lang,
+      'Lomuto 分区以末尾元素为 pivot，把 ≤ pivot 的值换到边界 i 左侧，最后 pivot 归位；平均 O(n log n)，最坏（如已排序且总取末尾 pivot）O(n²)，递归栈平均 O(log n)、最坏 O(n)，标准原地实现不稳定。',
+      'Lomuto partitions around the last element as pivot, moves values ≤ pivot left of boundary i, then places the pivot; average O(n log n), worst O(n²) when the last pivot is repeatedly extreme, recursion stack O(log n) average / O(n) worst, and the standard in-place version is unstable.',
+    );
+  }
+  if (snapshot.algorithm === 'merge') {
+    return tx(
+      lang,
+      '自顶向下归并把区间二分到单元素，再把两个有序半区逐个写入缓冲区并写回；任何输入都是 O(n log n)，数组实现通常需要 O(n) 辅助空间，相等时先取左侧因此稳定。',
+      'Top-down merge sort splits to singletons, then merges two sorted halves through a buffer and writes back; every input is O(n log n), the array implementation usually needs O(n) extra space, and taking the left candidate on equality keeps it stable.',
+    );
+  }
   return tx(
     lang,
     '对每个 gap 子序列做插入排序，再缩小 gap；gap=1 是普通插入排序，保证全局有序，但复杂度取决于间隔序列且通常不稳定。',
@@ -1300,12 +1404,42 @@ function sortingInsight(
   const previous = previousEvent?.structure?.kind === 'sorting' ? previousEvent.structure : null;
   const values = snapshot.elements.map((element) => element.value);
   const valueAt = (index: number | null): string => (index === null ? '—' : String(values[index] ?? '—'));
+  const mergedCovered = (() => {
+    const covered = new Set<number>();
+    for (const range of snapshot.mergedRanges) {
+      for (let index = range.low; index <= range.high; index += 1) covered.add(index);
+    }
+    return covered.size;
+  })();
+  const progressLabel = snapshot.algorithm === 'quick'
+    ? tx(lang, '已确定终位', 'final slots')
+    : snapshot.algorithm === 'merge'
+      ? tx(lang, '已归并区间', 'merged slots')
+      : tx(lang, '已排序前缀', 'sorted prefix');
+  const progressNow = snapshot.algorithm === 'quick'
+    ? snapshot.finalized.length
+    : snapshot.algorithm === 'merge'
+      ? mergedCovered
+      : snapshot.sortedFrom;
+  const progressBefore = previous
+    ? previous.algorithm === 'quick'
+      ? previous.finalized.length
+      : previous.algorithm === 'merge'
+        ? (() => {
+            const covered = new Set<number>();
+            for (const range of previous.mergedRanges) {
+              for (let index = range.low; index <= range.high; index += 1) covered.add(index);
+            }
+            return covered.size;
+          })()
+        : previous.sortedFrom
+    : undefined;
   const changes: FrameChange[] = [
     {
-      label: tx(lang, '已排序前缀', 'sorted prefix'),
-      before: previous ? String(previous.sortedFrom) : undefined,
-      after: `${snapshot.sortedFrom} / ${snapshot.elements.length}`,
-      tone: previous && snapshot.sortedFrom > previous.sortedFrom ? 'success' : 'neutral',
+      label: progressLabel,
+      before: previous ? String(progressBefore) : undefined,
+      after: `${progressNow} / ${snapshot.elements.length}`,
+      tone: previous && progressNow > (progressBefore ?? 0) ? 'success' : 'neutral',
     },
   ];
 
@@ -1407,6 +1541,114 @@ function sortingInsight(
         tone: snapshot.gap === 1 ? 'success' : 'neutral',
       });
       break;
+    case 'quick-range':
+      changes.push({
+        label: tx(lang, '递归区间', 'recursive range'),
+        after: snapshot.range ? `[${snapshot.range.low}, ${snapshot.range.high}]` : '—',
+        detail: `pivot=p${snapshot.pivot ?? '—'} value=${valueAt(snapshot.pivot)} · boundary i=${snapshot.boundary ?? '—'}`,
+        tone: 'update',
+      });
+      break;
+    case 'quick-compare':
+      changes.push({
+        label: tx(lang, '与 pivot 比较', 'compare with pivot'),
+        detail: `a[p${snapshot.compare}]=${valueAt(snapshot.compare)} ${values[snapshot.compare ?? 0]! <= (values[snapshot.pivot ?? 0] ?? 0) ? '≤' : '>'} pivot=${valueAt(snapshot.pivot)}；i=${snapshot.boundary ?? '—'}`,
+        tone: 'neutral',
+      });
+      break;
+    case 'quick-swap':
+      changes.push({
+        label: tx(lang, '真实交换', 'real swap'),
+        before: 'compare j → boundary i',
+        after: `p${snapshot.swapped?.[0] ?? '—'} ⇄ p${snapshot.swapped?.[1] ?? '—'}`,
+        detail: tx(lang, '交换后边界 i 右移一格。', 'The boundary i advances by one after the swap.'),
+        tone: 'update',
+      });
+      break;
+    case 'quick-place':
+      changes.push({
+        label: tx(lang, 'pivot 归位', 'pivot placed'),
+        after: `p${snapshot.insertedAt} = ${valueAt(snapshot.insertedAt)}`,
+        detail: tx(lang, '该位置已是最终位置；左右子区间分别递归。', 'This slot is final; both child ranges recurse next.'),
+        tone: 'success',
+      });
+      break;
+    case 'quick-return':
+      changes.push({
+        label: tx(lang, '子区间返回', 'child returns'),
+        after: snapshot.range ? `[${snapshot.range.low}, ${snapshot.range.high}]` : '—',
+        detail: snapshot.range && snapshot.range.low > snapshot.range.high
+          ? tx(lang, '空区间，无元素可处理。', 'Empty range, so no element is processed.')
+          : tx(lang, '单元素区间已经是最终位置。', 'A singleton range is already final.'),
+        tone: 'neutral',
+      });
+      break;
+    case 'merge-range':
+      changes.push({
+        label: tx(lang, '递归区间', 'recursive range'),
+        after: snapshot.range ? `[${snapshot.range.low}, ${snapshot.range.high}]` : '—',
+        detail: tx(lang, '真实进入下一次归并调用。', 'A real merge call has been entered.'),
+        tone: 'update',
+      });
+      break;
+    case 'merge-split':
+      changes.push({
+        label: tx(lang, '二分位置', 'split midpoint'),
+        after: `mid=${snapshot.split ?? '—'}`,
+        detail: `${tx(lang, '左半区', 'left half')} [${snapshot.range?.low ?? '—'}, ${snapshot.split ?? '—'}] · ${tx(lang, '右半区', 'right half')} [${(snapshot.split ?? 0) + 1}, ${snapshot.range?.high ?? '—'}]`,
+        tone: 'update',
+      });
+      break;
+    case 'merge-return':
+      changes.push({
+        label: tx(lang, '单元素返回', 'singleton return'),
+        after: snapshot.range ? `[${snapshot.range.low}, ${snapshot.range.high}]` : '—',
+        detail: tx(lang, '该区间只有一个元素，天然有序。', 'This range has one element and is already sorted.'),
+        tone: 'success',
+      });
+      break;
+    case 'merge-start':
+      changes.push({
+        label: tx(lang, '归并游标', 'merge cursors'),
+        after: `L=p${snapshot.left ?? '—'} · R=p${snapshot.right ?? '—'}`,
+        detail: tx(lang, '两个半区已有序，缓冲区为空。', 'Both halves are sorted and the buffer is empty.'),
+        tone: 'update',
+      });
+      break;
+    case 'merge-compare': {
+      const takeLeft = values[snapshot.left ?? 0]! <= values[snapshot.right ?? 0]!;
+      changes.push({
+        label: tx(lang, '左右候选', 'left/right candidates'),
+        detail: `L=${valueAt(snapshot.left)} vs R=${valueAt(snapshot.right)} → ${takeLeft ? tx(lang, '取左', 'take left') : tx(lang, '取右', 'take right')}`,
+        tone: 'neutral',
+      });
+      break;
+    }
+    case 'merge-write':
+    case 'merge-copy':
+      changes.push({
+        label: snapshot.operation === 'merge-copy' ? tx(lang, '复制剩余', 'copy remainder') : tx(lang, '写入缓冲区', 'buffer append'),
+        after: `b${snapshot.bufferWrite?.index ?? '—'} = ${snapshot.bufferWrite?.value ?? '—'}`,
+        detail: `${tx(lang, '来源', 'source')} p${snapshot.bufferWrite?.source ?? '—'} · ${tx(lang, '缓冲区', 'buffer')} ${snapshot.buffer.length}/${snapshot.range ? snapshot.range.high - snapshot.range.low + 1 : 0}`,
+        tone: 'update',
+      });
+      break;
+    case 'merge-writeback':
+      changes.push({
+        label: tx(lang, '写回原数组', 'write back'),
+        after: `p${snapshot.writeAt ?? '—'} = ${valueAt(snapshot.writeAt)}`,
+        detail: `${tx(lang, '缓冲区', 'buffer')} [${snapshot.buffer.join(', ')}]`,
+        tone: 'update',
+      });
+      break;
+    case 'merge-range-done':
+      changes.push({
+        label: tx(lang, '区间完成', 'range merged'),
+        after: snapshot.range ? `[${snapshot.range.low}, ${snapshot.range.high}]` : '—',
+        detail: tx(lang, '该区间整体有序，父调用把它当作一个有序半区。', 'The whole range is sorted; the parent treats it as one sorted half.'),
+        tone: 'success',
+      });
+      break;
     case 'done':
       changes.push({
         label: tx(lang, '最终数组', 'final array'),
@@ -1425,7 +1667,11 @@ function sortingInsight(
       ? tx(lang, '选择排序：每轮只选一个最小，轮末才交换。', 'Selection: one minimum per pass, one swap at the end.')
       : snapshot.algorithm === 'insertion'
         ? tx(lang, '插入排序：取 key、右移较大元素、写回空位；不是连续冒泡交换。', 'Insertion: lift key, shift larger values right, write key back; not bubble swapping.')
-        : tx(lang, '希尔排序：gap 子序列各自插入排序，gap=1 才保证全局有序。', 'Shell: insertion-sort each gap lane; only gap=1 guarantees global order.');
+        : snapshot.algorithm === 'quick'
+          ? tx(lang, '快速排序：末尾 pivot + Lomuto；扫描 ≤ pivot 的值，边界 i 左侧才属于左子区间。', 'Quick: last-slot pivot with Lomuto; only the ≤ pivot values left of boundary i belong to the left child.')
+          : snapshot.algorithm === 'merge'
+            ? tx(lang, '归并排序：先拆到单元素，再按左右候选把较小值写入缓冲区，最后写回；相等取左保持稳定。', 'Merge: split to singletons, append the smaller candidate into the buffer, then write back; take left on equality to stay stable.')
+            : tx(lang, '希尔排序：gap 子序列各自插入排序，gap=1 才保证全局有序。', 'Shell: insertion-sort each gap lane; only gap=1 guarantees global order.');
 
   return {
     semantic: true,

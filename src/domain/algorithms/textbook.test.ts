@@ -36,7 +36,7 @@ describe('textbook directory (UX-03)', () => {
     expect(ids).toHaveLength(Object.keys(catalog).length);
     expect(new Set(ids).size).toBe(ids.length);
     expect(new Set(ids)).toEqual(new Set(Object.keys(catalog)));
-    expect(ids).toHaveLength(28);
+    expect(ids).toHaveLength(29);
   });
 
   it('places MST before shortest paths and marks Bellman-Ford / connectivity as extensions', () => {
@@ -84,7 +84,7 @@ describe('textbook directory (UX-03)', () => {
     expect(search.topics.find((topic) => topic.id === 'ordered-search')?.algorithms[0].id).toBe('binary');
   });
 
-  it('follows the textbook sorting order and keeps only merge as planned while shell and heap are authored', () => {
+  it('follows the textbook sorting order and keeps shell, heap, merge and quick authored', () => {
     const sort = nav.find((chapter) => chapter.id === 'ch9-sort')!;
     expect(sort.topics.map((topic) => topic.id)).toEqual([
       'sort-basics',
@@ -100,7 +100,8 @@ describe('textbook directory (UX-03)', () => {
     expect(sort.topics.find((topic) => topic.id === 'shell-sort')?.algorithms[0].id).toBe('shell');
     expect(sort.topics.find((topic) => topic.id === 'heap-sort')?.planned).toBeUndefined();
     expect(sort.topics.find((topic) => topic.id === 'heap-sort')?.algorithms[0].id).toBe('heap');
-    expect(sort.topics.find((topic) => topic.id === 'merge-sort')?.planned).toBe(true);
+    expect(sort.topics.find((topic) => topic.id === 'merge-sort')?.planned).toBeUndefined();
+    expect(sort.topics.find((topic) => topic.id === 'merge-sort')?.algorithms[0].id).toBe('merge');
     expect(sort.topics.at(-1)?.id).toBe('quick-sort');
   });
 
@@ -149,6 +150,7 @@ describe('textbook directory (UX-03)', () => {
       'insertion-sort',
       'shell-sort',
       'heap-sort',
+      'merge-sort',
       'quick-sort',
     ]);
     expect(groups.map((topic) => topic.id)).toEqual([
@@ -171,7 +173,7 @@ describe('textbook directory (UX-03)', () => {
     const graphBasics = topics.find((topic) => topic.id === 'graph-basics');
     const mergeSort = topics.find((topic) => topic.id === 'merge-sort');
     expect(graphBasics?.kind).toBe('concept');
-    expect(mergeSort?.kind).toBe('planned');
+    expect(mergeSort?.kind).toBe('algorithm');
     expect(topics.every((topic) => topic.kind !== undefined)).toBe(true);
   });
 

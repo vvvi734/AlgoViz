@@ -41,10 +41,17 @@ for(let i=0;i<a.length;i++) {let m=i;
 for(let j=i+1;j<a.length;j++){trace({type:'array',values:[...a],focus:[m,j]},'寻找最小值 / Find minimum');if(a[j]<a[m])m=j;}
 [a[i],a[m]]=[a[m],a[i]];trace({type:'array',values:[...a],focus:[i,m]},'确定位置 / Place minimum');}
 trace({type:'array',values:[...a],done:true},'完成 / Done');`},
- quick:{group:'sort',icon:'▥',name:['快速排序','Quicksort'],desc:['选择枢轴分区，递归处理左右子区间。','Partition around a pivot, then recursively sort the two partitions.'],time:'O(n log n)',space:'O(log n)',input:[8,3,1,7,5,2,9,4],code:`const a=[...input];trace({type:'array',values:[...a]},'开始 / Start');
+ quick:{group:'sort',icon:'▥',name:['快速排序','Quicksort'],desc:['Lomuto 分区以末尾元素为枢轴，把不大于枢轴的值换到左侧，递归处理左右子区间。','Lomuto partitioning uses the last element as pivot, moves values ≤ pivot left, then recursively sorts both partitions.'],time:'平均 O(n log n)；最坏 O(n²)',space:'递归栈平均 O(log n)；最坏 O(n)',input:[8,3,1,7,5,2,9,4],code:`const a=[...input];trace({type:'array',values:[...a]},'开始 / Start');
 function sort(l,r){if(l>=r)return; const pivot=a[r];let i=l;
-for(let j=l;j<r;j++){trace({type:'array',values:[...a],focus:[j,r]},'与枢轴比较 / Compare pivot');if(a[j]<pivot){[a[i],a[j]]=[a[j],a[i]];trace({type:'array',values:[...a],focus:[i,j]},'分区交换 / Partition swap');i++;}}
+for(let j=l;j<r;j++){trace({type:'array',values:[...a],focus:[j,r]},'与枢轴比较 / Compare pivot');if(a[j]<=pivot){[a[i],a[j]]=[a[j],a[i]];trace({type:'array',values:[...a],focus:[i,j]},'分区交换 / Partition swap');i++;}}
 [a[i],a[r]]=[a[r],a[i]];trace({type:'array',values:[...a],focus:[i]},'枢轴归位 / Pivot placed');sort(l,i-1);sort(i+1,r);}
+sort(0,a.length-1);trace({type:'array',values:[...a],done:true},'完成 / Done');`},
+ merge:{group:'sort',icon:'⇄',name:['归并排序','Merge sort'],desc:['自顶向下拆分到单元素，再合并两个有序半区；相等时优先取左侧以保持稳定。','Split top-down to singletons, then merge sorted halves; take the left side on equality to preserve stability.'],time:'O(n log n)',space:'O(n)',input:[7,3,5,1,9,2,8,4],code:`const a=[...input];trace({type:'array',values:[...a]},'开始 / Start');
+function merge(l,m,r){const L=a.slice(l,m+1),R=a.slice(m+1,r+1);let i=0,j=0,k=l;
+while(i<L.length&&j<R.length){trace({type:'array',values:[...a],focus:[l+i,m+1+j]},'比较左右候选 / Compare candidates');if(L[i]<=R[j]){a[k]=L[i];i++;}else{a[k]=R[j];j++;}trace({type:'array',values:[...a],focus:[k]},'写入缓冲区并写回 / Merge write');k++;}
+while(i<L.length){a[k]=L[i];i++;k++;trace({type:'array',values:[...a],focus:[k-1]},'复制剩余 / Copy remainder');}
+while(j<R.length){a[k]=R[j];j++;k++;trace({type:'array',values:[...a],focus:[k-1]},'复制剩余 / Copy remainder');}}
+function sort(l,r){if(l>=r)return;const m=Math.floor((l+r)/2);sort(l,m);sort(m+1,r);merge(l,m,r);}
 sort(0,a.length-1);trace({type:'array',values:[...a],done:true},'完成 / Done');`},
  shell:{group:'sort',icon:'▦',name:['希尔排序','Shell sort'],desc:['按不断减半的 gap 对子序列做插入排序，gap=1 时完成全局排序。','Insertion-sort each gap lane while halving the gap; the gap=1 pass finishes the global order.'],time:'取决于间隔序列，约 O(n log n)～O(n²)',space:'O(1)',input:[8,3,7,4,9,2,6,1],code:`const a=[...input];trace({type:'array',values:[...a]},'开始 / Start');
 for(let gap=Math.floor(a.length/2);gap>0;gap=Math.floor(gap/2)){

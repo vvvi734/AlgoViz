@@ -5038,7 +5038,7 @@ export type HuffmanSnapshot = z.infer<typeof huffmanSnapshotSchema>;
  * `a[j + 1] = a[j]`; pretending the hole is already filled would fabricate a
  * state Python never had.
  * ------------------------------------------------------------------------- */
-export const SORTING_ALGORITHMS = ['selection', 'insertion', 'shell'] as const;
+export const SORTING_ALGORITHMS = ['selection', 'insertion', 'shell', 'quick', 'merge'] as const;
 export type SortingAlgorithm = (typeof SORTING_ALGORITHMS)[number];
 
 export const SORTING_OPERATIONS = [
@@ -5057,6 +5057,20 @@ export const SORTING_OPERATIONS = [
   'shell-shift',
   'shell-place',
   'gap-done',
+  'quick-range',
+  'quick-compare',
+  'quick-swap',
+  'quick-place',
+  'quick-return',
+  'merge-range',
+  'merge-split',
+  'merge-return',
+  'merge-start',
+  'merge-compare',
+  'merge-write',
+  'merge-copy',
+  'merge-writeback',
+  'merge-range-done',
   'done',
 ] as const;
 export type SortingOperation = (typeof SORTING_OPERATIONS)[number];
@@ -5065,6 +5079,20 @@ const SORTING_OPS_BY_ALGORITHM: Record<SortingAlgorithm, readonly SortingOperati
   selection: ['init', 'select-start', 'select-compare', 'select-candidate', 'select-swap', 'select-done', 'done'],
   insertion: ['init', 'insert-key', 'insert-compare', 'insert-shift', 'insert-place', 'done'],
   shell: ['init', 'gap-change', 'shell-compare', 'shell-shift', 'shell-place', 'gap-done', 'done'],
+  quick: ['init', 'quick-range', 'quick-compare', 'quick-swap', 'quick-place', 'quick-return', 'done'],
+  merge: [
+    'init',
+    'merge-range',
+    'merge-split',
+    'merge-return',
+    'merge-start',
+    'merge-compare',
+    'merge-write',
+    'merge-copy',
+    'merge-writeback',
+    'merge-range-done',
+    'done',
+  ],
 };
 
 export const SORTING_LIMITS = {
@@ -5091,6 +5119,21 @@ export const sortingShiftSchema = z.object({
 });
 export type SortingShift = z.infer<typeof sortingShiftSchema>;
 
+/** Inclusive recursive interval. An empty quick child may have low = high + 1. */
+export const sortingRangeSchema = z.object({
+  low: z.number().int().nonnegative().max(SORTING_LIMITS.MAX_VALUES),
+  high: z.number().int().min(-1).max(SORTING_LIMITS.MAX_VALUES - 1),
+});
+export type SortingRange = z.infer<typeof sortingRangeSchema>;
+
+/** One real merge-buffer append. `index` is the slot that just received the value. */
+export const sortingBufferWriteSchema = z.object({
+  index: z.number().int().nonnegative().max(SORTING_LIMITS.MAX_VALUES - 1),
+  value: z.number().finite().min(-SORTING_LIMITS.MAX_ABS_VALUE).max(SORTING_LIMITS.MAX_ABS_VALUE),
+  source: z.number().int().nonnegative().max(SORTING_LIMITS.MAX_VALUES - 1),
+});
+export type SortingBufferWrite = z.infer<typeof sortingBufferWriteSchema>;
+
 export const sortingSnapshotSchema = z
   .object({
     kind: z.literal('sorting'),
@@ -5109,6 +5152,20 @@ export const sortingSnapshotSchema = z
     swapped: z.tuple([z.number().int().nonnegative(), z.number().int().nonnegative()]).nullable(),
     insertedAt: z.number().int().nonnegative().max(SORTING_LIMITS.MAX_VALUES - 1).nullable(),
     result: z.enum(['sorted', 'empty']).nullable(),
+    range: sortingRangeSchema.nullable().default(null),
+    pivot: z.number().int().nonnegative().max(SORTING_LIMITS.MAX_VALUES - 1).nullable().default(null),
+    boundary: z.number().int().nonnegative().max(SORTING_LIMITS.MAX_VALUES - 1).nullable().default(null),
+    split: z.number().int().nonnegative().max(SORTING_LIMITS.MAX_VALUES - 1).nullable().default(null),
+    left: z.number().int().nonnegative().max(SORTING_LIMITS.MAX_VALUES - 1).nullable().default(null),
+    right: z.number().int().nonnegative().max(SORTING_LIMITS.MAX_VALUES - 1).nullable().default(null),
+    buffer: z
+      .array(z.number().finite().min(-SORTING_LIMITS.MAX_ABS_VALUE).max(SORTING_LIMITS.MAX_ABS_VALUE))
+      .max(SORTING_LIMITS.MAX_VALUES)
+      .default([]),
+    bufferWrite: sortingBufferWriteSchema.nullable().default(null),
+    writeAt: z.number().int().nonnegative().max(SORTING_LIMITS.MAX_VALUES - 1).nullable().default(null),
+    finalized: z.array(z.number().int().nonnegative().max(SORTING_LIMITS.MAX_VALUES - 1)).max(SORTING_LIMITS.MAX_VALUES).default([]),
+    mergedRanges: z.array(sortingRangeSchema).max(SORTING_LIMITS.MAX_VALUES).default([]),
   })
   .superRefine((snapshot, ctx) => {
     const add = (path: (string | number)[], message: string) =>
@@ -5155,6 +5212,27 @@ export const sortingSnapshotSchema = z
     const ascending = () => prefixSorted(n);
     const keyMatchesSlot = (origin: number, value: number) =>
       origin >= 0 && origin < n && values[origin] === value;
+    const rangeWithinBounds = (range: SortingRange) =>
+      range.low >= 0 && range.low <= n && range.high >= -1 && range.high < n;
+    const rangeHasSlots = (range: SortingRange) => range.low <= range.high;
+    const rangeOf = (low: number, high: number) => ({ low, high });
+    const rangeEquals = (a: SortingRange | null, low: number, high: number) =>
+      a !== null && a.low === low && a.high === high;
+    const finalizedValid = snapshot.finalized.every(
+      (index) => index >= 0 && index < n,
+    );
+    if (!finalizedValid) add(['finalized'], 'finalized slots must be real array indices');
+    if (new Set(snapshot.finalized).size !== snapshot.finalized.length) {
+      add(['finalized'], 'finalized slots must be unique');
+    }
+    if (snapshot.range !== null && !rangeWithinBounds(snapshot.range)) {
+      add(['range'], 'recursive range is outside the array');
+    }
+    for (const [index, range] of snapshot.mergedRanges.entries()) {
+      if (!rangeWithinBounds(range) || !rangeHasSlots(range)) {
+        add(['mergedRanges', index], 'merged ranges must be non-empty and inside the array');
+      }
+    }
 
     if (snapshot.operation === 'init') {
       if (snapshot.round !== 0 || snapshot.sortedFrom !== 0) add(['round'], 'init starts at round 0 with no sorted prefix');
@@ -5167,7 +5245,18 @@ export const sortingSnapshotSchema = z
         snapshot.shifted !== null ||
         snapshot.swapped !== null ||
         snapshot.insertedAt !== null ||
-        snapshot.result !== null
+        snapshot.result !== null ||
+        snapshot.range !== null ||
+        snapshot.pivot !== null ||
+        snapshot.boundary !== null ||
+        snapshot.split !== null ||
+        snapshot.left !== null ||
+        snapshot.right !== null ||
+        snapshot.buffer.length !== 0 ||
+        snapshot.bufferWrite !== null ||
+        snapshot.writeAt !== null ||
+        snapshot.finalized.length !== 0 ||
+        snapshot.mergedRanges.length !== 0
       ) {
         add(['operation'], 'init cannot carry active sort metadata');
       }
@@ -5188,9 +5277,26 @@ export const sortingSnapshotSchema = z
         snapshot.lane !== null ||
         snapshot.shifted !== null ||
         snapshot.swapped !== null ||
-        snapshot.insertedAt !== null
+        snapshot.insertedAt !== null ||
+        snapshot.range !== null ||
+        snapshot.pivot !== null ||
+        snapshot.boundary !== null ||
+        snapshot.split !== null ||
+        snapshot.left !== null ||
+        snapshot.right !== null ||
+        snapshot.buffer.length !== 0 ||
+        snapshot.bufferWrite !== null ||
+        snapshot.writeAt !== null
       ) {
         add(['operation'], 'done cannot carry active sort metadata');
+      }
+      if (snapshot.algorithm === 'quick' || snapshot.algorithm === 'merge') {
+        if (new Set(snapshot.finalized).size !== n || snapshot.finalized.length !== n) {
+          add(['finalized'], 'done must mark every slot as final');
+        }
+      }
+      if (snapshot.algorithm === 'merge' && n > 0 && !snapshot.mergedRanges.some((range) => range.low === 0 && range.high === n - 1)) {
+        add(['mergedRanges'], 'done must report the whole array as one sorted range');
       }
       return;
     }
@@ -5369,10 +5475,236 @@ export const sortingSnapshotSchema = z
         }
       }
     }
+
+    if (snapshot.algorithm === 'quick') {
+      if (snapshot.round < 1 && !(snapshot.operation === 'quick-return' && snapshot.round === 0)) {
+        add(['round'], 'quick operations need a partition number');
+      }
+      if (
+        snapshot.candidate !== null ||
+        snapshot.key !== null ||
+        snapshot.gap !== null ||
+        snapshot.lane !== null ||
+        snapshot.shifted !== null ||
+        snapshot.buffer.length !== 0 ||
+        snapshot.bufferWrite !== null ||
+        snapshot.writeAt !== null ||
+        snapshot.left !== null ||
+        snapshot.right !== null ||
+        snapshot.mergedRanges.length !== 0
+      ) {
+        add(['operation'], 'quick cannot carry merge, key or gap metadata');
+      }
+      if (snapshot.range === null) add(['range'], 'quick operations need the current recursive range');
+      if (snapshot.range !== null && snapshot.operation !== 'quick-return' && !rangeHasSlots(snapshot.range)) {
+        add(['range'], 'only a returning quick call may have an empty range');
+      }
+      if (snapshot.operation === 'quick-range') {
+        if (snapshot.range === null || !rangeHasSlots(snapshot.range)) add(['range'], 'quick-range needs a non-empty interval');
+        if (snapshot.range !== null && snapshot.pivot !== snapshot.range.high) add(['pivot'], 'Lomuto pivot must be the last slot');
+        if (snapshot.range !== null && snapshot.boundary !== snapshot.range.low) add(['boundary'], 'the partition boundary starts at low');
+        if (snapshot.compare !== null || snapshot.swapped !== null || snapshot.insertedAt !== null) {
+          add(['operation'], 'quick-range has not compared or placed anything yet');
+        }
+      }
+      if (snapshot.operation === 'quick-compare') {
+        if (snapshot.range === null || !rangeHasSlots(snapshot.range)) add(['range'], 'quick-compare needs a non-empty interval');
+        if (snapshot.range !== null && snapshot.pivot !== snapshot.range.high) add(['pivot'], 'Lomuto pivot must be the last slot');
+        if (snapshot.compare === null || snapshot.range === null || snapshot.compare < snapshot.range.low || snapshot.compare >= snapshot.range.high) {
+          add(['compare'], 'quick compare scans only [low, high - 1]');
+        }
+        if (snapshot.boundary === null || snapshot.range === null || snapshot.boundary < snapshot.range.low) {
+          add(['boundary'], 'quick boundary must stay inside the partition');
+        }
+        if (snapshot.boundary !== null && snapshot.compare !== null && snapshot.boundary > snapshot.compare) {
+          add(['boundary'], 'the boundary can never be right of the scan pointer');
+        }
+        if (snapshot.swapped !== null || snapshot.insertedAt !== null) add(['swapped'], 'comparison does not swap or place');
+      }
+      if (snapshot.operation === 'quick-swap') {
+        if (snapshot.range === null || !rangeHasSlots(snapshot.range)) add(['range'], 'quick-swap needs the partition interval');
+        if (snapshot.pivot !== snapshot.range?.high) add(['pivot'], 'the pivot stays at high during the scan');
+        if (snapshot.swapped === null) add(['swapped'], 'quick-swap must record the real exchanged slots');
+        if (snapshot.swapped !== null) {
+          const [left, right] = snapshot.swapped;
+          if (right !== snapshot.compare) add(['swapped'], 'the scan slot is the right exchange slot');
+          if (snapshot.range !== null && (left < snapshot.range.low || right >= snapshot.range.high || left > right)) {
+            add(['swapped'], 'quick exchanges stay inside [low, high)');
+          }
+          if (snapshot.boundary !== left + 1) add(['boundary'], 'the boundary advances after every <= pivot element');
+        }
+        if (snapshot.insertedAt !== null) add(['insertedAt'], 'the pivot is placed only in quick-place');
+      }
+      if (snapshot.operation === 'quick-place') {
+        if (snapshot.range === null || !rangeHasSlots(snapshot.range)) add(['range'], 'quick-place needs the partition interval');
+        if (snapshot.insertedAt === null) add(['insertedAt'], 'quick-place must record the pivot home');
+        if (snapshot.insertedAt !== null && snapshot.range !== null && (snapshot.insertedAt < snapshot.range.low || snapshot.insertedAt > snapshot.range.high)) {
+          add(['insertedAt'], 'the pivot home must stay inside the partition');
+        }
+        if (snapshot.insertedAt !== snapshot.boundary || snapshot.insertedAt !== snapshot.pivot) {
+          add(['boundary'], 'the pivot home is both the boundary and the pivot slot after placement');
+        }
+        if (snapshot.finalized.includes(snapshot.insertedAt ?? -1) === false) {
+          add(['finalized'], 'a placed pivot is final');
+        }
+        if (snapshot.swapped === null || snapshot.swapped[0] !== snapshot.insertedAt || snapshot.swapped[1] !== snapshot.range?.high) {
+          add(['swapped'], 'quick-place swaps the pivot home with the original high slot');
+        }
+        if (snapshot.compare !== null) add(['compare'], 'quick-place has finished scanning');
+      }
+      if (snapshot.operation === 'quick-return') {
+        if (snapshot.range === null) add(['range'], 'quick-return must name the returning interval');
+        if (snapshot.range !== null && snapshot.range.low === snapshot.range.high) {
+          if (snapshot.insertedAt !== snapshot.range.low) add(['insertedAt'], 'a singleton is already in its final slot');
+          if (!snapshot.finalized.includes(snapshot.range.low)) add(['finalized'], 'a singleton returning from recursion is final');
+        }
+        if (snapshot.range !== null && snapshot.range.low > snapshot.range.high && snapshot.insertedAt !== null) {
+          add(['insertedAt'], 'an empty interval has no pivot home');
+        }
+        if (snapshot.pivot !== null || snapshot.boundary !== null || snapshot.compare !== null || snapshot.swapped !== null) {
+          add(['operation'], 'quick-return has no active scan metadata');
+        }
+      }
+    }
+
+    if (snapshot.algorithm === 'merge') {
+      if (snapshot.round < 1) add(['round'], 'merge operations need a recursive call number');
+      if (
+        snapshot.candidate !== null ||
+        snapshot.compare !== null ||
+        snapshot.key !== null ||
+        snapshot.gap !== null ||
+        snapshot.lane !== null ||
+        snapshot.shifted !== null ||
+        snapshot.swapped !== null ||
+        snapshot.insertedAt !== null ||
+        snapshot.pivot !== null ||
+        snapshot.boundary !== null
+      ) {
+        add(['operation'], 'merge cannot carry quick, key or gap metadata');
+      }
+      if (snapshot.finalized.length !== 0) add(['finalized'], 'merge marks whole ranges, not final slots, before done');
+      if (snapshot.range === null) add(['range'], 'merge operations need the current recursive range');
+      if (snapshot.range !== null && !rangeHasSlots(snapshot.range)) add(['range'], 'merge only recurses into non-empty ranges');
+      if (snapshot.buffer.length > (snapshot.range === null ? 0 : snapshot.range.high - snapshot.range.low + 1)) {
+        add(['buffer'], 'the merge buffer cannot exceed the current range');
+      }
+      if (snapshot.split !== null && snapshot.range !== null && (snapshot.split < snapshot.range.low || snapshot.split >= snapshot.range.high)) {
+        add(['split'], 'the split must leave a non-empty right half');
+      }
+      if (snapshot.operation === 'merge-range') {
+        if (snapshot.split !== null || snapshot.left !== null || snapshot.right !== null) add(['split'], 'merge-range has not split yet');
+        if (snapshot.buffer.length !== 0 || snapshot.bufferWrite !== null || snapshot.writeAt !== null || snapshot.mergedRanges.length !== 0) {
+          add(['buffer'], 'merge-range has no buffer or merged range yet');
+        }
+      }
+      if (snapshot.operation === 'merge-split') {
+        if (snapshot.range === null || snapshot.range.low >= snapshot.range.high) add(['split'], 'only a range of length >= 2 can split');
+        if (snapshot.range !== null && snapshot.split !== Math.floor((snapshot.range.low + snapshot.range.high) / 2)) {
+          add(['split'], 'the split must be the real midpoint');
+        }
+        if (snapshot.left !== null || snapshot.right !== null) add(['left'], 'split does not start comparing');
+        if (snapshot.buffer.length !== 0 || snapshot.bufferWrite !== null || snapshot.writeAt !== null || snapshot.mergedRanges.length !== 0) {
+          add(['buffer'], 'split has no buffer or merged range yet');
+        }
+      }
+      if (snapshot.operation === 'merge-return') {
+        if (snapshot.split !== null || snapshot.left !== null || snapshot.right !== null) add(['split'], 'a returning merge has no split or cursors');
+        if (snapshot.range !== null && snapshot.range.low === snapshot.range.high) {
+          if (!snapshot.mergedRanges.some((range) => rangeEquals(range, snapshot.range!.low, snapshot.range!.high))) {
+            add(['mergedRanges'], 'a singleton return is one sorted range');
+          }
+        }
+        if (snapshot.buffer.length !== 0 || snapshot.bufferWrite !== null || snapshot.writeAt !== null) {
+          add(['buffer'], 'a returning merge has no active buffer');
+        }
+      }
+      if (
+        snapshot.operation === 'merge-start' ||
+        snapshot.operation === 'merge-compare' ||
+        snapshot.operation === 'merge-write' ||
+        snapshot.operation === 'merge-copy' ||
+        snapshot.operation === 'merge-writeback'
+      ) {
+        if (snapshot.range === null || snapshot.split === null) add(['split'], 'merging needs the split midpoint');
+        if (snapshot.range !== null && snapshot.split !== null) {
+          const halves = [
+            rangeOf(snapshot.range.low, snapshot.split),
+            rangeOf(snapshot.split + 1, snapshot.range.high),
+          ];
+          if (
+            snapshot.mergedRanges.length !== 2 ||
+            !rangeEquals(snapshot.mergedRanges[0] ?? null, halves[0].low, halves[0].high) ||
+            !rangeEquals(snapshot.mergedRanges[1] ?? null, halves[1].low, halves[1].high)
+          ) {
+            add(['mergedRanges'], 'the two sorted halves must be visible during merge');
+          }
+        }
+      }
+      if (snapshot.operation === 'merge-start') {
+        if (snapshot.range === null || snapshot.left !== snapshot.range.low || snapshot.right !== (snapshot.split ?? -1) + 1) {
+          add(['left'], 'merge cursors start at the first slots of both halves');
+        }
+        if (snapshot.buffer.length !== 0 || snapshot.bufferWrite !== null || snapshot.writeAt !== null) {
+          add(['buffer'], 'merge-start has an empty buffer');
+        }
+      }
+      if (snapshot.operation === 'merge-compare') {
+        if (snapshot.range === null || snapshot.split === null) add(['split'], 'merge-compare needs a split');
+        if (snapshot.left === null || snapshot.left < snapshot.range!.low || snapshot.left > snapshot.split!) {
+          add(['left'], 'left cursor must stay inside its half');
+        }
+        if (snapshot.right === null || snapshot.right < snapshot.split! + 1 || snapshot.right > snapshot.range!.high) {
+          add(['right'], 'right cursor must stay inside its half');
+        }
+        if (snapshot.bufferWrite !== null || snapshot.writeAt !== null) add(['buffer'], 'comparison does not write');
+      }
+      if (snapshot.operation === 'merge-write' || snapshot.operation === 'merge-copy') {
+        if (snapshot.bufferWrite === null) add(['bufferWrite'], 'a real buffer append must be recorded');
+        if (snapshot.bufferWrite !== null) {
+          const write = snapshot.bufferWrite;
+          if (write.index !== snapshot.buffer.length - 1) add(['bufferWrite'], 'buffer index must be the slot just appended');
+          if (snapshot.buffer[write.index] !== write.value) add(['buffer'], 'buffer content must equal the appended value');
+          if (snapshot.range !== null && (write.source < snapshot.range.low || write.source > snapshot.range.high)) {
+            add(['bufferWrite'], 'buffer source must be inside the current range');
+          }
+        }
+        if (snapshot.writeAt !== null) add(['writeAt'], 'buffer append is not a write-back');
+      }
+      if (snapshot.operation === 'merge-writeback') {
+        if (snapshot.range === null || snapshot.split === null) add(['split'], 'write-back needs the merge range');
+        if (snapshot.range !== null && snapshot.buffer.length !== snapshot.range.high - snapshot.range.low + 1) {
+          add(['buffer'], 'write-back needs the full merged buffer');
+        }
+        if (snapshot.writeAt === null) add(['writeAt'], 'write-back must name the real array slot');
+        if (snapshot.writeAt !== null && snapshot.range !== null) {
+          if (snapshot.writeAt < snapshot.range.low || snapshot.writeAt > snapshot.range.high) {
+            add(['writeAt'], 'write-back stays inside the merge range');
+          } else if (values[snapshot.writeAt] !== snapshot.buffer[snapshot.writeAt - snapshot.range.low]) {
+            add(['elements'], 'the written slot must equal the buffer value');
+          }
+        }
+        if (snapshot.left !== null || snapshot.right !== null || snapshot.bufferWrite !== null) {
+          add(['left'], 'write-back has finished reading both halves');
+        }
+      }
+      if (snapshot.operation === 'merge-range-done') {
+        if (snapshot.range === null) add(['range'], 'merge-range-done needs the finished range');
+        if (snapshot.range !== null && snapshot.buffer.length !== snapshot.range.high - snapshot.range.low + 1) {
+          add(['buffer'], 'the finished merge must retain its real buffer');
+        }
+        if (snapshot.left !== null || snapshot.right !== null || snapshot.bufferWrite !== null || snapshot.writeAt !== null) {
+          add(['operation'], 'merge-range-done has no active cursor or write');
+        }
+        if (snapshot.range !== null && !snapshot.mergedRanges.some((range) => rangeEquals(range, snapshot.range!.low, snapshot.range!.high))) {
+          add(['mergedRanges'], 'the finished range must be marked as merged');
+        }
+      }
+    }
   });
 export type SortingSnapshot = z.infer<typeof sortingSnapshotSchema>;
 
-/** Stage 7B stack/queue + Stage 7C linked-list + Stage 7D binary-tree + T1 BST + T2 AVL + T3 max-heap + T4 Huffman + S1 sorting + Stage 7E/7F/G1/G2/G3/G4 graphs. */
+/** Stage 7B stack/queue + Stage 7C linked-list + Stage 7D binary-tree + T1 BST + T2 AVL + T3 max-heap + T4 Huffman + S1/S2 sorting + Stage 7E/7F/G1/G2/G3/G4 graphs. */
 export const structureSchema = z.union([
   sortingSnapshotSchema,
   huffmanSnapshotSchema,

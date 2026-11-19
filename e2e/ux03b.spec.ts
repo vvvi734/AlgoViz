@@ -48,7 +48,7 @@ test.describe('UX-03B — compact textbook navigation', () => {
 
     // Every single-algorithm topic is structurally direct, not just bubble.
     const directTopics = page.locator('.textbook-nav .textbook-topic[data-direct="true"]');
-    await expect(directTopics).toHaveCount(17);
+    await expect(directTopics).toHaveCount(18);
     const directCounts = await directTopics.evaluateAll((nodes) =>
       nodes.map((node) => node.querySelectorAll('[data-testid^="algo-"]').length),
     );
@@ -87,15 +87,23 @@ test.describe('UX-03B — compact textbook navigation', () => {
     await expect(concept.locator('[data-testid^="algo-"]')).toHaveCount(0);
 
     await openTextbookChapter(page, 'ch9-sort');
-    const planned = page.getByTestId('topic-merge-sort');
+    const merge = page.getByTestId('topic-merge-sort');
+    await expect(merge).toHaveAttribute('data-kind', 'algorithm');
+    await expect(merge).toHaveAttribute('data-direct', 'true');
+    await expect(merge).toContainText('归并排序');
+    await expect(merge.locator('button')).toHaveCount(1);
+    await expect(page.getByTestId('algo-merge')).toHaveCount(1);
+
+    // Planned rows remain static and never fake an algorithm target.
+    await openTextbookChapter(page, 'ch5-string');
+    const planned = page.getByTestId('topic-kmp');
     await expect(planned).toHaveAttribute('data-kind', 'planned');
     await expect(planned).toHaveAttribute('aria-disabled', 'true');
     await expect(planned).toContainText('待完善');
     await expect(planned.locator('button')).toHaveCount(0);
-    await expect(page.getByTestId('algo-merge-sort')).toHaveCount(0);
 
     // The compact tree still contains every registered algorithm exactly once.
-    await expect(page.locator('[data-testid^="algo-"]')).toHaveCount(28);
+    await expect(page.locator('[data-testid^="algo-"]')).toHaveCount(29);
   });
 
   test('keeps playback and selection intact while folding or reloading the directory', async ({

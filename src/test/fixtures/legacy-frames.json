@@ -1602,6 +1602,817 @@
       "message": "完成 / Done"
     }
   ],
+  "merge": [
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          7,
+          3,
+          5,
+          1,
+          9,
+          2,
+          8,
+          4
+        ]
+      },
+      "message": "开始 / Start"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          7,
+          3,
+          5,
+          1,
+          9,
+          2,
+          8,
+          4
+        ],
+        "focus": [
+          0,
+          1
+        ]
+      },
+      "message": "比较左右候选 / Compare candidates"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          3,
+          3,
+          5,
+          1,
+          9,
+          2,
+          8,
+          4
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "写入缓冲区并写回 / Merge write"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          3,
+          7,
+          5,
+          1,
+          9,
+          2,
+          8,
+          4
+        ],
+        "focus": [
+          1
+        ]
+      },
+      "message": "复制剩余 / Copy remainder"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          3,
+          7,
+          5,
+          1,
+          9,
+          2,
+          8,
+          4
+        ],
+        "focus": [
+          2,
+          3
+        ]
+      },
+      "message": "比较左右候选 / Compare candidates"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          3,
+          7,
+          1,
+          1,
+          9,
+          2,
+          8,
+          4
+        ],
+        "focus": [
+          2
+        ]
+      },
+      "message": "写入缓冲区并写回 / Merge write"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          3,
+          7,
+          1,
+          5,
+          9,
+          2,
+          8,
+          4
+        ],
+        "focus": [
+          3
+        ]
+      },
+      "message": "复制剩余 / Copy remainder"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          3,
+          7,
+          1,
+          5,
+          9,
+          2,
+          8,
+          4
+        ],
+        "focus": [
+          0,
+          2
+        ]
+      },
+      "message": "比较左右候选 / Compare candidates"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          7,
+          1,
+          5,
+          9,
+          2,
+          8,
+          4
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "写入缓冲区并写回 / Merge write"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          7,
+          1,
+          5,
+          9,
+          2,
+          8,
+          4
+        ],
+        "focus": [
+          0,
+          3
+        ]
+      },
+      "message": "比较左右候选 / Compare candidates"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          3,
+          1,
+          5,
+          9,
+          2,
+          8,
+          4
+        ],
+        "focus": [
+          1
+        ]
+      },
+      "message": "写入缓冲区并写回 / Merge write"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          3,
+          1,
+          5,
+          9,
+          2,
+          8,
+          4
+        ],
+        "focus": [
+          1,
+          3
+        ]
+      },
+      "message": "比较左右候选 / Compare candidates"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          3,
+          5,
+          5,
+          9,
+          2,
+          8,
+          4
+        ],
+        "focus": [
+          2
+        ]
+      },
+      "message": "写入缓冲区并写回 / Merge write"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          3,
+          5,
+          7,
+          9,
+          2,
+          8,
+          4
+        ],
+        "focus": [
+          3
+        ]
+      },
+      "message": "复制剩余 / Copy remainder"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          3,
+          5,
+          7,
+          9,
+          2,
+          8,
+          4
+        ],
+        "focus": [
+          4,
+          5
+        ]
+      },
+      "message": "比较左右候选 / Compare candidates"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          3,
+          5,
+          7,
+          2,
+          2,
+          8,
+          4
+        ],
+        "focus": [
+          4
+        ]
+      },
+      "message": "写入缓冲区并写回 / Merge write"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          3,
+          5,
+          7,
+          2,
+          9,
+          8,
+          4
+        ],
+        "focus": [
+          5
+        ]
+      },
+      "message": "复制剩余 / Copy remainder"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          3,
+          5,
+          7,
+          2,
+          9,
+          8,
+          4
+        ],
+        "focus": [
+          6,
+          7
+        ]
+      },
+      "message": "比较左右候选 / Compare candidates"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          3,
+          5,
+          7,
+          2,
+          9,
+          4,
+          4
+        ],
+        "focus": [
+          6
+        ]
+      },
+      "message": "写入缓冲区并写回 / Merge write"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          3,
+          5,
+          7,
+          2,
+          9,
+          4,
+          8
+        ],
+        "focus": [
+          7
+        ]
+      },
+      "message": "复制剩余 / Copy remainder"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          3,
+          5,
+          7,
+          2,
+          9,
+          4,
+          8
+        ],
+        "focus": [
+          4,
+          6
+        ]
+      },
+      "message": "比较左右候选 / Compare candidates"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          3,
+          5,
+          7,
+          2,
+          9,
+          4,
+          8
+        ],
+        "focus": [
+          4
+        ]
+      },
+      "message": "写入缓冲区并写回 / Merge write"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          3,
+          5,
+          7,
+          2,
+          9,
+          4,
+          8
+        ],
+        "focus": [
+          5,
+          6
+        ]
+      },
+      "message": "比较左右候选 / Compare candidates"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          3,
+          5,
+          7,
+          2,
+          4,
+          4,
+          8
+        ],
+        "focus": [
+          5
+        ]
+      },
+      "message": "写入缓冲区并写回 / Merge write"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          3,
+          5,
+          7,
+          2,
+          4,
+          4,
+          8
+        ],
+        "focus": [
+          5,
+          7
+        ]
+      },
+      "message": "比较左右候选 / Compare candidates"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          3,
+          5,
+          7,
+          2,
+          4,
+          8,
+          8
+        ],
+        "focus": [
+          6
+        ]
+      },
+      "message": "写入缓冲区并写回 / Merge write"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          3,
+          5,
+          7,
+          2,
+          4,
+          8,
+          9
+        ],
+        "focus": [
+          7
+        ]
+      },
+      "message": "复制剩余 / Copy remainder"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          3,
+          5,
+          7,
+          2,
+          4,
+          8,
+          9
+        ],
+        "focus": [
+          0,
+          4
+        ]
+      },
+      "message": "比较左右候选 / Compare candidates"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          3,
+          5,
+          7,
+          2,
+          4,
+          8,
+          9
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "写入缓冲区并写回 / Merge write"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          3,
+          5,
+          7,
+          2,
+          4,
+          8,
+          9
+        ],
+        "focus": [
+          1,
+          4
+        ]
+      },
+      "message": "比较左右候选 / Compare candidates"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          5,
+          7,
+          2,
+          4,
+          8,
+          9
+        ],
+        "focus": [
+          1
+        ]
+      },
+      "message": "写入缓冲区并写回 / Merge write"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          5,
+          7,
+          2,
+          4,
+          8,
+          9
+        ],
+        "focus": [
+          1,
+          5
+        ]
+      },
+      "message": "比较左右候选 / Compare candidates"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          3,
+          7,
+          2,
+          4,
+          8,
+          9
+        ],
+        "focus": [
+          2
+        ]
+      },
+      "message": "写入缓冲区并写回 / Merge write"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          3,
+          7,
+          2,
+          4,
+          8,
+          9
+        ],
+        "focus": [
+          2,
+          5
+        ]
+      },
+      "message": "比较左右候选 / Compare candidates"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          3,
+          4,
+          2,
+          4,
+          8,
+          9
+        ],
+        "focus": [
+          3
+        ]
+      },
+      "message": "写入缓冲区并写回 / Merge write"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          3,
+          4,
+          2,
+          4,
+          8,
+          9
+        ],
+        "focus": [
+          2,
+          6
+        ]
+      },
+      "message": "比较左右候选 / Compare candidates"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          4,
+          8,
+          9
+        ],
+        "focus": [
+          4
+        ]
+      },
+      "message": "写入缓冲区并写回 / Merge write"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          4,
+          8,
+          9
+        ],
+        "focus": [
+          3,
+          6
+        ]
+      },
+      "message": "比较左右候选 / Compare candidates"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          7,
+          8,
+          9
+        ],
+        "focus": [
+          5
+        ]
+      },
+      "message": "写入缓冲区并写回 / Merge write"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          7,
+          8,
+          9
+        ],
+        "focus": [
+          6
+        ]
+      },
+      "message": "复制剩余 / Copy remainder"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          7,
+          8,
+          9
+        ],
+        "focus": [
+          7
+        ]
+      },
+      "message": "复制剩余 / Copy remainder"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          7,
+          8,
+          9
+        ],
+        "done": true
+      },
+      "message": "完成 / Done"
+    }
+  ],
   "shell": [
     {
       "state": {

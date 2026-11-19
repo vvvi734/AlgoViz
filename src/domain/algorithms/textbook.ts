@@ -410,8 +410,7 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
       {
         id: 'merge-sort',
         title: { zh: '归并排序', en: 'Merge sort' },
-        algorithms: [],
-        planned: true,
+        algorithms: [{ id: 'merge' }],
       },
       {
         id: 'quick-sort',

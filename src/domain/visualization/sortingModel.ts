@@ -1,7 +1,9 @@
 import type { TraceState } from '../trace/types';
 import type {
   SortingAlgorithm,
+  SortingBufferWrite,
   SortingOperation,
+  SortingRange,
   SortingSnapshot,
 } from '../trace/schema';
 
@@ -14,7 +16,17 @@ export type SortingCellMark =
   | 'shift-target'
   | 'placed'
   | 'lane'
-  | 'swap';
+  | 'swap'
+  | 'range'
+  | 'range-start'
+  | 'range-end'
+  | 'pivot'
+  | 'final'
+  | 'merged'
+  | 'left'
+  | 'right'
+  | 'buffer-source'
+  | 'write-target';
 
 export interface SortingCellVisual {
   id: string;
@@ -24,7 +36,19 @@ export interface SortingCellVisual {
   marks: SortingCellMark[];
 }
 
-export type SortingPhase = 'init' | 'compare' | 'candidate' | 'move' | 'place' | 'gap' | 'done';
+export type SortingPhase =
+  | 'init'
+  | 'range'
+  | 'compare'
+  | 'candidate'
+  | 'move'
+  | 'place'
+  | 'gap'
+  | 'split'
+  | 'merge'
+  | 'buffer'
+  | 'writeback'
+  | 'done';
 
 export interface SortingVisualModel {
   kind: 'sorting';
@@ -44,6 +68,17 @@ export interface SortingVisualModel {
   swapped: [number, number] | null;
   insertedAt: number | null;
   result: 'sorted' | 'empty' | null;
+  range: SortingRange | null;
+  pivot: number | null;
+  boundary: number | null;
+  split: number | null;
+  left: number | null;
+  right: number | null;
+  buffer: number[];
+  bufferWrite: SortingBufferWrite | null;
+  writeAt: number | null;
+  finalized: number[];
+  mergedRanges: SortingRange[];
   cells: SortingCellVisual[];
   sortedCount: number;
   unsortedCount: number;
@@ -67,6 +102,20 @@ function phaseOf(operation: SortingOperation): SortingPhase {
     case 'shell-shift': return 'move';
     case 'shell-place': return 'place';
     case 'gap-done': return 'gap';
+    case 'quick-range': return 'range';
+    case 'quick-compare': return 'compare';
+    case 'quick-swap': return 'move';
+    case 'quick-place': return 'place';
+    case 'quick-return': return 'place';
+    case 'merge-range': return 'split';
+    case 'merge-split': return 'split';
+    case 'merge-return': return 'place';
+    case 'merge-start': return 'merge';
+    case 'merge-compare': return 'compare';
+    case 'merge-write': return 'buffer';
+    case 'merge-copy': return 'buffer';
+    case 'merge-writeback': return 'writeback';
+    case 'merge-range-done': return 'place';
     case 'done': return 'done';
     default: return 'init';
   }
@@ -74,6 +123,10 @@ function phaseOf(operation: SortingOperation): SortingPhase {
 
 function heightOf(value: number, maxAbs: number): number {
   return Math.max(14, Math.round((Math.abs(value) / maxAbs) * 165));
+}
+
+function inRange(index: number, range: SortingRange | null): boolean {
+  return range !== null && index >= range.low && index <= range.high;
 }
 
 /**
@@ -92,6 +145,20 @@ export function buildSortingModel(
   }
 
   const maxAbs = Math.max(1, ...snapshot.elements.map((element) => Math.abs(element.value)));
+  // S1 snapshots predate the S2 fields. Normalize missing optional metadata
+  // here as well as in the schema so callers that construct a typed snapshot
+  // directly still get the same visible state as a parsed trace.
+  const range = snapshot.range ?? null;
+  const pivot = snapshot.pivot ?? null;
+  const boundary = snapshot.boundary ?? null;
+  const split = snapshot.split ?? null;
+  const left = snapshot.left ?? null;
+  const right = snapshot.right ?? null;
+  const buffer = snapshot.buffer ?? [];
+  const bufferWrite = snapshot.bufferWrite ?? null;
+  const writeAt = snapshot.writeAt ?? null;
+  const finalized = snapshot.finalized ?? [];
+  const mergedRanges = snapshot.mergedRanges ?? [];
   const cells: SortingCellVisual[] = snapshot.elements.map((element, index) => {
     const marks: SortingCellMark[] = [];
     if (index < snapshot.sortedFrom) marks.push('sorted');
@@ -114,6 +181,18 @@ export function buildSortingModel(
     ) {
       marks.push('lane');
     }
+    if (inRange(index, range)) {
+      marks.push('range');
+      if (range?.low === index) marks.push('range-start');
+      if (range?.high === index) marks.push('range-end');
+    }
+    if (pivot === index) marks.push('pivot');
+    if (finalized.includes(index)) marks.push('final');
+    if (mergedRanges.some((merged) => inRange(index, merged))) marks.push('merged');
+    if (left === index) marks.push('left');
+    if (right === index) marks.push('right');
+    if (bufferWrite?.source === index) marks.push('buffer-source');
+    if (writeAt === index) marks.push('write-target');
     return {
       id: element.id,
       index,
@@ -122,6 +201,17 @@ export function buildSortingModel(
       marks,
     };
   });
+
+  let sortedCount = snapshot.sortedFrom;
+  if (snapshot.algorithm === 'quick') {
+    sortedCount = finalized.length;
+  } else if (snapshot.algorithm === 'merge') {
+    const covered = new Set<number>();
+    for (const merged of mergedRanges) {
+      for (let index = merged.low; index <= merged.high; index += 1) covered.add(index);
+    }
+    sortedCount = covered.size;
+  }
 
   return {
     kind: 'sorting',
@@ -141,9 +231,20 @@ export function buildSortingModel(
     swapped: snapshot.swapped,
     insertedAt: snapshot.insertedAt,
     result: snapshot.result,
+    range,
+    pivot,
+    boundary,
+    split,
+    left,
+    right,
+    buffer: [...buffer],
+    bufferWrite,
+    writeAt,
+    finalized: [...finalized],
+    mergedRanges: mergedRanges.map((merged) => ({ ...merged })),
     cells,
-    sortedCount: snapshot.sortedFrom,
-    unsortedCount: snapshot.elements.length - snapshot.sortedFrom,
+    sortedCount,
+    unsortedCount: snapshot.elements.length - sortedCount,
     empty: snapshot.elements.length === 0,
   };
 }

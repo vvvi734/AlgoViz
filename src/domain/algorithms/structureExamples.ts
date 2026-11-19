@@ -56,6 +56,8 @@ import {
 } from './huffmanExamples';
 import {
   INSERTION_DEFAULT_INPUT,
+  MERGE_DEFAULT_INPUT,
+  QUICK_DEFAULT_INPUT,
   SELECTION_DEFAULT_INPUT,
   SHELL_DEFAULT_INPUT,
   SORTING_PYTHON,
@@ -188,6 +190,8 @@ const STRUCTURE_PYTHON: Record<string, string> = {
   selection: SORTING_PYTHON.selection,
   insertion: SORTING_PYTHON.insertion,
   shell: SORTING_PYTHON.shell,
+  quick: SORTING_PYTHON.quick,
+  merge: SORTING_PYTHON.merge,
 };
 
 const STRUCTURE_INPUT: Record<string, unknown> = {
@@ -212,6 +216,8 @@ const STRUCTURE_INPUT: Record<string, unknown> = {
   selection: SELECTION_DEFAULT_INPUT,
   insertion: INSERTION_DEFAULT_INPUT,
   shell: SHELL_DEFAULT_INPUT,
+  quick: QUICK_DEFAULT_INPUT,
+  merge: MERGE_DEFAULT_INPUT,
 };
 
 export function structurePythonExample(algorithmId: string): string | undefined {

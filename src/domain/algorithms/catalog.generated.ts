@@ -81,11 +81,11 @@ export const ALGORITHM_CATALOG: AlgorithmCatalog = {
       "Quicksort"
     ],
     "desc": [
-      "选择枢轴分区，递归处理左右子区间。",
-      "Partition around a pivot, then recursively sort the two partitions."
+      "Lomuto 分区以末尾元素为枢轴，把不大于枢轴的值换到左侧，递归处理左右子区间。",
+      "Lomuto partitioning uses the last element as pivot, moves values ≤ pivot left, then recursively sorts both partitions."
     ],
-    "time": "O(n log n)",
-    "space": "O(log n)",
+    "time": "平均 O(n log n)；最坏 O(n²)",
+    "space": "递归栈平均 O(log n)；最坏 O(n)",
     "input": [
       8,
       3,
@@ -96,7 +96,32 @@ export const ALGORITHM_CATALOG: AlgorithmCatalog = {
       9,
       4
     ],
-    "code": "const a=[...input];trace({type:'array',values:[...a]},'开始 / Start');\nfunction sort(l,r){if(l>=r)return; const pivot=a[r];let i=l;\nfor(let j=l;j<r;j++){trace({type:'array',values:[...a],focus:[j,r]},'与枢轴比较 / Compare pivot');if(a[j]<pivot){[a[i],a[j]]=[a[j],a[i]];trace({type:'array',values:[...a],focus:[i,j]},'分区交换 / Partition swap');i++;}}\n[a[i],a[r]]=[a[r],a[i]];trace({type:'array',values:[...a],focus:[i]},'枢轴归位 / Pivot placed');sort(l,i-1);sort(i+1,r);}\nsort(0,a.length-1);trace({type:'array',values:[...a],done:true},'完成 / Done');"
+    "code": "const a=[...input];trace({type:'array',values:[...a]},'开始 / Start');\nfunction sort(l,r){if(l>=r)return; const pivot=a[r];let i=l;\nfor(let j=l;j<r;j++){trace({type:'array',values:[...a],focus:[j,r]},'与枢轴比较 / Compare pivot');if(a[j]<=pivot){[a[i],a[j]]=[a[j],a[i]];trace({type:'array',values:[...a],focus:[i,j]},'分区交换 / Partition swap');i++;}}\n[a[i],a[r]]=[a[r],a[i]];trace({type:'array',values:[...a],focus:[i]},'枢轴归位 / Pivot placed');sort(l,i-1);sort(i+1,r);}\nsort(0,a.length-1);trace({type:'array',values:[...a],done:true},'完成 / Done');"
+  },
+  "merge": {
+    "group": "sort",
+    "icon": "⇄",
+    "name": [
+      "归并排序",
+      "Merge sort"
+    ],
+    "desc": [
+      "自顶向下拆分到单元素，再合并两个有序半区；相等时优先取左侧以保持稳定。",
+      "Split top-down to singletons, then merge sorted halves; take the left side on equality to preserve stability."
+    ],
+    "time": "O(n log n)",
+    "space": "O(n)",
+    "input": [
+      7,
+      3,
+      5,
+      1,
+      9,
+      2,
+      8,
+      4
+    ],
+    "code": "const a=[...input];trace({type:'array',values:[...a]},'开始 / Start');\nfunction merge(l,m,r){const L=a.slice(l,m+1),R=a.slice(m+1,r+1);let i=0,j=0,k=l;\nwhile(i<L.length&&j<R.length){trace({type:'array',values:[...a],focus:[l+i,m+1+j]},'比较左右候选 / Compare candidates');if(L[i]<=R[j]){a[k]=L[i];i++;}else{a[k]=R[j];j++;}trace({type:'array',values:[...a],focus:[k]},'写入缓冲区并写回 / Merge write');k++;}\nwhile(i<L.length){a[k]=L[i];i++;k++;trace({type:'array',values:[...a],focus:[k-1]},'复制剩余 / Copy remainder');}\nwhile(j<R.length){a[k]=R[j];j++;k++;trace({type:'array',values:[...a],focus:[k-1]},'复制剩余 / Copy remainder');}}\nfunction sort(l,r){if(l>=r)return;const m=Math.floor((l+r)/2);sort(l,m);sort(m+1,r);merge(l,m,r);}\nsort(0,a.length-1);trace({type:'array',values:[...a],done:true},'完成 / Done');"
   },
   "shell": {
     "group": "sort",

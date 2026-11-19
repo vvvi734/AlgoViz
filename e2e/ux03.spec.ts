@@ -68,9 +68,9 @@ test.describe('UX-03 — textbook navigation', () => {
       await expect(page.getByTestId(`chapter-${id}`)).toHaveAttribute('aria-expanded', 'false');
     }
 
-    // 28 shipped algorithms, each rendered once with exactly one primary home.
+    // 29 shipped algorithms, each rendered once with exactly one primary home.
     const algorithms = page.locator('[data-testid^="algo-"]');
-    await expect(algorithms).toHaveCount(28);
+    await expect(algorithms).toHaveCount(29);
     const placements = await algorithms.evaluateAll((nodes) =>
       nodes.map((node) => ({
         id: node.getAttribute('data-testid'),
@@ -78,7 +78,7 @@ test.describe('UX-03 — textbook navigation', () => {
         topic: node.getAttribute('data-topic'),
       })),
     );
-    expect(new Set(placements.map((item) => item.id)).size).toBe(28);
+    expect(new Set(placements.map((item) => item.id)).size).toBe(29);
     for (const item of placements) {
       expect(item.chapter).toBeTruthy();
       expect(item.topic).toBeTruthy();
@@ -173,7 +173,7 @@ test.describe('UX-03 — textbook navigation', () => {
     await expect(page.getByTestId('chapter-ch7-graph')).toContainText('Graphs');
     await expect(page.getByTestId('chapter-ch9-sort')).toContainText('Sorting');
     await expect(page.getByTestId('topic-graph-basics')).toContainText('Concept');
-    await expect(page.getByTestId('topic-merge-sort')).toContainText('Pending');
+    await expect(page.getByTestId('topic-merge-sort')).toContainText('Merge sort');
     await expect(page.getByTestId('topic-graph-connectivity')).toContainText('Extension');
     await expect(page.locator('.textbook-source')).toContainText('Da Hua Data Structures');
     await expectNoPageOverflow(page);

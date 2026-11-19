@@ -28,6 +28,8 @@ describe('Lesson registry (Stage 3B)', () => {
       'selection-sort-basics',
       'insertion-sort-basics',
       'shell-sort-basics',
+      'quick-sort-basics',
+      'merge-sort-basics',
       'factorial-recursion-basics',
       'stack-lifo-basics',
       'queue-fifo-basics',
@@ -82,7 +84,7 @@ describe('Lesson registry (Stage 3B)', () => {
   it('leaves the other algorithms without a course, and that is legal', () => {
     const covered = lessonRegistry.lessons.map((lesson) => lesson.algorithmId);
     const uncovered = catalogIds.filter((id) => !covered.includes(id));
-    expect(catalogIds.length).toBe(28);
-    expect(uncovered.length).toBe(4);
+    expect(catalogIds.length).toBe(29);
+    expect(uncovered.length).toBe(3);
   });
 });
