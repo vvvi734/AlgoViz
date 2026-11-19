@@ -7,6 +7,7 @@
 - 基线来源：没有从落后的 `main`（`10f9a68`）开发，也没有重置或覆盖其他 Agent 的分支
 - 版本：`0.22.0-s1`
 - 实现提交：`7422d66 feat(s1): add real Python selection, insertion and Shell sort labs`
+- 文档提交：`b5d47fc docs(s1): record sorting coverage, screenshots and delivery report`
 - 按用户要求，S1 完成后停止；未开发快速排序、归并排序，未继续页面布局、知识讲解页、图论定理、AI/MCP 或任意用户代码可视化
 
 ## 1. 实现摘要
@@ -96,4 +97,6 @@
 - 分支：`feat/s1-sorting`，从 `dc3469c` 建立
 - 远端：`https://gitee.com/vvvi734/algolens.git`
 - 实现提交：`7422d66 feat(s1): add real Python selection, insertion and Shell sort labs`
-- 文档提交：待记录
+- 文档提交：`b5d47fc docs(s1): record sorting coverage, screenshots and delivery report`
+- 最终记录：本提交
+- 推送：2026-11-19 已推送 `origin/feat/s1-sorting`
