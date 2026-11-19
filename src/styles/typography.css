@@ -58,7 +58,8 @@
 }
 
 .reference-code-panel .reference-language-tab,
-.reference-code-panel .reference-copy {
+.reference-code-panel .reference-copy,
+.reference-code-panel .reference-purpose {
   font-size: var(--font-body);
 }
 

@@ -1,12 +1,15 @@
 import { useEffect, useMemo, useState } from 'react';
 import {
+  REFERENCE_CONVENIENCE_SOURCE_NOTES,
   REFERENCE_LANGUAGE_LABELS,
   REFERENCE_LANGUAGES,
   REFERENCE_LICENSE,
   REFERENCE_SOURCE_NOTES,
   loadReferenceCode,
   referenceFileMeta,
+  referenceImplementations,
   referenceLanguages,
+  type ReferenceImplementation,
   type ReferenceLanguage,
 } from '../../domain/reference-code/registry';
 import { useI18n } from '../../i18n/I18nProvider';
@@ -49,6 +52,14 @@ export function ReferenceCodePanel({
   const { resolved } = useTheme();
   const available = useMemo(() => referenceLanguages(algorithmId), [algorithmId]);
   const [language, setLanguage] = useState<ReferenceLanguage>(available[0] ?? 'c');
+  const implementations = useMemo(
+    () => referenceImplementations(algorithmId, language),
+    [algorithmId, language],
+  );
+  const [implementation, setImplementation] = useState<ReferenceImplementation>('principle');
+  const activeImplementation: ReferenceImplementation = implementations.includes(implementation)
+    ? implementation
+    : (implementations[0] ?? 'principle');
   const [source, setSource] = useState<string | null>(null);
   const [loading, setLoading] = useState(available.length > 0);
   const [failed, setFailed] = useState(false);
@@ -74,7 +85,7 @@ export function ReferenceCodePanel({
       };
     }
     setLoading(true);
-    loadReferenceCode(algorithmId, language)
+    loadReferenceCode(algorithmId, language, activeImplementation)
       .then((text) => {
         if (!active) return;
         if (text == null) {
@@ -93,7 +104,7 @@ export function ReferenceCodePanel({
     return () => {
       active = false;
     };
-  }, [algorithmId, language, available.length]);
+  }, [algorithmId, language, activeImplementation, available.length]);
 
   useEffect(() => {
     if (copyState === 'idle') return;
@@ -101,8 +112,15 @@ export function ReferenceCodePanel({
     return () => window.clearTimeout(timer);
   }, [copyState]);
 
-  const meta = referenceFileMeta(algorithmId, language);
+  const meta = referenceFileMeta(algorithmId, language, activeImplementation);
   const hasAny = available.length > 0;
+  const hasImplementationSwitch = implementations.length > 1;
+  const implementationLabel =
+    activeImplementation === 'principle' ? t('referencePrinciple') : t('referenceConvenience');
+  const implementationPurpose =
+    activeImplementation === 'principle'
+      ? t('referencePrinciplePurpose')
+      : t('referenceConveniencePurpose');
 
   return (
     <section
@@ -110,6 +128,7 @@ export function ReferenceCodePanel({
       data-testid="reference-code-panel"
       data-algorithm-id={algorithmId}
       data-language={language}
+      data-implementation={activeImplementation}
     >
       <header className="reference-code-head">
         <div>
@@ -158,6 +177,31 @@ export function ReferenceCodePanel({
               })}
             </div>
 
+            {hasImplementationSwitch ? (
+              <div
+                className="reference-implementation-tabs"
+                role="tablist"
+                aria-label={t('referenceImplementationLabel')}
+                data-testid="reference-implementation-tabs"
+              >
+                {implementations.map((item) => (
+                  <button
+                    key={item}
+                    type="button"
+                    role="tab"
+                    className={`reference-language-tab reference-implementation-tab${
+                      activeImplementation === item ? ' active' : ''
+                    }`}
+                    aria-selected={activeImplementation === item}
+                    data-testid={`reference-impl-${item}`}
+                    onClick={() => setImplementation(item)}
+                  >
+                    {item === 'principle' ? t('referencePrinciple') : t('referenceConvenience')}
+                  </button>
+                ))}
+              </div>
+            ) : null}
+
             <div className="reference-file-row">
               {meta ? (
                 <code className="reference-file-name" data-testid="reference-file-name">
@@ -186,6 +230,11 @@ export function ReferenceCodePanel({
             </div>
           </div>
 
+          <p className="reference-purpose" data-testid="reference-purpose">
+            <b>{implementationLabel}</b>
+            <span>{implementationPurpose}</span>
+          </p>
+
           {loading ? (
             <p className="reference-code-loading" data-testid="reference-code-loading">
               {t('referenceLoading')}
@@ -202,7 +251,11 @@ export function ReferenceCodePanel({
 
           <footer className="reference-source" data-testid="reference-source">
             <b>{t('referenceSourceLabel')}</b>
-            <span>{REFERENCE_SOURCE_NOTES[language][lang]}</span>
+            <span>
+              {activeImplementation === 'principle'
+                ? REFERENCE_SOURCE_NOTES[language][lang]
+                : REFERENCE_CONVENIENCE_SOURCE_NOTES[language][lang]}
+            </span>
             <span className="reference-license">MIT License · AlgoViz contributors</span>
           </footer>
         </>

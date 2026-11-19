@@ -74,6 +74,52 @@ describe('ReferenceCodePanel', () => {
     expect(copied).toContain('int main(void)');
   });
 
+  it('switches between the principle and shared convenience implementations', async () => {
+    renderPanel('bubble', '冒泡排序');
+    await waitForCode();
+    expect(screen.getByTestId('reference-file-name').textContent).toBe('bubble_sort.c');
+    expect(screen.getByTestId('reference-impl-principle').getAttribute('aria-selected')).toBe('true');
+    expect(screen.getByTestId('reference-impl-convenience').getAttribute('aria-selected')).toBe('false');
+    expect(screen.getByTestId('reference-purpose').textContent).toContain('原理实现');
+
+    fireEvent.click(screen.getByTestId('reference-impl-convenience'));
+    expect(screen.getByTestId('reference-file-name').textContent).toBe('builtin_sorting.c');
+    await waitFor(() =>
+      expect(screen.getByTestId('reference-code-fallback').textContent).toContain('compare_int'),
+    );
+    expect(screen.getByTestId('reference-purpose').textContent).toContain('简洁实现');
+    expect(screen.getByTestId('reference-source').textContent).toContain('共享便捷示例');
+
+    fireEvent.click(screen.getByTestId('reference-lang-cpp'));
+    expect(screen.getByTestId('reference-file-name').textContent).toBe('builtin_sorting.cpp');
+    await waitFor(() =>
+      expect(screen.getByTestId('reference-code-fallback').textContent).toContain('std::sort'),
+    );
+    expect(screen.getByTestId('reference-impl-convenience').getAttribute('aria-selected')).toBe('true');
+
+    fireEvent.click(screen.getByTestId('reference-lang-python'));
+    expect(screen.getByTestId('reference-file-name').textContent).toBe('builtin_sorting.py');
+    await waitFor(() =>
+      expect(screen.getByTestId('reference-code-fallback').textContent).toContain('in_place.sort()'),
+    );
+  });
+
+  it('falls back to the principle version when the next algorithm has no convenience code', async () => {
+    const { rerender } = renderPanel('bubble', '冒泡排序');
+    await waitForCode();
+    fireEvent.click(screen.getByTestId('reference-impl-convenience'));
+    await waitFor(() =>
+      expect(screen.getByTestId('reference-code-fallback').textContent).toContain('compare_int'),
+    );
+
+    rerender(panel('binary', '二分查找'));
+    await waitFor(() =>
+      expect(screen.getByTestId('reference-code-fallback').textContent).toContain('int binary_search'),
+    );
+    expect(screen.getByTestId('reference-file-name').textContent).toBe('binary_search.c');
+    expect(screen.queryByTestId('reference-implementation-tabs')).toBeNull();
+  });
+
   it('keeps the chosen language when switching to another algorithm that supports it', async () => {
     const { rerender } = renderPanel('binary', '二分查找');
     await waitForCode();
@@ -91,7 +137,7 @@ describe('ReferenceCodePanel', () => {
   });
 
   it('shows an explicit unavailable state instead of borrowing another algorithm code', () => {
-    renderPanel('bubble', '冒泡排序');
+    renderPanel('shell', '希尔排序');
     expect(screen.getByTestId('reference-code-unavailable').textContent).toContain('暂未收录');
     expect(screen.queryByTestId('reference-lang-c')).toBeNull();
     expect(screen.queryByTestId('reference-code-viewer')).toBeNull();

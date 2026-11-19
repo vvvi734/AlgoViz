@@ -195,5 +195,22 @@ test.describe('Stage 7A — workspace UX (UI-03 layout)', () => {
     await selectAlgorithm(page, 'dijkstra');
     await expect(page.locator('[data-testid="reference-file-name"]')).toHaveText('dijkstra.py');
     await expect(page.locator('[data-testid="code-dock"]')).toHaveAttribute('data-expanded', 'false');
+
+    // CODE-02: a sort page can switch from the hand-written version to the
+    // shared language-native convenience resource without leaving the viewer.
+    await page.click('[data-testid="reference-lang-c"]');
+    await selectAlgorithm(page, 'bubble');
+    await expect(page.locator('[data-testid="reference-file-name"]')).toHaveText('bubble_sort.c');
+    await expect(page.locator('[data-testid="reference-implementation-tabs"]')).toBeVisible();
+    await page.click('[data-testid="reference-impl-convenience"]');
+    await expect(page.locator('[data-testid="reference-code-panel"]')).toHaveAttribute(
+      'data-implementation',
+      'convenience',
+    );
+    await expect(page.locator('[data-testid="reference-file-name"]')).toHaveText('builtin_sorting.c');
+    await expect(page.locator('[data-testid="reference-code-viewer"] .monaco-editor')).toBeVisible({
+      timeout: 20_000,
+    });
+    await expect(page.locator('[data-testid="reference-source"]')).toContainText('共享便捷示例');
   });
 });
