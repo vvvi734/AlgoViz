@@ -351,8 +351,8 @@ UX-02 证据：`docs/ux02/before/`（4 张基线）与 `docs/ux02/after/`（7 �
 | T4 E2E | ✅ 2/2：官方 29 帧 `A5/B9` 弹出、`n7=14` 新父、真实回队、build-done 11 节点/WPL224、F 路径 `0`、最终 6 行码表与回退同步；equal/single/empty 边界、Dark、390 无页面横向溢出；生成 8 张截图 |
 | S1 E2E | ✅ 3/3：真实 Pyodide 依次运行选择 40 帧、插入 33 帧、Shell 70 帧；验证候选/交换、key/真实右移重复值/写回、gap 序列/lane/shift/gap-done、前进回退跳帧、done 全排序与 390 无页面横向溢出；生成 6 张截图 |
 | S2 E2E | ✅ 2/2：真实 Pyodide 执行 quick 32 帧与 merge 110 帧；验证 Lomuto pivot/真实交换/归位/递归/最终顺序、拆分/缓冲区写入/来源/写回/稳定终序、前进回退跳帧与 390 无页面横向溢出；生成 6 张截图 |
-| 独立 Python 校验 | ✅ `verify_bst_python.py`、`verify_avl_python.py`、`verify_heap_python.py`、`verify_huffman_python.py`、`verify_sorting_python.py`、`verify_divide_sort_python.py` 与 `verify_search_python.py` 全部通过；S1 721 帧 + S2 923 帧 + F1 143 帧 |
-| 回归 | ✅ BFS/DFS、Dijkstra、Floyd、Bellman-Ford、Prim、Kruskal、拓扑排序、关键路径、连通分量/SCC、二叉树遍历、栈/队列/链表、BST/AVL/最大堆/哈夫曼、S1 三排序、S2 两排序、F1 两查找与 F2 链地址法/线性探测在 140/140 全量 E2E 中通过 |
+| 独立 Python 校验 | ✅ `verify_bst_python.py`、`verify_avl_python.py`、`verify_heap_python.py`、`verify_huffman_python.py`、`verify_sorting_python.py`、`verify_divide_sort_python.py`、`verify_search_python.py`、`verify_hash_python.py` 与 `verify_l1a_python.py` 全部通过；S1 721 帧 + S2 923 帧 + F1 143 帧 + F2 752 帧 + L1A 516 帧 |
+| 回归 | ✅ BFS/DFS、Dijkstra、Floyd、Bellman-Ford、Prim、Kruskal、拓扑排序、关键路径、连通分量/SCC、二叉树遍历、栈/队列/链表、BST/AVL/最大堆/哈夫曼、S1 三排序、S2 两排序、F1 两查找、F2 链地址法/线性探测与 L1A 双向/循环单链表在 143/143 全量 E2E 中通过 |
 | 入口数量 | ✅ 33 个入口 / 32 门课程 / 33 个真实 Python；仅 `fib` 无内置课程，作为官方知识包的目录安全回退载体 |
 
 ## 14. 已知边界
