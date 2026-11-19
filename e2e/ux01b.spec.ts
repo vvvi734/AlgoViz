@@ -1,9 +1,14 @@
 import { expect, selectAlgorithm as chooseAlgorithm, test, type Page } from './fixtures';
-import { mkdirSync } from 'node:fs';
-import { resolve } from 'node:path';
 
-const SHOT_DIR = resolve(process.cwd(), 'docs/ux01b/after');
-mkdirSync(SHOT_DIR, { recursive: true });
+/**
+ * UX-01B — the review sheet in its simplified five-block form.
+ *
+ * The old three-layer guide had a headline, a detail drawer, a diagram caption
+ * and a source row. UI-SIMPLIFY replaced those with intro, definition/plain,
+ * complexity/conditions, a horizontal flow and pitfalls/memory. This spec keeps
+ * the parts that are still real interactions: per-algorithm fold state, the
+ * start button, bilingual copy, the catalog fallback and mobile readability.
+ */
 
 async function openApp(page: Page) {
   await page.goto('/');
@@ -11,7 +16,7 @@ async function openApp(page: Page) {
   await page.evaluate(() => window.scrollTo(0, 0));
 }
 
-async function selectAlgorithm(page: Page, id: string, _group: string) {
+async function selectAlgorithm(page: Page, id: string) {
   await chooseAlgorithm(page, id);
 }
 
@@ -36,15 +41,15 @@ async function expectNoPageOverflow(page: Page) {
 
 async function openDijkstra(page: Page) {
   await openApp(page);
-  await selectAlgorithm(page, 'dijkstra', 'graph');
+  await selectAlgorithm(page, 'dijkstra');
   await expect(page.locator('[data-testid="graph-visual"]')).toHaveAttribute('data-algorithm', 'dijkstra', {
     timeout: 60_000,
   });
   await expect(page.locator('[data-testid="progress"]')).toHaveText('1 / 46', { timeout: 60_000 });
 }
 
-test.describe('UX-01B — compact guide hierarchy', () => {
-  test('desktop: three layers, a reachable animation top and stable playback across folds', async ({ page }) => {
+test.describe('UX-01B — simplified review sheet', () => {
+  test('desktop: five blocks, horizontal flow, fold state and bilingual copy', async ({ page }) => {
     test.setTimeout(360_000);
     await page.setViewportSize({ width: 1440, height: 900 });
     await openDijkstra(page);
@@ -52,45 +57,35 @@ test.describe('UX-01B — compact guide hierarchy', () => {
     const guide = page.locator('[data-testid="algorithm-guide"]');
     await expect(guide).toBeVisible();
     await expect(page.locator('[data-testid="guide-toggle"]')).toHaveAttribute('aria-expanded', 'true');
-    await expect(page.locator('[data-testid="guide-title"]')).toContainText('一句话理解');
     await expect(page.locator('[data-testid="guide-title"]')).toContainText('Dijkstra');
-    await expect(page.locator('[data-testid="guide-problem"]')).toContainText('带权图');
-    await expect(page.locator('[data-testid="guide-core-headline"]')).toContainText('贪心选最近');
-    await expect(page.locator('[data-testid="guide-core"]')).toContainText('最小堆');
-    await expect(page.locator('[data-testid="guide-memory"]')).toContainText('选最近，做松弛');
-    await expect(page.locator('[data-testid="guide-stage-list"] li')).toHaveCount(4);
-    await expect(page.locator('[data-testid="guide-details"]')).toHaveCount(0);
-    await expect(page.locator('[data-testid="guide-details-toggle"]')).toHaveAttribute('aria-expanded', 'false');
+    await expect(page.locator('[data-testid="guide-intro"]')).toContainText('BFS');
+    await expect(page.locator('[data-testid="guide-intro"]')).toContainText('边权');
 
-    await page.evaluate(() => window.scrollTo(0, 0));
-    const layout = await page.evaluate(() => {
-      const guide = document.querySelector('[data-testid="algorithm-guide"]') as HTMLElement;
-      const primary = document.querySelector('[data-testid="lab-workbench"]') as HTMLElement;
-      const g = guide.getBoundingClientRect();
-      const p = primary.getBoundingClientRect();
-      return {
-        guideHeight: g.height,
-        guideBottom: g.bottom,
-        primaryTop: p.top,
-        viewportHeight: window.innerHeight,
-      };
+    const definitionBlock = page.locator('[data-testid="guide-definition-block"]');
+    await expect(definitionBlock).toBeVisible();
+    await expect(page.locator('[data-testid="guide-definition"]')).toContainText('非负');
+    await expect(page.locator('[data-testid="guide-plain"]')).not.toBeEmpty();
+
+    const facts = page.locator('[data-testid="guide-facts"]');
+    await expect(facts).toBeVisible();
+    await expect(page.locator('[data-testid="guide-complexity"]')).toContainText('O');
+    await expect(page.locator('[data-testid="guide-conditions"]')).toContainText('非负');
+
+    await expect(page.locator('[data-testid="guide-flow-title"]')).toContainText('算法整体流程');
+    await expect(page.locator('[data-testid="guide-stage-list"] li')).toHaveCount(6);
+    const flowLayout = await page.locator('[data-testid="guide-stage-list"]').evaluate((node) => {
+      const style = getComputedStyle(node);
+      return { display: style.display, wrap: style.flexWrap, overflow: node.scrollWidth - node.clientWidth };
     });
-    expect(layout.guideHeight).toBeLessThan(620);
-    expect(layout.primaryTop).toBeLessThan(layout.viewportHeight);
-    expect(layout.guideBottom).toBeLessThan(820);
-    await page.evaluate(() => window.scrollTo(0, 0));
-    await page.screenshot({ path: resolve(SHOT_DIR, 'dijkstra-expanded-1440-light.png') });
+    expect(flowLayout.display).toBe('flex');
+    expect(flowLayout.wrap).toBe('wrap');
+    expect(flowLayout.overflow).toBeLessThanOrEqual(1);
 
-    await page.locator('[data-testid="guide-details-toggle"]').click();
-    await expect(page.locator('[data-testid="guide-details"]')).toBeVisible();
-    await expect(page.locator('[data-testid="guide-details"] .guide-step-list li')).toHaveCount(7);
-    await expect(page.locator('[data-testid="guide-details"]')).toContainText('O((V + E) log V)');
-    await expect(page.locator('[data-testid="guide-details"]')).toContainText('适用条件与关键限制');
-    await expect(page.locator('[data-testid="guide-details"]')).toContainText('常见错误');
-    await expect(page.locator('[data-testid="guide-source"]')).toContainText('原创导学');
-    await page.screenshot({ path: resolve(SHOT_DIR, 'dijkstra-details-1440-light.png') });
-    await page.locator('[data-testid="guide-details-toggle"]').click();
-    await expect(page.locator('[data-testid="guide-details"]')).toHaveCount(0);
+    await expect(page.locator('[data-testid="guide-pitfalls"] li')).toHaveCount(3);
+    await expect(page.locator('[data-testid="guide-memory"]')).toBeVisible();
+
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await expectNoPageOverflow(page);
 
     await setFrame(page, 10, 46);
     const progressBefore = await page.locator('[data-testid="progress"]').textContent();
@@ -98,104 +93,92 @@ test.describe('UX-01B — compact guide hierarchy', () => {
     await expect(guide).toHaveCount(0);
     await expect(page.locator('[data-testid="guide-toggle"]')).toHaveAttribute('aria-expanded', 'false');
     await expect(page.locator('[data-testid="progress"]')).toHaveText(progressBefore ?? '');
-    await page.evaluate(() => window.scrollTo(0, 0));
-    await page.screenshot({ path: resolve(SHOT_DIR, 'dijkstra-collapsed-1440-light.png') });
 
-    const toggle = page.locator('[data-testid="guide-toggle"]');
-    await toggle.focus();
-    await page.keyboard.press('Enter');
+    await page.locator('[data-testid="guide-toggle"]').click();
     await expect(guide).toBeVisible();
     await expect(page.locator('[data-testid="progress"]')).toHaveText(progressBefore ?? '');
-    await expect(page.locator('[data-testid="guide-title"]')).toContainText('Dijkstra');
 
-    await selectAlgorithm(page, 'topological', 'graph');
+    await selectAlgorithm(page, 'topological');
     await expect(page.locator('[data-testid="topo-stage"]')).toBeVisible({ timeout: 60_000 });
-    await expect(page.locator('[data-testid="algorithm-guide"]')).toBeVisible();
     await expect(page.locator('[data-testid="guide-title"]')).toContainText('拓扑');
-    await expect(page.locator('[data-testid="guide-core-headline"]')).toContainText('入度归零');
-    await expect(page.locator('[data-testid="guide-memory"]')).toContainText('零入度');
-    await expect(page.locator('[data-testid="guide-flow-count"]')).toContainText('4 个阶段');
-    await expect(page.locator('[data-testid="guide-stage-list"] li')).toHaveCount(4);
-    await expect(page.locator('[data-testid="guide-details"]')).toHaveCount(0);
-    await page.evaluate(() => window.scrollTo(0, 0));
-    await page.screenshot({ path: resolve(SHOT_DIR, 'kahn-expanded-1440-light.png') });
+    await expect(page.locator('[data-testid="guide-stage-list"] li')).toHaveCount(6);
+    await expect(page.locator('[data-testid="guide-conditions"]')).toContainText('DAG');
 
-    // Per-algorithm preference: Kahn stays folded while Kosaraju opens, then
-    // Kahn is still folded when the learner navigates back to it.
+    // The fold preference is per algorithm: folding Kahn must not fold Kosaraju.
     await page.locator('[data-testid="guide-toggle"]').click();
     await expect(page.locator('[data-testid="algorithm-guide"]')).toHaveCount(0);
 
-    await selectAlgorithm(page, 'scc', 'graph');
+    await selectAlgorithm(page, 'scc');
     await expect(page.locator('[data-testid="scc-stage"]')).toBeVisible({ timeout: 60_000 });
     await expect(page.locator('[data-testid="algorithm-guide"]')).toBeVisible();
     await expect(page.locator('[data-testid="guide-title"]')).toContainText('Kosaraju');
-    await expect(page.locator('[data-testid="guide-core-headline"]')).toContainText('两遍 DFS');
-    await expect(page.locator('[data-testid="guide-memory"]')).toContainText('转置图');
-    await expect(page.locator('[data-testid="guide-flow-count"]')).toContainText('5 个阶段');
-    await expect(page.locator('[data-testid="guide-stage-list"] li')).toHaveCount(5);
-    await expect(page.locator('[data-testid="guide-details"]')).toHaveCount(0);
-    await page.evaluate(() => window.scrollTo(0, 0));
-    await page.screenshot({ path: resolve(SHOT_DIR, 'kosaraju-expanded-1440-light.png') });
+    await expect(page.locator('[data-testid="guide-stage-list"] li')).toHaveCount(6);
+    await expectNoPageOverflow(page);
 
-    await selectAlgorithm(page, 'topological', 'graph');
+    await selectAlgorithm(page, 'topological');
     await expect(page.locator('[data-testid="topo-stage"]')).toBeVisible({ timeout: 60_000 });
     await expect(page.locator('[data-testid="algorithm-guide"]')).toHaveCount(0);
     await page.locator('[data-testid="guide-toggle"]').click();
     await expect(page.locator('[data-testid="algorithm-guide"]')).toBeVisible();
 
-    await selectAlgorithm(page, 'scc', 'graph');
+    await selectAlgorithm(page, 'scc');
     await expect(page.locator('[data-testid="scc-stage"]')).toBeVisible({ timeout: 60_000 });
-    await expect(page.locator('[data-testid="algorithm-guide"]')).toBeVisible();
-
-    // English + dark: the three-layer copy and the static sketch remain bilingual.
     await page.getByRole('button', { name: 'Switch language' }).click();
-    await expect(page.locator('[data-testid="guide-title"]')).toContainText('One-line understanding');
-    await expect(page.locator('[data-testid="guide-core-headline"]')).toContainText('Two DFS passes');
-    await expect(page.locator('[data-testid="guide-stage-list"]')).toContainText('Build the transpose');
-    await expect(page.locator('[data-testid="guide-diagram-kosaraju"]')).toContainText('Transpose');
-    await expect(page.locator('[data-testid="guide-memory"]')).toContainText('Postorder');
-    await page.selectOption('[data-testid="theme-select"]', 'dark');
-    await expect(page.locator('[data-testid="algorithm-guide"]')).toBeVisible();
-    await page.evaluate(() => window.scrollTo(0, 0));
-    await page.screenshot({ path: resolve(SHOT_DIR, 'kosaraju-expanded-1440-dark.png') });
-    await page.selectOption('[data-testid="theme-select"]', 'system');
+    await expect(page.locator('[data-testid="guide-title"]')).toContainText('Kosaraju');
+    await expect(page.locator('[data-testid="guide-intro"]')).toContainText('Mutual reachability');
+    await expect(page.locator('[data-testid="guide-stage-list"]')).toContainText('Build the transposed graph');
+    await expect(page.locator('[data-testid="guide-memory"]')).toContainText('transpose');
     await expectNoPageOverflow(page);
 
-    // A catalog-only algorithm (`fib` has no built-in lesson) stays short, safe
-    // and free of empty stage cards.
-    await selectAlgorithm(page, 'fib', 'recursion');
+    // A catalog-only algorithm has no authored flow and must not invent one.
+    // Select it through the mobile menu: at this point the directory is scrolled
+    // to the graph chapter and a direct desktop click can land on a stale node.
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.selectOption('[data-testid="mobile-algo-select"]', 'fib');
+    await expect(page.locator('[data-testid="lab-title"]')).toHaveText(/Fibonacci|斐波那契/);
     await expect(page.locator('[data-testid="algorithm-guide"]')).toHaveAttribute('data-source', 'catalog');
     await expect(page.locator('[data-testid="guide-no-steps"]')).toBeVisible();
     await expect(page.locator('[data-testid="guide-catalog-note"]')).toBeVisible();
     await expect(page.locator('[data-testid="guide-stage-list"]')).toHaveCount(0);
+    await expect(page.locator('[data-testid="guide-pitfalls"]')).toHaveCount(0);
     await expect(page.locator('[data-testid="guide-memory"]')).toHaveCount(0);
-    await expect(page.locator('[data-testid="guide-details-toggle"]')).toHaveCount(0);
     await expectNoPageOverflow(page);
   });
 
-  test('390 mobile: the guide is readable, detailed and folds without resetting the trace', async ({ page }) => {
+  test('390 mobile: flow wraps in two columns, text stays readable and folding keeps the trace', async ({ page }) => {
     test.setTimeout(300_000);
     await page.setViewportSize({ width: 390, height: 844 });
     await openApp(page);
-    await selectAlgorithm(page, 'scc', 'graph');
+    await selectAlgorithm(page, 'scc');
     await expect(page.locator('[data-testid="scc-stage"]')).toBeVisible({ timeout: 60_000 });
+    await expect(page.locator('[data-testid="algorithm-guide"]')).toBeVisible();
     await expect(page.locator('[data-testid="guide-title"]')).toContainText('Kosaraju');
-    await expect(page.locator('[data-testid="guide-stage-list"] li')).toHaveCount(5);
-    await expectNoPageOverflow(page);
-    await page.evaluate(() => window.scrollTo(0, 0));
-    await page.screenshot({ path: resolve(SHOT_DIR, 'kosaraju-expanded-390-light.png') });
+    await expect(page.locator('[data-testid="guide-stage-list"] li')).toHaveCount(6);
 
-    await page.locator('[data-testid="guide-details-toggle"]').click();
-    await expect(page.locator('[data-testid="guide-details"]')).toBeVisible();
-    const stepColumns = await page.locator('.guide-step-list').evaluate(
-      (node) => getComputedStyle(node).gridTemplateColumns.split(' ').length,
-    );
-    expect(stepColumns).toBe(1);
-    await page.locator('[data-testid="guide-details-toggle"]').click();
+    const mobile = await page.evaluate(() => {
+      const flow = document.querySelector('[data-testid="guide-stage-list"]') as HTMLElement;
+      const intro = document.querySelector('[data-testid="guide-intro"]') as HTMLElement;
+      const step = document.querySelector('[data-testid="guide-stage-list"] li') as HTMLElement;
+      const flowStyle = getComputedStyle(flow);
+      return {
+        display: flowStyle.display,
+        wrap: flowStyle.flexWrap,
+        introFont: parseFloat(getComputedStyle(intro).fontSize),
+        stepWidth: step.getBoundingClientRect().width,
+        stepHeight: step.getBoundingClientRect().height,
+        flowOverflow: flow.scrollWidth - flow.clientWidth,
+      };
+    });
+    expect(mobile.display).toBe('flex');
+    expect(mobile.wrap).toBe('wrap');
+    expect(mobile.introFont).toBeGreaterThanOrEqual(14);
+    expect(mobile.stepWidth).toBeGreaterThan(100);
+    expect(mobile.stepHeight).toBeGreaterThan(0);
+    expect(mobile.flowOverflow).toBeLessThanOrEqual(1);
+    await expectNoPageOverflow(page);
 
     const progressBefore = await page.locator('[data-testid="progress"]').textContent();
-    const toggle = page.locator('[data-testid="guide-toggle"]');
-    await toggle.click();
+    await page.locator('[data-testid="guide-toggle"]').click();
     await expect(page.locator('[data-testid="algorithm-guide"]')).toHaveCount(0);
     await expect(page.locator('[data-testid="progress"]')).toHaveText(progressBefore ?? '');
     await expectNoPageOverflow(page);
