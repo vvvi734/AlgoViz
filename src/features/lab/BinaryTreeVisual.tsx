@@ -118,11 +118,6 @@ export function BinaryTreeVisual({ model }: { model: BinaryTreeVisualModel }) {
             {t(MODE_KEY[model.traversal])}
           </span>
         </div>
-        <span className="tree-legend">
-          <span className="tree-legend-dot current" /> {t('treeCurrentLabel')}
-          <span className="tree-legend-dot visited" /> {t('treeVisitedLabel')}
-          <span className="tree-legend-dot path" /> {t('treePathLabel')}
-        </span>
       </div>
 
       <div className="tree-summary-row">

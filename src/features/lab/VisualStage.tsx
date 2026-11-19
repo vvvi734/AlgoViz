@@ -102,15 +102,6 @@ const FLOYD_OPERATION_KEYS: Record<FloydOperation, string> = {
   done: 'floydOpDone',
 };
 
-const FLOYD_HINT_KEYS: Record<FloydOperation, string> = {
-  init: 'floydHintInit',
-  'k-advance': 'floydHintK',
-  update: 'floydHintUpdate',
-  skip: 'floydHintSkip',
-  'negative-cycle': 'floydHintCycle',
-  done: 'floydHintDone',
-};
-
 const BELLMAN_OPERATION_KEYS: Record<BellmanOperation, string> = {
   init: 'bellmanOpInit',
   'round-start': 'bellmanOpRound',
@@ -166,15 +157,6 @@ const KRUSKAL_OPERATION_KEYS: Record<KruskalOperation, string> = {
   done: 'kruskalOpDone',
 };
 
-const KRUSKAL_HINT_KEYS: Record<KruskalOperation, string> = {
-  init: 'kruskalHintInit',
-  sort: 'kruskalHintSort',
-  'inspect-edge': 'kruskalHintInspect',
-  'reject-edge': 'kruskalHintReject',
-  union: 'kruskalHintUnion',
-  done: 'kruskalHintDone',
-};
-
 const TOPOLOGICAL_OPERATION_KEYS: Record<TopologicalOperation, string> = {
   init: 'topoOpInit',
   enqueue: 'topoOpEnqueue',
@@ -205,16 +187,6 @@ const CRITICAL_OPERATION_KEYS: Record<CriticalPathOperation, string> = {
   activity: 'criticalOpActivity',
   cycle: 'criticalOpCycle',
   done: 'criticalOpDone',
-};
-
-const CRITICAL_HINT_KEYS: Record<CriticalPathOperation, string> = {
-  init: 'criticalHintInit',
-  'topo-order': 'criticalHintTopo',
-  ve: 'criticalHintVe',
-  vl: 'criticalHintVl',
-  activity: 'criticalHintActivity',
-  cycle: 'criticalHintCycle',
-  done: 'criticalHintDone',
 };
 
 const CONNECTED_OPERATION_KEYS: Record<ConnectedComponentOperation, string> = {
@@ -255,20 +227,6 @@ const KOSARAJU_OPERATION_KEYS: Record<KosarajuOperation, string> = {
   assign: 'g4OpAssign',
   'complete-component': 'g4OpComplete',
   done: 'g4OpDone',
-};
-
-const KOSARAJU_HINT_KEYS: Record<KosarajuOperation, string> = {
-  init: 'g4HintInit',
-  'start-first': 'g4HintStartFirst',
-  'inspect-edge': 'g4HintInspectFirst',
-  skip: 'g4HintSkip',
-  push: 'g4HintPush',
-  finish: 'g4HintFinish',
-  reverse: 'g4HintReverse',
-  'start-second': 'g4HintStartSecond',
-  assign: 'g4HintAssign',
-  'complete-component': 'g4HintComplete',
-  done: 'g4HintSccDone',
 };
 
 function graphOperationText(model: GraphVisualModel, t: (key: string) => string): string {
@@ -469,7 +427,6 @@ export function VisualStage({ event }: { event: TraceEvent | undefined }) {
         <FloydVisual
           model={model as FloydVisualModel}
           operationText={t(FLOYD_OPERATION_KEYS[model.operation])}
-          hint={t(FLOYD_HINT_KEYS[model.operation])}
         />
       );
       break;
@@ -496,7 +453,6 @@ export function VisualStage({ event }: { event: TraceEvent | undefined }) {
         <KruskalVisual
           model={model as KruskalVisualModel}
           operationText={t(KRUSKAL_OPERATION_KEYS[model.operation])}
-          hint={t(KRUSKAL_HINT_KEYS[model.operation])}
         />
       );
       break;
@@ -514,7 +470,6 @@ export function VisualStage({ event }: { event: TraceEvent | undefined }) {
         <CriticalPathVisual
           model={model as CriticalVisualModel}
           operationText={t(CRITICAL_OPERATION_KEYS[model.operation])}
-          hint={t(CRITICAL_HINT_KEYS[model.operation])}
         />
       );
       break;
@@ -532,7 +487,6 @@ export function VisualStage({ event }: { event: TraceEvent | undefined }) {
         <KosarajuVisual
           model={model as SccVisualModel}
           operationText={t(KOSARAJU_OPERATION_KEYS[model.operation])}
-          hint={t(KOSARAJU_HINT_KEYS[model.operation])}
         />
       );
       break;

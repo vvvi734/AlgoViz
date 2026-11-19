@@ -172,27 +172,21 @@ function FloydCompare({ model }: { model: FloydVisualModel }) {
 export function FloydVisual({
   model,
   operationText,
-  hint,
 }: {
   model: FloydVisualModel;
   operationText: string;
-  hint: string;
 }) {
   const { t } = useI18n();
   const cycle = model.negativeCycle?.hasCycle === true;
   return (
     <section className="g1-stage floyd-stage" data-testid="floyd-stage" data-operation={model.operation}>
-      <header className="g1-head">
-        <div>
-          <span className="g1-kicker">FLOYD-WARSHALL</span>
-          <b>{t('floydTitle')}</b>
-          <small className="g1-op-line" data-testid="floyd-operation-text">
-            <strong>{operationText}</strong> · {hint}
-          </small>
-        </div>
+      <header className="g1-toolbar">
+        <strong className="g1-op-line" data-testid="floyd-operation-text">{operationText}</strong>
         <div className="g1-head-state">
           <span>{t('floydKLabel')}: <b>{model.kNodeId ?? '—'}</b></span>
-          <span>{t('floydPairLabel')}: <b>{model.iNodeId ?? '—'} → {model.jNodeId ?? '—'}</b></span>
+          {model.iNodeId !== null && model.jNodeId !== null ? (
+            <span>{t('floydPairLabel')}: <b>{model.iNodeId} → {model.jNodeId}</b></span>
+          ) : null}
           {model.directed && <span className="g1-badge">{t('floydDirected')}</span>}
         </div>
       </header>
@@ -203,7 +197,6 @@ export function FloydVisual({
         <div className="floyd-matrix-panel">
           <header className="g1-panel-head">
             <b>{t('floydMatrixTitle')}</b>
-            <small>{t('floydMatrixNote')}</small>
           </header>
           {model.empty ? (
             <p className="g1-empty">{t('floydEmpty')}</p>

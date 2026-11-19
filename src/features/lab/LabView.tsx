@@ -13,6 +13,7 @@ import { CodeDock } from './CodeDock';
 import { SyncPanel } from './SyncPanel';
 import { CallStackPanel } from './CallStackPanel';
 import { LessonPanel } from './LessonPanel';
+import { VisualGuide } from './VisualGuide';
 import { AlgorithmGuide, ALGORITHM_GUIDE_ID } from './AlgorithmGuide';
 import { useAlgorithmGuidePreferences } from './useAlgorithmGuidePreferences';
 import { buildAlgorithmGuide } from '../../domain/guides/buildGuide';
@@ -330,14 +331,25 @@ export function LabView({
               ) : null}
               {lab.traceStale && <span className="tag orange">{t('traceStaleShort')}</span>}
             </div>
-            <VisualStage event={currentEvent} />
             {showTreePicker ? (
-              <TreeTraversalPicker
-                inputJson={lab.inputJson}
-                actualTraversal={actualTreeTraversal}
-                onSelect={lab.selectTreeMode}
-              />
+              <div className="stage-control-strip" data-testid="tree-control-strip">
+                <TreeTraversalPicker
+                  inputJson={lab.inputJson}
+                  actualTraversal={actualTreeTraversal}
+                  onSelect={lab.selectTreeMode}
+                />
+              </div>
             ) : null}
+            {showHuffmanPicker ? (
+              <div className="stage-control-strip" data-testid="huffman-control-strip">
+                <HuffmanPicker
+                  inputJson={lab.inputJson}
+                  actualPreset={actualHuffmanPreset}
+                  onSelect={lab.selectHuffmanPreset}
+                />
+              </div>
+            ) : null}
+            <VisualStage event={currentEvent} />
             {showBstPicker ? (
               <BstPicker
                 inputJson={lab.inputJson}
@@ -359,13 +371,6 @@ export function LabView({
                 onSelect={lab.selectHeapPreset}
               />
             ) : null}
-            {showHuffmanPicker ? (
-              <HuffmanPicker
-                inputJson={lab.inputJson}
-                actualPreset={actualHuffmanPreset}
-                onSelect={lab.selectHuffmanPreset}
-              />
-            ) : null}
             {showSequentialListPicker ? (
               <SequentialListPicker
                 inputJson={lab.inputJson}
@@ -377,6 +382,7 @@ export function LabView({
           </section>
 
           <aside className="lab-explanation" data-testid="explanation-rail" aria-label={t('lessonPanel')}>
+            <VisualGuide algorithmId={lab.currentAlgo} />
             <LessonPanel
               lesson={lesson}
               events={lab.events}

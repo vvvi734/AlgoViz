@@ -392,11 +392,9 @@ function activityState(row: CriticalActivityVisual, t: (key: string) => string):
 export function CriticalPathVisual({
   model,
   operationText,
-  hint,
 }: {
   model: CriticalVisualModel;
   operationText: string;
-  hint: string;
 }) {
   const { t } = useI18n();
   const currentEdge = model.currentEdgeId ? model.edges.find((edge) => edge.id === model.currentEdgeId) : null;
@@ -441,15 +439,6 @@ export function CriticalPathVisual({
             <b>{t('criticalGraphTitle')}</b>
             <span className="tag green">{t('criticalAoeBadge')}</span>
           </div>
-          <Legend
-            states={[
-              { state: 'idle', label: t('criticalEdgeIdle') },
-              { state: 'current', label: t('criticalEdgeCurrent') },
-              { state: 'critical', label: t('criticalEdgeCritical') },
-              { state: 'slack', label: t('criticalEdgeSlack') },
-              { state: 'path', label: t('criticalEdgePath') },
-            ]}
-          />
           <CriticalGraph model={model} />
           <div className="mst-current-strip" data-testid="critical-current">
             <span className="mst-strip-label">{t('criticalCurrentLabel')}</span>
@@ -475,14 +464,12 @@ export function CriticalPathVisual({
               <span className="muted">{t('criticalNoCurrent')}</span>
             )}
           </div>
-          <p className="mst-hint">{hint}</p>
         </section>
 
         <aside className="mst-side g3-side">
           <section className="mst-panel" data-testid="critical-phase-panel">
             <header className="mst-panel-head">
               <b>{t('criticalPhaseTitle')}</b>
-              <small>{t('criticalPhaseNote')}</small>
             </header>
             <div className="g3-phase-track">
               {(['topo', 've', 'vl', 'activity'] as const).map((phase) => (
@@ -497,13 +484,11 @@ export function CriticalPathVisual({
                 </span>
               ))}
             </div>
-            <p className="g3-phase-current" data-testid="critical-phase-current">{phaseLabel(model.phase, t)}</p>
           </section>
 
           <section className="mst-panel" data-testid="critical-event-panel">
             <header className="mst-panel-head">
               <b>{t('criticalEventTitle')}</b>
-              <small>{t('criticalEventNote')}</small>
             </header>
             <div className="g3-table-wrap">
               <table className="g3-table g3-event-table">
@@ -537,7 +522,6 @@ export function CriticalPathVisual({
           <section className="mst-panel" data-testid="critical-activity-panel">
             <header className="mst-panel-head">
               <b>{t('criticalActivityTitle')}</b>
-              <small>{t('criticalActivityNote')}</small>
             </header>
             <div className="g3-table-wrap">
               <table className="g3-table g3-activity-table">
@@ -577,7 +561,6 @@ export function CriticalPathVisual({
           <section className="mst-panel" data-testid="critical-paths-panel">
             <header className="mst-panel-head">
               <b>{t('criticalPathsTitle')}</b>
-              <small>{t('criticalPathsNote')}</small>
             </header>
             {model.criticalPaths.length ? (
               <ol className="g3-paths">

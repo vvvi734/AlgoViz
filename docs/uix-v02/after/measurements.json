@@ -1,0 +1,1604 @@
+[
+  {
+    "viewport": "1440x900",
+    "case": "huffman",
+    "frame": 28,
+    "pageOverflowX": false,
+    "stageOverflowX": false,
+    "stageHeight": 456.1,
+    "railScroll": {
+      "client": 631.3,
+      "scroll": 670,
+      "gap": 38.7
+    },
+    "guideOrder": {
+      "beforeLesson": true
+    },
+    ".lab-primary": {
+      "x": 256,
+      "y": 155.2,
+      "width": 1164,
+      "height": 631.3
+    },
+    ".stage-panel": {
+      "x": 256,
+      "y": 155.2,
+      "width": 714.2,
+      "height": 631.3
+    },
+    ".stage": {
+      "x": 267,
+      "y": 241.2,
+      "width": 692.2,
+      "height": 456.1
+    },
+    ".stage-head": {
+      "x": 267,
+      "y": 163.2,
+      "width": 692.2,
+      "height": 30
+    },
+    ".stage-control-strip": {
+      "x": 267,
+      "y": 197.2,
+      "width": 692.2,
+      "height": 37
+    },
+    ".lab-explanation": {
+      "x": 982.2,
+      "y": 155.2,
+      "width": 437.8,
+      "height": 631.3
+    },
+    ".visual-guide": {
+      "x": 982.2,
+      "y": 155.2,
+      "width": 435.8,
+      "height": 143.1
+    },
+    ".visual-guide-note": {
+      "x": 996.2,
+      "y": 263.8,
+      "width": 407.8,
+      "height": 23.5
+    },
+    ".lessonpanel": {
+      "x": 982.2,
+      "y": 312.3,
+      "width": 435.8,
+      "height": 512.5
+    },
+    "[data-testid=\"huffman-visual\"]": {
+      "x": 276,
+      "y": 250.2,
+      "width": 674.2,
+      "height": 438.1
+    },
+    ".huffman-topbar": {
+      "x": 276,
+      "y": 250.2,
+      "width": 674.2,
+      "height": 23.8
+    },
+    ".huffman-main": {
+      "x": 276,
+      "y": 278,
+      "width": 674.2,
+      "height": 306.1
+    },
+    ".huffman-tree-panel": {
+      "x": 276,
+      "y": 278,
+      "width": 531.2,
+      "height": 306.1
+    },
+    ".huffman-tree-scroll": {
+      "x": 277,
+      "y": 279,
+      "width": 529.2,
+      "height": 304.1
+    },
+    ".huffman-svg": {
+      "x": 279,
+      "y": 281,
+      "width": 738,
+      "height": 522
+    },
+    ".huffman-queue-panel": {
+      "x": 814.2,
+      "y": 278,
+      "width": 136,
+      "height": 306.1
+    },
+    ".huffman-code-panel": {
+      "x": 276,
+      "y": 588.2,
+      "width": 674.2,
+      "height": 80
+    },
+    ".huffman-pathbar": {
+      "x": 276,
+      "y": 672.2,
+      "width": 674.2,
+      "height": 16.2
+    },
+    ".huffman-code-row": null,
+    ".tree-toolbar": null,
+    ".tree-summary-row": null,
+    ".tree-scroller": null,
+    ".tree-canvas": null,
+    ".g1-toolbar": null,
+    ".g1-workbench": null,
+    ".g1-graph-panel": null,
+    ".g1-graph-svg": null,
+    ".floyd-matrix-panel": null,
+    ".floyd-matrix-scroll": null,
+    ".g1-current-strip": null,
+    ".mst-head": null,
+    ".mst-layout": null,
+    ".mst-graph-card": null,
+    ".mst-graph-svg": null,
+    ".mst-side": null,
+    ".mst-legend": null,
+    ".critical-phase-panel": null,
+    ".critical-event-panel": null,
+    ".critical-activity-panel": null,
+    "longTextBlocks": []
+  },
+  {
+    "viewport": "1440x900",
+    "case": "inorder",
+    "frame": 10,
+    "pageOverflowX": false,
+    "stageOverflowX": false,
+    "stageHeight": 456.1,
+    "railScroll": {
+      "client": 631.3,
+      "scroll": 631,
+      "gap": -0.3
+    },
+    "guideOrder": {
+      "beforeLesson": true
+    },
+    ".lab-primary": {
+      "x": 256,
+      "y": 155.2,
+      "width": 1164,
+      "height": 631.3
+    },
+    ".stage-panel": {
+      "x": 256,
+      "y": 155.2,
+      "width": 714.2,
+      "height": 631.3
+    },
+    ".stage": {
+      "x": 267,
+      "y": 241.2,
+      "width": 692.2,
+      "height": 456.1
+    },
+    ".stage-head": {
+      "x": 267,
+      "y": 163.2,
+      "width": 692.2,
+      "height": 30
+    },
+    ".stage-control-strip": {
+      "x": 267,
+      "y": 197.2,
+      "width": 692.2,
+      "height": 37
+    },
+    ".lab-explanation": {
+      "x": 982.2,
+      "y": 155.2,
+      "width": 437.8,
+      "height": 631.3
+    },
+    ".visual-guide": {
+      "x": 982.2,
+      "y": 155.2,
+      "width": 435.8,
+      "height": 143.1
+    },
+    ".visual-guide-note": {
+      "x": 996.2,
+      "y": 263.8,
+      "width": 407.8,
+      "height": 23.5
+    },
+    ".lessonpanel": {
+      "x": 982.2,
+      "y": 312.3,
+      "width": 435.8,
+      "height": 417.2
+    },
+    "[data-testid=\"tree-visual\"]": {
+      "x": 276,
+      "y": 250.2,
+      "width": 674.2,
+      "height": 438.1
+    },
+    ".huffman-topbar": null,
+    ".huffman-main": null,
+    ".huffman-tree-panel": null,
+    ".huffman-tree-scroll": null,
+    ".huffman-svg": null,
+    ".huffman-queue-panel": null,
+    ".huffman-code-panel": null,
+    ".huffman-pathbar": null,
+    ".huffman-code-row": null,
+    ".tree-toolbar": {
+      "x": 276,
+      "y": 250.2,
+      "width": 674.2,
+      "height": 14.9
+    },
+    ".tree-summary-row": {
+      "x": 276,
+      "y": 273.1,
+      "width": 674.2,
+      "height": 31
+    },
+    ".tree-scroller": {
+      "x": 276,
+      "y": 312.1,
+      "width": 674.2,
+      "height": 376.2
+    },
+    ".tree-canvas": {
+      "x": 276,
+      "y": 314.1,
+      "width": 674,
+      "height": 256
+    },
+    ".g1-toolbar": null,
+    ".g1-workbench": null,
+    ".g1-graph-panel": null,
+    ".g1-graph-svg": null,
+    ".floyd-matrix-panel": null,
+    ".floyd-matrix-scroll": null,
+    ".g1-current-strip": null,
+    ".mst-head": null,
+    ".mst-layout": null,
+    ".mst-graph-card": null,
+    ".mst-graph-svg": null,
+    ".mst-side": null,
+    ".mst-legend": null,
+    ".critical-phase-panel": null,
+    ".critical-event-panel": null,
+    ".critical-activity-panel": null,
+    "longTextBlocks": []
+  },
+  {
+    "viewport": "1440x900",
+    "case": "floyd-warshall",
+    "frame": 35,
+    "pageOverflowX": false,
+    "stageOverflowX": false,
+    "stageHeight": 500.1,
+    "railScroll": {
+      "client": 631.3,
+      "scroll": 631,
+      "gap": -0.3
+    },
+    "guideOrder": {
+      "beforeLesson": true
+    },
+    ".lab-primary": {
+      "x": 256,
+      "y": 155.2,
+      "width": 1164,
+      "height": 631.3
+    },
+    ".stage-panel": {
+      "x": 256,
+      "y": 155.2,
+      "width": 714.2,
+      "height": 631.3
+    },
+    ".stage": {
+      "x": 267,
+      "y": 197.2,
+      "width": 692.2,
+      "height": 500.1
+    },
+    ".stage-head": {
+      "x": 267,
+      "y": 163.2,
+      "width": 692.2,
+      "height": 30
+    },
+    ".stage-control-strip": null,
+    ".lab-explanation": {
+      "x": 982.2,
+      "y": 155.2,
+      "width": 437.8,
+      "height": 631.3
+    },
+    ".visual-guide": {
+      "x": 982.2,
+      "y": 155.2,
+      "width": 435.8,
+      "height": 143.1
+    },
+    ".visual-guide-note": {
+      "x": 996.2,
+      "y": 263.8,
+      "width": 407.8,
+      "height": 23.5
+    },
+    ".lessonpanel": {
+      "x": 982.2,
+      "y": 312.3,
+      "width": 435.8,
+      "height": 355.7
+    },
+    "[data-testid=\"floyd-stage\"]": {
+      "x": 276,
+      "y": 206.2,
+      "width": 674.2,
+      "height": 482.1
+    },
+    ".huffman-topbar": null,
+    ".huffman-main": null,
+    ".huffman-tree-panel": null,
+    ".huffman-tree-scroll": null,
+    ".huffman-svg": null,
+    ".huffman-queue-panel": null,
+    ".huffman-code-panel": null,
+    ".huffman-pathbar": null,
+    ".huffman-code-row": null,
+    ".tree-toolbar": null,
+    ".tree-summary-row": null,
+    ".tree-scroller": null,
+    ".tree-canvas": null,
+    ".g1-toolbar": {
+      "x": 276,
+      "y": 206.2,
+      "width": 674.2,
+      "height": 26
+    },
+    ".g1-workbench": {
+      "x": 276,
+      "y": 241.2,
+      "width": 674.2,
+      "height": 447.1
+    },
+    ".g1-graph-panel": {
+      "x": 276,
+      "y": 241.2,
+      "width": 344.9,
+      "height": 316
+    },
+    ".g1-graph-svg": {
+      "x": 284,
+      "y": 249.2,
+      "width": 480,
+      "height": 300
+    },
+    ".floyd-matrix-panel": {
+      "x": 632.9,
+      "y": 241.2,
+      "width": 317.3,
+      "height": 263.3
+    },
+    ".floyd-matrix-scroll": {
+      "x": 640.9,
+      "y": 275.3,
+      "width": 301.3,
+      "height": 181.3
+    },
+    ".g1-current-strip": {
+      "x": 640.9,
+      "y": 464.6,
+      "width": 301.3,
+      "height": 31.9
+    },
+    ".mst-head": null,
+    ".mst-layout": null,
+    ".mst-graph-card": null,
+    ".mst-graph-svg": null,
+    ".mst-side": null,
+    ".mst-legend": null,
+    ".critical-phase-panel": null,
+    ".critical-event-panel": null,
+    ".critical-activity-panel": null,
+    "longTextBlocks": []
+  },
+  {
+    "viewport": "1440x900",
+    "case": "critical-path",
+    "frame": 14,
+    "pageOverflowX": false,
+    "stageOverflowX": false,
+    "stageHeight": 500.1,
+    "railScroll": {
+      "client": 631.3,
+      "scroll": 631,
+      "gap": -0.3
+    },
+    "guideOrder": {
+      "beforeLesson": true
+    },
+    ".lab-primary": {
+      "x": 256,
+      "y": 155.2,
+      "width": 1164,
+      "height": 631.3
+    },
+    ".stage-panel": {
+      "x": 256,
+      "y": 155.2,
+      "width": 714.2,
+      "height": 631.3
+    },
+    ".stage": {
+      "x": 267,
+      "y": 197.2,
+      "width": 692.2,
+      "height": 500.1
+    },
+    ".stage-head": {
+      "x": 267,
+      "y": 163.2,
+      "width": 692.2,
+      "height": 30
+    },
+    ".stage-control-strip": null,
+    ".lab-explanation": {
+      "x": 982.2,
+      "y": 155.2,
+      "width": 437.8,
+      "height": 631.3
+    },
+    ".visual-guide": {
+      "x": 982.2,
+      "y": 155.2,
+      "width": 435.8,
+      "height": 157.4
+    },
+    ".visual-guide-note": {
+      "x": 996.2,
+      "y": 278.1,
+      "width": 407.8,
+      "height": 23.5
+    },
+    ".lessonpanel": {
+      "x": 982.2,
+      "y": 326.6,
+      "width": 435.8,
+      "height": 403.1
+    },
+    "[data-testid=\"critical-stage\"]": {
+      "x": 276,
+      "y": 206.2,
+      "width": 674.2,
+      "height": 482.1
+    },
+    ".huffman-topbar": null,
+    ".huffman-main": null,
+    ".huffman-tree-panel": null,
+    ".huffman-tree-scroll": null,
+    ".huffman-svg": null,
+    ".huffman-queue-panel": null,
+    ".huffman-code-panel": null,
+    ".huffman-pathbar": null,
+    ".huffman-code-row": null,
+    ".tree-toolbar": null,
+    ".tree-summary-row": null,
+    ".tree-scroller": null,
+    ".tree-canvas": null,
+    ".g1-toolbar": null,
+    ".g1-workbench": null,
+    ".g1-graph-panel": null,
+    ".g1-graph-svg": null,
+    ".floyd-matrix-panel": null,
+    ".floyd-matrix-scroll": null,
+    ".g1-current-strip": null,
+    ".mst-head": {
+      "x": 276,
+      "y": 206.2,
+      "width": 674.2,
+      "height": 32.9
+    },
+    ".mst-layout": {
+      "x": 276,
+      "y": 245.1,
+      "width": 674.2,
+      "height": 405.3
+    },
+    ".mst-graph-card": {
+      "x": 276,
+      "y": 245.1,
+      "width": 404.2,
+      "height": 405.3
+    },
+    ".mst-graph-svg": {
+      "x": 287,
+      "y": 283.5,
+      "width": 382.2,
+      "height": 270
+    },
+    ".mst-side": {
+      "x": 690.2,
+      "y": 245.1,
+      "width": 260,
+      "height": 405.3
+    },
+    ".mst-legend": null,
+    ".critical-phase-panel": null,
+    ".critical-event-panel": null,
+    ".critical-activity-panel": null,
+    "longTextBlocks": []
+  },
+  {
+    "viewport": "1366x768",
+    "case": "huffman",
+    "frame": 28,
+    "pageOverflowX": false,
+    "stageOverflowX": false,
+    "stageHeight": 324.1,
+    "railScroll": {
+      "client": 499.3,
+      "scroll": 684,
+      "gap": 184.7
+    },
+    "guideOrder": {
+      "beforeLesson": true
+    },
+    ".lab-primary": {
+      "x": 256,
+      "y": 155.2,
+      "width": 1090,
+      "height": 499.3
+    },
+    ".stage-panel": {
+      "x": 256,
+      "y": 155.2,
+      "width": 668.4,
+      "height": 499.3
+    },
+    ".stage": {
+      "x": 267,
+      "y": 241.2,
+      "width": 646.4,
+      "height": 324.1
+    },
+    ".stage-head": {
+      "x": 267,
+      "y": 163.2,
+      "width": 646.4,
+      "height": 30
+    },
+    ".stage-control-strip": {
+      "x": 267,
+      "y": 197.2,
+      "width": 646.4,
+      "height": 37
+    },
+    ".lab-explanation": {
+      "x": 936.4,
+      "y": 155.2,
+      "width": 409.6,
+      "height": 499.3
+    },
+    ".visual-guide": {
+      "x": 936.4,
+      "y": 155.2,
+      "width": 407.6,
+      "height": 157.4
+    },
+    ".visual-guide-note": {
+      "x": 950.4,
+      "y": 278.1,
+      "width": 379.6,
+      "height": 23.5
+    },
+    ".lessonpanel": {
+      "x": 936.4,
+      "y": 326.6,
+      "width": 407.6,
+      "height": 512.5
+    },
+    "[data-testid=\"huffman-visual\"]": {
+      "x": 276,
+      "y": 250.2,
+      "width": 628.4,
+      "height": 306.1
+    },
+    ".huffman-topbar": {
+      "x": 276,
+      "y": 250.2,
+      "width": 628.4,
+      "height": 23.8
+    },
+    ".huffman-main": {
+      "x": 276,
+      "y": 278,
+      "width": 628.4,
+      "height": 188.1
+    },
+    ".huffman-tree-panel": {
+      "x": 276,
+      "y": 278,
+      "width": 485.4,
+      "height": 188.1
+    },
+    ".huffman-tree-scroll": {
+      "x": 277,
+      "y": 279,
+      "width": 483.4,
+      "height": 186.1
+    },
+    ".huffman-svg": {
+      "x": 279,
+      "y": 281,
+      "width": 738,
+      "height": 522
+    },
+    ".huffman-queue-panel": {
+      "x": 768.4,
+      "y": 278,
+      "width": 136,
+      "height": 188.1
+    },
+    ".huffman-code-panel": {
+      "x": 276,
+      "y": 470.2,
+      "width": 628.4,
+      "height": 66
+    },
+    ".huffman-pathbar": {
+      "x": 276,
+      "y": 540.2,
+      "width": 628.4,
+      "height": 16.2
+    },
+    ".huffman-code-row": null,
+    ".tree-toolbar": null,
+    ".tree-summary-row": null,
+    ".tree-scroller": null,
+    ".tree-canvas": null,
+    ".g1-toolbar": null,
+    ".g1-workbench": null,
+    ".g1-graph-panel": null,
+    ".g1-graph-svg": null,
+    ".floyd-matrix-panel": null,
+    ".floyd-matrix-scroll": null,
+    ".g1-current-strip": null,
+    ".mst-head": null,
+    ".mst-layout": null,
+    ".mst-graph-card": null,
+    ".mst-graph-svg": null,
+    ".mst-side": null,
+    ".mst-legend": null,
+    ".critical-phase-panel": null,
+    ".critical-event-panel": null,
+    ".critical-activity-panel": null,
+    "longTextBlocks": []
+  },
+  {
+    "viewport": "1366x768",
+    "case": "inorder",
+    "frame": 10,
+    "pageOverflowX": false,
+    "stageOverflowX": false,
+    "stageHeight": 324.1,
+    "railScroll": {
+      "client": 499.3,
+      "scroll": 574,
+      "gap": 74.7
+    },
+    "guideOrder": {
+      "beforeLesson": true
+    },
+    ".lab-primary": {
+      "x": 256,
+      "y": 155.2,
+      "width": 1090,
+      "height": 499.3
+    },
+    ".stage-panel": {
+      "x": 256,
+      "y": 155.2,
+      "width": 668.4,
+      "height": 499.3
+    },
+    ".stage": {
+      "x": 267,
+      "y": 241.2,
+      "width": 646.4,
+      "height": 324.1
+    },
+    ".stage-head": {
+      "x": 267,
+      "y": 163.2,
+      "width": 646.4,
+      "height": 30
+    },
+    ".stage-control-strip": {
+      "x": 267,
+      "y": 197.2,
+      "width": 646.4,
+      "height": 37
+    },
+    ".lab-explanation": {
+      "x": 936.4,
+      "y": 155.2,
+      "width": 409.6,
+      "height": 499.3
+    },
+    ".visual-guide": {
+      "x": 936.4,
+      "y": 155.2,
+      "width": 407.6,
+      "height": 143.1
+    },
+    ".visual-guide-note": {
+      "x": 950.4,
+      "y": 263.8,
+      "width": 379.6,
+      "height": 23.5
+    },
+    ".lessonpanel": {
+      "x": 936.4,
+      "y": 312.3,
+      "width": 407.6,
+      "height": 417.2
+    },
+    "[data-testid=\"tree-visual\"]": {
+      "x": 276,
+      "y": 250.2,
+      "width": 628.4,
+      "height": 306.1
+    },
+    ".huffman-topbar": null,
+    ".huffman-main": null,
+    ".huffman-tree-panel": null,
+    ".huffman-tree-scroll": null,
+    ".huffman-svg": null,
+    ".huffman-queue-panel": null,
+    ".huffman-code-panel": null,
+    ".huffman-pathbar": null,
+    ".huffman-code-row": null,
+    ".tree-toolbar": {
+      "x": 276,
+      "y": 250.2,
+      "width": 628.4,
+      "height": 14.9
+    },
+    ".tree-summary-row": {
+      "x": 276,
+      "y": 273.1,
+      "width": 628.4,
+      "height": 31
+    },
+    ".tree-scroller": {
+      "x": 276,
+      "y": 312.1,
+      "width": 628.4,
+      "height": 244.2
+    },
+    ".tree-canvas": {
+      "x": 276,
+      "y": 314.1,
+      "width": 628,
+      "height": 238
+    },
+    ".g1-toolbar": null,
+    ".g1-workbench": null,
+    ".g1-graph-panel": null,
+    ".g1-graph-svg": null,
+    ".floyd-matrix-panel": null,
+    ".floyd-matrix-scroll": null,
+    ".g1-current-strip": null,
+    ".mst-head": null,
+    ".mst-layout": null,
+    ".mst-graph-card": null,
+    ".mst-graph-svg": null,
+    ".mst-side": null,
+    ".mst-legend": null,
+    ".critical-phase-panel": null,
+    ".critical-event-panel": null,
+    ".critical-activity-panel": null,
+    "longTextBlocks": []
+  },
+  {
+    "viewport": "1366x768",
+    "case": "floyd-warshall",
+    "frame": 35,
+    "pageOverflowX": false,
+    "stageOverflowX": false,
+    "stageHeight": 368.1,
+    "railScroll": {
+      "client": 499.3,
+      "scroll": 513,
+      "gap": 13.7
+    },
+    "guideOrder": {
+      "beforeLesson": true
+    },
+    ".lab-primary": {
+      "x": 256,
+      "y": 155.2,
+      "width": 1090,
+      "height": 499.3
+    },
+    ".stage-panel": {
+      "x": 256,
+      "y": 155.2,
+      "width": 668.4,
+      "height": 499.3
+    },
+    ".stage": {
+      "x": 267,
+      "y": 197.2,
+      "width": 646.4,
+      "height": 368.1
+    },
+    ".stage-head": {
+      "x": 267,
+      "y": 163.2,
+      "width": 646.4,
+      "height": 30
+    },
+    ".stage-control-strip": null,
+    ".lab-explanation": {
+      "x": 936.4,
+      "y": 155.2,
+      "width": 409.6,
+      "height": 499.3
+    },
+    ".visual-guide": {
+      "x": 936.4,
+      "y": 155.2,
+      "width": 407.6,
+      "height": 143.1
+    },
+    ".visual-guide-note": {
+      "x": 950.4,
+      "y": 263.8,
+      "width": 379.6,
+      "height": 23.5
+    },
+    ".lessonpanel": {
+      "x": 936.4,
+      "y": 312.3,
+      "width": 407.6,
+      "height": 355.7
+    },
+    "[data-testid=\"floyd-stage\"]": {
+      "x": 276,
+      "y": 206.2,
+      "width": 628.4,
+      "height": 350.1
+    },
+    ".huffman-topbar": null,
+    ".huffman-main": null,
+    ".huffman-tree-panel": null,
+    ".huffman-tree-scroll": null,
+    ".huffman-svg": null,
+    ".huffman-queue-panel": null,
+    ".huffman-code-panel": null,
+    ".huffman-pathbar": null,
+    ".huffman-code-row": null,
+    ".tree-toolbar": null,
+    ".tree-summary-row": null,
+    ".tree-scroller": null,
+    ".tree-canvas": null,
+    ".g1-toolbar": {
+      "x": 276,
+      "y": 206.2,
+      "width": 628.4,
+      "height": 26
+    },
+    ".g1-workbench": {
+      "x": 276,
+      "y": 241.2,
+      "width": 628.4,
+      "height": 315.1
+    },
+    ".g1-graph-panel": {
+      "x": 276,
+      "y": 241.2,
+      "width": 321,
+      "height": 316
+    },
+    ".g1-graph-svg": {
+      "x": 284,
+      "y": 249.2,
+      "width": 480,
+      "height": 300
+    },
+    ".floyd-matrix-panel": {
+      "x": 609,
+      "y": 241.2,
+      "width": 295.3,
+      "height": 263.3
+    },
+    ".floyd-matrix-scroll": {
+      "x": 617,
+      "y": 275.3,
+      "width": 279.3,
+      "height": 181.3
+    },
+    ".g1-current-strip": {
+      "x": 617,
+      "y": 464.6,
+      "width": 279.3,
+      "height": 31.9
+    },
+    ".mst-head": null,
+    ".mst-layout": null,
+    ".mst-graph-card": null,
+    ".mst-graph-svg": null,
+    ".mst-side": null,
+    ".mst-legend": null,
+    ".critical-phase-panel": null,
+    ".critical-event-panel": null,
+    ".critical-activity-panel": null,
+    "longTextBlocks": []
+  },
+  {
+    "viewport": "1366x768",
+    "case": "critical-path",
+    "frame": 14,
+    "pageOverflowX": false,
+    "stageOverflowX": false,
+    "stageHeight": 368.1,
+    "railScroll": {
+      "client": 499.3,
+      "scroll": 629,
+      "gap": 129.7
+    },
+    "guideOrder": {
+      "beforeLesson": true
+    },
+    ".lab-primary": {
+      "x": 256,
+      "y": 155.2,
+      "width": 1090,
+      "height": 499.3
+    },
+    ".stage-panel": {
+      "x": 256,
+      "y": 155.2,
+      "width": 668.4,
+      "height": 499.3
+    },
+    ".stage": {
+      "x": 267,
+      "y": 197.2,
+      "width": 646.4,
+      "height": 368.1
+    },
+    ".stage-head": {
+      "x": 267,
+      "y": 163.2,
+      "width": 646.4,
+      "height": 30
+    },
+    ".stage-control-strip": null,
+    ".lab-explanation": {
+      "x": 936.4,
+      "y": 155.2,
+      "width": 409.6,
+      "height": 499.3
+    },
+    ".visual-guide": {
+      "x": 936.4,
+      "y": 155.2,
+      "width": 407.6,
+      "height": 171.6
+    },
+    ".visual-guide-note": {
+      "x": 950.4,
+      "y": 292.3,
+      "width": 379.6,
+      "height": 23.5
+    },
+    ".lessonpanel": {
+      "x": 936.4,
+      "y": 340.8,
+      "width": 407.6,
+      "height": 443.2
+    },
+    "[data-testid=\"critical-stage\"]": {
+      "x": 276,
+      "y": 206.2,
+      "width": 628.4,
+      "height": 350.1
+    },
+    ".huffman-topbar": null,
+    ".huffman-main": null,
+    ".huffman-tree-panel": null,
+    ".huffman-tree-scroll": null,
+    ".huffman-svg": null,
+    ".huffman-queue-panel": null,
+    ".huffman-code-panel": null,
+    ".huffman-pathbar": null,
+    ".huffman-code-row": null,
+    ".tree-toolbar": null,
+    ".tree-summary-row": null,
+    ".tree-scroller": null,
+    ".tree-canvas": null,
+    ".g1-toolbar": null,
+    ".g1-workbench": null,
+    ".g1-graph-panel": null,
+    ".g1-graph-svg": null,
+    ".floyd-matrix-panel": null,
+    ".floyd-matrix-scroll": null,
+    ".g1-current-strip": null,
+    ".mst-head": {
+      "x": 276,
+      "y": 206.2,
+      "width": 628.4,
+      "height": 32.9
+    },
+    ".mst-layout": {
+      "x": 276,
+      "y": 245.1,
+      "width": 628.4,
+      "height": 273.3
+    },
+    ".mst-graph-card": {
+      "x": 276,
+      "y": 245.1,
+      "width": 358.4,
+      "height": 273.3
+    },
+    ".mst-graph-svg": {
+      "x": 287,
+      "y": 281.1,
+      "width": 336.4,
+      "height": 199.7
+    },
+    ".mst-side": {
+      "x": 644.4,
+      "y": 245.1,
+      "width": 260,
+      "height": 273.3
+    },
+    ".mst-legend": null,
+    ".critical-phase-panel": null,
+    ".critical-event-panel": null,
+    ".critical-activity-panel": null,
+    "longTextBlocks": []
+  },
+  {
+    "viewport": "390x844",
+    "case": "huffman",
+    "frame": 28,
+    "pageOverflowX": false,
+    "stageOverflowX": false,
+    "stageHeight": 858.8,
+    "railScroll": {
+      "client": 756.8,
+      "scroll": 757,
+      "gap": 0.2
+    },
+    "guideOrder": {
+      "beforeLesson": true
+    },
+    ".lab-primary": {
+      "x": 12,
+      "y": 412.3,
+      "width": 366,
+      "height": 1972.2
+    },
+    ".stage-panel": {
+      "x": 12,
+      "y": 412.3,
+      "width": 366,
+      "height": 1205.4
+    },
+    ".stage": {
+      "x": 30,
+      "y": 560.3,
+      "width": 330,
+      "height": 858.8
+    },
+    ".stage-head": {
+      "x": 30,
+      "y": 430.3,
+      "width": 330,
+      "height": 30
+    },
+    ".stage-control-strip": {
+      "x": 30,
+      "y": 467.3,
+      "width": 330,
+      "height": 86
+    },
+    ".lab-explanation": {
+      "x": 12,
+      "y": 1627.8,
+      "width": 366,
+      "height": 756.8
+    },
+    ".visual-guide": {
+      "x": 12,
+      "y": 1627.8,
+      "width": 366,
+      "height": 174.5
+    },
+    ".visual-guide-note": {
+      "x": 24,
+      "y": 1767.8,
+      "width": 342,
+      "height": 23.5
+    },
+    ".lessonpanel": {
+      "x": 12,
+      "y": 1812.3,
+      "width": 366,
+      "height": 572.3
+    },
+    "[data-testid=\"huffman-visual\"]": {
+      "x": 41,
+      "y": 571.3,
+      "width": 308,
+      "height": 836.8
+    },
+    ".huffman-topbar": {
+      "x": 41,
+      "y": 571.3,
+      "width": 308,
+      "height": 47.8
+    },
+    ".huffman-main": {
+      "x": 41,
+      "y": 623.2,
+      "width": 308,
+      "height": 617.1
+    },
+    ".huffman-tree-panel": {
+      "x": 41,
+      "y": 623.2,
+      "width": 308,
+      "height": 528
+    },
+    ".huffman-tree-scroll": {
+      "x": 42,
+      "y": 624.2,
+      "width": 306,
+      "height": 526
+    },
+    ".huffman-svg": {
+      "x": 44,
+      "y": 626.2,
+      "width": 738,
+      "height": 522
+    },
+    ".huffman-queue-panel": {
+      "x": 41,
+      "y": 1158.2,
+      "width": 308,
+      "height": 82.1
+    },
+    ".huffman-code-panel": {
+      "x": 41,
+      "y": 1244.3,
+      "width": 308,
+      "height": 143.7
+    },
+    ".huffman-pathbar": {
+      "x": 41,
+      "y": 1392,
+      "width": 308,
+      "height": 16.2
+    },
+    ".huffman-code-row": null,
+    ".tree-toolbar": null,
+    ".tree-summary-row": null,
+    ".tree-scroller": null,
+    ".tree-canvas": null,
+    ".g1-toolbar": null,
+    ".g1-workbench": null,
+    ".g1-graph-panel": null,
+    ".g1-graph-svg": null,
+    ".floyd-matrix-panel": null,
+    ".floyd-matrix-scroll": null,
+    ".g1-current-strip": null,
+    ".mst-head": null,
+    ".mst-layout": null,
+    ".mst-graph-card": null,
+    ".mst-graph-svg": null,
+    ".mst-side": null,
+    ".mst-legend": null,
+    ".critical-phase-panel": null,
+    ".critical-event-panel": null,
+    ".critical-activity-panel": null,
+    "longTextBlocks": []
+  },
+  {
+    "viewport": "390x844",
+    "case": "inorder",
+    "frame": 10,
+    "pageOverflowX": false,
+    "stageOverflowX": false,
+    "stageHeight": 350.1,
+    "railScroll": {
+      "client": 661.6,
+      "scroll": 662,
+      "gap": 0.4
+    },
+    "guideOrder": {
+      "beforeLesson": true
+    },
+    ".lab-primary": {
+      "x": 12,
+      "y": 412.3,
+      "width": 366,
+      "height": 1312
+    },
+    ".stage-panel": {
+      "x": 12,
+      "y": 412.3,
+      "width": 366,
+      "height": 640.5
+    },
+    ".stage": {
+      "x": 30,
+      "y": 538.9,
+      "width": 330,
+      "height": 350.1
+    },
+    ".stage-head": {
+      "x": 30,
+      "y": 430.3,
+      "width": 330,
+      "height": 30
+    },
+    ".stage-control-strip": {
+      "x": 30,
+      "y": 467.3,
+      "width": 330,
+      "height": 64.6
+    },
+    ".lab-explanation": {
+      "x": 12,
+      "y": 1062.8,
+      "width": 366,
+      "height": 661.6
+    },
+    ".visual-guide": {
+      "x": 12,
+      "y": 1062.8,
+      "width": 366,
+      "height": 174.5
+    },
+    ".visual-guide-note": {
+      "x": 24,
+      "y": 1202.8,
+      "width": 342,
+      "height": 23.5
+    },
+    ".lessonpanel": {
+      "x": 12,
+      "y": 1247.3,
+      "width": 366,
+      "height": 477.1
+    },
+    "[data-testid=\"tree-visual\"]": {
+      "x": 41,
+      "y": 549.9,
+      "width": 308,
+      "height": 328.1
+    },
+    ".huffman-topbar": null,
+    ".huffman-main": null,
+    ".huffman-tree-panel": null,
+    ".huffman-tree-scroll": null,
+    ".huffman-svg": null,
+    ".huffman-queue-panel": null,
+    ".huffman-code-panel": null,
+    ".huffman-pathbar": null,
+    ".huffman-code-row": null,
+    ".tree-toolbar": {
+      "x": 41,
+      "y": 549.9,
+      "width": 308,
+      "height": 14.9
+    },
+    ".tree-summary-row": {
+      "x": 41,
+      "y": 572.9,
+      "width": 308,
+      "height": 50.4
+    },
+    ".tree-scroller": {
+      "x": 41,
+      "y": 659.1,
+      "width": 308,
+      "height": 219
+    },
+    ".tree-canvas": {
+      "x": 41,
+      "y": 661.1,
+      "width": 546,
+      "height": 207
+    },
+    ".g1-toolbar": null,
+    ".g1-workbench": null,
+    ".g1-graph-panel": null,
+    ".g1-graph-svg": null,
+    ".floyd-matrix-panel": null,
+    ".floyd-matrix-scroll": null,
+    ".g1-current-strip": null,
+    ".mst-head": null,
+    ".mst-layout": null,
+    ".mst-graph-card": null,
+    ".mst-graph-svg": null,
+    ".mst-side": null,
+    ".mst-legend": null,
+    ".critical-phase-panel": null,
+    ".critical-event-panel": null,
+    ".critical-activity-panel": null,
+    "longTextBlocks": []
+  },
+  {
+    "viewport": "390x844",
+    "case": "floyd-warshall",
+    "frame": 35,
+    "pageOverflowX": false,
+    "stageOverflowX": false,
+    "stageHeight": 637.8,
+    "railScroll": {
+      "client": 563,
+      "scroll": 563,
+      "gap": 0
+    },
+    "guideOrder": {
+      "beforeLesson": true
+    },
+    ".lab-primary": {
+      "x": 12,
+      "y": 442.8,
+      "width": 366,
+      "height": 1440.2
+    },
+    ".stage-panel": {
+      "x": 12,
+      "y": 442.8,
+      "width": 366,
+      "height": 867.1
+    },
+    ".stage": {
+      "x": 30,
+      "y": 497.8,
+      "width": 330,
+      "height": 637.8
+    },
+    ".stage-head": {
+      "x": 30,
+      "y": 460.8,
+      "width": 330,
+      "height": 30
+    },
+    ".stage-control-strip": null,
+    ".lab-explanation": {
+      "x": 12,
+      "y": 1319.9,
+      "width": 366,
+      "height": 563
+    },
+    ".visual-guide": {
+      "x": 12,
+      "y": 1319.9,
+      "width": 366,
+      "height": 158.9
+    },
+    ".visual-guide-note": {
+      "x": 24,
+      "y": 1444.3,
+      "width": 342,
+      "height": 23.5
+    },
+    ".lessonpanel": {
+      "x": 12,
+      "y": 1488.8,
+      "width": 366,
+      "height": 394.2
+    },
+    "[data-testid=\"floyd-stage\"]": {
+      "x": 41,
+      "y": 508.8,
+      "width": 308,
+      "height": 615.8
+    },
+    ".huffman-topbar": null,
+    ".huffman-main": null,
+    ".huffman-tree-panel": null,
+    ".huffman-tree-scroll": null,
+    ".huffman-svg": null,
+    ".huffman-queue-panel": null,
+    ".huffman-code-panel": null,
+    ".huffman-pathbar": null,
+    ".huffman-code-row": null,
+    ".tree-toolbar": null,
+    ".tree-summary-row": null,
+    ".tree-scroller": null,
+    ".tree-canvas": null,
+    ".g1-toolbar": {
+      "x": 41,
+      "y": 508.8,
+      "width": 308,
+      "height": 40.3
+    },
+    ".g1-workbench": {
+      "x": 41,
+      "y": 558.1,
+      "width": 308,
+      "height": 566.5
+    },
+    ".g1-graph-panel": {
+      "x": 41,
+      "y": 558.1,
+      "width": 308,
+      "height": 291.2
+    },
+    ".g1-graph-svg": {
+      "x": 49,
+      "y": 566.1,
+      "width": 420,
+      "height": 275.2
+    },
+    ".floyd-matrix-panel": {
+      "x": 41,
+      "y": 861.3,
+      "width": 308,
+      "height": 263.3
+    },
+    ".floyd-matrix-scroll": {
+      "x": 49,
+      "y": 895.3,
+      "width": 292,
+      "height": 181.3
+    },
+    ".g1-current-strip": {
+      "x": 49,
+      "y": 1084.6,
+      "width": 292,
+      "height": 31.9
+    },
+    ".mst-head": null,
+    ".mst-layout": null,
+    ".mst-graph-card": null,
+    ".mst-graph-svg": null,
+    ".mst-side": null,
+    ".mst-legend": null,
+    ".critical-phase-panel": null,
+    ".critical-event-panel": null,
+    ".critical-activity-panel": null,
+    "longTextBlocks": []
+  },
+  {
+    "viewport": "390x844",
+    "case": "critical-path",
+    "frame": 14,
+    "pageOverflowX": false,
+    "stageOverflowX": false,
+    "stageHeight": 861.2,
+    "railScroll": {
+      "client": 644.9,
+      "scroll": 645,
+      "gap": 0.1
+    },
+    "guideOrder": {
+      "beforeLesson": true
+    },
+    ".lab-primary": {
+      "x": 12,
+      "y": 412.3,
+      "width": 366,
+      "height": 1765.2
+    },
+    ".stage-panel": {
+      "x": 12,
+      "y": 412.3,
+      "width": 366,
+      "height": 1110.2
+    },
+    ".stage": {
+      "x": 30,
+      "y": 487,
+      "width": 330,
+      "height": 861.2
+    },
+    ".stage-head": {
+      "x": 30,
+      "y": 430.3,
+      "width": 330,
+      "height": 49.7
+    },
+    ".stage-control-strip": null,
+    ".lab-explanation": {
+      "x": 12,
+      "y": 1532.6,
+      "width": 366,
+      "height": 644.9
+    },
+    ".visual-guide": {
+      "x": 12,
+      "y": 1532.6,
+      "width": 366,
+      "height": 174.5
+    },
+    ".visual-guide-note": {
+      "x": 24,
+      "y": 1672.6,
+      "width": 342,
+      "height": 23.5
+    },
+    ".lessonpanel": {
+      "x": 12,
+      "y": 1717.1,
+      "width": 366,
+      "height": 460.4
+    },
+    "[data-testid=\"critical-stage\"]": {
+      "x": 41,
+      "y": 498,
+      "width": 308,
+      "height": 839.2
+    },
+    ".huffman-topbar": null,
+    ".huffman-main": null,
+    ".huffman-tree-panel": null,
+    ".huffman-tree-scroll": null,
+    ".huffman-svg": null,
+    ".huffman-queue-panel": null,
+    ".huffman-code-panel": null,
+    ".huffman-pathbar": null,
+    ".huffman-code-row": null,
+    ".tree-toolbar": null,
+    ".tree-summary-row": null,
+    ".tree-scroller": null,
+    ".tree-canvas": null,
+    ".g1-toolbar": null,
+    ".g1-workbench": null,
+    ".g1-graph-panel": null,
+    ".g1-graph-svg": null,
+    ".floyd-matrix-panel": null,
+    ".floyd-matrix-scroll": null,
+    ".g1-current-strip": null,
+    ".mst-head": {
+      "x": 41,
+      "y": 498,
+      "width": 308,
+      "height": 66.7
+    },
+    ".mst-layout": {
+      "x": 41,
+      "y": 574.7,
+      "width": 308,
+      "height": 720.6
+    },
+    ".mst-graph-card": {
+      "x": 41,
+      "y": 574.7,
+      "width": 308,
+      "height": 288
+    },
+    ".mst-graph-svg": {
+      "x": 52,
+      "y": 613.1,
+      "width": 300,
+      "height": 196.5
+    },
+    ".mst-side": {
+      "x": 41,
+      "y": 872.7,
+      "width": 308,
+      "height": 422.6
+    },
+    ".mst-legend": null,
+    ".critical-phase-panel": null,
+    ".critical-event-panel": null,
+    ".critical-activity-panel": null,
+    "longTextBlocks": []
+  }
+]

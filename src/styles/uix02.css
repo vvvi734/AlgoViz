@@ -1,0 +1,630 @@
+/* UIX-V02 — visual-first information hierarchy.
+   Right rail: a compact "how to read this view" guide above Teaching Course.
+   Stage: shorter chrome, controls moved out of the canvas, long hints removed.
+   All data, frame semantics and the single player remain untouched. */
+
+/* ---------- Right rail guide ---------- */
+.visual-guide {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 11px 13px 10px;
+  border-color: var(--node-edge);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--accent) 5%, var(--panel)) 0%, var(--panel) 52%);
+}
+
+.visual-guide-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
+}
+
+.visual-guide-head > div {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+}
+
+.visual-guide-kicker {
+  color: var(--accent);
+  font: 800 8.5px/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
+  letter-spacing: 0.12em;
+  white-space: nowrap;
+}
+
+.visual-guide-head h2 {
+  margin: 0;
+  color: var(--txt);
+  font-size: 13px;
+  line-height: 1.2;
+  letter-spacing: 0.01em;
+}
+
+.visual-guide-mark {
+  color: var(--accent);
+  font-size: 14px;
+  line-height: 1;
+  opacity: 0.9;
+}
+
+.visual-guide-list {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+}
+
+.visual-guide-row {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  align-items: baseline;
+  gap: 7px;
+  padding-top: 4px;
+  border-top: 1px solid color-mix(in srgb, var(--edge) 72%, transparent);
+}
+
+.visual-guide-row:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.visual-guide-row dt {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 17px;
+  padding: 1px 4px;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--accent) 9%, transparent);
+  color: var(--accent);
+  font-size: 8.5px;
+  font-weight: 850;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+.visual-guide-row.is-symbols dt {
+  background: color-mix(in srgb, var(--accent-2) 9%, transparent);
+  color: var(--accent-2);
+}
+
+.visual-guide-row.is-regions dt {
+  background: var(--stat-bg);
+  color: var(--muted);
+}
+
+.visual-guide-row dd {
+  margin: 0;
+  color: var(--txt);
+  font-size: 10.8px;
+  line-height: 1.42;
+}
+
+.visual-guide-note {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin: 0;
+  padding: 5px 7px;
+  border-left: 2px solid var(--accent);
+  border-radius: 0 5px 5px 0;
+  background: color-mix(in srgb, var(--accent) 6%, transparent);
+  color: var(--muted);
+  font-size: 9.8px;
+  line-height: 1.38;
+}
+
+.visual-guide-note b {
+  color: var(--accent);
+  font-size: 8.5px;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+/* ---------- Shared stage chrome ---------- */
+.stage-head {
+  min-height: 30px;
+  margin-bottom: 7px;
+  align-items: center;
+}
+
+.stage-head > div:first-child .eyebrow {
+  display: none;
+}
+
+.stage-head h2 {
+  font-size: 14px;
+  line-height: 1.2;
+  letter-spacing: 0.01em;
+}
+
+.stage-head .stage-step-peek {
+  max-width: min(68%, 440px);
+  padding: 3px 8px;
+}
+
+.stage-head .stage-step-peek-text {
+  max-width: 340px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+/* Tree/Huffman preset controls live between the stage head and the canvas,
+   instead of after the canvas. The canvas still owns the remaining height. */
+.stage-control-strip {
+  flex: 0 0 auto;
+  margin: 0 0 7px;
+}
+
+.stage-control-strip .tree-mode-picker,
+.stage-control-strip .bst-picker {
+  flex-direction: row;
+  align-items: center;
+  gap: 4px 8px;
+  flex-wrap: wrap;
+  padding: 4px 6px;
+  border-radius: 7px;
+}
+
+.stage-control-strip .tree-mode-head,
+.stage-control-strip .bst-picker-head {
+  flex: 0 0 auto;
+  gap: 3px 7px;
+  align-items: center;
+}
+
+.stage-control-strip .tree-mode-title,
+.stage-control-strip .bst-picker-title {
+  font-size: 9px;
+  letter-spacing: 0.04em;
+}
+
+.stage-control-strip .tree-mode-actual,
+.stage-control-strip .bst-picker-actual {
+  font-size: 9px;
+  color: var(--muted);
+}
+
+.stage-control-strip .tree-mode-options,
+.stage-control-strip .bst-picker-options {
+  flex: 1 1 auto;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.stage-control-strip .tree-mode-btn {
+  flex: 0 1 auto;
+  min-height: 27px;
+  padding: 3px 8px;
+  font-size: 9.6px;
+  line-height: 1.2;
+  border-radius: 999px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.stage-control-strip .bst-preset-btn {
+  min-height: 27px;
+  padding: 3px 8px;
+  font-size: 9.8px;
+}
+
+.stage-control-strip .tree-mode-pending,
+.stage-control-strip .bst-picker-pending {
+  flex: 1 1 100%;
+  padding: 2px 0 0 8px;
+  border-left-width: 2px;
+  font-size: 9.5px;
+  line-height: 1.35;
+}
+
+/* ---------- Huffman: tree first, result table compressed ---------- */
+.huffman-visual {
+  gap: 4px;
+}
+
+.huffman-main {
+  grid-template-columns: minmax(0, 1fr) clamp(136px, 15%, 168px);
+  min-height: 168px;
+}
+
+.huffman-code-panel {
+  min-height: 74px;
+  max-height: 92px;
+}
+
+.huffman-visual[data-phase='done'] .huffman-code-panel {
+  min-height: 80px;
+  max-height: 96px;
+}
+
+.huffman-code-head {
+  padding: 3px 7px 2px;
+}
+
+/* Six codes stay fully visible in 3 columns x 2 rows on desktop. The panel
+   title already names the five fields, so the separate header row is dropped. */
+.huffman-code-table {
+  display: block;
+  min-width: 0;
+  font-size: 9.4px;
+}
+
+.huffman-code-table thead {
+  display: none;
+}
+
+.huffman-code-table tbody {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 2px 7px;
+  padding: 1px 6px 3px;
+}
+
+.huffman-code-table tr {
+  display: grid;
+  grid-template-columns: 16px 28px minmax(40px, 1fr) 26px 30px;
+  align-items: center;
+  gap: 3px;
+  min-width: 0;
+  padding: 1px 4px;
+  border: 1px solid color-mix(in srgb, var(--edge) 70%, transparent);
+  border-radius: 4px;
+  background: var(--panel-2);
+}
+
+.huffman-code-table tr.is-active {
+  border-color: var(--accent);
+  background: var(--node-focus-bg);
+}
+
+.huffman-code-table td {
+  padding: 0;
+  border: 0;
+  font-size: 9.2px;
+  line-height: 1.35;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.huffman-code-table td:nth-child(3) {
+  color: var(--accent);
+  font-family: var(--mono, ui-monospace, monospace);
+  letter-spacing: 0.02em;
+}
+
+.huffman-pathbar {
+  min-height: 14px;
+  padding: 0 2px;
+}
+
+.huffman-fixed-note {
+  font-size: 8px;
+}
+
+.stage-control-strip[data-testid='huffman-control-strip'] .bst-picker-head {
+  display: none;
+}
+
+/* ---------- Binary tree: the canvas owns the remaining height ---------- */
+.tree-visual {
+  height: 100%;
+}
+
+.tree-scroller {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.tree-summary-row {
+  padding: 4px 8px;
+  gap: 5px 14px;
+}
+
+.tree-toolbar {
+  gap: 4px 10px;
+}
+
+/* Merge/sort pages keep every buffer slot and legend label; only their
+   inter-block air is reduced so the main array does not lose its height. */
+@media (min-width: 721px) {
+  .app[data-view='learn'] .lab-shell:not(.guide-open) .stage .sorting-buffer-panel {
+    padding: 4px 8px;
+    gap: 2px;
+  }
+
+  .app[data-view='learn'] .lab-shell:not(.guide-open) .stage .sorting-footer {
+    gap: 4px;
+  }
+
+  .app[data-view='learn'] .lab-shell:not(.guide-open) .stage .sorting-hint {
+    padding-top: 4px;
+  }
+}
+
+/* On a 768px-high desktop the hint's second sentence restates the step
+   already shown by the highlighted bars and by the Teaching Course. Keep
+   the operation title and the legend; drop only that duplicated line. */
+@media (min-width: 721px) and (max-height: 820px) {
+  .app[data-view='learn'] .lab-shell:not(.guide-open) .stage .sorting-hint > span {
+    display: none;
+  }
+}
+
+/* ---------- Floyd: one-line status, matrix-first reading ---------- */
+.floyd-stage {
+  height: 100%;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 9px;
+  align-content: center;
+}
+
+.g1-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 5px 12px;
+  flex-wrap: wrap;
+  min-height: 26px;
+}
+
+.g1-toolbar .g1-op-line {
+  color: var(--txt);
+  font-size: 11px;
+  max-width: none;
+}
+
+.g1-toolbar .g1-head-state {
+  font-size: 10.5px;
+}
+
+.g1-toolbar .g1-badge {
+  padding: 2px 7px;
+  font-size: 9.5px;
+}
+
+.floyd-stage .g1-workbench {
+  align-items: start;
+  min-height: 0;
+}
+
+.floyd-stage .g1-graph-panel,
+.floyd-stage .floyd-matrix-panel {
+  padding: 8px;
+}
+
+.floyd-stage .g1-panel-head {
+  margin-bottom: 5px;
+}
+
+.floyd-stage .floyd-matrix {
+  font-size: 11.5px;
+}
+
+.floyd-stage .floyd-matrix th,
+.floyd-stage .floyd-matrix td {
+  padding: 6px 7px;
+}
+
+/* ---------- AOE: event/activity tables compact, graph card gets priority ---------- */
+.critical-stage .mst-head {
+  align-items: center;
+  gap: 6px 12px;
+}
+
+.critical-stage .mst-head > div:first-child .eyebrow,
+.critical-stage .mst-head > div:first-child h2 {
+  display: none;
+}
+
+.critical-stage .mst-subtitle {
+  margin: 0;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.25;
+}
+
+.critical-stage .mst-card-head {
+  min-height: 22px;
+  margin-bottom: 2px;
+}
+
+.critical-stage .mst-current-strip {
+  margin-top: 4px;
+  padding: 5px 7px;
+}
+
+.critical-stage .mst-side {
+  gap: 5px;
+}
+
+.critical-stage .mst-panel {
+  padding: 6px 7px;
+}
+
+.critical-stage .mst-panel-head {
+  margin-bottom: 4px;
+}
+
+.critical-stage .mst-panel-head small {
+  display: none;
+}
+
+.critical-stage .g3-table-wrap {
+  max-height: 148px;
+}
+
+.critical-stage .g3-table th {
+  padding: 2px 5px;
+  font-size: 8px;
+}
+
+.critical-stage .g3-table td {
+  padding: 1px 5px;
+  font-size: 9px;
+  line-height: 1.15;
+}
+
+.critical-stage .g3-phase {
+  padding: 2px 6px;
+  font-size: 8.5px;
+}
+
+.critical-stage .mst-result {
+  padding-top: 5px;
+}
+
+/* Secondary pages: remove duplicated long hints from the canvas only. */
+.graph-visual[data-algorithm='dijkstra'] .graph-current-hint,
+.graph-visual[data-algorithm='dijkstra'] .graph-scroll-hint {
+  display: none;
+}
+
+/* BFS/DFS queue band: keep the real FIFO/LIFO items, trim only padding.
+   This has to outrank the closed-guide compact rule in ux04.css. */
+@media (min-width: 721px) {
+  .app[data-view='learn'] .lab-shell:not(.guide-open) .graph-traversal-stage {
+    gap: 6px;
+  }
+
+  .app[data-view='learn'] .graph-traversal-stage:not(.is-weighted) .graph-frontier-panel {
+    gap: 2px;
+    padding: 2px 7px 1px;
+  }
+}
+
+/* At 1366 the weighted graph lands at 219.75px after the rail gets its
+   guide. Keep a 220px floor so the compact canvas is not half a pixel
+   below the readability gate; the SVG still preserves its viewBox ratio. */
+@media (min-width: 721px) and (max-height: 820px) {
+  .graph-visual[data-algorithm='dijkstra'] .graph-svg {
+    min-height: 220px;
+  }
+}
+
+.kruskal-stage .mst-head > div:first-child .eyebrow,
+.kruskal-stage .mst-head > div:first-child h2 {
+  display: none;
+}
+
+.kruskal-stage .mst-subtitle {
+  margin: 0;
+  font-size: 10px;
+}
+
+/* ---------- Narrow screens: keep the guide readable, not another lecture ---------- */
+@media (max-width: 900px) {
+  .huffman-main {
+    grid-template-columns: minmax(0, 1fr) 132px;
+  }
+}
+
+@media (min-width: 721px) and (max-height: 820px) {
+  .huffman-code-panel,
+  .huffman-visual[data-phase='done'] .huffman-code-panel {
+    min-height: 66px;
+    max-height: 70px;
+  }
+
+  .huffman-code-table tr {
+    padding: 0 4px;
+  }
+
+  .huffman-code-table td {
+    font-size: 9px;
+    line-height: 1.2;
+  }
+}
+
+@media (max-width: 720px) {
+  .visual-guide {
+    padding: 10px 11px;
+  }
+
+  .visual-guide-row {
+    grid-template-columns: 32px minmax(0, 1fr);
+    gap: 6px;
+  }
+
+  .visual-guide-row dd {
+    font-size: 11px;
+    line-height: 1.5;
+  }
+
+  .stage-control-strip .tree-mode-btn,
+  .stage-control-strip .bst-preset-btn {
+    min-height: 36px;
+    flex: 1 1 auto;
+  }
+
+  .stage-control-strip .tree-mode-btn {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 3px 4px;
+    font-size: 9px;
+  }
+
+  .stage-head {
+    align-items: flex-start;
+  }
+
+  .stage-head .stage-step-peek {
+    max-width: 100%;
+  }
+
+  .tree-visual {
+    height: auto;
+  }
+
+  .floyd-stage {
+    height: auto;
+  }
+
+  .huffman-code-panel,
+  .huffman-visual[data-phase='done'] .huffman-code-panel {
+    min-height: 132px;
+    max-height: 150px;
+  }
+
+  .huffman-code-table tbody {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1px;
+  }
+
+  .huffman-code-table tr {
+    grid-template-columns: 18px 32px minmax(54px, 1fr) 30px 38px;
+    padding: 2px 5px;
+  }
+
+  .huffman-code-table {
+    min-width: 0;
+  }
+
+  .huffman-main {
+    grid-template-columns: minmax(0, 1fr) 122px;
+  }
+}
+
+@media (max-width: 560px) {
+  .huffman-main {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) auto;
+    min-height: 0;
+  }
+
+  .huffman-queue-panel {
+    max-height: 112px;
+  }
+
+  .huffman-queue-body {
+    overflow-y: auto;
+  }
+}

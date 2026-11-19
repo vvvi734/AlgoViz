@@ -367,11 +367,9 @@ function KruskalResult({ model }: { model: KruskalVisualModel }) {
 export function KruskalVisual({
   model,
   operationText,
-  hint,
 }: {
   model: KruskalVisualModel;
   operationText: string;
-  hint: string;
 }) {
   const { t } = useI18n();
   const current = model.currentEdge;
@@ -445,7 +443,6 @@ export function KruskalVisual({
               </span>
             )}
           </div>
-          <p className="mst-hint">{hint}</p>
         </section>
 
         <aside className="mst-side">

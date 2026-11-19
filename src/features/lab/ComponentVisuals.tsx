@@ -339,11 +339,9 @@ export function ConnectedComponentsVisual({
 export function KosarajuVisual({
   model,
   operationText,
-  hint,
 }: {
   model: SccVisualModel;
   operationText: string;
-  hint: string;
 }) {
   const { t } = useI18n();
   if (model.empty) return <p className="mst-empty" data-testid="g4-empty">{t('g4Empty')}</p>;
@@ -403,7 +401,6 @@ export function KosarajuVisual({
             {model.currentComponentId !== null && <span className="g4-change-pill">{t('g4ComponentBadge')} {componentBadge(model.currentComponentId)}</span>}
             {model.currentEdgeId && <span className="g4-change-pill">{t('g4InspectEdge')}: {model.currentEdgeId}</span>}
           </div>
-          <p className="mst-hint">{hint}</p>
         </section>
 
         <aside className="mst-side g4-side">

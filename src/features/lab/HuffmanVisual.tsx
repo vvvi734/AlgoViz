@@ -22,12 +22,6 @@ const PHASE_KEY = {
   done: 'huffmanPhaseDone',
 } as const;
 
-const HINT_KEY = {
-  build: 'huffmanHintBuild',
-  encode: 'huffmanHintEncode',
-  done: 'huffmanHintDone',
-} as const;
-
 function nodeClass(node: HuffmanVisualModel['nodes'][number]): string {
   return [
     'huffman-node',
@@ -73,7 +67,6 @@ export function HuffmanVisual({ model }: { model: HuffmanVisualModel }) {
   } as CSSProperties;
   const hasMetrics = model.wpl !== null;
   const prefixLabel = model.prefix === '' ? '∅' : model.prefix;
-  const rawQueue = model.queueIds.length ? model.queueIds.join(' · ') : '[]';
   const pathLabel = model.pathIds.length
     ? model.pathIds.map((id) => {
         const node = nodeById.get(id);
@@ -134,18 +127,6 @@ export function HuffmanVisual({ model }: { model: HuffmanVisualModel }) {
           data-testid="huffman-tree-panel"
           aria-label={t('huffmanTreeLabel')}
         >
-          <div className="huffman-panel-head">
-            <span className="huffman-panel-title">{t('huffmanTreeLabel')}</span>
-            <span className="huffman-panel-note">
-              {model.roots.length > 1
-                ? t('huffmanTreeRoots').replace('{count}', String(model.roots.length))
-                : model.roots.length === 1
-                  ? t('huffmanTreeRootOne')
-                  : '∅'}
-              {' · '}
-              {t('huffmanTreeHint')}
-            </span>
-          </div>
           <div className="huffman-tree-scroll" data-testid="huffman-tree-scroll">
             {model.empty ? (
               <div className="huffman-tree-empty" data-testid="huffman-empty">
@@ -245,9 +226,6 @@ export function HuffmanVisual({ model }: { model: HuffmanVisualModel }) {
             <span className="huffman-panel-note">heapq · {model.queueIds.length}</span>
           </div>
           <div className="huffman-queue-body">
-            <div className="huffman-queue-note" title={rawQueue}>
-              {t('huffmanQueueRaw').replace('{ids}', rawQueue)}
-            </div>
             {model.queueEntries.length === 1 &&
             (model.phase !== 'build' || model.operation === 'build-done') ? (
               <div className="huffman-queue-banner" data-testid="huffman-queue-root-only">
@@ -333,14 +311,6 @@ export function HuffmanVisual({ model }: { model: HuffmanVisualModel }) {
               </span>
             ) : null}
           </div>
-          <div className="huffman-code-metrics">
-            <span className="huffman-metric">
-              {t('huffmanMetricWpl')} <b>{hasMetrics ? model.wpl : '—'}</b>
-            </span>
-            <span className="huffman-metric">
-              {t('huffmanMetricBits')} <b>{model.totalBits ?? '—'}</b>
-            </span>
-          </div>
         </div>
         <div className="huffman-code-scroll">
           {model.codes.length > 0 ? (
@@ -391,11 +361,6 @@ export function HuffmanVisual({ model }: { model: HuffmanVisualModel }) {
             {t('huffmanSingleNote')}
           </div>
         ) : null}
-        {model.phase === 'done' && !model.empty ? (
-          <div className="huffman-note">
-            {t('huffmanPrefixNote')} {t('huffmanNonUniqueNote')}
-          </div>
-        ) : null}
       </section>
 
       <footer className="huffman-pathbar" data-testid="huffman-active-path" data-prefix={model.prefix}>
@@ -403,7 +368,6 @@ export function HuffmanVisual({ model }: { model: HuffmanVisualModel }) {
         <span className="huffman-path-value">{pathLabel}</span>
         <span className="huffman-prefix-label">{t('huffmanCurrentPrefix')}</span>
         <code className="huffman-prefix-value">{prefixLabel}</code>
-        <span className="huffman-hint">{t(HINT_KEY[model.phase])}</span>
       </footer>
     </div>
   );

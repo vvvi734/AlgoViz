@@ -352,8 +352,8 @@ UX-02 证据：`docs/ux02/before/`（4 张基线）与 `docs/ux02/after/`（7 �
 | 项 | 结果 |
 | --- | --- |
 | `npm run typecheck` | ✅ 通过 |
-| `npm run build` | ✅ 通过；版本 `0.27.1-uix01`，1484 modules，`index-DXyl2egV.js` 1,926.73 kB（gzip 539.84 kB）、`monaco-setup-CzR1tBD-.js` 4,122.24 kB（gzip 1,066.59 kB）、`index-CX1f6qog.css` 220.02 kB（gzip 35.78 kB）、`monaco-setup-CX3ij07K.css` 186.75 kB（gzip 27.79 kB） |
-| 全量单测 | ✅ 105 个文件、875 tests 全部通过 |
+| `npm run build` | ✅ 通过；版本 `0.27.2-uix02`，1486 modules，`index-TYstDR_Q.js` 1,933.56 kB（gzip 542.83 kB）、`monaco-setup-D3FNmEEj.js` 4,122.24 kB（gzip 1,066.59 kB）、`index-BXj7V1-p.css` 228.82 kB（gzip 37.21 kB）、`monaco-setup-CX3ij07K.css` 186.75 kB（gzip 27.79 kB） |
+| 全量单测 | ✅ 106 个文件、886 tests 全部通过 |
 | F2 专项单测 | ✅ `hash.test.ts` 10 项、`hashVisual.test.tsx` 7 项、`hashLessons.test.ts` 7 项，合计 24 项 |
 | F2 独立 Python 校验 | ✅ `scripts/verify_hash_python.py` 752/752 帧 / 19 组输入：官方 + 空表、单元素、负整数、表长 2/17、长链、重复键、删除头/中/尾、墓碑继续、墓碑复用、回绕、表满；逐命令对照独立引用模型 |
 | F2 真实帧 fixtures | ✅ `hash-default-frames.json` 242 帧（链 60 + 探测 182）、`hash-edge-frames.json` 510 帧，全部通过 Zod `structureSchema` 与 `hashSnapshotSchema` |
@@ -368,12 +368,17 @@ UX-02 证据：`docs/ux02/before/`（4 张基线）与 `docs/ux02/after/`（7 �
 | L1B 真实 Pyodide E2E | ✅ 3/3：默认 8 帧插入、9 帧删除、3 帧满表拒绝、2 帧空表拒绝；覆盖预设 pending→Run、`shift-right` 源 4→目标 5、`shift-left` 源 2→目标 1、`write`、`clear`、回退/跳帧同步、390 画布内滚动且页面无横向溢出；生成 4 张截图 |
 | UIX-V01 像素测量 | ✅ `docs/uix-v01/before/measurements.json` 与 `after/measurements.json` 各 48 条（8 算法 × 3 尺寸 × 展开/收起）；1440 焦点态最大柱高由 158–165px 提升至 217.7–323.3px，1366 由 158–165px 提升至 169–191.3px，390 由 124.2–146.2px 提升至 184–202px；两种模式均无页面横向溢出 |
 | UIX-V01 专项 E2E | ✅ `e2e/uix01.spec.ts` 3/3：1440/1366 × 8 算法检查数组高度、最大柱高、右栏宽度、柱/标签/标记无裁切重叠；390 检查固定 220px 轨与归并缓冲区 8 槽可读；播放/前后跳帧、中英、Light/Dark 均通过 |
+| UIX-V02 像素测量 | ✅ `docs/uix-v02/before` 与 `after` 各 12 条（4 算法 × 3 尺寸）；哈夫曼树面板 1440 156.3→306.1px、树滚动区 130.2→304.1px，1366 150→188.1px、123.8→186.1px；编码表 212.7→80px（1440）/66px（1366）且六行全可见；二叉树滚动区 268→376.2px、204.2→244.2px；Floyd 头部 129.4→26px（1440）/99.4→26px（1366）；AOE 图例删除、移动端 stage 1250→861.2px；四页长句块 Floyd 2→0、AOE 5→0；全部无页面/画布横向溢出 |
+| UIX-V02 专项单测 | ✅ `VisualGuide.test.tsx` 11 项：9 个目标算法均有 3 行 + 1 条关键提示、`data-algorithm` 正确、非目标算法（冒泡）不渲染空面板、说明区不含“当前做什么/为什么这样做” |
+| UIX-V02 专项 E2E | ✅ `e2e/uix02.spec.ts` 4/4：四页右栏说明区位于 Teaching Course 之前且高度 100–210px；画布内无 >24 字可见长句；哈夫曼 1366 六行码表均不越出面板；二叉树无图例、Floyd 无 `g1-head`、AOE 无图例且事件 6 行/活动 7 行/result 11；390 哈夫曼树/队列改上下布局且六行码表保留；无页面横向溢出 |
+| UIX-V02 回归 | ✅ `t4.spec.ts` 2/2、`g1.spec.ts` 3/3、`g3.spec.ts` 4/4、`stage7d.spec.ts` 6/6，共 15/15：哈夫曼真实 heapq/WPL/六行不裁切、Floyd 当前三元更新、AOE 事件/活动/关键路径、二叉树三种遍历与移动端 scroll hint 均未受布局调整影响 |
+| UIX-V02 布局修正 | ✅ `uix01.spec.ts` 3/3 与 `ux04c.spec.ts` 4/4：归并主数组在 1440 为 252.2px，1366 插入排序 footer 收回舞台内，BFS 1366 队列底部 565.4px ≤ stage 565.34px+1，Dijkstra 1366 SVG 222.75px ≥ 220px；未放宽任何既有尺寸断言 |
 | F1 专项单测 | ✅ `search.test.ts` 10 项、`searchVisual.test.tsx` 6 项、`searchLessons.test.ts` 5 项、`searchInsight.test.ts` 3 项，合计 24 项 |
 | F1 独立 Python 校验 | ✅ `scripts/verify_search_python.py` 143/143 帧 / 23 组输入：官方 + 成功/失败、空数组、单元素、首尾命中、重复值、负数、中间目标、无序；linear 返回首次匹配，binary 返回任意合法匹配且无序只发 `invalid` |
 | F1 真实帧 fixtures | ✅ `search-default-frames.json` 12+10=22 帧、`search-edge-frames.json` 121 帧，全部通过 Zod `structureSchema` 与 `searchSnapshotSchema` |
 | F1 真实 Pyodide E2E | ✅ 2/2：linear 比较帧 p4=7、checked 4/6、第 11 帧 found 索引 4；binary 第 3 帧排除左半区 left=4/right=6、excluded=4、第 9 帧 found 索引 4；前后跳帧一致；无序输入 1 帧 invalid、警告可见、无 L/R/MID |
 | 官方知识包 E2E | ✅ 2/2：`algolens-fib-basics` 安装/预览/课程/重载/卸载，以及课程 Python 示例真实 Pyodide 运行到 `init/combine/done`；包内 5 文件、归档 5,502 B |
-| 全量 E2E | ✅ 149/149（既有 146 条基线 + UIX-V01 3 条；真实 Edge + 本地 Pyodide，约 10 分钟） |
+| 全量 E2E | ✅ 153/153（既有 149 条 + UIX-V02 专项 4 条；真实 Edge + 本地 Pyodide，约 5.6 分钟） |
 | S1 相关单测 | ✅ `sorting.test.ts` 9 项、`sortingLessons.test.ts` 4 项、`SortingVisual.test.tsx` 4 项，合计 17 项；另 `registry/catalog/textbook/frameInsight/App/AlgorithmSidebar` 联动断言全部通过 |
 | S1 独立 Python 校验 | ✅ `scripts/verify_sorting_python.py` 721/721 帧：3 算法 × 8 输入（官方 + 7 边界）；最终升序、多重集不变、选择每轮后缀最小与交换、插入前缀有序与真实右移、Shell gap 序列/lane/shift/gap=1 全局有序；稳定性身份样例验证插入稳定、选择与 Shell 不稳定 |
 | S1 真实帧 fixtures | ✅ `sorting-default-frames.json` 143 帧 + `sorting-edge-frames.json` 578 帧，全部通过 Zod `structureSchema` 与 `sortingSnapshotSchema` |
