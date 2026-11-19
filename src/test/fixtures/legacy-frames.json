@@ -3642,6 +3642,18 @@
       "message": "请在 Python 模式运行 / Run the Python preset"
     }
   ],
+  "seqlist": [
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          "Sequential list: use the Python preset"
+        ],
+        "done": true
+      },
+      "message": "请在 Python 模式运行 / Run the Python preset"
+    }
+  ],
   "bfs": [
     {
       "state": {

@@ -28,6 +28,7 @@ import type {
   WeightedGraphSnapshot,
   DoublyLinkedListSnapshot,
   CircularLinkedListSnapshot,
+  SequentialListSnapshot,
 } from '../trace/schema';
 import { resolveStep } from './sync';
 import type { Lesson, LessonLang, LessonStep } from './types';
@@ -2286,6 +2287,286 @@ function advancedLinkedInsight(
 }
 
 /**
+ * L1B: right-rail explanation for the sequential list. Action text and the
+ * before/after values come from the recorded snapshot; nothing is inferred from
+ * the final array or from message text.
+ */
+function sequentialListInsight(
+  snapshot: SequentialListSnapshot,
+  lang: LessonLang,
+  hasStep: boolean,
+  lesson: Lesson | undefined,
+  currentEvent: TraceEvent,
+  previousEvent: TraceEvent | undefined,
+): FrameInsight {
+  const seqValue = (value: unknown): string => {
+    if (value === null || value === undefined) return 'null';
+    if (typeof value === 'string') return value;
+    if (typeof value === 'number' || typeof value === 'boolean') return String(value);
+    try {
+      return JSON.stringify(value);
+    } catch {
+      return String(value);
+    }
+  };
+  const previousRaw = previousEvent?.structure;
+  const previous = previousRaw?.kind === 'sequential-list' ? previousRaw : undefined;
+  const op = snapshot.operation;
+  const change = snapshot.change;
+
+  const action = (() => {
+    if (change) {
+      return tx(
+        lang,
+        `slots[${change.index}]：${seqValue(change.before)} → ${seqValue(change.after)}`,
+        `slots[${change.index}]: ${seqValue(change.before)} → ${seqValue(change.after)}`,
+      );
+    }
+    switch (snapshot.action) {
+      case 'shift-right':
+        return tx(
+          lang,
+          `data[${snapshot.targetIndex}] = data[${snapshot.sourceIndex}]，向右腾出一个槽位`,
+          `data[${snapshot.targetIndex}] = data[${snapshot.sourceIndex}], opening a slot to the right`,
+        );
+      case 'shift-left':
+        return tx(
+          lang,
+          `data[${snapshot.targetIndex}] = data[${snapshot.sourceIndex}]，向左填掉空洞`,
+          `data[${snapshot.targetIndex}] = data[${snapshot.sourceIndex}], filling the hole leftwards`,
+        );
+      case 'write':
+        return tx(
+          lang,
+          `把新元素写入 data[${snapshot.targetIndex}]`,
+          `write the new element into data[${snapshot.targetIndex}]`,
+        );
+      case 'save':
+        return tx(
+          lang,
+          `保存 data[${snapshot.removedIndex}] = ${seqValue(snapshot.removedValue)}，再开始搬移`,
+          `save data[${snapshot.removedIndex}] = ${seqValue(snapshot.removedValue)} before shifting`,
+        );
+      case 'clear':
+        return tx(
+          lang,
+          `length 减一后，把新的空闲槽位 data[${snapshot.targetIndex}] 清成 None`,
+          `after decrementing length, clear the first free slot data[${snapshot.targetIndex}] to None`,
+        );
+      case 'read':
+        return tx(
+          lang,
+          `直接读取 data[${snapshot.focusIndex}] = ${seqValue(snapshot.result)}，O(1)`,
+          `read data[${snapshot.focusIndex}] = ${seqValue(snapshot.result)} directly, O(1)`,
+        );
+      case 'compare':
+        return tx(
+          lang,
+          `比较 data[${snapshot.focusIndex}] 与目标值 ${seqValue(snapshot.searchValue)}`,
+          `compare data[${snapshot.focusIndex}] with target ${seqValue(snapshot.searchValue)}`,
+        );
+      case 'visit':
+        return tx(
+          lang,
+          `访问有效槽位 data[${snapshot.focusIndex}]`,
+          `visit the live slot data[${snapshot.focusIndex}]`,
+        );
+      case 'check':
+        return tx(
+          lang,
+          '检查索引边界与剩余容量，尚未修改数组',
+          'check the index bounds and remaining capacity without changing the array',
+        );
+      case 'complete':
+        return tx(
+          lang,
+          op === 'insert'
+            ? `插入完成，length = ${snapshot.length}`
+            : op === 'delete'
+              ? `删除完成，length = ${snapshot.length}`
+              : '本步操作完成',
+          op === 'insert'
+            ? `insertion complete, length = ${snapshot.length}`
+            : op === 'delete'
+              ? `deletion complete, length = ${snapshot.length}`
+              : 'this operation is complete',
+        );
+      case 'reject':
+        return tx(
+          lang,
+          snapshot.error === 'capacity-full'
+            ? '满表插入被拒绝，数组不变'
+            : snapshot.error === 'list-empty'
+              ? '空表删除被拒绝，数组不变'
+              : '索引越界被拒绝，数组不变',
+          snapshot.error === 'capacity-full'
+            ? 'insertion into a full table is rejected; the array is unchanged'
+            : snapshot.error === 'list-empty'
+              ? 'deletion from an empty table is rejected; the array is unchanged'
+              : 'the out-of-range index is rejected; the array is unchanged',
+        );
+      default:
+        return tx(lang, '完成本次操作', 'finish this operation');
+    }
+  })();
+
+  const why = (() => {
+    if (snapshot.error === 'capacity-full') {
+      return tx(
+        lang,
+        'length 已经等于 capacity，固定容量槽位没有空位。必须先腾出空间或改用别的结构；本批次不做动态扩容。',
+        'length already equals capacity, so the fixed slot block has no free cell. Space must be freed or another structure used; dynamic growth is out of scope in this batch.',
+      );
+    }
+    if (snapshot.error === 'list-empty') {
+      return tx(
+        lang,
+        '空表没有有效元素，length = 0，任何下标都不在 [0, length) 内，因此删除无法进行。',
+        'An empty table has no live element: length = 0 means no index lies in [0, length), so there is nothing to delete.',
+      );
+    }
+    if (snapshot.error === 'index-out-of-range') {
+      return tx(
+        lang,
+        '下标必须落在有效区或合法的插入边界；越界时直接拒绝，不能读取空闲槽位或破坏已有元素。',
+        'The index must lie in the live prefix or at the legal insertion boundary; out of range is rejected without reading free slots or damaging live data.',
+      );
+    }
+    if (change) {
+      if (snapshot.action === 'shift-right') {
+        return tx(
+          lang,
+          `插入必须从最后一个有效元素开始向右搬：先搬 data[${snapshot.sourceIndex}]，否则会覆盖尚未搬走的右邻元素。`,
+          `Insertion must shift right starting from the last live element: move data[${snapshot.sourceIndex}] first, or an un-copied right neighbour would be overwritten.`,
+        );
+      }
+      if (snapshot.action === 'shift-left') {
+        return tx(
+          lang,
+          `删除必须从被删位置开始向左搬：先搬 data[${snapshot.sourceIndex}]，否则会覆盖尚未读取的右邻元素。`,
+          `Deletion must shift left starting at the removed position: move data[${snapshot.sourceIndex}] first, or an unread right neighbour would be overwritten.`,
+        );
+      }
+      if (snapshot.action === 'write') {
+        return tx(
+          lang,
+          '所有右侧元素已经腾好位置，此时才把新元素写进空出来的槽位；写完后 length 才能加一。',
+          'All elements on the right have moved, so the new value can now go into the opened slot; only after this write may length increase.',
+        );
+      }
+      if (snapshot.action === 'clear') {
+        return tx(
+          lang,
+          'length 已经减一，最后一个旧副本落在空闲区；必须清成 None，否则空闲槽位会残留看似有效的数据。',
+          'Length has already decreased, so the old tail copy now lies in the free tail; it must be cleared to None or the free slot would look occupied.',
+        );
+      }
+    }
+    if (snapshot.action === 'read') {
+      return tx(
+        lang,
+        '每个槽位的地址由起始地址加下标偏移直接算出，不需要沿链走路，所以合法下标访问是 O(1)。',
+        'Each slot address is the base address plus the index offset, with no chain walk, so a valid indexed access is O(1).',
+      );
+    }
+    if (snapshot.action === 'compare' || snapshot.action === 'visit') {
+      return tx(
+        lang,
+        '循环上界是 length 而不是 capacity；空闲区不属于有效元素，不能参与查找或遍历。',
+        'The loop bound is length, not capacity; the free tail is not live data and must not participate in search or traversal.',
+      );
+    }
+    if (snapshot.action === 'complete' && (op === 'insert' || op === 'delete')) {
+      return tx(
+        lang,
+        '完成帧要求 [0, length) 全部有真实元素、[length, capacity) 全部为 None，且 0 <= length <= capacity。',
+        'A complete frame requires every slot in [0, length) to hold a real element, every slot in [length, capacity) to be None, and 0 <= length <= capacity.',
+      );
+    }
+    if (hasStep && lesson) {
+      const step = lesson.steps.find((item) => item.stepId === currentEvent.lessonStepId);
+      if (step) return step.explanation[lang];
+    }
+    return currentEvent.message;
+  })();
+
+  const changes: FrameChange[] = [];
+  if (change) {
+    changes.push({
+      label: `slots[${change.index}]`,
+      before: seqValue(change.before),
+      after: seqValue(change.after),
+      detail: snapshot.action,
+      tone: 'update',
+    });
+  }
+  if (previous && previous.length !== snapshot.length) {
+    changes.push({
+      label: 'length',
+      before: String(previous.length),
+      after: String(snapshot.length),
+      tone: 'update',
+    });
+  }
+  if (snapshot.action === 'save' && snapshot.removedValue !== undefined) {
+    changes.push({
+      label: `data[${snapshot.removedIndex}]`,
+      after: seqValue(snapshot.removedValue),
+      detail: 'saved before shifting',
+      tone: 'warning',
+    });
+  }
+  if (snapshot.error) {
+    changes.push({
+      label: 'error',
+      after: snapshot.error,
+      detail: `length ${snapshot.length} / capacity ${snapshot.capacity}`,
+      tone: 'warning',
+    });
+  }
+  if (snapshot.found === true) {
+    changes.push({
+      label: 'search',
+      after: `found index ${snapshot.foundIndex}`,
+      detail: seqValue(snapshot.result),
+      tone: 'success',
+    });
+  } else if (snapshot.found === false) {
+    changes.push({
+      label: 'search',
+      after: 'not found',
+      detail: `${snapshot.checked?.length ?? 0} checked`,
+      tone: 'warning',
+    });
+  }
+  if (changes.length === 0) {
+    changes.push({
+      label: 'length / capacity',
+      after: `${snapshot.length} / ${snapshot.capacity}`,
+      tone: 'neutral',
+    });
+  }
+  if (snapshot.phase === 'intermediate') {
+    changes.push({
+      label: tx(lang, '中间帧', 'intermediate frame'),
+      after: tx(lang, '真实赋值尚未完成', 'the recorded assignment is not finished'),
+      tone: 'warning',
+    });
+  }
+
+  const memory = hasStep && lesson
+    ? lesson.steps.find((step) => step.stepId === currentEvent.lessonStepId)?.tip?.[lang] ?? null
+    : null;
+  return {
+    semantic: true,
+    action,
+    why: firstSentence(why),
+    changes,
+    memory: memory ? firstSentence(memory, 140) : null,
+  };
+}
+
+/**
  * Build the compact, frame-synchronised insight for the right rail.
  *
  * `lesson` may be undefined (algorithm without a course); `currentEvent` may be
@@ -2327,6 +2608,8 @@ export function buildFrameInsight(
       case 'doubly-linked-list':
       case 'circular-linked-list':
         return advancedLinkedInsight(structure, lang, hasStep, lesson, currentEvent, previousEvent);
+      case 'sequential-list':
+        return sequentialListInsight(structure, lang, hasStep, lesson, currentEvent, previousEvent);
       default:
         break;
     }

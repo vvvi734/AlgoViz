@@ -1,0 +1,7098 @@
+{
+  "access-middle": [
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          10,
+          20,
+          30,
+          40,
+          50
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "初始化：capacity 是物理槽位数，length 是有效元素数 / init: capacity vs length",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          10,
+          20,
+          30,
+          40,
+          50,
+          null,
+          null,
+          null
+        ],
+        "length": 5,
+        "capacity": 8,
+        "index": 2,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "init",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "init",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 8,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": 10
+          },
+          {
+            "index": 1,
+            "value": 20
+          },
+          {
+            "index": 2,
+            "value": 30
+          },
+          {
+            "index": 3,
+            "value": 40
+          },
+          {
+            "index": 4,
+            "value": 50
+          },
+          {
+            "index": 5,
+            "value": null
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "access-middle",
+        "focusIndex": 0
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          10,
+          20,
+          30,
+          40,
+          50
+        ],
+        "focus": [
+          2
+        ]
+      },
+      "message": "检查索引：0 <= index < length / bounds check",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          10,
+          20,
+          30,
+          40,
+          50,
+          null,
+          null,
+          null
+        ],
+        "length": 5,
+        "capacity": 8,
+        "index": 2,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "access",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "access",
+        "action": "check",
+        "phase": "intermediate",
+        "capacity": 8,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": 10
+          },
+          {
+            "index": 1,
+            "value": 20
+          },
+          {
+            "index": 2,
+            "value": 30
+          },
+          {
+            "index": 3,
+            "value": 40
+          },
+          {
+            "index": 4,
+            "value": 50
+          },
+          {
+            "index": 5,
+            "value": null
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "access-middle",
+        "focusIndex": 2,
+        "requestedIndex": 2
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          10,
+          20,
+          30,
+          40,
+          50
+        ],
+        "focus": [
+          2
+        ]
+      },
+      "message": "直接定位 data[index]，随机访问 O(1) / direct slot read is O(1)",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          10,
+          20,
+          30,
+          40,
+          50,
+          null,
+          null,
+          null
+        ],
+        "length": 5,
+        "capacity": 8,
+        "index": 2,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "access",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "access",
+        "action": "read",
+        "phase": "complete",
+        "capacity": 8,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": 10
+          },
+          {
+            "index": 1,
+            "value": 20
+          },
+          {
+            "index": 2,
+            "value": 30
+          },
+          {
+            "index": 3,
+            "value": 40
+          },
+          {
+            "index": 4,
+            "value": 50
+          },
+          {
+            "index": 5,
+            "value": null
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "access-middle",
+        "focusIndex": 2,
+        "requestedIndex": 2,
+        "found": true,
+        "foundIndex": 2,
+        "result": 30
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          10,
+          20,
+          30,
+          40,
+          50
+        ],
+        "focus": []
+      },
+      "message": "操作完成，最终槽位与真实数组一致 / done: final slots match the real array",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          10,
+          20,
+          30,
+          40,
+          50,
+          null,
+          null,
+          null
+        ],
+        "length": 5,
+        "capacity": 8,
+        "index": 2,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "done",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "done",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 8,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": 10
+          },
+          {
+            "index": 1,
+            "value": 20
+          },
+          {
+            "index": 2,
+            "value": 30
+          },
+          {
+            "index": 3,
+            "value": 40
+          },
+          {
+            "index": 4,
+            "value": 50
+          },
+          {
+            "index": 5,
+            "value": null
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "access-middle"
+      },
+      "extra": {}
+    }
+  ],
+  "access-out": [
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          10,
+          20,
+          30,
+          40,
+          50
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "初始化：capacity 是物理槽位数，length 是有效元素数 / init: capacity vs length",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          10,
+          20,
+          30,
+          40,
+          50,
+          null,
+          null,
+          null
+        ],
+        "length": 5,
+        "capacity": 8,
+        "index": 9,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "init",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "init",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 8,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": 10
+          },
+          {
+            "index": 1,
+            "value": 20
+          },
+          {
+            "index": 2,
+            "value": 30
+          },
+          {
+            "index": 3,
+            "value": 40
+          },
+          {
+            "index": 4,
+            "value": 50
+          },
+          {
+            "index": 5,
+            "value": null
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "access-out",
+        "focusIndex": 0
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          10,
+          20,
+          30,
+          40,
+          50
+        ],
+        "focus": []
+      },
+      "message": "索引越界：无法读取空闲区或容量外槽位 / invalid index",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          10,
+          20,
+          30,
+          40,
+          50,
+          null,
+          null,
+          null
+        ],
+        "length": 5,
+        "capacity": 8,
+        "index": 9,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "access",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "access",
+        "action": "reject",
+        "phase": "complete",
+        "capacity": 8,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": 10
+          },
+          {
+            "index": 1,
+            "value": 20
+          },
+          {
+            "index": 2,
+            "value": 30
+          },
+          {
+            "index": 3,
+            "value": 40
+          },
+          {
+            "index": 4,
+            "value": 50
+          },
+          {
+            "index": 5,
+            "value": null
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "access-out",
+        "requestedIndex": 9,
+        "error": "index-out-of-range"
+      },
+      "extra": {}
+    }
+  ],
+  "search-hit": [
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          10,
+          20,
+          30,
+          40,
+          50
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "初始化：capacity 是物理槽位数，length 是有效元素数 / init: capacity vs length",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          10,
+          20,
+          30,
+          40,
+          50,
+          null,
+          null,
+          null
+        ],
+        "length": 5,
+        "capacity": 8,
+        "index": 5,
+        "checked": [],
+        "value": 0,
+        "target": 30
+      },
+      "lessonStepId": "init",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "init",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 8,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": 10
+          },
+          {
+            "index": 1,
+            "value": 20
+          },
+          {
+            "index": 2,
+            "value": 30
+          },
+          {
+            "index": 3,
+            "value": 40
+          },
+          {
+            "index": 4,
+            "value": 50
+          },
+          {
+            "index": 5,
+            "value": null
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "search-hit",
+        "focusIndex": 0
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          10,
+          20,
+          30,
+          40,
+          50
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "比较 data[i] 与目标值 / compare data[i] with target",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          10,
+          20,
+          30,
+          40,
+          50,
+          null,
+          null,
+          null
+        ],
+        "length": 5,
+        "capacity": 8,
+        "index": 5,
+        "checked": [],
+        "value": 0,
+        "target": 30
+      },
+      "lessonStepId": "search",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "search",
+        "action": "compare",
+        "phase": "intermediate",
+        "capacity": 8,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": 10
+          },
+          {
+            "index": 1,
+            "value": 20
+          },
+          {
+            "index": 2,
+            "value": 30
+          },
+          {
+            "index": 3,
+            "value": 40
+          },
+          {
+            "index": 4,
+            "value": 50
+          },
+          {
+            "index": 5,
+            "value": null
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "search-hit",
+        "focusIndex": 0,
+        "checked": [],
+        "searchValue": 30
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          10,
+          20,
+          30,
+          40,
+          50
+        ],
+        "focus": [
+          1
+        ]
+      },
+      "message": "比较 data[i] 与目标值 / compare data[i] with target",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          10,
+          20,
+          30,
+          40,
+          50,
+          null,
+          null,
+          null
+        ],
+        "length": 5,
+        "capacity": 8,
+        "index": 5,
+        "checked": [
+          0
+        ],
+        "value": 0,
+        "target": 30
+      },
+      "lessonStepId": "search",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "search",
+        "action": "compare",
+        "phase": "intermediate",
+        "capacity": 8,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": 10
+          },
+          {
+            "index": 1,
+            "value": 20
+          },
+          {
+            "index": 2,
+            "value": 30
+          },
+          {
+            "index": 3,
+            "value": 40
+          },
+          {
+            "index": 4,
+            "value": 50
+          },
+          {
+            "index": 5,
+            "value": null
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "search-hit",
+        "focusIndex": 1,
+        "checked": [
+          0
+        ],
+        "searchValue": 30
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          10,
+          20,
+          30,
+          40,
+          50
+        ],
+        "focus": [
+          2
+        ]
+      },
+      "message": "比较 data[i] 与目标值 / compare data[i] with target",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          10,
+          20,
+          30,
+          40,
+          50,
+          null,
+          null,
+          null
+        ],
+        "length": 5,
+        "capacity": 8,
+        "index": 5,
+        "checked": [
+          0,
+          1
+        ],
+        "value": 0,
+        "target": 30
+      },
+      "lessonStepId": "search",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "search",
+        "action": "compare",
+        "phase": "intermediate",
+        "capacity": 8,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": 10
+          },
+          {
+            "index": 1,
+            "value": 20
+          },
+          {
+            "index": 2,
+            "value": 30
+          },
+          {
+            "index": 3,
+            "value": 40
+          },
+          {
+            "index": 4,
+            "value": 50
+          },
+          {
+            "index": 5,
+            "value": null
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "search-hit",
+        "focusIndex": 2,
+        "checked": [
+          0,
+          1
+        ],
+        "searchValue": 30
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          10,
+          20,
+          30,
+          40,
+          50
+        ],
+        "focus": [
+          2
+        ]
+      },
+      "message": "查找成功：目标值位于该索引 / found at this index",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          10,
+          20,
+          30,
+          40,
+          50,
+          null,
+          null,
+          null
+        ],
+        "length": 5,
+        "capacity": 8,
+        "index": 5,
+        "checked": [
+          0,
+          1
+        ],
+        "value": 0,
+        "target": 30
+      },
+      "lessonStepId": "search",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "search",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 8,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": 10
+          },
+          {
+            "index": 1,
+            "value": 20
+          },
+          {
+            "index": 2,
+            "value": 30
+          },
+          {
+            "index": 3,
+            "value": 40
+          },
+          {
+            "index": 4,
+            "value": 50
+          },
+          {
+            "index": 5,
+            "value": null
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "search-hit",
+        "focusIndex": 2,
+        "checked": [
+          0,
+          1
+        ],
+        "searchValue": 30,
+        "found": true,
+        "foundIndex": 2,
+        "result": 30
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          10,
+          20,
+          30,
+          40,
+          50
+        ],
+        "focus": []
+      },
+      "message": "操作完成，最终槽位与真实数组一致 / done: final slots match the real array",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          10,
+          20,
+          30,
+          40,
+          50,
+          null,
+          null,
+          null
+        ],
+        "length": 5,
+        "capacity": 8,
+        "index": 5,
+        "checked": [
+          0,
+          1
+        ],
+        "value": 0,
+        "target": 30
+      },
+      "lessonStepId": "done",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "done",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 8,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": 10
+          },
+          {
+            "index": 1,
+            "value": 20
+          },
+          {
+            "index": 2,
+            "value": 30
+          },
+          {
+            "index": 3,
+            "value": 40
+          },
+          {
+            "index": 4,
+            "value": 50
+          },
+          {
+            "index": 5,
+            "value": null
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "search-hit"
+      },
+      "extra": {}
+    }
+  ],
+  "search-miss": [
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          10,
+          20,
+          30,
+          40,
+          50
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "初始化：capacity 是物理槽位数，length 是有效元素数 / init: capacity vs length",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          10,
+          20,
+          30,
+          40,
+          50,
+          null,
+          null,
+          null
+        ],
+        "length": 5,
+        "capacity": 8,
+        "index": 5,
+        "checked": [],
+        "value": 0,
+        "target": 99
+      },
+      "lessonStepId": "init",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "init",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 8,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": 10
+          },
+          {
+            "index": 1,
+            "value": 20
+          },
+          {
+            "index": 2,
+            "value": 30
+          },
+          {
+            "index": 3,
+            "value": 40
+          },
+          {
+            "index": 4,
+            "value": 50
+          },
+          {
+            "index": 5,
+            "value": null
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "search-miss",
+        "focusIndex": 0
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          10,
+          20,
+          30,
+          40,
+          50
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "比较 data[i] 与目标值 / compare data[i] with target",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          10,
+          20,
+          30,
+          40,
+          50,
+          null,
+          null,
+          null
+        ],
+        "length": 5,
+        "capacity": 8,
+        "index": 5,
+        "checked": [],
+        "value": 0,
+        "target": 99
+      },
+      "lessonStepId": "search",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "search",
+        "action": "compare",
+        "phase": "intermediate",
+        "capacity": 8,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": 10
+          },
+          {
+            "index": 1,
+            "value": 20
+          },
+          {
+            "index": 2,
+            "value": 30
+          },
+          {
+            "index": 3,
+            "value": 40
+          },
+          {
+            "index": 4,
+            "value": 50
+          },
+          {
+            "index": 5,
+            "value": null
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "search-miss",
+        "focusIndex": 0,
+        "checked": [],
+        "searchValue": 99
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          10,
+          20,
+          30,
+          40,
+          50
+        ],
+        "focus": [
+          1
+        ]
+      },
+      "message": "比较 data[i] 与目标值 / compare data[i] with target",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          10,
+          20,
+          30,
+          40,
+          50,
+          null,
+          null,
+          null
+        ],
+        "length": 5,
+        "capacity": 8,
+        "index": 5,
+        "checked": [
+          0
+        ],
+        "value": 0,
+        "target": 99
+      },
+      "lessonStepId": "search",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "search",
+        "action": "compare",
+        "phase": "intermediate",
+        "capacity": 8,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": 10
+          },
+          {
+            "index": 1,
+            "value": 20
+          },
+          {
+            "index": 2,
+            "value": 30
+          },
+          {
+            "index": 3,
+            "value": 40
+          },
+          {
+            "index": 4,
+            "value": 50
+          },
+          {
+            "index": 5,
+            "value": null
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "search-miss",
+        "focusIndex": 1,
+        "checked": [
+          0
+        ],
+        "searchValue": 99
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          10,
+          20,
+          30,
+          40,
+          50
+        ],
+        "focus": [
+          2
+        ]
+      },
+      "message": "比较 data[i] 与目标值 / compare data[i] with target",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          10,
+          20,
+          30,
+          40,
+          50,
+          null,
+          null,
+          null
+        ],
+        "length": 5,
+        "capacity": 8,
+        "index": 5,
+        "checked": [
+          0,
+          1
+        ],
+        "value": 0,
+        "target": 99
+      },
+      "lessonStepId": "search",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "search",
+        "action": "compare",
+        "phase": "intermediate",
+        "capacity": 8,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": 10
+          },
+          {
+            "index": 1,
+            "value": 20
+          },
+          {
+            "index": 2,
+            "value": 30
+          },
+          {
+            "index": 3,
+            "value": 40
+          },
+          {
+            "index": 4,
+            "value": 50
+          },
+          {
+            "index": 5,
+            "value": null
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "search-miss",
+        "focusIndex": 2,
+        "checked": [
+          0,
+          1
+        ],
+        "searchValue": 99
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          10,
+          20,
+          30,
+          40,
+          50
+        ],
+        "focus": [
+          3
+        ]
+      },
+      "message": "比较 data[i] 与目标值 / compare data[i] with target",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          10,
+          20,
+          30,
+          40,
+          50,
+          null,
+          null,
+          null
+        ],
+        "length": 5,
+        "capacity": 8,
+        "index": 5,
+        "checked": [
+          0,
+          1,
+          2
+        ],
+        "value": 0,
+        "target": 99
+      },
+      "lessonStepId": "search",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "search",
+        "action": "compare",
+        "phase": "intermediate",
+        "capacity": 8,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": 10
+          },
+          {
+            "index": 1,
+            "value": 20
+          },
+          {
+            "index": 2,
+            "value": 30
+          },
+          {
+            "index": 3,
+            "value": 40
+          },
+          {
+            "index": 4,
+            "value": 50
+          },
+          {
+            "index": 5,
+            "value": null
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "search-miss",
+        "focusIndex": 3,
+        "checked": [
+          0,
+          1,
+          2
+        ],
+        "searchValue": 99
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          10,
+          20,
+          30,
+          40,
+          50
+        ],
+        "focus": [
+          4
+        ]
+      },
+      "message": "比较 data[i] 与目标值 / compare data[i] with target",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          10,
+          20,
+          30,
+          40,
+          50,
+          null,
+          null,
+          null
+        ],
+        "length": 5,
+        "capacity": 8,
+        "index": 5,
+        "checked": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "value": 0,
+        "target": 99
+      },
+      "lessonStepId": "search",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "search",
+        "action": "compare",
+        "phase": "intermediate",
+        "capacity": 8,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": 10
+          },
+          {
+            "index": 1,
+            "value": 20
+          },
+          {
+            "index": 2,
+            "value": 30
+          },
+          {
+            "index": 3,
+            "value": 40
+          },
+          {
+            "index": 4,
+            "value": 50
+          },
+          {
+            "index": 5,
+            "value": null
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "search-miss",
+        "focusIndex": 4,
+        "checked": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "searchValue": 99
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          10,
+          20,
+          30,
+          40,
+          50
+        ],
+        "focus": []
+      },
+      "message": "查找失败：已检查全部有效元素 / not found after scanning the live prefix",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          10,
+          20,
+          30,
+          40,
+          50,
+          null,
+          null,
+          null
+        ],
+        "length": 5,
+        "capacity": 8,
+        "index": 5,
+        "checked": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "value": 0,
+        "target": 99
+      },
+      "lessonStepId": "search",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "search",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 8,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": 10
+          },
+          {
+            "index": 1,
+            "value": 20
+          },
+          {
+            "index": 2,
+            "value": 30
+          },
+          {
+            "index": 3,
+            "value": 40
+          },
+          {
+            "index": 4,
+            "value": 50
+          },
+          {
+            "index": 5,
+            "value": null
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "search-miss",
+        "checked": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "searchValue": 99,
+        "found": false
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          10,
+          20,
+          30,
+          40,
+          50
+        ],
+        "focus": []
+      },
+      "message": "操作完成，最终槽位与真实数组一致 / done: final slots match the real array",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          10,
+          20,
+          30,
+          40,
+          50,
+          null,
+          null,
+          null
+        ],
+        "length": 5,
+        "capacity": 8,
+        "index": 5,
+        "checked": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "value": 0,
+        "target": 99
+      },
+      "lessonStepId": "done",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "done",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 8,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": 10
+          },
+          {
+            "index": 1,
+            "value": 20
+          },
+          {
+            "index": 2,
+            "value": 30
+          },
+          {
+            "index": 3,
+            "value": 40
+          },
+          {
+            "index": 4,
+            "value": 50
+          },
+          {
+            "index": 5,
+            "value": null
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "search-miss"
+      },
+      "extra": {}
+    }
+  ],
+  "insert-middle": [
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          10,
+          20,
+          30,
+          40,
+          50
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "初始化：capacity 是物理槽位数，length 是有效元素数 / init: capacity vs length",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          10,
+          20,
+          30,
+          40,
+          50,
+          null,
+          null,
+          null
+        ],
+        "length": 5,
+        "capacity": 8,
+        "index": 2,
+        "checked": [],
+        "value": 25,
+        "target": 0
+      },
+      "lessonStepId": "init",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "init",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 8,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": 10
+          },
+          {
+            "index": 1,
+            "value": 20
+          },
+          {
+            "index": 2,
+            "value": 30
+          },
+          {
+            "index": 3,
+            "value": 40
+          },
+          {
+            "index": 4,
+            "value": 50
+          },
+          {
+            "index": 5,
+            "value": null
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "insert-middle",
+        "focusIndex": 0
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          10,
+          20,
+          30,
+          40,
+          50
+        ],
+        "focus": [
+          2
+        ]
+      },
+      "message": "检查索引与剩余容量 / check index and free capacity",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          10,
+          20,
+          30,
+          40,
+          50,
+          null,
+          null,
+          null
+        ],
+        "length": 5,
+        "capacity": 8,
+        "index": 2,
+        "checked": [],
+        "value": 25,
+        "target": 0
+      },
+      "lessonStepId": "insert",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "insert",
+        "action": "check",
+        "phase": "intermediate",
+        "capacity": 8,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": 10
+          },
+          {
+            "index": 1,
+            "value": 20
+          },
+          {
+            "index": 2,
+            "value": 30
+          },
+          {
+            "index": 3,
+            "value": 40
+          },
+          {
+            "index": 4,
+            "value": 50
+          },
+          {
+            "index": 5,
+            "value": null
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "insert-middle",
+        "focusIndex": 2,
+        "requestedIndex": 2
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          10,
+          20,
+          30,
+          40,
+          50
+        ],
+        "focus": []
+      },
+      "message": "从后向前搬移：data[5] = data[4] / shift right",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          10,
+          20,
+          30,
+          40,
+          50,
+          50,
+          null,
+          null
+        ],
+        "length": 5,
+        "capacity": 8,
+        "index": 2,
+        "checked": [],
+        "value": 25,
+        "target": 0
+      },
+      "lessonStepId": "insert",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "insert",
+        "action": "shift-right",
+        "phase": "intermediate",
+        "capacity": 8,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": 10
+          },
+          {
+            "index": 1,
+            "value": 20
+          },
+          {
+            "index": 2,
+            "value": 30
+          },
+          {
+            "index": 3,
+            "value": 40
+          },
+          {
+            "index": 4,
+            "value": 50
+          },
+          {
+            "index": 5,
+            "value": 50
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "insert-middle",
+        "focusIndex": 5,
+        "sourceIndex": 4,
+        "targetIndex": 5,
+        "requestedIndex": 2,
+        "change": {
+          "index": 5,
+          "before": null,
+          "after": 50
+        }
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          10,
+          20,
+          30,
+          40,
+          40
+        ],
+        "focus": [
+          4
+        ]
+      },
+      "message": "从后向前搬移：data[4] = data[3] / shift right",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          10,
+          20,
+          30,
+          40,
+          40,
+          50,
+          null,
+          null
+        ],
+        "length": 5,
+        "capacity": 8,
+        "index": 2,
+        "checked": [],
+        "value": 25,
+        "target": 0
+      },
+      "lessonStepId": "insert",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "insert",
+        "action": "shift-right",
+        "phase": "intermediate",
+        "capacity": 8,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": 10
+          },
+          {
+            "index": 1,
+            "value": 20
+          },
+          {
+            "index": 2,
+            "value": 30
+          },
+          {
+            "index": 3,
+            "value": 40
+          },
+          {
+            "index": 4,
+            "value": 40
+          },
+          {
+            "index": 5,
+            "value": 50
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "insert-middle",
+        "focusIndex": 4,
+        "sourceIndex": 3,
+        "targetIndex": 4,
+        "requestedIndex": 2,
+        "change": {
+          "index": 4,
+          "before": 50,
+          "after": 40
+        }
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          10,
+          20,
+          30,
+          30,
+          40
+        ],
+        "focus": [
+          3
+        ]
+      },
+      "message": "从后向前搬移：data[3] = data[2] / shift right",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          10,
+          20,
+          30,
+          30,
+          40,
+          50,
+          null,
+          null
+        ],
+        "length": 5,
+        "capacity": 8,
+        "index": 2,
+        "checked": [],
+        "value": 25,
+        "target": 0
+      },
+      "lessonStepId": "insert",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "insert",
+        "action": "shift-right",
+        "phase": "intermediate",
+        "capacity": 8,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": 10
+          },
+          {
+            "index": 1,
+            "value": 20
+          },
+          {
+            "index": 2,
+            "value": 30
+          },
+          {
+            "index": 3,
+            "value": 30
+          },
+          {
+            "index": 4,
+            "value": 40
+          },
+          {
+            "index": 5,
+            "value": 50
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "insert-middle",
+        "focusIndex": 3,
+        "sourceIndex": 2,
+        "targetIndex": 3,
+        "requestedIndex": 2,
+        "change": {
+          "index": 3,
+          "before": 40,
+          "after": 30
+        }
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          10,
+          20,
+          25,
+          30,
+          40
+        ],
+        "focus": [
+          2
+        ]
+      },
+      "message": "写入新元素到保留槽位 / write the new value into the reserved slot",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          10,
+          20,
+          25,
+          30,
+          40,
+          50,
+          null,
+          null
+        ],
+        "length": 5,
+        "capacity": 8,
+        "index": 2,
+        "checked": [],
+        "value": 25,
+        "target": 0
+      },
+      "lessonStepId": "insert",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "insert",
+        "action": "write",
+        "phase": "intermediate",
+        "capacity": 8,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": 10
+          },
+          {
+            "index": 1,
+            "value": 20
+          },
+          {
+            "index": 2,
+            "value": 25
+          },
+          {
+            "index": 3,
+            "value": 30
+          },
+          {
+            "index": 4,
+            "value": 40
+          },
+          {
+            "index": 5,
+            "value": 50
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "insert-middle",
+        "focusIndex": 2,
+        "targetIndex": 2,
+        "requestedIndex": 2,
+        "change": {
+          "index": 2,
+          "before": 30,
+          "after": 25
+        }
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          10,
+          20,
+          25,
+          30,
+          40,
+          50
+        ],
+        "focus": [
+          2
+        ]
+      },
+      "message": "length 更新为 6，插入完成 / insertion complete",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          10,
+          20,
+          25,
+          30,
+          40,
+          50,
+          null,
+          null
+        ],
+        "length": 6,
+        "capacity": 8,
+        "index": 2,
+        "checked": [],
+        "value": 25,
+        "target": 0
+      },
+      "lessonStepId": "insert",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "insert",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 8,
+        "length": 6,
+        "slots": [
+          {
+            "index": 0,
+            "value": 10
+          },
+          {
+            "index": 1,
+            "value": 20
+          },
+          {
+            "index": 2,
+            "value": 25
+          },
+          {
+            "index": 3,
+            "value": 30
+          },
+          {
+            "index": 4,
+            "value": 40
+          },
+          {
+            "index": 5,
+            "value": 50
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "insert-middle",
+        "focusIndex": 2,
+        "requestedIndex": 2
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          10,
+          20,
+          25,
+          30,
+          40,
+          50
+        ],
+        "focus": []
+      },
+      "message": "操作完成，最终槽位与真实数组一致 / done: final slots match the real array",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          10,
+          20,
+          25,
+          30,
+          40,
+          50,
+          null,
+          null
+        ],
+        "length": 6,
+        "capacity": 8,
+        "index": 2,
+        "checked": [],
+        "value": 25,
+        "target": 0
+      },
+      "lessonStepId": "done",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "done",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 8,
+        "length": 6,
+        "slots": [
+          {
+            "index": 0,
+            "value": 10
+          },
+          {
+            "index": 1,
+            "value": 20
+          },
+          {
+            "index": 2,
+            "value": 25
+          },
+          {
+            "index": 3,
+            "value": 30
+          },
+          {
+            "index": 4,
+            "value": 40
+          },
+          {
+            "index": 5,
+            "value": 50
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "insert-middle"
+      },
+      "extra": {}
+    }
+  ],
+  "insert-head": [
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          10,
+          20,
+          30,
+          40,
+          50
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "初始化：capacity 是物理槽位数，length 是有效元素数 / init: capacity vs length",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          10,
+          20,
+          30,
+          40,
+          50,
+          null,
+          null,
+          null
+        ],
+        "length": 5,
+        "capacity": 8,
+        "index": 0,
+        "checked": [],
+        "value": 5,
+        "target": 0
+      },
+      "lessonStepId": "init",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "init",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 8,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": 10
+          },
+          {
+            "index": 1,
+            "value": 20
+          },
+          {
+            "index": 2,
+            "value": 30
+          },
+          {
+            "index": 3,
+            "value": 40
+          },
+          {
+            "index": 4,
+            "value": 50
+          },
+          {
+            "index": 5,
+            "value": null
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "insert-head",
+        "focusIndex": 0
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          10,
+          20,
+          30,
+          40,
+          50
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "检查索引与剩余容量 / check index and free capacity",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          10,
+          20,
+          30,
+          40,
+          50,
+          null,
+          null,
+          null
+        ],
+        "length": 5,
+        "capacity": 8,
+        "index": 0,
+        "checked": [],
+        "value": 5,
+        "target": 0
+      },
+      "lessonStepId": "insert",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "insert",
+        "action": "check",
+        "phase": "intermediate",
+        "capacity": 8,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": 10
+          },
+          {
+            "index": 1,
+            "value": 20
+          },
+          {
+            "index": 2,
+            "value": 30
+          },
+          {
+            "index": 3,
+            "value": 40
+          },
+          {
+            "index": 4,
+            "value": 50
+          },
+          {
+            "index": 5,
+            "value": null
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "insert-head",
+        "focusIndex": 0,
+        "requestedIndex": 0
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          10,
+          20,
+          30,
+          40,
+          50
+        ],
+        "focus": []
+      },
+      "message": "从后向前搬移：data[5] = data[4] / shift right",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          10,
+          20,
+          30,
+          40,
+          50,
+          50,
+          null,
+          null
+        ],
+        "length": 5,
+        "capacity": 8,
+        "index": 0,
+        "checked": [],
+        "value": 5,
+        "target": 0
+      },
+      "lessonStepId": "insert",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "insert",
+        "action": "shift-right",
+        "phase": "intermediate",
+        "capacity": 8,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": 10
+          },
+          {
+            "index": 1,
+            "value": 20
+          },
+          {
+            "index": 2,
+            "value": 30
+          },
+          {
+            "index": 3,
+            "value": 40
+          },
+          {
+            "index": 4,
+            "value": 50
+          },
+          {
+            "index": 5,
+            "value": 50
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "insert-head",
+        "focusIndex": 5,
+        "sourceIndex": 4,
+        "targetIndex": 5,
+        "requestedIndex": 0,
+        "change": {
+          "index": 5,
+          "before": null,
+          "after": 50
+        }
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          10,
+          20,
+          30,
+          40,
+          40
+        ],
+        "focus": [
+          4
+        ]
+      },
+      "message": "从后向前搬移：data[4] = data[3] / shift right",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          10,
+          20,
+          30,
+          40,
+          40,
+          50,
+          null,
+          null
+        ],
+        "length": 5,
+        "capacity": 8,
+        "index": 0,
+        "checked": [],
+        "value": 5,
+        "target": 0
+      },
+      "lessonStepId": "insert",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "insert",
+        "action": "shift-right",
+        "phase": "intermediate",
+        "capacity": 8,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": 10
+          },
+          {
+            "index": 1,
+            "value": 20
+          },
+          {
+            "index": 2,
+            "value": 30
+          },
+          {
+            "index": 3,
+            "value": 40
+          },
+          {
+            "index": 4,
+            "value": 40
+          },
+          {
+            "index": 5,
+            "value": 50
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "insert-head",
+        "focusIndex": 4,
+        "sourceIndex": 3,
+        "targetIndex": 4,
+        "requestedIndex": 0,
+        "change": {
+          "index": 4,
+          "before": 50,
+          "after": 40
+        }
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          10,
+          20,
+          30,
+          30,
+          40
+        ],
+        "focus": [
+          3
+        ]
+      },
+      "message": "从后向前搬移：data[3] = data[2] / shift right",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          10,
+          20,
+          30,
+          30,
+          40,
+          50,
+          null,
+          null
+        ],
+        "length": 5,
+        "capacity": 8,
+        "index": 0,
+        "checked": [],
+        "value": 5,
+        "target": 0
+      },
+      "lessonStepId": "insert",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "insert",
+        "action": "shift-right",
+        "phase": "intermediate",
+        "capacity": 8,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": 10
+          },
+          {
+            "index": 1,
+            "value": 20
+          },
+          {
+            "index": 2,
+            "value": 30
+          },
+          {
+            "index": 3,
+            "value": 30
+          },
+          {
+            "index": 4,
+            "value": 40
+          },
+          {
+            "index": 5,
+            "value": 50
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "insert-head",
+        "focusIndex": 3,
+        "sourceIndex": 2,
+        "targetIndex": 3,
+        "requestedIndex": 0,
+        "change": {
+          "index": 3,
+          "before": 40,
+          "after": 30
+        }
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          10,
+          20,
+          20,
+          30,
+          40
+        ],
+        "focus": [
+          2
+        ]
+      },
+      "message": "从后向前搬移：data[2] = data[1] / shift right",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          10,
+          20,
+          20,
+          30,
+          40,
+          50,
+          null,
+          null
+        ],
+        "length": 5,
+        "capacity": 8,
+        "index": 0,
+        "checked": [],
+        "value": 5,
+        "target": 0
+      },
+      "lessonStepId": "insert",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "insert",
+        "action": "shift-right",
+        "phase": "intermediate",
+        "capacity": 8,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": 10
+          },
+          {
+            "index": 1,
+            "value": 20
+          },
+          {
+            "index": 2,
+            "value": 20
+          },
+          {
+            "index": 3,
+            "value": 30
+          },
+          {
+            "index": 4,
+            "value": 40
+          },
+          {
+            "index": 5,
+            "value": 50
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "insert-head",
+        "focusIndex": 2,
+        "sourceIndex": 1,
+        "targetIndex": 2,
+        "requestedIndex": 0,
+        "change": {
+          "index": 2,
+          "before": 30,
+          "after": 20
+        }
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          10,
+          10,
+          20,
+          30,
+          40
+        ],
+        "focus": [
+          1
+        ]
+      },
+      "message": "从后向前搬移：data[1] = data[0] / shift right",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          10,
+          10,
+          20,
+          30,
+          40,
+          50,
+          null,
+          null
+        ],
+        "length": 5,
+        "capacity": 8,
+        "index": 0,
+        "checked": [],
+        "value": 5,
+        "target": 0
+      },
+      "lessonStepId": "insert",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "insert",
+        "action": "shift-right",
+        "phase": "intermediate",
+        "capacity": 8,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": 10
+          },
+          {
+            "index": 1,
+            "value": 10
+          },
+          {
+            "index": 2,
+            "value": 20
+          },
+          {
+            "index": 3,
+            "value": 30
+          },
+          {
+            "index": 4,
+            "value": 40
+          },
+          {
+            "index": 5,
+            "value": 50
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "insert-head",
+        "focusIndex": 1,
+        "sourceIndex": 0,
+        "targetIndex": 1,
+        "requestedIndex": 0,
+        "change": {
+          "index": 1,
+          "before": 20,
+          "after": 10
+        }
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          5,
+          10,
+          20,
+          30,
+          40
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "写入新元素到保留槽位 / write the new value into the reserved slot",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          5,
+          10,
+          20,
+          30,
+          40,
+          50,
+          null,
+          null
+        ],
+        "length": 5,
+        "capacity": 8,
+        "index": 0,
+        "checked": [],
+        "value": 5,
+        "target": 0
+      },
+      "lessonStepId": "insert",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "insert",
+        "action": "write",
+        "phase": "intermediate",
+        "capacity": 8,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": 5
+          },
+          {
+            "index": 1,
+            "value": 10
+          },
+          {
+            "index": 2,
+            "value": 20
+          },
+          {
+            "index": 3,
+            "value": 30
+          },
+          {
+            "index": 4,
+            "value": 40
+          },
+          {
+            "index": 5,
+            "value": 50
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "insert-head",
+        "focusIndex": 0,
+        "targetIndex": 0,
+        "requestedIndex": 0,
+        "change": {
+          "index": 0,
+          "before": 10,
+          "after": 5
+        }
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          5,
+          10,
+          20,
+          30,
+          40,
+          50
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "length 更新为 6，插入完成 / insertion complete",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          5,
+          10,
+          20,
+          30,
+          40,
+          50,
+          null,
+          null
+        ],
+        "length": 6,
+        "capacity": 8,
+        "index": 0,
+        "checked": [],
+        "value": 5,
+        "target": 0
+      },
+      "lessonStepId": "insert",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "insert",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 8,
+        "length": 6,
+        "slots": [
+          {
+            "index": 0,
+            "value": 5
+          },
+          {
+            "index": 1,
+            "value": 10
+          },
+          {
+            "index": 2,
+            "value": 20
+          },
+          {
+            "index": 3,
+            "value": 30
+          },
+          {
+            "index": 4,
+            "value": 40
+          },
+          {
+            "index": 5,
+            "value": 50
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "insert-head",
+        "focusIndex": 0,
+        "requestedIndex": 0
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          5,
+          10,
+          20,
+          30,
+          40,
+          50
+        ],
+        "focus": []
+      },
+      "message": "操作完成，最终槽位与真实数组一致 / done: final slots match the real array",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          5,
+          10,
+          20,
+          30,
+          40,
+          50,
+          null,
+          null
+        ],
+        "length": 6,
+        "capacity": 8,
+        "index": 0,
+        "checked": [],
+        "value": 5,
+        "target": 0
+      },
+      "lessonStepId": "done",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "done",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 8,
+        "length": 6,
+        "slots": [
+          {
+            "index": 0,
+            "value": 5
+          },
+          {
+            "index": 1,
+            "value": 10
+          },
+          {
+            "index": 2,
+            "value": 20
+          },
+          {
+            "index": 3,
+            "value": 30
+          },
+          {
+            "index": 4,
+            "value": 40
+          },
+          {
+            "index": 5,
+            "value": 50
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "insert-head"
+      },
+      "extra": {}
+    }
+  ],
+  "insert-tail": [
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          10,
+          20,
+          30,
+          40,
+          50
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "初始化：capacity 是物理槽位数，length 是有效元素数 / init: capacity vs length",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          10,
+          20,
+          30,
+          40,
+          50,
+          null,
+          null,
+          null
+        ],
+        "length": 5,
+        "capacity": 8,
+        "index": 5,
+        "checked": [],
+        "value": 60,
+        "target": 0
+      },
+      "lessonStepId": "init",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "init",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 8,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": 10
+          },
+          {
+            "index": 1,
+            "value": 20
+          },
+          {
+            "index": 2,
+            "value": 30
+          },
+          {
+            "index": 3,
+            "value": 40
+          },
+          {
+            "index": 4,
+            "value": 50
+          },
+          {
+            "index": 5,
+            "value": null
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "insert-tail",
+        "focusIndex": 0
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          10,
+          20,
+          30,
+          40,
+          50
+        ],
+        "focus": []
+      },
+      "message": "检查索引与剩余容量 / check index and free capacity",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          10,
+          20,
+          30,
+          40,
+          50,
+          null,
+          null,
+          null
+        ],
+        "length": 5,
+        "capacity": 8,
+        "index": 5,
+        "checked": [],
+        "value": 60,
+        "target": 0
+      },
+      "lessonStepId": "insert",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "insert",
+        "action": "check",
+        "phase": "intermediate",
+        "capacity": 8,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": 10
+          },
+          {
+            "index": 1,
+            "value": 20
+          },
+          {
+            "index": 2,
+            "value": 30
+          },
+          {
+            "index": 3,
+            "value": 40
+          },
+          {
+            "index": 4,
+            "value": 50
+          },
+          {
+            "index": 5,
+            "value": null
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "insert-tail",
+        "focusIndex": 5,
+        "requestedIndex": 5
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          10,
+          20,
+          30,
+          40,
+          50
+        ],
+        "focus": []
+      },
+      "message": "写入新元素到保留槽位 / write the new value into the reserved slot",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          10,
+          20,
+          30,
+          40,
+          50,
+          60,
+          null,
+          null
+        ],
+        "length": 5,
+        "capacity": 8,
+        "index": 5,
+        "checked": [],
+        "value": 60,
+        "target": 0
+      },
+      "lessonStepId": "insert",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "insert",
+        "action": "write",
+        "phase": "intermediate",
+        "capacity": 8,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": 10
+          },
+          {
+            "index": 1,
+            "value": 20
+          },
+          {
+            "index": 2,
+            "value": 30
+          },
+          {
+            "index": 3,
+            "value": 40
+          },
+          {
+            "index": 4,
+            "value": 50
+          },
+          {
+            "index": 5,
+            "value": 60
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "insert-tail",
+        "focusIndex": 5,
+        "targetIndex": 5,
+        "requestedIndex": 5,
+        "change": {
+          "index": 5,
+          "before": null,
+          "after": 60
+        }
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          10,
+          20,
+          30,
+          40,
+          50,
+          60
+        ],
+        "focus": [
+          5
+        ]
+      },
+      "message": "length 更新为 6，插入完成 / insertion complete",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          10,
+          20,
+          30,
+          40,
+          50,
+          60,
+          null,
+          null
+        ],
+        "length": 6,
+        "capacity": 8,
+        "index": 5,
+        "checked": [],
+        "value": 60,
+        "target": 0
+      },
+      "lessonStepId": "insert",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "insert",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 8,
+        "length": 6,
+        "slots": [
+          {
+            "index": 0,
+            "value": 10
+          },
+          {
+            "index": 1,
+            "value": 20
+          },
+          {
+            "index": 2,
+            "value": 30
+          },
+          {
+            "index": 3,
+            "value": 40
+          },
+          {
+            "index": 4,
+            "value": 50
+          },
+          {
+            "index": 5,
+            "value": 60
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "insert-tail",
+        "focusIndex": 5,
+        "requestedIndex": 5
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          10,
+          20,
+          30,
+          40,
+          50,
+          60
+        ],
+        "focus": []
+      },
+      "message": "操作完成，最终槽位与真实数组一致 / done: final slots match the real array",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          10,
+          20,
+          30,
+          40,
+          50,
+          60,
+          null,
+          null
+        ],
+        "length": 6,
+        "capacity": 8,
+        "index": 5,
+        "checked": [],
+        "value": 60,
+        "target": 0
+      },
+      "lessonStepId": "done",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "done",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 8,
+        "length": 6,
+        "slots": [
+          {
+            "index": 0,
+            "value": 10
+          },
+          {
+            "index": 1,
+            "value": 20
+          },
+          {
+            "index": 2,
+            "value": 30
+          },
+          {
+            "index": 3,
+            "value": 40
+          },
+          {
+            "index": 4,
+            "value": 50
+          },
+          {
+            "index": 5,
+            "value": 60
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "insert-tail"
+      },
+      "extra": {}
+    }
+  ],
+  "delete-middle": [
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          10,
+          20,
+          30,
+          40,
+          50
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "初始化：capacity 是物理槽位数，length 是有效元素数 / init: capacity vs length",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          10,
+          20,
+          30,
+          40,
+          50,
+          null,
+          null,
+          null
+        ],
+        "length": 5,
+        "capacity": 8,
+        "index": 1,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "init",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "init",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 8,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": 10
+          },
+          {
+            "index": 1,
+            "value": 20
+          },
+          {
+            "index": 2,
+            "value": 30
+          },
+          {
+            "index": 3,
+            "value": 40
+          },
+          {
+            "index": 4,
+            "value": 50
+          },
+          {
+            "index": 5,
+            "value": null
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "delete-middle",
+        "focusIndex": 0
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          10,
+          20,
+          30,
+          40,
+          50
+        ],
+        "focus": [
+          1
+        ]
+      },
+      "message": "检查索引：被删位置必须位于有效区 / bounds check",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          10,
+          20,
+          30,
+          40,
+          50,
+          null,
+          null,
+          null
+        ],
+        "length": 5,
+        "capacity": 8,
+        "index": 1,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "delete",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "delete",
+        "action": "check",
+        "phase": "intermediate",
+        "capacity": 8,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": 10
+          },
+          {
+            "index": 1,
+            "value": 20
+          },
+          {
+            "index": 2,
+            "value": 30
+          },
+          {
+            "index": 3,
+            "value": 40
+          },
+          {
+            "index": 4,
+            "value": 50
+          },
+          {
+            "index": 5,
+            "value": null
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "delete-middle",
+        "focusIndex": 1,
+        "requestedIndex": 1
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          10,
+          20,
+          30,
+          40,
+          50
+        ],
+        "focus": [
+          1
+        ]
+      },
+      "message": "保存被删除元素 / remember the removed value",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          10,
+          20,
+          30,
+          40,
+          50,
+          null,
+          null,
+          null
+        ],
+        "length": 5,
+        "capacity": 8,
+        "index": 1,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "delete",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "delete",
+        "action": "save",
+        "phase": "intermediate",
+        "capacity": 8,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": 10
+          },
+          {
+            "index": 1,
+            "value": 20
+          },
+          {
+            "index": 2,
+            "value": 30
+          },
+          {
+            "index": 3,
+            "value": 40
+          },
+          {
+            "index": 4,
+            "value": 50
+          },
+          {
+            "index": 5,
+            "value": null
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "delete-middle",
+        "focusIndex": 1,
+        "requestedIndex": 1,
+        "removedIndex": 1,
+        "removedValue": 20
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          10,
+          30,
+          30,
+          40,
+          50
+        ],
+        "focus": [
+          1
+        ]
+      },
+      "message": "从前向后搬移：data[1] = data[2] / shift left",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          10,
+          30,
+          30,
+          40,
+          50,
+          null,
+          null,
+          null
+        ],
+        "length": 5,
+        "capacity": 8,
+        "index": 1,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "delete",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "delete",
+        "action": "shift-left",
+        "phase": "intermediate",
+        "capacity": 8,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": 10
+          },
+          {
+            "index": 1,
+            "value": 30
+          },
+          {
+            "index": 2,
+            "value": 30
+          },
+          {
+            "index": 3,
+            "value": 40
+          },
+          {
+            "index": 4,
+            "value": 50
+          },
+          {
+            "index": 5,
+            "value": null
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "delete-middle",
+        "focusIndex": 1,
+        "sourceIndex": 2,
+        "targetIndex": 1,
+        "requestedIndex": 1,
+        "removedIndex": 1,
+        "removedValue": 20,
+        "change": {
+          "index": 1,
+          "before": 20,
+          "after": 30
+        }
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          10,
+          30,
+          40,
+          40,
+          50
+        ],
+        "focus": [
+          2
+        ]
+      },
+      "message": "从前向后搬移：data[2] = data[3] / shift left",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          10,
+          30,
+          40,
+          40,
+          50,
+          null,
+          null,
+          null
+        ],
+        "length": 5,
+        "capacity": 8,
+        "index": 1,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "delete",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "delete",
+        "action": "shift-left",
+        "phase": "intermediate",
+        "capacity": 8,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": 10
+          },
+          {
+            "index": 1,
+            "value": 30
+          },
+          {
+            "index": 2,
+            "value": 40
+          },
+          {
+            "index": 3,
+            "value": 40
+          },
+          {
+            "index": 4,
+            "value": 50
+          },
+          {
+            "index": 5,
+            "value": null
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "delete-middle",
+        "focusIndex": 2,
+        "sourceIndex": 3,
+        "targetIndex": 2,
+        "requestedIndex": 1,
+        "removedIndex": 1,
+        "removedValue": 20,
+        "change": {
+          "index": 2,
+          "before": 30,
+          "after": 40
+        }
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          10,
+          30,
+          40,
+          50,
+          50
+        ],
+        "focus": [
+          3
+        ]
+      },
+      "message": "从前向后搬移：data[3] = data[4] / shift left",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          10,
+          30,
+          40,
+          50,
+          50,
+          null,
+          null,
+          null
+        ],
+        "length": 5,
+        "capacity": 8,
+        "index": 1,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "delete",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "delete",
+        "action": "shift-left",
+        "phase": "intermediate",
+        "capacity": 8,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": 10
+          },
+          {
+            "index": 1,
+            "value": 30
+          },
+          {
+            "index": 2,
+            "value": 40
+          },
+          {
+            "index": 3,
+            "value": 50
+          },
+          {
+            "index": 4,
+            "value": 50
+          },
+          {
+            "index": 5,
+            "value": null
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "delete-middle",
+        "focusIndex": 3,
+        "sourceIndex": 4,
+        "targetIndex": 3,
+        "requestedIndex": 1,
+        "removedIndex": 1,
+        "removedValue": 20,
+        "change": {
+          "index": 3,
+          "before": 40,
+          "after": 50
+        }
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          10,
+          30,
+          40,
+          50
+        ],
+        "focus": []
+      },
+      "message": "清理最后一个无效槽位 / clear the first free slot",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          10,
+          30,
+          40,
+          50,
+          null,
+          null,
+          null,
+          null
+        ],
+        "length": 4,
+        "capacity": 8,
+        "index": 1,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "delete",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "delete",
+        "action": "clear",
+        "phase": "intermediate",
+        "capacity": 8,
+        "length": 4,
+        "slots": [
+          {
+            "index": 0,
+            "value": 10
+          },
+          {
+            "index": 1,
+            "value": 30
+          },
+          {
+            "index": 2,
+            "value": 40
+          },
+          {
+            "index": 3,
+            "value": 50
+          },
+          {
+            "index": 4,
+            "value": null
+          },
+          {
+            "index": 5,
+            "value": null
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "delete-middle",
+        "focusIndex": 4,
+        "targetIndex": 4,
+        "requestedIndex": 1,
+        "removedIndex": 1,
+        "removedValue": 20,
+        "change": {
+          "index": 4,
+          "before": 50,
+          "after": null
+        }
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          10,
+          30,
+          40,
+          50
+        ],
+        "focus": [
+          1
+        ]
+      },
+      "message": "length 更新为 4，删除完成 / deletion complete",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          10,
+          30,
+          40,
+          50,
+          null,
+          null,
+          null,
+          null
+        ],
+        "length": 4,
+        "capacity": 8,
+        "index": 1,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "delete",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "delete",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 8,
+        "length": 4,
+        "slots": [
+          {
+            "index": 0,
+            "value": 10
+          },
+          {
+            "index": 1,
+            "value": 30
+          },
+          {
+            "index": 2,
+            "value": 40
+          },
+          {
+            "index": 3,
+            "value": 50
+          },
+          {
+            "index": 4,
+            "value": null
+          },
+          {
+            "index": 5,
+            "value": null
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "delete-middle",
+        "focusIndex": 1,
+        "requestedIndex": 1
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          10,
+          30,
+          40,
+          50
+        ],
+        "focus": []
+      },
+      "message": "操作完成，最终槽位与真实数组一致 / done: final slots match the real array",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          10,
+          30,
+          40,
+          50,
+          null,
+          null,
+          null,
+          null
+        ],
+        "length": 4,
+        "capacity": 8,
+        "index": 1,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "done",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "done",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 8,
+        "length": 4,
+        "slots": [
+          {
+            "index": 0,
+            "value": 10
+          },
+          {
+            "index": 1,
+            "value": 30
+          },
+          {
+            "index": 2,
+            "value": 40
+          },
+          {
+            "index": 3,
+            "value": 50
+          },
+          {
+            "index": 4,
+            "value": null
+          },
+          {
+            "index": 5,
+            "value": null
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "delete-middle"
+      },
+      "extra": {}
+    }
+  ],
+  "delete-head": [
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          10,
+          20,
+          30,
+          40,
+          50
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "初始化：capacity 是物理槽位数，length 是有效元素数 / init: capacity vs length",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          10,
+          20,
+          30,
+          40,
+          50,
+          null,
+          null,
+          null
+        ],
+        "length": 5,
+        "capacity": 8,
+        "index": 0,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "init",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "init",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 8,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": 10
+          },
+          {
+            "index": 1,
+            "value": 20
+          },
+          {
+            "index": 2,
+            "value": 30
+          },
+          {
+            "index": 3,
+            "value": 40
+          },
+          {
+            "index": 4,
+            "value": 50
+          },
+          {
+            "index": 5,
+            "value": null
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "delete-head",
+        "focusIndex": 0
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          10,
+          20,
+          30,
+          40,
+          50
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "检查索引：被删位置必须位于有效区 / bounds check",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          10,
+          20,
+          30,
+          40,
+          50,
+          null,
+          null,
+          null
+        ],
+        "length": 5,
+        "capacity": 8,
+        "index": 0,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "delete",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "delete",
+        "action": "check",
+        "phase": "intermediate",
+        "capacity": 8,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": 10
+          },
+          {
+            "index": 1,
+            "value": 20
+          },
+          {
+            "index": 2,
+            "value": 30
+          },
+          {
+            "index": 3,
+            "value": 40
+          },
+          {
+            "index": 4,
+            "value": 50
+          },
+          {
+            "index": 5,
+            "value": null
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "delete-head",
+        "focusIndex": 0,
+        "requestedIndex": 0
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          10,
+          20,
+          30,
+          40,
+          50
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "保存被删除元素 / remember the removed value",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          10,
+          20,
+          30,
+          40,
+          50,
+          null,
+          null,
+          null
+        ],
+        "length": 5,
+        "capacity": 8,
+        "index": 0,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "delete",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "delete",
+        "action": "save",
+        "phase": "intermediate",
+        "capacity": 8,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": 10
+          },
+          {
+            "index": 1,
+            "value": 20
+          },
+          {
+            "index": 2,
+            "value": 30
+          },
+          {
+            "index": 3,
+            "value": 40
+          },
+          {
+            "index": 4,
+            "value": 50
+          },
+          {
+            "index": 5,
+            "value": null
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "delete-head",
+        "focusIndex": 0,
+        "requestedIndex": 0,
+        "removedIndex": 0,
+        "removedValue": 10
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          20,
+          20,
+          30,
+          40,
+          50
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "从前向后搬移：data[0] = data[1] / shift left",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          20,
+          20,
+          30,
+          40,
+          50,
+          null,
+          null,
+          null
+        ],
+        "length": 5,
+        "capacity": 8,
+        "index": 0,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "delete",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "delete",
+        "action": "shift-left",
+        "phase": "intermediate",
+        "capacity": 8,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": 20
+          },
+          {
+            "index": 1,
+            "value": 20
+          },
+          {
+            "index": 2,
+            "value": 30
+          },
+          {
+            "index": 3,
+            "value": 40
+          },
+          {
+            "index": 4,
+            "value": 50
+          },
+          {
+            "index": 5,
+            "value": null
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "delete-head",
+        "focusIndex": 0,
+        "sourceIndex": 1,
+        "targetIndex": 0,
+        "requestedIndex": 0,
+        "removedIndex": 0,
+        "removedValue": 10,
+        "change": {
+          "index": 0,
+          "before": 10,
+          "after": 20
+        }
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          20,
+          30,
+          30,
+          40,
+          50
+        ],
+        "focus": [
+          1
+        ]
+      },
+      "message": "从前向后搬移：data[1] = data[2] / shift left",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          20,
+          30,
+          30,
+          40,
+          50,
+          null,
+          null,
+          null
+        ],
+        "length": 5,
+        "capacity": 8,
+        "index": 0,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "delete",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "delete",
+        "action": "shift-left",
+        "phase": "intermediate",
+        "capacity": 8,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": 20
+          },
+          {
+            "index": 1,
+            "value": 30
+          },
+          {
+            "index": 2,
+            "value": 30
+          },
+          {
+            "index": 3,
+            "value": 40
+          },
+          {
+            "index": 4,
+            "value": 50
+          },
+          {
+            "index": 5,
+            "value": null
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "delete-head",
+        "focusIndex": 1,
+        "sourceIndex": 2,
+        "targetIndex": 1,
+        "requestedIndex": 0,
+        "removedIndex": 0,
+        "removedValue": 10,
+        "change": {
+          "index": 1,
+          "before": 20,
+          "after": 30
+        }
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          20,
+          30,
+          40,
+          40,
+          50
+        ],
+        "focus": [
+          2
+        ]
+      },
+      "message": "从前向后搬移：data[2] = data[3] / shift left",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          20,
+          30,
+          40,
+          40,
+          50,
+          null,
+          null,
+          null
+        ],
+        "length": 5,
+        "capacity": 8,
+        "index": 0,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "delete",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "delete",
+        "action": "shift-left",
+        "phase": "intermediate",
+        "capacity": 8,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": 20
+          },
+          {
+            "index": 1,
+            "value": 30
+          },
+          {
+            "index": 2,
+            "value": 40
+          },
+          {
+            "index": 3,
+            "value": 40
+          },
+          {
+            "index": 4,
+            "value": 50
+          },
+          {
+            "index": 5,
+            "value": null
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "delete-head",
+        "focusIndex": 2,
+        "sourceIndex": 3,
+        "targetIndex": 2,
+        "requestedIndex": 0,
+        "removedIndex": 0,
+        "removedValue": 10,
+        "change": {
+          "index": 2,
+          "before": 30,
+          "after": 40
+        }
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          20,
+          30,
+          40,
+          50,
+          50
+        ],
+        "focus": [
+          3
+        ]
+      },
+      "message": "从前向后搬移：data[3] = data[4] / shift left",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          20,
+          30,
+          40,
+          50,
+          50,
+          null,
+          null,
+          null
+        ],
+        "length": 5,
+        "capacity": 8,
+        "index": 0,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "delete",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "delete",
+        "action": "shift-left",
+        "phase": "intermediate",
+        "capacity": 8,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": 20
+          },
+          {
+            "index": 1,
+            "value": 30
+          },
+          {
+            "index": 2,
+            "value": 40
+          },
+          {
+            "index": 3,
+            "value": 50
+          },
+          {
+            "index": 4,
+            "value": 50
+          },
+          {
+            "index": 5,
+            "value": null
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "delete-head",
+        "focusIndex": 3,
+        "sourceIndex": 4,
+        "targetIndex": 3,
+        "requestedIndex": 0,
+        "removedIndex": 0,
+        "removedValue": 10,
+        "change": {
+          "index": 3,
+          "before": 40,
+          "after": 50
+        }
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          20,
+          30,
+          40,
+          50
+        ],
+        "focus": []
+      },
+      "message": "清理最后一个无效槽位 / clear the first free slot",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          20,
+          30,
+          40,
+          50,
+          null,
+          null,
+          null,
+          null
+        ],
+        "length": 4,
+        "capacity": 8,
+        "index": 0,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "delete",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "delete",
+        "action": "clear",
+        "phase": "intermediate",
+        "capacity": 8,
+        "length": 4,
+        "slots": [
+          {
+            "index": 0,
+            "value": 20
+          },
+          {
+            "index": 1,
+            "value": 30
+          },
+          {
+            "index": 2,
+            "value": 40
+          },
+          {
+            "index": 3,
+            "value": 50
+          },
+          {
+            "index": 4,
+            "value": null
+          },
+          {
+            "index": 5,
+            "value": null
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "delete-head",
+        "focusIndex": 4,
+        "targetIndex": 4,
+        "requestedIndex": 0,
+        "removedIndex": 0,
+        "removedValue": 10,
+        "change": {
+          "index": 4,
+          "before": 50,
+          "after": null
+        }
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          20,
+          30,
+          40,
+          50
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "length 更新为 4，删除完成 / deletion complete",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          20,
+          30,
+          40,
+          50,
+          null,
+          null,
+          null,
+          null
+        ],
+        "length": 4,
+        "capacity": 8,
+        "index": 0,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "delete",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "delete",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 8,
+        "length": 4,
+        "slots": [
+          {
+            "index": 0,
+            "value": 20
+          },
+          {
+            "index": 1,
+            "value": 30
+          },
+          {
+            "index": 2,
+            "value": 40
+          },
+          {
+            "index": 3,
+            "value": 50
+          },
+          {
+            "index": 4,
+            "value": null
+          },
+          {
+            "index": 5,
+            "value": null
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "delete-head",
+        "focusIndex": 0,
+        "requestedIndex": 0
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          20,
+          30,
+          40,
+          50
+        ],
+        "focus": []
+      },
+      "message": "操作完成，最终槽位与真实数组一致 / done: final slots match the real array",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          20,
+          30,
+          40,
+          50,
+          null,
+          null,
+          null,
+          null
+        ],
+        "length": 4,
+        "capacity": 8,
+        "index": 0,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "done",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "done",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 8,
+        "length": 4,
+        "slots": [
+          {
+            "index": 0,
+            "value": 20
+          },
+          {
+            "index": 1,
+            "value": 30
+          },
+          {
+            "index": 2,
+            "value": 40
+          },
+          {
+            "index": 3,
+            "value": 50
+          },
+          {
+            "index": 4,
+            "value": null
+          },
+          {
+            "index": 5,
+            "value": null
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "delete-head"
+      },
+      "extra": {}
+    }
+  ],
+  "delete-tail": [
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          10,
+          20,
+          30,
+          40,
+          50
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "初始化：capacity 是物理槽位数，length 是有效元素数 / init: capacity vs length",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          10,
+          20,
+          30,
+          40,
+          50,
+          null,
+          null,
+          null
+        ],
+        "length": 5,
+        "capacity": 8,
+        "index": 4,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "init",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "init",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 8,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": 10
+          },
+          {
+            "index": 1,
+            "value": 20
+          },
+          {
+            "index": 2,
+            "value": 30
+          },
+          {
+            "index": 3,
+            "value": 40
+          },
+          {
+            "index": 4,
+            "value": 50
+          },
+          {
+            "index": 5,
+            "value": null
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "delete-tail",
+        "focusIndex": 0
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          10,
+          20,
+          30,
+          40,
+          50
+        ],
+        "focus": [
+          4
+        ]
+      },
+      "message": "检查索引：被删位置必须位于有效区 / bounds check",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          10,
+          20,
+          30,
+          40,
+          50,
+          null,
+          null,
+          null
+        ],
+        "length": 5,
+        "capacity": 8,
+        "index": 4,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "delete",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "delete",
+        "action": "check",
+        "phase": "intermediate",
+        "capacity": 8,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": 10
+          },
+          {
+            "index": 1,
+            "value": 20
+          },
+          {
+            "index": 2,
+            "value": 30
+          },
+          {
+            "index": 3,
+            "value": 40
+          },
+          {
+            "index": 4,
+            "value": 50
+          },
+          {
+            "index": 5,
+            "value": null
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "delete-tail",
+        "focusIndex": 4,
+        "requestedIndex": 4
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          10,
+          20,
+          30,
+          40,
+          50
+        ],
+        "focus": [
+          4
+        ]
+      },
+      "message": "保存被删除元素 / remember the removed value",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          10,
+          20,
+          30,
+          40,
+          50,
+          null,
+          null,
+          null
+        ],
+        "length": 5,
+        "capacity": 8,
+        "index": 4,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "delete",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "delete",
+        "action": "save",
+        "phase": "intermediate",
+        "capacity": 8,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": 10
+          },
+          {
+            "index": 1,
+            "value": 20
+          },
+          {
+            "index": 2,
+            "value": 30
+          },
+          {
+            "index": 3,
+            "value": 40
+          },
+          {
+            "index": 4,
+            "value": 50
+          },
+          {
+            "index": 5,
+            "value": null
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "delete-tail",
+        "focusIndex": 4,
+        "requestedIndex": 4,
+        "removedIndex": 4,
+        "removedValue": 50
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          10,
+          20,
+          30,
+          40
+        ],
+        "focus": []
+      },
+      "message": "清理最后一个无效槽位 / clear the first free slot",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          10,
+          20,
+          30,
+          40,
+          null,
+          null,
+          null,
+          null
+        ],
+        "length": 4,
+        "capacity": 8,
+        "index": 4,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "delete",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "delete",
+        "action": "clear",
+        "phase": "intermediate",
+        "capacity": 8,
+        "length": 4,
+        "slots": [
+          {
+            "index": 0,
+            "value": 10
+          },
+          {
+            "index": 1,
+            "value": 20
+          },
+          {
+            "index": 2,
+            "value": 30
+          },
+          {
+            "index": 3,
+            "value": 40
+          },
+          {
+            "index": 4,
+            "value": null
+          },
+          {
+            "index": 5,
+            "value": null
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "delete-tail",
+        "focusIndex": 4,
+        "targetIndex": 4,
+        "requestedIndex": 4,
+        "removedIndex": 4,
+        "removedValue": 50,
+        "change": {
+          "index": 4,
+          "before": 50,
+          "after": null
+        }
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          10,
+          20,
+          30,
+          40
+        ],
+        "focus": []
+      },
+      "message": "length 更新为 4，删除完成 / deletion complete",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          10,
+          20,
+          30,
+          40,
+          null,
+          null,
+          null,
+          null
+        ],
+        "length": 4,
+        "capacity": 8,
+        "index": 4,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "delete",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "delete",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 8,
+        "length": 4,
+        "slots": [
+          {
+            "index": 0,
+            "value": 10
+          },
+          {
+            "index": 1,
+            "value": 20
+          },
+          {
+            "index": 2,
+            "value": 30
+          },
+          {
+            "index": 3,
+            "value": 40
+          },
+          {
+            "index": 4,
+            "value": null
+          },
+          {
+            "index": 5,
+            "value": null
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "delete-tail",
+        "focusIndex": 4,
+        "requestedIndex": 4
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          10,
+          20,
+          30,
+          40
+        ],
+        "focus": []
+      },
+      "message": "操作完成，最终槽位与真实数组一致 / done: final slots match the real array",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          10,
+          20,
+          30,
+          40,
+          null,
+          null,
+          null,
+          null
+        ],
+        "length": 4,
+        "capacity": 8,
+        "index": 4,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "done",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "done",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 8,
+        "length": 4,
+        "slots": [
+          {
+            "index": 0,
+            "value": 10
+          },
+          {
+            "index": 1,
+            "value": 20
+          },
+          {
+            "index": 2,
+            "value": 30
+          },
+          {
+            "index": 3,
+            "value": 40
+          },
+          {
+            "index": 4,
+            "value": null
+          },
+          {
+            "index": 5,
+            "value": null
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "delete-tail"
+      },
+      "extra": {}
+    }
+  ],
+  "traverse": [
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          10,
+          20,
+          30,
+          40,
+          50
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "初始化：capacity 是物理槽位数，length 是有效元素数 / init: capacity vs length",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          10,
+          20,
+          30,
+          40,
+          50,
+          null,
+          null,
+          null
+        ],
+        "length": 5,
+        "capacity": 8,
+        "index": 5,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "init",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "init",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 8,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": 10
+          },
+          {
+            "index": 1,
+            "value": 20
+          },
+          {
+            "index": 2,
+            "value": 30
+          },
+          {
+            "index": 3,
+            "value": 40
+          },
+          {
+            "index": 4,
+            "value": 50
+          },
+          {
+            "index": 5,
+            "value": null
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "traverse",
+        "focusIndex": 0
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          10,
+          20,
+          30,
+          40,
+          50
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "访问有效槽位 / visit one live slot",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          10,
+          20,
+          30,
+          40,
+          50,
+          null,
+          null,
+          null
+        ],
+        "length": 5,
+        "capacity": 8,
+        "index": 5,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "traverse",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "traverse",
+        "action": "visit",
+        "phase": "intermediate",
+        "capacity": 8,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": 10
+          },
+          {
+            "index": 1,
+            "value": 20
+          },
+          {
+            "index": 2,
+            "value": 30
+          },
+          {
+            "index": 3,
+            "value": 40
+          },
+          {
+            "index": 4,
+            "value": 50
+          },
+          {
+            "index": 5,
+            "value": null
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "traverse",
+        "focusIndex": 0,
+        "checked": []
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          10,
+          20,
+          30,
+          40,
+          50
+        ],
+        "focus": [
+          1
+        ]
+      },
+      "message": "访问有效槽位 / visit one live slot",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          10,
+          20,
+          30,
+          40,
+          50,
+          null,
+          null,
+          null
+        ],
+        "length": 5,
+        "capacity": 8,
+        "index": 5,
+        "checked": [
+          0
+        ],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "traverse",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "traverse",
+        "action": "visit",
+        "phase": "intermediate",
+        "capacity": 8,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": 10
+          },
+          {
+            "index": 1,
+            "value": 20
+          },
+          {
+            "index": 2,
+            "value": 30
+          },
+          {
+            "index": 3,
+            "value": 40
+          },
+          {
+            "index": 4,
+            "value": 50
+          },
+          {
+            "index": 5,
+            "value": null
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "traverse",
+        "focusIndex": 1,
+        "checked": [
+          0
+        ]
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          10,
+          20,
+          30,
+          40,
+          50
+        ],
+        "focus": [
+          2
+        ]
+      },
+      "message": "访问有效槽位 / visit one live slot",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          10,
+          20,
+          30,
+          40,
+          50,
+          null,
+          null,
+          null
+        ],
+        "length": 5,
+        "capacity": 8,
+        "index": 5,
+        "checked": [
+          0,
+          1
+        ],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "traverse",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "traverse",
+        "action": "visit",
+        "phase": "intermediate",
+        "capacity": 8,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": 10
+          },
+          {
+            "index": 1,
+            "value": 20
+          },
+          {
+            "index": 2,
+            "value": 30
+          },
+          {
+            "index": 3,
+            "value": 40
+          },
+          {
+            "index": 4,
+            "value": 50
+          },
+          {
+            "index": 5,
+            "value": null
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "traverse",
+        "focusIndex": 2,
+        "checked": [
+          0,
+          1
+        ]
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          10,
+          20,
+          30,
+          40,
+          50
+        ],
+        "focus": [
+          3
+        ]
+      },
+      "message": "访问有效槽位 / visit one live slot",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          10,
+          20,
+          30,
+          40,
+          50,
+          null,
+          null,
+          null
+        ],
+        "length": 5,
+        "capacity": 8,
+        "index": 5,
+        "checked": [
+          0,
+          1,
+          2
+        ],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "traverse",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "traverse",
+        "action": "visit",
+        "phase": "intermediate",
+        "capacity": 8,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": 10
+          },
+          {
+            "index": 1,
+            "value": 20
+          },
+          {
+            "index": 2,
+            "value": 30
+          },
+          {
+            "index": 3,
+            "value": 40
+          },
+          {
+            "index": 4,
+            "value": 50
+          },
+          {
+            "index": 5,
+            "value": null
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "traverse",
+        "focusIndex": 3,
+        "checked": [
+          0,
+          1,
+          2
+        ]
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          10,
+          20,
+          30,
+          40,
+          50
+        ],
+        "focus": [
+          4
+        ]
+      },
+      "message": "访问有效槽位 / visit one live slot",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          10,
+          20,
+          30,
+          40,
+          50,
+          null,
+          null,
+          null
+        ],
+        "length": 5,
+        "capacity": 8,
+        "index": 5,
+        "checked": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "traverse",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "traverse",
+        "action": "visit",
+        "phase": "intermediate",
+        "capacity": 8,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": 10
+          },
+          {
+            "index": 1,
+            "value": 20
+          },
+          {
+            "index": 2,
+            "value": 30
+          },
+          {
+            "index": 3,
+            "value": 40
+          },
+          {
+            "index": 4,
+            "value": 50
+          },
+          {
+            "index": 5,
+            "value": null
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "traverse",
+        "focusIndex": 4,
+        "checked": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          10,
+          20,
+          30,
+          40,
+          50
+        ],
+        "focus": []
+      },
+      "message": "遍历完成：只访问 [0, length) / traversal stops at length",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          10,
+          20,
+          30,
+          40,
+          50,
+          null,
+          null,
+          null
+        ],
+        "length": 5,
+        "capacity": 8,
+        "index": 5,
+        "checked": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "traverse",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "traverse",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 8,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": 10
+          },
+          {
+            "index": 1,
+            "value": 20
+          },
+          {
+            "index": 2,
+            "value": 30
+          },
+          {
+            "index": 3,
+            "value": 40
+          },
+          {
+            "index": 4,
+            "value": 50
+          },
+          {
+            "index": 5,
+            "value": null
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "traverse",
+        "checked": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          10,
+          20,
+          30,
+          40,
+          50
+        ],
+        "focus": []
+      },
+      "message": "操作完成，最终槽位与真实数组一致 / done: final slots match the real array",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          10,
+          20,
+          30,
+          40,
+          50,
+          null,
+          null,
+          null
+        ],
+        "length": 5,
+        "capacity": 8,
+        "index": 5,
+        "checked": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "done",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "done",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 8,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": 10
+          },
+          {
+            "index": 1,
+            "value": 20
+          },
+          {
+            "index": 2,
+            "value": 30
+          },
+          {
+            "index": 3,
+            "value": 40
+          },
+          {
+            "index": 4,
+            "value": 50
+          },
+          {
+            "index": 5,
+            "value": null
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "traverse"
+      },
+      "extra": {}
+    }
+  ],
+  "empty": [
+    {
+      "state": {
+        "type": "array",
+        "values": [],
+        "focus": []
+      },
+      "message": "初始化：capacity 是物理槽位数，length 是有效元素数 / init: capacity vs length",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        "length": 0,
+        "capacity": 8,
+        "index": 0,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "init",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "init",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 8,
+        "length": 0,
+        "slots": [
+          {
+            "index": 0,
+            "value": null
+          },
+          {
+            "index": 1,
+            "value": null
+          },
+          {
+            "index": 2,
+            "value": null
+          },
+          {
+            "index": 3,
+            "value": null
+          },
+          {
+            "index": 4,
+            "value": null
+          },
+          {
+            "index": 5,
+            "value": null
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "empty"
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [],
+        "focus": []
+      },
+      "message": "遍历完成：只访问 [0, length) / traversal stops at length",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        "length": 0,
+        "capacity": 8,
+        "index": 0,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "traverse",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "traverse",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 8,
+        "length": 0,
+        "slots": [
+          {
+            "index": 0,
+            "value": null
+          },
+          {
+            "index": 1,
+            "value": null
+          },
+          {
+            "index": 2,
+            "value": null
+          },
+          {
+            "index": 3,
+            "value": null
+          },
+          {
+            "index": 4,
+            "value": null
+          },
+          {
+            "index": 5,
+            "value": null
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "empty",
+        "checked": []
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [],
+        "focus": []
+      },
+      "message": "操作完成，最终槽位与真实数组一致 / done: final slots match the real array",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        "length": 0,
+        "capacity": 8,
+        "index": 0,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "done",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "done",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 8,
+        "length": 0,
+        "slots": [
+          {
+            "index": 0,
+            "value": null
+          },
+          {
+            "index": 1,
+            "value": null
+          },
+          {
+            "index": 2,
+            "value": null
+          },
+          {
+            "index": 3,
+            "value": null
+          },
+          {
+            "index": 4,
+            "value": null
+          },
+          {
+            "index": 5,
+            "value": null
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "empty"
+      },
+      "extra": {}
+    }
+  ],
+  "empty-delete": [
+    {
+      "state": {
+        "type": "array",
+        "values": [],
+        "focus": []
+      },
+      "message": "初始化：capacity 是物理槽位数，length 是有效元素数 / init: capacity vs length",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        "length": 0,
+        "capacity": 8,
+        "index": 0,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "init",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "init",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 8,
+        "length": 0,
+        "slots": [
+          {
+            "index": 0,
+            "value": null
+          },
+          {
+            "index": 1,
+            "value": null
+          },
+          {
+            "index": 2,
+            "value": null
+          },
+          {
+            "index": 3,
+            "value": null
+          },
+          {
+            "index": 4,
+            "value": null
+          },
+          {
+            "index": 5,
+            "value": null
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "empty-delete"
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [],
+        "focus": []
+      },
+      "message": "空表删除被拒绝：没有有效元素 / empty table rejects deletion",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        "length": 0,
+        "capacity": 8,
+        "index": 0,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "delete",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "delete",
+        "action": "reject",
+        "phase": "complete",
+        "capacity": 8,
+        "length": 0,
+        "slots": [
+          {
+            "index": 0,
+            "value": null
+          },
+          {
+            "index": 1,
+            "value": null
+          },
+          {
+            "index": 2,
+            "value": null
+          },
+          {
+            "index": 3,
+            "value": null
+          },
+          {
+            "index": 4,
+            "value": null
+          },
+          {
+            "index": 5,
+            "value": null
+          },
+          {
+            "index": 6,
+            "value": null
+          },
+          {
+            "index": 7,
+            "value": null
+          }
+        ],
+        "preset": "empty-delete",
+        "focusIndex": 0,
+        "requestedIndex": 0,
+        "error": "list-empty"
+      },
+      "extra": {}
+    }
+  ],
+  "full-insert": [
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "初始化：capacity 是物理槽位数，length 是有效元素数 / init: capacity vs length",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "length": 8,
+        "capacity": 8,
+        "index": 0,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "init",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "init",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 8,
+        "length": 8,
+        "slots": [
+          {
+            "index": 0,
+            "value": 1
+          },
+          {
+            "index": 1,
+            "value": 2
+          },
+          {
+            "index": 2,
+            "value": 3
+          },
+          {
+            "index": 3,
+            "value": 4
+          },
+          {
+            "index": 4,
+            "value": 5
+          },
+          {
+            "index": 5,
+            "value": 6
+          },
+          {
+            "index": 6,
+            "value": 7
+          },
+          {
+            "index": 7,
+            "value": 8
+          }
+        ],
+        "preset": "full-insert",
+        "focusIndex": 0
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "检查容量：length == capacity，无法插入 / the slot array is full",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "length": 8,
+        "capacity": 8,
+        "index": 0,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "insert",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "insert",
+        "action": "check",
+        "phase": "intermediate",
+        "capacity": 8,
+        "length": 8,
+        "slots": [
+          {
+            "index": 0,
+            "value": 1
+          },
+          {
+            "index": 1,
+            "value": 2
+          },
+          {
+            "index": 2,
+            "value": 3
+          },
+          {
+            "index": 3,
+            "value": 4
+          },
+          {
+            "index": 4,
+            "value": 5
+          },
+          {
+            "index": 5,
+            "value": 6
+          },
+          {
+            "index": 6,
+            "value": 7
+          },
+          {
+            "index": 7,
+            "value": 8
+          }
+        ],
+        "preset": "full-insert",
+        "focusIndex": 0,
+        "requestedIndex": 0
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "满表插入被拒绝：没有空闲槽位 / full table rejects insertion",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "length": 8,
+        "capacity": 8,
+        "index": 0,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "insert",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "insert",
+        "action": "reject",
+        "phase": "complete",
+        "capacity": 8,
+        "length": 8,
+        "slots": [
+          {
+            "index": 0,
+            "value": 1
+          },
+          {
+            "index": 1,
+            "value": 2
+          },
+          {
+            "index": 2,
+            "value": 3
+          },
+          {
+            "index": 3,
+            "value": 4
+          },
+          {
+            "index": 4,
+            "value": 5
+          },
+          {
+            "index": 5,
+            "value": 6
+          },
+          {
+            "index": 6,
+            "value": 7
+          },
+          {
+            "index": 7,
+            "value": 8
+          }
+        ],
+        "preset": "full-insert",
+        "focusIndex": 0,
+        "requestedIndex": 0,
+        "error": "capacity-full"
+      },
+      "extra": {}
+    }
+  ]
+}

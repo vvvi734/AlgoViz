@@ -136,9 +136,8 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
       },
       {
         id: 'sequential-list',
-        title: { zh: '线性表的顺序存储结构', en: 'Sequential storage' },
-        algorithms: [],
-        concept: true,
+        title: { zh: '顺序表（顺序存储结构）', en: 'Sequential list (sequential storage)' },
+        algorithms: [{ id: 'seqlist' }],
       },
       {
         id: 'linked-list',

@@ -31,10 +31,10 @@ function renderApp() {
 }
 
 describe('App UI regression (Phase 1)', () => {
-  it('renders all 33 presets and loads a timeline on startup', async () => {
+  it('renders all 34 presets and loads a timeline on startup', async () => {
     renderApp();
     await waitFor(() => expect(screen.getByTestId('progress').textContent).toBe('1 / 3'));
-    expect(screen.getAllByTestId(/^algo-/)).toHaveLength(33);
+    expect(screen.getAllByTestId(/^algo-/)).toHaveLength(34);
     expect(screen.getByTestId('algo-bst')).toBeTruthy();
     expect(screen.getByTestId('algo-heap')).toBeTruthy();
     expect(screen.getByTestId('algo-huffman')).toBeTruthy();

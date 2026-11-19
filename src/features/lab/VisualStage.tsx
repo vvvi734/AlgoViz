@@ -19,6 +19,8 @@ import type { TraceEvent } from '../../domain/trace/schema';
 import { useI18n } from '../../i18n/I18nProvider';
 import { QueueVisual, StackVisual } from './StructureVisuals';import { LinkedListVisual } from './LinkedListVisual';
 import { AdvancedLinkedListVisual } from './AdvancedLinkedListVisual';
+import { SequentialListVisual } from './SequentialListVisual';
+import type { SequentialListVisualModel } from '../../domain/visualization/sequentialListModel';
 import { BinaryTreeVisual } from './BinaryTreeVisual';
 import { GraphVisual } from './GraphVisual';
 import { BellmanFordVisual, FloydVisual } from './G1Visuals';
@@ -434,6 +436,9 @@ export function VisualStage({ event }: { event: TraceEvent | undefined }) {
     case 'doubly-linked-list':
     case 'circular-linked-list':
       content = <AdvancedLinkedListVisual model={model} />;
+      break;
+    case 'sequential-list':
+      content = <SequentialListVisual model={model as SequentialListVisualModel} />;
       break;
     case 'binary-tree':
       content = <BinaryTreeVisual model={model} />;

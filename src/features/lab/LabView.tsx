@@ -6,6 +6,8 @@ import { BstPicker } from './BstPicker';
 import { AvlPicker } from './AvlPicker';
 import { HeapPicker } from './HeapPicker';
 import { HuffmanPicker } from './HuffmanPicker';
+import { SequentialListPicker } from './SequentialListPicker';
+import { sequentialListPresetFromInput } from '../../domain/algorithms/sequentialListExamples';
 import { Timeline } from './Timeline';
 import { CodeDock } from './CodeDock';
 import { SyncPanel } from './SyncPanel';
@@ -78,6 +80,7 @@ export function LabView({
   const showAvlPicker = lab.currentAlgo === 'avl' && lab.codeLang === 'python';
   const showHeapPicker = lab.currentAlgo === 'heap' && lab.codeLang === 'python';
   const showHuffmanPicker = lab.currentAlgo === 'huffman' && lab.codeLang === 'python';
+  const showSequentialListPicker = lab.currentAlgo === 'seqlist' && lab.codeLang === 'python';
   const actualBstPreset =
     currentEvent?.structure?.kind === 'bst'
       ? bstPresetFromInput({ preset: currentEvent.structure.preset })
@@ -93,6 +96,10 @@ export function LabView({
   const actualHuffmanPreset =
     currentEvent?.structure?.kind === 'huffman'
       ? huffmanPresetFromInput({ preset: currentEvent.structure.preset })
+      : null;
+  const actualSequentialListPreset =
+    currentEvent?.structure?.kind === 'sequential-list'
+      ? sequentialListPresetFromInput({ preset: currentEvent.structure.preset })
       : null;
   const showGraphStepPeek =
     lab.currentAlgo === 'bfs' || lab.currentAlgo === 'dfs' || lab.currentAlgo === 'dijkstra' ||
@@ -357,6 +364,13 @@ export function LabView({
                 inputJson={lab.inputJson}
                 actualPreset={actualHuffmanPreset}
                 onSelect={lab.selectHuffmanPreset}
+              />
+            ) : null}
+            {showSequentialListPicker ? (
+              <SequentialListPicker
+                inputJson={lab.inputJson}
+                actualPreset={actualSequentialListPreset}
+                onSelect={lab.selectSequentialListPreset}
               />
             ) : null}
             <Timeline events={lab.events} playback={lab.playback} />

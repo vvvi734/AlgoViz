@@ -1,0 +1,5290 @@
+{
+  "capacity-one": [
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          7
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "初始化：capacity 是物理槽位数，length 是有效元素数 / init: capacity vs length",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          7
+        ],
+        "length": 1,
+        "capacity": 1,
+        "index": 0,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "init",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "init",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 1,
+        "length": 1,
+        "slots": [
+          {
+            "index": 0,
+            "value": 7
+          }
+        ],
+        "focusIndex": 0
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          7
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "检查索引：被删位置必须位于有效区 / bounds check",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          7
+        ],
+        "length": 1,
+        "capacity": 1,
+        "index": 0,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "delete",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "delete",
+        "action": "check",
+        "phase": "intermediate",
+        "capacity": 1,
+        "length": 1,
+        "slots": [
+          {
+            "index": 0,
+            "value": 7
+          }
+        ],
+        "focusIndex": 0,
+        "requestedIndex": 0
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          7
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "保存被删除元素 / remember the removed value",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          7
+        ],
+        "length": 1,
+        "capacity": 1,
+        "index": 0,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "delete",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "delete",
+        "action": "save",
+        "phase": "intermediate",
+        "capacity": 1,
+        "length": 1,
+        "slots": [
+          {
+            "index": 0,
+            "value": 7
+          }
+        ],
+        "focusIndex": 0,
+        "requestedIndex": 0,
+        "removedIndex": 0,
+        "removedValue": 7
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [],
+        "focus": []
+      },
+      "message": "清理最后一个无效槽位 / clear the first free slot",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          null
+        ],
+        "length": 0,
+        "capacity": 1,
+        "index": 0,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "delete",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "delete",
+        "action": "clear",
+        "phase": "intermediate",
+        "capacity": 1,
+        "length": 0,
+        "slots": [
+          {
+            "index": 0,
+            "value": null
+          }
+        ],
+        "focusIndex": 0,
+        "targetIndex": 0,
+        "requestedIndex": 0,
+        "removedIndex": 0,
+        "removedValue": 7,
+        "change": {
+          "index": 0,
+          "before": 7,
+          "after": null
+        }
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [],
+        "focus": []
+      },
+      "message": "length 更新为 0，删除完成 / deletion complete",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          null
+        ],
+        "length": 0,
+        "capacity": 1,
+        "index": 0,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "delete",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "delete",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 1,
+        "length": 0,
+        "slots": [
+          {
+            "index": 0,
+            "value": null
+          }
+        ],
+        "focusIndex": 0,
+        "requestedIndex": 0
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [],
+        "focus": []
+      },
+      "message": "操作完成，最终槽位与真实数组一致 / done: final slots match the real array",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          null
+        ],
+        "length": 0,
+        "capacity": 1,
+        "index": 0,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "done",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "done",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 1,
+        "length": 0,
+        "slots": [
+          {
+            "index": 0,
+            "value": null
+          }
+        ]
+      },
+      "extra": {}
+    }
+  ],
+  "capacity-one-full-insert": [
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          7
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "初始化：capacity 是物理槽位数，length 是有效元素数 / init: capacity vs length",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          7
+        ],
+        "length": 1,
+        "capacity": 1,
+        "index": 0,
+        "checked": [],
+        "value": 6,
+        "target": 0
+      },
+      "lessonStepId": "init",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "init",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 1,
+        "length": 1,
+        "slots": [
+          {
+            "index": 0,
+            "value": 7
+          }
+        ],
+        "focusIndex": 0
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          7
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "检查容量：length == capacity，无法插入 / the slot array is full",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          7
+        ],
+        "length": 1,
+        "capacity": 1,
+        "index": 0,
+        "checked": [],
+        "value": 6,
+        "target": 0
+      },
+      "lessonStepId": "insert",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "insert",
+        "action": "check",
+        "phase": "intermediate",
+        "capacity": 1,
+        "length": 1,
+        "slots": [
+          {
+            "index": 0,
+            "value": 7
+          }
+        ],
+        "focusIndex": 0,
+        "requestedIndex": 0
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          7
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "满表插入被拒绝：没有空闲槽位 / full table rejects insertion",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          7
+        ],
+        "length": 1,
+        "capacity": 1,
+        "index": 0,
+        "checked": [],
+        "value": 6,
+        "target": 0
+      },
+      "lessonStepId": "insert",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "insert",
+        "action": "reject",
+        "phase": "complete",
+        "capacity": 1,
+        "length": 1,
+        "slots": [
+          {
+            "index": 0,
+            "value": 7
+          }
+        ],
+        "focusIndex": 0,
+        "requestedIndex": 0,
+        "error": "capacity-full"
+      },
+      "extra": {}
+    }
+  ],
+  "negative-and-duplicate": [
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          -5,
+          3,
+          3,
+          0,
+          -5
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "初始化：capacity 是物理槽位数，length 是有效元素数 / init: capacity vs length",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          -5,
+          3,
+          3,
+          0,
+          -5,
+          null
+        ],
+        "length": 5,
+        "capacity": 6,
+        "index": 5,
+        "checked": [],
+        "value": 0,
+        "target": 3
+      },
+      "lessonStepId": "init",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "init",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 6,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": -5
+          },
+          {
+            "index": 1,
+            "value": 3
+          },
+          {
+            "index": 2,
+            "value": 3
+          },
+          {
+            "index": 3,
+            "value": 0
+          },
+          {
+            "index": 4,
+            "value": -5
+          },
+          {
+            "index": 5,
+            "value": null
+          }
+        ],
+        "focusIndex": 0
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          -5,
+          3,
+          3,
+          0,
+          -5
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "比较 data[i] 与目标值 / compare data[i] with target",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          -5,
+          3,
+          3,
+          0,
+          -5,
+          null
+        ],
+        "length": 5,
+        "capacity": 6,
+        "index": 5,
+        "checked": [],
+        "value": 0,
+        "target": 3
+      },
+      "lessonStepId": "search",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "search",
+        "action": "compare",
+        "phase": "intermediate",
+        "capacity": 6,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": -5
+          },
+          {
+            "index": 1,
+            "value": 3
+          },
+          {
+            "index": 2,
+            "value": 3
+          },
+          {
+            "index": 3,
+            "value": 0
+          },
+          {
+            "index": 4,
+            "value": -5
+          },
+          {
+            "index": 5,
+            "value": null
+          }
+        ],
+        "focusIndex": 0,
+        "checked": [],
+        "searchValue": 3
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          -5,
+          3,
+          3,
+          0,
+          -5
+        ],
+        "focus": [
+          1
+        ]
+      },
+      "message": "比较 data[i] 与目标值 / compare data[i] with target",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          -5,
+          3,
+          3,
+          0,
+          -5,
+          null
+        ],
+        "length": 5,
+        "capacity": 6,
+        "index": 5,
+        "checked": [
+          0
+        ],
+        "value": 0,
+        "target": 3
+      },
+      "lessonStepId": "search",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "search",
+        "action": "compare",
+        "phase": "intermediate",
+        "capacity": 6,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": -5
+          },
+          {
+            "index": 1,
+            "value": 3
+          },
+          {
+            "index": 2,
+            "value": 3
+          },
+          {
+            "index": 3,
+            "value": 0
+          },
+          {
+            "index": 4,
+            "value": -5
+          },
+          {
+            "index": 5,
+            "value": null
+          }
+        ],
+        "focusIndex": 1,
+        "checked": [
+          0
+        ],
+        "searchValue": 3
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          -5,
+          3,
+          3,
+          0,
+          -5
+        ],
+        "focus": [
+          1
+        ]
+      },
+      "message": "查找成功：目标值位于该索引 / found at this index",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          -5,
+          3,
+          3,
+          0,
+          -5,
+          null
+        ],
+        "length": 5,
+        "capacity": 6,
+        "index": 5,
+        "checked": [
+          0
+        ],
+        "value": 0,
+        "target": 3
+      },
+      "lessonStepId": "search",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "search",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 6,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": -5
+          },
+          {
+            "index": 1,
+            "value": 3
+          },
+          {
+            "index": 2,
+            "value": 3
+          },
+          {
+            "index": 3,
+            "value": 0
+          },
+          {
+            "index": 4,
+            "value": -5
+          },
+          {
+            "index": 5,
+            "value": null
+          }
+        ],
+        "focusIndex": 1,
+        "checked": [
+          0
+        ],
+        "searchValue": 3,
+        "found": true,
+        "foundIndex": 1,
+        "result": 3
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          -5,
+          3,
+          3,
+          0,
+          -5
+        ],
+        "focus": []
+      },
+      "message": "操作完成，最终槽位与真实数组一致 / done: final slots match the real array",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          -5,
+          3,
+          3,
+          0,
+          -5,
+          null
+        ],
+        "length": 5,
+        "capacity": 6,
+        "index": 5,
+        "checked": [
+          0
+        ],
+        "value": 0,
+        "target": 3
+      },
+      "lessonStepId": "done",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "done",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 6,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": -5
+          },
+          {
+            "index": 1,
+            "value": 3
+          },
+          {
+            "index": 2,
+            "value": 3
+          },
+          {
+            "index": 3,
+            "value": 0
+          },
+          {
+            "index": 4,
+            "value": -5
+          },
+          {
+            "index": 5,
+            "value": null
+          }
+        ]
+      },
+      "extra": {}
+    }
+  ],
+  "negative-values": [
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          -1,
+          -2,
+          -3,
+          -4,
+          -5
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "初始化：capacity 是物理槽位数，length 是有效元素数 / init: capacity vs length",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          -1,
+          -2,
+          -3,
+          -4,
+          -5,
+          null
+        ],
+        "length": 5,
+        "capacity": 6,
+        "index": 2,
+        "checked": [],
+        "value": -9,
+        "target": 0
+      },
+      "lessonStepId": "init",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "init",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 6,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": -1
+          },
+          {
+            "index": 1,
+            "value": -2
+          },
+          {
+            "index": 2,
+            "value": -3
+          },
+          {
+            "index": 3,
+            "value": -4
+          },
+          {
+            "index": 4,
+            "value": -5
+          },
+          {
+            "index": 5,
+            "value": null
+          }
+        ],
+        "focusIndex": 0
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          -1,
+          -2,
+          -3,
+          -4,
+          -5
+        ],
+        "focus": [
+          2
+        ]
+      },
+      "message": "检查索引与剩余容量 / check index and free capacity",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          -1,
+          -2,
+          -3,
+          -4,
+          -5,
+          null
+        ],
+        "length": 5,
+        "capacity": 6,
+        "index": 2,
+        "checked": [],
+        "value": -9,
+        "target": 0
+      },
+      "lessonStepId": "insert",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "insert",
+        "action": "check",
+        "phase": "intermediate",
+        "capacity": 6,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": -1
+          },
+          {
+            "index": 1,
+            "value": -2
+          },
+          {
+            "index": 2,
+            "value": -3
+          },
+          {
+            "index": 3,
+            "value": -4
+          },
+          {
+            "index": 4,
+            "value": -5
+          },
+          {
+            "index": 5,
+            "value": null
+          }
+        ],
+        "focusIndex": 2,
+        "requestedIndex": 2
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          -1,
+          -2,
+          -3,
+          -4,
+          -5
+        ],
+        "focus": []
+      },
+      "message": "从后向前搬移：data[5] = data[4] / shift right",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          -1,
+          -2,
+          -3,
+          -4,
+          -5,
+          -5
+        ],
+        "length": 5,
+        "capacity": 6,
+        "index": 2,
+        "checked": [],
+        "value": -9,
+        "target": 0
+      },
+      "lessonStepId": "insert",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "insert",
+        "action": "shift-right",
+        "phase": "intermediate",
+        "capacity": 6,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": -1
+          },
+          {
+            "index": 1,
+            "value": -2
+          },
+          {
+            "index": 2,
+            "value": -3
+          },
+          {
+            "index": 3,
+            "value": -4
+          },
+          {
+            "index": 4,
+            "value": -5
+          },
+          {
+            "index": 5,
+            "value": -5
+          }
+        ],
+        "focusIndex": 5,
+        "sourceIndex": 4,
+        "targetIndex": 5,
+        "requestedIndex": 2,
+        "change": {
+          "index": 5,
+          "before": null,
+          "after": -5
+        }
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          -1,
+          -2,
+          -3,
+          -4,
+          -4
+        ],
+        "focus": [
+          4
+        ]
+      },
+      "message": "从后向前搬移：data[4] = data[3] / shift right",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          -1,
+          -2,
+          -3,
+          -4,
+          -4,
+          -5
+        ],
+        "length": 5,
+        "capacity": 6,
+        "index": 2,
+        "checked": [],
+        "value": -9,
+        "target": 0
+      },
+      "lessonStepId": "insert",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "insert",
+        "action": "shift-right",
+        "phase": "intermediate",
+        "capacity": 6,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": -1
+          },
+          {
+            "index": 1,
+            "value": -2
+          },
+          {
+            "index": 2,
+            "value": -3
+          },
+          {
+            "index": 3,
+            "value": -4
+          },
+          {
+            "index": 4,
+            "value": -4
+          },
+          {
+            "index": 5,
+            "value": -5
+          }
+        ],
+        "focusIndex": 4,
+        "sourceIndex": 3,
+        "targetIndex": 4,
+        "requestedIndex": 2,
+        "change": {
+          "index": 4,
+          "before": -5,
+          "after": -4
+        }
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          -1,
+          -2,
+          -3,
+          -3,
+          -4
+        ],
+        "focus": [
+          3
+        ]
+      },
+      "message": "从后向前搬移：data[3] = data[2] / shift right",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          -1,
+          -2,
+          -3,
+          -3,
+          -4,
+          -5
+        ],
+        "length": 5,
+        "capacity": 6,
+        "index": 2,
+        "checked": [],
+        "value": -9,
+        "target": 0
+      },
+      "lessonStepId": "insert",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "insert",
+        "action": "shift-right",
+        "phase": "intermediate",
+        "capacity": 6,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": -1
+          },
+          {
+            "index": 1,
+            "value": -2
+          },
+          {
+            "index": 2,
+            "value": -3
+          },
+          {
+            "index": 3,
+            "value": -3
+          },
+          {
+            "index": 4,
+            "value": -4
+          },
+          {
+            "index": 5,
+            "value": -5
+          }
+        ],
+        "focusIndex": 3,
+        "sourceIndex": 2,
+        "targetIndex": 3,
+        "requestedIndex": 2,
+        "change": {
+          "index": 3,
+          "before": -4,
+          "after": -3
+        }
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          -1,
+          -2,
+          -9,
+          -3,
+          -4
+        ],
+        "focus": [
+          2
+        ]
+      },
+      "message": "写入新元素到保留槽位 / write the new value into the reserved slot",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          -1,
+          -2,
+          -9,
+          -3,
+          -4,
+          -5
+        ],
+        "length": 5,
+        "capacity": 6,
+        "index": 2,
+        "checked": [],
+        "value": -9,
+        "target": 0
+      },
+      "lessonStepId": "insert",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "insert",
+        "action": "write",
+        "phase": "intermediate",
+        "capacity": 6,
+        "length": 5,
+        "slots": [
+          {
+            "index": 0,
+            "value": -1
+          },
+          {
+            "index": 1,
+            "value": -2
+          },
+          {
+            "index": 2,
+            "value": -9
+          },
+          {
+            "index": 3,
+            "value": -3
+          },
+          {
+            "index": 4,
+            "value": -4
+          },
+          {
+            "index": 5,
+            "value": -5
+          }
+        ],
+        "focusIndex": 2,
+        "targetIndex": 2,
+        "requestedIndex": 2,
+        "change": {
+          "index": 2,
+          "before": -3,
+          "after": -9
+        }
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          -1,
+          -2,
+          -9,
+          -3,
+          -4,
+          -5
+        ],
+        "focus": [
+          2
+        ]
+      },
+      "message": "length 更新为 6，插入完成 / insertion complete",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          -1,
+          -2,
+          -9,
+          -3,
+          -4,
+          -5
+        ],
+        "length": 6,
+        "capacity": 6,
+        "index": 2,
+        "checked": [],
+        "value": -9,
+        "target": 0
+      },
+      "lessonStepId": "insert",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "insert",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 6,
+        "length": 6,
+        "slots": [
+          {
+            "index": 0,
+            "value": -1
+          },
+          {
+            "index": 1,
+            "value": -2
+          },
+          {
+            "index": 2,
+            "value": -9
+          },
+          {
+            "index": 3,
+            "value": -3
+          },
+          {
+            "index": 4,
+            "value": -4
+          },
+          {
+            "index": 5,
+            "value": -5
+          }
+        ],
+        "focusIndex": 2,
+        "requestedIndex": 2
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          -1,
+          -2,
+          -9,
+          -3,
+          -4,
+          -5
+        ],
+        "focus": []
+      },
+      "message": "操作完成，最终槽位与真实数组一致 / done: final slots match the real array",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          -1,
+          -2,
+          -9,
+          -3,
+          -4,
+          -5
+        ],
+        "length": 6,
+        "capacity": 6,
+        "index": 2,
+        "checked": [],
+        "value": -9,
+        "target": 0
+      },
+      "lessonStepId": "done",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "done",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 6,
+        "length": 6,
+        "slots": [
+          {
+            "index": 0,
+            "value": -1
+          },
+          {
+            "index": 1,
+            "value": -2
+          },
+          {
+            "index": 2,
+            "value": -9
+          },
+          {
+            "index": 3,
+            "value": -3
+          },
+          {
+            "index": 4,
+            "value": -4
+          },
+          {
+            "index": 5,
+            "value": -5
+          }
+        ]
+      },
+      "extra": {}
+    }
+  ],
+  "access-zero": [
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          4,
+          5
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "初始化：capacity 是物理槽位数，length 是有效元素数 / init: capacity vs length",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          4,
+          5,
+          null,
+          null,
+          null
+        ],
+        "length": 2,
+        "capacity": 5,
+        "index": 0,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "init",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "init",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 5,
+        "length": 2,
+        "slots": [
+          {
+            "index": 0,
+            "value": 4
+          },
+          {
+            "index": 1,
+            "value": 5
+          },
+          {
+            "index": 2,
+            "value": null
+          },
+          {
+            "index": 3,
+            "value": null
+          },
+          {
+            "index": 4,
+            "value": null
+          }
+        ],
+        "focusIndex": 0
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          4,
+          5
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "检查索引：0 <= index < length / bounds check",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          4,
+          5,
+          null,
+          null,
+          null
+        ],
+        "length": 2,
+        "capacity": 5,
+        "index": 0,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "access",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "access",
+        "action": "check",
+        "phase": "intermediate",
+        "capacity": 5,
+        "length": 2,
+        "slots": [
+          {
+            "index": 0,
+            "value": 4
+          },
+          {
+            "index": 1,
+            "value": 5
+          },
+          {
+            "index": 2,
+            "value": null
+          },
+          {
+            "index": 3,
+            "value": null
+          },
+          {
+            "index": 4,
+            "value": null
+          }
+        ],
+        "focusIndex": 0,
+        "requestedIndex": 0
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          4,
+          5
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "直接定位 data[index]，随机访问 O(1) / direct slot read is O(1)",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          4,
+          5,
+          null,
+          null,
+          null
+        ],
+        "length": 2,
+        "capacity": 5,
+        "index": 0,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "access",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "access",
+        "action": "read",
+        "phase": "complete",
+        "capacity": 5,
+        "length": 2,
+        "slots": [
+          {
+            "index": 0,
+            "value": 4
+          },
+          {
+            "index": 1,
+            "value": 5
+          },
+          {
+            "index": 2,
+            "value": null
+          },
+          {
+            "index": 3,
+            "value": null
+          },
+          {
+            "index": 4,
+            "value": null
+          }
+        ],
+        "focusIndex": 0,
+        "requestedIndex": 0,
+        "found": true,
+        "foundIndex": 0,
+        "result": 4
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          4,
+          5
+        ],
+        "focus": []
+      },
+      "message": "操作完成，最终槽位与真实数组一致 / done: final slots match the real array",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          4,
+          5,
+          null,
+          null,
+          null
+        ],
+        "length": 2,
+        "capacity": 5,
+        "index": 0,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "done",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "done",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 5,
+        "length": 2,
+        "slots": [
+          {
+            "index": 0,
+            "value": 4
+          },
+          {
+            "index": 1,
+            "value": 5
+          },
+          {
+            "index": 2,
+            "value": null
+          },
+          {
+            "index": 3,
+            "value": null
+          },
+          {
+            "index": 4,
+            "value": null
+          }
+        ]
+      },
+      "extra": {}
+    }
+  ],
+  "access-negative": [
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          4,
+          5
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "初始化：capacity 是物理槽位数，length 是有效元素数 / init: capacity vs length",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          4,
+          5,
+          null,
+          null,
+          null
+        ],
+        "length": 2,
+        "capacity": 5,
+        "index": -1,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "init",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "init",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 5,
+        "length": 2,
+        "slots": [
+          {
+            "index": 0,
+            "value": 4
+          },
+          {
+            "index": 1,
+            "value": 5
+          },
+          {
+            "index": 2,
+            "value": null
+          },
+          {
+            "index": 3,
+            "value": null
+          },
+          {
+            "index": 4,
+            "value": null
+          }
+        ],
+        "focusIndex": 0
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          4,
+          5
+        ],
+        "focus": []
+      },
+      "message": "索引越界：无法读取空闲区或容量外槽位 / invalid index",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          4,
+          5,
+          null,
+          null,
+          null
+        ],
+        "length": 2,
+        "capacity": 5,
+        "index": -1,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "access",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "access",
+        "action": "reject",
+        "phase": "complete",
+        "capacity": 5,
+        "length": 2,
+        "slots": [
+          {
+            "index": 0,
+            "value": 4
+          },
+          {
+            "index": 1,
+            "value": 5
+          },
+          {
+            "index": 2,
+            "value": null
+          },
+          {
+            "index": 3,
+            "value": null
+          },
+          {
+            "index": 4,
+            "value": null
+          }
+        ],
+        "requestedIndex": -1,
+        "error": "index-out-of-range"
+      },
+      "extra": {}
+    }
+  ],
+  "access-empty": [
+    {
+      "state": {
+        "type": "array",
+        "values": [],
+        "focus": []
+      },
+      "message": "初始化：capacity 是物理槽位数，length 是有效元素数 / init: capacity vs length",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        "length": 0,
+        "capacity": 5,
+        "index": 0,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "init",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "init",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 5,
+        "length": 0,
+        "slots": [
+          {
+            "index": 0,
+            "value": null
+          },
+          {
+            "index": 1,
+            "value": null
+          },
+          {
+            "index": 2,
+            "value": null
+          },
+          {
+            "index": 3,
+            "value": null
+          },
+          {
+            "index": 4,
+            "value": null
+          }
+        ]
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [],
+        "focus": []
+      },
+      "message": "索引越界：无法读取空闲区或容量外槽位 / invalid index",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        "length": 0,
+        "capacity": 5,
+        "index": 0,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "access",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "access",
+        "action": "reject",
+        "phase": "complete",
+        "capacity": 5,
+        "length": 0,
+        "slots": [
+          {
+            "index": 0,
+            "value": null
+          },
+          {
+            "index": 1,
+            "value": null
+          },
+          {
+            "index": 2,
+            "value": null
+          },
+          {
+            "index": 3,
+            "value": null
+          },
+          {
+            "index": 4,
+            "value": null
+          }
+        ],
+        "focusIndex": 0,
+        "requestedIndex": 0,
+        "error": "index-out-of-range"
+      },
+      "extra": {}
+    }
+  ],
+  "insert-negative": [
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "初始化：capacity 是物理槽位数，length 是有效元素数 / init: capacity vs length",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          1,
+          2,
+          null,
+          null,
+          null
+        ],
+        "length": 2,
+        "capacity": 5,
+        "index": -1,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "init",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "init",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 5,
+        "length": 2,
+        "slots": [
+          {
+            "index": 0,
+            "value": 1
+          },
+          {
+            "index": 1,
+            "value": 2
+          },
+          {
+            "index": 2,
+            "value": null
+          },
+          {
+            "index": 3,
+            "value": null
+          },
+          {
+            "index": 4,
+            "value": null
+          }
+        ],
+        "focusIndex": 0
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2
+        ],
+        "focus": []
+      },
+      "message": "插入位置非法：必须满足 0 <= index <= length / invalid insertion index",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          1,
+          2,
+          null,
+          null,
+          null
+        ],
+        "length": 2,
+        "capacity": 5,
+        "index": -1,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "insert",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "insert",
+        "action": "reject",
+        "phase": "complete",
+        "capacity": 5,
+        "length": 2,
+        "slots": [
+          {
+            "index": 0,
+            "value": 1
+          },
+          {
+            "index": 1,
+            "value": 2
+          },
+          {
+            "index": 2,
+            "value": null
+          },
+          {
+            "index": 3,
+            "value": null
+          },
+          {
+            "index": 4,
+            "value": null
+          }
+        ],
+        "requestedIndex": -1,
+        "error": "index-out-of-range"
+      },
+      "extra": {}
+    }
+  ],
+  "insert-past-end": [
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "初始化：capacity 是物理槽位数，length 是有效元素数 / init: capacity vs length",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          1,
+          2,
+          null,
+          null,
+          null
+        ],
+        "length": 2,
+        "capacity": 5,
+        "index": 3,
+        "checked": [],
+        "value": 9,
+        "target": 0
+      },
+      "lessonStepId": "init",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "init",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 5,
+        "length": 2,
+        "slots": [
+          {
+            "index": 0,
+            "value": 1
+          },
+          {
+            "index": 1,
+            "value": 2
+          },
+          {
+            "index": 2,
+            "value": null
+          },
+          {
+            "index": 3,
+            "value": null
+          },
+          {
+            "index": 4,
+            "value": null
+          }
+        ],
+        "focusIndex": 0
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2
+        ],
+        "focus": []
+      },
+      "message": "插入位置非法：必须满足 0 <= index <= length / invalid insertion index",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          1,
+          2,
+          null,
+          null,
+          null
+        ],
+        "length": 2,
+        "capacity": 5,
+        "index": 3,
+        "checked": [],
+        "value": 9,
+        "target": 0
+      },
+      "lessonStepId": "insert",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "insert",
+        "action": "reject",
+        "phase": "complete",
+        "capacity": 5,
+        "length": 2,
+        "slots": [
+          {
+            "index": 0,
+            "value": 1
+          },
+          {
+            "index": 1,
+            "value": 2
+          },
+          {
+            "index": 2,
+            "value": null
+          },
+          {
+            "index": 3,
+            "value": null
+          },
+          {
+            "index": 4,
+            "value": null
+          }
+        ],
+        "focusIndex": 3,
+        "requestedIndex": 3,
+        "error": "index-out-of-range"
+      },
+      "extra": {}
+    }
+  ],
+  "insert-at-empty": [
+    {
+      "state": {
+        "type": "array",
+        "values": [],
+        "focus": []
+      },
+      "message": "初始化：capacity 是物理槽位数，length 是有效元素数 / init: capacity vs length",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          null,
+          null,
+          null
+        ],
+        "length": 0,
+        "capacity": 3,
+        "index": 0,
+        "checked": [],
+        "value": 42,
+        "target": 0
+      },
+      "lessonStepId": "init",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "init",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 3,
+        "length": 0,
+        "slots": [
+          {
+            "index": 0,
+            "value": null
+          },
+          {
+            "index": 1,
+            "value": null
+          },
+          {
+            "index": 2,
+            "value": null
+          }
+        ]
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [],
+        "focus": []
+      },
+      "message": "检查索引与剩余容量 / check index and free capacity",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          null,
+          null,
+          null
+        ],
+        "length": 0,
+        "capacity": 3,
+        "index": 0,
+        "checked": [],
+        "value": 42,
+        "target": 0
+      },
+      "lessonStepId": "insert",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "insert",
+        "action": "check",
+        "phase": "intermediate",
+        "capacity": 3,
+        "length": 0,
+        "slots": [
+          {
+            "index": 0,
+            "value": null
+          },
+          {
+            "index": 1,
+            "value": null
+          },
+          {
+            "index": 2,
+            "value": null
+          }
+        ],
+        "focusIndex": 0,
+        "requestedIndex": 0
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [],
+        "focus": []
+      },
+      "message": "写入新元素到保留槽位 / write the new value into the reserved slot",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          42,
+          null,
+          null
+        ],
+        "length": 0,
+        "capacity": 3,
+        "index": 0,
+        "checked": [],
+        "value": 42,
+        "target": 0
+      },
+      "lessonStepId": "insert",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "insert",
+        "action": "write",
+        "phase": "intermediate",
+        "capacity": 3,
+        "length": 0,
+        "slots": [
+          {
+            "index": 0,
+            "value": 42
+          },
+          {
+            "index": 1,
+            "value": null
+          },
+          {
+            "index": 2,
+            "value": null
+          }
+        ],
+        "focusIndex": 0,
+        "targetIndex": 0,
+        "requestedIndex": 0,
+        "change": {
+          "index": 0,
+          "before": null,
+          "after": 42
+        }
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          42
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "length 更新为 1，插入完成 / insertion complete",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          42,
+          null,
+          null
+        ],
+        "length": 1,
+        "capacity": 3,
+        "index": 0,
+        "checked": [],
+        "value": 42,
+        "target": 0
+      },
+      "lessonStepId": "insert",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "insert",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 3,
+        "length": 1,
+        "slots": [
+          {
+            "index": 0,
+            "value": 42
+          },
+          {
+            "index": 1,
+            "value": null
+          },
+          {
+            "index": 2,
+            "value": null
+          }
+        ],
+        "focusIndex": 0,
+        "requestedIndex": 0
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          42
+        ],
+        "focus": []
+      },
+      "message": "操作完成，最终槽位与真实数组一致 / done: final slots match the real array",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          42,
+          null,
+          null
+        ],
+        "length": 1,
+        "capacity": 3,
+        "index": 0,
+        "checked": [],
+        "value": 42,
+        "target": 0
+      },
+      "lessonStepId": "done",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "done",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 3,
+        "length": 1,
+        "slots": [
+          {
+            "index": 0,
+            "value": 42
+          },
+          {
+            "index": 1,
+            "value": null
+          },
+          {
+            "index": 2,
+            "value": null
+          }
+        ]
+      },
+      "extra": {}
+    }
+  ],
+  "append-first-free": [
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "初始化：capacity 是物理槽位数，length 是有效元素数 / init: capacity vs length",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          1,
+          2,
+          null,
+          null
+        ],
+        "length": 2,
+        "capacity": 4,
+        "index": 2,
+        "checked": [],
+        "value": 3,
+        "target": 0
+      },
+      "lessonStepId": "init",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "init",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 4,
+        "length": 2,
+        "slots": [
+          {
+            "index": 0,
+            "value": 1
+          },
+          {
+            "index": 1,
+            "value": 2
+          },
+          {
+            "index": 2,
+            "value": null
+          },
+          {
+            "index": 3,
+            "value": null
+          }
+        ],
+        "focusIndex": 0
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2
+        ],
+        "focus": []
+      },
+      "message": "检查索引与剩余容量 / check index and free capacity",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          1,
+          2,
+          null,
+          null
+        ],
+        "length": 2,
+        "capacity": 4,
+        "index": 2,
+        "checked": [],
+        "value": 3,
+        "target": 0
+      },
+      "lessonStepId": "insert",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "insert",
+        "action": "check",
+        "phase": "intermediate",
+        "capacity": 4,
+        "length": 2,
+        "slots": [
+          {
+            "index": 0,
+            "value": 1
+          },
+          {
+            "index": 1,
+            "value": 2
+          },
+          {
+            "index": 2,
+            "value": null
+          },
+          {
+            "index": 3,
+            "value": null
+          }
+        ],
+        "focusIndex": 2,
+        "requestedIndex": 2
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2
+        ],
+        "focus": []
+      },
+      "message": "写入新元素到保留槽位 / write the new value into the reserved slot",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          1,
+          2,
+          3,
+          null
+        ],
+        "length": 2,
+        "capacity": 4,
+        "index": 2,
+        "checked": [],
+        "value": 3,
+        "target": 0
+      },
+      "lessonStepId": "insert",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "insert",
+        "action": "write",
+        "phase": "intermediate",
+        "capacity": 4,
+        "length": 2,
+        "slots": [
+          {
+            "index": 0,
+            "value": 1
+          },
+          {
+            "index": 1,
+            "value": 2
+          },
+          {
+            "index": 2,
+            "value": 3
+          },
+          {
+            "index": 3,
+            "value": null
+          }
+        ],
+        "focusIndex": 2,
+        "targetIndex": 2,
+        "requestedIndex": 2,
+        "change": {
+          "index": 2,
+          "before": null,
+          "after": 3
+        }
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          3
+        ],
+        "focus": [
+          2
+        ]
+      },
+      "message": "length 更新为 3，插入完成 / insertion complete",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          1,
+          2,
+          3,
+          null
+        ],
+        "length": 3,
+        "capacity": 4,
+        "index": 2,
+        "checked": [],
+        "value": 3,
+        "target": 0
+      },
+      "lessonStepId": "insert",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "insert",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 4,
+        "length": 3,
+        "slots": [
+          {
+            "index": 0,
+            "value": 1
+          },
+          {
+            "index": 1,
+            "value": 2
+          },
+          {
+            "index": 2,
+            "value": 3
+          },
+          {
+            "index": 3,
+            "value": null
+          }
+        ],
+        "focusIndex": 2,
+        "requestedIndex": 2
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          3
+        ],
+        "focus": []
+      },
+      "message": "操作完成，最终槽位与真实数组一致 / done: final slots match the real array",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          1,
+          2,
+          3,
+          null
+        ],
+        "length": 3,
+        "capacity": 4,
+        "index": 2,
+        "checked": [],
+        "value": 3,
+        "target": 0
+      },
+      "lessonStepId": "done",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "done",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 4,
+        "length": 3,
+        "slots": [
+          {
+            "index": 0,
+            "value": 1
+          },
+          {
+            "index": 1,
+            "value": 2
+          },
+          {
+            "index": 2,
+            "value": 3
+          },
+          {
+            "index": 3,
+            "value": null
+          }
+        ]
+      },
+      "extra": {}
+    }
+  ],
+  "delete-negative": [
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "初始化：capacity 是物理槽位数，length 是有效元素数 / init: capacity vs length",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          1,
+          2,
+          null,
+          null,
+          null
+        ],
+        "length": 2,
+        "capacity": 5,
+        "index": -1,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "init",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "init",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 5,
+        "length": 2,
+        "slots": [
+          {
+            "index": 0,
+            "value": 1
+          },
+          {
+            "index": 1,
+            "value": 2
+          },
+          {
+            "index": 2,
+            "value": null
+          },
+          {
+            "index": 3,
+            "value": null
+          },
+          {
+            "index": 4,
+            "value": null
+          }
+        ],
+        "focusIndex": 0
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2
+        ],
+        "focus": []
+      },
+      "message": "删除位置非法：必须满足 0 <= index < length / invalid deletion index",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          1,
+          2,
+          null,
+          null,
+          null
+        ],
+        "length": 2,
+        "capacity": 5,
+        "index": -1,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "delete",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "delete",
+        "action": "reject",
+        "phase": "complete",
+        "capacity": 5,
+        "length": 2,
+        "slots": [
+          {
+            "index": 0,
+            "value": 1
+          },
+          {
+            "index": 1,
+            "value": 2
+          },
+          {
+            "index": 2,
+            "value": null
+          },
+          {
+            "index": 3,
+            "value": null
+          },
+          {
+            "index": 4,
+            "value": null
+          }
+        ],
+        "requestedIndex": -1,
+        "error": "index-out-of-range"
+      },
+      "extra": {}
+    }
+  ],
+  "delete-past-end": [
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "初始化：capacity 是物理槽位数，length 是有效元素数 / init: capacity vs length",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          1,
+          2,
+          null,
+          null,
+          null
+        ],
+        "length": 2,
+        "capacity": 5,
+        "index": 2,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "init",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "init",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 5,
+        "length": 2,
+        "slots": [
+          {
+            "index": 0,
+            "value": 1
+          },
+          {
+            "index": 1,
+            "value": 2
+          },
+          {
+            "index": 2,
+            "value": null
+          },
+          {
+            "index": 3,
+            "value": null
+          },
+          {
+            "index": 4,
+            "value": null
+          }
+        ],
+        "focusIndex": 0
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2
+        ],
+        "focus": []
+      },
+      "message": "删除位置非法：必须满足 0 <= index < length / invalid deletion index",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          1,
+          2,
+          null,
+          null,
+          null
+        ],
+        "length": 2,
+        "capacity": 5,
+        "index": 2,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "delete",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "delete",
+        "action": "reject",
+        "phase": "complete",
+        "capacity": 5,
+        "length": 2,
+        "slots": [
+          {
+            "index": 0,
+            "value": 1
+          },
+          {
+            "index": 1,
+            "value": 2
+          },
+          {
+            "index": 2,
+            "value": null
+          },
+          {
+            "index": 3,
+            "value": null
+          },
+          {
+            "index": 4,
+            "value": null
+          }
+        ],
+        "focusIndex": 2,
+        "requestedIndex": 2,
+        "error": "index-out-of-range"
+      },
+      "extra": {}
+    }
+  ],
+  "delete-only": [
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          9
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "初始化：capacity 是物理槽位数，length 是有效元素数 / init: capacity vs length",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          9,
+          null,
+          null
+        ],
+        "length": 1,
+        "capacity": 3,
+        "index": 0,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "init",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "init",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 3,
+        "length": 1,
+        "slots": [
+          {
+            "index": 0,
+            "value": 9
+          },
+          {
+            "index": 1,
+            "value": null
+          },
+          {
+            "index": 2,
+            "value": null
+          }
+        ],
+        "focusIndex": 0
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          9
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "检查索引：被删位置必须位于有效区 / bounds check",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          9,
+          null,
+          null
+        ],
+        "length": 1,
+        "capacity": 3,
+        "index": 0,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "delete",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "delete",
+        "action": "check",
+        "phase": "intermediate",
+        "capacity": 3,
+        "length": 1,
+        "slots": [
+          {
+            "index": 0,
+            "value": 9
+          },
+          {
+            "index": 1,
+            "value": null
+          },
+          {
+            "index": 2,
+            "value": null
+          }
+        ],
+        "focusIndex": 0,
+        "requestedIndex": 0
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          9
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "保存被删除元素 / remember the removed value",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          9,
+          null,
+          null
+        ],
+        "length": 1,
+        "capacity": 3,
+        "index": 0,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "delete",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "delete",
+        "action": "save",
+        "phase": "intermediate",
+        "capacity": 3,
+        "length": 1,
+        "slots": [
+          {
+            "index": 0,
+            "value": 9
+          },
+          {
+            "index": 1,
+            "value": null
+          },
+          {
+            "index": 2,
+            "value": null
+          }
+        ],
+        "focusIndex": 0,
+        "requestedIndex": 0,
+        "removedIndex": 0,
+        "removedValue": 9
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [],
+        "focus": []
+      },
+      "message": "清理最后一个无效槽位 / clear the first free slot",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          null,
+          null,
+          null
+        ],
+        "length": 0,
+        "capacity": 3,
+        "index": 0,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "delete",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "delete",
+        "action": "clear",
+        "phase": "intermediate",
+        "capacity": 3,
+        "length": 0,
+        "slots": [
+          {
+            "index": 0,
+            "value": null
+          },
+          {
+            "index": 1,
+            "value": null
+          },
+          {
+            "index": 2,
+            "value": null
+          }
+        ],
+        "focusIndex": 0,
+        "targetIndex": 0,
+        "requestedIndex": 0,
+        "removedIndex": 0,
+        "removedValue": 9,
+        "change": {
+          "index": 0,
+          "before": 9,
+          "after": null
+        }
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [],
+        "focus": []
+      },
+      "message": "length 更新为 0，删除完成 / deletion complete",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          null,
+          null,
+          null
+        ],
+        "length": 0,
+        "capacity": 3,
+        "index": 0,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "delete",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "delete",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 3,
+        "length": 0,
+        "slots": [
+          {
+            "index": 0,
+            "value": null
+          },
+          {
+            "index": 1,
+            "value": null
+          },
+          {
+            "index": 2,
+            "value": null
+          }
+        ],
+        "focusIndex": 0,
+        "requestedIndex": 0
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [],
+        "focus": []
+      },
+      "message": "操作完成，最终槽位与真实数组一致 / done: final slots match the real array",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          null,
+          null,
+          null
+        ],
+        "length": 0,
+        "capacity": 3,
+        "index": 0,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "done",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "done",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 3,
+        "length": 0,
+        "slots": [
+          {
+            "index": 0,
+            "value": null
+          },
+          {
+            "index": 1,
+            "value": null
+          },
+          {
+            "index": 2,
+            "value": null
+          }
+        ]
+      },
+      "extra": {}
+    }
+  ],
+  "delete-to-empty": [
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "初始化：capacity 是物理槽位数，length 是有效元素数 / init: capacity vs length",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          1,
+          null,
+          null,
+          null
+        ],
+        "length": 1,
+        "capacity": 4,
+        "index": 0,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "init",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "init",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 4,
+        "length": 1,
+        "slots": [
+          {
+            "index": 0,
+            "value": 1
+          },
+          {
+            "index": 1,
+            "value": null
+          },
+          {
+            "index": 2,
+            "value": null
+          },
+          {
+            "index": 3,
+            "value": null
+          }
+        ],
+        "focusIndex": 0
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "检查索引：被删位置必须位于有效区 / bounds check",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          1,
+          null,
+          null,
+          null
+        ],
+        "length": 1,
+        "capacity": 4,
+        "index": 0,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "delete",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "delete",
+        "action": "check",
+        "phase": "intermediate",
+        "capacity": 4,
+        "length": 1,
+        "slots": [
+          {
+            "index": 0,
+            "value": 1
+          },
+          {
+            "index": 1,
+            "value": null
+          },
+          {
+            "index": 2,
+            "value": null
+          },
+          {
+            "index": 3,
+            "value": null
+          }
+        ],
+        "focusIndex": 0,
+        "requestedIndex": 0
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "保存被删除元素 / remember the removed value",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          1,
+          null,
+          null,
+          null
+        ],
+        "length": 1,
+        "capacity": 4,
+        "index": 0,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "delete",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "delete",
+        "action": "save",
+        "phase": "intermediate",
+        "capacity": 4,
+        "length": 1,
+        "slots": [
+          {
+            "index": 0,
+            "value": 1
+          },
+          {
+            "index": 1,
+            "value": null
+          },
+          {
+            "index": 2,
+            "value": null
+          },
+          {
+            "index": 3,
+            "value": null
+          }
+        ],
+        "focusIndex": 0,
+        "requestedIndex": 0,
+        "removedIndex": 0,
+        "removedValue": 1
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [],
+        "focus": []
+      },
+      "message": "清理最后一个无效槽位 / clear the first free slot",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          null,
+          null,
+          null,
+          null
+        ],
+        "length": 0,
+        "capacity": 4,
+        "index": 0,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "delete",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "delete",
+        "action": "clear",
+        "phase": "intermediate",
+        "capacity": 4,
+        "length": 0,
+        "slots": [
+          {
+            "index": 0,
+            "value": null
+          },
+          {
+            "index": 1,
+            "value": null
+          },
+          {
+            "index": 2,
+            "value": null
+          },
+          {
+            "index": 3,
+            "value": null
+          }
+        ],
+        "focusIndex": 0,
+        "targetIndex": 0,
+        "requestedIndex": 0,
+        "removedIndex": 0,
+        "removedValue": 1,
+        "change": {
+          "index": 0,
+          "before": 1,
+          "after": null
+        }
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [],
+        "focus": []
+      },
+      "message": "length 更新为 0，删除完成 / deletion complete",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          null,
+          null,
+          null,
+          null
+        ],
+        "length": 0,
+        "capacity": 4,
+        "index": 0,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "delete",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "delete",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 4,
+        "length": 0,
+        "slots": [
+          {
+            "index": 0,
+            "value": null
+          },
+          {
+            "index": 1,
+            "value": null
+          },
+          {
+            "index": 2,
+            "value": null
+          },
+          {
+            "index": 3,
+            "value": null
+          }
+        ],
+        "focusIndex": 0,
+        "requestedIndex": 0
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [],
+        "focus": []
+      },
+      "message": "操作完成，最终槽位与真实数组一致 / done: final slots match the real array",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          null,
+          null,
+          null,
+          null
+        ],
+        "length": 0,
+        "capacity": 4,
+        "index": 0,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "done",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "done",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 4,
+        "length": 0,
+        "slots": [
+          {
+            "index": 0,
+            "value": null
+          },
+          {
+            "index": 1,
+            "value": null
+          },
+          {
+            "index": 2,
+            "value": null
+          },
+          {
+            "index": 3,
+            "value": null
+          }
+        ]
+      },
+      "extra": {}
+    }
+  ],
+  "traverse-empty": [
+    {
+      "state": {
+        "type": "array",
+        "values": [],
+        "focus": []
+      },
+      "message": "初始化：capacity 是物理槽位数，length 是有效元素数 / init: capacity vs length",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          null,
+          null,
+          null,
+          null
+        ],
+        "length": 0,
+        "capacity": 4,
+        "index": 0,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "init",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "init",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 4,
+        "length": 0,
+        "slots": [
+          {
+            "index": 0,
+            "value": null
+          },
+          {
+            "index": 1,
+            "value": null
+          },
+          {
+            "index": 2,
+            "value": null
+          },
+          {
+            "index": 3,
+            "value": null
+          }
+        ]
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [],
+        "focus": []
+      },
+      "message": "遍历完成：只访问 [0, length) / traversal stops at length",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          null,
+          null,
+          null,
+          null
+        ],
+        "length": 0,
+        "capacity": 4,
+        "index": 0,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "traverse",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "traverse",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 4,
+        "length": 0,
+        "slots": [
+          {
+            "index": 0,
+            "value": null
+          },
+          {
+            "index": 1,
+            "value": null
+          },
+          {
+            "index": 2,
+            "value": null
+          },
+          {
+            "index": 3,
+            "value": null
+          }
+        ],
+        "checked": []
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [],
+        "focus": []
+      },
+      "message": "操作完成，最终槽位与真实数组一致 / done: final slots match the real array",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          null,
+          null,
+          null,
+          null
+        ],
+        "length": 0,
+        "capacity": 4,
+        "index": 0,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "done",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "done",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 4,
+        "length": 0,
+        "slots": [
+          {
+            "index": 0,
+            "value": null
+          },
+          {
+            "index": 1,
+            "value": null
+          },
+          {
+            "index": 2,
+            "value": null
+          },
+          {
+            "index": 3,
+            "value": null
+          }
+        ]
+      },
+      "extra": {}
+    }
+  ],
+  "search-empty": [
+    {
+      "state": {
+        "type": "array",
+        "values": [],
+        "focus": []
+      },
+      "message": "初始化：capacity 是物理槽位数，length 是有效元素数 / init: capacity vs length",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          null,
+          null,
+          null,
+          null
+        ],
+        "length": 0,
+        "capacity": 4,
+        "index": 0,
+        "checked": [],
+        "value": 0,
+        "target": 5
+      },
+      "lessonStepId": "init",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "init",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 4,
+        "length": 0,
+        "slots": [
+          {
+            "index": 0,
+            "value": null
+          },
+          {
+            "index": 1,
+            "value": null
+          },
+          {
+            "index": 2,
+            "value": null
+          },
+          {
+            "index": 3,
+            "value": null
+          }
+        ]
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [],
+        "focus": []
+      },
+      "message": "查找失败：已检查全部有效元素 / not found after scanning the live prefix",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          null,
+          null,
+          null,
+          null
+        ],
+        "length": 0,
+        "capacity": 4,
+        "index": 0,
+        "checked": [],
+        "value": 0,
+        "target": 5
+      },
+      "lessonStepId": "search",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "search",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 4,
+        "length": 0,
+        "slots": [
+          {
+            "index": 0,
+            "value": null
+          },
+          {
+            "index": 1,
+            "value": null
+          },
+          {
+            "index": 2,
+            "value": null
+          },
+          {
+            "index": 3,
+            "value": null
+          }
+        ],
+        "checked": [],
+        "searchValue": 5,
+        "found": false
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [],
+        "focus": []
+      },
+      "message": "操作完成，最终槽位与真实数组一致 / done: final slots match the real array",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          null,
+          null,
+          null,
+          null
+        ],
+        "length": 0,
+        "capacity": 4,
+        "index": 0,
+        "checked": [],
+        "value": 0,
+        "target": 5
+      },
+      "lessonStepId": "done",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "done",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 4,
+        "length": 0,
+        "slots": [
+          {
+            "index": 0,
+            "value": null
+          },
+          {
+            "index": 1,
+            "value": null
+          },
+          {
+            "index": 2,
+            "value": null
+          },
+          {
+            "index": 3,
+            "value": null
+          }
+        ]
+      },
+      "extra": {}
+    }
+  ],
+  "search-first": [
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          5,
+          6,
+          7,
+          8
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "初始化：capacity 是物理槽位数，length 是有效元素数 / init: capacity vs length",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          5,
+          6,
+          7,
+          8,
+          null
+        ],
+        "length": 4,
+        "capacity": 5,
+        "index": 4,
+        "checked": [],
+        "value": 0,
+        "target": 5
+      },
+      "lessonStepId": "init",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "init",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 5,
+        "length": 4,
+        "slots": [
+          {
+            "index": 0,
+            "value": 5
+          },
+          {
+            "index": 1,
+            "value": 6
+          },
+          {
+            "index": 2,
+            "value": 7
+          },
+          {
+            "index": 3,
+            "value": 8
+          },
+          {
+            "index": 4,
+            "value": null
+          }
+        ],
+        "focusIndex": 0
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          5,
+          6,
+          7,
+          8
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "比较 data[i] 与目标值 / compare data[i] with target",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          5,
+          6,
+          7,
+          8,
+          null
+        ],
+        "length": 4,
+        "capacity": 5,
+        "index": 4,
+        "checked": [],
+        "value": 0,
+        "target": 5
+      },
+      "lessonStepId": "search",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "search",
+        "action": "compare",
+        "phase": "intermediate",
+        "capacity": 5,
+        "length": 4,
+        "slots": [
+          {
+            "index": 0,
+            "value": 5
+          },
+          {
+            "index": 1,
+            "value": 6
+          },
+          {
+            "index": 2,
+            "value": 7
+          },
+          {
+            "index": 3,
+            "value": 8
+          },
+          {
+            "index": 4,
+            "value": null
+          }
+        ],
+        "focusIndex": 0,
+        "checked": [],
+        "searchValue": 5
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          5,
+          6,
+          7,
+          8
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "查找成功：目标值位于该索引 / found at this index",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          5,
+          6,
+          7,
+          8,
+          null
+        ],
+        "length": 4,
+        "capacity": 5,
+        "index": 4,
+        "checked": [],
+        "value": 0,
+        "target": 5
+      },
+      "lessonStepId": "search",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "search",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 5,
+        "length": 4,
+        "slots": [
+          {
+            "index": 0,
+            "value": 5
+          },
+          {
+            "index": 1,
+            "value": 6
+          },
+          {
+            "index": 2,
+            "value": 7
+          },
+          {
+            "index": 3,
+            "value": 8
+          },
+          {
+            "index": 4,
+            "value": null
+          }
+        ],
+        "focusIndex": 0,
+        "checked": [],
+        "searchValue": 5,
+        "found": true,
+        "foundIndex": 0,
+        "result": 5
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          5,
+          6,
+          7,
+          8
+        ],
+        "focus": []
+      },
+      "message": "操作完成，最终槽位与真实数组一致 / done: final slots match the real array",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          5,
+          6,
+          7,
+          8,
+          null
+        ],
+        "length": 4,
+        "capacity": 5,
+        "index": 4,
+        "checked": [],
+        "value": 0,
+        "target": 5
+      },
+      "lessonStepId": "done",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "done",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 5,
+        "length": 4,
+        "slots": [
+          {
+            "index": 0,
+            "value": 5
+          },
+          {
+            "index": 1,
+            "value": 6
+          },
+          {
+            "index": 2,
+            "value": 7
+          },
+          {
+            "index": 3,
+            "value": 8
+          },
+          {
+            "index": 4,
+            "value": null
+          }
+        ]
+      },
+      "extra": {}
+    }
+  ],
+  "search-last": [
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          5,
+          6,
+          7,
+          8
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "初始化：capacity 是物理槽位数，length 是有效元素数 / init: capacity vs length",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          5,
+          6,
+          7,
+          8,
+          null
+        ],
+        "length": 4,
+        "capacity": 5,
+        "index": 4,
+        "checked": [],
+        "value": 0,
+        "target": 8
+      },
+      "lessonStepId": "init",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "init",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 5,
+        "length": 4,
+        "slots": [
+          {
+            "index": 0,
+            "value": 5
+          },
+          {
+            "index": 1,
+            "value": 6
+          },
+          {
+            "index": 2,
+            "value": 7
+          },
+          {
+            "index": 3,
+            "value": 8
+          },
+          {
+            "index": 4,
+            "value": null
+          }
+        ],
+        "focusIndex": 0
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          5,
+          6,
+          7,
+          8
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "比较 data[i] 与目标值 / compare data[i] with target",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          5,
+          6,
+          7,
+          8,
+          null
+        ],
+        "length": 4,
+        "capacity": 5,
+        "index": 4,
+        "checked": [],
+        "value": 0,
+        "target": 8
+      },
+      "lessonStepId": "search",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "search",
+        "action": "compare",
+        "phase": "intermediate",
+        "capacity": 5,
+        "length": 4,
+        "slots": [
+          {
+            "index": 0,
+            "value": 5
+          },
+          {
+            "index": 1,
+            "value": 6
+          },
+          {
+            "index": 2,
+            "value": 7
+          },
+          {
+            "index": 3,
+            "value": 8
+          },
+          {
+            "index": 4,
+            "value": null
+          }
+        ],
+        "focusIndex": 0,
+        "checked": [],
+        "searchValue": 8
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          5,
+          6,
+          7,
+          8
+        ],
+        "focus": [
+          1
+        ]
+      },
+      "message": "比较 data[i] 与目标值 / compare data[i] with target",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          5,
+          6,
+          7,
+          8,
+          null
+        ],
+        "length": 4,
+        "capacity": 5,
+        "index": 4,
+        "checked": [
+          0
+        ],
+        "value": 0,
+        "target": 8
+      },
+      "lessonStepId": "search",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "search",
+        "action": "compare",
+        "phase": "intermediate",
+        "capacity": 5,
+        "length": 4,
+        "slots": [
+          {
+            "index": 0,
+            "value": 5
+          },
+          {
+            "index": 1,
+            "value": 6
+          },
+          {
+            "index": 2,
+            "value": 7
+          },
+          {
+            "index": 3,
+            "value": 8
+          },
+          {
+            "index": 4,
+            "value": null
+          }
+        ],
+        "focusIndex": 1,
+        "checked": [
+          0
+        ],
+        "searchValue": 8
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          5,
+          6,
+          7,
+          8
+        ],
+        "focus": [
+          2
+        ]
+      },
+      "message": "比较 data[i] 与目标值 / compare data[i] with target",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          5,
+          6,
+          7,
+          8,
+          null
+        ],
+        "length": 4,
+        "capacity": 5,
+        "index": 4,
+        "checked": [
+          0,
+          1
+        ],
+        "value": 0,
+        "target": 8
+      },
+      "lessonStepId": "search",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "search",
+        "action": "compare",
+        "phase": "intermediate",
+        "capacity": 5,
+        "length": 4,
+        "slots": [
+          {
+            "index": 0,
+            "value": 5
+          },
+          {
+            "index": 1,
+            "value": 6
+          },
+          {
+            "index": 2,
+            "value": 7
+          },
+          {
+            "index": 3,
+            "value": 8
+          },
+          {
+            "index": 4,
+            "value": null
+          }
+        ],
+        "focusIndex": 2,
+        "checked": [
+          0,
+          1
+        ],
+        "searchValue": 8
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          5,
+          6,
+          7,
+          8
+        ],
+        "focus": [
+          3
+        ]
+      },
+      "message": "比较 data[i] 与目标值 / compare data[i] with target",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          5,
+          6,
+          7,
+          8,
+          null
+        ],
+        "length": 4,
+        "capacity": 5,
+        "index": 4,
+        "checked": [
+          0,
+          1,
+          2
+        ],
+        "value": 0,
+        "target": 8
+      },
+      "lessonStepId": "search",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "search",
+        "action": "compare",
+        "phase": "intermediate",
+        "capacity": 5,
+        "length": 4,
+        "slots": [
+          {
+            "index": 0,
+            "value": 5
+          },
+          {
+            "index": 1,
+            "value": 6
+          },
+          {
+            "index": 2,
+            "value": 7
+          },
+          {
+            "index": 3,
+            "value": 8
+          },
+          {
+            "index": 4,
+            "value": null
+          }
+        ],
+        "focusIndex": 3,
+        "checked": [
+          0,
+          1,
+          2
+        ],
+        "searchValue": 8
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          5,
+          6,
+          7,
+          8
+        ],
+        "focus": [
+          3
+        ]
+      },
+      "message": "查找成功：目标值位于该索引 / found at this index",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          5,
+          6,
+          7,
+          8,
+          null
+        ],
+        "length": 4,
+        "capacity": 5,
+        "index": 4,
+        "checked": [
+          0,
+          1,
+          2
+        ],
+        "value": 0,
+        "target": 8
+      },
+      "lessonStepId": "search",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "search",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 5,
+        "length": 4,
+        "slots": [
+          {
+            "index": 0,
+            "value": 5
+          },
+          {
+            "index": 1,
+            "value": 6
+          },
+          {
+            "index": 2,
+            "value": 7
+          },
+          {
+            "index": 3,
+            "value": 8
+          },
+          {
+            "index": 4,
+            "value": null
+          }
+        ],
+        "focusIndex": 3,
+        "checked": [
+          0,
+          1,
+          2
+        ],
+        "searchValue": 8,
+        "found": true,
+        "foundIndex": 3,
+        "result": 8
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          5,
+          6,
+          7,
+          8
+        ],
+        "focus": []
+      },
+      "message": "操作完成，最终槽位与真实数组一致 / done: final slots match the real array",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          5,
+          6,
+          7,
+          8,
+          null
+        ],
+        "length": 4,
+        "capacity": 5,
+        "index": 4,
+        "checked": [
+          0,
+          1,
+          2
+        ],
+        "value": 0,
+        "target": 8
+      },
+      "lessonStepId": "done",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "done",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 5,
+        "length": 4,
+        "slots": [
+          {
+            "index": 0,
+            "value": 5
+          },
+          {
+            "index": 1,
+            "value": 6
+          },
+          {
+            "index": 2,
+            "value": 7
+          },
+          {
+            "index": 3,
+            "value": 8
+          },
+          {
+            "index": 4,
+            "value": null
+          }
+        ]
+      },
+      "extra": {}
+    }
+  ],
+  "initial-over-capacity": [
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          3
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "初始化：capacity 是物理槽位数，length 是有效元素数 / init: capacity vs length",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          1,
+          2,
+          3
+        ],
+        "length": 3,
+        "capacity": 3,
+        "index": 3,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "init",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "init",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 3,
+        "length": 3,
+        "slots": [
+          {
+            "index": 0,
+            "value": 1
+          },
+          {
+            "index": 1,
+            "value": 2
+          },
+          {
+            "index": 2,
+            "value": 3
+          }
+        ],
+        "focusIndex": 0
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          3
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "访问有效槽位 / visit one live slot",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          1,
+          2,
+          3
+        ],
+        "length": 3,
+        "capacity": 3,
+        "index": 3,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "traverse",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "traverse",
+        "action": "visit",
+        "phase": "intermediate",
+        "capacity": 3,
+        "length": 3,
+        "slots": [
+          {
+            "index": 0,
+            "value": 1
+          },
+          {
+            "index": 1,
+            "value": 2
+          },
+          {
+            "index": 2,
+            "value": 3
+          }
+        ],
+        "focusIndex": 0,
+        "checked": []
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          3
+        ],
+        "focus": [
+          1
+        ]
+      },
+      "message": "访问有效槽位 / visit one live slot",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          1,
+          2,
+          3
+        ],
+        "length": 3,
+        "capacity": 3,
+        "index": 3,
+        "checked": [
+          0
+        ],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "traverse",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "traverse",
+        "action": "visit",
+        "phase": "intermediate",
+        "capacity": 3,
+        "length": 3,
+        "slots": [
+          {
+            "index": 0,
+            "value": 1
+          },
+          {
+            "index": 1,
+            "value": 2
+          },
+          {
+            "index": 2,
+            "value": 3
+          }
+        ],
+        "focusIndex": 1,
+        "checked": [
+          0
+        ]
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          3
+        ],
+        "focus": [
+          2
+        ]
+      },
+      "message": "访问有效槽位 / visit one live slot",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          1,
+          2,
+          3
+        ],
+        "length": 3,
+        "capacity": 3,
+        "index": 3,
+        "checked": [
+          0,
+          1
+        ],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "traverse",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "traverse",
+        "action": "visit",
+        "phase": "intermediate",
+        "capacity": 3,
+        "length": 3,
+        "slots": [
+          {
+            "index": 0,
+            "value": 1
+          },
+          {
+            "index": 1,
+            "value": 2
+          },
+          {
+            "index": 2,
+            "value": 3
+          }
+        ],
+        "focusIndex": 2,
+        "checked": [
+          0,
+          1
+        ]
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          3
+        ],
+        "focus": []
+      },
+      "message": "遍历完成：只访问 [0, length) / traversal stops at length",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          1,
+          2,
+          3
+        ],
+        "length": 3,
+        "capacity": 3,
+        "index": 3,
+        "checked": [
+          0,
+          1,
+          2
+        ],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "traverse",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "traverse",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 3,
+        "length": 3,
+        "slots": [
+          {
+            "index": 0,
+            "value": 1
+          },
+          {
+            "index": 1,
+            "value": 2
+          },
+          {
+            "index": 2,
+            "value": 3
+          }
+        ],
+        "checked": [
+          0,
+          1,
+          2
+        ]
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          3
+        ],
+        "focus": []
+      },
+      "message": "操作完成，最终槽位与真实数组一致 / done: final slots match the real array",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          1,
+          2,
+          3
+        ],
+        "length": 3,
+        "capacity": 3,
+        "index": 3,
+        "checked": [
+          0,
+          1,
+          2
+        ],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "done",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "done",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 3,
+        "length": 3,
+        "slots": [
+          {
+            "index": 0,
+            "value": 1
+          },
+          {
+            "index": 1,
+            "value": 2
+          },
+          {
+            "index": 2,
+            "value": 3
+          }
+        ]
+      },
+      "extra": {}
+    }
+  ],
+  "full-delete-tail": [
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "初始化：capacity 是物理槽位数，length 是有效元素数 / init: capacity vs length",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "length": 4,
+        "capacity": 4,
+        "index": 3,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "init",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "init",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 4,
+        "length": 4,
+        "slots": [
+          {
+            "index": 0,
+            "value": 1
+          },
+          {
+            "index": 1,
+            "value": 2
+          },
+          {
+            "index": 2,
+            "value": 3
+          },
+          {
+            "index": 3,
+            "value": 4
+          }
+        ],
+        "focusIndex": 0
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "focus": [
+          3
+        ]
+      },
+      "message": "检查索引：被删位置必须位于有效区 / bounds check",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "length": 4,
+        "capacity": 4,
+        "index": 3,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "delete",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "delete",
+        "action": "check",
+        "phase": "intermediate",
+        "capacity": 4,
+        "length": 4,
+        "slots": [
+          {
+            "index": 0,
+            "value": 1
+          },
+          {
+            "index": 1,
+            "value": 2
+          },
+          {
+            "index": 2,
+            "value": 3
+          },
+          {
+            "index": 3,
+            "value": 4
+          }
+        ],
+        "focusIndex": 3,
+        "requestedIndex": 3
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "focus": [
+          3
+        ]
+      },
+      "message": "保存被删除元素 / remember the removed value",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "length": 4,
+        "capacity": 4,
+        "index": 3,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "delete",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "delete",
+        "action": "save",
+        "phase": "intermediate",
+        "capacity": 4,
+        "length": 4,
+        "slots": [
+          {
+            "index": 0,
+            "value": 1
+          },
+          {
+            "index": 1,
+            "value": 2
+          },
+          {
+            "index": 2,
+            "value": 3
+          },
+          {
+            "index": 3,
+            "value": 4
+          }
+        ],
+        "focusIndex": 3,
+        "requestedIndex": 3,
+        "removedIndex": 3,
+        "removedValue": 4
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          3
+        ],
+        "focus": []
+      },
+      "message": "清理最后一个无效槽位 / clear the first free slot",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          1,
+          2,
+          3,
+          null
+        ],
+        "length": 3,
+        "capacity": 4,
+        "index": 3,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "delete",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "delete",
+        "action": "clear",
+        "phase": "intermediate",
+        "capacity": 4,
+        "length": 3,
+        "slots": [
+          {
+            "index": 0,
+            "value": 1
+          },
+          {
+            "index": 1,
+            "value": 2
+          },
+          {
+            "index": 2,
+            "value": 3
+          },
+          {
+            "index": 3,
+            "value": null
+          }
+        ],
+        "focusIndex": 3,
+        "targetIndex": 3,
+        "requestedIndex": 3,
+        "removedIndex": 3,
+        "removedValue": 4,
+        "change": {
+          "index": 3,
+          "before": 4,
+          "after": null
+        }
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          3
+        ],
+        "focus": []
+      },
+      "message": "length 更新为 3，删除完成 / deletion complete",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          1,
+          2,
+          3,
+          null
+        ],
+        "length": 3,
+        "capacity": 4,
+        "index": 3,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "delete",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "delete",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 4,
+        "length": 3,
+        "slots": [
+          {
+            "index": 0,
+            "value": 1
+          },
+          {
+            "index": 1,
+            "value": 2
+          },
+          {
+            "index": 2,
+            "value": 3
+          },
+          {
+            "index": 3,
+            "value": null
+          }
+        ],
+        "focusIndex": 3,
+        "requestedIndex": 3
+      },
+      "extra": {}
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          3
+        ],
+        "focus": []
+      },
+      "message": "操作完成，最终槽位与真实数组一致 / done: final slots match the real array",
+      "sourceLocation": null,
+      "variables": {
+        "data": [
+          1,
+          2,
+          3,
+          null
+        ],
+        "length": 3,
+        "capacity": 4,
+        "index": 3,
+        "checked": [],
+        "value": 0,
+        "target": 0
+      },
+      "lessonStepId": "done",
+      "structure": {
+        "kind": "sequential-list",
+        "operation": "done",
+        "action": "complete",
+        "phase": "complete",
+        "capacity": 4,
+        "length": 3,
+        "slots": [
+          {
+            "index": 0,
+            "value": 1
+          },
+          {
+            "index": 1,
+            "value": 2
+          },
+          {
+            "index": 2,
+            "value": 3
+          },
+          {
+            "index": 3,
+            "value": null
+          }
+        ]
+      },
+      "extra": {}
+    }
+  ]
+}

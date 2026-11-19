@@ -1,0 +1,413 @@
+/* ==========================================================================
+   L1B — fixed-capacity sequential list. Physical slots are the visual model;
+   the canvas owns horizontal scrolling and never widens the page.
+   ========================================================================== */
+
+.seqlist-visual {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  align-items: stretch;
+  z-index: 1;
+}
+
+.seqlist-toolbar {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.seqlist-heading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.seqlist-op-label {
+  color: var(--accent);
+  font: 850 12px/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+}
+
+.seqlist-action-label {
+  color: var(--accent-2);
+  font: 700 10.5px/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
+  letter-spacing: .4px;
+  border: 1px dashed color-mix(in srgb, var(--accent-2) 50%, var(--node-edge));
+  border-radius: 5px;
+  padding: 2px 6px;
+  background: color-mix(in srgb, var(--accent-2) 6%, var(--stat-bg));
+}
+
+.seqlist-phase {
+  border: 1px solid var(--node-edge);
+  border-radius: 999px;
+  padding: 3px 8px;
+  color: var(--muted);
+  background: var(--stat-bg);
+  font: 750 10px/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
+  letter-spacing: .3px;
+}
+.seqlist-phase.is-intermediate {
+  color: var(--warn);
+  border-color: color-mix(in srgb, var(--warn) 55%, var(--node-edge));
+}
+.seqlist-phase.is-complete {
+  color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--node-edge));
+}
+
+.seqlist-counters {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.seqlist-counter {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+  border: 1px solid var(--node-edge);
+  border-radius: 7px;
+  padding: 4px 8px;
+  background: var(--stat-bg);
+  font: 750 11px/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
+  color: var(--muted);
+}
+.seqlist-counter b { font-weight: 750; letter-spacing: .3px; }
+.seqlist-counter strong {
+  color: var(--accent);
+  font-size: 15px;
+  line-height: 1;
+}
+.seqlist-counter-note {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.seqlist-legend {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.35;
+}
+.seqlist-legend > span { display: inline-flex; align-items: center; gap: 5px; }
+.seqlist-legend-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
+  display: inline-block;
+  border: 1px solid var(--node-edge);
+  background: var(--node-bg);
+}
+.seqlist-legend-dot.occupied { background: var(--node-bg); border-color: var(--accent); }
+.seqlist-legend-dot.free { background: transparent; border-style: dashed; }
+.seqlist-legend-dot.temporary { background: color-mix(in srgb, var(--warn) 20%, var(--node-bg)); border-color: var(--warn); }
+.seqlist-state-chip {
+  margin-left: auto;
+  border: 1px solid color-mix(in srgb, var(--warn) 50%, var(--node-edge));
+  border-radius: 999px;
+  padding: 3px 8px;
+  color: var(--warn);
+  background: color-mix(in srgb, var(--warn) 8%, var(--panel-2));
+  font-weight: 800;
+}
+
+.seqlist-scroller {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0 0 8px;
+  scrollbar-width: thin;
+  overscroll-behavior-x: contain;
+}
+
+.seqlist-region-labels {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: max-content;
+  padding: 0 1px 6px;
+  font: 750 10px/1.3 ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+.seqlist-region {
+  border-radius: 4px;
+  padding: 2px 6px;
+  white-space: nowrap;
+}
+.seqlist-region.effective {
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+}
+.seqlist-region.free {
+  color: var(--muted);
+  background: color-mix(in srgb, var(--muted) 10%, transparent);
+}
+
+.seqlist-track {
+  display: grid;
+  gap: 8px;
+  align-items: stretch;
+  position: relative;
+}
+
+.seqlist-slot {
+  position: relative;
+  min-height: 108px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 5px;
+  padding: 30px 5px 8px;
+  border: 1px solid var(--node-edge);
+  border-radius: 10px;
+  background: var(--node-bg);
+  color: var(--node-fg);
+  box-shadow: 0 5px 14px color-mix(in srgb, var(--stage-bg-b) 50%, transparent);
+  transition: border-color .16s, background .16s, box-shadow .16s, transform .16s;
+  overflow: hidden;
+}
+
+.seqlist-slot.is-free {
+  border-style: dashed;
+  background: color-mix(in srgb, var(--node-bg) 28%, var(--panel-2));
+  color: var(--muted);
+  box-shadow: none;
+}
+.seqlist-slot.is-temporary {
+  border-style: dashed;
+  border-color: var(--warn);
+  background: color-mix(in srgb, var(--warn) 14%, var(--node-bg));
+  color: var(--warn);
+}
+.seqlist-slot.is-checked {
+  border-color: color-mix(in srgb, var(--accent-2) 55%, var(--node-edge));
+}
+.seqlist-slot.is-focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--node-focus-ring), 0 7px 18px color-mix(in srgb, var(--stage-bg-b) 60%, transparent);
+}
+.seqlist-slot.is-source {
+  border-color: var(--warn);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--warn) 22%, transparent);
+}
+.seqlist-slot.is-target {
+  border-color: var(--accent-2);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent-2) 24%, transparent);
+}
+.seqlist-slot.is-changed {
+  background: color-mix(in srgb, var(--accent-2) 13%, var(--node-bg));
+}
+.seqlist-slot.is-removed {
+  border-color: var(--red);
+}
+.seqlist-slot.is-removed .seqlist-slot-value {
+  color: var(--red);
+  text-decoration: line-through;
+  text-decoration-thickness: 2px;
+}
+
+.seqlist-slot-index {
+  position: absolute;
+  top: 5px;
+  left: 7px;
+  color: var(--muted);
+  font: 750 10px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+  letter-spacing: .4px;
+}
+
+.seqlist-slot-value {
+  font: 850 21px/1.15 ui-monospace, SFMono-Regular, Consolas, monospace;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.seqlist-slot-role {
+  color: var(--muted);
+  font: 650 9.5px/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
+  letter-spacing: .3px;
+  text-transform: uppercase;
+}
+.seqlist-slot.is-temporary .seqlist-slot-role { color: var(--warn); }
+
+.seqlist-slot-badges {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  max-width: 54%;
+}
+.seqlist-badge {
+  border-radius: 4px;
+  padding: 2px 4px;
+  font: 800 8.5px/1.15 ui-monospace, SFMono-Regular, Consolas, monospace;
+  letter-spacing: .2px;
+  border: 1px solid currentColor;
+  background: var(--panel-2);
+  white-space: nowrap;
+}
+.seqlist-badge.source { color: var(--warn); }
+.seqlist-badge.target { color: var(--accent-2); }
+.seqlist-badge.focus { color: var(--accent); }
+.seqlist-badge.removed { color: var(--red); }
+
+.seqlist-readout {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+.seqlist-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid var(--node-edge);
+  border-radius: 6px;
+  padding: 4px 7px;
+  background: var(--stat-bg);
+  color: var(--muted);
+  font: 700 11px/1.25 ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+.seqlist-chip b { color: var(--txt); }
+.seqlist-chip.is-found { border-color: var(--accent); color: var(--accent); }
+.seqlist-chip.is-shift {
+  border-color: color-mix(in srgb, var(--accent-2) 55%, var(--node-edge));
+  color: var(--accent-2);
+}
+.seqlist-chip.is-shift.is-active {
+  background: color-mix(in srgb, var(--accent-2) 12%, var(--stat-bg));
+  border-color: var(--accent-2);
+}
+.seqlist-chip.is-shift b { color: var(--accent-2); }
+
+.seqlist-change {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+  padding: 7px 10px;
+  border: 1px solid var(--node-edge);
+  border-left: 3px solid var(--accent-2);
+  border-radius: 8px;
+  background: var(--stat-bg);
+  color: var(--txt);
+  font: 12px/1.4 ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+.seqlist-change-label { color: var(--muted); font-size: 10.5px; letter-spacing: .4px; text-transform: uppercase; }
+.seqlist-change b { color: var(--accent-2); }
+.seqlist-change-before { color: var(--muted); }
+.seqlist-change-arrow { color: var(--accent); font-weight: 850; }
+.seqlist-change-after { color: var(--accent); font-weight: 850; }
+.seqlist-change small { color: var(--muted); font-size: 10.5px; }
+
+.seqlist-error,
+.seqlist-result {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 7px 10px;
+  border: 1px solid var(--node-edge);
+  border-radius: 8px;
+  background: var(--stat-bg);
+  color: var(--txt);
+  font-size: 12px;
+  line-height: 1.45;
+}
+.seqlist-error {
+  border-left: 3px solid var(--red);
+  color: var(--red);
+  background: color-mix(in srgb, var(--red) 8%, var(--stat-bg));
+}
+.seqlist-error strong { color: var(--red); }
+.seqlist-result.is-found {
+  border-left: 3px solid var(--accent);
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 7%, var(--stat-bg));
+}
+.seqlist-result.is-found b { color: var(--accent); }
+.seqlist-result.is-miss {
+  border-left: 3px solid var(--warn);
+  color: var(--warn);
+  background: color-mix(in srgb, var(--warn) 7%, var(--stat-bg));
+}
+.seqlist-result.is-traverse,
+.seqlist-result.is-complete {
+  border-left: 3px solid var(--accent-2);
+  color: var(--accent-2);
+  background: color-mix(in srgb, var(--accent-2) 7%, var(--stat-bg));
+}
+.seqlist-result strong { font-weight: 850; }
+
+.seqlist-scroll-hint {
+  color: var(--muted);
+  font-size: 10.5px;
+}
+
+.seqlist-picker {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  border-top: 1px solid var(--edge);
+  padding-top: 9px;
+}
+.seqlist-picker-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.seqlist-picker-title {
+  color: var(--accent);
+  font: 850 11px/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
+  letter-spacing: .7px;
+  text-transform: uppercase;
+}
+.seqlist-picker-actual { color: var(--muted); font-size: 10.5px; }
+.seqlist-picker-options { display: flex; flex-wrap: wrap; gap: 6px; }
+.seqlist-preset-btn {
+  border: 1px solid var(--node-edge);
+  border-radius: 7px;
+  padding: 5px 8px;
+  background: var(--stat-bg);
+  color: var(--txt);
+  font: 700 11px/1.25 ui-monospace, SFMono-Regular, Consolas, monospace;
+  cursor: pointer;
+}
+.seqlist-preset-btn:hover { border-color: var(--accent-2); }
+.seqlist-preset-btn.is-selected {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 9%, var(--stat-bg));
+}
+.seqlist-preset-btn:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 1px; }
+.seqlist-picker-pending { color: var(--warn); font-size: 11px; }
+
+@media (max-width: 720px) {
+  .seqlist-slot { min-height: 98px; }
+  .seqlist-slot-value { font-size: 19px; }
+  .seqlist-counter strong { font-size: 14px; }
+  .seqlist-region-labels { font-size: 9.5px; }
+}

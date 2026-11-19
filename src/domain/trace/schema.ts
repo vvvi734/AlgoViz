@@ -667,6 +667,243 @@ export type CircularLinkedListSnapshot = z.infer<typeof circularLinkedListSnapsh
 export type AdvancedLinkedListSnapshot = DoublyLinkedListSnapshot | CircularLinkedListSnapshot;
 
 /**
+ * L1B: fixed-capacity sequential list. `capacity` is the physical slot count,
+ * `length` is the live prefix [0, length), and `slots` records every physical
+ * cell, including the free tail. A complete frame requires occupied values in
+ * the prefix and null values in the free tail; an intermediate frame may show
+ * temporary duplicates/stale values produced by real assignments, but must
+ * never claim they are valid elements.
+ */
+export const SEQUENTIAL_LIST_OPERATIONS = [
+  'init', 'access', 'search', 'insert', 'delete', 'traverse', 'done',
+] as const;
+export type SequentialListOperation = (typeof SEQUENTIAL_LIST_OPERATIONS)[number];
+
+export const SEQUENTIAL_LIST_ACTIONS = [
+  'read', 'compare', 'visit', 'check', 'shift-right', 'write', 'save',
+  'shift-left', 'clear', 'complete', 'reject',
+] as const;
+export type SequentialListAction = (typeof SEQUENTIAL_LIST_ACTIONS)[number];
+
+export const SEQUENTIAL_LIST_ERRORS = [
+  'index-out-of-range', 'capacity-full', 'list-empty',
+] as const;
+export type SequentialListError = (typeof SEQUENTIAL_LIST_ERRORS)[number];
+
+export const SEQUENTIAL_LIST_PHASES = ['intermediate', 'complete'] as const;
+export type SequentialListPhase = (typeof SEQUENTIAL_LIST_PHASES)[number];
+
+export const sequentialListSlotSchema = z.object({
+  index: z.number().int().min(0).max(31),
+  value: jsonValueSchema.refine(
+    (value) => JSON.stringify(value).length <= LIMITS.MAX_VARIABLE_VALUE_JSON_BYTES,
+    'sequential-list slot value too large',
+  ).nullable(),
+});
+export type SequentialListSlot = z.infer<typeof sequentialListSlotSchema>;
+
+export const sequentialListChangeSchema = z.object({
+  index: z.number().int().min(0).max(31),
+  before: jsonValueSchema,
+  after: jsonValueSchema,
+});
+export type SequentialListChange = z.infer<typeof sequentialListChangeSchema>;
+
+export const sequentialListSnapshotSchema = z
+  .object({
+    kind: z.literal('sequential-list'),
+    operation: z.enum(SEQUENTIAL_LIST_OPERATIONS),
+    action: z.enum(SEQUENTIAL_LIST_ACTIONS),
+    phase: z.enum(SEQUENTIAL_LIST_PHASES),
+    capacity: z.number().int().min(1).max(16),
+    length: z.number().int().min(0).max(16),
+    slots: z.array(sequentialListSlotSchema).max(16),
+    requestedIndex: z.number().int().min(-16).max(999).optional(),
+    focusIndex: z.number().int().min(0).max(15).optional(),
+    sourceIndex: z.number().int().min(0).max(15).optional(),
+    targetIndex: z.number().int().min(0).max(15).optional(),
+    change: sequentialListChangeSchema.optional(),
+    checked: z.array(z.number().int().min(0).max(15)).max(16).optional(),
+    searchValue: jsonValueSchema.optional(),
+    result: jsonValueSchema.optional(),
+    found: z.boolean().optional(),
+    foundIndex: z.number().int().min(0).max(15).optional(),
+    removedIndex: z.number().int().min(0).max(15).optional(),
+    removedValue: jsonValueSchema.optional(),
+    error: z.enum(SEQUENTIAL_LIST_ERRORS).optional(),
+    preset: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).optional(),
+  })
+  .superRefine((snapshot, ctx) => {
+    if (snapshot.slots.length !== snapshot.capacity) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['slots'],
+        message: `slots length ${snapshot.slots.length} must equal capacity ${snapshot.capacity}`,
+      });
+      return;
+    }
+    snapshot.slots.forEach((slot, index) => {
+      if (slot.index !== index) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['slots', index, 'index'],
+          message: `slot ${index} must carry index ${index}`,
+        });
+      }
+    });
+    if (snapshot.length > snapshot.capacity) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['length'], message: 'length cannot exceed capacity' });
+    }
+
+    for (const [name, value] of [
+      ['focusIndex', snapshot.focusIndex],
+      ['sourceIndex', snapshot.sourceIndex],
+      ['targetIndex', snapshot.targetIndex],
+      ['foundIndex', snapshot.foundIndex],
+      ['removedIndex', snapshot.removedIndex],
+    ] as const) {
+      if (value !== undefined && value >= snapshot.capacity) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, path: [name], message: `${name} is outside capacity` });
+      }
+    }
+    if (snapshot.checked) {
+      const seen = new Set<number>();
+      snapshot.checked.forEach((index, position) => {
+        if (index >= snapshot.capacity) {
+          ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['checked', position], message: 'checked index is outside capacity' });
+        }
+        if (seen.has(index)) {
+          ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['checked', position], message: 'checked indices must be unique' });
+        }
+        seen.add(index);
+      });
+    }
+
+    if (snapshot.phase === 'complete') {
+      snapshot.slots.forEach((slot, index) => {
+        const occupied = index < snapshot.length;
+        if (occupied && slot.value === null) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['slots', index, 'value'],
+            message: `occupied slot ${index} cannot be null in a complete frame`,
+          });
+        }
+        if (!occupied && slot.value !== null) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['slots', index, 'value'],
+            message: `free slot ${index} must be null in a complete frame`,
+          });
+        }
+      });
+    }
+
+    if (snapshot.change) {
+      if (snapshot.phase !== 'intermediate') {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['change'], message: 'change only belongs to an intermediate assignment frame' });
+      }
+      if (snapshot.change.index >= snapshot.capacity) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['change', 'index'], message: 'change index is outside capacity' });
+      } else if (JSON.stringify(snapshot.slots[snapshot.change.index]?.value) !== JSON.stringify(snapshot.change.after)) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['change', 'after'], message: 'change.after must equal the recorded slot value' });
+      }
+    }
+
+    if (snapshot.action === 'reject') {
+      if (!snapshot.error) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['error'], message: 'reject must record an error reason' });
+      }
+      if (snapshot.phase !== 'complete') {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['phase'], message: 'reject is a complete frame' });
+      }
+    } else if (snapshot.error) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['error'], message: 'error requires action = reject' });
+    }
+
+    if (snapshot.action === 'shift-right') {
+      if (snapshot.operation !== 'insert') {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['operation'], message: 'shift-right belongs to insertion' });
+      }
+      if (snapshot.sourceIndex === undefined || snapshot.targetIndex !== snapshot.sourceIndex + 1) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['targetIndex'], message: 'shift-right must target sourceIndex + 1' });
+      }
+      if (snapshot.phase !== 'intermediate') {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['phase'], message: 'shift-right is an intermediate frame' });
+      }
+    }
+    if (snapshot.action === 'shift-left') {
+      if (snapshot.operation !== 'delete') {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['operation'], message: 'shift-left belongs to deletion' });
+      }
+      if (snapshot.sourceIndex === undefined || snapshot.targetIndex !== snapshot.sourceIndex - 1) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['targetIndex'], message: 'shift-left must target sourceIndex - 1' });
+      }
+      if (snapshot.phase !== 'intermediate') {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['phase'], message: 'shift-left is an intermediate frame' });
+      }
+    }
+    if (snapshot.action === 'write') {
+      if (snapshot.operation !== 'insert') {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['operation'], message: 'write belongs to insertion' });
+      }
+      if (snapshot.targetIndex === undefined || !snapshot.change) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['change'], message: 'write must record its target and assignment' });
+      }
+      if (snapshot.phase !== 'intermediate') {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['phase'], message: 'write is an intermediate frame' });
+      }
+    }
+    if (snapshot.action === 'clear') {
+      if (snapshot.operation !== 'delete') {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['operation'], message: 'clear belongs to deletion' });
+      }
+      if (snapshot.targetIndex !== snapshot.length || snapshot.slots[snapshot.length]?.value !== null) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['targetIndex'], message: 'clear must null the first free slot' });
+      }
+      if (snapshot.phase !== 'intermediate') {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['phase'], message: 'clear is an intermediate frame' });
+      }
+    }
+    if (snapshot.action === 'save') {
+      if (snapshot.operation !== 'delete' || snapshot.removedIndex === undefined || snapshot.removedValue === undefined) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['removedIndex'], message: 'save must record the removed element' });
+      }
+      if (snapshot.phase !== 'intermediate') {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['phase'], message: 'save is an intermediate frame' });
+      }
+    }
+    if (snapshot.action === 'read') {
+      if (snapshot.operation !== 'access' || snapshot.focusIndex === undefined || snapshot.found !== true || snapshot.foundIndex !== snapshot.focusIndex) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['focusIndex'], message: 'read must identify the accessed slot and result' });
+      }
+      if (snapshot.phase !== 'complete') {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['phase'], message: 'read is a complete frame' });
+      }
+    }
+    if ((snapshot.action === 'compare' || snapshot.action === 'visit') && snapshot.focusIndex === undefined) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['focusIndex'], message: `${snapshot.action} must identify the current slot` });
+    }
+    if (snapshot.operation === 'done' && (snapshot.phase !== 'complete' || snapshot.action !== 'complete')) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['operation'], message: 'done must be a complete frame' });
+    }
+    if (snapshot.operation === 'init' && (snapshot.phase !== 'complete' || snapshot.action !== 'complete')) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['operation'], message: 'init must be a complete frame' });
+    }
+    if (snapshot.operation === 'search' && snapshot.action === 'complete' && snapshot.found === true) {
+      if (snapshot.foundIndex === undefined || snapshot.result === undefined) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['foundIndex'], message: 'a successful search must record its index and result' });
+      } else if (JSON.stringify(snapshot.result) !== JSON.stringify(snapshot.slots[snapshot.foundIndex]?.value)) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['result'], message: 'search result must equal the matching slot value' });
+      }
+    }
+    if (snapshot.operation === 'search' && snapshot.action === 'complete' && snapshot.found === false && snapshot.foundIndex !== undefined) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['foundIndex'], message: 'a missing search has no foundIndex' });
+    }
+  });
+export type SequentialListSnapshot = z.infer<typeof sequentialListSnapshotSchema>;
+
+/**
  * Stage 7D: binary-tree traversal semantics. Every frame is a full snapshot of
  * the real TreeNode objects plus the real recursion state recorded by Python:
  *
@@ -6823,11 +7060,12 @@ export const searchSnapshotSchema = z
   });
 export type SearchSnapshot = z.infer<typeof searchSnapshotSchema>;
 
-/** Stage 7B stack/queue + Stage 7C linked-list + L1A doubly/circular linked lists + Stage 7D binary-tree + T1 BST + T2 AVL + T3 max-heap + T4 Huffman + S1/S2 sorting + F1 search + F2 hash + Stage 7E/7F/G1/G2/G3/G4 graphs. */
+/** Stage 7B stack/queue + Stage 7C linked-list + L1A doubly/circular linked lists + L1B sequential list + Stage 7D binary-tree + T1 BST + T2 AVL + T3 max-heap + T4 Huffman + S1/S2 sorting + F1 search + F2 hash + Stage 7E/7F/G1/G2/G3/G4 graphs. */
 export const structureSchema = z.union([
   sortingSnapshotSchema,
   searchSnapshotSchema,
   hashSnapshotSchema,
+  sequentialListSnapshotSchema,
   huffmanSnapshotSchema,
   maxHeapSnapshotSchema,
   structureSnapshotSchema,

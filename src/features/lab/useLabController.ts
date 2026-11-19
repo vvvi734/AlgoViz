@@ -38,6 +38,10 @@ import {
   huffmanPresetInput,
   type HuffmanPresetId,
 } from '../../domain/algorithms/huffmanExamples';
+import {
+  sequentialListPresetInput,
+  type SequentialListPresetId,
+} from '../../domain/algorithms/sequentialListExamples';
 import { useI18n } from '../../i18n/I18nProvider';
 import { usePlayback, type Playback } from './usePlayback';
 
@@ -134,6 +138,11 @@ export interface LabController {
    * input. It never runs code; a real Trace still requires Run.
    */
   selectHuffmanPreset: (preset: HuffmanPresetId) => void;
+  /**
+   * L1B: select one official sequential-list example by rewriting the
+   * `{preset, capacity, values, operation, ...}` input. It never runs code.
+   */
+  selectSequentialListPreset: (preset: SequentialListPresetId) => void;
   runVisualization: () => void;
   restorePreset: () => void;
   randomizeInput: () => void;
@@ -302,7 +311,7 @@ export function useLabController(): LabController {
     // real Python presets. Default those courses to Python; the user can still
     // switch to JS (legacy frames remain available).
     const preferredLang: CodeLanguage =
-      id === 'stack' || id === 'queue' || id === 'linked' || id === 'doubly' || id === 'circular' || id === 'inorder' || id === 'bst' || id === 'avl' || id === 'heap' || id === 'huffman' || id === 'selection' || id === 'insertion' || id === 'shell' || id === 'quick' || id === 'merge' || id === 'linear' || id === 'binary' || id === 'hash-chain' || id === 'hash-probe' || isGraphAlgorithm(id) ? 'python' : codeLang;
+      id === 'stack' || id === 'queue' || id === 'linked' || id === 'doubly' || id === 'circular' || id === 'seqlist' || id === 'inorder' || id === 'bst' || id === 'avl' || id === 'heap' || id === 'huffman' || id === 'selection' || id === 'insertion' || id === 'shell' || id === 'quick' || id === 'merge' || id === 'linear' || id === 'binary' || id === 'hash-chain' || id === 'hash-probe' || isGraphAlgorithm(id) ? 'python' : codeLang;
     if (preferredLang !== codeLang) {
       setCodeLangState(preferredLang);
       safeSet(CODE_LANG_KEY, preferredLang);
@@ -383,6 +392,12 @@ export function useLabController(): LabController {
   const selectHuffmanPreset = useCallback((preset: HuffmanPresetId) => {
     playback.stop();
     setInputJson(JSON.stringify(huffmanPresetInput(preset)));
+    setStatus({ text: '', error: false });
+  }, [playback]);
+
+  const selectSequentialListPreset = useCallback((preset: SequentialListPresetId) => {
+    playback.stop();
+    setInputJson(JSON.stringify(sequentialListPresetInput(preset)));
     setStatus({ text: '', error: false });
   }, [playback]);
 
@@ -546,6 +561,7 @@ export function useLabController(): LabController {
     selectAvlPreset,
     selectHeapPreset,
     selectHuffmanPreset,
+    selectSequentialListPreset,
     runVisualization,
     restorePreset,
     randomizeInput,

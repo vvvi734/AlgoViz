@@ -545,6 +545,35 @@ export const ALGORITHM_CATALOG: AlgorithmCatalog = {
     },
     "code": "trace({type:'array',values:['Circular linked list: use the Python preset'],done:true},'请在 Python 模式运行 / Run the Python preset');"
   },
+  "seqlist": {
+    "group": "ds",
+    "icon": "▦",
+    "name": [
+      "顺序表",
+      "Sequential list"
+    ],
+    "desc": [
+      "固定容量连续槽位中的真实 Python 数组。演示按索引访问、按值查找、指定位置插入与删除、遍历；插入从后向前搬移，删除从前向后搬移，并明确区分 length 与 capacity、有效区与空闲区。",
+      "A real Python array in a fixed-capacity continuous slot block. The demo covers indexed access, value search, insertion and deletion at a given position, and traversal; insertion shifts right from the tail, deletion shifts left from the removed slot, and length is kept distinct from capacity and the free tail."
+    ],
+    "time": "访问 O(1) · 查找/插入/删除 O(n)",
+    "space": "O(capacity)",
+    "input": {
+      "preset": "insert-middle",
+      "capacity": 8,
+      "values": [
+        10,
+        20,
+        30,
+        40,
+        50
+      ],
+      "operation": "insert",
+      "index": 2,
+      "value": 25
+    },
+    "code": "trace({type:'array',values:['Sequential list: use the Python preset'],done:true},'请在 Python 模式运行 / Run the Python preset');"
+  },
   "bfs": {
     "group": "graph",
     "icon": "◉",

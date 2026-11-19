@@ -75,6 +75,10 @@ import {
   HASH_PROBE_INPUT,
   PROBING_PYTHON,
 } from './hashExamples';
+import {
+  SEQUENTIAL_LIST_DEFAULT_INPUT,
+  sequentialListPythonExample,
+} from './sequentialListExamples';
 
 export const STACK_DEFAULT_INPUT: unknown = [
   ['push', 3],
@@ -186,6 +190,7 @@ const STRUCTURE_PYTHON: Record<string, string> = {
   linked: LINKED_PYTHON,
   doubly: DOUBLY_PYTHON,
   circular: CIRCULAR_PYTHON,
+  seqlist: sequentialListPythonExample(),
   inorder: TREE_PYTHON,
   bst: bstPythonExample(),
   avl: avlPythonExample(),
@@ -219,6 +224,7 @@ const STRUCTURE_INPUT: Record<string, unknown> = {
   linked: LINKED_DEFAULT_INPUT,
   doubly: DOUBLY_DEFAULT_INPUT,
   circular: CIRCULAR_DEFAULT_INPUT,
+  seqlist: SEQUENTIAL_LIST_DEFAULT_INPUT,
   bst: BST_DEFAULT_INPUT,
   avl: AVL_DEFAULT_INPUT,
   bfs: GRAPH_DEFAULT_INPUT,

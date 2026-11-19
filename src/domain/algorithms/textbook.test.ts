@@ -36,7 +36,7 @@ describe('textbook directory (UX-03)', () => {
     expect(ids).toHaveLength(Object.keys(catalog).length);
     expect(new Set(ids).size).toBe(ids.length);
     expect(new Set(ids)).toEqual(new Set(Object.keys(catalog)));
-    expect(ids).toHaveLength(33);
+    expect(ids).toHaveLength(34);
   });
 
   it('places MST before shortest paths and marks Bellman-Ford / connectivity as extensions', () => {
@@ -134,6 +134,7 @@ describe('textbook directory (UX-03)', () => {
     const groups = topics.filter((topic) => topic.kind === 'group');
 
     expect(direct.map((topic) => topic.id)).toEqual([
+      'sequential-list',
       'linked-list',
       'circular-linked-list',
       'doubly-linked-list',
@@ -188,6 +189,10 @@ describe('textbook directory (UX-03)', () => {
     });
     expect(textbookPathFor(catalog, 'bst')).toEqual({ chapterId: 'ch8-search', topicId: 'bst' });
     expect(textbookPathFor(catalog, 'avl')).toEqual({ chapterId: 'ch8-search', topicId: 'avl' });
+    expect(textbookPathFor(catalog, 'seqlist')).toEqual({
+      chapterId: 'ch3-linear',
+      topicId: 'sequential-list',
+    });
     expect(textbookPathFor(catalog, 'factorial')).toEqual({
       chapterId: 'ch2-algorithm',
       topicId: 'recursion-extension',

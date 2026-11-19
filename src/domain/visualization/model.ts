@@ -28,6 +28,7 @@ import { buildHuffmanModel, type HuffmanVisualModel } from './huffmanModel';
 import { buildSortingModel, type SortingVisualModel } from './sortingModel';
 import { buildSearchModel, type SearchVisualModel } from './searchModel';
 import { buildHashModel, type HashVisualModel } from './hashModel';
+import { buildSequentialListModel, type SequentialListVisualModel } from './sequentialListModel';
 
 /**
  * Pure mapping from a trace state to a renderable model. React components only
@@ -81,6 +82,7 @@ export type VisualModel =
   | { kind: 'queue'; operation: StructureOperation; items: StructureItemModel[]; removed?: StructureItemModel; empty: boolean; label: string }
   | LinkedListVisualModel
   | AdvancedLinkedListVisualModel
+  | SequentialListVisualModel
   | BinaryTreeVisualModel
   | BstVisualModel
   | AvlVisualModel
@@ -252,6 +254,11 @@ export function buildVisualModel(
   const s = state as TraceState;
   const kind = s.type || 'array';
   const focus = asFocusSet(s);
+
+  if (structure !== undefined && structure.kind === 'sequential-list') {
+    if (kind !== 'array') return { kind: 'raw', text: labels.invalid };
+    return buildSequentialListModel(structure);
+  }
 
   if (structure !== undefined && structure.kind === 'search') {
     if (kind !== 'array') return { kind: 'raw', text: labels.invalid };

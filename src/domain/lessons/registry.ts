@@ -14,6 +14,7 @@ import { quickSortLesson } from './quickSortLesson';
 import { mergeSortLesson } from './mergeSortLesson';
 import { queueLesson } from './queue';
 import { stackLesson } from './stack';
+import { sequentialListLesson } from './sequentialList';
 import { factorialLesson } from './factorial';
 import { linkedListLesson } from './linkedList';
 import { doublyLinkedListLesson } from './doublyLinkedList';
@@ -79,6 +80,7 @@ const BUNDLED: unknown[] = [
   factorialLesson,
   stackLesson,
   queueLesson,
+  sequentialListLesson,
   linkedListLesson,
   doublyLinkedListLesson,
   circularLinkedListLesson,
