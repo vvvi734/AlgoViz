@@ -154,9 +154,10 @@ test.describe('G4 — connected components and Kosaraju SCC', () => {
     await expect(page.locator('[data-testid="g4-component-count"]')).toContainText('5');
     await expect(page.locator('[data-testid="scc-finish-chip"]')).toHaveCount(8);
     await expect(page.locator('[data-testid="scc-second-chip"]')).toHaveCount(8);
-    await expect(page.locator('[data-testid="scc-result"]')).toContainText('C1={H}');
-    await expect(page.locator('[data-testid="scc-result"]')).toContainText('C5={D,E}');
-    await expect(page.locator('[data-testid="scc-result"]')).toContainText('SCC');
+    await expect(page.locator('[data-testid="scc-result"]')).toContainText('强连通分量');
+    await expect(page.locator('[data-testid="g4-component-row"][data-component-id="1"]')).toContainText('H');
+    await expect(page.locator('[data-testid="g4-component-row"][data-component-id="5"]')).toContainText('D');
+    await expect(page.locator('[data-testid="g4-component-row"][data-component-id="5"]')).toContainText('E');
     await expect(page.locator('[data-testid="lesson-active-step"]')).toHaveAttribute('data-step-id', 'done');
 
     await page.click('[data-testid="prev-btn"]');
@@ -168,6 +169,64 @@ test.describe('G4 — connected components and Kosaraju SCC', () => {
     await setFrame(page, 59, 60);
     await expect(page.locator('[data-testid="scc-stage"]')).toHaveAttribute('data-phase', 'done');
     await expectNoOverflow(page);
+  });
+
+  test('Kosaraju graph stays whole and readable without nested scrolling', async ({ page }) => {
+    test.setTimeout(300_000);
+    const viewports = [
+      { width: 1440, height: 900, minNode: 44, minGraphWidth: 480, minGraphHeight: 300 },
+      { width: 1366, height: 768, minNode: 44, minGraphWidth: 460, minGraphHeight: 290 },
+      { width: 390, height: 844, minNode: 26, minGraphWidth: 270, minGraphHeight: 185 },
+    ];
+    for (const viewport of viewports) {
+      await page.setViewportSize({ width: viewport.width, height: viewport.height });
+      await openApp(page);
+      await selectAlgorithm(page, 'scc', 60);
+      await expect(page.locator('[data-testid="scc-stage"]')).toBeVisible({ timeout: 60_000 });
+
+      const metrics = await page.evaluate(() => {
+        const scroll = document.querySelector('.scc-graph-scroll') as HTMLElement | null;
+        const svg = document.querySelector('[data-testid="scc-graph-svg"]') as SVGSVGElement | null;
+        const rail = document.querySelector('[data-testid="scc-side"]') as HTMLElement | null;
+        if (!scroll || !svg || !rail) throw new Error('missing SCC layout node');
+        const scrollRect = scroll.getBoundingClientRect();
+        const svgRect = svg.getBoundingClientRect();
+        const nodeRects = [...document.querySelectorAll('[data-testid="g4-node"]')].map((node) => {
+          const rect = node.getBoundingClientRect();
+          return {
+            id: (node as HTMLElement).dataset.nodeId ?? '',
+            width: rect.width,
+            height: rect.height,
+            outside:
+              rect.left < scrollRect.left - 1 ||
+              rect.right > scrollRect.right + 1 ||
+              rect.top < scrollRect.top - 1 ||
+              rect.bottom > scrollRect.bottom + 1,
+          };
+        });
+        return {
+          scrollWidth: scroll.scrollWidth,
+          scrollClientWidth: scroll.clientWidth,
+          scrollHeight: scroll.scrollHeight,
+          scrollClientHeight: scroll.clientHeight,
+          svgWidth: svgRect.width,
+          svgHeight: svgRect.height,
+          nodeWidths: nodeRects.map((node) => Math.min(node.width, node.height)),
+          outsideNodes: nodeRects.filter((node) => node.outside).map((node) => node.id),
+          railScrollHeight: rail.scrollHeight,
+          railClientHeight: rail.clientHeight,
+        };
+      });
+
+      expect(metrics.scrollWidth).toBeLessThanOrEqual(metrics.scrollClientWidth + 1);
+      expect(metrics.scrollHeight).toBeLessThanOrEqual(metrics.scrollClientHeight + 1);
+      expect(metrics.svgWidth).toBeGreaterThanOrEqual(viewport.minGraphWidth);
+      expect(metrics.svgHeight).toBeGreaterThanOrEqual(viewport.minGraphHeight);
+      expect(Math.min(...metrics.nodeWidths)).toBeGreaterThanOrEqual(viewport.minNode);
+      expect(metrics.outsideNodes).toEqual([]);
+      expect(metrics.railScrollHeight).toBeLessThanOrEqual(metrics.railClientHeight + 1);
+      await expectNoOverflow(page);
+    }
   });
 
   test('empty graphs render an explicit empty state instead of a broken canvas', async ({ page }) => {
@@ -199,8 +258,8 @@ test.describe('G4 — connected components and Kosaraju SCC', () => {
     await setFrame(page, chain - 1, chain);
     await expect(page.locator('[data-testid="scc-stage"]')).toHaveAttribute('data-phase', 'done');
     await expect(page.locator('[data-testid="g4-component-row"]')).toHaveCount(3);
-    await expect(page.locator('[data-testid="scc-result"]')).toContainText('C1={A}');
-    await expect(page.locator('[data-testid="scc-result"]')).toContainText('C3={C}');
+    await expect(page.locator('[data-testid="g4-component-row"][data-component-id="1"]')).toContainText('A');
+    await expect(page.locator('[data-testid="g4-component-row"][data-component-id="3"]')).toContainText('C');
 
     const cycle = await runInput(page, {
       nodes: ['A', 'B', 'C'],
@@ -209,8 +268,11 @@ test.describe('G4 — connected components and Kosaraju SCC', () => {
     await setFrame(page, cycle - 1, cycle);
     await expect(page.locator('[data-testid="scc-stage"]')).toHaveAttribute('data-phase', 'done');
     await expect(page.locator('[data-testid="g4-component-row"]')).toHaveCount(1);
-    await expect(page.locator('[data-testid="scc-result"]')).toContainText('C1={A,C,B}');
-    await expect(page.locator('[data-testid="scc-result"]')).not.toContainText('C2=');
+    const cycleGroup = page.locator('[data-testid="g4-component-row"][data-component-id="1"]');
+    await expect(cycleGroup).toContainText('A');
+    await expect(cycleGroup).toContainText('B');
+    await expect(cycleGroup).toContainText('C');
+    await expect(page.locator('[data-testid="g4-component-row"][data-component-id="2"]')).toHaveCount(0);
     await expectNoOverflow(page);
   });
 });

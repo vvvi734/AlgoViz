@@ -9,7 +9,33 @@ import type {
   ConnectedComponentsSnapshot,
   KosarajuSnapshot,
 } from '../trace/schema';
-import { layoutGraph, type GraphLayoutEdge } from './graphLayout';
+import { layoutGraph, type GraphLayoutEdge, type GraphNodePositions } from './graphLayout';
+
+/**
+ * Kosaraju uses a dedicated eight-node teaching layout. The shared A–G positions
+ * do not cover H, so without this the official graph fell back to a small circle
+ * and wasted most of a desktop canvas. The coordinates stay fixed across every
+ * frame, just like the other deterministic layouts.
+ */
+export const SCC_NODE_RADIUS = 30;
+
+export const SCC_GRAPH_POSITIONS: GraphNodePositions = {
+  A: { x: 290, y: 65 },
+  B: { x: 115, y: 125 },
+  C: { x: 420, y: 125 },
+  D: { x: 150, y: 300 },
+  E: { x: 320, y: 300 },
+  F: { x: 505, y: 65 },
+  G: { x: 535, y: 235 },
+  H: { x: 445, y: 325 },
+};
+
+function kosarajuPositions(
+  nodes: KosarajuSnapshot['nodes'],
+): GraphNodePositions | undefined {
+  const officialEight = nodes.length === 8 && nodes.every((node) => node.id in SCC_GRAPH_POSITIONS);
+  return officialEight ? SCC_GRAPH_POSITIONS : undefined;
+}
 
 export type ComponentNodeState = 'undiscovered' | 'discovered' | 'visited' | 'finished' | 'assigned';
 
@@ -220,7 +246,12 @@ export function buildConnectedComponentsVisualModel(
 }
 
 export function buildKosarajuVisualModel(snapshot: KosarajuSnapshot): SccVisualModel {
-  const layout = layoutGraph(snapshot.nodes, snapshot.edges);
+  const layout = layoutGraph(
+    snapshot.nodes,
+    snapshot.edges,
+    SCC_NODE_RADIUS,
+    kosarajuPositions(snapshot.nodes),
+  );
   const owner = componentOwner(snapshot.components);
   const discovered = new Set(snapshot.discoveredIds);
   const finished = new Set(snapshot.finishOrder);

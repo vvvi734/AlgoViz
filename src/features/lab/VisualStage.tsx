@@ -8,7 +8,6 @@ import type {
   CriticalPathOperation,
   DijkstraOperation,
   FloydOperation,
-  KosarajuOperation,
   KruskalOperation,
   PrimOperation,
   TopologicalOperation,
@@ -202,20 +201,6 @@ const CONNECTED_HINT_KEYS: Record<ConnectedComponentOperation, string> = {
   skip: 'g4HintSkip',
   'complete-component': 'g4HintComplete',
   done: 'g4HintDone',
-};
-
-const KOSARAJU_OPERATION_KEYS: Record<KosarajuOperation, string> = {
-  init: 'g4OpInit',
-  'start-first': 'g4OpStartFirst',
-  'inspect-edge': 'g4OpInspect',
-  skip: 'g4OpSkip',
-  push: 'g4OpPush',
-  finish: 'g4OpFinish',
-  reverse: 'g4OpReverse',
-  'start-second': 'g4OpStartSecond',
-  assign: 'g4OpAssign',
-  'complete-component': 'g4OpComplete',
-  done: 'g4OpDone',
 };
 
 function graphOperationText(model: GraphVisualModel, t: (key: string) => string): string {
@@ -474,7 +459,6 @@ export function VisualStage({ event }: { event: TraceEvent | undefined }) {
       content = (
         <KosarajuVisual
           model={model as SccVisualModel}
-          operationText={t(KOSARAJU_OPERATION_KEYS[model.operation])}
         />
       );
       break;

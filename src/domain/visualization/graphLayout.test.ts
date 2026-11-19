@@ -42,6 +42,31 @@ describe('Stage 7E deterministic graph layout', () => {
     );
   });
 
+  it('uses an opt-in hand-placed layout only when every node has a position', () => {
+    const nodes = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'].map((id) => ({ id }));
+    const positions = {
+      A: { x: 290, y: 65 },
+      B: { x: 115, y: 125 },
+      C: { x: 420, y: 125 },
+      D: { x: 150, y: 300 },
+      E: { x: 320, y: 300 },
+      F: { x: 505, y: 65 },
+      G: { x: 535, y: 235 },
+      H: { x: 445, y: 325 },
+    };
+    const placed = layoutGraph(nodes, DEFAULT_EDGES, 30, positions);
+    expect(placed.nodeRadius).toBe(30);
+    expect(placed.nodes.find((node) => node.id === 'H')).toMatchObject(positions.H);
+    expect(placed.nodes.map((node) => node.id)).toEqual(nodes.map((node) => node.id));
+
+    const missingH = layoutGraph(nodes, DEFAULT_EDGES, 30, {
+      A: positions.A, B: positions.B, C: positions.C, D: positions.D,
+      E: positions.E, F: positions.F, G: positions.G,
+    });
+    expect(missingH.nodes.find((node) => node.id === 'H')).not.toMatchObject(positions.H);
+    expect(missingH.nodes).toHaveLength(8);
+  });
+
   it('uses stable hand-placed coordinates for the official A–G graph', () => {
     const layout = layoutGraph(DEFAULT_NODES, DEFAULT_EDGES);
     expect(layout.width).toBe(GRAPH_LAYOUT_WIDTH);

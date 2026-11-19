@@ -61,6 +61,9 @@ export interface GraphViewEdge {
 
 type LayoutNodeInput = Pick<GraphLayoutNode, 'id'>;
 
+/** Optional hand-placed coordinates for a specific teaching graph. */
+export type GraphNodePositions = Readonly<Record<string, Readonly<{ x: number; y: number }>>>;
+
 export const GRAPH_NODE_RADIUS = 23;
 export const GRAPH_LAYOUT_WIDTH = 580;
 export const GRAPH_LAYOUT_HEIGHT = 380;
@@ -111,7 +114,19 @@ function gridLayout(nodes: LayoutNodeInput[]): GraphLayoutNode[] {
   }));
 }
 
-function positionsFor(nodes: LayoutNodeInput[]): GraphLayoutNode[] {
+function positionsFor(
+  nodes: LayoutNodeInput[],
+  positions?: GraphNodePositions,
+): GraphLayoutNode[] {
+  // A caller may supply a dedicated teaching layout (for example the eight-node
+  // Kosaraju graph). It is used only when every node has a coordinate; otherwise
+  // the deterministic fallback keeps arbitrary inputs stable.
+  if (positions && nodes.every((node) => node.id in positions)) {
+    return nodes.map((node) => ({
+      id: node.id,
+      ...positions[node.id]!,
+    }));
+  }
   const known = nodes.every((node) => node.id in DEFAULT_GRAPH_POSITIONS);
   if (known) {
     return nodes.map((node) => ({
@@ -149,12 +164,18 @@ function trimEdge(
  * are skipped defensively; the schema rejects them before rendering.
  *
  * `radius` is an explicit opt-in for a local presentation (MST uses 29 user
- * units for legibility). The default keeps every existing graph algorithm's
- * geometry byte-for-byte unchanged.
+ * units for legibility). `positions` is a similarly scoped opt-in for a
+ * dedicated teaching layout; both defaults keep every existing graph
+ * algorithm's geometry byte-for-byte unchanged.
  */
-export function layoutGraph(nodes: LayoutNodeInput[], edges: GraphEdge[], radius = GRAPH_NODE_RADIUS): GraphLayout {
-  const positions = positionsFor(nodes);
-  const byId = new Map(positions.map((node) => [node.id, node]));
+export function layoutGraph(
+  nodes: LayoutNodeInput[],
+  edges: GraphEdge[],
+  radius = GRAPH_NODE_RADIUS,
+  positions?: GraphNodePositions,
+): GraphLayout {
+  const laidNodes = positionsFor(nodes, positions);
+  const byId = new Map(laidNodes.map((node) => [node.id, node]));
   const laidEdges: GraphLayoutEdge[] = [];
   for (const edge of edges) {
     const from = byId.get(edge.fromId);
@@ -171,7 +192,7 @@ export function layoutGraph(nodes: LayoutNodeInput[], edges: GraphEdge[], radius
     width: GRAPH_LAYOUT_WIDTH,
     height: GRAPH_LAYOUT_HEIGHT,
     nodeRadius: radius,
-    nodes: positions,
+    nodes: laidNodes,
     edges: laidEdges,
   };
 }

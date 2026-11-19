@@ -110,8 +110,7 @@ export function LabView({
     lab.currentAlgo === 'kruskal' ||
     lab.currentAlgo === 'topological' ||
     lab.currentAlgo === 'critical-path' ||
-    lab.currentAlgo === 'components' ||
-    lab.currentAlgo === 'scc';
+    lab.currentAlgo === 'components';
   const highlightLine = !lab.traceStale && currentEvent?.sourceLocation?.line
     ? currentEvent.sourceLocation.line
     : null;
@@ -226,7 +225,7 @@ export function LabView({
 
   return (
     <div
-      className={`lab-shell${sidebar.collapsed ? ' nav-collapsed' : ''}${algorithmGuide.isOpen ? ' guide-open' : ''}`}
+      className={`lab-shell${sidebar.collapsed ? ' nav-collapsed' : ''}${algorithmGuide.isOpen ? ' guide-open' : ''}${lab.currentAlgo === 'scc' ? ' scc-focus' : ''}`}
       data-testid="learn-view"
     >
       <div className="lab-sidebar-wrap">

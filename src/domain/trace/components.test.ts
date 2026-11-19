@@ -182,6 +182,16 @@ describe('G4 Kosaraju SCC real Python fixture', () => {
     }
   });
 
+  it('uses a dedicated enlarged eight-node layout for the official SCC graph', () => {
+    const model = buildKosarajuVisualModel(frames.scc[0]!.structure);
+    expect(model.nodeRadius).toBe(30);
+    expect(model.nodes).toHaveLength(8);
+    expect(model.nodes.find((node) => node.id === 'H')).toMatchObject({ x: 445, y: 325 });
+    expect(new Set(model.nodes.map((node) => `${node.x},${node.y}`)).size).toBe(8);
+    expect(model.nodes.every((node) => node.x >= 30 && node.x <= 550)).toBe(true);
+    expect(model.nodes.every((node) => node.y >= 30 && node.y <= 350)).toBe(true);
+  });
+
   it('distinguishes a one-way chain from a directed cycle', () => {
     const chain = parseFrames(edgeFrames.scc.chain!, kosarajuSnapshotSchema).at(-1)!;
     const cycle = parseFrames(edgeFrames.scc.cycle!, kosarajuSnapshotSchema).at(-1)!;

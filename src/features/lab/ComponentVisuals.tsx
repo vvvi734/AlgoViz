@@ -49,9 +49,13 @@ function GroupChips({ group }: { group: ComponentGroupVisual }) {
 function NodeShape({
   node,
   radius,
+  showStackLabel = true,
+  rootLabel = 'ROOT',
 }: {
   node: ComponentGraphNodeVisual;
   radius: number;
+  showStackLabel?: boolean;
+  rootLabel?: string;
 }) {
   return (
     <g
@@ -84,8 +88,10 @@ function NodeShape({
           <text textAnchor="middle" y="4">{node.finishIndex}</text>
         </g>
       )}
-      {node.start && <text className="g4-node-role" textAnchor="middle" y={-radius - 12}>ROOT</text>}
-      {node.inFrontier && <text className="g4-node-role is-stack" textAnchor="middle" y={radius + 18}>STACK</text>}
+      {node.start && <text className="g4-node-role" textAnchor="middle" y={-radius - 12}>{rootLabel}</text>}
+      {showStackLabel && node.inFrontier && (
+        <text className="g4-node-role is-stack" textAnchor="middle" y={radius + 18}>STACK</text>
+      )}
     </g>
   );
 }
@@ -121,16 +127,6 @@ function EdgeLines({
             y2={edge.y2}
             markerEnd={directed && markerId ? `url(#${markerId})` : undefined}
           />
-          {directed && (
-            <text
-              className="g4-edge-label"
-              x={(edge.x1 + edge.x2) / 2}
-              y={(edge.y1 + edge.y2) / 2 - 5}
-              textAnchor="middle"
-            >
-              {edge.reversed ? `rev ${edge.originalFromId}→${edge.originalToId}` : `${edge.fromId}→${edge.toId}`}
-            </text>
-          )}
         </g>
       ))}
     </g>
@@ -175,6 +171,25 @@ function StackPanel({
   );
 }
 
+function ComponentRow({ group }: { group: ComponentGroupVisual }) {
+  const { t } = useI18n();
+  return (
+    <div
+      className={`g4-component-row${group.current ? ' is-current' : ''}${group.complete ? ' is-complete' : ''}`}
+      data-testid="g4-component-row"
+      data-component-id={group.id}
+      data-complete={group.complete ? 'true' : 'false'}
+      style={groupStyle(group.id)}
+    >
+      <span className="g4-component-id">C{group.id}</span>
+      <GroupChips group={group} />
+      <span className="g4-component-state">
+        {group.complete ? t('g4Complete') : group.current ? t('g4Current') : t('g4Pending')}
+      </span>
+    </div>
+  );
+}
+
 function ComponentGroupPanel({
   groups,
   count,
@@ -190,22 +205,8 @@ function ComponentGroupPanel({
         <small>{t('g4ComponentsNote')}</small>
       </header>
       <div className="g4-component-list">
-        {groups.length ? groups.map((group) => (
-          <div
-            key={group.id}
-            className={`g4-component-row${group.current ? ' is-current' : ''}${group.complete ? ' is-complete' : ''}`}
-            data-testid="g4-component-row"
-            data-component-id={group.id}
-            data-complete={group.complete ? 'true' : 'false'}
-            style={groupStyle(group.id)}
-          >
-            <span className="g4-component-id">C{group.id}</span>
-            <GroupChips group={group} />
-            <span className="g4-component-state">
-              {group.complete ? t('g4Complete') : group.current ? t('g4Current') : t('g4Pending')}
-            </span>
-          </div>
-        )) : <span className="mst-empty-inline" data-testid="g4-component-empty">{t('g4ComponentsEmpty')}</span>}
+        {groups.length ? groups.map((group) => <ComponentRow key={group.id} group={group} />)
+          : <span className="mst-empty-inline" data-testid="g4-component-empty">{t('g4ComponentsEmpty')}</span>}
       </div>
       <footer className="g4-panel-footer" data-testid="g4-component-count">
         {t('g4CountLabel')}: <b>{count}</b>
@@ -336,44 +337,180 @@ export function ConnectedComponentsVisual({
   );
 }
 
+function SccOrderBlock({
+  nodes,
+  label,
+  testId,
+  activeIndex = null,
+}: {
+  nodes: string[];
+  label: string;
+  testId: string;
+  activeIndex?: number | null;
+}) {
+  const { t } = useI18n();
+  return (
+    <div className="scc-key-order">
+      <div className="scc-key-label">
+        <span>{label}</span>
+        {activeIndex !== null && <em>#{activeIndex + 1}</em>}
+      </div>
+      <div className="g4-order">
+        {nodes.length ? nodes.map((node, index) => (
+          <span
+            key={`${node}-${index}`}
+            className={`g4-order-chip${activeIndex === index ? ' is-current' : ''}`}
+            data-testid={testId}
+            data-node-id={node}
+          >
+            <small>{index + 1}</small><code>{node}</code>
+          </span>
+        )) : <span className="mst-empty-inline">{t('sccOrderEmpty')}</span>}
+      </div>
+    </div>
+  );
+}
+
+function SccStackBlock({ model }: { model: SccVisualModel }) {
+  const { t } = useI18n();
+  return (
+    <div className="scc-key-order" data-testid="g4-stack-panel">
+      <div className="scc-key-label">
+        <span>{t('g4StackTitle')}</span>
+        <em>{model.frontierItems.length}</em>
+      </div>
+      <div className="g4-stack scc-stack" data-testid="g4-stack">
+        {model.frontierItems.length ? model.frontierItems.map((item, index) => (
+          <span
+            key={item.id}
+            className={`g4-stack-chip${item.added ? ' is-added' : ''}`}
+            data-testid="g4-stack-item"
+            data-entry-id={item.id}
+            data-node-id={item.nodeId}
+          >
+            <small>{index === model.frontierItems.length - 1 ? t('g4StackTop') : `#${index + 1}`}</small>
+            <code>{item.label}</code>
+          </span>
+        )) : <span className="mst-empty-inline" data-testid="g4-stack-empty">{t('g4StackEmpty')}</span>}
+      </div>
+    </div>
+  );
+}
+
+function SccFinalGroups({ model }: { model: SccVisualModel }) {
+  const { t } = useI18n();
+  return (
+    <footer className="scc-final" data-testid="scc-result">
+      <header className="scc-final-head">
+        <strong>{t('g4FinalGroups')}</strong>
+        <span>{t('sccComponentsTitle')}</span>
+        <span data-testid="g4-component-count">{t('g4CountLabel')}: <b>{model.componentCount}</b></span>
+        <span className="mst-tree-badge">{t('g4CompleteBadge')}</span>
+      </header>
+      <div className="scc-final-grid">
+        {model.components.map((group) => <ComponentRow key={group.id} group={group} />)}
+      </div>
+    </footer>
+  );
+}
+
+function SccKeyRail({ model }: { model: SccVisualModel }) {
+  const { t } = useI18n();
+  const phaseLabel = t(`g4Phase_${model.phase}` as 'g4Phase_first-pass');
+  const phaseNote = t(`sccPhaseNote_${model.phase}` as 'sccPhaseNote_first-pass');
+  const latestGroup = model.components.at(-1) ?? null;
+  return (
+    <aside className="mst-side g4-side scc-side" data-testid="scc-side">
+      <section className="scc-key-panel">
+        <header className="scc-key-head">
+          <b>{t('sccKeyVariables')}</b>
+          <span className={`scc-key-phase is-${model.phase}`}>{phaseLabel}</span>
+        </header>
+        <div className="scc-key-grid">
+          <div className="scc-key-metric">
+            <small>{t('graphCurrentNode')}</small>
+            <b>{model.currentNodeId ?? '—'}</b>
+          </div>
+          <div className="scc-key-metric">
+            <small>{t('sccStackDepth')}</small>
+            <b>{model.frontierItems.length}</b>
+          </div>
+          <div className="scc-key-metric">
+            <small>{t('sccFinishProgress')}</small>
+            <b>{model.finishOrder.length}/{model.nodes.length}</b>
+          </div>
+          <div className="scc-key-metric">
+            <small>{t('g4SccCount')}</small>
+            <b>{model.componentCount}</b>
+          </div>
+        </div>
+        <p className="scc-phase-note" data-testid="scc-phase-note">{phaseNote}</p>
+
+        {model.phase === 'first-pass' && (
+          <>
+            <SccOrderBlock nodes={model.finishOrder} label={t('sccFirstOrder')} testId="scc-finish-chip" />
+            <SccStackBlock model={model} />
+            {model.components.length === 0 && (
+              <p className="scc-empty" data-testid="g4-component-empty">{t('g4ComponentsEmpty')}</p>
+            )}
+          </>
+        )}
+
+        {model.phase === 'reverse' && (
+          <>
+            <SccOrderBlock nodes={model.finishOrder} label={t('sccFirstOrder')} testId="scc-finish-chip" />
+            <SccOrderBlock nodes={model.secondPassOrder} label={t('sccSecondOrder')} testId="scc-second-chip" />
+          </>
+        )}
+
+        {model.phase === 'second-pass' && (
+          <>
+            {latestGroup && <ComponentRow group={latestGroup} />}
+            <SccOrderBlock
+              nodes={model.secondPassOrder}
+              label={t('sccSecondOrder')}
+              testId="scc-second-chip"
+              activeIndex={model.secondPassIndex}
+            />
+          </>
+        )}
+
+        {model.phase === 'done' && (
+          <>
+            <SccOrderBlock nodes={model.finishOrder} label={t('sccFirstOrder')} testId="scc-finish-chip" />
+            <SccOrderBlock nodes={model.secondPassOrder} label={t('sccSecondOrder')} testId="scc-second-chip" />
+          </>
+        )}
+      </section>
+    </aside>
+  );
+}
+
 export function KosarajuVisual({
   model,
-  operationText,
 }: {
   model: SccVisualModel;
-  operationText: string;
 }) {
   const { t } = useI18n();
   if (model.empty) return <p className="mst-empty" data-testid="g4-empty">{t('g4Empty')}</p>;
   return (
     <article className="mst-stage g4-stage scc-stage" data-testid="scc-stage" data-operation={model.operation} data-phase={model.phase} data-reversed={model.reversed ? 'true' : 'false'}>
-      <header className="mst-head">
-        <div>
-          <div className="eyebrow">{t('g4Kicker')}</div>
-          <h2>{t('sccTitle')}</h2>
-          <p className="mst-subtitle">{operationText}</p>
-        </div>
-        <div className="mst-metrics">
-          <div className="mst-metric"><span>{t('g4SccPhase')}</span><b>{t(`g4Phase_${model.phase}` as 'g4Phase_first-pass')}</b></div>
-          <div className="mst-metric"><span>{t('g4SccCount')}</span><b>{model.componentCount}</b></div>
-          <div className="mst-metric"><span>{t('g4ReversedLabel')}</span><b>{model.reversed ? t('g4Yes') : t('g4No')}</b></div>
-        </div>
-      </header>
-
-      <div className="mst-layout g4-layout">
-        <section className="mst-graph-card">
-          <div className="mst-card-head">
-            <b>{model.reversed ? t('sccReversedGraphTitle') : t('sccGraphTitle')}</b>
-            <span className="tag green">{model.reversed ? t('sccReversedBadge') : t('sccDirectedBadge')}</span>
+      <div className="mst-layout scc-layout">
+        <section className="mst-graph-card scc-graph-card">
+          <div className="scc-graph-head">
+            <div className="scc-graph-id">
+              <b>{model.reversed ? t('sccReversedGraphTitle') : t('sccGraphTitle')}</b>
+              <span className="tag green">{model.reversed ? t('sccReversedBadge') : t('sccDirectedBadge')}</span>
+            </div>
+            <div className="g4-phase-track" data-testid="scc-phase-track">
+              {(['first-pass', 'reverse', 'second-pass', 'done'] as const).map((phase) => (
+                <span key={phase} className={`g4-phase${model.phase === phase ? ' is-current' : ''}`} data-phase={phase}>
+                  {t(`g4Phase_${phase}` as 'g4Phase_first-pass')}
+                </span>
+              ))}
+            </div>
           </div>
-          <div className="g4-phase-track" data-testid="scc-phase-track">
-            {(['first-pass', 'reverse', 'second-pass', 'done'] as const).map((phase) => (
-              <span key={phase} className={`g4-phase${model.phase === phase ? ' is-current' : ''}`} data-phase={phase}>
-                {t(`g4Phase_${phase}` as 'g4Phase_first-pass')}
-              </span>
-            ))}
-          </div>
-          <div className="mst-graph-scroll">
+          <div className="mst-graph-scroll scc-graph-scroll">
             <svg
               className="mst-graph-svg g4-graph-svg scc-graph-svg"
               viewBox={`0 0 ${model.width} ${model.height}`}
@@ -385,62 +522,24 @@ export function KosarajuVisual({
               data-reversed={model.reversed ? 'true' : 'false'}
             >
               <defs>
-                <marker id="g4-scc-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+                <marker id="g4-scc-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
                   <path d="M0,0 L10,5 L0,10 z" className="g4-arrow-head" />
                 </marker>
               </defs>
               <EdgeLines edges={model.edges} directed markerId="g4-scc-arrow" testId="scc-edge" />
               <g className="mst-nodes">
-                {model.nodes.map((node) => <NodeShape key={node.id} node={node} radius={model.nodeRadius} />)}
+                {model.nodes.map((node) => (
+                  <NodeShape key={node.id} node={node} radius={model.nodeRadius} showStackLabel={false} rootLabel={t('g4RootLabel')} />
+                ))}
               </g>
             </svg>
           </div>
-          <div className="mst-current-strip" data-testid="scc-current">
-            <span className="mst-strip-label">{t('g4CurrentLabel')}</span>
-            {model.currentNodeId ? <code>{model.currentNodeId}</code> : <span className="muted">{t('g4NoCurrent')}</span>}
-            {model.currentComponentId !== null && <span className="g4-change-pill">{t('g4ComponentBadge')} {componentBadge(model.currentComponentId)}</span>}
-            {model.currentEdgeId && <span className="g4-change-pill">{t('g4InspectEdge')}: {model.currentEdgeId}</span>}
-          </div>
         </section>
 
-        <aside className="mst-side g4-side">
-          <ComponentGroupPanel groups={model.components} count={model.componentCount} />
-          <StackPanel model={model} title={t('g4StackTitle')} />
-          <section className="mst-panel" data-testid="scc-order-panel">
-            <header className="mst-panel-head">
-              <b>{t('sccFinishTitle')}</b>
-              <small>{t('sccFinishNote')}</small>
-            </header>
-            <div className="g4-order-block">
-              <label>{t('sccFirstOrder')}</label>
-              <div className="g4-order">
-                {model.finishOrder.length ? model.finishOrder.map((node, index) => (
-                  <span key={`${node}-${index}`} className="g4-order-chip" data-testid="scc-finish-chip" data-node-id={node}>
-                    <small>{index + 1}</small><code>{node}</code>
-                  </span>
-                )) : <span className="mst-empty-inline">{t('sccOrderEmpty')}</span>}
-              </div>
-            </div>
-            <div className="g4-order-block">
-              <label>{t('sccSecondOrder')}{model.secondPassIndex !== null ? ` · #${model.secondPassIndex + 1}` : ''}</label>
-              <div className="g4-order">
-                {model.secondPassOrder.length ? model.secondPassOrder.map((node, index) => (
-                  <span key={`${node}-${index}`} className={`g4-order-chip${model.secondPassIndex === index ? ' is-current' : ''}`} data-testid="scc-second-chip" data-node-id={node}>
-                    <small>{index + 1}</small><code>{node}</code>
-                  </span>
-                )) : <span className="mst-empty-inline">{t('sccOrderEmpty')}</span>}
-              </div>
-            </div>
-          </section>
-        </aside>
+        <SccKeyRail model={model} />
       </div>
 
-      <footer className="mst-result" data-testid="scc-result">
-        <span className="mst-result-kicker">{model.done ? t('mstResultDone') : t('mstResultRunning')}</span>
-        <strong>{t('g4FinalGroups')}: {model.components.map((group) => `C${group.id}={${group.nodeIds.join(',')}}`).join(' ')}</strong>
-        <span>{t('g4SccCount')}: {model.componentCount}</span>
-        {model.done && <span className="mst-tree-badge">{t('g4CompleteBadge')}</span>}
-      </footer>
+      {model.done && <SccFinalGroups model={model} />}
     </article>
   );
 }

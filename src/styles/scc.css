@@ -1,0 +1,382 @@
+/* ==========================================================================
+   Kosaraju SCC decluttering.
+   The eight-node directed graph owns the desktop canvas. Auxiliary state is
+   compressed into a single key-variable rail; the final partition only appears
+   when the trace is done.
+   ========================================================================== */
+
+.scc-stage {
+  width: 100%;
+  max-width: none;
+  gap: 7px;
+}
+
+.scc-layout {
+  grid-template-columns: minmax(0, 1fr) minmax(168px, 188px);
+  gap: 8px;
+  align-items: stretch;
+}
+
+.scc-graph-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 6px;
+}
+
+.scc-graph-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px 10px;
+  flex-wrap: wrap;
+  min-width: 0;
+  margin-bottom: 5px;
+}
+
+.scc-graph-id {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.scc-graph-id b {
+  color: var(--txt);
+  font-size: 12px;
+  line-height: 1.2;
+}
+
+.scc-graph-head .g4-phase-track {
+  gap: 3px;
+  flex-wrap: nowrap;
+  margin: 0;
+}
+
+.scc-graph-head .g4-phase {
+  padding: 2px 6px;
+  font-size: 8.5px;
+  white-space: nowrap;
+}
+
+.scc-graph-scroll {
+  width: 100%;
+  max-width: 900px;
+  aspect-ratio: 580 / 380;
+  max-height: clamp(300px, 44vh, 420px);
+  overflow: hidden;
+  margin-inline: auto;
+}
+
+.scc-graph-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  max-height: none;
+  margin: 0;
+}
+
+/* The learning shell's G4 rule caps every graph at 30vh; SCC needs the taller
+   canvas so the eight-node graph remains the dominant object. */
+.app[data-view='learn'] .scc-stage .scc-graph-svg {
+  height: 100%;
+  max-height: none;
+}
+
+.scc-graph-svg .mst-node-label {
+  font-size: 16px;
+}
+
+.scc-graph-svg .g4-component-badge text,
+.scc-graph-svg .g4-finish-badge text {
+  font-size: 11px;
+}
+
+.scc-graph-svg .g4-node-role {
+  font-size: 9px;
+}
+
+.scc-side {
+  max-height: none;
+  overflow: visible;
+}
+
+.scc-key-panel {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  min-width: 0;
+  min-height: 100%;
+  padding: 8px;
+  border: 1px solid var(--stage-edge);
+  border-radius: 9px;
+  background: var(--panel-grad-b);
+}
+
+.scc-key-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  min-width: 0;
+  padding-bottom: 5px;
+  border-bottom: 1px solid var(--stage-edge);
+}
+
+.scc-key-head b {
+  color: var(--txt);
+  font-size: 11px;
+}
+
+.scc-key-phase {
+  padding: 2px 6px;
+  border: 1px solid var(--info-edge);
+  border-radius: 999px;
+  background: var(--stat-bg);
+  color: var(--muted);
+  font-size: 8.5px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.scc-key-phase.is-reverse,
+.scc-key-phase.is-done {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.scc-key-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.scc-phase-note {
+  margin: 0;
+  padding: 0 1px;
+  color: var(--muted);
+  font-size: 9px;
+  line-height: 1.4;
+}
+
+.scc-key-metric {
+  min-width: 0;
+  padding: 5px 6px;
+  border: 1px solid var(--info-edge);
+  border-radius: 6px;
+  background: var(--stat-bg);
+}
+
+.scc-key-metric small {
+  display: block;
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 8.5px;
+  line-height: 1.2;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.scc-key-metric b {
+  display: block;
+  margin-top: 2px;
+  color: var(--txt);
+  font: 850 13px/1.1 ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+
+.scc-key-order {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.scc-key-label {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 750;
+}
+
+.scc-key-label em {
+  color: var(--accent);
+  font: 850 8.5px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-style: normal;
+}
+
+.scc-key-order .g4-order {
+  gap: 3px;
+}
+
+.scc-key-order .g4-order-chip {
+  gap: 3px;
+  padding: 2px 4px;
+}
+
+.scc-key-order .g4-order-chip small {
+  font-size: 7.5px;
+}
+
+.scc-key-order .g4-order-chip code {
+  font-size: 9.5px;
+}
+
+.scc-stack {
+  min-height: 0;
+  padding: 3px;
+  border-bottom-width: 1px;
+}
+
+.scc-stack .g4-stack-chip {
+  gap: 3px;
+  padding: 3px 5px;
+}
+
+.scc-stack .g4-stack-chip small {
+  font-size: 7.5px;
+}
+
+.scc-stack .g4-stack-chip code {
+  font-size: 9.5px;
+}
+
+.scc-empty {
+  margin: 0;
+  padding: 4px 1px;
+  color: var(--muted);
+  font-size: 9px;
+  line-height: 1.35;
+}
+
+.scc-side .g4-component-row {
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 4px;
+  padding: 4px 5px;
+}
+
+.scc-side .g4-component-row .g4-component-state {
+  display: none;
+}
+
+.scc-side .g4-component-id {
+  min-width: 24px;
+  font-size: 9px;
+}
+
+.scc-final {
+  min-width: 0;
+  padding: 7px 9px;
+  border: 1px solid var(--stage-edge);
+  border-radius: 9px;
+  background: var(--panel-grad-b);
+}
+
+.scc-final-head {
+  display: flex;
+  align-items: center;
+  gap: 4px 10px;
+  flex-wrap: wrap;
+  margin-bottom: 5px;
+}
+
+.scc-final-head strong {
+  color: var(--txt);
+  font-size: 11px;
+}
+
+.scc-final-head span {
+  color: var(--muted);
+  font-size: 9px;
+}
+
+.scc-final-head .mst-tree-badge {
+  margin-left: auto;
+}
+
+.scc-final-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.scc-final-grid .g4-component-row {
+  min-width: 0;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 3px;
+  padding: 4px 5px;
+}
+
+.scc-final-grid .g4-component-row .g4-component-state {
+  display: none;
+}
+
+.scc-final-grid .g4-component-id {
+  min-width: 22px;
+  font-size: 8.5px;
+}
+
+.scc-final-grid .g4-node-chip {
+  padding: 1px 3px;
+  font-size: 8px;
+}
+
+/* Kosaraju's step knowledge is carried by the phase track, finish-order chips
+   and component rows inside the stage. The long Teaching Course rail would
+   repeat that content and squeeze the graph into a narrow column, so it is
+   suppressed only for this algorithm. */
+.app[data-view='learn'] .lab-shell.scc-focus .lab-primary.ui02-workbench {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.app[data-view='learn'] .lab-shell.scc-focus .lab-explanation {
+  display: none;
+}
+
+@media (max-width: 980px) {
+  .scc-layout {
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .scc-key-panel {
+    height: auto;
+  }
+
+  .scc-graph-scroll {
+    max-height: none;
+  }
+
+  .scc-final-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .scc-graph-head {
+    align-items: flex-start;
+  }
+
+  .scc-graph-head .g4-phase-track {
+    flex-wrap: wrap;
+  }
+
+  .scc-graph-scroll {
+    min-height: 200px;
+  }
+
+  .scc-key-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .scc-key-metric {
+    padding: 4px;
+  }
+
+  .scc-final-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
