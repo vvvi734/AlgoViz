@@ -11,6 +11,12 @@
  * working; Python is the primary teaching language for these two structures.
  */
 import { LINKED_DEFAULT_INPUT, LINKED_PYTHON } from './linkedListExamples';
+import {
+  CIRCULAR_DEFAULT_INPUT,
+  CIRCULAR_PYTHON,
+  DOUBLY_DEFAULT_INPUT,
+  DOUBLY_PYTHON,
+} from './advancedLinkedListExamples';
 import { TREE_PYTHON } from './treeTraversalExamples';
 import {
   BST_DEFAULT_INPUT,
@@ -178,6 +184,8 @@ const STRUCTURE_PYTHON: Record<string, string> = {
   stack: STACK_PYTHON,
   queue: QUEUE_PYTHON,
   linked: LINKED_PYTHON,
+  doubly: DOUBLY_PYTHON,
+  circular: CIRCULAR_PYTHON,
   inorder: TREE_PYTHON,
   bst: bstPythonExample(),
   avl: avlPythonExample(),
@@ -209,6 +217,8 @@ const STRUCTURE_INPUT: Record<string, unknown> = {
   stack: STACK_DEFAULT_INPUT,
   queue: QUEUE_DEFAULT_INPUT,
   linked: LINKED_DEFAULT_INPUT,
+  doubly: DOUBLY_DEFAULT_INPUT,
+  circular: CIRCULAR_DEFAULT_INPUT,
   bst: BST_DEFAULT_INPUT,
   avl: AVL_DEFAULT_INPUT,
   bfs: GRAPH_DEFAULT_INPUT,

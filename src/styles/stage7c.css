@@ -297,8 +297,205 @@
 }
 
 
-/* Stage 7C: narrow screens keep an explicit affordance for the internal
-   horizontal scroll, so a clipped 4th node never looks like a missing node. */
+/* ==========================================================================
+   L1A — doubly / circular linked lists. Reuses the Stage 7C node shell and
+   colour tokens, then adds an explicit two-row pointer card and separate
+   next / prev / return-edge arrow styles. The distinguishing cue is line
+   geometry and dash pattern, not colour alone.
+   ========================================================================== */
+
+.adv-linked-visual {
+  gap: 10px;
+}
+
+.adv-node {
+  height: 100px;
+  overflow: visible;
+}
+
+.adv-node .linked-node-data {
+  min-height: 48px;
+  padding-bottom: 2px;
+}
+
+.adv-node-links {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--node-edge);
+  background: var(--panel-2);
+}
+
+.adv-node-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  min-height: 21px;
+  padding: 2px 7px;
+  color: var(--muted);
+  font: 700 9.5px/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
+  white-space: nowrap;
+}
+.adv-node-link b {
+  color: var(--node-fg);
+  font-weight: 850;
+}
+.adv-node-prev {
+  border-bottom: 1px dashed var(--node-edge);
+}
+.adv-node.is-active .adv-node-links {
+  background: var(--tab-active-bg);
+}
+.adv-node.is-active .adv-node-link,
+.adv-node.is-active .adv-node-link b {
+  color: var(--accent);
+}
+
+.adv-marker {
+  position: absolute;
+  z-index: 3;
+  color: var(--accent);
+  font: 850 10.5px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+.adv-tail-marker {
+  color: var(--accent-2);
+}
+.adv-tail-marker .linked-head-arrow {
+  color: var(--accent-2);
+}
+
+.adv-edges {
+  color: var(--node-edge);
+}
+.adv-edge {
+  fill: none;
+  vector-effect: non-scaling-stroke;
+}
+.adv-next-edge {
+  stroke: var(--node-edge);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+}
+.adv-prev-edge {
+  stroke: var(--node-edge);
+  stroke-width: 2;
+  stroke-dasharray: 7 5;
+  stroke-linecap: butt;
+}
+.adv-circular-edge {
+  stroke: var(--accent-2);
+  stroke-width: 2.4;
+  stroke-dasharray: 2 4;
+  stroke-linecap: round;
+}
+.adv-edge.is-changed {
+  stroke: var(--accent-2);
+  stroke-width: 3.2;
+}
+.adv-null-edge {
+  stroke: var(--muted);
+  stroke-width: 1.7;
+  fill: none;
+}
+.adv-edge-label {
+  fill: var(--muted);
+  font: 700 9px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+  letter-spacing: .2px;
+}
+.adv-edge-label.circular {
+  fill: var(--accent-2);
+  font-size: 9.5px;
+}
+.adv-null-text {
+  fill: var(--muted);
+  font: 800 9.5px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+  letter-spacing: .6px;
+}
+.adv-edges marker path { fill: var(--node-edge); }
+
+.adv-status-row {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+  flex-wrap: wrap;
+  width: 100%;
+}
+.adv-change {
+  flex: 1 1 260px;
+}
+.adv-change-text {
+  color: var(--muted);
+  font-size: 10.5px;
+}
+.adv-phase {
+  padding: 2px 7px;
+  border: 1px solid var(--node-edge);
+  border-radius: 99px;
+  font: 750 9.5px/1.4 ui-monospace, SFMono-Regular, Consolas, monospace;
+  letter-spacing: .3px;
+}
+.adv-phase.complete {
+  border-color: var(--accent-2);
+  color: var(--accent-2);
+  background: var(--tag-green-bg);
+}
+.adv-phase.intermediate {
+  border-style: dashed;
+  color: var(--muted);
+}
+.adv-legend-line {
+  display: inline-block;
+  width: 18px;
+  height: 0;
+  border-top: 2px solid var(--node-edge);
+  margin-right: -4px;
+}
+.adv-legend-line.prev {
+  border-top-style: dashed;
+}
+.adv-legend-line.next {
+  border-top-style: solid;
+}
+
+.adv-search-result {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border: 1px solid var(--node-edge);
+  border-left: 3px solid var(--accent-2);
+  border-radius: 7px;
+  background: var(--stat-bg);
+  color: var(--txt);
+  font: 12px/1.4 ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+.adv-search-result.found {
+  border-left-color: var(--accent);
+}
+.adv-search-result.miss {
+  border-left-color: var(--muted);
+}
+.adv-search-result b { color: var(--accent); }
+
+.adv-empty {
+  flex-wrap: wrap;
+}
+
+.adv-detached-node {
+  width: 176px;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto auto auto auto auto;
+}
+
+@media (max-width: 760px) {
+  .adv-status-row { flex-direction: column; }
+  .adv-change { flex-basis: auto; }
+  .adv-node-link { font-size: 9px; }
+}
+
 .linked-scroll-hint {
   display: none;
 }

@@ -36,7 +36,7 @@ describe('textbook directory (UX-03)', () => {
     expect(ids).toHaveLength(Object.keys(catalog).length);
     expect(new Set(ids).size).toBe(ids.length);
     expect(new Set(ids)).toEqual(new Set(Object.keys(catalog)));
-    expect(ids).toHaveLength(31);
+    expect(ids).toHaveLength(33);
   });
 
   it('places MST before shortest paths and marks Bellman-Ford / connectivity as extensions', () => {
@@ -135,6 +135,8 @@ describe('textbook directory (UX-03)', () => {
 
     expect(direct.map((topic) => topic.id)).toEqual([
       'linked-list',
+      'circular-linked-list',
+      'doubly-linked-list',
       'stack-basics',
       'queue-basics',
       'binary-tree-traversal',

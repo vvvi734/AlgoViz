@@ -68,9 +68,9 @@ test.describe('UX-03 — textbook navigation', () => {
       await expect(page.getByTestId(`chapter-${id}`)).toHaveAttribute('aria-expanded', 'false');
     }
 
-    // 31 shipped algorithms, each rendered once with exactly one primary home.
+    // 33 shipped algorithms, each rendered once with exactly one primary home.
     const algorithms = page.locator('[data-testid^="algo-"]');
-    await expect(algorithms).toHaveCount(31);
+    await expect(algorithms).toHaveCount(33);
     const placements = await algorithms.evaluateAll((nodes) =>
       nodes.map((node) => ({
         id: node.getAttribute('data-testid'),
@@ -78,7 +78,7 @@ test.describe('UX-03 — textbook navigation', () => {
         topic: node.getAttribute('data-topic'),
       })),
     );
-    expect(new Set(placements.map((item) => item.id)).size).toBe(31);
+    expect(new Set(placements.map((item) => item.id)).size).toBe(33);
     for (const item of placements) {
       expect(item.chapter).toBeTruthy();
       expect(item.topic).toBeTruthy();

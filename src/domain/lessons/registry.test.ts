@@ -34,6 +34,8 @@ describe('Lesson registry (Stage 3B)', () => {
       'stack-lifo-basics',
       'queue-fifo-basics',
       'linked-list-pointer-basics',
+      'doubly-linked-list-pointers',
+      'circular-linked-list-cycle',
       'binary-tree-traversal-basics',
       'binary-search-tree-search-insert-delete',
       'avl-balanced-binary-search-tree',
@@ -88,7 +90,7 @@ describe('Lesson registry (Stage 3B)', () => {
   it('leaves the other algorithms without a course, and that is legal', () => {
     const covered = lessonRegistry.lessons.map((lesson) => lesson.algorithmId);
     const uncovered = catalogIds.filter((id) => !covered.includes(id));
-    expect(catalogIds.length).toBe(31);
+    expect(catalogIds.length).toBe(33);
     expect(uncovered.length).toBe(1);
     expect(uncovered).toEqual(['fib']);
   });

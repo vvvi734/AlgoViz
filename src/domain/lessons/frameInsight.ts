@@ -26,6 +26,8 @@ import type {
   TopologicalSortSnapshot,
   TraceEvent,
   WeightedGraphSnapshot,
+  DoublyLinkedListSnapshot,
+  CircularLinkedListSnapshot,
 } from '../trace/schema';
 import { resolveStep } from './sync';
 import type { Lesson, LessonLang, LessonStep } from './types';
@@ -2089,6 +2091,201 @@ function searchInsight(
 }
 
 /**
+ * L1A: explain the exact node and pointer field touched by the current frame.
+ * This reads the typed snapshot only; message text is never parsed for facts.
+ */
+function advancedLinkedInsight(
+  snapshot: DoublyLinkedListSnapshot | CircularLinkedListSnapshot,
+  lang: LessonLang,
+  hasStep: boolean,
+  lesson: Lesson | undefined,
+  currentEvent: TraceEvent,
+  previousEvent: TraceEvent | undefined,
+): FrameInsight {
+  const doubly = snapshot.kind === 'doubly-linked-list';
+  const change = snapshot.change;
+  const target = snapshot.targetId
+    ? snapshot.nodes.find((node) => node.id === snapshot.targetId)
+    : undefined;
+  const previous = previousEvent?.structure;
+  const previousLinked =
+    previous && (previous.kind === 'doubly-linked-list' || previous.kind === 'circular-linked-list')
+      ? previous
+      : undefined;
+
+  const op = snapshot.operation;
+  const fallbackAction = (() => {
+    if (change) {
+      return tx(
+        lang,
+        `${change.nodeId}.${change.field}：${change.beforeId ?? 'None'} → ${change.afterId ?? 'None'}`,
+        `${change.nodeId}.${change.field}: ${change.beforeId ?? 'None'} → ${change.afterId ?? 'None'}`,
+      );
+    }
+    switch (op) {
+      case 'init':
+        return tx(lang, '初始化链表', 'initialise the list');
+      case 'create':
+        return tx(lang, `创建节点 ${snapshot.targetId ?? ''}`, `create node ${snapshot.targetId ?? ''}`);
+      case 'set-head':
+        return tx(lang, `更新 head → ${snapshot.headId ?? 'None'}`, `update head → ${snapshot.headId ?? 'None'}`);
+      case 'set-tail':
+        return tx(lang, `更新 tail → ${snapshot.tailId ?? 'None'}`, `update tail → ${snapshot.tailId ?? 'None'}`);
+      case 'visit':
+        return tx(lang, `访问节点 ${snapshot.targetId ?? ''}`, `visit node ${snapshot.targetId ?? ''}`);
+      case 'found':
+        return tx(lang, `查找 ${snapshot.searchValue}：命中 ${snapshot.targetId ?? ''}`, `search ${snapshot.searchValue}: found ${snapshot.targetId ?? ''}`);
+      case 'not-found':
+        return tx(lang, `查找 ${snapshot.searchValue}：未命中，已停止`, `search ${snapshot.searchValue}: miss, stopped`);
+      case 'detach':
+        return tx(lang, `移除并解除 ${snapshot.targetId ?? ''} 的引用`, `remove ${snapshot.targetId ?? ''} and clear its links`);
+      case 'done':
+        return tx(lang, '演示完成', 'demo complete');
+      default:
+        return tx(lang, '当前链表帧', 'current linked-list frame');
+    }
+  })();
+
+  const action = hasStep && lesson
+    ? lesson.steps.find((step) => step.stepId === currentEvent.lessonStepId)?.title[lang] ?? fallbackAction
+    : currentEvent.message || fallbackAction;
+  const why = (() => {
+    if (change) {
+      if (doubly && change.field === 'prev') {
+        return tx(
+          lang,
+          `这一步写入 ${change.nodeId}.prev。双向链表必须让相邻节点的 next 与 prev 互相印证；只改 next 会让反向遍历断裂。`,
+          `This frame writes ${change.nodeId}.prev. A doubly linked list needs each next and prev pair to agree; changing only next would break backward traversal.`,
+        );
+      }
+      if (doubly) {
+        return tx(
+          lang,
+          `这一步写入 ${change.nodeId}.next。先让新节点接住后继，再让前驱改指，才能不丢失链的剩余部分。`,
+          `This frame writes ${change.nodeId}.next. Keep the successor on the new node before redirecting the predecessor, or the rest of the chain is lost.`,
+        );
+      }
+      if (change.afterId === snapshot.headId && change.nodeId === snapshot.tailId) {
+        return tx(
+          lang,
+          `这一步把 ${change.nodeId}.next 写回 head，形成 tail.next → head 的回环。循环链表没有 None 终止，遍历必须判断是否回到 head。`,
+          `This frame writes ${change.nodeId}.next back to head, forming tail.next → head. A circular list has no None terminator; traversal must stop by returning to head.`,
+        );
+      }
+      return tx(
+        lang,
+        `这一步改写 ${change.nodeId}.next，把环上的后继重新接好。删除或插入后要检查 tail.next 是否仍然回到 head。`,
+        `This frame rewrites ${change.nodeId}.next to reconnect the cycle. After insertion or deletion, check that tail.next still returns to head.`,
+      );
+    }
+    if (op === 'found' || op === 'not-found') {
+      return tx(
+        lang,
+        doubly
+          ? `按值查找沿 next 前进，命中后立即停止；反向遍历则沿 prev。最坏检查 n 个节点，O(n)。`
+          : `按值查找沿 head 出发的 next 前进；回到 head 就停止，绝不能等待 next 变成 None。最坏检查 n 个节点，O(n)。`,
+        doubly
+          ? 'Value search walks next and stops on the first hit; backward traversal walks prev. Worst case checks n nodes, O(n).'
+          : 'Value search walks next from head and stops when it returns to head; it must never wait for next to become None. Worst case O(n).',
+      );
+    }
+    if (op === 'detach') {
+      return tx(
+        lang,
+        `目标节点已从链上移除，它自己的指针被清空。Python 对象是否回收取决于是否还有别的引用，动画不伪造 GC。`,
+        'The node is off the chain and its own links are cleared. Python may keep the object alive while another reference exists; the animation never fabricates GC.',
+      );
+    }
+    if (op === 'init') {
+      return tx(
+        lang,
+        doubly
+          ? '空表是合法状态：head = None 且 tail = None；插入第一个节点后两个指针都指向它。'
+          : '空表是合法状态：head = tail = None；插入第一个节点后必须建立自环 tail.next = head。',
+        doubly
+          ? 'An empty list is valid: head = None and tail = None; after the first node both pointers reference it.'
+          : 'An empty list is valid: head = tail = None; after the first node the self-loop tail.next = head must close.',
+      );
+    }
+    return hasStep && lesson ? lesson.steps.find((step) => step.stepId === currentEvent.lessonStepId)?.explanation[lang] ?? currentEvent.message : currentEvent.message;
+  })();
+
+  const changes: FrameChange[] = [];
+  if (change) {
+    changes.push({
+      label: `${change.nodeId}.${change.field}`,
+      before: change.beforeId ?? 'None',
+      after: change.afterId ?? 'None',
+      tone: 'update',
+    });
+  }
+  if (previousLinked) {
+    if (previousLinked.headId !== snapshot.headId) {
+      changes.push({ label: 'head', before: previousLinked.headId ?? 'None', after: snapshot.headId ?? 'None', tone: 'update' });
+    }
+    if (previousLinked.tailId !== snapshot.tailId) {
+      changes.push({ label: 'tail', before: previousLinked.tailId ?? 'None', after: snapshot.tailId ?? 'None', tone: 'update' });
+    }
+  }
+  if (op === 'found' || op === 'not-found') {
+    changes.push({
+      label: 'search',
+      before: String(snapshot.searchValue),
+      after: snapshot.found ? `found ${snapshot.targetId ?? ''}` : 'miss',
+      tone: snapshot.found ? 'success' : 'warning',
+    });
+  }
+  if (op === 'detach') {
+    changes.push({ label: snapshot.targetId ?? 'target', after: 'detached, prev/next = None', tone: 'warning' });
+  }
+  if (changes.length === 0) {
+    changes.push({
+      label: doubly ? 'doubly linked list' : 'circular linked list',
+      after: snapshot.headId ? `${snapshot.nodes.length} nodes · phase ${snapshot.phase}` : 'empty · head/tail None',
+      tone: 'neutral',
+    });
+  }
+  if (snapshot.phase === 'intermediate') {
+    changes.push({
+      label: tx(lang, '中间帧', 'intermediate frame'),
+      after: tx(lang, '真实指针尚未全部接好', 'some real pointers are not connected yet'),
+      tone: 'warning',
+    });
+  }
+  if (snapshot.operation === 'done' && !doubly && snapshot.headId) {
+    const tail = snapshot.nodes.find((node) => node.id === snapshot.tailId);
+    if (tail) {
+      changes.push({
+        label: 'tail.next',
+        before: tail.nextId ?? 'None',
+        after: tail.nextId === snapshot.headId ? '= head' : '≠ head',
+        tone: tail.nextId === snapshot.headId ? 'success' : 'warning',
+      });
+    }
+  }
+
+  const memory = hasStep && lesson
+    ? lesson.steps.find((step) => step.stepId === currentEvent.lessonStepId)?.tip?.[lang] ?? null
+    : null;
+  if (target && (op === 'create' || op === 'visit' || op === 'found')) {
+    changes.push({
+      label: tx(lang, '目标值', 'target value'),
+      after: String(target.value),
+      detail: target.id,
+      tone: 'neutral',
+    });
+  }
+
+  return {
+    semantic: true,
+    action,
+    why: firstSentence(why),
+    changes,
+    memory: memory ? firstSentence(memory, 140) : null,
+  };
+}
+
+/**
  * Build the compact, frame-synchronised insight for the right rail.
  *
  * `lesson` may be undefined (algorithm without a course); `currentEvent` may be
@@ -2127,6 +2324,9 @@ export function buildFrameInsight(
         return searchInsight(structure, lang, lesson, currentEvent, previousEvent);
       case 'hash':
         return hashInsight(structure, lang, lesson, currentEvent, previousEvent);
+      case 'doubly-linked-list':
+      case 'circular-linked-list':
+        return advancedLinkedInsight(structure, lang, hasStep, lesson, currentEvent, previousEvent);
       default:
         break;
     }

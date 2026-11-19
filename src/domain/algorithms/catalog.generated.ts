@@ -509,6 +509,42 @@ export const ALGORITHM_CATALOG: AlgorithmCatalog = {
     ],
     "code": "const list=[];trace({type:'linked',values:[...list]},'空链表 / Empty list');\nfor(const [op,val] of input){if(op==='insert')list.unshift(val);else if(op==='remove')list.shift();\ntrace({type:'linked',values:[...list],focus:[0]},op+' '+(val??''));}"
   },
+  "doubly": {
+    "group": "ds",
+    "icon": "⇄",
+    "name": [
+      "双向链表",
+      "Doubly linked list"
+    ],
+    "desc": [
+      "每个真实 Python 节点同时持有 prev 与 next。演示正反向遍历、头/尾/中间插入删除和按值查找；插入时先固定后继，再补反向引用，删除时前驱与后继互相越过目标。",
+      "Every real Python node holds both prev and next. The demo covers forward and backward traversal, head/tail/middle insertion and deletion, and value search; insertion fixes the successor first then adds the reverse link, while deletion makes both neighbours bypass the target."
+    ],
+    "time": "按值查找 O(n) · 已持有节点引用时局部插入/删除 O(1)",
+    "space": "O(n)",
+    "input": {
+      "preset": "official"
+    },
+    "code": "trace({type:'array',values:['Doubly linked list: use the Python preset'],done:true},'请在 Python 模式运行 / Run the Python preset');"
+  },
+  "circular": {
+    "group": "ds",
+    "icon": "↻",
+    "name": [
+      "循环单链表",
+      "Circular singly linked list"
+    ],
+    "desc": [
+      "最后一个节点的真实 next 指回 head，非空时不存在 None 终止。演示整圈遍历、头/尾/中间插入删除和按值查找，并明确处理空表、单节点自环以及删除最后一个节点后变空。",
+      "The last node’s real next points back to head, so a non-empty list never ends at None. The demo covers one full-circle traversal, head/tail/middle insertion and deletion, and value search, with explicit empty, single-node self-loop and delete-last-node states."
+    ],
+    "time": "头/尾操作取决于 head/tail 维护 · 按值查找 O(n)",
+    "space": "O(n)",
+    "input": {
+      "preset": "official"
+    },
+    "code": "trace({type:'array',values:['Circular linked list: use the Python preset'],done:true},'请在 Python 模式运行 / Run the Python preset');"
+  },
   "bfs": {
     "group": "graph",
     "icon": "◉",

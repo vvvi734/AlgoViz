@@ -4,6 +4,10 @@ import { buildBinaryTreeModel, type BinaryTreeVisualModel } from './binaryTreeMo
 import { buildBstModel, type BstVisualModel } from './bstModel';
 import { buildAvlModel, type AvlVisualModel } from './avlModel';
 import { buildLinkedListModel, type LinkedListVisualModel } from './linkedListModel';
+import {
+  buildAdvancedLinkedListModel,
+  type AdvancedLinkedListVisualModel,
+} from './advancedLinkedListModel';
 import { buildGraphVisualModel, buildWeightedGraphVisualModel, type GraphVisualModel } from './graphModel';
 import { buildBellmanVisualModel, buildFloydVisualModel, type BellmanVisualModel, type FloydVisualModel } from './shortestPathModel';
 import { buildKruskalVisualModel, buildPrimVisualModel, type KruskalVisualModel, type PrimVisualModel } from './mstModel';
@@ -76,6 +80,7 @@ export type VisualModel =
   | { kind: 'stack'; operation: StructureOperation; items: StructureItemModel[]; removed?: StructureItemModel; empty: boolean; label: string }
   | { kind: 'queue'; operation: StructureOperation; items: StructureItemModel[]; removed?: StructureItemModel; empty: boolean; label: string }
   | LinkedListVisualModel
+  | AdvancedLinkedListVisualModel
   | BinaryTreeVisualModel
   | BstVisualModel
   | AvlVisualModel
@@ -368,6 +373,11 @@ export function buildVisualModel(
   if (structure !== undefined && structure.kind === 'kosaraju') {
     if (kind !== 'graph') return { kind: 'raw', text: labels.invalid };
     return buildKosarajuVisualModel(structure);
+  }
+
+  if (structure !== undefined && (structure.kind === 'doubly-linked-list' || structure.kind === 'circular-linked-list')) {
+    if (kind !== 'linked') return { kind: 'raw', text: labels.invalid };
+    return buildAdvancedLinkedListModel(structure);
   }
 
   if (structure !== undefined && structure.kind === 'linked-list') {

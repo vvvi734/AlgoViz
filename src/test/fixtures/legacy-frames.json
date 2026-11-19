@@ -3618,6 +3618,30 @@
       "message": "insert 7"
     }
   ],
+  "doubly": [
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          "Doubly linked list: use the Python preset"
+        ],
+        "done": true
+      },
+      "message": "请在 Python 模式运行 / Run the Python preset"
+    }
+  ],
+  "circular": [
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          "Circular linked list: use the Python preset"
+        ],
+        "done": true
+      },
+      "message": "请在 Python 模式运行 / Run the Python preset"
+    }
+  ],
   "bfs": [
     {
       "state": {

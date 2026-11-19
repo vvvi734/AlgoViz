@@ -308,6 +308,365 @@ export const linkedListSnapshotSchema = z
 export type LinkedListSnapshot = z.infer<typeof linkedListSnapshotSchema>;
 
 /**
+ * L1A: doubly linked list and circular singly linked list.
+ *
+ * These are separate snapshot kinds on purpose: the Stage 7C schema above
+ * rejects every cycle, and weakening it would make the old singly-linked traces
+ * unverifiable. The new schemas share pointer-change bookkeeping but enforce
+ * different completed-state invariants:
+ *  - doubly: head.prev = null, tail.next = null, adjacent prev/next agree;
+ *  - circular: non-empty tail.next = head, one full next-cycle from head, and a
+ *    single node points to itself.
+ *
+ * `phase: 'intermediate'` is used while Python has changed only part of a link
+ * set (for example node.next was set but the predecessor has not been updated).
+ * Every `complete` frame must satisfy the structure's invariant, so an
+ * operation cannot be declared finished with a broken chain.
+ */
+export const ADVANCED_LINKED_OPERATIONS = [
+  'init', 'create', 'set-next', 'set-prev', 'set-head', 'set-tail',
+  'visit', 'found', 'not-found', 'detach', 'done',
+] as const;
+export type AdvancedLinkedListOperation = (typeof ADVANCED_LINKED_OPERATIONS)[number];
+
+export const LINKED_SNAPSHOT_PHASES = ['intermediate', 'complete'] as const;
+export type LinkedSnapshotPhase = (typeof LINKED_SNAPSHOT_PHASES)[number];
+
+export const advancedLinkedListChangeSchema = z.object({
+  nodeId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS),
+  field: z.enum(['prev', 'next']),
+  beforeId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+  afterId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+});
+export type AdvancedLinkedListChange = z.infer<typeof advancedLinkedListChangeSchema>;
+
+export const doublyLinkedListNodeSchema = z.object({
+  id: z.string().min(1).max(LIMITS.MAX_NAME_CHARS),
+  value: jsonValueSchema.refine(
+    (value) => JSON.stringify(value).length <= LIMITS.MAX_VARIABLE_VALUE_JSON_BYTES,
+    'doubly linked-list node value too large',
+  ),
+  prevId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+  nextId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+});
+export type DoublyLinkedListNode = z.infer<typeof doublyLinkedListNodeSchema>;
+
+export const circularLinkedListNodeSchema = z.object({
+  id: z.string().min(1).max(LIMITS.MAX_NAME_CHARS),
+  value: jsonValueSchema.refine(
+    (value) => JSON.stringify(value).length <= LIMITS.MAX_VARIABLE_VALUE_JSON_BYTES,
+    'circular linked-list node value too large',
+  ),
+  nextId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+});
+export type CircularLinkedListNode = z.infer<typeof circularLinkedListNodeSchema>;
+
+interface LinkedAudit {
+  ids: Set<string>;
+  byId: Map<string, DoublyLinkedListNode | CircularLinkedListNode>;
+}
+
+function collectLinkedNodes(
+  ctx: z.RefinementCtx,
+  nodes: Array<DoublyLinkedListNode | CircularLinkedListNode>,
+  kindLabel: string,
+): LinkedAudit {
+  const ids = new Set<string>();
+  const byId = new Map<string, DoublyLinkedListNode | CircularLinkedListNode>();
+  nodes.forEach((node, index) => {
+    if (ids.has(node.id)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['nodes', index, 'id'],
+        message: `duplicate ${kindLabel} node id "${node.id}"`,
+      });
+    }
+    ids.add(node.id);
+    byId.set(node.id, node);
+  });
+  return { ids, byId };
+}
+
+function checkRef(
+  ctx: z.RefinementCtx,
+  ids: Set<string>,
+  ref: string | null,
+  path: Array<string | number>,
+  label: string,
+): void {
+  if (ref !== null && !ids.has(ref)) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path,
+      message: `${label} "${ref}" does not refer to a node`,
+    });
+  }
+}
+
+function checkAdvancedLinkedCommon(
+  ctx: z.RefinementCtx,
+  snapshot: {
+    operation: AdvancedLinkedListOperation;
+    phase: LinkedSnapshotPhase;
+    headId: string | null;
+    tailId: string | null;
+    nodes: Array<DoublyLinkedListNode | CircularLinkedListNode>;
+    targetId?: string;
+    change?: AdvancedLinkedListChange;
+    searchValue?: unknown;
+    found?: boolean;
+  },
+  audit: LinkedAudit,
+  isDoubly: boolean,
+): void {
+  const { ids } = audit;
+  checkRef(ctx, ids, snapshot.headId, ['headId'], 'headId');
+  checkRef(ctx, ids, snapshot.tailId, ['tailId'], 'tailId');
+  if (snapshot.targetId !== undefined && !ids.has(snapshot.targetId)) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ['targetId'],
+      message: `targetId "${snapshot.targetId}" does not refer to a node`,
+    });
+  }
+  snapshot.nodes.forEach((node, index) => {
+    if (isDoubly && 'prevId' in node) {
+      checkRef(ctx, ids, node.prevId, ['nodes', index, 'prevId'], 'prevId');
+    }
+    checkRef(ctx, ids, node.nextId, ['nodes', index, 'nextId'], 'nextId');
+  });
+
+  if (snapshot.phase === 'complete') {
+    if (snapshot.headId === null && snapshot.tailId !== null) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['tailId'], message: 'empty list must have tailId = null' });
+    }
+    if (snapshot.tailId === null && snapshot.headId !== null) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['headId'], message: 'empty list must have headId = null' });
+    }
+  }
+
+  const change = snapshot.change;
+  if (change) {
+    const node = audit.byId.get(change.nodeId);
+    if (!node) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['change', 'nodeId'], message: 'change.nodeId does not refer to a node' });
+    } else {
+      const current = change.field === 'prev' && 'prevId' in node ? node.prevId : node.nextId;
+      if (current !== change.afterId) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['change', 'afterId'],
+          message: `change.afterId must equal the node's recorded ${change.field}`,
+        });
+      }
+    }
+    checkRef(ctx, ids, change.beforeId, ['change', 'beforeId'], 'change.beforeId');
+    checkRef(ctx, ids, change.afterId, ['change', 'afterId'], 'change.afterId');
+    if (snapshot.targetId !== change.nodeId) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['targetId'], message: 'targetId must identify the node whose pointer changed' });
+    }
+    if (snapshot.operation !== 'set-next' && snapshot.operation !== 'set-prev') {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['change'], message: `change is not valid for operation "${snapshot.operation}"` });
+    }
+    if (snapshot.operation === 'set-next' && change.field !== 'next') {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['change', 'field'], message: 'set-next must change the next pointer' });
+    }
+    if (snapshot.operation === 'set-prev' && change.field !== 'prev') {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['change', 'field'], message: 'set-prev must change the prev pointer' });
+    }
+  } else if (snapshot.operation === 'set-next' || snapshot.operation === 'set-prev') {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['change'], message: `${snapshot.operation} must record the pointer change` });
+  }
+
+  if ((snapshot.operation === 'visit' || snapshot.operation === 'found') && !snapshot.targetId) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['targetId'], message: `${snapshot.operation} must identify the current node` });
+  }
+  if (snapshot.operation === 'not-found') {
+    if (snapshot.targetId !== undefined) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['targetId'], message: 'a missing search has no target node' });
+    }
+    if (snapshot.found !== false) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['found'], message: 'not-found must set found = false' });
+    }
+  }
+  if (snapshot.operation === 'found') {
+    if (snapshot.found !== true) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['found'], message: 'found must set found = true' });
+    }
+    const target = snapshot.targetId ? audit.byId.get(snapshot.targetId) : undefined;
+    if (!target) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['targetId'], message: 'found must point at the matching node' });
+    } else if (snapshot.searchValue !== undefined && JSON.stringify(target.value) !== JSON.stringify(snapshot.searchValue)) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['targetId'], message: 'found target value must equal searchValue' });
+    }
+  }
+  if ((snapshot.operation === 'found' || snapshot.operation === 'not-found') && snapshot.searchValue === undefined) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['searchValue'], message: 'search result must record searchValue' });
+  }
+
+  if (snapshot.operation === 'create') {
+    const target = snapshot.targetId ? audit.byId.get(snapshot.targetId) : undefined;
+    if (!target) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['targetId'], message: 'create must identify its new node' });
+    } else if (target.nextId !== null || ('prevId' in target && target.prevId !== null)) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['targetId'], message: 'a newly created node must start with null links' });
+    }
+    if (snapshot.phase !== 'intermediate') {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['phase'], message: 'create is an intermediate frame' });
+    }
+  }
+  if (snapshot.operation === 'set-head' && snapshot.targetId !== undefined && snapshot.targetId !== snapshot.headId) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['targetId'], message: 'set-head target must be the recorded head' });
+  }
+  if (snapshot.operation === 'set-tail' && snapshot.targetId !== undefined && snapshot.targetId !== snapshot.tailId) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['targetId'], message: 'set-tail target must be the recorded tail' });
+  }
+  if (snapshot.operation === 'detach') {
+    const target = snapshot.targetId ? audit.byId.get(snapshot.targetId) : undefined;
+    if (!target) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['targetId'], message: 'detach must identify the removed node' });
+    } else if (target.nextId !== null || ('prevId' in target && target.prevId !== null)) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['targetId'], message: 'detached node must have null links' });
+    }
+    if (snapshot.change !== undefined) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['change'], message: 'detach does not change a pointer' });
+    }
+    if (snapshot.phase !== 'complete') {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['phase'], message: 'detach completes an unlink operation' });
+    }
+  }
+  if (snapshot.operation === 'done' && snapshot.phase !== 'complete') {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['phase'], message: 'done must be a complete frame' });
+  }
+}
+
+export const doublyLinkedListSnapshotSchema = z
+  .object({
+    kind: z.literal('doubly-linked-list'),
+    operation: z.enum(ADVANCED_LINKED_OPERATIONS),
+    phase: z.enum(LINKED_SNAPSHOT_PHASES),
+    headId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+    tailId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+    nodes: z.array(doublyLinkedListNodeSchema).max(40),
+    targetId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).optional(),
+    change: advancedLinkedListChangeSchema.optional(),
+    searchValue: jsonValueSchema.optional(),
+    found: z.boolean().optional(),
+  })
+  .superRefine((snapshot, ctx) => {
+    const audit = collectLinkedNodes(ctx, snapshot.nodes, 'doubly linked-list');
+    checkAdvancedLinkedCommon(ctx, snapshot, audit, true);
+    if (snapshot.phase !== 'complete') return;
+
+    const chain: DoublyLinkedListNode[] = [];
+    const seen = new Set<string>();
+    let current = snapshot.headId;
+    while (current !== null) {
+      if (seen.has(current)) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['nodes'], message: `cyclic doubly linked list at node "${current}"` });
+        break;
+      }
+      const node = audit.byId.get(current);
+      if (!node) break;
+      seen.add(current);
+      chain.push(node as DoublyLinkedListNode);
+      current = node.nextId;
+    }
+    if (snapshot.headId === null && snapshot.tailId !== null) return;
+    if (snapshot.headId !== null && chain.length === 0) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['headId'], message: 'non-empty list head must be reachable' });
+    }
+    if (snapshot.headId !== null && snapshot.tailId !== null && chain.length > 0 && chain[chain.length - 1].id !== snapshot.tailId) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['tailId'], message: 'tailId must be the last node on the next chain' });
+    }
+    chain.forEach((node, index) => {
+      const previous = index === 0 ? null : chain[index - 1].id;
+      if (node.prevId !== previous) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['nodes'], message: `node "${node.id}" prevId does not match the previous node` });
+      }
+      const next = index === chain.length - 1 ? null : chain[index + 1].id;
+      if (node.nextId !== next) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['nodes'], message: `node "${node.id}" nextId does not match the next node` });
+      }
+    });
+    snapshot.nodes.filter((node) => !seen.has(node.id)).forEach((node, index) => {
+      if (node.prevId !== null || node.nextId !== null) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['nodes', index], message: `unreachable node "${node.id}" must have null links` });
+      }
+    });
+  });
+export type DoublyLinkedListSnapshot = z.infer<typeof doublyLinkedListSnapshotSchema>;
+
+export const circularLinkedListSnapshotSchema = z
+  .object({
+    kind: z.literal('circular-linked-list'),
+    operation: z.enum(ADVANCED_LINKED_OPERATIONS),
+    phase: z.enum(LINKED_SNAPSHOT_PHASES),
+    headId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+    tailId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+    nodes: z.array(circularLinkedListNodeSchema).max(40),
+    targetId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).optional(),
+    change: advancedLinkedListChangeSchema.optional(),
+    searchValue: jsonValueSchema.optional(),
+    found: z.boolean().optional(),
+  })
+  .superRefine((snapshot, ctx) => {
+    const audit = collectLinkedNodes(ctx, snapshot.nodes, 'circular linked-list');
+    checkAdvancedLinkedCommon(ctx, snapshot, audit, false);
+    if (snapshot.operation === 'set-prev') {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['operation'], message: 'circular singly linked list has no prev pointer' });
+    }
+    if (snapshot.change?.field === 'prev') {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['change', 'field'], message: 'circular singly linked list has no prev pointer' });
+    }
+    if (snapshot.phase !== 'complete') return;
+
+    if (snapshot.headId === null && snapshot.tailId !== null) return;
+    if (snapshot.headId !== null && snapshot.tailId === null) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['tailId'], message: 'non-empty circular list needs a tail' });
+      return;
+    }
+    const cycle: CircularLinkedListNode[] = [];
+    const seen = new Set<string>();
+    let current = snapshot.headId;
+    while (current !== null && !seen.has(current)) {
+      const node = audit.byId.get(current);
+      if (!node) break;
+      seen.add(current);
+      cycle.push(node as CircularLinkedListNode);
+      current = node.nextId;
+      if (current === snapshot.headId) break;
+    }
+    if (snapshot.headId !== null) {
+      if (current !== snapshot.headId) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['nodes'], message: 'next chain must return to head without dangling' });
+      }
+      if (cycle.length > 0 && cycle[cycle.length - 1].id !== snapshot.tailId) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['tailId'], message: 'tailId must be the node whose next is head' });
+      }
+      if (snapshot.tailId !== null) {
+        const tail = audit.byId.get(snapshot.tailId);
+        if (tail && tail.nextId !== snapshot.headId) {
+          ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['tailId'], message: 'non-empty circular list must have tail.next = head' });
+        }
+      }
+      if (cycle.length === 1 && snapshot.headId !== snapshot.tailId) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['tailId'], message: 'single-node list must have head = tail' });
+      }
+      if (cycle.length === 1 && cycle[0].nextId !== cycle[0].id) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['nodes'], message: 'single node must point to itself' });
+      }
+    }
+    snapshot.nodes.filter((node) => !seen.has(node.id)).forEach((node, index) => {
+      if (node.nextId !== null) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['nodes', index], message: `unreachable node "${node.id}" must have next = null` });
+      }
+    });
+  });
+export type CircularLinkedListSnapshot = z.infer<typeof circularLinkedListSnapshotSchema>;
+export type AdvancedLinkedListSnapshot = DoublyLinkedListSnapshot | CircularLinkedListSnapshot;
+
+/**
  * Stage 7D: binary-tree traversal semantics. Every frame is a full snapshot of
  * the real TreeNode objects plus the real recursion state recorded by Python:
  *
@@ -6464,7 +6823,7 @@ export const searchSnapshotSchema = z
   });
 export type SearchSnapshot = z.infer<typeof searchSnapshotSchema>;
 
-/** Stage 7B stack/queue + Stage 7C linked-list + Stage 7D binary-tree + T1 BST + T2 AVL + T3 max-heap + T4 Huffman + S1/S2 sorting + F1 search + F2 hash + Stage 7E/7F/G1/G2/G3/G4 graphs. */
+/** Stage 7B stack/queue + Stage 7C linked-list + L1A doubly/circular linked lists + Stage 7D binary-tree + T1 BST + T2 AVL + T3 max-heap + T4 Huffman + S1/S2 sorting + F1 search + F2 hash + Stage 7E/7F/G1/G2/G3/G4 graphs. */
 export const structureSchema = z.union([
   sortingSnapshotSchema,
   searchSnapshotSchema,
@@ -6473,6 +6832,8 @@ export const structureSchema = z.union([
   maxHeapSnapshotSchema,
   structureSnapshotSchema,
   linkedListSnapshotSchema,
+  doublyLinkedListSnapshotSchema,
+  circularLinkedListSnapshotSchema,
   binaryTreeSnapshotSchema,
   bstSnapshotSchema,
   avlSnapshotSchema,

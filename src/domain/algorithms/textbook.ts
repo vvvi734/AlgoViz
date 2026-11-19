@@ -154,14 +154,12 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
       {
         id: 'circular-linked-list',
         title: { zh: '循环链表', en: 'Circular linked list' },
-        algorithms: [],
-        concept: true,
+        algorithms: [{ id: 'circular' }],
       },
       {
         id: 'doubly-linked-list',
         title: { zh: '双向链表', en: 'Doubly linked list' },
-        algorithms: [],
-        concept: true,
+        algorithms: [{ id: 'doubly' }],
       },
     ],
   },

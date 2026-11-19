@@ -1,0 +1,6064 @@
+[
+  {
+    "lessonStepId": "init",
+    "line": 232,
+    "message": "空的双向链表：head = None，tail = None / Empty doubly linked list",
+    "state": {
+      "focus": [],
+      "type": "linked",
+      "values": []
+    },
+    "structure": {
+      "headId": null,
+      "kind": "doubly-linked-list",
+      "nodes": [],
+      "operation": "init",
+      "phase": "complete",
+      "tailId": null
+    },
+    "variables": {
+      "current": null,
+      "current_id": null,
+      "head": null,
+      "ids": [],
+      "length": 0,
+      "tail": null
+    }
+  },
+  {
+    "lessonStepId": "insert-head",
+    "line": 120,
+    "message": "创建节点 5：prev/next 都是空 / create node with empty links",
+    "state": {
+      "focus": [
+        "n1"
+      ],
+      "type": "linked",
+      "values": []
+    },
+    "structure": {
+      "headId": null,
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": null,
+          "prevId": null,
+          "value": 5
+        }
+      ],
+      "operation": "create",
+      "phase": "intermediate",
+      "tailId": null,
+      "targetId": "n1"
+    },
+    "variables": {
+      "current": 5,
+      "current_id": "n1",
+      "head": null,
+      "ids": [],
+      "length": 0,
+      "tail": null
+    }
+  },
+  {
+    "lessonStepId": "insert-head",
+    "line": 123,
+    "message": "head = new：空表头指针指向 5 / head points at the first node",
+    "state": {
+      "focus": [
+        "n1"
+      ],
+      "type": "linked",
+      "values": [
+        5
+      ]
+    },
+    "structure": {
+      "headId": "n1",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": null,
+          "prevId": null,
+          "value": 5
+        }
+      ],
+      "operation": "set-head",
+      "phase": "intermediate",
+      "tailId": null,
+      "targetId": "n1"
+    },
+    "variables": {
+      "current": 5,
+      "current_id": "n1",
+      "head": 5,
+      "ids": [
+        "n1"
+      ],
+      "length": 1,
+      "tail": null
+    }
+  },
+  {
+    "lessonStepId": "insert-head",
+    "line": 125,
+    "message": "tail = new：空表只有一个节点 / one-node list has head = tail",
+    "state": {
+      "focus": [
+        "n1"
+      ],
+      "type": "linked",
+      "values": [
+        5
+      ]
+    },
+    "structure": {
+      "headId": "n1",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": null,
+          "prevId": null,
+          "value": 5
+        }
+      ],
+      "operation": "set-tail",
+      "phase": "complete",
+      "tailId": "n1",
+      "targetId": "n1"
+    },
+    "variables": {
+      "current": 5,
+      "current_id": "n1",
+      "head": 5,
+      "ids": [
+        "n1"
+      ],
+      "length": 1,
+      "tail": 5
+    }
+  },
+  {
+    "lessonStepId": "insert-tail",
+    "line": 138,
+    "message": "创建尾节点 7 / create tail node",
+    "state": {
+      "focus": [
+        "n2"
+      ],
+      "type": "linked",
+      "values": [
+        5
+      ]
+    },
+    "structure": {
+      "headId": "n1",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": null,
+          "prevId": null,
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": null,
+          "prevId": null,
+          "value": 7
+        }
+      ],
+      "operation": "create",
+      "phase": "intermediate",
+      "tailId": "n1",
+      "targetId": "n2"
+    },
+    "variables": {
+      "current": 7,
+      "current_id": "n2",
+      "head": 5,
+      "ids": [
+        "n1"
+      ],
+      "length": 1,
+      "tail": 5
+    }
+  },
+  {
+    "lessonStepId": "insert-tail",
+    "line": 146,
+    "message": "tail.next = new：旧尾先指向新节点 / old tail points forward",
+    "state": {
+      "focus": [
+        "n1"
+      ],
+      "type": "linked",
+      "values": [
+        5,
+        7
+      ]
+    },
+    "structure": {
+      "change": {
+        "afterId": "n2",
+        "beforeId": null,
+        "field": "next",
+        "nodeId": "n1"
+      },
+      "headId": "n1",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": "n2",
+          "prevId": null,
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": null,
+          "prevId": null,
+          "value": 7
+        }
+      ],
+      "operation": "set-next",
+      "phase": "intermediate",
+      "tailId": "n1",
+      "targetId": "n1"
+    },
+    "variables": {
+      "current": 5,
+      "current_id": "n1",
+      "head": 5,
+      "ids": [
+        "n1",
+        "n2"
+      ],
+      "length": 2,
+      "tail": 5
+    }
+  },
+  {
+    "lessonStepId": "insert-tail",
+    "line": 148,
+    "message": "new.prev = 旧 tail：新节点反向接住旧尾 / new node points back",
+    "state": {
+      "focus": [
+        "n2"
+      ],
+      "type": "linked",
+      "values": [
+        5,
+        7
+      ]
+    },
+    "structure": {
+      "change": {
+        "afterId": "n1",
+        "beforeId": null,
+        "field": "prev",
+        "nodeId": "n2"
+      },
+      "headId": "n1",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": "n2",
+          "prevId": null,
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": null,
+          "prevId": "n1",
+          "value": 7
+        }
+      ],
+      "operation": "set-prev",
+      "phase": "intermediate",
+      "tailId": "n1",
+      "targetId": "n2"
+    },
+    "variables": {
+      "current": 7,
+      "current_id": "n2",
+      "head": 5,
+      "ids": [
+        "n1",
+        "n2"
+      ],
+      "length": 2,
+      "tail": 5
+    }
+  },
+  {
+    "lessonStepId": "insert-tail",
+    "line": 150,
+    "message": "tail = new：尾指针更新，双向链完成 / tail moves to the new node",
+    "state": {
+      "focus": [
+        "n2"
+      ],
+      "type": "linked",
+      "values": [
+        5,
+        7
+      ]
+    },
+    "structure": {
+      "headId": "n1",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": "n2",
+          "prevId": null,
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": null,
+          "prevId": "n1",
+          "value": 7
+        }
+      ],
+      "operation": "set-tail",
+      "phase": "complete",
+      "tailId": "n2",
+      "targetId": "n2"
+    },
+    "variables": {
+      "current": 7,
+      "current_id": "n2",
+      "head": 5,
+      "ids": [
+        "n1",
+        "n2"
+      ],
+      "length": 2,
+      "tail": 7
+    }
+  },
+  {
+    "lessonStepId": "insert-head",
+    "line": 120,
+    "message": "创建节点 3：prev/next 都是空 / create node with empty links",
+    "state": {
+      "focus": [
+        "n3"
+      ],
+      "type": "linked",
+      "values": [
+        5,
+        7
+      ]
+    },
+    "structure": {
+      "headId": "n1",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": "n2",
+          "prevId": null,
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": null,
+          "prevId": "n1",
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": null,
+          "prevId": null,
+          "value": 3
+        }
+      ],
+      "operation": "create",
+      "phase": "intermediate",
+      "tailId": "n2",
+      "targetId": "n3"
+    },
+    "variables": {
+      "current": 3,
+      "current_id": "n3",
+      "head": 5,
+      "ids": [
+        "n1",
+        "n2"
+      ],
+      "length": 2,
+      "tail": 7
+    }
+  },
+  {
+    "lessonStepId": "insert-head",
+    "line": 128,
+    "message": "new.next = 旧 head：新节点先接住旧链 / new.next keeps the old head",
+    "state": {
+      "focus": [
+        "n3"
+      ],
+      "type": "linked",
+      "values": [
+        5,
+        7
+      ]
+    },
+    "structure": {
+      "change": {
+        "afterId": "n1",
+        "beforeId": null,
+        "field": "next",
+        "nodeId": "n3"
+      },
+      "headId": "n1",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": "n2",
+          "prevId": null,
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": null,
+          "prevId": "n1",
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": "n1",
+          "prevId": null,
+          "value": 3
+        }
+      ],
+      "operation": "set-next",
+      "phase": "intermediate",
+      "tailId": "n2",
+      "targetId": "n3"
+    },
+    "variables": {
+      "current": 3,
+      "current_id": "n3",
+      "head": 5,
+      "ids": [
+        "n1",
+        "n2"
+      ],
+      "length": 2,
+      "tail": 7
+    }
+  },
+  {
+    "lessonStepId": "insert-head",
+    "line": 130,
+    "message": "旧 head.prev = new：旧头反向接住新节点 / old head points back",
+    "state": {
+      "focus": [
+        "n1"
+      ],
+      "type": "linked",
+      "values": [
+        5,
+        7
+      ]
+    },
+    "structure": {
+      "change": {
+        "afterId": "n3",
+        "beforeId": null,
+        "field": "prev",
+        "nodeId": "n1"
+      },
+      "headId": "n1",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": "n2",
+          "prevId": "n3",
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": null,
+          "prevId": "n1",
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": "n1",
+          "prevId": null,
+          "value": 3
+        }
+      ],
+      "operation": "set-prev",
+      "phase": "intermediate",
+      "tailId": "n2",
+      "targetId": "n1"
+    },
+    "variables": {
+      "current": 5,
+      "current_id": "n1",
+      "head": 5,
+      "ids": [
+        "n1",
+        "n2"
+      ],
+      "length": 2,
+      "tail": 7
+    }
+  },
+  {
+    "lessonStepId": "insert-head",
+    "line": 132,
+    "message": "head = new：带头节点的双向链完成 / head moves to the new node",
+    "state": {
+      "focus": [
+        "n3"
+      ],
+      "type": "linked",
+      "values": [
+        3,
+        5,
+        7
+      ]
+    },
+    "structure": {
+      "headId": "n3",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": "n2",
+          "prevId": "n3",
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": null,
+          "prevId": "n1",
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": "n1",
+          "prevId": null,
+          "value": 3
+        }
+      ],
+      "operation": "set-head",
+      "phase": "complete",
+      "tailId": "n2",
+      "targetId": "n3"
+    },
+    "variables": {
+      "current": 3,
+      "current_id": "n3",
+      "head": 3,
+      "ids": [
+        "n3",
+        "n1",
+        "n2"
+      ],
+      "length": 3,
+      "tail": 7
+    }
+  },
+  {
+    "lessonStepId": "insert-middle",
+    "line": 104,
+    "message": "沿 next 查找 5：当前是 3 / walk next for 5",
+    "state": {
+      "focus": [
+        "n3"
+      ],
+      "type": "linked",
+      "values": [
+        3,
+        5,
+        7
+      ]
+    },
+    "structure": {
+      "headId": "n3",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": "n2",
+          "prevId": "n3",
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": null,
+          "prevId": "n1",
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": "n1",
+          "prevId": null,
+          "value": 3
+        }
+      ],
+      "operation": "visit",
+      "phase": "complete",
+      "tailId": "n2",
+      "targetId": "n3"
+    },
+    "variables": {
+      "current": 3,
+      "current_id": "n3",
+      "head": 3,
+      "ids": [
+        "n3",
+        "n1",
+        "n2"
+      ],
+      "length": 3,
+      "tail": 7
+    }
+  },
+  {
+    "lessonStepId": "insert-middle",
+    "line": 110,
+    "message": "查找 5：命中 n1 / found n1",
+    "state": {
+      "focus": [
+        "n1"
+      ],
+      "type": "linked",
+      "values": [
+        3,
+        5,
+        7
+      ]
+    },
+    "structure": {
+      "found": true,
+      "headId": "n3",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": "n2",
+          "prevId": "n3",
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": null,
+          "prevId": "n1",
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": "n1",
+          "prevId": null,
+          "value": 3
+        }
+      ],
+      "operation": "found",
+      "phase": "complete",
+      "searchValue": 5,
+      "tailId": "n2",
+      "targetId": "n1"
+    },
+    "variables": {
+      "current": 5,
+      "current_id": "n1",
+      "head": 3,
+      "ids": [
+        "n3",
+        "n1",
+        "n2"
+      ],
+      "length": 3,
+      "tail": 7
+    }
+  },
+  {
+    "lessonStepId": "insert-middle",
+    "line": 158,
+    "message": "创建节点 6：尚未接入 / create a detached node",
+    "state": {
+      "focus": [
+        "n4"
+      ],
+      "type": "linked",
+      "values": [
+        3,
+        5,
+        7
+      ]
+    },
+    "structure": {
+      "headId": "n3",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": "n2",
+          "prevId": "n3",
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": null,
+          "prevId": "n1",
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": "n1",
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": null,
+          "prevId": null,
+          "value": 6
+        }
+      ],
+      "operation": "create",
+      "phase": "intermediate",
+      "tailId": "n2",
+      "targetId": "n4"
+    },
+    "variables": {
+      "current": 6,
+      "current_id": "n4",
+      "head": 3,
+      "ids": [
+        "n3",
+        "n1",
+        "n2"
+      ],
+      "length": 3,
+      "tail": 7
+    }
+  },
+  {
+    "lessonStepId": "insert-middle",
+    "line": 161,
+    "message": "new.next = target.next：新节点接住后继 / new node keeps the successor",
+    "state": {
+      "focus": [
+        "n4"
+      ],
+      "type": "linked",
+      "values": [
+        3,
+        5,
+        7
+      ]
+    },
+    "structure": {
+      "change": {
+        "afterId": "n2",
+        "beforeId": null,
+        "field": "next",
+        "nodeId": "n4"
+      },
+      "headId": "n3",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": "n2",
+          "prevId": "n3",
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": null,
+          "prevId": "n1",
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": "n1",
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": "n2",
+          "prevId": null,
+          "value": 6
+        }
+      ],
+      "operation": "set-next",
+      "phase": "intermediate",
+      "tailId": "n2",
+      "targetId": "n4"
+    },
+    "variables": {
+      "current": 6,
+      "current_id": "n4",
+      "head": 3,
+      "ids": [
+        "n3",
+        "n1",
+        "n2"
+      ],
+      "length": 3,
+      "tail": 7
+    }
+  },
+  {
+    "lessonStepId": "insert-middle",
+    "line": 164,
+    "message": "后继.prev = new：后继反向接住新节点 / successor points back",
+    "state": {
+      "focus": [
+        "n2"
+      ],
+      "type": "linked",
+      "values": [
+        3,
+        5,
+        7
+      ]
+    },
+    "structure": {
+      "change": {
+        "afterId": "n4",
+        "beforeId": "n1",
+        "field": "prev",
+        "nodeId": "n2"
+      },
+      "headId": "n3",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": "n2",
+          "prevId": "n3",
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": null,
+          "prevId": "n4",
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": "n1",
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": "n2",
+          "prevId": null,
+          "value": 6
+        }
+      ],
+      "operation": "set-prev",
+      "phase": "intermediate",
+      "tailId": "n2",
+      "targetId": "n2"
+    },
+    "variables": {
+      "current": 7,
+      "current_id": "n2",
+      "head": 3,
+      "ids": [
+        "n3",
+        "n1",
+        "n2"
+      ],
+      "length": 3,
+      "tail": 7
+    }
+  },
+  {
+    "lessonStepId": "insert-middle",
+    "line": 166,
+    "message": "new.prev = target：新节点反向接住前驱 / new node points back to target",
+    "state": {
+      "focus": [
+        "n4"
+      ],
+      "type": "linked",
+      "values": [
+        3,
+        5,
+        7
+      ]
+    },
+    "structure": {
+      "change": {
+        "afterId": "n1",
+        "beforeId": null,
+        "field": "prev",
+        "nodeId": "n4"
+      },
+      "headId": "n3",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": "n2",
+          "prevId": "n3",
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": null,
+          "prevId": "n4",
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": "n1",
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": "n2",
+          "prevId": "n1",
+          "value": 6
+        }
+      ],
+      "operation": "set-prev",
+      "phase": "intermediate",
+      "tailId": "n2",
+      "targetId": "n4"
+    },
+    "variables": {
+      "current": 6,
+      "current_id": "n4",
+      "head": 3,
+      "ids": [
+        "n3",
+        "n1",
+        "n2"
+      ],
+      "length": 3,
+      "tail": 7
+    }
+  },
+  {
+    "lessonStepId": "insert-middle",
+    "line": 171,
+    "message": "target.next = new：前驱改指新节点，插入完成 / predecessor points to the new node",
+    "state": {
+      "focus": [
+        "n1"
+      ],
+      "type": "linked",
+      "values": [
+        3,
+        5,
+        6,
+        7
+      ]
+    },
+    "structure": {
+      "change": {
+        "afterId": "n4",
+        "beforeId": "n2",
+        "field": "next",
+        "nodeId": "n1"
+      },
+      "headId": "n3",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": "n4",
+          "prevId": "n3",
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": null,
+          "prevId": "n4",
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": "n1",
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": "n2",
+          "prevId": "n1",
+          "value": 6
+        }
+      ],
+      "operation": "set-next",
+      "phase": "complete",
+      "tailId": "n2",
+      "targetId": "n1"
+    },
+    "variables": {
+      "current": 5,
+      "current_id": "n1",
+      "head": 3,
+      "ids": [
+        "n3",
+        "n1",
+        "n4",
+        "n2"
+      ],
+      "length": 4,
+      "tail": 7
+    }
+  },
+  {
+    "lessonStepId": "insert-tail",
+    "line": 138,
+    "message": "创建尾节点 8 / create tail node",
+    "state": {
+      "focus": [
+        "n5"
+      ],
+      "type": "linked",
+      "values": [
+        3,
+        5,
+        6,
+        7
+      ]
+    },
+    "structure": {
+      "headId": "n3",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": "n4",
+          "prevId": "n3",
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": null,
+          "prevId": "n4",
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": "n1",
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": "n2",
+          "prevId": "n1",
+          "value": 6
+        },
+        {
+          "id": "n5",
+          "nextId": null,
+          "prevId": null,
+          "value": 8
+        }
+      ],
+      "operation": "create",
+      "phase": "intermediate",
+      "tailId": "n2",
+      "targetId": "n5"
+    },
+    "variables": {
+      "current": 8,
+      "current_id": "n5",
+      "head": 3,
+      "ids": [
+        "n3",
+        "n1",
+        "n4",
+        "n2"
+      ],
+      "length": 4,
+      "tail": 7
+    }
+  },
+  {
+    "lessonStepId": "insert-tail",
+    "line": 146,
+    "message": "tail.next = new：旧尾先指向新节点 / old tail points forward",
+    "state": {
+      "focus": [
+        "n2"
+      ],
+      "type": "linked",
+      "values": [
+        3,
+        5,
+        6,
+        7,
+        8
+      ]
+    },
+    "structure": {
+      "change": {
+        "afterId": "n5",
+        "beforeId": null,
+        "field": "next",
+        "nodeId": "n2"
+      },
+      "headId": "n3",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": "n4",
+          "prevId": "n3",
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": "n5",
+          "prevId": "n4",
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": "n1",
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": "n2",
+          "prevId": "n1",
+          "value": 6
+        },
+        {
+          "id": "n5",
+          "nextId": null,
+          "prevId": null,
+          "value": 8
+        }
+      ],
+      "operation": "set-next",
+      "phase": "intermediate",
+      "tailId": "n2",
+      "targetId": "n2"
+    },
+    "variables": {
+      "current": 7,
+      "current_id": "n2",
+      "head": 3,
+      "ids": [
+        "n3",
+        "n1",
+        "n4",
+        "n2",
+        "n5"
+      ],
+      "length": 5,
+      "tail": 7
+    }
+  },
+  {
+    "lessonStepId": "insert-tail",
+    "line": 148,
+    "message": "new.prev = 旧 tail：新节点反向接住旧尾 / new node points back",
+    "state": {
+      "focus": [
+        "n5"
+      ],
+      "type": "linked",
+      "values": [
+        3,
+        5,
+        6,
+        7,
+        8
+      ]
+    },
+    "structure": {
+      "change": {
+        "afterId": "n2",
+        "beforeId": null,
+        "field": "prev",
+        "nodeId": "n5"
+      },
+      "headId": "n3",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": "n4",
+          "prevId": "n3",
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": "n5",
+          "prevId": "n4",
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": "n1",
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": "n2",
+          "prevId": "n1",
+          "value": 6
+        },
+        {
+          "id": "n5",
+          "nextId": null,
+          "prevId": "n2",
+          "value": 8
+        }
+      ],
+      "operation": "set-prev",
+      "phase": "intermediate",
+      "tailId": "n2",
+      "targetId": "n5"
+    },
+    "variables": {
+      "current": 8,
+      "current_id": "n5",
+      "head": 3,
+      "ids": [
+        "n3",
+        "n1",
+        "n4",
+        "n2",
+        "n5"
+      ],
+      "length": 5,
+      "tail": 7
+    }
+  },
+  {
+    "lessonStepId": "insert-tail",
+    "line": 150,
+    "message": "tail = new：尾指针更新，双向链完成 / tail moves to the new node",
+    "state": {
+      "focus": [
+        "n5"
+      ],
+      "type": "linked",
+      "values": [
+        3,
+        5,
+        6,
+        7,
+        8
+      ]
+    },
+    "structure": {
+      "headId": "n3",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": "n4",
+          "prevId": "n3",
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": "n5",
+          "prevId": "n4",
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": "n1",
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": "n2",
+          "prevId": "n1",
+          "value": 6
+        },
+        {
+          "id": "n5",
+          "nextId": null,
+          "prevId": "n2",
+          "value": 8
+        }
+      ],
+      "operation": "set-tail",
+      "phase": "complete",
+      "tailId": "n5",
+      "targetId": "n5"
+    },
+    "variables": {
+      "current": 8,
+      "current_id": "n5",
+      "head": 3,
+      "ids": [
+        "n3",
+        "n1",
+        "n4",
+        "n2",
+        "n5"
+      ],
+      "length": 5,
+      "tail": 8
+    }
+  },
+  {
+    "lessonStepId": "traverse-forward",
+    "line": 216,
+    "message": "正向访问 3，然后 current = current.next / visit forward, then follow next",
+    "state": {
+      "focus": [
+        "n3"
+      ],
+      "type": "linked",
+      "values": [
+        3,
+        5,
+        6,
+        7,
+        8
+      ]
+    },
+    "structure": {
+      "headId": "n3",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": "n4",
+          "prevId": "n3",
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": "n5",
+          "prevId": "n4",
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": "n1",
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": "n2",
+          "prevId": "n1",
+          "value": 6
+        },
+        {
+          "id": "n5",
+          "nextId": null,
+          "prevId": "n2",
+          "value": 8
+        }
+      ],
+      "operation": "visit",
+      "phase": "complete",
+      "tailId": "n5",
+      "targetId": "n3"
+    },
+    "variables": {
+      "current": 3,
+      "current_id": "n3",
+      "head": 3,
+      "ids": [
+        "n3",
+        "n1",
+        "n4",
+        "n2",
+        "n5"
+      ],
+      "length": 5,
+      "tail": 8
+    }
+  },
+  {
+    "lessonStepId": "traverse-forward",
+    "line": 216,
+    "message": "正向访问 5，然后 current = current.next / visit forward, then follow next",
+    "state": {
+      "focus": [
+        "n1"
+      ],
+      "type": "linked",
+      "values": [
+        3,
+        5,
+        6,
+        7,
+        8
+      ]
+    },
+    "structure": {
+      "headId": "n3",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": "n4",
+          "prevId": "n3",
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": "n5",
+          "prevId": "n4",
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": "n1",
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": "n2",
+          "prevId": "n1",
+          "value": 6
+        },
+        {
+          "id": "n5",
+          "nextId": null,
+          "prevId": "n2",
+          "value": 8
+        }
+      ],
+      "operation": "visit",
+      "phase": "complete",
+      "tailId": "n5",
+      "targetId": "n1"
+    },
+    "variables": {
+      "current": 5,
+      "current_id": "n1",
+      "head": 3,
+      "ids": [
+        "n3",
+        "n1",
+        "n4",
+        "n2",
+        "n5"
+      ],
+      "length": 5,
+      "tail": 8
+    }
+  },
+  {
+    "lessonStepId": "traverse-forward",
+    "line": 216,
+    "message": "正向访问 6，然后 current = current.next / visit forward, then follow next",
+    "state": {
+      "focus": [
+        "n4"
+      ],
+      "type": "linked",
+      "values": [
+        3,
+        5,
+        6,
+        7,
+        8
+      ]
+    },
+    "structure": {
+      "headId": "n3",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": "n4",
+          "prevId": "n3",
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": "n5",
+          "prevId": "n4",
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": "n1",
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": "n2",
+          "prevId": "n1",
+          "value": 6
+        },
+        {
+          "id": "n5",
+          "nextId": null,
+          "prevId": "n2",
+          "value": 8
+        }
+      ],
+      "operation": "visit",
+      "phase": "complete",
+      "tailId": "n5",
+      "targetId": "n4"
+    },
+    "variables": {
+      "current": 6,
+      "current_id": "n4",
+      "head": 3,
+      "ids": [
+        "n3",
+        "n1",
+        "n4",
+        "n2",
+        "n5"
+      ],
+      "length": 5,
+      "tail": 8
+    }
+  },
+  {
+    "lessonStepId": "traverse-forward",
+    "line": 216,
+    "message": "正向访问 7，然后 current = current.next / visit forward, then follow next",
+    "state": {
+      "focus": [
+        "n2"
+      ],
+      "type": "linked",
+      "values": [
+        3,
+        5,
+        6,
+        7,
+        8
+      ]
+    },
+    "structure": {
+      "headId": "n3",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": "n4",
+          "prevId": "n3",
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": "n5",
+          "prevId": "n4",
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": "n1",
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": "n2",
+          "prevId": "n1",
+          "value": 6
+        },
+        {
+          "id": "n5",
+          "nextId": null,
+          "prevId": "n2",
+          "value": 8
+        }
+      ],
+      "operation": "visit",
+      "phase": "complete",
+      "tailId": "n5",
+      "targetId": "n2"
+    },
+    "variables": {
+      "current": 7,
+      "current_id": "n2",
+      "head": 3,
+      "ids": [
+        "n3",
+        "n1",
+        "n4",
+        "n2",
+        "n5"
+      ],
+      "length": 5,
+      "tail": 8
+    }
+  },
+  {
+    "lessonStepId": "traverse-forward",
+    "line": 216,
+    "message": "正向访问 8，然后 current = current.next / visit forward, then follow next",
+    "state": {
+      "focus": [
+        "n5"
+      ],
+      "type": "linked",
+      "values": [
+        3,
+        5,
+        6,
+        7,
+        8
+      ]
+    },
+    "structure": {
+      "headId": "n3",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": "n4",
+          "prevId": "n3",
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": "n5",
+          "prevId": "n4",
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": "n1",
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": "n2",
+          "prevId": "n1",
+          "value": 6
+        },
+        {
+          "id": "n5",
+          "nextId": null,
+          "prevId": "n2",
+          "value": 8
+        }
+      ],
+      "operation": "visit",
+      "phase": "complete",
+      "tailId": "n5",
+      "targetId": "n5"
+    },
+    "variables": {
+      "current": 8,
+      "current_id": "n5",
+      "head": 3,
+      "ids": [
+        "n3",
+        "n1",
+        "n4",
+        "n2",
+        "n5"
+      ],
+      "length": 5,
+      "tail": 8
+    }
+  },
+  {
+    "lessonStepId": "traverse-reverse",
+    "line": 224,
+    "message": "反向访问 8，然后 current = current.prev / visit backward, then follow prev",
+    "state": {
+      "focus": [
+        "n5"
+      ],
+      "type": "linked",
+      "values": [
+        3,
+        5,
+        6,
+        7,
+        8
+      ]
+    },
+    "structure": {
+      "headId": "n3",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": "n4",
+          "prevId": "n3",
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": "n5",
+          "prevId": "n4",
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": "n1",
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": "n2",
+          "prevId": "n1",
+          "value": 6
+        },
+        {
+          "id": "n5",
+          "nextId": null,
+          "prevId": "n2",
+          "value": 8
+        }
+      ],
+      "operation": "visit",
+      "phase": "complete",
+      "tailId": "n5",
+      "targetId": "n5"
+    },
+    "variables": {
+      "current": 8,
+      "current_id": "n5",
+      "head": 3,
+      "ids": [
+        "n3",
+        "n1",
+        "n4",
+        "n2",
+        "n5"
+      ],
+      "length": 5,
+      "tail": 8
+    }
+  },
+  {
+    "lessonStepId": "traverse-reverse",
+    "line": 224,
+    "message": "反向访问 7，然后 current = current.prev / visit backward, then follow prev",
+    "state": {
+      "focus": [
+        "n2"
+      ],
+      "type": "linked",
+      "values": [
+        3,
+        5,
+        6,
+        7,
+        8
+      ]
+    },
+    "structure": {
+      "headId": "n3",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": "n4",
+          "prevId": "n3",
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": "n5",
+          "prevId": "n4",
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": "n1",
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": "n2",
+          "prevId": "n1",
+          "value": 6
+        },
+        {
+          "id": "n5",
+          "nextId": null,
+          "prevId": "n2",
+          "value": 8
+        }
+      ],
+      "operation": "visit",
+      "phase": "complete",
+      "tailId": "n5",
+      "targetId": "n2"
+    },
+    "variables": {
+      "current": 7,
+      "current_id": "n2",
+      "head": 3,
+      "ids": [
+        "n3",
+        "n1",
+        "n4",
+        "n2",
+        "n5"
+      ],
+      "length": 5,
+      "tail": 8
+    }
+  },
+  {
+    "lessonStepId": "traverse-reverse",
+    "line": 224,
+    "message": "反向访问 6，然后 current = current.prev / visit backward, then follow prev",
+    "state": {
+      "focus": [
+        "n4"
+      ],
+      "type": "linked",
+      "values": [
+        3,
+        5,
+        6,
+        7,
+        8
+      ]
+    },
+    "structure": {
+      "headId": "n3",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": "n4",
+          "prevId": "n3",
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": "n5",
+          "prevId": "n4",
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": "n1",
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": "n2",
+          "prevId": "n1",
+          "value": 6
+        },
+        {
+          "id": "n5",
+          "nextId": null,
+          "prevId": "n2",
+          "value": 8
+        }
+      ],
+      "operation": "visit",
+      "phase": "complete",
+      "tailId": "n5",
+      "targetId": "n4"
+    },
+    "variables": {
+      "current": 6,
+      "current_id": "n4",
+      "head": 3,
+      "ids": [
+        "n3",
+        "n1",
+        "n4",
+        "n2",
+        "n5"
+      ],
+      "length": 5,
+      "tail": 8
+    }
+  },
+  {
+    "lessonStepId": "traverse-reverse",
+    "line": 224,
+    "message": "反向访问 5，然后 current = current.prev / visit backward, then follow prev",
+    "state": {
+      "focus": [
+        "n1"
+      ],
+      "type": "linked",
+      "values": [
+        3,
+        5,
+        6,
+        7,
+        8
+      ]
+    },
+    "structure": {
+      "headId": "n3",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": "n4",
+          "prevId": "n3",
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": "n5",
+          "prevId": "n4",
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": "n1",
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": "n2",
+          "prevId": "n1",
+          "value": 6
+        },
+        {
+          "id": "n5",
+          "nextId": null,
+          "prevId": "n2",
+          "value": 8
+        }
+      ],
+      "operation": "visit",
+      "phase": "complete",
+      "tailId": "n5",
+      "targetId": "n1"
+    },
+    "variables": {
+      "current": 5,
+      "current_id": "n1",
+      "head": 3,
+      "ids": [
+        "n3",
+        "n1",
+        "n4",
+        "n2",
+        "n5"
+      ],
+      "length": 5,
+      "tail": 8
+    }
+  },
+  {
+    "lessonStepId": "traverse-reverse",
+    "line": 224,
+    "message": "反向访问 3，然后 current = current.prev / visit backward, then follow prev",
+    "state": {
+      "focus": [
+        "n3"
+      ],
+      "type": "linked",
+      "values": [
+        3,
+        5,
+        6,
+        7,
+        8
+      ]
+    },
+    "structure": {
+      "headId": "n3",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": "n4",
+          "prevId": "n3",
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": "n5",
+          "prevId": "n4",
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": "n1",
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": "n2",
+          "prevId": "n1",
+          "value": 6
+        },
+        {
+          "id": "n5",
+          "nextId": null,
+          "prevId": "n2",
+          "value": 8
+        }
+      ],
+      "operation": "visit",
+      "phase": "complete",
+      "tailId": "n5",
+      "targetId": "n3"
+    },
+    "variables": {
+      "current": 3,
+      "current_id": "n3",
+      "head": 3,
+      "ids": [
+        "n3",
+        "n1",
+        "n4",
+        "n2",
+        "n5"
+      ],
+      "length": 5,
+      "tail": 8
+    }
+  },
+  {
+    "lessonStepId": "find",
+    "line": 104,
+    "message": "沿 next 查找 6：当前是 3 / walk next for 6",
+    "state": {
+      "focus": [
+        "n3"
+      ],
+      "type": "linked",
+      "values": [
+        3,
+        5,
+        6,
+        7,
+        8
+      ]
+    },
+    "structure": {
+      "headId": "n3",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": "n4",
+          "prevId": "n3",
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": "n5",
+          "prevId": "n4",
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": "n1",
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": "n2",
+          "prevId": "n1",
+          "value": 6
+        },
+        {
+          "id": "n5",
+          "nextId": null,
+          "prevId": "n2",
+          "value": 8
+        }
+      ],
+      "operation": "visit",
+      "phase": "complete",
+      "tailId": "n5",
+      "targetId": "n3"
+    },
+    "variables": {
+      "current": 3,
+      "current_id": "n3",
+      "head": 3,
+      "ids": [
+        "n3",
+        "n1",
+        "n4",
+        "n2",
+        "n5"
+      ],
+      "length": 5,
+      "tail": 8
+    }
+  },
+  {
+    "lessonStepId": "find",
+    "line": 104,
+    "message": "沿 next 查找 6：当前是 5 / walk next for 6",
+    "state": {
+      "focus": [
+        "n1"
+      ],
+      "type": "linked",
+      "values": [
+        3,
+        5,
+        6,
+        7,
+        8
+      ]
+    },
+    "structure": {
+      "headId": "n3",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": "n4",
+          "prevId": "n3",
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": "n5",
+          "prevId": "n4",
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": "n1",
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": "n2",
+          "prevId": "n1",
+          "value": 6
+        },
+        {
+          "id": "n5",
+          "nextId": null,
+          "prevId": "n2",
+          "value": 8
+        }
+      ],
+      "operation": "visit",
+      "phase": "complete",
+      "tailId": "n5",
+      "targetId": "n1"
+    },
+    "variables": {
+      "current": 5,
+      "current_id": "n1",
+      "head": 3,
+      "ids": [
+        "n3",
+        "n1",
+        "n4",
+        "n2",
+        "n5"
+      ],
+      "length": 5,
+      "tail": 8
+    }
+  },
+  {
+    "lessonStepId": "find",
+    "line": 110,
+    "message": "查找 6：命中 n4 / found n4",
+    "state": {
+      "focus": [
+        "n4"
+      ],
+      "type": "linked",
+      "values": [
+        3,
+        5,
+        6,
+        7,
+        8
+      ]
+    },
+    "structure": {
+      "found": true,
+      "headId": "n3",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": "n4",
+          "prevId": "n3",
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": "n5",
+          "prevId": "n4",
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": "n1",
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": "n2",
+          "prevId": "n1",
+          "value": 6
+        },
+        {
+          "id": "n5",
+          "nextId": null,
+          "prevId": "n2",
+          "value": 8
+        }
+      ],
+      "operation": "found",
+      "phase": "complete",
+      "searchValue": 6,
+      "tailId": "n5",
+      "targetId": "n4"
+    },
+    "variables": {
+      "current": 6,
+      "current_id": "n4",
+      "head": 3,
+      "ids": [
+        "n3",
+        "n1",
+        "n4",
+        "n2",
+        "n5"
+      ],
+      "length": 5,
+      "tail": 8
+    }
+  },
+  {
+    "lessonStepId": "find",
+    "line": 104,
+    "message": "沿 next 查找 99：当前是 3 / walk next for 99",
+    "state": {
+      "focus": [
+        "n3"
+      ],
+      "type": "linked",
+      "values": [
+        3,
+        5,
+        6,
+        7,
+        8
+      ]
+    },
+    "structure": {
+      "headId": "n3",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": "n4",
+          "prevId": "n3",
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": "n5",
+          "prevId": "n4",
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": "n1",
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": "n2",
+          "prevId": "n1",
+          "value": 6
+        },
+        {
+          "id": "n5",
+          "nextId": null,
+          "prevId": "n2",
+          "value": 8
+        }
+      ],
+      "operation": "visit",
+      "phase": "complete",
+      "tailId": "n5",
+      "targetId": "n3"
+    },
+    "variables": {
+      "current": 3,
+      "current_id": "n3",
+      "head": 3,
+      "ids": [
+        "n3",
+        "n1",
+        "n4",
+        "n2",
+        "n5"
+      ],
+      "length": 5,
+      "tail": 8
+    }
+  },
+  {
+    "lessonStepId": "find",
+    "line": 104,
+    "message": "沿 next 查找 99：当前是 5 / walk next for 99",
+    "state": {
+      "focus": [
+        "n1"
+      ],
+      "type": "linked",
+      "values": [
+        3,
+        5,
+        6,
+        7,
+        8
+      ]
+    },
+    "structure": {
+      "headId": "n3",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": "n4",
+          "prevId": "n3",
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": "n5",
+          "prevId": "n4",
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": "n1",
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": "n2",
+          "prevId": "n1",
+          "value": 6
+        },
+        {
+          "id": "n5",
+          "nextId": null,
+          "prevId": "n2",
+          "value": 8
+        }
+      ],
+      "operation": "visit",
+      "phase": "complete",
+      "tailId": "n5",
+      "targetId": "n1"
+    },
+    "variables": {
+      "current": 5,
+      "current_id": "n1",
+      "head": 3,
+      "ids": [
+        "n3",
+        "n1",
+        "n4",
+        "n2",
+        "n5"
+      ],
+      "length": 5,
+      "tail": 8
+    }
+  },
+  {
+    "lessonStepId": "find",
+    "line": 104,
+    "message": "沿 next 查找 99：当前是 6 / walk next for 99",
+    "state": {
+      "focus": [
+        "n4"
+      ],
+      "type": "linked",
+      "values": [
+        3,
+        5,
+        6,
+        7,
+        8
+      ]
+    },
+    "structure": {
+      "headId": "n3",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": "n4",
+          "prevId": "n3",
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": "n5",
+          "prevId": "n4",
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": "n1",
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": "n2",
+          "prevId": "n1",
+          "value": 6
+        },
+        {
+          "id": "n5",
+          "nextId": null,
+          "prevId": "n2",
+          "value": 8
+        }
+      ],
+      "operation": "visit",
+      "phase": "complete",
+      "tailId": "n5",
+      "targetId": "n4"
+    },
+    "variables": {
+      "current": 6,
+      "current_id": "n4",
+      "head": 3,
+      "ids": [
+        "n3",
+        "n1",
+        "n4",
+        "n2",
+        "n5"
+      ],
+      "length": 5,
+      "tail": 8
+    }
+  },
+  {
+    "lessonStepId": "find",
+    "line": 104,
+    "message": "沿 next 查找 99：当前是 7 / walk next for 99",
+    "state": {
+      "focus": [
+        "n2"
+      ],
+      "type": "linked",
+      "values": [
+        3,
+        5,
+        6,
+        7,
+        8
+      ]
+    },
+    "structure": {
+      "headId": "n3",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": "n4",
+          "prevId": "n3",
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": "n5",
+          "prevId": "n4",
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": "n1",
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": "n2",
+          "prevId": "n1",
+          "value": 6
+        },
+        {
+          "id": "n5",
+          "nextId": null,
+          "prevId": "n2",
+          "value": 8
+        }
+      ],
+      "operation": "visit",
+      "phase": "complete",
+      "tailId": "n5",
+      "targetId": "n2"
+    },
+    "variables": {
+      "current": 7,
+      "current_id": "n2",
+      "head": 3,
+      "ids": [
+        "n3",
+        "n1",
+        "n4",
+        "n2",
+        "n5"
+      ],
+      "length": 5,
+      "tail": 8
+    }
+  },
+  {
+    "lessonStepId": "find",
+    "line": 104,
+    "message": "沿 next 查找 99：当前是 8 / walk next for 99",
+    "state": {
+      "focus": [
+        "n5"
+      ],
+      "type": "linked",
+      "values": [
+        3,
+        5,
+        6,
+        7,
+        8
+      ]
+    },
+    "structure": {
+      "headId": "n3",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": "n4",
+          "prevId": "n3",
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": "n5",
+          "prevId": "n4",
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": "n1",
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": "n2",
+          "prevId": "n1",
+          "value": 6
+        },
+        {
+          "id": "n5",
+          "nextId": null,
+          "prevId": "n2",
+          "value": 8
+        }
+      ],
+      "operation": "visit",
+      "phase": "complete",
+      "tailId": "n5",
+      "targetId": "n5"
+    },
+    "variables": {
+      "current": 8,
+      "current_id": "n5",
+      "head": 3,
+      "ids": [
+        "n3",
+        "n1",
+        "n4",
+        "n2",
+        "n5"
+      ],
+      "length": 5,
+      "tail": 8
+    }
+  },
+  {
+    "lessonStepId": "find",
+    "line": 108,
+    "message": "查找 99：已到 NULL，未命中 / reached NULL, miss",
+    "state": {
+      "focus": [],
+      "type": "linked",
+      "values": [
+        3,
+        5,
+        6,
+        7,
+        8
+      ]
+    },
+    "structure": {
+      "found": false,
+      "headId": "n3",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": "n4",
+          "prevId": "n3",
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": "n5",
+          "prevId": "n4",
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": "n1",
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": "n2",
+          "prevId": "n1",
+          "value": 6
+        },
+        {
+          "id": "n5",
+          "nextId": null,
+          "prevId": "n2",
+          "value": 8
+        }
+      ],
+      "operation": "not-found",
+      "phase": "complete",
+      "searchValue": 99,
+      "tailId": "n5"
+    },
+    "variables": {
+      "current": null,
+      "current_id": null,
+      "head": 3,
+      "ids": [
+        "n3",
+        "n1",
+        "n4",
+        "n2",
+        "n5"
+      ],
+      "length": 5,
+      "tail": 8
+    }
+  },
+  {
+    "lessonStepId": "delete-middle",
+    "line": 104,
+    "message": "沿 next 查找 6：当前是 3 / walk next for 6",
+    "state": {
+      "focus": [
+        "n3"
+      ],
+      "type": "linked",
+      "values": [
+        3,
+        5,
+        6,
+        7,
+        8
+      ]
+    },
+    "structure": {
+      "headId": "n3",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": "n4",
+          "prevId": "n3",
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": "n5",
+          "prevId": "n4",
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": "n1",
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": "n2",
+          "prevId": "n1",
+          "value": 6
+        },
+        {
+          "id": "n5",
+          "nextId": null,
+          "prevId": "n2",
+          "value": 8
+        }
+      ],
+      "operation": "visit",
+      "phase": "complete",
+      "tailId": "n5",
+      "targetId": "n3"
+    },
+    "variables": {
+      "current": 3,
+      "current_id": "n3",
+      "head": 3,
+      "ids": [
+        "n3",
+        "n1",
+        "n4",
+        "n2",
+        "n5"
+      ],
+      "length": 5,
+      "tail": 8
+    }
+  },
+  {
+    "lessonStepId": "delete-middle",
+    "line": 104,
+    "message": "沿 next 查找 6：当前是 5 / walk next for 6",
+    "state": {
+      "focus": [
+        "n1"
+      ],
+      "type": "linked",
+      "values": [
+        3,
+        5,
+        6,
+        7,
+        8
+      ]
+    },
+    "structure": {
+      "headId": "n3",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": "n4",
+          "prevId": "n3",
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": "n5",
+          "prevId": "n4",
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": "n1",
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": "n2",
+          "prevId": "n1",
+          "value": 6
+        },
+        {
+          "id": "n5",
+          "nextId": null,
+          "prevId": "n2",
+          "value": 8
+        }
+      ],
+      "operation": "visit",
+      "phase": "complete",
+      "tailId": "n5",
+      "targetId": "n1"
+    },
+    "variables": {
+      "current": 5,
+      "current_id": "n1",
+      "head": 3,
+      "ids": [
+        "n3",
+        "n1",
+        "n4",
+        "n2",
+        "n5"
+      ],
+      "length": 5,
+      "tail": 8
+    }
+  },
+  {
+    "lessonStepId": "delete-middle",
+    "line": 110,
+    "message": "查找 6：命中 n4 / found n4",
+    "state": {
+      "focus": [
+        "n4"
+      ],
+      "type": "linked",
+      "values": [
+        3,
+        5,
+        6,
+        7,
+        8
+      ]
+    },
+    "structure": {
+      "found": true,
+      "headId": "n3",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": "n4",
+          "prevId": "n3",
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": "n5",
+          "prevId": "n4",
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": "n1",
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": "n2",
+          "prevId": "n1",
+          "value": 6
+        },
+        {
+          "id": "n5",
+          "nextId": null,
+          "prevId": "n2",
+          "value": 8
+        }
+      ],
+      "operation": "found",
+      "phase": "complete",
+      "searchValue": 6,
+      "tailId": "n5",
+      "targetId": "n4"
+    },
+    "variables": {
+      "current": 6,
+      "current_id": "n4",
+      "head": 3,
+      "ids": [
+        "n3",
+        "n1",
+        "n4",
+        "n2",
+        "n5"
+      ],
+      "length": 5,
+      "tail": 8
+    }
+  },
+  {
+    "lessonStepId": "delete-middle",
+    "line": 181,
+    "message": "n1.next = target.next：前驱越过目标 / predecessor bypasses target",
+    "state": {
+      "focus": [
+        "n1"
+      ],
+      "type": "linked",
+      "values": [
+        3,
+        5,
+        7,
+        8
+      ]
+    },
+    "structure": {
+      "change": {
+        "afterId": "n2",
+        "beforeId": "n4",
+        "field": "next",
+        "nodeId": "n1"
+      },
+      "headId": "n3",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": "n2",
+          "prevId": "n3",
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": "n5",
+          "prevId": "n4",
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": "n1",
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": "n2",
+          "prevId": "n1",
+          "value": 6
+        },
+        {
+          "id": "n5",
+          "nextId": null,
+          "prevId": "n2",
+          "value": 8
+        }
+      ],
+      "operation": "set-next",
+      "phase": "intermediate",
+      "tailId": "n5",
+      "targetId": "n1"
+    },
+    "variables": {
+      "current": 5,
+      "current_id": "n1",
+      "head": 3,
+      "ids": [
+        "n3",
+        "n1",
+        "n2",
+        "n5"
+      ],
+      "length": 4,
+      "tail": 8
+    }
+  },
+  {
+    "lessonStepId": "delete-middle",
+    "line": 187,
+    "message": "后继.prev = target.prev：后继越过目标 / successor bypasses target",
+    "state": {
+      "focus": [
+        "n2"
+      ],
+      "type": "linked",
+      "values": [
+        3,
+        5,
+        7,
+        8
+      ]
+    },
+    "structure": {
+      "change": {
+        "afterId": "n1",
+        "beforeId": "n4",
+        "field": "prev",
+        "nodeId": "n2"
+      },
+      "headId": "n3",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": "n2",
+          "prevId": "n3",
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": "n5",
+          "prevId": "n1",
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": "n1",
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": "n2",
+          "prevId": "n1",
+          "value": 6
+        },
+        {
+          "id": "n5",
+          "nextId": null,
+          "prevId": "n2",
+          "value": 8
+        }
+      ],
+      "operation": "set-prev",
+      "phase": "intermediate",
+      "tailId": "n5",
+      "targetId": "n2"
+    },
+    "variables": {
+      "current": 7,
+      "current_id": "n2",
+      "head": 3,
+      "ids": [
+        "n3",
+        "n1",
+        "n2",
+        "n5"
+      ],
+      "length": 4,
+      "tail": 8
+    }
+  },
+  {
+    "lessonStepId": "delete-middle",
+    "line": 193,
+    "message": "target.prev = None：解除目标的反向引用 / clear the removed node's prev",
+    "state": {
+      "focus": [
+        "n4"
+      ],
+      "type": "linked",
+      "values": [
+        3,
+        5,
+        7,
+        8
+      ]
+    },
+    "structure": {
+      "change": {
+        "afterId": null,
+        "beforeId": "n1",
+        "field": "prev",
+        "nodeId": "n4"
+      },
+      "headId": "n3",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": "n2",
+          "prevId": "n3",
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": "n5",
+          "prevId": "n1",
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": "n1",
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": "n2",
+          "prevId": null,
+          "value": 6
+        },
+        {
+          "id": "n5",
+          "nextId": null,
+          "prevId": "n2",
+          "value": 8
+        }
+      ],
+      "operation": "set-prev",
+      "phase": "intermediate",
+      "tailId": "n5",
+      "targetId": "n4"
+    },
+    "variables": {
+      "current": 6,
+      "current_id": "n4",
+      "head": 3,
+      "ids": [
+        "n3",
+        "n1",
+        "n2",
+        "n5"
+      ],
+      "length": 4,
+      "tail": 8
+    }
+  },
+  {
+    "lessonStepId": "delete-middle",
+    "line": 195,
+    "message": "target.next = None：解除目标的正向引用 / clear the removed node's next",
+    "state": {
+      "focus": [
+        "n4"
+      ],
+      "type": "linked",
+      "values": [
+        3,
+        5,
+        7,
+        8
+      ]
+    },
+    "structure": {
+      "change": {
+        "afterId": null,
+        "beforeId": "n2",
+        "field": "next",
+        "nodeId": "n4"
+      },
+      "headId": "n3",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": "n2",
+          "prevId": "n3",
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": "n5",
+          "prevId": "n1",
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": "n1",
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": null,
+          "prevId": null,
+          "value": 6
+        },
+        {
+          "id": "n5",
+          "nextId": null,
+          "prevId": "n2",
+          "value": 8
+        }
+      ],
+      "operation": "set-next",
+      "phase": "intermediate",
+      "tailId": "n5",
+      "targetId": "n4"
+    },
+    "variables": {
+      "current": 6,
+      "current_id": "n4",
+      "head": 3,
+      "ids": [
+        "n3",
+        "n1",
+        "n2",
+        "n5"
+      ],
+      "length": 4,
+      "tail": 8
+    }
+  },
+  {
+    "lessonStepId": "delete-middle",
+    "line": 197,
+    "message": "节点 n4 已脱离链表，但对象仍然存在 / node detached from the list, object still exists",
+    "state": {
+      "focus": [
+        "n4"
+      ],
+      "type": "linked",
+      "values": [
+        3,
+        5,
+        7,
+        8
+      ]
+    },
+    "structure": {
+      "headId": "n3",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": "n2",
+          "prevId": "n3",
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": "n5",
+          "prevId": "n1",
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": "n1",
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": null,
+          "prevId": null,
+          "value": 6
+        },
+        {
+          "id": "n5",
+          "nextId": null,
+          "prevId": "n2",
+          "value": 8
+        }
+      ],
+      "operation": "detach",
+      "phase": "complete",
+      "tailId": "n5",
+      "targetId": "n4"
+    },
+    "variables": {
+      "current": 6,
+      "current_id": "n4",
+      "head": 3,
+      "ids": [
+        "n3",
+        "n1",
+        "n2",
+        "n5"
+      ],
+      "length": 4,
+      "tail": 8
+    }
+  },
+  {
+    "lessonStepId": "delete-head",
+    "line": 184,
+    "message": "head = target.next：删除原头节点 / head moves past the removed node",
+    "state": {
+      "focus": [
+        "n1"
+      ],
+      "type": "linked",
+      "values": [
+        5,
+        7,
+        8
+      ]
+    },
+    "structure": {
+      "headId": "n1",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": "n2",
+          "prevId": "n3",
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": "n5",
+          "prevId": "n1",
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": "n1",
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": null,
+          "prevId": null,
+          "value": 6
+        },
+        {
+          "id": "n5",
+          "nextId": null,
+          "prevId": "n2",
+          "value": 8
+        }
+      ],
+      "operation": "set-head",
+      "phase": "intermediate",
+      "tailId": "n5",
+      "targetId": "n1"
+    },
+    "variables": {
+      "current": 5,
+      "current_id": "n1",
+      "head": 5,
+      "ids": [
+        "n1",
+        "n2",
+        "n5"
+      ],
+      "length": 3,
+      "tail": 8
+    }
+  },
+  {
+    "lessonStepId": "delete-head",
+    "line": 187,
+    "message": "后继.prev = target.prev：后继越过目标 / successor bypasses target",
+    "state": {
+      "focus": [
+        "n1"
+      ],
+      "type": "linked",
+      "values": [
+        5,
+        7,
+        8
+      ]
+    },
+    "structure": {
+      "change": {
+        "afterId": null,
+        "beforeId": "n3",
+        "field": "prev",
+        "nodeId": "n1"
+      },
+      "headId": "n1",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": "n2",
+          "prevId": null,
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": "n5",
+          "prevId": "n1",
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": "n1",
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": null,
+          "prevId": null,
+          "value": 6
+        },
+        {
+          "id": "n5",
+          "nextId": null,
+          "prevId": "n2",
+          "value": 8
+        }
+      ],
+      "operation": "set-prev",
+      "phase": "intermediate",
+      "tailId": "n5",
+      "targetId": "n1"
+    },
+    "variables": {
+      "current": 5,
+      "current_id": "n1",
+      "head": 5,
+      "ids": [
+        "n1",
+        "n2",
+        "n5"
+      ],
+      "length": 3,
+      "tail": 8
+    }
+  },
+  {
+    "lessonStepId": "delete-head",
+    "line": 193,
+    "message": "target.prev = None：解除目标的反向引用 / clear the removed node's prev",
+    "state": {
+      "focus": [
+        "n3"
+      ],
+      "type": "linked",
+      "values": [
+        5,
+        7,
+        8
+      ]
+    },
+    "structure": {
+      "change": {
+        "afterId": null,
+        "beforeId": null,
+        "field": "prev",
+        "nodeId": "n3"
+      },
+      "headId": "n1",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": "n2",
+          "prevId": null,
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": "n5",
+          "prevId": "n1",
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": "n1",
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": null,
+          "prevId": null,
+          "value": 6
+        },
+        {
+          "id": "n5",
+          "nextId": null,
+          "prevId": "n2",
+          "value": 8
+        }
+      ],
+      "operation": "set-prev",
+      "phase": "intermediate",
+      "tailId": "n5",
+      "targetId": "n3"
+    },
+    "variables": {
+      "current": 3,
+      "current_id": "n3",
+      "head": 5,
+      "ids": [
+        "n1",
+        "n2",
+        "n5"
+      ],
+      "length": 3,
+      "tail": 8
+    }
+  },
+  {
+    "lessonStepId": "delete-head",
+    "line": 195,
+    "message": "target.next = None：解除目标的正向引用 / clear the removed node's next",
+    "state": {
+      "focus": [
+        "n3"
+      ],
+      "type": "linked",
+      "values": [
+        5,
+        7,
+        8
+      ]
+    },
+    "structure": {
+      "change": {
+        "afterId": null,
+        "beforeId": "n1",
+        "field": "next",
+        "nodeId": "n3"
+      },
+      "headId": "n1",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": "n2",
+          "prevId": null,
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": "n5",
+          "prevId": "n1",
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": null,
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": null,
+          "prevId": null,
+          "value": 6
+        },
+        {
+          "id": "n5",
+          "nextId": null,
+          "prevId": "n2",
+          "value": 8
+        }
+      ],
+      "operation": "set-next",
+      "phase": "intermediate",
+      "tailId": "n5",
+      "targetId": "n3"
+    },
+    "variables": {
+      "current": 3,
+      "current_id": "n3",
+      "head": 5,
+      "ids": [
+        "n1",
+        "n2",
+        "n5"
+      ],
+      "length": 3,
+      "tail": 8
+    }
+  },
+  {
+    "lessonStepId": "delete-head",
+    "line": 197,
+    "message": "节点 n3 已脱离链表，但对象仍然存在 / node detached from the list, object still exists",
+    "state": {
+      "focus": [
+        "n3"
+      ],
+      "type": "linked",
+      "values": [
+        5,
+        7,
+        8
+      ]
+    },
+    "structure": {
+      "headId": "n1",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": "n2",
+          "prevId": null,
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": "n5",
+          "prevId": "n1",
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": null,
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": null,
+          "prevId": null,
+          "value": 6
+        },
+        {
+          "id": "n5",
+          "nextId": null,
+          "prevId": "n2",
+          "value": 8
+        }
+      ],
+      "operation": "detach",
+      "phase": "complete",
+      "tailId": "n5",
+      "targetId": "n3"
+    },
+    "variables": {
+      "current": 3,
+      "current_id": "n3",
+      "head": 5,
+      "ids": [
+        "n1",
+        "n2",
+        "n5"
+      ],
+      "length": 3,
+      "tail": 8
+    }
+  },
+  {
+    "lessonStepId": "delete-tail",
+    "line": 181,
+    "message": "n2.next = target.next：前驱越过目标 / predecessor bypasses target",
+    "state": {
+      "focus": [
+        "n2"
+      ],
+      "type": "linked",
+      "values": [
+        5,
+        7
+      ]
+    },
+    "structure": {
+      "change": {
+        "afterId": null,
+        "beforeId": "n5",
+        "field": "next",
+        "nodeId": "n2"
+      },
+      "headId": "n1",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": "n2",
+          "prevId": null,
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": null,
+          "prevId": "n1",
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": null,
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": null,
+          "prevId": null,
+          "value": 6
+        },
+        {
+          "id": "n5",
+          "nextId": null,
+          "prevId": "n2",
+          "value": 8
+        }
+      ],
+      "operation": "set-next",
+      "phase": "intermediate",
+      "tailId": "n5",
+      "targetId": "n2"
+    },
+    "variables": {
+      "current": 7,
+      "current_id": "n2",
+      "head": 5,
+      "ids": [
+        "n1",
+        "n2"
+      ],
+      "length": 2,
+      "tail": 8
+    }
+  },
+  {
+    "lessonStepId": "delete-tail",
+    "line": 190,
+    "message": "tail = target.prev：删除原尾节点 / tail moves back",
+    "state": {
+      "focus": [
+        "n2"
+      ],
+      "type": "linked",
+      "values": [
+        5,
+        7
+      ]
+    },
+    "structure": {
+      "headId": "n1",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": "n2",
+          "prevId": null,
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": null,
+          "prevId": "n1",
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": null,
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": null,
+          "prevId": null,
+          "value": 6
+        },
+        {
+          "id": "n5",
+          "nextId": null,
+          "prevId": "n2",
+          "value": 8
+        }
+      ],
+      "operation": "set-tail",
+      "phase": "intermediate",
+      "tailId": "n2",
+      "targetId": "n2"
+    },
+    "variables": {
+      "current": 7,
+      "current_id": "n2",
+      "head": 5,
+      "ids": [
+        "n1",
+        "n2"
+      ],
+      "length": 2,
+      "tail": 7
+    }
+  },
+  {
+    "lessonStepId": "delete-tail",
+    "line": 193,
+    "message": "target.prev = None：解除目标的反向引用 / clear the removed node's prev",
+    "state": {
+      "focus": [
+        "n5"
+      ],
+      "type": "linked",
+      "values": [
+        5,
+        7
+      ]
+    },
+    "structure": {
+      "change": {
+        "afterId": null,
+        "beforeId": "n2",
+        "field": "prev",
+        "nodeId": "n5"
+      },
+      "headId": "n1",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": "n2",
+          "prevId": null,
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": null,
+          "prevId": "n1",
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": null,
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": null,
+          "prevId": null,
+          "value": 6
+        },
+        {
+          "id": "n5",
+          "nextId": null,
+          "prevId": null,
+          "value": 8
+        }
+      ],
+      "operation": "set-prev",
+      "phase": "intermediate",
+      "tailId": "n2",
+      "targetId": "n5"
+    },
+    "variables": {
+      "current": 8,
+      "current_id": "n5",
+      "head": 5,
+      "ids": [
+        "n1",
+        "n2"
+      ],
+      "length": 2,
+      "tail": 7
+    }
+  },
+  {
+    "lessonStepId": "delete-tail",
+    "line": 195,
+    "message": "target.next = None：解除目标的正向引用 / clear the removed node's next",
+    "state": {
+      "focus": [
+        "n5"
+      ],
+      "type": "linked",
+      "values": [
+        5,
+        7
+      ]
+    },
+    "structure": {
+      "change": {
+        "afterId": null,
+        "beforeId": null,
+        "field": "next",
+        "nodeId": "n5"
+      },
+      "headId": "n1",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": "n2",
+          "prevId": null,
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": null,
+          "prevId": "n1",
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": null,
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": null,
+          "prevId": null,
+          "value": 6
+        },
+        {
+          "id": "n5",
+          "nextId": null,
+          "prevId": null,
+          "value": 8
+        }
+      ],
+      "operation": "set-next",
+      "phase": "intermediate",
+      "tailId": "n2",
+      "targetId": "n5"
+    },
+    "variables": {
+      "current": 8,
+      "current_id": "n5",
+      "head": 5,
+      "ids": [
+        "n1",
+        "n2"
+      ],
+      "length": 2,
+      "tail": 7
+    }
+  },
+  {
+    "lessonStepId": "delete-tail",
+    "line": 197,
+    "message": "节点 n5 已脱离链表，但对象仍然存在 / node detached from the list, object still exists",
+    "state": {
+      "focus": [
+        "n5"
+      ],
+      "type": "linked",
+      "values": [
+        5,
+        7
+      ]
+    },
+    "structure": {
+      "headId": "n1",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": "n2",
+          "prevId": null,
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": null,
+          "prevId": "n1",
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": null,
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": null,
+          "prevId": null,
+          "value": 6
+        },
+        {
+          "id": "n5",
+          "nextId": null,
+          "prevId": null,
+          "value": 8
+        }
+      ],
+      "operation": "detach",
+      "phase": "complete",
+      "tailId": "n2",
+      "targetId": "n5"
+    },
+    "variables": {
+      "current": 8,
+      "current_id": "n5",
+      "head": 5,
+      "ids": [
+        "n1",
+        "n2"
+      ],
+      "length": 2,
+      "tail": 7
+    }
+  },
+  {
+    "lessonStepId": "delete-middle",
+    "line": 110,
+    "message": "查找 5：命中 n1 / found n1",
+    "state": {
+      "focus": [
+        "n1"
+      ],
+      "type": "linked",
+      "values": [
+        5,
+        7
+      ]
+    },
+    "structure": {
+      "found": true,
+      "headId": "n1",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": "n2",
+          "prevId": null,
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": null,
+          "prevId": "n1",
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": null,
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": null,
+          "prevId": null,
+          "value": 6
+        },
+        {
+          "id": "n5",
+          "nextId": null,
+          "prevId": null,
+          "value": 8
+        }
+      ],
+      "operation": "found",
+      "phase": "complete",
+      "searchValue": 5,
+      "tailId": "n2",
+      "targetId": "n1"
+    },
+    "variables": {
+      "current": 5,
+      "current_id": "n1",
+      "head": 5,
+      "ids": [
+        "n1",
+        "n2"
+      ],
+      "length": 2,
+      "tail": 7
+    }
+  },
+  {
+    "lessonStepId": "delete-middle",
+    "line": 184,
+    "message": "head = target.next：删除原头节点 / head moves past the removed node",
+    "state": {
+      "focus": [
+        "n2"
+      ],
+      "type": "linked",
+      "values": [
+        7
+      ]
+    },
+    "structure": {
+      "headId": "n2",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": "n2",
+          "prevId": null,
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": null,
+          "prevId": "n1",
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": null,
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": null,
+          "prevId": null,
+          "value": 6
+        },
+        {
+          "id": "n5",
+          "nextId": null,
+          "prevId": null,
+          "value": 8
+        }
+      ],
+      "operation": "set-head",
+      "phase": "intermediate",
+      "tailId": "n2",
+      "targetId": "n2"
+    },
+    "variables": {
+      "current": 7,
+      "current_id": "n2",
+      "head": 7,
+      "ids": [
+        "n2"
+      ],
+      "length": 1,
+      "tail": 7
+    }
+  },
+  {
+    "lessonStepId": "delete-middle",
+    "line": 187,
+    "message": "后继.prev = target.prev：后继越过目标 / successor bypasses target",
+    "state": {
+      "focus": [
+        "n2"
+      ],
+      "type": "linked",
+      "values": [
+        7
+      ]
+    },
+    "structure": {
+      "change": {
+        "afterId": null,
+        "beforeId": "n1",
+        "field": "prev",
+        "nodeId": "n2"
+      },
+      "headId": "n2",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": "n2",
+          "prevId": null,
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": null,
+          "prevId": null,
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": null,
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": null,
+          "prevId": null,
+          "value": 6
+        },
+        {
+          "id": "n5",
+          "nextId": null,
+          "prevId": null,
+          "value": 8
+        }
+      ],
+      "operation": "set-prev",
+      "phase": "intermediate",
+      "tailId": "n2",
+      "targetId": "n2"
+    },
+    "variables": {
+      "current": 7,
+      "current_id": "n2",
+      "head": 7,
+      "ids": [
+        "n2"
+      ],
+      "length": 1,
+      "tail": 7
+    }
+  },
+  {
+    "lessonStepId": "delete-middle",
+    "line": 193,
+    "message": "target.prev = None：解除目标的反向引用 / clear the removed node's prev",
+    "state": {
+      "focus": [
+        "n1"
+      ],
+      "type": "linked",
+      "values": [
+        7
+      ]
+    },
+    "structure": {
+      "change": {
+        "afterId": null,
+        "beforeId": null,
+        "field": "prev",
+        "nodeId": "n1"
+      },
+      "headId": "n2",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": "n2",
+          "prevId": null,
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": null,
+          "prevId": null,
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": null,
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": null,
+          "prevId": null,
+          "value": 6
+        },
+        {
+          "id": "n5",
+          "nextId": null,
+          "prevId": null,
+          "value": 8
+        }
+      ],
+      "operation": "set-prev",
+      "phase": "intermediate",
+      "tailId": "n2",
+      "targetId": "n1"
+    },
+    "variables": {
+      "current": 5,
+      "current_id": "n1",
+      "head": 7,
+      "ids": [
+        "n2"
+      ],
+      "length": 1,
+      "tail": 7
+    }
+  },
+  {
+    "lessonStepId": "delete-middle",
+    "line": 195,
+    "message": "target.next = None：解除目标的正向引用 / clear the removed node's next",
+    "state": {
+      "focus": [
+        "n1"
+      ],
+      "type": "linked",
+      "values": [
+        7
+      ]
+    },
+    "structure": {
+      "change": {
+        "afterId": null,
+        "beforeId": "n2",
+        "field": "next",
+        "nodeId": "n1"
+      },
+      "headId": "n2",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": null,
+          "prevId": null,
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": null,
+          "prevId": null,
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": null,
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": null,
+          "prevId": null,
+          "value": 6
+        },
+        {
+          "id": "n5",
+          "nextId": null,
+          "prevId": null,
+          "value": 8
+        }
+      ],
+      "operation": "set-next",
+      "phase": "intermediate",
+      "tailId": "n2",
+      "targetId": "n1"
+    },
+    "variables": {
+      "current": 5,
+      "current_id": "n1",
+      "head": 7,
+      "ids": [
+        "n2"
+      ],
+      "length": 1,
+      "tail": 7
+    }
+  },
+  {
+    "lessonStepId": "delete-middle",
+    "line": 197,
+    "message": "节点 n1 已脱离链表，但对象仍然存在 / node detached from the list, object still exists",
+    "state": {
+      "focus": [
+        "n1"
+      ],
+      "type": "linked",
+      "values": [
+        7
+      ]
+    },
+    "structure": {
+      "headId": "n2",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": null,
+          "prevId": null,
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": null,
+          "prevId": null,
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": null,
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": null,
+          "prevId": null,
+          "value": 6
+        },
+        {
+          "id": "n5",
+          "nextId": null,
+          "prevId": null,
+          "value": 8
+        }
+      ],
+      "operation": "detach",
+      "phase": "complete",
+      "tailId": "n2",
+      "targetId": "n1"
+    },
+    "variables": {
+      "current": 5,
+      "current_id": "n1",
+      "head": 7,
+      "ids": [
+        "n2"
+      ],
+      "length": 1,
+      "tail": 7
+    }
+  },
+  {
+    "lessonStepId": "delete-tail",
+    "line": 184,
+    "message": "head = target.next：删除原头节点 / head moves past the removed node",
+    "state": {
+      "focus": [],
+      "type": "linked",
+      "values": []
+    },
+    "structure": {
+      "headId": null,
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": null,
+          "prevId": null,
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": null,
+          "prevId": null,
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": null,
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": null,
+          "prevId": null,
+          "value": 6
+        },
+        {
+          "id": "n5",
+          "nextId": null,
+          "prevId": null,
+          "value": 8
+        }
+      ],
+      "operation": "set-head",
+      "phase": "intermediate",
+      "tailId": "n2"
+    },
+    "variables": {
+      "current": null,
+      "current_id": null,
+      "head": null,
+      "ids": [],
+      "length": 0,
+      "tail": 7
+    }
+  },
+  {
+    "lessonStepId": "delete-tail",
+    "line": 190,
+    "message": "tail = target.prev：删除原尾节点 / tail moves back",
+    "state": {
+      "focus": [],
+      "type": "linked",
+      "values": []
+    },
+    "structure": {
+      "headId": null,
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": null,
+          "prevId": null,
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": null,
+          "prevId": null,
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": null,
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": null,
+          "prevId": null,
+          "value": 6
+        },
+        {
+          "id": "n5",
+          "nextId": null,
+          "prevId": null,
+          "value": 8
+        }
+      ],
+      "operation": "set-tail",
+      "phase": "intermediate",
+      "tailId": null
+    },
+    "variables": {
+      "current": null,
+      "current_id": null,
+      "head": null,
+      "ids": [],
+      "length": 0,
+      "tail": null
+    }
+  },
+  {
+    "lessonStepId": "delete-tail",
+    "line": 193,
+    "message": "target.prev = None：解除目标的反向引用 / clear the removed node's prev",
+    "state": {
+      "focus": [
+        "n2"
+      ],
+      "type": "linked",
+      "values": []
+    },
+    "structure": {
+      "change": {
+        "afterId": null,
+        "beforeId": null,
+        "field": "prev",
+        "nodeId": "n2"
+      },
+      "headId": null,
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": null,
+          "prevId": null,
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": null,
+          "prevId": null,
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": null,
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": null,
+          "prevId": null,
+          "value": 6
+        },
+        {
+          "id": "n5",
+          "nextId": null,
+          "prevId": null,
+          "value": 8
+        }
+      ],
+      "operation": "set-prev",
+      "phase": "intermediate",
+      "tailId": null,
+      "targetId": "n2"
+    },
+    "variables": {
+      "current": 7,
+      "current_id": "n2",
+      "head": null,
+      "ids": [],
+      "length": 0,
+      "tail": null
+    }
+  },
+  {
+    "lessonStepId": "delete-tail",
+    "line": 195,
+    "message": "target.next = None：解除目标的正向引用 / clear the removed node's next",
+    "state": {
+      "focus": [
+        "n2"
+      ],
+      "type": "linked",
+      "values": []
+    },
+    "structure": {
+      "change": {
+        "afterId": null,
+        "beforeId": null,
+        "field": "next",
+        "nodeId": "n2"
+      },
+      "headId": null,
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": null,
+          "prevId": null,
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": null,
+          "prevId": null,
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": null,
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": null,
+          "prevId": null,
+          "value": 6
+        },
+        {
+          "id": "n5",
+          "nextId": null,
+          "prevId": null,
+          "value": 8
+        }
+      ],
+      "operation": "set-next",
+      "phase": "intermediate",
+      "tailId": null,
+      "targetId": "n2"
+    },
+    "variables": {
+      "current": 7,
+      "current_id": "n2",
+      "head": null,
+      "ids": [],
+      "length": 0,
+      "tail": null
+    }
+  },
+  {
+    "lessonStepId": "delete-tail",
+    "line": 197,
+    "message": "节点 n2 已脱离链表，但对象仍然存在 / node detached from the list, object still exists",
+    "state": {
+      "focus": [
+        "n2"
+      ],
+      "type": "linked",
+      "values": []
+    },
+    "structure": {
+      "headId": null,
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": null,
+          "prevId": null,
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": null,
+          "prevId": null,
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": null,
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": null,
+          "prevId": null,
+          "value": 6
+        },
+        {
+          "id": "n5",
+          "nextId": null,
+          "prevId": null,
+          "value": 8
+        }
+      ],
+      "operation": "detach",
+      "phase": "complete",
+      "tailId": null,
+      "targetId": "n2"
+    },
+    "variables": {
+      "current": 7,
+      "current_id": "n2",
+      "head": null,
+      "ids": [],
+      "length": 0,
+      "tail": null
+    }
+  },
+  {
+    "lessonStepId": "insert-head",
+    "line": 120,
+    "message": "创建节点 9：prev/next 都是空 / create node with empty links",
+    "state": {
+      "focus": [
+        "n6"
+      ],
+      "type": "linked",
+      "values": []
+    },
+    "structure": {
+      "headId": null,
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": null,
+          "prevId": null,
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": null,
+          "prevId": null,
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": null,
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": null,
+          "prevId": null,
+          "value": 6
+        },
+        {
+          "id": "n5",
+          "nextId": null,
+          "prevId": null,
+          "value": 8
+        },
+        {
+          "id": "n6",
+          "nextId": null,
+          "prevId": null,
+          "value": 9
+        }
+      ],
+      "operation": "create",
+      "phase": "intermediate",
+      "tailId": null,
+      "targetId": "n6"
+    },
+    "variables": {
+      "current": 9,
+      "current_id": "n6",
+      "head": null,
+      "ids": [],
+      "length": 0,
+      "tail": null
+    }
+  },
+  {
+    "lessonStepId": "insert-head",
+    "line": 123,
+    "message": "head = new：空表头指针指向 9 / head points at the first node",
+    "state": {
+      "focus": [
+        "n6"
+      ],
+      "type": "linked",
+      "values": [
+        9
+      ]
+    },
+    "structure": {
+      "headId": "n6",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": null,
+          "prevId": null,
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": null,
+          "prevId": null,
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": null,
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": null,
+          "prevId": null,
+          "value": 6
+        },
+        {
+          "id": "n5",
+          "nextId": null,
+          "prevId": null,
+          "value": 8
+        },
+        {
+          "id": "n6",
+          "nextId": null,
+          "prevId": null,
+          "value": 9
+        }
+      ],
+      "operation": "set-head",
+      "phase": "intermediate",
+      "tailId": null,
+      "targetId": "n6"
+    },
+    "variables": {
+      "current": 9,
+      "current_id": "n6",
+      "head": 9,
+      "ids": [
+        "n6"
+      ],
+      "length": 1,
+      "tail": null
+    }
+  },
+  {
+    "lessonStepId": "insert-head",
+    "line": 125,
+    "message": "tail = new：空表只有一个节点 / one-node list has head = tail",
+    "state": {
+      "focus": [
+        "n6"
+      ],
+      "type": "linked",
+      "values": [
+        9
+      ]
+    },
+    "structure": {
+      "headId": "n6",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": null,
+          "prevId": null,
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": null,
+          "prevId": null,
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": null,
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": null,
+          "prevId": null,
+          "value": 6
+        },
+        {
+          "id": "n5",
+          "nextId": null,
+          "prevId": null,
+          "value": 8
+        },
+        {
+          "id": "n6",
+          "nextId": null,
+          "prevId": null,
+          "value": 9
+        }
+      ],
+      "operation": "set-tail",
+      "phase": "complete",
+      "tailId": "n6",
+      "targetId": "n6"
+    },
+    "variables": {
+      "current": 9,
+      "current_id": "n6",
+      "head": 9,
+      "ids": [
+        "n6"
+      ],
+      "length": 1,
+      "tail": 9
+    }
+  },
+  {
+    "lessonStepId": "insert-tail",
+    "line": 138,
+    "message": "创建尾节点 11 / create tail node",
+    "state": {
+      "focus": [
+        "n7"
+      ],
+      "type": "linked",
+      "values": [
+        9
+      ]
+    },
+    "structure": {
+      "headId": "n6",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": null,
+          "prevId": null,
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": null,
+          "prevId": null,
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": null,
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": null,
+          "prevId": null,
+          "value": 6
+        },
+        {
+          "id": "n5",
+          "nextId": null,
+          "prevId": null,
+          "value": 8
+        },
+        {
+          "id": "n6",
+          "nextId": null,
+          "prevId": null,
+          "value": 9
+        },
+        {
+          "id": "n7",
+          "nextId": null,
+          "prevId": null,
+          "value": 11
+        }
+      ],
+      "operation": "create",
+      "phase": "intermediate",
+      "tailId": "n6",
+      "targetId": "n7"
+    },
+    "variables": {
+      "current": 11,
+      "current_id": "n7",
+      "head": 9,
+      "ids": [
+        "n6"
+      ],
+      "length": 1,
+      "tail": 9
+    }
+  },
+  {
+    "lessonStepId": "insert-tail",
+    "line": 146,
+    "message": "tail.next = new：旧尾先指向新节点 / old tail points forward",
+    "state": {
+      "focus": [
+        "n6"
+      ],
+      "type": "linked",
+      "values": [
+        9,
+        11
+      ]
+    },
+    "structure": {
+      "change": {
+        "afterId": "n7",
+        "beforeId": null,
+        "field": "next",
+        "nodeId": "n6"
+      },
+      "headId": "n6",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": null,
+          "prevId": null,
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": null,
+          "prevId": null,
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": null,
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": null,
+          "prevId": null,
+          "value": 6
+        },
+        {
+          "id": "n5",
+          "nextId": null,
+          "prevId": null,
+          "value": 8
+        },
+        {
+          "id": "n6",
+          "nextId": "n7",
+          "prevId": null,
+          "value": 9
+        },
+        {
+          "id": "n7",
+          "nextId": null,
+          "prevId": null,
+          "value": 11
+        }
+      ],
+      "operation": "set-next",
+      "phase": "intermediate",
+      "tailId": "n6",
+      "targetId": "n6"
+    },
+    "variables": {
+      "current": 9,
+      "current_id": "n6",
+      "head": 9,
+      "ids": [
+        "n6",
+        "n7"
+      ],
+      "length": 2,
+      "tail": 9
+    }
+  },
+  {
+    "lessonStepId": "insert-tail",
+    "line": 148,
+    "message": "new.prev = 旧 tail：新节点反向接住旧尾 / new node points back",
+    "state": {
+      "focus": [
+        "n7"
+      ],
+      "type": "linked",
+      "values": [
+        9,
+        11
+      ]
+    },
+    "structure": {
+      "change": {
+        "afterId": "n6",
+        "beforeId": null,
+        "field": "prev",
+        "nodeId": "n7"
+      },
+      "headId": "n6",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": null,
+          "prevId": null,
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": null,
+          "prevId": null,
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": null,
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": null,
+          "prevId": null,
+          "value": 6
+        },
+        {
+          "id": "n5",
+          "nextId": null,
+          "prevId": null,
+          "value": 8
+        },
+        {
+          "id": "n6",
+          "nextId": "n7",
+          "prevId": null,
+          "value": 9
+        },
+        {
+          "id": "n7",
+          "nextId": null,
+          "prevId": "n6",
+          "value": 11
+        }
+      ],
+      "operation": "set-prev",
+      "phase": "intermediate",
+      "tailId": "n6",
+      "targetId": "n7"
+    },
+    "variables": {
+      "current": 11,
+      "current_id": "n7",
+      "head": 9,
+      "ids": [
+        "n6",
+        "n7"
+      ],
+      "length": 2,
+      "tail": 9
+    }
+  },
+  {
+    "lessonStepId": "insert-tail",
+    "line": 150,
+    "message": "tail = new：尾指针更新，双向链完成 / tail moves to the new node",
+    "state": {
+      "focus": [
+        "n7"
+      ],
+      "type": "linked",
+      "values": [
+        9,
+        11
+      ]
+    },
+    "structure": {
+      "headId": "n6",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": null,
+          "prevId": null,
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": null,
+          "prevId": null,
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": null,
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": null,
+          "prevId": null,
+          "value": 6
+        },
+        {
+          "id": "n5",
+          "nextId": null,
+          "prevId": null,
+          "value": 8
+        },
+        {
+          "id": "n6",
+          "nextId": "n7",
+          "prevId": null,
+          "value": 9
+        },
+        {
+          "id": "n7",
+          "nextId": null,
+          "prevId": "n6",
+          "value": 11
+        }
+      ],
+      "operation": "set-tail",
+      "phase": "complete",
+      "tailId": "n7",
+      "targetId": "n7"
+    },
+    "variables": {
+      "current": 11,
+      "current_id": "n7",
+      "head": 9,
+      "ids": [
+        "n6",
+        "n7"
+      ],
+      "length": 2,
+      "tail": 11
+    }
+  },
+  {
+    "lessonStepId": "delete-head",
+    "line": 184,
+    "message": "head = target.next：删除原头节点 / head moves past the removed node",
+    "state": {
+      "focus": [
+        "n7"
+      ],
+      "type": "linked",
+      "values": [
+        11
+      ]
+    },
+    "structure": {
+      "headId": "n7",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": null,
+          "prevId": null,
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": null,
+          "prevId": null,
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": null,
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": null,
+          "prevId": null,
+          "value": 6
+        },
+        {
+          "id": "n5",
+          "nextId": null,
+          "prevId": null,
+          "value": 8
+        },
+        {
+          "id": "n6",
+          "nextId": "n7",
+          "prevId": null,
+          "value": 9
+        },
+        {
+          "id": "n7",
+          "nextId": null,
+          "prevId": "n6",
+          "value": 11
+        }
+      ],
+      "operation": "set-head",
+      "phase": "intermediate",
+      "tailId": "n7",
+      "targetId": "n7"
+    },
+    "variables": {
+      "current": 11,
+      "current_id": "n7",
+      "head": 11,
+      "ids": [
+        "n7"
+      ],
+      "length": 1,
+      "tail": 11
+    }
+  },
+  {
+    "lessonStepId": "delete-head",
+    "line": 187,
+    "message": "后继.prev = target.prev：后继越过目标 / successor bypasses target",
+    "state": {
+      "focus": [
+        "n7"
+      ],
+      "type": "linked",
+      "values": [
+        11
+      ]
+    },
+    "structure": {
+      "change": {
+        "afterId": null,
+        "beforeId": "n6",
+        "field": "prev",
+        "nodeId": "n7"
+      },
+      "headId": "n7",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": null,
+          "prevId": null,
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": null,
+          "prevId": null,
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": null,
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": null,
+          "prevId": null,
+          "value": 6
+        },
+        {
+          "id": "n5",
+          "nextId": null,
+          "prevId": null,
+          "value": 8
+        },
+        {
+          "id": "n6",
+          "nextId": "n7",
+          "prevId": null,
+          "value": 9
+        },
+        {
+          "id": "n7",
+          "nextId": null,
+          "prevId": null,
+          "value": 11
+        }
+      ],
+      "operation": "set-prev",
+      "phase": "intermediate",
+      "tailId": "n7",
+      "targetId": "n7"
+    },
+    "variables": {
+      "current": 11,
+      "current_id": "n7",
+      "head": 11,
+      "ids": [
+        "n7"
+      ],
+      "length": 1,
+      "tail": 11
+    }
+  },
+  {
+    "lessonStepId": "delete-head",
+    "line": 193,
+    "message": "target.prev = None：解除目标的反向引用 / clear the removed node's prev",
+    "state": {
+      "focus": [
+        "n6"
+      ],
+      "type": "linked",
+      "values": [
+        11
+      ]
+    },
+    "structure": {
+      "change": {
+        "afterId": null,
+        "beforeId": null,
+        "field": "prev",
+        "nodeId": "n6"
+      },
+      "headId": "n7",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": null,
+          "prevId": null,
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": null,
+          "prevId": null,
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": null,
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": null,
+          "prevId": null,
+          "value": 6
+        },
+        {
+          "id": "n5",
+          "nextId": null,
+          "prevId": null,
+          "value": 8
+        },
+        {
+          "id": "n6",
+          "nextId": "n7",
+          "prevId": null,
+          "value": 9
+        },
+        {
+          "id": "n7",
+          "nextId": null,
+          "prevId": null,
+          "value": 11
+        }
+      ],
+      "operation": "set-prev",
+      "phase": "intermediate",
+      "tailId": "n7",
+      "targetId": "n6"
+    },
+    "variables": {
+      "current": 9,
+      "current_id": "n6",
+      "head": 11,
+      "ids": [
+        "n7"
+      ],
+      "length": 1,
+      "tail": 11
+    }
+  },
+  {
+    "lessonStepId": "delete-head",
+    "line": 195,
+    "message": "target.next = None：解除目标的正向引用 / clear the removed node's next",
+    "state": {
+      "focus": [
+        "n6"
+      ],
+      "type": "linked",
+      "values": [
+        11
+      ]
+    },
+    "structure": {
+      "change": {
+        "afterId": null,
+        "beforeId": "n7",
+        "field": "next",
+        "nodeId": "n6"
+      },
+      "headId": "n7",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": null,
+          "prevId": null,
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": null,
+          "prevId": null,
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": null,
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": null,
+          "prevId": null,
+          "value": 6
+        },
+        {
+          "id": "n5",
+          "nextId": null,
+          "prevId": null,
+          "value": 8
+        },
+        {
+          "id": "n6",
+          "nextId": null,
+          "prevId": null,
+          "value": 9
+        },
+        {
+          "id": "n7",
+          "nextId": null,
+          "prevId": null,
+          "value": 11
+        }
+      ],
+      "operation": "set-next",
+      "phase": "intermediate",
+      "tailId": "n7",
+      "targetId": "n6"
+    },
+    "variables": {
+      "current": 9,
+      "current_id": "n6",
+      "head": 11,
+      "ids": [
+        "n7"
+      ],
+      "length": 1,
+      "tail": 11
+    }
+  },
+  {
+    "lessonStepId": "delete-head",
+    "line": 197,
+    "message": "节点 n6 已脱离链表，但对象仍然存在 / node detached from the list, object still exists",
+    "state": {
+      "focus": [
+        "n6"
+      ],
+      "type": "linked",
+      "values": [
+        11
+      ]
+    },
+    "structure": {
+      "headId": "n7",
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": null,
+          "prevId": null,
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": null,
+          "prevId": null,
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": null,
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": null,
+          "prevId": null,
+          "value": 6
+        },
+        {
+          "id": "n5",
+          "nextId": null,
+          "prevId": null,
+          "value": 8
+        },
+        {
+          "id": "n6",
+          "nextId": null,
+          "prevId": null,
+          "value": 9
+        },
+        {
+          "id": "n7",
+          "nextId": null,
+          "prevId": null,
+          "value": 11
+        }
+      ],
+      "operation": "detach",
+      "phase": "complete",
+      "tailId": "n7",
+      "targetId": "n6"
+    },
+    "variables": {
+      "current": 9,
+      "current_id": "n6",
+      "head": 11,
+      "ids": [
+        "n7"
+      ],
+      "length": 1,
+      "tail": 11
+    }
+  },
+  {
+    "lessonStepId": "delete-tail",
+    "line": 184,
+    "message": "head = target.next：删除原头节点 / head moves past the removed node",
+    "state": {
+      "focus": [],
+      "type": "linked",
+      "values": []
+    },
+    "structure": {
+      "headId": null,
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": null,
+          "prevId": null,
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": null,
+          "prevId": null,
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": null,
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": null,
+          "prevId": null,
+          "value": 6
+        },
+        {
+          "id": "n5",
+          "nextId": null,
+          "prevId": null,
+          "value": 8
+        },
+        {
+          "id": "n6",
+          "nextId": null,
+          "prevId": null,
+          "value": 9
+        },
+        {
+          "id": "n7",
+          "nextId": null,
+          "prevId": null,
+          "value": 11
+        }
+      ],
+      "operation": "set-head",
+      "phase": "intermediate",
+      "tailId": "n7"
+    },
+    "variables": {
+      "current": null,
+      "current_id": null,
+      "head": null,
+      "ids": [],
+      "length": 0,
+      "tail": 11
+    }
+  },
+  {
+    "lessonStepId": "delete-tail",
+    "line": 190,
+    "message": "tail = target.prev：删除原尾节点 / tail moves back",
+    "state": {
+      "focus": [],
+      "type": "linked",
+      "values": []
+    },
+    "structure": {
+      "headId": null,
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": null,
+          "prevId": null,
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": null,
+          "prevId": null,
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": null,
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": null,
+          "prevId": null,
+          "value": 6
+        },
+        {
+          "id": "n5",
+          "nextId": null,
+          "prevId": null,
+          "value": 8
+        },
+        {
+          "id": "n6",
+          "nextId": null,
+          "prevId": null,
+          "value": 9
+        },
+        {
+          "id": "n7",
+          "nextId": null,
+          "prevId": null,
+          "value": 11
+        }
+      ],
+      "operation": "set-tail",
+      "phase": "intermediate",
+      "tailId": null
+    },
+    "variables": {
+      "current": null,
+      "current_id": null,
+      "head": null,
+      "ids": [],
+      "length": 0,
+      "tail": null
+    }
+  },
+  {
+    "lessonStepId": "delete-tail",
+    "line": 193,
+    "message": "target.prev = None：解除目标的反向引用 / clear the removed node's prev",
+    "state": {
+      "focus": [
+        "n7"
+      ],
+      "type": "linked",
+      "values": []
+    },
+    "structure": {
+      "change": {
+        "afterId": null,
+        "beforeId": null,
+        "field": "prev",
+        "nodeId": "n7"
+      },
+      "headId": null,
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": null,
+          "prevId": null,
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": null,
+          "prevId": null,
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": null,
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": null,
+          "prevId": null,
+          "value": 6
+        },
+        {
+          "id": "n5",
+          "nextId": null,
+          "prevId": null,
+          "value": 8
+        },
+        {
+          "id": "n6",
+          "nextId": null,
+          "prevId": null,
+          "value": 9
+        },
+        {
+          "id": "n7",
+          "nextId": null,
+          "prevId": null,
+          "value": 11
+        }
+      ],
+      "operation": "set-prev",
+      "phase": "intermediate",
+      "tailId": null,
+      "targetId": "n7"
+    },
+    "variables": {
+      "current": 11,
+      "current_id": "n7",
+      "head": null,
+      "ids": [],
+      "length": 0,
+      "tail": null
+    }
+  },
+  {
+    "lessonStepId": "delete-tail",
+    "line": 195,
+    "message": "target.next = None：解除目标的正向引用 / clear the removed node's next",
+    "state": {
+      "focus": [
+        "n7"
+      ],
+      "type": "linked",
+      "values": []
+    },
+    "structure": {
+      "change": {
+        "afterId": null,
+        "beforeId": null,
+        "field": "next",
+        "nodeId": "n7"
+      },
+      "headId": null,
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": null,
+          "prevId": null,
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": null,
+          "prevId": null,
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": null,
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": null,
+          "prevId": null,
+          "value": 6
+        },
+        {
+          "id": "n5",
+          "nextId": null,
+          "prevId": null,
+          "value": 8
+        },
+        {
+          "id": "n6",
+          "nextId": null,
+          "prevId": null,
+          "value": 9
+        },
+        {
+          "id": "n7",
+          "nextId": null,
+          "prevId": null,
+          "value": 11
+        }
+      ],
+      "operation": "set-next",
+      "phase": "intermediate",
+      "tailId": null,
+      "targetId": "n7"
+    },
+    "variables": {
+      "current": 11,
+      "current_id": "n7",
+      "head": null,
+      "ids": [],
+      "length": 0,
+      "tail": null
+    }
+  },
+  {
+    "lessonStepId": "delete-tail",
+    "line": 197,
+    "message": "节点 n7 已脱离链表，但对象仍然存在 / node detached from the list, object still exists",
+    "state": {
+      "focus": [
+        "n7"
+      ],
+      "type": "linked",
+      "values": []
+    },
+    "structure": {
+      "headId": null,
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": null,
+          "prevId": null,
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": null,
+          "prevId": null,
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": null,
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": null,
+          "prevId": null,
+          "value": 6
+        },
+        {
+          "id": "n5",
+          "nextId": null,
+          "prevId": null,
+          "value": 8
+        },
+        {
+          "id": "n6",
+          "nextId": null,
+          "prevId": null,
+          "value": 9
+        },
+        {
+          "id": "n7",
+          "nextId": null,
+          "prevId": null,
+          "value": 11
+        }
+      ],
+      "operation": "detach",
+      "phase": "complete",
+      "tailId": null,
+      "targetId": "n7"
+    },
+    "variables": {
+      "current": 11,
+      "current_id": "n7",
+      "head": null,
+      "ids": [],
+      "length": 0,
+      "tail": null
+    }
+  },
+  {
+    "lessonStepId": "done",
+    "line": 247,
+    "message": "双向链表演示结束：head.prev 与 tail.next 都是 None / Done: both ends are null",
+    "state": {
+      "focus": [],
+      "type": "linked",
+      "values": []
+    },
+    "structure": {
+      "headId": null,
+      "kind": "doubly-linked-list",
+      "nodes": [
+        {
+          "id": "n1",
+          "nextId": null,
+          "prevId": null,
+          "value": 5
+        },
+        {
+          "id": "n2",
+          "nextId": null,
+          "prevId": null,
+          "value": 7
+        },
+        {
+          "id": "n3",
+          "nextId": null,
+          "prevId": null,
+          "value": 3
+        },
+        {
+          "id": "n4",
+          "nextId": null,
+          "prevId": null,
+          "value": 6
+        },
+        {
+          "id": "n5",
+          "nextId": null,
+          "prevId": null,
+          "value": 8
+        },
+        {
+          "id": "n6",
+          "nextId": null,
+          "prevId": null,
+          "value": 9
+        },
+        {
+          "id": "n7",
+          "nextId": null,
+          "prevId": null,
+          "value": 11
+        }
+      ],
+      "operation": "done",
+      "phase": "complete",
+      "tailId": null
+    },
+    "variables": {
+      "current": null,
+      "current_id": null,
+      "head": null,
+      "ids": [],
+      "length": 0,
+      "tail": null
+    }
+  }
+]

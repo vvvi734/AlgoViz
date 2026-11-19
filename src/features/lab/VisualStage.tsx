@@ -18,6 +18,7 @@ import type { StructureOperation } from '../../domain/trace/schema';
 import type { TraceEvent } from '../../domain/trace/schema';
 import { useI18n } from '../../i18n/I18nProvider';
 import { QueueVisual, StackVisual } from './StructureVisuals';import { LinkedListVisual } from './LinkedListVisual';
+import { AdvancedLinkedListVisual } from './AdvancedLinkedListVisual';
 import { BinaryTreeVisual } from './BinaryTreeVisual';
 import { GraphVisual } from './GraphVisual';
 import { BellmanFordVisual, FloydVisual } from './G1Visuals';
@@ -430,6 +431,10 @@ export function VisualStage({ event }: { event: TraceEvent | undefined }) {
     case 'linked-list':
       content = <LinkedListVisual model={model} />;
       break;
+    case 'doubly-linked-list':
+    case 'circular-linked-list':
+      content = <AdvancedLinkedListVisual model={model} />;
+      break;
     case 'binary-tree':
       content = <BinaryTreeVisual model={model} />;
       break;
@@ -641,6 +646,8 @@ export function VisualStage({ event }: { event: TraceEvent | undefined }) {
     model.kind === 'stack' ||
     model.kind === 'queue' ||
     model.kind === 'linked-list' ||
+    model.kind === 'doubly-linked-list' ||
+    model.kind === 'circular-linked-list' ||
     model.kind === 'binary-tree' ||
     model.kind === 'bst' ||
     model.kind === 'avl' ||

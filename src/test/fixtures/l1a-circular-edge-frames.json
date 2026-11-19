@@ -1,0 +1,8579 @@
+{
+  "delete_last": [
+    {
+      "lessonStepId": "init",
+      "line": 231,
+      "message": "空的循环单链表：head = None，tail = None / Empty circular singly linked list",
+      "state": {
+        "focus": [],
+        "type": "linked",
+        "values": []
+      },
+      "structure": {
+        "headId": null,
+        "kind": "circular-linked-list",
+        "nodes": [],
+        "operation": "init",
+        "phase": "complete",
+        "tailId": null
+      },
+      "variables": {
+        "current": null,
+        "current_id": null,
+        "head": null,
+        "ids": [],
+        "length": 0,
+        "tail": null
+      }
+    },
+    {
+      "lessonStepId": "insert-head",
+      "line": 120,
+      "message": "创建节点 9：next 暂时为空 / create node with next = None",
+      "state": {
+        "focus": [
+          "n1"
+        ],
+        "type": "linked",
+        "values": []
+      },
+      "structure": {
+        "headId": null,
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": null,
+            "value": 9
+          }
+        ],
+        "operation": "create",
+        "phase": "intermediate",
+        "tailId": null,
+        "targetId": "n1"
+      },
+      "variables": {
+        "current": 9,
+        "current_id": "n1",
+        "head": null,
+        "ids": [],
+        "length": 0,
+        "tail": null
+      }
+    },
+    {
+      "lessonStepId": "insert-head",
+      "line": 123,
+      "message": "head = new：空表建立首节点 / first node",
+      "state": {
+        "focus": [
+          "n1"
+        ],
+        "type": "linked",
+        "values": [
+          9
+        ]
+      },
+      "structure": {
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": null,
+            "value": 9
+          }
+        ],
+        "operation": "set-head",
+        "phase": "intermediate",
+        "tailId": null,
+        "targetId": "n1"
+      },
+      "variables": {
+        "current": 9,
+        "current_id": "n1",
+        "head": 9,
+        "ids": [
+          "n1"
+        ],
+        "length": 1,
+        "tail": null
+      }
+    },
+    {
+      "lessonStepId": "insert-head",
+      "line": 125,
+      "message": "tail = new：单节点时 head = tail / one node is both ends",
+      "state": {
+        "focus": [
+          "n1"
+        ],
+        "type": "linked",
+        "values": [
+          9
+        ]
+      },
+      "structure": {
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": null,
+            "value": 9
+          }
+        ],
+        "operation": "set-tail",
+        "phase": "intermediate",
+        "tailId": "n1",
+        "targetId": "n1"
+      },
+      "variables": {
+        "current": 9,
+        "current_id": "n1",
+        "head": 9,
+        "ids": [
+          "n1"
+        ],
+        "length": 1,
+        "tail": 9
+      }
+    },
+    {
+      "lessonStepId": "insert-head",
+      "line": 127,
+      "message": "new.next = new：单节点自环闭合 / the single node points to itself",
+      "state": {
+        "focus": [
+          "n1"
+        ],
+        "type": "linked",
+        "values": [
+          9
+        ]
+      },
+      "structure": {
+        "change": {
+          "afterId": "n1",
+          "beforeId": null,
+          "field": "next",
+          "nodeId": "n1"
+        },
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n1",
+            "value": 9
+          }
+        ],
+        "operation": "set-next",
+        "phase": "complete",
+        "tailId": "n1",
+        "targetId": "n1"
+      },
+      "variables": {
+        "current": 9,
+        "current_id": "n1",
+        "head": 9,
+        "ids": [
+          "n1"
+        ],
+        "length": 1,
+        "tail": 9
+      }
+    },
+    {
+      "lessonStepId": "insert-tail",
+      "line": 140,
+      "message": "创建尾节点 11 / create tail node",
+      "state": {
+        "focus": [
+          "n2"
+        ],
+        "type": "linked",
+        "values": [
+          9
+        ]
+      },
+      "structure": {
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n1",
+            "value": 9
+          },
+          {
+            "id": "n2",
+            "nextId": null,
+            "value": 11
+          }
+        ],
+        "operation": "create",
+        "phase": "intermediate",
+        "tailId": "n1",
+        "targetId": "n2"
+      },
+      "variables": {
+        "current": 11,
+        "current_id": "n2",
+        "head": 9,
+        "ids": [
+          "n1"
+        ],
+        "length": 1,
+        "tail": 9
+      }
+    },
+    {
+      "lessonStepId": "insert-tail",
+      "line": 150,
+      "message": "旧 tail.next = new：旧尾先指向新节点 / old tail points to the new node",
+      "state": {
+        "focus": [
+          "n1"
+        ],
+        "type": "linked",
+        "values": [
+          9,
+          11
+        ]
+      },
+      "structure": {
+        "change": {
+          "afterId": "n2",
+          "beforeId": "n1",
+          "field": "next",
+          "nodeId": "n1"
+        },
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n2",
+            "value": 9
+          },
+          {
+            "id": "n2",
+            "nextId": null,
+            "value": 11
+          }
+        ],
+        "operation": "set-next",
+        "phase": "intermediate",
+        "tailId": "n1",
+        "targetId": "n1"
+      },
+      "variables": {
+        "current": 9,
+        "current_id": "n1",
+        "head": 9,
+        "ids": [
+          "n1",
+          "n2"
+        ],
+        "length": 2,
+        "tail": 9
+      }
+    },
+    {
+      "lessonStepId": "insert-tail",
+      "line": 152,
+      "message": "new.next = head：新节点指回首节点 / new node closes the circle",
+      "state": {
+        "focus": [
+          "n2"
+        ],
+        "type": "linked",
+        "values": [
+          9,
+          11
+        ]
+      },
+      "structure": {
+        "change": {
+          "afterId": "n1",
+          "beforeId": null,
+          "field": "next",
+          "nodeId": "n2"
+        },
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n2",
+            "value": 9
+          },
+          {
+            "id": "n2",
+            "nextId": "n1",
+            "value": 11
+          }
+        ],
+        "operation": "set-next",
+        "phase": "intermediate",
+        "tailId": "n1",
+        "targetId": "n2"
+      },
+      "variables": {
+        "current": 11,
+        "current_id": "n2",
+        "head": 9,
+        "ids": [
+          "n1",
+          "n2"
+        ],
+        "length": 2,
+        "tail": 9
+      }
+    },
+    {
+      "lessonStepId": "insert-tail",
+      "line": 154,
+      "message": "tail = new：尾指针更新为 11 / tail moves to the new node",
+      "state": {
+        "focus": [
+          "n2"
+        ],
+        "type": "linked",
+        "values": [
+          9,
+          11
+        ]
+      },
+      "structure": {
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n2",
+            "value": 9
+          },
+          {
+            "id": "n2",
+            "nextId": "n1",
+            "value": 11
+          }
+        ],
+        "operation": "set-tail",
+        "phase": "complete",
+        "tailId": "n2",
+        "targetId": "n2"
+      },
+      "variables": {
+        "current": 11,
+        "current_id": "n2",
+        "head": 9,
+        "ids": [
+          "n1",
+          "n2"
+        ],
+        "length": 2,
+        "tail": 11
+      }
+    },
+    {
+      "lessonStepId": "delete-head",
+      "line": 189,
+      "message": "head = target.next：删除头节点 / head moves to the next node",
+      "state": {
+        "focus": [
+          "n2"
+        ],
+        "type": "linked",
+        "values": [
+          11,
+          9
+        ]
+      },
+      "structure": {
+        "headId": "n2",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n2",
+            "value": 9
+          },
+          {
+            "id": "n2",
+            "nextId": "n1",
+            "value": 11
+          }
+        ],
+        "operation": "set-head",
+        "phase": "intermediate",
+        "tailId": "n2",
+        "targetId": "n2"
+      },
+      "variables": {
+        "current": 11,
+        "current_id": "n2",
+        "head": 11,
+        "ids": [
+          "n2",
+          "n1"
+        ],
+        "length": 2,
+        "tail": 11
+      }
+    },
+    {
+      "lessonStepId": "delete-head",
+      "line": 191,
+      "message": "tail.next = head：回环改指新首节点 / tail's return arrow follows the new head",
+      "state": {
+        "focus": [
+          "n2"
+        ],
+        "type": "linked",
+        "values": [
+          11
+        ]
+      },
+      "structure": {
+        "change": {
+          "afterId": "n2",
+          "beforeId": "n1",
+          "field": "next",
+          "nodeId": "n2"
+        },
+        "headId": "n2",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n2",
+            "value": 9
+          },
+          {
+            "id": "n2",
+            "nextId": "n2",
+            "value": 11
+          }
+        ],
+        "operation": "set-next",
+        "phase": "intermediate",
+        "tailId": "n2",
+        "targetId": "n2"
+      },
+      "variables": {
+        "current": 11,
+        "current_id": "n2",
+        "head": 11,
+        "ids": [
+          "n2"
+        ],
+        "length": 1,
+        "tail": 11
+      }
+    },
+    {
+      "lessonStepId": "delete-head",
+      "line": 202,
+      "message": "target.next = None：解除目标的 next / clear the removed node's next",
+      "state": {
+        "focus": [
+          "n1"
+        ],
+        "type": "linked",
+        "values": [
+          11
+        ]
+      },
+      "structure": {
+        "change": {
+          "afterId": null,
+          "beforeId": "n2",
+          "field": "next",
+          "nodeId": "n1"
+        },
+        "headId": "n2",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": null,
+            "value": 9
+          },
+          {
+            "id": "n2",
+            "nextId": "n2",
+            "value": 11
+          }
+        ],
+        "operation": "set-next",
+        "phase": "intermediate",
+        "tailId": "n2",
+        "targetId": "n1"
+      },
+      "variables": {
+        "current": 9,
+        "current_id": "n1",
+        "head": 11,
+        "ids": [
+          "n2"
+        ],
+        "length": 1,
+        "tail": 11
+      }
+    },
+    {
+      "lessonStepId": "delete-head",
+      "line": 204,
+      "message": "节点 n1 已脱离链表 / node detached, no stale reference remains",
+      "state": {
+        "focus": [
+          "n1"
+        ],
+        "type": "linked",
+        "values": [
+          11
+        ]
+      },
+      "structure": {
+        "headId": "n2",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": null,
+            "value": 9
+          },
+          {
+            "id": "n2",
+            "nextId": "n2",
+            "value": 11
+          }
+        ],
+        "operation": "detach",
+        "phase": "complete",
+        "tailId": "n2",
+        "targetId": "n1"
+      },
+      "variables": {
+        "current": 9,
+        "current_id": "n1",
+        "head": 11,
+        "ids": [
+          "n2"
+        ],
+        "length": 1,
+        "tail": 11
+      }
+    },
+    {
+      "lessonStepId": "delete-tail",
+      "line": 178,
+      "message": "head = None：删除唯一节点 / removing the only node",
+      "state": {
+        "focus": [],
+        "type": "linked",
+        "values": []
+      },
+      "structure": {
+        "headId": null,
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": null,
+            "value": 9
+          },
+          {
+            "id": "n2",
+            "nextId": "n2",
+            "value": 11
+          }
+        ],
+        "operation": "set-head",
+        "phase": "intermediate",
+        "tailId": "n2"
+      },
+      "variables": {
+        "current": null,
+        "current_id": null,
+        "head": null,
+        "ids": [],
+        "length": 0,
+        "tail": 11
+      }
+    },
+    {
+      "lessonStepId": "delete-tail",
+      "line": 180,
+      "message": "tail = None：链表变空 / the list is empty",
+      "state": {
+        "focus": [],
+        "type": "linked",
+        "values": []
+      },
+      "structure": {
+        "headId": null,
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": null,
+            "value": 9
+          },
+          {
+            "id": "n2",
+            "nextId": "n2",
+            "value": 11
+          }
+        ],
+        "operation": "set-tail",
+        "phase": "intermediate",
+        "tailId": null
+      },
+      "variables": {
+        "current": null,
+        "current_id": null,
+        "head": null,
+        "ids": [],
+        "length": 0,
+        "tail": null
+      }
+    },
+    {
+      "lessonStepId": "delete-tail",
+      "line": 182,
+      "message": "target.next = None：自环解除 / the self-loop is cleared",
+      "state": {
+        "focus": [
+          "n2"
+        ],
+        "type": "linked",
+        "values": []
+      },
+      "structure": {
+        "change": {
+          "afterId": null,
+          "beforeId": "n2",
+          "field": "next",
+          "nodeId": "n2"
+        },
+        "headId": null,
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": null,
+            "value": 9
+          },
+          {
+            "id": "n2",
+            "nextId": null,
+            "value": 11
+          }
+        ],
+        "operation": "set-next",
+        "phase": "intermediate",
+        "tailId": null,
+        "targetId": "n2"
+      },
+      "variables": {
+        "current": 11,
+        "current_id": "n2",
+        "head": null,
+        "ids": [],
+        "length": 0,
+        "tail": null
+      }
+    },
+    {
+      "lessonStepId": "delete-tail",
+      "line": 184,
+      "message": "节点 n2 已脱离，head 与 tail 均为 None / detached, list is empty",
+      "state": {
+        "focus": [
+          "n2"
+        ],
+        "type": "linked",
+        "values": []
+      },
+      "structure": {
+        "headId": null,
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": null,
+            "value": 9
+          },
+          {
+            "id": "n2",
+            "nextId": null,
+            "value": 11
+          }
+        ],
+        "operation": "detach",
+        "phase": "complete",
+        "tailId": null,
+        "targetId": "n2"
+      },
+      "variables": {
+        "current": 11,
+        "current_id": "n2",
+        "head": null,
+        "ids": [],
+        "length": 0,
+        "tail": null
+      }
+    },
+    {
+      "lessonStepId": "done",
+      "line": 245,
+      "message": "循环单链表演示结束：非空时 tail.next 一定回到 head / Done: tail.next returns to head",
+      "state": {
+        "focus": [],
+        "type": "linked",
+        "values": []
+      },
+      "structure": {
+        "headId": null,
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": null,
+            "value": 9
+          },
+          {
+            "id": "n2",
+            "nextId": null,
+            "value": 11
+          }
+        ],
+        "operation": "done",
+        "phase": "complete",
+        "tailId": null
+      },
+      "variables": {
+        "current": null,
+        "current_id": null,
+        "head": null,
+        "ids": [],
+        "length": 0,
+        "tail": null
+      }
+    }
+  ],
+  "empty": [
+    {
+      "lessonStepId": "init",
+      "line": 231,
+      "message": "空的循环单链表：head = None，tail = None / Empty circular singly linked list",
+      "state": {
+        "focus": [],
+        "type": "linked",
+        "values": []
+      },
+      "structure": {
+        "headId": null,
+        "kind": "circular-linked-list",
+        "nodes": [],
+        "operation": "init",
+        "phase": "complete",
+        "tailId": null
+      },
+      "variables": {
+        "current": null,
+        "current_id": null,
+        "head": null,
+        "ids": [],
+        "length": 0,
+        "tail": null
+      }
+    },
+    {
+      "lessonStepId": "done",
+      "line": 245,
+      "message": "循环单链表演示结束：非空时 tail.next 一定回到 head / Done: tail.next returns to head",
+      "state": {
+        "focus": [],
+        "type": "linked",
+        "values": []
+      },
+      "structure": {
+        "headId": null,
+        "kind": "circular-linked-list",
+        "nodes": [],
+        "operation": "done",
+        "phase": "complete",
+        "tailId": null
+      },
+      "variables": {
+        "current": null,
+        "current_id": null,
+        "head": null,
+        "ids": [],
+        "length": 0,
+        "tail": null
+      }
+    }
+  ],
+  "head_tail": [
+    {
+      "lessonStepId": "init",
+      "line": 231,
+      "message": "空的循环单链表：head = None，tail = None / Empty circular singly linked list",
+      "state": {
+        "focus": [],
+        "type": "linked",
+        "values": []
+      },
+      "structure": {
+        "headId": null,
+        "kind": "circular-linked-list",
+        "nodes": [],
+        "operation": "init",
+        "phase": "complete",
+        "tailId": null
+      },
+      "variables": {
+        "current": null,
+        "current_id": null,
+        "head": null,
+        "ids": [],
+        "length": 0,
+        "tail": null
+      }
+    },
+    {
+      "lessonStepId": "insert-head",
+      "line": 120,
+      "message": "创建节点 5：next 暂时为空 / create node with next = None",
+      "state": {
+        "focus": [
+          "n1"
+        ],
+        "type": "linked",
+        "values": []
+      },
+      "structure": {
+        "headId": null,
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": null,
+            "value": 5
+          }
+        ],
+        "operation": "create",
+        "phase": "intermediate",
+        "tailId": null,
+        "targetId": "n1"
+      },
+      "variables": {
+        "current": 5,
+        "current_id": "n1",
+        "head": null,
+        "ids": [],
+        "length": 0,
+        "tail": null
+      }
+    },
+    {
+      "lessonStepId": "insert-head",
+      "line": 123,
+      "message": "head = new：空表建立首节点 / first node",
+      "state": {
+        "focus": [
+          "n1"
+        ],
+        "type": "linked",
+        "values": [
+          5
+        ]
+      },
+      "structure": {
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": null,
+            "value": 5
+          }
+        ],
+        "operation": "set-head",
+        "phase": "intermediate",
+        "tailId": null,
+        "targetId": "n1"
+      },
+      "variables": {
+        "current": 5,
+        "current_id": "n1",
+        "head": 5,
+        "ids": [
+          "n1"
+        ],
+        "length": 1,
+        "tail": null
+      }
+    },
+    {
+      "lessonStepId": "insert-head",
+      "line": 125,
+      "message": "tail = new：单节点时 head = tail / one node is both ends",
+      "state": {
+        "focus": [
+          "n1"
+        ],
+        "type": "linked",
+        "values": [
+          5
+        ]
+      },
+      "structure": {
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": null,
+            "value": 5
+          }
+        ],
+        "operation": "set-tail",
+        "phase": "intermediate",
+        "tailId": "n1",
+        "targetId": "n1"
+      },
+      "variables": {
+        "current": 5,
+        "current_id": "n1",
+        "head": 5,
+        "ids": [
+          "n1"
+        ],
+        "length": 1,
+        "tail": 5
+      }
+    },
+    {
+      "lessonStepId": "insert-head",
+      "line": 127,
+      "message": "new.next = new：单节点自环闭合 / the single node points to itself",
+      "state": {
+        "focus": [
+          "n1"
+        ],
+        "type": "linked",
+        "values": [
+          5
+        ]
+      },
+      "structure": {
+        "change": {
+          "afterId": "n1",
+          "beforeId": null,
+          "field": "next",
+          "nodeId": "n1"
+        },
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n1",
+            "value": 5
+          }
+        ],
+        "operation": "set-next",
+        "phase": "complete",
+        "tailId": "n1",
+        "targetId": "n1"
+      },
+      "variables": {
+        "current": 5,
+        "current_id": "n1",
+        "head": 5,
+        "ids": [
+          "n1"
+        ],
+        "length": 1,
+        "tail": 5
+      }
+    },
+    {
+      "lessonStepId": "insert-tail",
+      "line": 140,
+      "message": "创建尾节点 7 / create tail node",
+      "state": {
+        "focus": [
+          "n2"
+        ],
+        "type": "linked",
+        "values": [
+          5
+        ]
+      },
+      "structure": {
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n1",
+            "value": 5
+          },
+          {
+            "id": "n2",
+            "nextId": null,
+            "value": 7
+          }
+        ],
+        "operation": "create",
+        "phase": "intermediate",
+        "tailId": "n1",
+        "targetId": "n2"
+      },
+      "variables": {
+        "current": 7,
+        "current_id": "n2",
+        "head": 5,
+        "ids": [
+          "n1"
+        ],
+        "length": 1,
+        "tail": 5
+      }
+    },
+    {
+      "lessonStepId": "insert-tail",
+      "line": 150,
+      "message": "旧 tail.next = new：旧尾先指向新节点 / old tail points to the new node",
+      "state": {
+        "focus": [
+          "n1"
+        ],
+        "type": "linked",
+        "values": [
+          5,
+          7
+        ]
+      },
+      "structure": {
+        "change": {
+          "afterId": "n2",
+          "beforeId": "n1",
+          "field": "next",
+          "nodeId": "n1"
+        },
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n2",
+            "value": 5
+          },
+          {
+            "id": "n2",
+            "nextId": null,
+            "value": 7
+          }
+        ],
+        "operation": "set-next",
+        "phase": "intermediate",
+        "tailId": "n1",
+        "targetId": "n1"
+      },
+      "variables": {
+        "current": 5,
+        "current_id": "n1",
+        "head": 5,
+        "ids": [
+          "n1",
+          "n2"
+        ],
+        "length": 2,
+        "tail": 5
+      }
+    },
+    {
+      "lessonStepId": "insert-tail",
+      "line": 152,
+      "message": "new.next = head：新节点指回首节点 / new node closes the circle",
+      "state": {
+        "focus": [
+          "n2"
+        ],
+        "type": "linked",
+        "values": [
+          5,
+          7
+        ]
+      },
+      "structure": {
+        "change": {
+          "afterId": "n1",
+          "beforeId": null,
+          "field": "next",
+          "nodeId": "n2"
+        },
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n2",
+            "value": 5
+          },
+          {
+            "id": "n2",
+            "nextId": "n1",
+            "value": 7
+          }
+        ],
+        "operation": "set-next",
+        "phase": "intermediate",
+        "tailId": "n1",
+        "targetId": "n2"
+      },
+      "variables": {
+        "current": 7,
+        "current_id": "n2",
+        "head": 5,
+        "ids": [
+          "n1",
+          "n2"
+        ],
+        "length": 2,
+        "tail": 5
+      }
+    },
+    {
+      "lessonStepId": "insert-tail",
+      "line": 154,
+      "message": "tail = new：尾指针更新为 7 / tail moves to the new node",
+      "state": {
+        "focus": [
+          "n2"
+        ],
+        "type": "linked",
+        "values": [
+          5,
+          7
+        ]
+      },
+      "structure": {
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n2",
+            "value": 5
+          },
+          {
+            "id": "n2",
+            "nextId": "n1",
+            "value": 7
+          }
+        ],
+        "operation": "set-tail",
+        "phase": "complete",
+        "tailId": "n2",
+        "targetId": "n2"
+      },
+      "variables": {
+        "current": 7,
+        "current_id": "n2",
+        "head": 5,
+        "ids": [
+          "n1",
+          "n2"
+        ],
+        "length": 2,
+        "tail": 7
+      }
+    },
+    {
+      "lessonStepId": "insert-head",
+      "line": 120,
+      "message": "创建节点 3：next 暂时为空 / create node with next = None",
+      "state": {
+        "focus": [
+          "n3"
+        ],
+        "type": "linked",
+        "values": [
+          5,
+          7
+        ]
+      },
+      "structure": {
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n2",
+            "value": 5
+          },
+          {
+            "id": "n2",
+            "nextId": "n1",
+            "value": 7
+          },
+          {
+            "id": "n3",
+            "nextId": null,
+            "value": 3
+          }
+        ],
+        "operation": "create",
+        "phase": "intermediate",
+        "tailId": "n2",
+        "targetId": "n3"
+      },
+      "variables": {
+        "current": 3,
+        "current_id": "n3",
+        "head": 5,
+        "ids": [
+          "n1",
+          "n2"
+        ],
+        "length": 2,
+        "tail": 7
+      }
+    },
+    {
+      "lessonStepId": "insert-head",
+      "line": 130,
+      "message": "new.next = 旧 head：新节点指向旧首节点 / new node points at the old head",
+      "state": {
+        "focus": [
+          "n3"
+        ],
+        "type": "linked",
+        "values": [
+          5,
+          7
+        ]
+      },
+      "structure": {
+        "change": {
+          "afterId": "n1",
+          "beforeId": null,
+          "field": "next",
+          "nodeId": "n3"
+        },
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n2",
+            "value": 5
+          },
+          {
+            "id": "n2",
+            "nextId": "n1",
+            "value": 7
+          },
+          {
+            "id": "n3",
+            "nextId": "n1",
+            "value": 3
+          }
+        ],
+        "operation": "set-next",
+        "phase": "intermediate",
+        "tailId": "n2",
+        "targetId": "n3"
+      },
+      "variables": {
+        "current": 3,
+        "current_id": "n3",
+        "head": 5,
+        "ids": [
+          "n1",
+          "n2"
+        ],
+        "length": 2,
+        "tail": 7
+      }
+    },
+    {
+      "lessonStepId": "insert-head",
+      "line": 132,
+      "message": "tail.next = new：回环改指新首节点 / tail's return arrow moves to the new head",
+      "state": {
+        "focus": [
+          "n2"
+        ],
+        "type": "linked",
+        "values": [
+          5,
+          7,
+          3
+        ]
+      },
+      "structure": {
+        "change": {
+          "afterId": "n3",
+          "beforeId": "n1",
+          "field": "next",
+          "nodeId": "n2"
+        },
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n2",
+            "value": 5
+          },
+          {
+            "id": "n2",
+            "nextId": "n3",
+            "value": 7
+          },
+          {
+            "id": "n3",
+            "nextId": "n1",
+            "value": 3
+          }
+        ],
+        "operation": "set-next",
+        "phase": "intermediate",
+        "tailId": "n2",
+        "targetId": "n2"
+      },
+      "variables": {
+        "current": 7,
+        "current_id": "n2",
+        "head": 5,
+        "ids": [
+          "n1",
+          "n2",
+          "n3"
+        ],
+        "length": 3,
+        "tail": 7
+      }
+    },
+    {
+      "lessonStepId": "insert-head",
+      "line": 134,
+      "message": "head = new：头插入完成，tail.next 已指回新 head / head insertion complete",
+      "state": {
+        "focus": [
+          "n3"
+        ],
+        "type": "linked",
+        "values": [
+          3,
+          5,
+          7
+        ]
+      },
+      "structure": {
+        "headId": "n3",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n2",
+            "value": 5
+          },
+          {
+            "id": "n2",
+            "nextId": "n3",
+            "value": 7
+          },
+          {
+            "id": "n3",
+            "nextId": "n1",
+            "value": 3
+          }
+        ],
+        "operation": "set-head",
+        "phase": "complete",
+        "tailId": "n2",
+        "targetId": "n3"
+      },
+      "variables": {
+        "current": 3,
+        "current_id": "n3",
+        "head": 3,
+        "ids": [
+          "n3",
+          "n1",
+          "n2"
+        ],
+        "length": 3,
+        "tail": 7
+      }
+    },
+    {
+      "lessonStepId": "traverse-circle",
+      "line": 226,
+      "message": "访问 3，继续 current = current.next / visit, then follow next",
+      "state": {
+        "focus": [
+          "n3"
+        ],
+        "type": "linked",
+        "values": [
+          3,
+          5,
+          7
+        ]
+      },
+      "structure": {
+        "headId": "n3",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n2",
+            "value": 5
+          },
+          {
+            "id": "n2",
+            "nextId": "n3",
+            "value": 7
+          },
+          {
+            "id": "n3",
+            "nextId": "n1",
+            "value": 3
+          }
+        ],
+        "operation": "visit",
+        "phase": "complete",
+        "tailId": "n2",
+        "targetId": "n3"
+      },
+      "variables": {
+        "current": 3,
+        "current_id": "n3",
+        "head": 3,
+        "ids": [
+          "n3",
+          "n1",
+          "n2"
+        ],
+        "length": 3,
+        "tail": 7
+      }
+    },
+    {
+      "lessonStepId": "traverse-circle",
+      "line": 226,
+      "message": "访问 5，继续 current = current.next / visit, then follow next",
+      "state": {
+        "focus": [
+          "n1"
+        ],
+        "type": "linked",
+        "values": [
+          3,
+          5,
+          7
+        ]
+      },
+      "structure": {
+        "headId": "n3",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n2",
+            "value": 5
+          },
+          {
+            "id": "n2",
+            "nextId": "n3",
+            "value": 7
+          },
+          {
+            "id": "n3",
+            "nextId": "n1",
+            "value": 3
+          }
+        ],
+        "operation": "visit",
+        "phase": "complete",
+        "tailId": "n2",
+        "targetId": "n1"
+      },
+      "variables": {
+        "current": 5,
+        "current_id": "n1",
+        "head": 3,
+        "ids": [
+          "n3",
+          "n1",
+          "n2"
+        ],
+        "length": 3,
+        "tail": 7
+      }
+    },
+    {
+      "lessonStepId": "traverse-circle",
+      "line": 226,
+      "message": "访问 7，继续 current = current.next / visit, then follow next",
+      "state": {
+        "focus": [
+          "n2"
+        ],
+        "type": "linked",
+        "values": [
+          3,
+          5,
+          7
+        ]
+      },
+      "structure": {
+        "headId": "n3",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n2",
+            "value": 5
+          },
+          {
+            "id": "n2",
+            "nextId": "n3",
+            "value": 7
+          },
+          {
+            "id": "n3",
+            "nextId": "n1",
+            "value": 3
+          }
+        ],
+        "operation": "visit",
+        "phase": "complete",
+        "tailId": "n2",
+        "targetId": "n2"
+      },
+      "variables": {
+        "current": 7,
+        "current_id": "n2",
+        "head": 3,
+        "ids": [
+          "n3",
+          "n1",
+          "n2"
+        ],
+        "length": 3,
+        "tail": 7
+      }
+    },
+    {
+      "lessonStepId": "delete-head",
+      "line": 189,
+      "message": "head = target.next：删除头节点 / head moves to the next node",
+      "state": {
+        "focus": [
+          "n1"
+        ],
+        "type": "linked",
+        "values": [
+          5,
+          7,
+          3
+        ]
+      },
+      "structure": {
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n2",
+            "value": 5
+          },
+          {
+            "id": "n2",
+            "nextId": "n3",
+            "value": 7
+          },
+          {
+            "id": "n3",
+            "nextId": "n1",
+            "value": 3
+          }
+        ],
+        "operation": "set-head",
+        "phase": "intermediate",
+        "tailId": "n2",
+        "targetId": "n1"
+      },
+      "variables": {
+        "current": 5,
+        "current_id": "n1",
+        "head": 5,
+        "ids": [
+          "n1",
+          "n2",
+          "n3"
+        ],
+        "length": 3,
+        "tail": 7
+      }
+    },
+    {
+      "lessonStepId": "delete-head",
+      "line": 191,
+      "message": "tail.next = head：回环改指新首节点 / tail's return arrow follows the new head",
+      "state": {
+        "focus": [
+          "n2"
+        ],
+        "type": "linked",
+        "values": [
+          5,
+          7
+        ]
+      },
+      "structure": {
+        "change": {
+          "afterId": "n1",
+          "beforeId": "n3",
+          "field": "next",
+          "nodeId": "n2"
+        },
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n2",
+            "value": 5
+          },
+          {
+            "id": "n2",
+            "nextId": "n1",
+            "value": 7
+          },
+          {
+            "id": "n3",
+            "nextId": "n1",
+            "value": 3
+          }
+        ],
+        "operation": "set-next",
+        "phase": "intermediate",
+        "tailId": "n2",
+        "targetId": "n2"
+      },
+      "variables": {
+        "current": 7,
+        "current_id": "n2",
+        "head": 5,
+        "ids": [
+          "n1",
+          "n2"
+        ],
+        "length": 2,
+        "tail": 7
+      }
+    },
+    {
+      "lessonStepId": "delete-head",
+      "line": 202,
+      "message": "target.next = None：解除目标的 next / clear the removed node's next",
+      "state": {
+        "focus": [
+          "n3"
+        ],
+        "type": "linked",
+        "values": [
+          5,
+          7
+        ]
+      },
+      "structure": {
+        "change": {
+          "afterId": null,
+          "beforeId": "n1",
+          "field": "next",
+          "nodeId": "n3"
+        },
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n2",
+            "value": 5
+          },
+          {
+            "id": "n2",
+            "nextId": "n1",
+            "value": 7
+          },
+          {
+            "id": "n3",
+            "nextId": null,
+            "value": 3
+          }
+        ],
+        "operation": "set-next",
+        "phase": "intermediate",
+        "tailId": "n2",
+        "targetId": "n3"
+      },
+      "variables": {
+        "current": 3,
+        "current_id": "n3",
+        "head": 5,
+        "ids": [
+          "n1",
+          "n2"
+        ],
+        "length": 2,
+        "tail": 7
+      }
+    },
+    {
+      "lessonStepId": "delete-head",
+      "line": 204,
+      "message": "节点 n3 已脱离链表 / node detached, no stale reference remains",
+      "state": {
+        "focus": [
+          "n3"
+        ],
+        "type": "linked",
+        "values": [
+          5,
+          7
+        ]
+      },
+      "structure": {
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n2",
+            "value": 5
+          },
+          {
+            "id": "n2",
+            "nextId": "n1",
+            "value": 7
+          },
+          {
+            "id": "n3",
+            "nextId": null,
+            "value": 3
+          }
+        ],
+        "operation": "detach",
+        "phase": "complete",
+        "tailId": "n2",
+        "targetId": "n3"
+      },
+      "variables": {
+        "current": 3,
+        "current_id": "n3",
+        "head": 5,
+        "ids": [
+          "n1",
+          "n2"
+        ],
+        "length": 2,
+        "tail": 7
+      }
+    },
+    {
+      "lessonStepId": "delete-tail",
+      "line": 194,
+      "message": "tail = target.prev：删除尾节点 / tail moves back",
+      "state": {
+        "focus": [
+          "n1"
+        ],
+        "type": "linked",
+        "values": [
+          5,
+          7
+        ]
+      },
+      "structure": {
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n2",
+            "value": 5
+          },
+          {
+            "id": "n2",
+            "nextId": "n1",
+            "value": 7
+          },
+          {
+            "id": "n3",
+            "nextId": null,
+            "value": 3
+          }
+        ],
+        "operation": "set-tail",
+        "phase": "intermediate",
+        "tailId": "n1",
+        "targetId": "n1"
+      },
+      "variables": {
+        "current": 5,
+        "current_id": "n1",
+        "head": 5,
+        "ids": [
+          "n1",
+          "n2"
+        ],
+        "length": 2,
+        "tail": 5
+      }
+    },
+    {
+      "lessonStepId": "delete-tail",
+      "line": 196,
+      "message": "previous.next = head：新尾指回 head / new tail points back to head",
+      "state": {
+        "focus": [
+          "n1"
+        ],
+        "type": "linked",
+        "values": [
+          5
+        ]
+      },
+      "structure": {
+        "change": {
+          "afterId": "n1",
+          "beforeId": "n2",
+          "field": "next",
+          "nodeId": "n1"
+        },
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n1",
+            "value": 5
+          },
+          {
+            "id": "n2",
+            "nextId": "n1",
+            "value": 7
+          },
+          {
+            "id": "n3",
+            "nextId": null,
+            "value": 3
+          }
+        ],
+        "operation": "set-next",
+        "phase": "intermediate",
+        "tailId": "n1",
+        "targetId": "n1"
+      },
+      "variables": {
+        "current": 5,
+        "current_id": "n1",
+        "head": 5,
+        "ids": [
+          "n1"
+        ],
+        "length": 1,
+        "tail": 5
+      }
+    },
+    {
+      "lessonStepId": "delete-tail",
+      "line": 202,
+      "message": "target.next = None：解除目标的 next / clear the removed node's next",
+      "state": {
+        "focus": [
+          "n2"
+        ],
+        "type": "linked",
+        "values": [
+          5
+        ]
+      },
+      "structure": {
+        "change": {
+          "afterId": null,
+          "beforeId": "n1",
+          "field": "next",
+          "nodeId": "n2"
+        },
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n1",
+            "value": 5
+          },
+          {
+            "id": "n2",
+            "nextId": null,
+            "value": 7
+          },
+          {
+            "id": "n3",
+            "nextId": null,
+            "value": 3
+          }
+        ],
+        "operation": "set-next",
+        "phase": "intermediate",
+        "tailId": "n1",
+        "targetId": "n2"
+      },
+      "variables": {
+        "current": 7,
+        "current_id": "n2",
+        "head": 5,
+        "ids": [
+          "n1"
+        ],
+        "length": 1,
+        "tail": 5
+      }
+    },
+    {
+      "lessonStepId": "delete-tail",
+      "line": 204,
+      "message": "节点 n2 已脱离链表 / node detached, no stale reference remains",
+      "state": {
+        "focus": [
+          "n2"
+        ],
+        "type": "linked",
+        "values": [
+          5
+        ]
+      },
+      "structure": {
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n1",
+            "value": 5
+          },
+          {
+            "id": "n2",
+            "nextId": null,
+            "value": 7
+          },
+          {
+            "id": "n3",
+            "nextId": null,
+            "value": 3
+          }
+        ],
+        "operation": "detach",
+        "phase": "complete",
+        "tailId": "n1",
+        "targetId": "n2"
+      },
+      "variables": {
+        "current": 7,
+        "current_id": "n2",
+        "head": 5,
+        "ids": [
+          "n1"
+        ],
+        "length": 1,
+        "tail": 5
+      }
+    },
+    {
+      "lessonStepId": "done",
+      "line": 245,
+      "message": "循环单链表演示结束：非空时 tail.next 一定回到 head / Done: tail.next returns to head",
+      "state": {
+        "focus": [],
+        "type": "linked",
+        "values": [
+          5
+        ]
+      },
+      "structure": {
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n1",
+            "value": 5
+          },
+          {
+            "id": "n2",
+            "nextId": null,
+            "value": 7
+          },
+          {
+            "id": "n3",
+            "nextId": null,
+            "value": 3
+          }
+        ],
+        "operation": "done",
+        "phase": "complete",
+        "tailId": "n1"
+      },
+      "variables": {
+        "current": null,
+        "current_id": null,
+        "head": 5,
+        "ids": [
+          "n1"
+        ],
+        "length": 1,
+        "tail": 5
+      }
+    }
+  ],
+  "middle": [
+    {
+      "lessonStepId": "init",
+      "line": 231,
+      "message": "空的循环单链表：head = None，tail = None / Empty circular singly linked list",
+      "state": {
+        "focus": [],
+        "type": "linked",
+        "values": []
+      },
+      "structure": {
+        "headId": null,
+        "kind": "circular-linked-list",
+        "nodes": [],
+        "operation": "init",
+        "phase": "complete",
+        "tailId": null
+      },
+      "variables": {
+        "current": null,
+        "current_id": null,
+        "head": null,
+        "ids": [],
+        "length": 0,
+        "tail": null
+      }
+    },
+    {
+      "lessonStepId": "insert-head",
+      "line": 120,
+      "message": "创建节点 5：next 暂时为空 / create node with next = None",
+      "state": {
+        "focus": [
+          "n1"
+        ],
+        "type": "linked",
+        "values": []
+      },
+      "structure": {
+        "headId": null,
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": null,
+            "value": 5
+          }
+        ],
+        "operation": "create",
+        "phase": "intermediate",
+        "tailId": null,
+        "targetId": "n1"
+      },
+      "variables": {
+        "current": 5,
+        "current_id": "n1",
+        "head": null,
+        "ids": [],
+        "length": 0,
+        "tail": null
+      }
+    },
+    {
+      "lessonStepId": "insert-head",
+      "line": 123,
+      "message": "head = new：空表建立首节点 / first node",
+      "state": {
+        "focus": [
+          "n1"
+        ],
+        "type": "linked",
+        "values": [
+          5
+        ]
+      },
+      "structure": {
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": null,
+            "value": 5
+          }
+        ],
+        "operation": "set-head",
+        "phase": "intermediate",
+        "tailId": null,
+        "targetId": "n1"
+      },
+      "variables": {
+        "current": 5,
+        "current_id": "n1",
+        "head": 5,
+        "ids": [
+          "n1"
+        ],
+        "length": 1,
+        "tail": null
+      }
+    },
+    {
+      "lessonStepId": "insert-head",
+      "line": 125,
+      "message": "tail = new：单节点时 head = tail / one node is both ends",
+      "state": {
+        "focus": [
+          "n1"
+        ],
+        "type": "linked",
+        "values": [
+          5
+        ]
+      },
+      "structure": {
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": null,
+            "value": 5
+          }
+        ],
+        "operation": "set-tail",
+        "phase": "intermediate",
+        "tailId": "n1",
+        "targetId": "n1"
+      },
+      "variables": {
+        "current": 5,
+        "current_id": "n1",
+        "head": 5,
+        "ids": [
+          "n1"
+        ],
+        "length": 1,
+        "tail": 5
+      }
+    },
+    {
+      "lessonStepId": "insert-head",
+      "line": 127,
+      "message": "new.next = new：单节点自环闭合 / the single node points to itself",
+      "state": {
+        "focus": [
+          "n1"
+        ],
+        "type": "linked",
+        "values": [
+          5
+        ]
+      },
+      "structure": {
+        "change": {
+          "afterId": "n1",
+          "beforeId": null,
+          "field": "next",
+          "nodeId": "n1"
+        },
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n1",
+            "value": 5
+          }
+        ],
+        "operation": "set-next",
+        "phase": "complete",
+        "tailId": "n1",
+        "targetId": "n1"
+      },
+      "variables": {
+        "current": 5,
+        "current_id": "n1",
+        "head": 5,
+        "ids": [
+          "n1"
+        ],
+        "length": 1,
+        "tail": 5
+      }
+    },
+    {
+      "lessonStepId": "insert-tail",
+      "line": 140,
+      "message": "创建尾节点 7 / create tail node",
+      "state": {
+        "focus": [
+          "n2"
+        ],
+        "type": "linked",
+        "values": [
+          5
+        ]
+      },
+      "structure": {
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n1",
+            "value": 5
+          },
+          {
+            "id": "n2",
+            "nextId": null,
+            "value": 7
+          }
+        ],
+        "operation": "create",
+        "phase": "intermediate",
+        "tailId": "n1",
+        "targetId": "n2"
+      },
+      "variables": {
+        "current": 7,
+        "current_id": "n2",
+        "head": 5,
+        "ids": [
+          "n1"
+        ],
+        "length": 1,
+        "tail": 5
+      }
+    },
+    {
+      "lessonStepId": "insert-tail",
+      "line": 150,
+      "message": "旧 tail.next = new：旧尾先指向新节点 / old tail points to the new node",
+      "state": {
+        "focus": [
+          "n1"
+        ],
+        "type": "linked",
+        "values": [
+          5,
+          7
+        ]
+      },
+      "structure": {
+        "change": {
+          "afterId": "n2",
+          "beforeId": "n1",
+          "field": "next",
+          "nodeId": "n1"
+        },
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n2",
+            "value": 5
+          },
+          {
+            "id": "n2",
+            "nextId": null,
+            "value": 7
+          }
+        ],
+        "operation": "set-next",
+        "phase": "intermediate",
+        "tailId": "n1",
+        "targetId": "n1"
+      },
+      "variables": {
+        "current": 5,
+        "current_id": "n1",
+        "head": 5,
+        "ids": [
+          "n1",
+          "n2"
+        ],
+        "length": 2,
+        "tail": 5
+      }
+    },
+    {
+      "lessonStepId": "insert-tail",
+      "line": 152,
+      "message": "new.next = head：新节点指回首节点 / new node closes the circle",
+      "state": {
+        "focus": [
+          "n2"
+        ],
+        "type": "linked",
+        "values": [
+          5,
+          7
+        ]
+      },
+      "structure": {
+        "change": {
+          "afterId": "n1",
+          "beforeId": null,
+          "field": "next",
+          "nodeId": "n2"
+        },
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n2",
+            "value": 5
+          },
+          {
+            "id": "n2",
+            "nextId": "n1",
+            "value": 7
+          }
+        ],
+        "operation": "set-next",
+        "phase": "intermediate",
+        "tailId": "n1",
+        "targetId": "n2"
+      },
+      "variables": {
+        "current": 7,
+        "current_id": "n2",
+        "head": 5,
+        "ids": [
+          "n1",
+          "n2"
+        ],
+        "length": 2,
+        "tail": 5
+      }
+    },
+    {
+      "lessonStepId": "insert-tail",
+      "line": 154,
+      "message": "tail = new：尾指针更新为 7 / tail moves to the new node",
+      "state": {
+        "focus": [
+          "n2"
+        ],
+        "type": "linked",
+        "values": [
+          5,
+          7
+        ]
+      },
+      "structure": {
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n2",
+            "value": 5
+          },
+          {
+            "id": "n2",
+            "nextId": "n1",
+            "value": 7
+          }
+        ],
+        "operation": "set-tail",
+        "phase": "complete",
+        "tailId": "n2",
+        "targetId": "n2"
+      },
+      "variables": {
+        "current": 7,
+        "current_id": "n2",
+        "head": 5,
+        "ids": [
+          "n1",
+          "n2"
+        ],
+        "length": 2,
+        "tail": 7
+      }
+    },
+    {
+      "lessonStepId": "insert-head",
+      "line": 120,
+      "message": "创建节点 3：next 暂时为空 / create node with next = None",
+      "state": {
+        "focus": [
+          "n3"
+        ],
+        "type": "linked",
+        "values": [
+          5,
+          7
+        ]
+      },
+      "structure": {
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n2",
+            "value": 5
+          },
+          {
+            "id": "n2",
+            "nextId": "n1",
+            "value": 7
+          },
+          {
+            "id": "n3",
+            "nextId": null,
+            "value": 3
+          }
+        ],
+        "operation": "create",
+        "phase": "intermediate",
+        "tailId": "n2",
+        "targetId": "n3"
+      },
+      "variables": {
+        "current": 3,
+        "current_id": "n3",
+        "head": 5,
+        "ids": [
+          "n1",
+          "n2"
+        ],
+        "length": 2,
+        "tail": 7
+      }
+    },
+    {
+      "lessonStepId": "insert-head",
+      "line": 130,
+      "message": "new.next = 旧 head：新节点指向旧首节点 / new node points at the old head",
+      "state": {
+        "focus": [
+          "n3"
+        ],
+        "type": "linked",
+        "values": [
+          5,
+          7
+        ]
+      },
+      "structure": {
+        "change": {
+          "afterId": "n1",
+          "beforeId": null,
+          "field": "next",
+          "nodeId": "n3"
+        },
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n2",
+            "value": 5
+          },
+          {
+            "id": "n2",
+            "nextId": "n1",
+            "value": 7
+          },
+          {
+            "id": "n3",
+            "nextId": "n1",
+            "value": 3
+          }
+        ],
+        "operation": "set-next",
+        "phase": "intermediate",
+        "tailId": "n2",
+        "targetId": "n3"
+      },
+      "variables": {
+        "current": 3,
+        "current_id": "n3",
+        "head": 5,
+        "ids": [
+          "n1",
+          "n2"
+        ],
+        "length": 2,
+        "tail": 7
+      }
+    },
+    {
+      "lessonStepId": "insert-head",
+      "line": 132,
+      "message": "tail.next = new：回环改指新首节点 / tail's return arrow moves to the new head",
+      "state": {
+        "focus": [
+          "n2"
+        ],
+        "type": "linked",
+        "values": [
+          5,
+          7,
+          3
+        ]
+      },
+      "structure": {
+        "change": {
+          "afterId": "n3",
+          "beforeId": "n1",
+          "field": "next",
+          "nodeId": "n2"
+        },
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n2",
+            "value": 5
+          },
+          {
+            "id": "n2",
+            "nextId": "n3",
+            "value": 7
+          },
+          {
+            "id": "n3",
+            "nextId": "n1",
+            "value": 3
+          }
+        ],
+        "operation": "set-next",
+        "phase": "intermediate",
+        "tailId": "n2",
+        "targetId": "n2"
+      },
+      "variables": {
+        "current": 7,
+        "current_id": "n2",
+        "head": 5,
+        "ids": [
+          "n1",
+          "n2",
+          "n3"
+        ],
+        "length": 3,
+        "tail": 7
+      }
+    },
+    {
+      "lessonStepId": "insert-head",
+      "line": 134,
+      "message": "head = new：头插入完成，tail.next 已指回新 head / head insertion complete",
+      "state": {
+        "focus": [
+          "n3"
+        ],
+        "type": "linked",
+        "values": [
+          3,
+          5,
+          7
+        ]
+      },
+      "structure": {
+        "headId": "n3",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n2",
+            "value": 5
+          },
+          {
+            "id": "n2",
+            "nextId": "n3",
+            "value": 7
+          },
+          {
+            "id": "n3",
+            "nextId": "n1",
+            "value": 3
+          }
+        ],
+        "operation": "set-head",
+        "phase": "complete",
+        "tailId": "n2",
+        "targetId": "n3"
+      },
+      "variables": {
+        "current": 3,
+        "current_id": "n3",
+        "head": 3,
+        "ids": [
+          "n3",
+          "n1",
+          "n2"
+        ],
+        "length": 3,
+        "tail": 7
+      }
+    },
+    {
+      "lessonStepId": "insert-middle",
+      "line": 104,
+      "message": "沿 next 查找 5：当前是 3 / walk next for 5",
+      "state": {
+        "focus": [
+          "n3"
+        ],
+        "type": "linked",
+        "values": [
+          3,
+          5,
+          7
+        ]
+      },
+      "structure": {
+        "headId": "n3",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n2",
+            "value": 5
+          },
+          {
+            "id": "n2",
+            "nextId": "n3",
+            "value": 7
+          },
+          {
+            "id": "n3",
+            "nextId": "n1",
+            "value": 3
+          }
+        ],
+        "operation": "visit",
+        "phase": "complete",
+        "tailId": "n2",
+        "targetId": "n3"
+      },
+      "variables": {
+        "current": 3,
+        "current_id": "n3",
+        "head": 3,
+        "ids": [
+          "n3",
+          "n1",
+          "n2"
+        ],
+        "length": 3,
+        "tail": 7
+      }
+    },
+    {
+      "lessonStepId": "insert-middle",
+      "line": 104,
+      "message": "沿 next 查找 5：当前是 5 / walk next for 5",
+      "state": {
+        "focus": [
+          "n1"
+        ],
+        "type": "linked",
+        "values": [
+          3,
+          5,
+          7
+        ]
+      },
+      "structure": {
+        "headId": "n3",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n2",
+            "value": 5
+          },
+          {
+            "id": "n2",
+            "nextId": "n3",
+            "value": 7
+          },
+          {
+            "id": "n3",
+            "nextId": "n1",
+            "value": 3
+          }
+        ],
+        "operation": "visit",
+        "phase": "complete",
+        "tailId": "n2",
+        "targetId": "n1"
+      },
+      "variables": {
+        "current": 5,
+        "current_id": "n1",
+        "head": 3,
+        "ids": [
+          "n3",
+          "n1",
+          "n2"
+        ],
+        "length": 3,
+        "tail": 7
+      }
+    },
+    {
+      "lessonStepId": "insert-middle",
+      "line": 107,
+      "message": "查找 5：命中 n1，立即停止整圈扫描 / found before returning to head",
+      "state": {
+        "focus": [
+          "n1"
+        ],
+        "type": "linked",
+        "values": [
+          3,
+          5,
+          7
+        ]
+      },
+      "structure": {
+        "found": true,
+        "headId": "n3",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n2",
+            "value": 5
+          },
+          {
+            "id": "n2",
+            "nextId": "n3",
+            "value": 7
+          },
+          {
+            "id": "n3",
+            "nextId": "n1",
+            "value": 3
+          }
+        ],
+        "operation": "found",
+        "phase": "complete",
+        "searchValue": 5,
+        "tailId": "n2",
+        "targetId": "n1"
+      },
+      "variables": {
+        "current": 5,
+        "current_id": "n1",
+        "head": 3,
+        "ids": [
+          "n3",
+          "n1",
+          "n2"
+        ],
+        "length": 3,
+        "tail": 7
+      }
+    },
+    {
+      "lessonStepId": "insert-middle",
+      "line": 162,
+      "message": "创建节点 6：尚未接入 / create a detached node",
+      "state": {
+        "focus": [
+          "n4"
+        ],
+        "type": "linked",
+        "values": [
+          3,
+          5,
+          7
+        ]
+      },
+      "structure": {
+        "headId": "n3",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n2",
+            "value": 5
+          },
+          {
+            "id": "n2",
+            "nextId": "n3",
+            "value": 7
+          },
+          {
+            "id": "n3",
+            "nextId": "n1",
+            "value": 3
+          },
+          {
+            "id": "n4",
+            "nextId": null,
+            "value": 6
+          }
+        ],
+        "operation": "create",
+        "phase": "intermediate",
+        "tailId": "n2",
+        "targetId": "n4"
+      },
+      "variables": {
+        "current": 6,
+        "current_id": "n4",
+        "head": 3,
+        "ids": [
+          "n3",
+          "n1",
+          "n2"
+        ],
+        "length": 3,
+        "tail": 7
+      }
+    },
+    {
+      "lessonStepId": "insert-middle",
+      "line": 165,
+      "message": "new.next = target.next：新节点先接住后继 / new node keeps the successor",
+      "state": {
+        "focus": [
+          "n4"
+        ],
+        "type": "linked",
+        "values": [
+          3,
+          5,
+          7
+        ]
+      },
+      "structure": {
+        "change": {
+          "afterId": "n2",
+          "beforeId": null,
+          "field": "next",
+          "nodeId": "n4"
+        },
+        "headId": "n3",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n2",
+            "value": 5
+          },
+          {
+            "id": "n2",
+            "nextId": "n3",
+            "value": 7
+          },
+          {
+            "id": "n3",
+            "nextId": "n1",
+            "value": 3
+          },
+          {
+            "id": "n4",
+            "nextId": "n2",
+            "value": 6
+          }
+        ],
+        "operation": "set-next",
+        "phase": "intermediate",
+        "tailId": "n2",
+        "targetId": "n4"
+      },
+      "variables": {
+        "current": 6,
+        "current_id": "n4",
+        "head": 3,
+        "ids": [
+          "n3",
+          "n1",
+          "n2"
+        ],
+        "length": 3,
+        "tail": 7
+      }
+    },
+    {
+      "lessonStepId": "insert-middle",
+      "line": 167,
+      "message": "target.next = new：前驱改指新节点 / predecessor points to the new node",
+      "state": {
+        "focus": [
+          "n1"
+        ],
+        "type": "linked",
+        "values": [
+          3,
+          5,
+          6,
+          7
+        ]
+      },
+      "structure": {
+        "change": {
+          "afterId": "n4",
+          "beforeId": "n2",
+          "field": "next",
+          "nodeId": "n1"
+        },
+        "headId": "n3",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n4",
+            "value": 5
+          },
+          {
+            "id": "n2",
+            "nextId": "n3",
+            "value": 7
+          },
+          {
+            "id": "n3",
+            "nextId": "n1",
+            "value": 3
+          },
+          {
+            "id": "n4",
+            "nextId": "n2",
+            "value": 6
+          }
+        ],
+        "operation": "set-next",
+        "phase": "complete",
+        "tailId": "n2",
+        "targetId": "n1"
+      },
+      "variables": {
+        "current": 5,
+        "current_id": "n1",
+        "head": 3,
+        "ids": [
+          "n3",
+          "n1",
+          "n4",
+          "n2"
+        ],
+        "length": 4,
+        "tail": 7
+      }
+    },
+    {
+      "lessonStepId": "insert-tail",
+      "line": 140,
+      "message": "创建尾节点 8 / create tail node",
+      "state": {
+        "focus": [
+          "n5"
+        ],
+        "type": "linked",
+        "values": [
+          3,
+          5,
+          6,
+          7
+        ]
+      },
+      "structure": {
+        "headId": "n3",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n4",
+            "value": 5
+          },
+          {
+            "id": "n2",
+            "nextId": "n3",
+            "value": 7
+          },
+          {
+            "id": "n3",
+            "nextId": "n1",
+            "value": 3
+          },
+          {
+            "id": "n4",
+            "nextId": "n2",
+            "value": 6
+          },
+          {
+            "id": "n5",
+            "nextId": null,
+            "value": 8
+          }
+        ],
+        "operation": "create",
+        "phase": "intermediate",
+        "tailId": "n2",
+        "targetId": "n5"
+      },
+      "variables": {
+        "current": 8,
+        "current_id": "n5",
+        "head": 3,
+        "ids": [
+          "n3",
+          "n1",
+          "n4",
+          "n2"
+        ],
+        "length": 4,
+        "tail": 7
+      }
+    },
+    {
+      "lessonStepId": "insert-tail",
+      "line": 150,
+      "message": "旧 tail.next = new：旧尾先指向新节点 / old tail points to the new node",
+      "state": {
+        "focus": [
+          "n2"
+        ],
+        "type": "linked",
+        "values": [
+          3,
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "structure": {
+        "change": {
+          "afterId": "n5",
+          "beforeId": "n3",
+          "field": "next",
+          "nodeId": "n2"
+        },
+        "headId": "n3",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n4",
+            "value": 5
+          },
+          {
+            "id": "n2",
+            "nextId": "n5",
+            "value": 7
+          },
+          {
+            "id": "n3",
+            "nextId": "n1",
+            "value": 3
+          },
+          {
+            "id": "n4",
+            "nextId": "n2",
+            "value": 6
+          },
+          {
+            "id": "n5",
+            "nextId": null,
+            "value": 8
+          }
+        ],
+        "operation": "set-next",
+        "phase": "intermediate",
+        "tailId": "n2",
+        "targetId": "n2"
+      },
+      "variables": {
+        "current": 7,
+        "current_id": "n2",
+        "head": 3,
+        "ids": [
+          "n3",
+          "n1",
+          "n4",
+          "n2",
+          "n5"
+        ],
+        "length": 5,
+        "tail": 7
+      }
+    },
+    {
+      "lessonStepId": "insert-tail",
+      "line": 152,
+      "message": "new.next = head：新节点指回首节点 / new node closes the circle",
+      "state": {
+        "focus": [
+          "n5"
+        ],
+        "type": "linked",
+        "values": [
+          3,
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "structure": {
+        "change": {
+          "afterId": "n3",
+          "beforeId": null,
+          "field": "next",
+          "nodeId": "n5"
+        },
+        "headId": "n3",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n4",
+            "value": 5
+          },
+          {
+            "id": "n2",
+            "nextId": "n5",
+            "value": 7
+          },
+          {
+            "id": "n3",
+            "nextId": "n1",
+            "value": 3
+          },
+          {
+            "id": "n4",
+            "nextId": "n2",
+            "value": 6
+          },
+          {
+            "id": "n5",
+            "nextId": "n3",
+            "value": 8
+          }
+        ],
+        "operation": "set-next",
+        "phase": "intermediate",
+        "tailId": "n2",
+        "targetId": "n5"
+      },
+      "variables": {
+        "current": 8,
+        "current_id": "n5",
+        "head": 3,
+        "ids": [
+          "n3",
+          "n1",
+          "n4",
+          "n2",
+          "n5"
+        ],
+        "length": 5,
+        "tail": 7
+      }
+    },
+    {
+      "lessonStepId": "insert-tail",
+      "line": 154,
+      "message": "tail = new：尾指针更新为 8 / tail moves to the new node",
+      "state": {
+        "focus": [
+          "n5"
+        ],
+        "type": "linked",
+        "values": [
+          3,
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "structure": {
+        "headId": "n3",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n4",
+            "value": 5
+          },
+          {
+            "id": "n2",
+            "nextId": "n5",
+            "value": 7
+          },
+          {
+            "id": "n3",
+            "nextId": "n1",
+            "value": 3
+          },
+          {
+            "id": "n4",
+            "nextId": "n2",
+            "value": 6
+          },
+          {
+            "id": "n5",
+            "nextId": "n3",
+            "value": 8
+          }
+        ],
+        "operation": "set-tail",
+        "phase": "complete",
+        "tailId": "n5",
+        "targetId": "n5"
+      },
+      "variables": {
+        "current": 8,
+        "current_id": "n5",
+        "head": 3,
+        "ids": [
+          "n3",
+          "n1",
+          "n4",
+          "n2",
+          "n5"
+        ],
+        "length": 5,
+        "tail": 8
+      }
+    },
+    {
+      "lessonStepId": "delete-middle",
+      "line": 104,
+      "message": "沿 next 查找 6：当前是 3 / walk next for 6",
+      "state": {
+        "focus": [
+          "n3"
+        ],
+        "type": "linked",
+        "values": [
+          3,
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "structure": {
+        "headId": "n3",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n4",
+            "value": 5
+          },
+          {
+            "id": "n2",
+            "nextId": "n5",
+            "value": 7
+          },
+          {
+            "id": "n3",
+            "nextId": "n1",
+            "value": 3
+          },
+          {
+            "id": "n4",
+            "nextId": "n2",
+            "value": 6
+          },
+          {
+            "id": "n5",
+            "nextId": "n3",
+            "value": 8
+          }
+        ],
+        "operation": "visit",
+        "phase": "complete",
+        "tailId": "n5",
+        "targetId": "n3"
+      },
+      "variables": {
+        "current": 3,
+        "current_id": "n3",
+        "head": 3,
+        "ids": [
+          "n3",
+          "n1",
+          "n4",
+          "n2",
+          "n5"
+        ],
+        "length": 5,
+        "tail": 8
+      }
+    },
+    {
+      "lessonStepId": "delete-middle",
+      "line": 104,
+      "message": "沿 next 查找 6：当前是 5 / walk next for 6",
+      "state": {
+        "focus": [
+          "n1"
+        ],
+        "type": "linked",
+        "values": [
+          3,
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "structure": {
+        "headId": "n3",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n4",
+            "value": 5
+          },
+          {
+            "id": "n2",
+            "nextId": "n5",
+            "value": 7
+          },
+          {
+            "id": "n3",
+            "nextId": "n1",
+            "value": 3
+          },
+          {
+            "id": "n4",
+            "nextId": "n2",
+            "value": 6
+          },
+          {
+            "id": "n5",
+            "nextId": "n3",
+            "value": 8
+          }
+        ],
+        "operation": "visit",
+        "phase": "complete",
+        "tailId": "n5",
+        "targetId": "n1"
+      },
+      "variables": {
+        "current": 5,
+        "current_id": "n1",
+        "head": 3,
+        "ids": [
+          "n3",
+          "n1",
+          "n4",
+          "n2",
+          "n5"
+        ],
+        "length": 5,
+        "tail": 8
+      }
+    },
+    {
+      "lessonStepId": "delete-middle",
+      "line": 104,
+      "message": "沿 next 查找 6：当前是 6 / walk next for 6",
+      "state": {
+        "focus": [
+          "n4"
+        ],
+        "type": "linked",
+        "values": [
+          3,
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "structure": {
+        "headId": "n3",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n4",
+            "value": 5
+          },
+          {
+            "id": "n2",
+            "nextId": "n5",
+            "value": 7
+          },
+          {
+            "id": "n3",
+            "nextId": "n1",
+            "value": 3
+          },
+          {
+            "id": "n4",
+            "nextId": "n2",
+            "value": 6
+          },
+          {
+            "id": "n5",
+            "nextId": "n3",
+            "value": 8
+          }
+        ],
+        "operation": "visit",
+        "phase": "complete",
+        "tailId": "n5",
+        "targetId": "n4"
+      },
+      "variables": {
+        "current": 6,
+        "current_id": "n4",
+        "head": 3,
+        "ids": [
+          "n3",
+          "n1",
+          "n4",
+          "n2",
+          "n5"
+        ],
+        "length": 5,
+        "tail": 8
+      }
+    },
+    {
+      "lessonStepId": "delete-middle",
+      "line": 107,
+      "message": "查找 6：命中 n4，立即停止整圈扫描 / found before returning to head",
+      "state": {
+        "focus": [
+          "n4"
+        ],
+        "type": "linked",
+        "values": [
+          3,
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "structure": {
+        "found": true,
+        "headId": "n3",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n4",
+            "value": 5
+          },
+          {
+            "id": "n2",
+            "nextId": "n5",
+            "value": 7
+          },
+          {
+            "id": "n3",
+            "nextId": "n1",
+            "value": 3
+          },
+          {
+            "id": "n4",
+            "nextId": "n2",
+            "value": 6
+          },
+          {
+            "id": "n5",
+            "nextId": "n3",
+            "value": 8
+          }
+        ],
+        "operation": "found",
+        "phase": "complete",
+        "searchValue": 6,
+        "tailId": "n5",
+        "targetId": "n4"
+      },
+      "variables": {
+        "current": 6,
+        "current_id": "n4",
+        "head": 3,
+        "ids": [
+          "n3",
+          "n1",
+          "n4",
+          "n2",
+          "n5"
+        ],
+        "length": 5,
+        "tail": 8
+      }
+    },
+    {
+      "lessonStepId": "delete-middle",
+      "line": 199,
+      "message": "previous.next = target.next：前驱越过目标 / predecessor bypasses target",
+      "state": {
+        "focus": [
+          "n1"
+        ],
+        "type": "linked",
+        "values": [
+          3,
+          5,
+          7,
+          8
+        ]
+      },
+      "structure": {
+        "change": {
+          "afterId": "n2",
+          "beforeId": "n4",
+          "field": "next",
+          "nodeId": "n1"
+        },
+        "headId": "n3",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n2",
+            "value": 5
+          },
+          {
+            "id": "n2",
+            "nextId": "n5",
+            "value": 7
+          },
+          {
+            "id": "n3",
+            "nextId": "n1",
+            "value": 3
+          },
+          {
+            "id": "n4",
+            "nextId": "n2",
+            "value": 6
+          },
+          {
+            "id": "n5",
+            "nextId": "n3",
+            "value": 8
+          }
+        ],
+        "operation": "set-next",
+        "phase": "intermediate",
+        "tailId": "n5",
+        "targetId": "n1"
+      },
+      "variables": {
+        "current": 5,
+        "current_id": "n1",
+        "head": 3,
+        "ids": [
+          "n3",
+          "n1",
+          "n2",
+          "n5"
+        ],
+        "length": 4,
+        "tail": 8
+      }
+    },
+    {
+      "lessonStepId": "delete-middle",
+      "line": 202,
+      "message": "target.next = None：解除目标的 next / clear the removed node's next",
+      "state": {
+        "focus": [
+          "n4"
+        ],
+        "type": "linked",
+        "values": [
+          3,
+          5,
+          7,
+          8
+        ]
+      },
+      "structure": {
+        "change": {
+          "afterId": null,
+          "beforeId": "n2",
+          "field": "next",
+          "nodeId": "n4"
+        },
+        "headId": "n3",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n2",
+            "value": 5
+          },
+          {
+            "id": "n2",
+            "nextId": "n5",
+            "value": 7
+          },
+          {
+            "id": "n3",
+            "nextId": "n1",
+            "value": 3
+          },
+          {
+            "id": "n4",
+            "nextId": null,
+            "value": 6
+          },
+          {
+            "id": "n5",
+            "nextId": "n3",
+            "value": 8
+          }
+        ],
+        "operation": "set-next",
+        "phase": "intermediate",
+        "tailId": "n5",
+        "targetId": "n4"
+      },
+      "variables": {
+        "current": 6,
+        "current_id": "n4",
+        "head": 3,
+        "ids": [
+          "n3",
+          "n1",
+          "n2",
+          "n5"
+        ],
+        "length": 4,
+        "tail": 8
+      }
+    },
+    {
+      "lessonStepId": "delete-middle",
+      "line": 204,
+      "message": "节点 n4 已脱离链表 / node detached, no stale reference remains",
+      "state": {
+        "focus": [
+          "n4"
+        ],
+        "type": "linked",
+        "values": [
+          3,
+          5,
+          7,
+          8
+        ]
+      },
+      "structure": {
+        "headId": "n3",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n2",
+            "value": 5
+          },
+          {
+            "id": "n2",
+            "nextId": "n5",
+            "value": 7
+          },
+          {
+            "id": "n3",
+            "nextId": "n1",
+            "value": 3
+          },
+          {
+            "id": "n4",
+            "nextId": null,
+            "value": 6
+          },
+          {
+            "id": "n5",
+            "nextId": "n3",
+            "value": 8
+          }
+        ],
+        "operation": "detach",
+        "phase": "complete",
+        "tailId": "n5",
+        "targetId": "n4"
+      },
+      "variables": {
+        "current": 6,
+        "current_id": "n4",
+        "head": 3,
+        "ids": [
+          "n3",
+          "n1",
+          "n2",
+          "n5"
+        ],
+        "length": 4,
+        "tail": 8
+      }
+    },
+    {
+      "lessonStepId": "traverse-circle",
+      "line": 226,
+      "message": "访问 3，继续 current = current.next / visit, then follow next",
+      "state": {
+        "focus": [
+          "n3"
+        ],
+        "type": "linked",
+        "values": [
+          3,
+          5,
+          7,
+          8
+        ]
+      },
+      "structure": {
+        "headId": "n3",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n2",
+            "value": 5
+          },
+          {
+            "id": "n2",
+            "nextId": "n5",
+            "value": 7
+          },
+          {
+            "id": "n3",
+            "nextId": "n1",
+            "value": 3
+          },
+          {
+            "id": "n4",
+            "nextId": null,
+            "value": 6
+          },
+          {
+            "id": "n5",
+            "nextId": "n3",
+            "value": 8
+          }
+        ],
+        "operation": "visit",
+        "phase": "complete",
+        "tailId": "n5",
+        "targetId": "n3"
+      },
+      "variables": {
+        "current": 3,
+        "current_id": "n3",
+        "head": 3,
+        "ids": [
+          "n3",
+          "n1",
+          "n2",
+          "n5"
+        ],
+        "length": 4,
+        "tail": 8
+      }
+    },
+    {
+      "lessonStepId": "traverse-circle",
+      "line": 226,
+      "message": "访问 5，继续 current = current.next / visit, then follow next",
+      "state": {
+        "focus": [
+          "n1"
+        ],
+        "type": "linked",
+        "values": [
+          3,
+          5,
+          7,
+          8
+        ]
+      },
+      "structure": {
+        "headId": "n3",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n2",
+            "value": 5
+          },
+          {
+            "id": "n2",
+            "nextId": "n5",
+            "value": 7
+          },
+          {
+            "id": "n3",
+            "nextId": "n1",
+            "value": 3
+          },
+          {
+            "id": "n4",
+            "nextId": null,
+            "value": 6
+          },
+          {
+            "id": "n5",
+            "nextId": "n3",
+            "value": 8
+          }
+        ],
+        "operation": "visit",
+        "phase": "complete",
+        "tailId": "n5",
+        "targetId": "n1"
+      },
+      "variables": {
+        "current": 5,
+        "current_id": "n1",
+        "head": 3,
+        "ids": [
+          "n3",
+          "n1",
+          "n2",
+          "n5"
+        ],
+        "length": 4,
+        "tail": 8
+      }
+    },
+    {
+      "lessonStepId": "traverse-circle",
+      "line": 226,
+      "message": "访问 7，继续 current = current.next / visit, then follow next",
+      "state": {
+        "focus": [
+          "n2"
+        ],
+        "type": "linked",
+        "values": [
+          3,
+          5,
+          7,
+          8
+        ]
+      },
+      "structure": {
+        "headId": "n3",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n2",
+            "value": 5
+          },
+          {
+            "id": "n2",
+            "nextId": "n5",
+            "value": 7
+          },
+          {
+            "id": "n3",
+            "nextId": "n1",
+            "value": 3
+          },
+          {
+            "id": "n4",
+            "nextId": null,
+            "value": 6
+          },
+          {
+            "id": "n5",
+            "nextId": "n3",
+            "value": 8
+          }
+        ],
+        "operation": "visit",
+        "phase": "complete",
+        "tailId": "n5",
+        "targetId": "n2"
+      },
+      "variables": {
+        "current": 7,
+        "current_id": "n2",
+        "head": 3,
+        "ids": [
+          "n3",
+          "n1",
+          "n2",
+          "n5"
+        ],
+        "length": 4,
+        "tail": 8
+      }
+    },
+    {
+      "lessonStepId": "traverse-circle",
+      "line": 226,
+      "message": "访问 8，继续 current = current.next / visit, then follow next",
+      "state": {
+        "focus": [
+          "n5"
+        ],
+        "type": "linked",
+        "values": [
+          3,
+          5,
+          7,
+          8
+        ]
+      },
+      "structure": {
+        "headId": "n3",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n2",
+            "value": 5
+          },
+          {
+            "id": "n2",
+            "nextId": "n5",
+            "value": 7
+          },
+          {
+            "id": "n3",
+            "nextId": "n1",
+            "value": 3
+          },
+          {
+            "id": "n4",
+            "nextId": null,
+            "value": 6
+          },
+          {
+            "id": "n5",
+            "nextId": "n3",
+            "value": 8
+          }
+        ],
+        "operation": "visit",
+        "phase": "complete",
+        "tailId": "n5",
+        "targetId": "n5"
+      },
+      "variables": {
+        "current": 8,
+        "current_id": "n5",
+        "head": 3,
+        "ids": [
+          "n3",
+          "n1",
+          "n2",
+          "n5"
+        ],
+        "length": 4,
+        "tail": 8
+      }
+    },
+    {
+      "lessonStepId": "done",
+      "line": 245,
+      "message": "循环单链表演示结束：非空时 tail.next 一定回到 head / Done: tail.next returns to head",
+      "state": {
+        "focus": [],
+        "type": "linked",
+        "values": [
+          3,
+          5,
+          7,
+          8
+        ]
+      },
+      "structure": {
+        "headId": "n3",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n2",
+            "value": 5
+          },
+          {
+            "id": "n2",
+            "nextId": "n5",
+            "value": 7
+          },
+          {
+            "id": "n3",
+            "nextId": "n1",
+            "value": 3
+          },
+          {
+            "id": "n4",
+            "nextId": null,
+            "value": 6
+          },
+          {
+            "id": "n5",
+            "nextId": "n3",
+            "value": 8
+          }
+        ],
+        "operation": "done",
+        "phase": "complete",
+        "tailId": "n5"
+      },
+      "variables": {
+        "current": null,
+        "current_id": null,
+        "head": 3,
+        "ids": [
+          "n3",
+          "n1",
+          "n2",
+          "n5"
+        ],
+        "length": 4,
+        "tail": 8
+      }
+    }
+  ],
+  "missing": [
+    {
+      "lessonStepId": "init",
+      "line": 231,
+      "message": "空的循环单链表：head = None，tail = None / Empty circular singly linked list",
+      "state": {
+        "focus": [],
+        "type": "linked",
+        "values": []
+      },
+      "structure": {
+        "headId": null,
+        "kind": "circular-linked-list",
+        "nodes": [],
+        "operation": "init",
+        "phase": "complete",
+        "tailId": null
+      },
+      "variables": {
+        "current": null,
+        "current_id": null,
+        "head": null,
+        "ids": [],
+        "length": 0,
+        "tail": null
+      }
+    },
+    {
+      "lessonStepId": "insert-head",
+      "line": 120,
+      "message": "创建节点 5：next 暂时为空 / create node with next = None",
+      "state": {
+        "focus": [
+          "n1"
+        ],
+        "type": "linked",
+        "values": []
+      },
+      "structure": {
+        "headId": null,
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": null,
+            "value": 5
+          }
+        ],
+        "operation": "create",
+        "phase": "intermediate",
+        "tailId": null,
+        "targetId": "n1"
+      },
+      "variables": {
+        "current": 5,
+        "current_id": "n1",
+        "head": null,
+        "ids": [],
+        "length": 0,
+        "tail": null
+      }
+    },
+    {
+      "lessonStepId": "insert-head",
+      "line": 123,
+      "message": "head = new：空表建立首节点 / first node",
+      "state": {
+        "focus": [
+          "n1"
+        ],
+        "type": "linked",
+        "values": [
+          5
+        ]
+      },
+      "structure": {
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": null,
+            "value": 5
+          }
+        ],
+        "operation": "set-head",
+        "phase": "intermediate",
+        "tailId": null,
+        "targetId": "n1"
+      },
+      "variables": {
+        "current": 5,
+        "current_id": "n1",
+        "head": 5,
+        "ids": [
+          "n1"
+        ],
+        "length": 1,
+        "tail": null
+      }
+    },
+    {
+      "lessonStepId": "insert-head",
+      "line": 125,
+      "message": "tail = new：单节点时 head = tail / one node is both ends",
+      "state": {
+        "focus": [
+          "n1"
+        ],
+        "type": "linked",
+        "values": [
+          5
+        ]
+      },
+      "structure": {
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": null,
+            "value": 5
+          }
+        ],
+        "operation": "set-tail",
+        "phase": "intermediate",
+        "tailId": "n1",
+        "targetId": "n1"
+      },
+      "variables": {
+        "current": 5,
+        "current_id": "n1",
+        "head": 5,
+        "ids": [
+          "n1"
+        ],
+        "length": 1,
+        "tail": 5
+      }
+    },
+    {
+      "lessonStepId": "insert-head",
+      "line": 127,
+      "message": "new.next = new：单节点自环闭合 / the single node points to itself",
+      "state": {
+        "focus": [
+          "n1"
+        ],
+        "type": "linked",
+        "values": [
+          5
+        ]
+      },
+      "structure": {
+        "change": {
+          "afterId": "n1",
+          "beforeId": null,
+          "field": "next",
+          "nodeId": "n1"
+        },
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n1",
+            "value": 5
+          }
+        ],
+        "operation": "set-next",
+        "phase": "complete",
+        "tailId": "n1",
+        "targetId": "n1"
+      },
+      "variables": {
+        "current": 5,
+        "current_id": "n1",
+        "head": 5,
+        "ids": [
+          "n1"
+        ],
+        "length": 1,
+        "tail": 5
+      }
+    },
+    {
+      "lessonStepId": "find",
+      "line": 104,
+      "message": "沿 next 查找 99：当前是 5 / walk next for 99",
+      "state": {
+        "focus": [
+          "n1"
+        ],
+        "type": "linked",
+        "values": [
+          5
+        ]
+      },
+      "structure": {
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n1",
+            "value": 5
+          }
+        ],
+        "operation": "visit",
+        "phase": "complete",
+        "tailId": "n1",
+        "targetId": "n1"
+      },
+      "variables": {
+        "current": 5,
+        "current_id": "n1",
+        "head": 5,
+        "ids": [
+          "n1"
+        ],
+        "length": 1,
+        "tail": 5
+      }
+    },
+    {
+      "lessonStepId": "find",
+      "line": 111,
+      "message": "查找 99：回到 head 仍未命中，停止循环 / returned to head, miss",
+      "state": {
+        "focus": [],
+        "type": "linked",
+        "values": [
+          5
+        ]
+      },
+      "structure": {
+        "found": false,
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n1",
+            "value": 5
+          }
+        ],
+        "operation": "not-found",
+        "phase": "complete",
+        "searchValue": 99,
+        "tailId": "n1"
+      },
+      "variables": {
+        "current": null,
+        "current_id": null,
+        "head": 5,
+        "ids": [
+          "n1"
+        ],
+        "length": 1,
+        "tail": 5
+      }
+    },
+    {
+      "lessonStepId": "insert-middle",
+      "line": 104,
+      "message": "沿 next 查找 99：当前是 5 / walk next for 99",
+      "state": {
+        "focus": [
+          "n1"
+        ],
+        "type": "linked",
+        "values": [
+          5
+        ]
+      },
+      "structure": {
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n1",
+            "value": 5
+          }
+        ],
+        "operation": "visit",
+        "phase": "complete",
+        "tailId": "n1",
+        "targetId": "n1"
+      },
+      "variables": {
+        "current": 5,
+        "current_id": "n1",
+        "head": 5,
+        "ids": [
+          "n1"
+        ],
+        "length": 1,
+        "tail": 5
+      }
+    },
+    {
+      "lessonStepId": "insert-middle",
+      "line": 111,
+      "message": "查找 99：回到 head 仍未命中，停止循环 / returned to head, miss",
+      "state": {
+        "focus": [],
+        "type": "linked",
+        "values": [
+          5
+        ]
+      },
+      "structure": {
+        "found": false,
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n1",
+            "value": 5
+          }
+        ],
+        "operation": "not-found",
+        "phase": "complete",
+        "searchValue": 99,
+        "tailId": "n1"
+      },
+      "variables": {
+        "current": null,
+        "current_id": null,
+        "head": 5,
+        "ids": [
+          "n1"
+        ],
+        "length": 1,
+        "tail": 5
+      }
+    },
+    {
+      "lessonStepId": "delete-middle",
+      "line": 104,
+      "message": "沿 next 查找 99：当前是 5 / walk next for 99",
+      "state": {
+        "focus": [
+          "n1"
+        ],
+        "type": "linked",
+        "values": [
+          5
+        ]
+      },
+      "structure": {
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n1",
+            "value": 5
+          }
+        ],
+        "operation": "visit",
+        "phase": "complete",
+        "tailId": "n1",
+        "targetId": "n1"
+      },
+      "variables": {
+        "current": 5,
+        "current_id": "n1",
+        "head": 5,
+        "ids": [
+          "n1"
+        ],
+        "length": 1,
+        "tail": 5
+      }
+    },
+    {
+      "lessonStepId": "delete-middle",
+      "line": 111,
+      "message": "查找 99：回到 head 仍未命中，停止循环 / returned to head, miss",
+      "state": {
+        "focus": [],
+        "type": "linked",
+        "values": [
+          5
+        ]
+      },
+      "structure": {
+        "found": false,
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n1",
+            "value": 5
+          }
+        ],
+        "operation": "not-found",
+        "phase": "complete",
+        "searchValue": 99,
+        "tailId": "n1"
+      },
+      "variables": {
+        "current": null,
+        "current_id": null,
+        "head": 5,
+        "ids": [
+          "n1"
+        ],
+        "length": 1,
+        "tail": 5
+      }
+    },
+    {
+      "lessonStepId": "done",
+      "line": 245,
+      "message": "循环单链表演示结束：非空时 tail.next 一定回到 head / Done: tail.next returns to head",
+      "state": {
+        "focus": [],
+        "type": "linked",
+        "values": [
+          5
+        ]
+      },
+      "structure": {
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n1",
+            "value": 5
+          }
+        ],
+        "operation": "done",
+        "phase": "complete",
+        "tailId": "n1"
+      },
+      "variables": {
+        "current": null,
+        "current_id": null,
+        "head": 5,
+        "ids": [
+          "n1"
+        ],
+        "length": 1,
+        "tail": 5
+      }
+    }
+  ],
+  "order": [
+    {
+      "lessonStepId": "init",
+      "line": 231,
+      "message": "空的循环单链表：head = None，tail = None / Empty circular singly linked list",
+      "state": {
+        "focus": [],
+        "type": "linked",
+        "values": []
+      },
+      "structure": {
+        "headId": null,
+        "kind": "circular-linked-list",
+        "nodes": [],
+        "operation": "init",
+        "phase": "complete",
+        "tailId": null
+      },
+      "variables": {
+        "current": null,
+        "current_id": null,
+        "head": null,
+        "ids": [],
+        "length": 0,
+        "tail": null
+      }
+    },
+    {
+      "lessonStepId": "insert-head",
+      "line": 120,
+      "message": "创建节点 1：next 暂时为空 / create node with next = None",
+      "state": {
+        "focus": [
+          "n1"
+        ],
+        "type": "linked",
+        "values": []
+      },
+      "structure": {
+        "headId": null,
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": null,
+            "value": 1
+          }
+        ],
+        "operation": "create",
+        "phase": "intermediate",
+        "tailId": null,
+        "targetId": "n1"
+      },
+      "variables": {
+        "current": 1,
+        "current_id": "n1",
+        "head": null,
+        "ids": [],
+        "length": 0,
+        "tail": null
+      }
+    },
+    {
+      "lessonStepId": "insert-head",
+      "line": 123,
+      "message": "head = new：空表建立首节点 / first node",
+      "state": {
+        "focus": [
+          "n1"
+        ],
+        "type": "linked",
+        "values": [
+          1
+        ]
+      },
+      "structure": {
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": null,
+            "value": 1
+          }
+        ],
+        "operation": "set-head",
+        "phase": "intermediate",
+        "tailId": null,
+        "targetId": "n1"
+      },
+      "variables": {
+        "current": 1,
+        "current_id": "n1",
+        "head": 1,
+        "ids": [
+          "n1"
+        ],
+        "length": 1,
+        "tail": null
+      }
+    },
+    {
+      "lessonStepId": "insert-head",
+      "line": 125,
+      "message": "tail = new：单节点时 head = tail / one node is both ends",
+      "state": {
+        "focus": [
+          "n1"
+        ],
+        "type": "linked",
+        "values": [
+          1
+        ]
+      },
+      "structure": {
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": null,
+            "value": 1
+          }
+        ],
+        "operation": "set-tail",
+        "phase": "intermediate",
+        "tailId": "n1",
+        "targetId": "n1"
+      },
+      "variables": {
+        "current": 1,
+        "current_id": "n1",
+        "head": 1,
+        "ids": [
+          "n1"
+        ],
+        "length": 1,
+        "tail": 1
+      }
+    },
+    {
+      "lessonStepId": "insert-head",
+      "line": 127,
+      "message": "new.next = new：单节点自环闭合 / the single node points to itself",
+      "state": {
+        "focus": [
+          "n1"
+        ],
+        "type": "linked",
+        "values": [
+          1
+        ]
+      },
+      "structure": {
+        "change": {
+          "afterId": "n1",
+          "beforeId": null,
+          "field": "next",
+          "nodeId": "n1"
+        },
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n1",
+            "value": 1
+          }
+        ],
+        "operation": "set-next",
+        "phase": "complete",
+        "tailId": "n1",
+        "targetId": "n1"
+      },
+      "variables": {
+        "current": 1,
+        "current_id": "n1",
+        "head": 1,
+        "ids": [
+          "n1"
+        ],
+        "length": 1,
+        "tail": 1
+      }
+    },
+    {
+      "lessonStepId": "insert-tail",
+      "line": 140,
+      "message": "创建尾节点 2 / create tail node",
+      "state": {
+        "focus": [
+          "n2"
+        ],
+        "type": "linked",
+        "values": [
+          1
+        ]
+      },
+      "structure": {
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n1",
+            "value": 1
+          },
+          {
+            "id": "n2",
+            "nextId": null,
+            "value": 2
+          }
+        ],
+        "operation": "create",
+        "phase": "intermediate",
+        "tailId": "n1",
+        "targetId": "n2"
+      },
+      "variables": {
+        "current": 2,
+        "current_id": "n2",
+        "head": 1,
+        "ids": [
+          "n1"
+        ],
+        "length": 1,
+        "tail": 1
+      }
+    },
+    {
+      "lessonStepId": "insert-tail",
+      "line": 150,
+      "message": "旧 tail.next = new：旧尾先指向新节点 / old tail points to the new node",
+      "state": {
+        "focus": [
+          "n1"
+        ],
+        "type": "linked",
+        "values": [
+          1,
+          2
+        ]
+      },
+      "structure": {
+        "change": {
+          "afterId": "n2",
+          "beforeId": "n1",
+          "field": "next",
+          "nodeId": "n1"
+        },
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n2",
+            "value": 1
+          },
+          {
+            "id": "n2",
+            "nextId": null,
+            "value": 2
+          }
+        ],
+        "operation": "set-next",
+        "phase": "intermediate",
+        "tailId": "n1",
+        "targetId": "n1"
+      },
+      "variables": {
+        "current": 1,
+        "current_id": "n1",
+        "head": 1,
+        "ids": [
+          "n1",
+          "n2"
+        ],
+        "length": 2,
+        "tail": 1
+      }
+    },
+    {
+      "lessonStepId": "insert-tail",
+      "line": 152,
+      "message": "new.next = head：新节点指回首节点 / new node closes the circle",
+      "state": {
+        "focus": [
+          "n2"
+        ],
+        "type": "linked",
+        "values": [
+          1,
+          2
+        ]
+      },
+      "structure": {
+        "change": {
+          "afterId": "n1",
+          "beforeId": null,
+          "field": "next",
+          "nodeId": "n2"
+        },
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n2",
+            "value": 1
+          },
+          {
+            "id": "n2",
+            "nextId": "n1",
+            "value": 2
+          }
+        ],
+        "operation": "set-next",
+        "phase": "intermediate",
+        "tailId": "n1",
+        "targetId": "n2"
+      },
+      "variables": {
+        "current": 2,
+        "current_id": "n2",
+        "head": 1,
+        "ids": [
+          "n1",
+          "n2"
+        ],
+        "length": 2,
+        "tail": 1
+      }
+    },
+    {
+      "lessonStepId": "insert-tail",
+      "line": 154,
+      "message": "tail = new：尾指针更新为 2 / tail moves to the new node",
+      "state": {
+        "focus": [
+          "n2"
+        ],
+        "type": "linked",
+        "values": [
+          1,
+          2
+        ]
+      },
+      "structure": {
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n2",
+            "value": 1
+          },
+          {
+            "id": "n2",
+            "nextId": "n1",
+            "value": 2
+          }
+        ],
+        "operation": "set-tail",
+        "phase": "complete",
+        "tailId": "n2",
+        "targetId": "n2"
+      },
+      "variables": {
+        "current": 2,
+        "current_id": "n2",
+        "head": 1,
+        "ids": [
+          "n1",
+          "n2"
+        ],
+        "length": 2,
+        "tail": 2
+      }
+    },
+    {
+      "lessonStepId": "insert-tail",
+      "line": 140,
+      "message": "创建尾节点 3 / create tail node",
+      "state": {
+        "focus": [
+          "n3"
+        ],
+        "type": "linked",
+        "values": [
+          1,
+          2
+        ]
+      },
+      "structure": {
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n2",
+            "value": 1
+          },
+          {
+            "id": "n2",
+            "nextId": "n1",
+            "value": 2
+          },
+          {
+            "id": "n3",
+            "nextId": null,
+            "value": 3
+          }
+        ],
+        "operation": "create",
+        "phase": "intermediate",
+        "tailId": "n2",
+        "targetId": "n3"
+      },
+      "variables": {
+        "current": 3,
+        "current_id": "n3",
+        "head": 1,
+        "ids": [
+          "n1",
+          "n2"
+        ],
+        "length": 2,
+        "tail": 2
+      }
+    },
+    {
+      "lessonStepId": "insert-tail",
+      "line": 150,
+      "message": "旧 tail.next = new：旧尾先指向新节点 / old tail points to the new node",
+      "state": {
+        "focus": [
+          "n2"
+        ],
+        "type": "linked",
+        "values": [
+          1,
+          2,
+          3
+        ]
+      },
+      "structure": {
+        "change": {
+          "afterId": "n3",
+          "beforeId": "n1",
+          "field": "next",
+          "nodeId": "n2"
+        },
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n2",
+            "value": 1
+          },
+          {
+            "id": "n2",
+            "nextId": "n3",
+            "value": 2
+          },
+          {
+            "id": "n3",
+            "nextId": null,
+            "value": 3
+          }
+        ],
+        "operation": "set-next",
+        "phase": "intermediate",
+        "tailId": "n2",
+        "targetId": "n2"
+      },
+      "variables": {
+        "current": 2,
+        "current_id": "n2",
+        "head": 1,
+        "ids": [
+          "n1",
+          "n2",
+          "n3"
+        ],
+        "length": 3,
+        "tail": 2
+      }
+    },
+    {
+      "lessonStepId": "insert-tail",
+      "line": 152,
+      "message": "new.next = head：新节点指回首节点 / new node closes the circle",
+      "state": {
+        "focus": [
+          "n3"
+        ],
+        "type": "linked",
+        "values": [
+          1,
+          2,
+          3
+        ]
+      },
+      "structure": {
+        "change": {
+          "afterId": "n1",
+          "beforeId": null,
+          "field": "next",
+          "nodeId": "n3"
+        },
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n2",
+            "value": 1
+          },
+          {
+            "id": "n2",
+            "nextId": "n3",
+            "value": 2
+          },
+          {
+            "id": "n3",
+            "nextId": "n1",
+            "value": 3
+          }
+        ],
+        "operation": "set-next",
+        "phase": "intermediate",
+        "tailId": "n2",
+        "targetId": "n3"
+      },
+      "variables": {
+        "current": 3,
+        "current_id": "n3",
+        "head": 1,
+        "ids": [
+          "n1",
+          "n2",
+          "n3"
+        ],
+        "length": 3,
+        "tail": 2
+      }
+    },
+    {
+      "lessonStepId": "insert-tail",
+      "line": 154,
+      "message": "tail = new：尾指针更新为 3 / tail moves to the new node",
+      "state": {
+        "focus": [
+          "n3"
+        ],
+        "type": "linked",
+        "values": [
+          1,
+          2,
+          3
+        ]
+      },
+      "structure": {
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n2",
+            "value": 1
+          },
+          {
+            "id": "n2",
+            "nextId": "n3",
+            "value": 2
+          },
+          {
+            "id": "n3",
+            "nextId": "n1",
+            "value": 3
+          }
+        ],
+        "operation": "set-tail",
+        "phase": "complete",
+        "tailId": "n3",
+        "targetId": "n3"
+      },
+      "variables": {
+        "current": 3,
+        "current_id": "n3",
+        "head": 1,
+        "ids": [
+          "n1",
+          "n2",
+          "n3"
+        ],
+        "length": 3,
+        "tail": 3
+      }
+    },
+    {
+      "lessonStepId": "insert-tail",
+      "line": 140,
+      "message": "创建尾节点 4 / create tail node",
+      "state": {
+        "focus": [
+          "n4"
+        ],
+        "type": "linked",
+        "values": [
+          1,
+          2,
+          3
+        ]
+      },
+      "structure": {
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n2",
+            "value": 1
+          },
+          {
+            "id": "n2",
+            "nextId": "n3",
+            "value": 2
+          },
+          {
+            "id": "n3",
+            "nextId": "n1",
+            "value": 3
+          },
+          {
+            "id": "n4",
+            "nextId": null,
+            "value": 4
+          }
+        ],
+        "operation": "create",
+        "phase": "intermediate",
+        "tailId": "n3",
+        "targetId": "n4"
+      },
+      "variables": {
+        "current": 4,
+        "current_id": "n4",
+        "head": 1,
+        "ids": [
+          "n1",
+          "n2",
+          "n3"
+        ],
+        "length": 3,
+        "tail": 3
+      }
+    },
+    {
+      "lessonStepId": "insert-tail",
+      "line": 150,
+      "message": "旧 tail.next = new：旧尾先指向新节点 / old tail points to the new node",
+      "state": {
+        "focus": [
+          "n3"
+        ],
+        "type": "linked",
+        "values": [
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      "structure": {
+        "change": {
+          "afterId": "n4",
+          "beforeId": "n1",
+          "field": "next",
+          "nodeId": "n3"
+        },
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n2",
+            "value": 1
+          },
+          {
+            "id": "n2",
+            "nextId": "n3",
+            "value": 2
+          },
+          {
+            "id": "n3",
+            "nextId": "n4",
+            "value": 3
+          },
+          {
+            "id": "n4",
+            "nextId": null,
+            "value": 4
+          }
+        ],
+        "operation": "set-next",
+        "phase": "intermediate",
+        "tailId": "n3",
+        "targetId": "n3"
+      },
+      "variables": {
+        "current": 3,
+        "current_id": "n3",
+        "head": 1,
+        "ids": [
+          "n1",
+          "n2",
+          "n3",
+          "n4"
+        ],
+        "length": 4,
+        "tail": 3
+      }
+    },
+    {
+      "lessonStepId": "insert-tail",
+      "line": 152,
+      "message": "new.next = head：新节点指回首节点 / new node closes the circle",
+      "state": {
+        "focus": [
+          "n4"
+        ],
+        "type": "linked",
+        "values": [
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      "structure": {
+        "change": {
+          "afterId": "n1",
+          "beforeId": null,
+          "field": "next",
+          "nodeId": "n4"
+        },
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n2",
+            "value": 1
+          },
+          {
+            "id": "n2",
+            "nextId": "n3",
+            "value": 2
+          },
+          {
+            "id": "n3",
+            "nextId": "n4",
+            "value": 3
+          },
+          {
+            "id": "n4",
+            "nextId": "n1",
+            "value": 4
+          }
+        ],
+        "operation": "set-next",
+        "phase": "intermediate",
+        "tailId": "n3",
+        "targetId": "n4"
+      },
+      "variables": {
+        "current": 4,
+        "current_id": "n4",
+        "head": 1,
+        "ids": [
+          "n1",
+          "n2",
+          "n3",
+          "n4"
+        ],
+        "length": 4,
+        "tail": 3
+      }
+    },
+    {
+      "lessonStepId": "insert-tail",
+      "line": 154,
+      "message": "tail = new：尾指针更新为 4 / tail moves to the new node",
+      "state": {
+        "focus": [
+          "n4"
+        ],
+        "type": "linked",
+        "values": [
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      "structure": {
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n2",
+            "value": 1
+          },
+          {
+            "id": "n2",
+            "nextId": "n3",
+            "value": 2
+          },
+          {
+            "id": "n3",
+            "nextId": "n4",
+            "value": 3
+          },
+          {
+            "id": "n4",
+            "nextId": "n1",
+            "value": 4
+          }
+        ],
+        "operation": "set-tail",
+        "phase": "complete",
+        "tailId": "n4",
+        "targetId": "n4"
+      },
+      "variables": {
+        "current": 4,
+        "current_id": "n4",
+        "head": 1,
+        "ids": [
+          "n1",
+          "n2",
+          "n3",
+          "n4"
+        ],
+        "length": 4,
+        "tail": 4
+      }
+    },
+    {
+      "lessonStepId": "insert-tail",
+      "line": 140,
+      "message": "创建尾节点 5 / create tail node",
+      "state": {
+        "focus": [
+          "n5"
+        ],
+        "type": "linked",
+        "values": [
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      "structure": {
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n2",
+            "value": 1
+          },
+          {
+            "id": "n2",
+            "nextId": "n3",
+            "value": 2
+          },
+          {
+            "id": "n3",
+            "nextId": "n4",
+            "value": 3
+          },
+          {
+            "id": "n4",
+            "nextId": "n1",
+            "value": 4
+          },
+          {
+            "id": "n5",
+            "nextId": null,
+            "value": 5
+          }
+        ],
+        "operation": "create",
+        "phase": "intermediate",
+        "tailId": "n4",
+        "targetId": "n5"
+      },
+      "variables": {
+        "current": 5,
+        "current_id": "n5",
+        "head": 1,
+        "ids": [
+          "n1",
+          "n2",
+          "n3",
+          "n4"
+        ],
+        "length": 4,
+        "tail": 4
+      }
+    },
+    {
+      "lessonStepId": "insert-tail",
+      "line": 150,
+      "message": "旧 tail.next = new：旧尾先指向新节点 / old tail points to the new node",
+      "state": {
+        "focus": [
+          "n4"
+        ],
+        "type": "linked",
+        "values": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      "structure": {
+        "change": {
+          "afterId": "n5",
+          "beforeId": "n1",
+          "field": "next",
+          "nodeId": "n4"
+        },
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n2",
+            "value": 1
+          },
+          {
+            "id": "n2",
+            "nextId": "n3",
+            "value": 2
+          },
+          {
+            "id": "n3",
+            "nextId": "n4",
+            "value": 3
+          },
+          {
+            "id": "n4",
+            "nextId": "n5",
+            "value": 4
+          },
+          {
+            "id": "n5",
+            "nextId": null,
+            "value": 5
+          }
+        ],
+        "operation": "set-next",
+        "phase": "intermediate",
+        "tailId": "n4",
+        "targetId": "n4"
+      },
+      "variables": {
+        "current": 4,
+        "current_id": "n4",
+        "head": 1,
+        "ids": [
+          "n1",
+          "n2",
+          "n3",
+          "n4",
+          "n5"
+        ],
+        "length": 5,
+        "tail": 4
+      }
+    },
+    {
+      "lessonStepId": "insert-tail",
+      "line": 152,
+      "message": "new.next = head：新节点指回首节点 / new node closes the circle",
+      "state": {
+        "focus": [
+          "n5"
+        ],
+        "type": "linked",
+        "values": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      "structure": {
+        "change": {
+          "afterId": "n1",
+          "beforeId": null,
+          "field": "next",
+          "nodeId": "n5"
+        },
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n2",
+            "value": 1
+          },
+          {
+            "id": "n2",
+            "nextId": "n3",
+            "value": 2
+          },
+          {
+            "id": "n3",
+            "nextId": "n4",
+            "value": 3
+          },
+          {
+            "id": "n4",
+            "nextId": "n5",
+            "value": 4
+          },
+          {
+            "id": "n5",
+            "nextId": "n1",
+            "value": 5
+          }
+        ],
+        "operation": "set-next",
+        "phase": "intermediate",
+        "tailId": "n4",
+        "targetId": "n5"
+      },
+      "variables": {
+        "current": 5,
+        "current_id": "n5",
+        "head": 1,
+        "ids": [
+          "n1",
+          "n2",
+          "n3",
+          "n4",
+          "n5"
+        ],
+        "length": 5,
+        "tail": 4
+      }
+    },
+    {
+      "lessonStepId": "insert-tail",
+      "line": 154,
+      "message": "tail = new：尾指针更新为 5 / tail moves to the new node",
+      "state": {
+        "focus": [
+          "n5"
+        ],
+        "type": "linked",
+        "values": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      "structure": {
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n2",
+            "value": 1
+          },
+          {
+            "id": "n2",
+            "nextId": "n3",
+            "value": 2
+          },
+          {
+            "id": "n3",
+            "nextId": "n4",
+            "value": 3
+          },
+          {
+            "id": "n4",
+            "nextId": "n5",
+            "value": 4
+          },
+          {
+            "id": "n5",
+            "nextId": "n1",
+            "value": 5
+          }
+        ],
+        "operation": "set-tail",
+        "phase": "complete",
+        "tailId": "n5",
+        "targetId": "n5"
+      },
+      "variables": {
+        "current": 5,
+        "current_id": "n5",
+        "head": 1,
+        "ids": [
+          "n1",
+          "n2",
+          "n3",
+          "n4",
+          "n5"
+        ],
+        "length": 5,
+        "tail": 5
+      }
+    },
+    {
+      "lessonStepId": "delete-middle",
+      "line": 104,
+      "message": "沿 next 查找 2：当前是 1 / walk next for 2",
+      "state": {
+        "focus": [
+          "n1"
+        ],
+        "type": "linked",
+        "values": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      "structure": {
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n2",
+            "value": 1
+          },
+          {
+            "id": "n2",
+            "nextId": "n3",
+            "value": 2
+          },
+          {
+            "id": "n3",
+            "nextId": "n4",
+            "value": 3
+          },
+          {
+            "id": "n4",
+            "nextId": "n5",
+            "value": 4
+          },
+          {
+            "id": "n5",
+            "nextId": "n1",
+            "value": 5
+          }
+        ],
+        "operation": "visit",
+        "phase": "complete",
+        "tailId": "n5",
+        "targetId": "n1"
+      },
+      "variables": {
+        "current": 1,
+        "current_id": "n1",
+        "head": 1,
+        "ids": [
+          "n1",
+          "n2",
+          "n3",
+          "n4",
+          "n5"
+        ],
+        "length": 5,
+        "tail": 5
+      }
+    },
+    {
+      "lessonStepId": "delete-middle",
+      "line": 104,
+      "message": "沿 next 查找 2：当前是 2 / walk next for 2",
+      "state": {
+        "focus": [
+          "n2"
+        ],
+        "type": "linked",
+        "values": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      "structure": {
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n2",
+            "value": 1
+          },
+          {
+            "id": "n2",
+            "nextId": "n3",
+            "value": 2
+          },
+          {
+            "id": "n3",
+            "nextId": "n4",
+            "value": 3
+          },
+          {
+            "id": "n4",
+            "nextId": "n5",
+            "value": 4
+          },
+          {
+            "id": "n5",
+            "nextId": "n1",
+            "value": 5
+          }
+        ],
+        "operation": "visit",
+        "phase": "complete",
+        "tailId": "n5",
+        "targetId": "n2"
+      },
+      "variables": {
+        "current": 2,
+        "current_id": "n2",
+        "head": 1,
+        "ids": [
+          "n1",
+          "n2",
+          "n3",
+          "n4",
+          "n5"
+        ],
+        "length": 5,
+        "tail": 5
+      }
+    },
+    {
+      "lessonStepId": "delete-middle",
+      "line": 107,
+      "message": "查找 2：命中 n2，立即停止整圈扫描 / found before returning to head",
+      "state": {
+        "focus": [
+          "n2"
+        ],
+        "type": "linked",
+        "values": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      "structure": {
+        "found": true,
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n2",
+            "value": 1
+          },
+          {
+            "id": "n2",
+            "nextId": "n3",
+            "value": 2
+          },
+          {
+            "id": "n3",
+            "nextId": "n4",
+            "value": 3
+          },
+          {
+            "id": "n4",
+            "nextId": "n5",
+            "value": 4
+          },
+          {
+            "id": "n5",
+            "nextId": "n1",
+            "value": 5
+          }
+        ],
+        "operation": "found",
+        "phase": "complete",
+        "searchValue": 2,
+        "tailId": "n5",
+        "targetId": "n2"
+      },
+      "variables": {
+        "current": 2,
+        "current_id": "n2",
+        "head": 1,
+        "ids": [
+          "n1",
+          "n2",
+          "n3",
+          "n4",
+          "n5"
+        ],
+        "length": 5,
+        "tail": 5
+      }
+    },
+    {
+      "lessonStepId": "delete-middle",
+      "line": 199,
+      "message": "previous.next = target.next：前驱越过目标 / predecessor bypasses target",
+      "state": {
+        "focus": [
+          "n1"
+        ],
+        "type": "linked",
+        "values": [
+          1,
+          3,
+          4,
+          5
+        ]
+      },
+      "structure": {
+        "change": {
+          "afterId": "n3",
+          "beforeId": "n2",
+          "field": "next",
+          "nodeId": "n1"
+        },
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n3",
+            "value": 1
+          },
+          {
+            "id": "n2",
+            "nextId": "n3",
+            "value": 2
+          },
+          {
+            "id": "n3",
+            "nextId": "n4",
+            "value": 3
+          },
+          {
+            "id": "n4",
+            "nextId": "n5",
+            "value": 4
+          },
+          {
+            "id": "n5",
+            "nextId": "n1",
+            "value": 5
+          }
+        ],
+        "operation": "set-next",
+        "phase": "intermediate",
+        "tailId": "n5",
+        "targetId": "n1"
+      },
+      "variables": {
+        "current": 1,
+        "current_id": "n1",
+        "head": 1,
+        "ids": [
+          "n1",
+          "n3",
+          "n4",
+          "n5"
+        ],
+        "length": 4,
+        "tail": 5
+      }
+    },
+    {
+      "lessonStepId": "delete-middle",
+      "line": 202,
+      "message": "target.next = None：解除目标的 next / clear the removed node's next",
+      "state": {
+        "focus": [
+          "n2"
+        ],
+        "type": "linked",
+        "values": [
+          1,
+          3,
+          4,
+          5
+        ]
+      },
+      "structure": {
+        "change": {
+          "afterId": null,
+          "beforeId": "n3",
+          "field": "next",
+          "nodeId": "n2"
+        },
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n3",
+            "value": 1
+          },
+          {
+            "id": "n2",
+            "nextId": null,
+            "value": 2
+          },
+          {
+            "id": "n3",
+            "nextId": "n4",
+            "value": 3
+          },
+          {
+            "id": "n4",
+            "nextId": "n5",
+            "value": 4
+          },
+          {
+            "id": "n5",
+            "nextId": "n1",
+            "value": 5
+          }
+        ],
+        "operation": "set-next",
+        "phase": "intermediate",
+        "tailId": "n5",
+        "targetId": "n2"
+      },
+      "variables": {
+        "current": 2,
+        "current_id": "n2",
+        "head": 1,
+        "ids": [
+          "n1",
+          "n3",
+          "n4",
+          "n5"
+        ],
+        "length": 4,
+        "tail": 5
+      }
+    },
+    {
+      "lessonStepId": "delete-middle",
+      "line": 204,
+      "message": "节点 n2 已脱离链表 / node detached, no stale reference remains",
+      "state": {
+        "focus": [
+          "n2"
+        ],
+        "type": "linked",
+        "values": [
+          1,
+          3,
+          4,
+          5
+        ]
+      },
+      "structure": {
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n3",
+            "value": 1
+          },
+          {
+            "id": "n2",
+            "nextId": null,
+            "value": 2
+          },
+          {
+            "id": "n3",
+            "nextId": "n4",
+            "value": 3
+          },
+          {
+            "id": "n4",
+            "nextId": "n5",
+            "value": 4
+          },
+          {
+            "id": "n5",
+            "nextId": "n1",
+            "value": 5
+          }
+        ],
+        "operation": "detach",
+        "phase": "complete",
+        "tailId": "n5",
+        "targetId": "n2"
+      },
+      "variables": {
+        "current": 2,
+        "current_id": "n2",
+        "head": 1,
+        "ids": [
+          "n1",
+          "n3",
+          "n4",
+          "n5"
+        ],
+        "length": 4,
+        "tail": 5
+      }
+    },
+    {
+      "lessonStepId": "delete-middle",
+      "line": 104,
+      "message": "沿 next 查找 4：当前是 1 / walk next for 4",
+      "state": {
+        "focus": [
+          "n1"
+        ],
+        "type": "linked",
+        "values": [
+          1,
+          3,
+          4,
+          5
+        ]
+      },
+      "structure": {
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n3",
+            "value": 1
+          },
+          {
+            "id": "n2",
+            "nextId": null,
+            "value": 2
+          },
+          {
+            "id": "n3",
+            "nextId": "n4",
+            "value": 3
+          },
+          {
+            "id": "n4",
+            "nextId": "n5",
+            "value": 4
+          },
+          {
+            "id": "n5",
+            "nextId": "n1",
+            "value": 5
+          }
+        ],
+        "operation": "visit",
+        "phase": "complete",
+        "tailId": "n5",
+        "targetId": "n1"
+      },
+      "variables": {
+        "current": 1,
+        "current_id": "n1",
+        "head": 1,
+        "ids": [
+          "n1",
+          "n3",
+          "n4",
+          "n5"
+        ],
+        "length": 4,
+        "tail": 5
+      }
+    },
+    {
+      "lessonStepId": "delete-middle",
+      "line": 104,
+      "message": "沿 next 查找 4：当前是 3 / walk next for 4",
+      "state": {
+        "focus": [
+          "n3"
+        ],
+        "type": "linked",
+        "values": [
+          1,
+          3,
+          4,
+          5
+        ]
+      },
+      "structure": {
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n3",
+            "value": 1
+          },
+          {
+            "id": "n2",
+            "nextId": null,
+            "value": 2
+          },
+          {
+            "id": "n3",
+            "nextId": "n4",
+            "value": 3
+          },
+          {
+            "id": "n4",
+            "nextId": "n5",
+            "value": 4
+          },
+          {
+            "id": "n5",
+            "nextId": "n1",
+            "value": 5
+          }
+        ],
+        "operation": "visit",
+        "phase": "complete",
+        "tailId": "n5",
+        "targetId": "n3"
+      },
+      "variables": {
+        "current": 3,
+        "current_id": "n3",
+        "head": 1,
+        "ids": [
+          "n1",
+          "n3",
+          "n4",
+          "n5"
+        ],
+        "length": 4,
+        "tail": 5
+      }
+    },
+    {
+      "lessonStepId": "delete-middle",
+      "line": 104,
+      "message": "沿 next 查找 4：当前是 4 / walk next for 4",
+      "state": {
+        "focus": [
+          "n4"
+        ],
+        "type": "linked",
+        "values": [
+          1,
+          3,
+          4,
+          5
+        ]
+      },
+      "structure": {
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n3",
+            "value": 1
+          },
+          {
+            "id": "n2",
+            "nextId": null,
+            "value": 2
+          },
+          {
+            "id": "n3",
+            "nextId": "n4",
+            "value": 3
+          },
+          {
+            "id": "n4",
+            "nextId": "n5",
+            "value": 4
+          },
+          {
+            "id": "n5",
+            "nextId": "n1",
+            "value": 5
+          }
+        ],
+        "operation": "visit",
+        "phase": "complete",
+        "tailId": "n5",
+        "targetId": "n4"
+      },
+      "variables": {
+        "current": 4,
+        "current_id": "n4",
+        "head": 1,
+        "ids": [
+          "n1",
+          "n3",
+          "n4",
+          "n5"
+        ],
+        "length": 4,
+        "tail": 5
+      }
+    },
+    {
+      "lessonStepId": "delete-middle",
+      "line": 107,
+      "message": "查找 4：命中 n4，立即停止整圈扫描 / found before returning to head",
+      "state": {
+        "focus": [
+          "n4"
+        ],
+        "type": "linked",
+        "values": [
+          1,
+          3,
+          4,
+          5
+        ]
+      },
+      "structure": {
+        "found": true,
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n3",
+            "value": 1
+          },
+          {
+            "id": "n2",
+            "nextId": null,
+            "value": 2
+          },
+          {
+            "id": "n3",
+            "nextId": "n4",
+            "value": 3
+          },
+          {
+            "id": "n4",
+            "nextId": "n5",
+            "value": 4
+          },
+          {
+            "id": "n5",
+            "nextId": "n1",
+            "value": 5
+          }
+        ],
+        "operation": "found",
+        "phase": "complete",
+        "searchValue": 4,
+        "tailId": "n5",
+        "targetId": "n4"
+      },
+      "variables": {
+        "current": 4,
+        "current_id": "n4",
+        "head": 1,
+        "ids": [
+          "n1",
+          "n3",
+          "n4",
+          "n5"
+        ],
+        "length": 4,
+        "tail": 5
+      }
+    },
+    {
+      "lessonStepId": "delete-middle",
+      "line": 199,
+      "message": "previous.next = target.next：前驱越过目标 / predecessor bypasses target",
+      "state": {
+        "focus": [
+          "n3"
+        ],
+        "type": "linked",
+        "values": [
+          1,
+          3,
+          5
+        ]
+      },
+      "structure": {
+        "change": {
+          "afterId": "n5",
+          "beforeId": "n4",
+          "field": "next",
+          "nodeId": "n3"
+        },
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n3",
+            "value": 1
+          },
+          {
+            "id": "n2",
+            "nextId": null,
+            "value": 2
+          },
+          {
+            "id": "n3",
+            "nextId": "n5",
+            "value": 3
+          },
+          {
+            "id": "n4",
+            "nextId": "n5",
+            "value": 4
+          },
+          {
+            "id": "n5",
+            "nextId": "n1",
+            "value": 5
+          }
+        ],
+        "operation": "set-next",
+        "phase": "intermediate",
+        "tailId": "n5",
+        "targetId": "n3"
+      },
+      "variables": {
+        "current": 3,
+        "current_id": "n3",
+        "head": 1,
+        "ids": [
+          "n1",
+          "n3",
+          "n5"
+        ],
+        "length": 3,
+        "tail": 5
+      }
+    },
+    {
+      "lessonStepId": "delete-middle",
+      "line": 202,
+      "message": "target.next = None：解除目标的 next / clear the removed node's next",
+      "state": {
+        "focus": [
+          "n4"
+        ],
+        "type": "linked",
+        "values": [
+          1,
+          3,
+          5
+        ]
+      },
+      "structure": {
+        "change": {
+          "afterId": null,
+          "beforeId": "n5",
+          "field": "next",
+          "nodeId": "n4"
+        },
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n3",
+            "value": 1
+          },
+          {
+            "id": "n2",
+            "nextId": null,
+            "value": 2
+          },
+          {
+            "id": "n3",
+            "nextId": "n5",
+            "value": 3
+          },
+          {
+            "id": "n4",
+            "nextId": null,
+            "value": 4
+          },
+          {
+            "id": "n5",
+            "nextId": "n1",
+            "value": 5
+          }
+        ],
+        "operation": "set-next",
+        "phase": "intermediate",
+        "tailId": "n5",
+        "targetId": "n4"
+      },
+      "variables": {
+        "current": 4,
+        "current_id": "n4",
+        "head": 1,
+        "ids": [
+          "n1",
+          "n3",
+          "n5"
+        ],
+        "length": 3,
+        "tail": 5
+      }
+    },
+    {
+      "lessonStepId": "delete-middle",
+      "line": 204,
+      "message": "节点 n4 已脱离链表 / node detached, no stale reference remains",
+      "state": {
+        "focus": [
+          "n4"
+        ],
+        "type": "linked",
+        "values": [
+          1,
+          3,
+          5
+        ]
+      },
+      "structure": {
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n3",
+            "value": 1
+          },
+          {
+            "id": "n2",
+            "nextId": null,
+            "value": 2
+          },
+          {
+            "id": "n3",
+            "nextId": "n5",
+            "value": 3
+          },
+          {
+            "id": "n4",
+            "nextId": null,
+            "value": 4
+          },
+          {
+            "id": "n5",
+            "nextId": "n1",
+            "value": 5
+          }
+        ],
+        "operation": "detach",
+        "phase": "complete",
+        "tailId": "n5",
+        "targetId": "n4"
+      },
+      "variables": {
+        "current": 4,
+        "current_id": "n4",
+        "head": 1,
+        "ids": [
+          "n1",
+          "n3",
+          "n5"
+        ],
+        "length": 3,
+        "tail": 5
+      }
+    },
+    {
+      "lessonStepId": "traverse-circle",
+      "line": 226,
+      "message": "访问 1，继续 current = current.next / visit, then follow next",
+      "state": {
+        "focus": [
+          "n1"
+        ],
+        "type": "linked",
+        "values": [
+          1,
+          3,
+          5
+        ]
+      },
+      "structure": {
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n3",
+            "value": 1
+          },
+          {
+            "id": "n2",
+            "nextId": null,
+            "value": 2
+          },
+          {
+            "id": "n3",
+            "nextId": "n5",
+            "value": 3
+          },
+          {
+            "id": "n4",
+            "nextId": null,
+            "value": 4
+          },
+          {
+            "id": "n5",
+            "nextId": "n1",
+            "value": 5
+          }
+        ],
+        "operation": "visit",
+        "phase": "complete",
+        "tailId": "n5",
+        "targetId": "n1"
+      },
+      "variables": {
+        "current": 1,
+        "current_id": "n1",
+        "head": 1,
+        "ids": [
+          "n1",
+          "n3",
+          "n5"
+        ],
+        "length": 3,
+        "tail": 5
+      }
+    },
+    {
+      "lessonStepId": "traverse-circle",
+      "line": 226,
+      "message": "访问 3，继续 current = current.next / visit, then follow next",
+      "state": {
+        "focus": [
+          "n3"
+        ],
+        "type": "linked",
+        "values": [
+          1,
+          3,
+          5
+        ]
+      },
+      "structure": {
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n3",
+            "value": 1
+          },
+          {
+            "id": "n2",
+            "nextId": null,
+            "value": 2
+          },
+          {
+            "id": "n3",
+            "nextId": "n5",
+            "value": 3
+          },
+          {
+            "id": "n4",
+            "nextId": null,
+            "value": 4
+          },
+          {
+            "id": "n5",
+            "nextId": "n1",
+            "value": 5
+          }
+        ],
+        "operation": "visit",
+        "phase": "complete",
+        "tailId": "n5",
+        "targetId": "n3"
+      },
+      "variables": {
+        "current": 3,
+        "current_id": "n3",
+        "head": 1,
+        "ids": [
+          "n1",
+          "n3",
+          "n5"
+        ],
+        "length": 3,
+        "tail": 5
+      }
+    },
+    {
+      "lessonStepId": "traverse-circle",
+      "line": 226,
+      "message": "访问 5，继续 current = current.next / visit, then follow next",
+      "state": {
+        "focus": [
+          "n5"
+        ],
+        "type": "linked",
+        "values": [
+          1,
+          3,
+          5
+        ]
+      },
+      "structure": {
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n3",
+            "value": 1
+          },
+          {
+            "id": "n2",
+            "nextId": null,
+            "value": 2
+          },
+          {
+            "id": "n3",
+            "nextId": "n5",
+            "value": 3
+          },
+          {
+            "id": "n4",
+            "nextId": null,
+            "value": 4
+          },
+          {
+            "id": "n5",
+            "nextId": "n1",
+            "value": 5
+          }
+        ],
+        "operation": "visit",
+        "phase": "complete",
+        "tailId": "n5",
+        "targetId": "n5"
+      },
+      "variables": {
+        "current": 5,
+        "current_id": "n5",
+        "head": 1,
+        "ids": [
+          "n1",
+          "n3",
+          "n5"
+        ],
+        "length": 3,
+        "tail": 5
+      }
+    },
+    {
+      "lessonStepId": "done",
+      "line": 245,
+      "message": "循环单链表演示结束：非空时 tail.next 一定回到 head / Done: tail.next returns to head",
+      "state": {
+        "focus": [],
+        "type": "linked",
+        "values": [
+          1,
+          3,
+          5
+        ]
+      },
+      "structure": {
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n3",
+            "value": 1
+          },
+          {
+            "id": "n2",
+            "nextId": null,
+            "value": 2
+          },
+          {
+            "id": "n3",
+            "nextId": "n5",
+            "value": 3
+          },
+          {
+            "id": "n4",
+            "nextId": null,
+            "value": 4
+          },
+          {
+            "id": "n5",
+            "nextId": "n1",
+            "value": 5
+          }
+        ],
+        "operation": "done",
+        "phase": "complete",
+        "tailId": "n5"
+      },
+      "variables": {
+        "current": null,
+        "current_id": null,
+        "head": 1,
+        "ids": [
+          "n1",
+          "n3",
+          "n5"
+        ],
+        "length": 3,
+        "tail": 5
+      }
+    }
+  ],
+  "rebuild": [
+    {
+      "lessonStepId": "init",
+      "line": 231,
+      "message": "空的循环单链表：head = None，tail = None / Empty circular singly linked list",
+      "state": {
+        "focus": [],
+        "type": "linked",
+        "values": []
+      },
+      "structure": {
+        "headId": null,
+        "kind": "circular-linked-list",
+        "nodes": [],
+        "operation": "init",
+        "phase": "complete",
+        "tailId": null
+      },
+      "variables": {
+        "current": null,
+        "current_id": null,
+        "head": null,
+        "ids": [],
+        "length": 0,
+        "tail": null
+      }
+    },
+    {
+      "lessonStepId": "insert-head",
+      "line": 120,
+      "message": "创建节点 9：next 暂时为空 / create node with next = None",
+      "state": {
+        "focus": [
+          "n1"
+        ],
+        "type": "linked",
+        "values": []
+      },
+      "structure": {
+        "headId": null,
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": null,
+            "value": 9
+          }
+        ],
+        "operation": "create",
+        "phase": "intermediate",
+        "tailId": null,
+        "targetId": "n1"
+      },
+      "variables": {
+        "current": 9,
+        "current_id": "n1",
+        "head": null,
+        "ids": [],
+        "length": 0,
+        "tail": null
+      }
+    },
+    {
+      "lessonStepId": "insert-head",
+      "line": 123,
+      "message": "head = new：空表建立首节点 / first node",
+      "state": {
+        "focus": [
+          "n1"
+        ],
+        "type": "linked",
+        "values": [
+          9
+        ]
+      },
+      "structure": {
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": null,
+            "value": 9
+          }
+        ],
+        "operation": "set-head",
+        "phase": "intermediate",
+        "tailId": null,
+        "targetId": "n1"
+      },
+      "variables": {
+        "current": 9,
+        "current_id": "n1",
+        "head": 9,
+        "ids": [
+          "n1"
+        ],
+        "length": 1,
+        "tail": null
+      }
+    },
+    {
+      "lessonStepId": "insert-head",
+      "line": 125,
+      "message": "tail = new：单节点时 head = tail / one node is both ends",
+      "state": {
+        "focus": [
+          "n1"
+        ],
+        "type": "linked",
+        "values": [
+          9
+        ]
+      },
+      "structure": {
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": null,
+            "value": 9
+          }
+        ],
+        "operation": "set-tail",
+        "phase": "intermediate",
+        "tailId": "n1",
+        "targetId": "n1"
+      },
+      "variables": {
+        "current": 9,
+        "current_id": "n1",
+        "head": 9,
+        "ids": [
+          "n1"
+        ],
+        "length": 1,
+        "tail": 9
+      }
+    },
+    {
+      "lessonStepId": "insert-head",
+      "line": 127,
+      "message": "new.next = new：单节点自环闭合 / the single node points to itself",
+      "state": {
+        "focus": [
+          "n1"
+        ],
+        "type": "linked",
+        "values": [
+          9
+        ]
+      },
+      "structure": {
+        "change": {
+          "afterId": "n1",
+          "beforeId": null,
+          "field": "next",
+          "nodeId": "n1"
+        },
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n1",
+            "value": 9
+          }
+        ],
+        "operation": "set-next",
+        "phase": "complete",
+        "tailId": "n1",
+        "targetId": "n1"
+      },
+      "variables": {
+        "current": 9,
+        "current_id": "n1",
+        "head": 9,
+        "ids": [
+          "n1"
+        ],
+        "length": 1,
+        "tail": 9
+      }
+    },
+    {
+      "lessonStepId": "delete-head",
+      "line": 178,
+      "message": "head = None：删除唯一节点 / removing the only node",
+      "state": {
+        "focus": [],
+        "type": "linked",
+        "values": []
+      },
+      "structure": {
+        "headId": null,
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n1",
+            "value": 9
+          }
+        ],
+        "operation": "set-head",
+        "phase": "intermediate",
+        "tailId": "n1"
+      },
+      "variables": {
+        "current": null,
+        "current_id": null,
+        "head": null,
+        "ids": [],
+        "length": 0,
+        "tail": 9
+      }
+    },
+    {
+      "lessonStepId": "delete-head",
+      "line": 180,
+      "message": "tail = None：链表变空 / the list is empty",
+      "state": {
+        "focus": [],
+        "type": "linked",
+        "values": []
+      },
+      "structure": {
+        "headId": null,
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n1",
+            "value": 9
+          }
+        ],
+        "operation": "set-tail",
+        "phase": "intermediate",
+        "tailId": null
+      },
+      "variables": {
+        "current": null,
+        "current_id": null,
+        "head": null,
+        "ids": [],
+        "length": 0,
+        "tail": null
+      }
+    },
+    {
+      "lessonStepId": "delete-head",
+      "line": 182,
+      "message": "target.next = None：自环解除 / the self-loop is cleared",
+      "state": {
+        "focus": [
+          "n1"
+        ],
+        "type": "linked",
+        "values": []
+      },
+      "structure": {
+        "change": {
+          "afterId": null,
+          "beforeId": "n1",
+          "field": "next",
+          "nodeId": "n1"
+        },
+        "headId": null,
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": null,
+            "value": 9
+          }
+        ],
+        "operation": "set-next",
+        "phase": "intermediate",
+        "tailId": null,
+        "targetId": "n1"
+      },
+      "variables": {
+        "current": 9,
+        "current_id": "n1",
+        "head": null,
+        "ids": [],
+        "length": 0,
+        "tail": null
+      }
+    },
+    {
+      "lessonStepId": "delete-head",
+      "line": 184,
+      "message": "节点 n1 已脱离，head 与 tail 均为 None / detached, list is empty",
+      "state": {
+        "focus": [
+          "n1"
+        ],
+        "type": "linked",
+        "values": []
+      },
+      "structure": {
+        "headId": null,
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": null,
+            "value": 9
+          }
+        ],
+        "operation": "detach",
+        "phase": "complete",
+        "tailId": null,
+        "targetId": "n1"
+      },
+      "variables": {
+        "current": 9,
+        "current_id": "n1",
+        "head": null,
+        "ids": [],
+        "length": 0,
+        "tail": null
+      }
+    },
+    {
+      "lessonStepId": "insert-head",
+      "line": 120,
+      "message": "创建节点 11：next 暂时为空 / create node with next = None",
+      "state": {
+        "focus": [
+          "n2"
+        ],
+        "type": "linked",
+        "values": []
+      },
+      "structure": {
+        "headId": null,
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": null,
+            "value": 9
+          },
+          {
+            "id": "n2",
+            "nextId": null,
+            "value": 11
+          }
+        ],
+        "operation": "create",
+        "phase": "intermediate",
+        "tailId": null,
+        "targetId": "n2"
+      },
+      "variables": {
+        "current": 11,
+        "current_id": "n2",
+        "head": null,
+        "ids": [],
+        "length": 0,
+        "tail": null
+      }
+    },
+    {
+      "lessonStepId": "insert-head",
+      "line": 123,
+      "message": "head = new：空表建立首节点 / first node",
+      "state": {
+        "focus": [
+          "n2"
+        ],
+        "type": "linked",
+        "values": [
+          11
+        ]
+      },
+      "structure": {
+        "headId": "n2",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": null,
+            "value": 9
+          },
+          {
+            "id": "n2",
+            "nextId": null,
+            "value": 11
+          }
+        ],
+        "operation": "set-head",
+        "phase": "intermediate",
+        "tailId": null,
+        "targetId": "n2"
+      },
+      "variables": {
+        "current": 11,
+        "current_id": "n2",
+        "head": 11,
+        "ids": [
+          "n2"
+        ],
+        "length": 1,
+        "tail": null
+      }
+    },
+    {
+      "lessonStepId": "insert-head",
+      "line": 125,
+      "message": "tail = new：单节点时 head = tail / one node is both ends",
+      "state": {
+        "focus": [
+          "n2"
+        ],
+        "type": "linked",
+        "values": [
+          11
+        ]
+      },
+      "structure": {
+        "headId": "n2",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": null,
+            "value": 9
+          },
+          {
+            "id": "n2",
+            "nextId": null,
+            "value": 11
+          }
+        ],
+        "operation": "set-tail",
+        "phase": "intermediate",
+        "tailId": "n2",
+        "targetId": "n2"
+      },
+      "variables": {
+        "current": 11,
+        "current_id": "n2",
+        "head": 11,
+        "ids": [
+          "n2"
+        ],
+        "length": 1,
+        "tail": 11
+      }
+    },
+    {
+      "lessonStepId": "insert-head",
+      "line": 127,
+      "message": "new.next = new：单节点自环闭合 / the single node points to itself",
+      "state": {
+        "focus": [
+          "n2"
+        ],
+        "type": "linked",
+        "values": [
+          11
+        ]
+      },
+      "structure": {
+        "change": {
+          "afterId": "n2",
+          "beforeId": null,
+          "field": "next",
+          "nodeId": "n2"
+        },
+        "headId": "n2",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": null,
+            "value": 9
+          },
+          {
+            "id": "n2",
+            "nextId": "n2",
+            "value": 11
+          }
+        ],
+        "operation": "set-next",
+        "phase": "complete",
+        "tailId": "n2",
+        "targetId": "n2"
+      },
+      "variables": {
+        "current": 11,
+        "current_id": "n2",
+        "head": 11,
+        "ids": [
+          "n2"
+        ],
+        "length": 1,
+        "tail": 11
+      }
+    },
+    {
+      "lessonStepId": "insert-tail",
+      "line": 140,
+      "message": "创建尾节点 13 / create tail node",
+      "state": {
+        "focus": [
+          "n3"
+        ],
+        "type": "linked",
+        "values": [
+          11
+        ]
+      },
+      "structure": {
+        "headId": "n2",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": null,
+            "value": 9
+          },
+          {
+            "id": "n2",
+            "nextId": "n2",
+            "value": 11
+          },
+          {
+            "id": "n3",
+            "nextId": null,
+            "value": 13
+          }
+        ],
+        "operation": "create",
+        "phase": "intermediate",
+        "tailId": "n2",
+        "targetId": "n3"
+      },
+      "variables": {
+        "current": 13,
+        "current_id": "n3",
+        "head": 11,
+        "ids": [
+          "n2"
+        ],
+        "length": 1,
+        "tail": 11
+      }
+    },
+    {
+      "lessonStepId": "insert-tail",
+      "line": 150,
+      "message": "旧 tail.next = new：旧尾先指向新节点 / old tail points to the new node",
+      "state": {
+        "focus": [
+          "n2"
+        ],
+        "type": "linked",
+        "values": [
+          11,
+          13
+        ]
+      },
+      "structure": {
+        "change": {
+          "afterId": "n3",
+          "beforeId": "n2",
+          "field": "next",
+          "nodeId": "n2"
+        },
+        "headId": "n2",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": null,
+            "value": 9
+          },
+          {
+            "id": "n2",
+            "nextId": "n3",
+            "value": 11
+          },
+          {
+            "id": "n3",
+            "nextId": null,
+            "value": 13
+          }
+        ],
+        "operation": "set-next",
+        "phase": "intermediate",
+        "tailId": "n2",
+        "targetId": "n2"
+      },
+      "variables": {
+        "current": 11,
+        "current_id": "n2",
+        "head": 11,
+        "ids": [
+          "n2",
+          "n3"
+        ],
+        "length": 2,
+        "tail": 11
+      }
+    },
+    {
+      "lessonStepId": "insert-tail",
+      "line": 152,
+      "message": "new.next = head：新节点指回首节点 / new node closes the circle",
+      "state": {
+        "focus": [
+          "n3"
+        ],
+        "type": "linked",
+        "values": [
+          11,
+          13
+        ]
+      },
+      "structure": {
+        "change": {
+          "afterId": "n2",
+          "beforeId": null,
+          "field": "next",
+          "nodeId": "n3"
+        },
+        "headId": "n2",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": null,
+            "value": 9
+          },
+          {
+            "id": "n2",
+            "nextId": "n3",
+            "value": 11
+          },
+          {
+            "id": "n3",
+            "nextId": "n2",
+            "value": 13
+          }
+        ],
+        "operation": "set-next",
+        "phase": "intermediate",
+        "tailId": "n2",
+        "targetId": "n3"
+      },
+      "variables": {
+        "current": 13,
+        "current_id": "n3",
+        "head": 11,
+        "ids": [
+          "n2",
+          "n3"
+        ],
+        "length": 2,
+        "tail": 11
+      }
+    },
+    {
+      "lessonStepId": "insert-tail",
+      "line": 154,
+      "message": "tail = new：尾指针更新为 13 / tail moves to the new node",
+      "state": {
+        "focus": [
+          "n3"
+        ],
+        "type": "linked",
+        "values": [
+          11,
+          13
+        ]
+      },
+      "structure": {
+        "headId": "n2",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": null,
+            "value": 9
+          },
+          {
+            "id": "n2",
+            "nextId": "n3",
+            "value": 11
+          },
+          {
+            "id": "n3",
+            "nextId": "n2",
+            "value": 13
+          }
+        ],
+        "operation": "set-tail",
+        "phase": "complete",
+        "tailId": "n3",
+        "targetId": "n3"
+      },
+      "variables": {
+        "current": 13,
+        "current_id": "n3",
+        "head": 11,
+        "ids": [
+          "n2",
+          "n3"
+        ],
+        "length": 2,
+        "tail": 13
+      }
+    },
+    {
+      "lessonStepId": "traverse-circle",
+      "line": 226,
+      "message": "访问 11，继续 current = current.next / visit, then follow next",
+      "state": {
+        "focus": [
+          "n2"
+        ],
+        "type": "linked",
+        "values": [
+          11,
+          13
+        ]
+      },
+      "structure": {
+        "headId": "n2",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": null,
+            "value": 9
+          },
+          {
+            "id": "n2",
+            "nextId": "n3",
+            "value": 11
+          },
+          {
+            "id": "n3",
+            "nextId": "n2",
+            "value": 13
+          }
+        ],
+        "operation": "visit",
+        "phase": "complete",
+        "tailId": "n3",
+        "targetId": "n2"
+      },
+      "variables": {
+        "current": 11,
+        "current_id": "n2",
+        "head": 11,
+        "ids": [
+          "n2",
+          "n3"
+        ],
+        "length": 2,
+        "tail": 13
+      }
+    },
+    {
+      "lessonStepId": "traverse-circle",
+      "line": 226,
+      "message": "访问 13，继续 current = current.next / visit, then follow next",
+      "state": {
+        "focus": [
+          "n3"
+        ],
+        "type": "linked",
+        "values": [
+          11,
+          13
+        ]
+      },
+      "structure": {
+        "headId": "n2",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": null,
+            "value": 9
+          },
+          {
+            "id": "n2",
+            "nextId": "n3",
+            "value": 11
+          },
+          {
+            "id": "n3",
+            "nextId": "n2",
+            "value": 13
+          }
+        ],
+        "operation": "visit",
+        "phase": "complete",
+        "tailId": "n3",
+        "targetId": "n3"
+      },
+      "variables": {
+        "current": 13,
+        "current_id": "n3",
+        "head": 11,
+        "ids": [
+          "n2",
+          "n3"
+        ],
+        "length": 2,
+        "tail": 13
+      }
+    },
+    {
+      "lessonStepId": "delete-tail",
+      "line": 194,
+      "message": "tail = target.prev：删除尾节点 / tail moves back",
+      "state": {
+        "focus": [
+          "n2"
+        ],
+        "type": "linked",
+        "values": [
+          11,
+          13
+        ]
+      },
+      "structure": {
+        "headId": "n2",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": null,
+            "value": 9
+          },
+          {
+            "id": "n2",
+            "nextId": "n3",
+            "value": 11
+          },
+          {
+            "id": "n3",
+            "nextId": "n2",
+            "value": 13
+          }
+        ],
+        "operation": "set-tail",
+        "phase": "intermediate",
+        "tailId": "n2",
+        "targetId": "n2"
+      },
+      "variables": {
+        "current": 11,
+        "current_id": "n2",
+        "head": 11,
+        "ids": [
+          "n2",
+          "n3"
+        ],
+        "length": 2,
+        "tail": 11
+      }
+    },
+    {
+      "lessonStepId": "delete-tail",
+      "line": 196,
+      "message": "previous.next = head：新尾指回 head / new tail points back to head",
+      "state": {
+        "focus": [
+          "n2"
+        ],
+        "type": "linked",
+        "values": [
+          11
+        ]
+      },
+      "structure": {
+        "change": {
+          "afterId": "n2",
+          "beforeId": "n3",
+          "field": "next",
+          "nodeId": "n2"
+        },
+        "headId": "n2",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": null,
+            "value": 9
+          },
+          {
+            "id": "n2",
+            "nextId": "n2",
+            "value": 11
+          },
+          {
+            "id": "n3",
+            "nextId": "n2",
+            "value": 13
+          }
+        ],
+        "operation": "set-next",
+        "phase": "intermediate",
+        "tailId": "n2",
+        "targetId": "n2"
+      },
+      "variables": {
+        "current": 11,
+        "current_id": "n2",
+        "head": 11,
+        "ids": [
+          "n2"
+        ],
+        "length": 1,
+        "tail": 11
+      }
+    },
+    {
+      "lessonStepId": "delete-tail",
+      "line": 202,
+      "message": "target.next = None：解除目标的 next / clear the removed node's next",
+      "state": {
+        "focus": [
+          "n3"
+        ],
+        "type": "linked",
+        "values": [
+          11
+        ]
+      },
+      "structure": {
+        "change": {
+          "afterId": null,
+          "beforeId": "n2",
+          "field": "next",
+          "nodeId": "n3"
+        },
+        "headId": "n2",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": null,
+            "value": 9
+          },
+          {
+            "id": "n2",
+            "nextId": "n2",
+            "value": 11
+          },
+          {
+            "id": "n3",
+            "nextId": null,
+            "value": 13
+          }
+        ],
+        "operation": "set-next",
+        "phase": "intermediate",
+        "tailId": "n2",
+        "targetId": "n3"
+      },
+      "variables": {
+        "current": 13,
+        "current_id": "n3",
+        "head": 11,
+        "ids": [
+          "n2"
+        ],
+        "length": 1,
+        "tail": 11
+      }
+    },
+    {
+      "lessonStepId": "delete-tail",
+      "line": 204,
+      "message": "节点 n3 已脱离链表 / node detached, no stale reference remains",
+      "state": {
+        "focus": [
+          "n3"
+        ],
+        "type": "linked",
+        "values": [
+          11
+        ]
+      },
+      "structure": {
+        "headId": "n2",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": null,
+            "value": 9
+          },
+          {
+            "id": "n2",
+            "nextId": "n2",
+            "value": 11
+          },
+          {
+            "id": "n3",
+            "nextId": null,
+            "value": 13
+          }
+        ],
+        "operation": "detach",
+        "phase": "complete",
+        "tailId": "n2",
+        "targetId": "n3"
+      },
+      "variables": {
+        "current": 13,
+        "current_id": "n3",
+        "head": 11,
+        "ids": [
+          "n2"
+        ],
+        "length": 1,
+        "tail": 11
+      }
+    },
+    {
+      "lessonStepId": "insert-head",
+      "line": 120,
+      "message": "创建节点 15：next 暂时为空 / create node with next = None",
+      "state": {
+        "focus": [
+          "n4"
+        ],
+        "type": "linked",
+        "values": [
+          11
+        ]
+      },
+      "structure": {
+        "headId": "n2",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": null,
+            "value": 9
+          },
+          {
+            "id": "n2",
+            "nextId": "n2",
+            "value": 11
+          },
+          {
+            "id": "n3",
+            "nextId": null,
+            "value": 13
+          },
+          {
+            "id": "n4",
+            "nextId": null,
+            "value": 15
+          }
+        ],
+        "operation": "create",
+        "phase": "intermediate",
+        "tailId": "n2",
+        "targetId": "n4"
+      },
+      "variables": {
+        "current": 15,
+        "current_id": "n4",
+        "head": 11,
+        "ids": [
+          "n2"
+        ],
+        "length": 1,
+        "tail": 11
+      }
+    },
+    {
+      "lessonStepId": "insert-head",
+      "line": 130,
+      "message": "new.next = 旧 head：新节点指向旧首节点 / new node points at the old head",
+      "state": {
+        "focus": [
+          "n4"
+        ],
+        "type": "linked",
+        "values": [
+          11
+        ]
+      },
+      "structure": {
+        "change": {
+          "afterId": "n2",
+          "beforeId": null,
+          "field": "next",
+          "nodeId": "n4"
+        },
+        "headId": "n2",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": null,
+            "value": 9
+          },
+          {
+            "id": "n2",
+            "nextId": "n2",
+            "value": 11
+          },
+          {
+            "id": "n3",
+            "nextId": null,
+            "value": 13
+          },
+          {
+            "id": "n4",
+            "nextId": "n2",
+            "value": 15
+          }
+        ],
+        "operation": "set-next",
+        "phase": "intermediate",
+        "tailId": "n2",
+        "targetId": "n4"
+      },
+      "variables": {
+        "current": 15,
+        "current_id": "n4",
+        "head": 11,
+        "ids": [
+          "n2"
+        ],
+        "length": 1,
+        "tail": 11
+      }
+    },
+    {
+      "lessonStepId": "insert-head",
+      "line": 132,
+      "message": "tail.next = new：回环改指新首节点 / tail's return arrow moves to the new head",
+      "state": {
+        "focus": [
+          "n2"
+        ],
+        "type": "linked",
+        "values": [
+          11,
+          15
+        ]
+      },
+      "structure": {
+        "change": {
+          "afterId": "n4",
+          "beforeId": "n2",
+          "field": "next",
+          "nodeId": "n2"
+        },
+        "headId": "n2",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": null,
+            "value": 9
+          },
+          {
+            "id": "n2",
+            "nextId": "n4",
+            "value": 11
+          },
+          {
+            "id": "n3",
+            "nextId": null,
+            "value": 13
+          },
+          {
+            "id": "n4",
+            "nextId": "n2",
+            "value": 15
+          }
+        ],
+        "operation": "set-next",
+        "phase": "intermediate",
+        "tailId": "n2",
+        "targetId": "n2"
+      },
+      "variables": {
+        "current": 11,
+        "current_id": "n2",
+        "head": 11,
+        "ids": [
+          "n2",
+          "n4"
+        ],
+        "length": 2,
+        "tail": 11
+      }
+    },
+    {
+      "lessonStepId": "insert-head",
+      "line": 134,
+      "message": "head = new：头插入完成，tail.next 已指回新 head / head insertion complete",
+      "state": {
+        "focus": [
+          "n4"
+        ],
+        "type": "linked",
+        "values": [
+          15,
+          11
+        ]
+      },
+      "structure": {
+        "headId": "n4",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": null,
+            "value": 9
+          },
+          {
+            "id": "n2",
+            "nextId": "n4",
+            "value": 11
+          },
+          {
+            "id": "n3",
+            "nextId": null,
+            "value": 13
+          },
+          {
+            "id": "n4",
+            "nextId": "n2",
+            "value": 15
+          }
+        ],
+        "operation": "set-head",
+        "phase": "complete",
+        "tailId": "n2",
+        "targetId": "n4"
+      },
+      "variables": {
+        "current": 15,
+        "current_id": "n4",
+        "head": 15,
+        "ids": [
+          "n4",
+          "n2"
+        ],
+        "length": 2,
+        "tail": 11
+      }
+    },
+    {
+      "lessonStepId": "done",
+      "line": 245,
+      "message": "循环单链表演示结束：非空时 tail.next 一定回到 head / Done: tail.next returns to head",
+      "state": {
+        "focus": [],
+        "type": "linked",
+        "values": [
+          15,
+          11
+        ]
+      },
+      "structure": {
+        "headId": "n4",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": null,
+            "value": 9
+          },
+          {
+            "id": "n2",
+            "nextId": "n4",
+            "value": 11
+          },
+          {
+            "id": "n3",
+            "nextId": null,
+            "value": 13
+          },
+          {
+            "id": "n4",
+            "nextId": "n2",
+            "value": 15
+          }
+        ],
+        "operation": "done",
+        "phase": "complete",
+        "tailId": "n2"
+      },
+      "variables": {
+        "current": null,
+        "current_id": null,
+        "head": 15,
+        "ids": [
+          "n4",
+          "n2"
+        ],
+        "length": 2,
+        "tail": 11
+      }
+    }
+  ],
+  "single_self_loop": [
+    {
+      "lessonStepId": "init",
+      "line": 231,
+      "message": "空的循环单链表：head = None，tail = None / Empty circular singly linked list",
+      "state": {
+        "focus": [],
+        "type": "linked",
+        "values": []
+      },
+      "structure": {
+        "headId": null,
+        "kind": "circular-linked-list",
+        "nodes": [],
+        "operation": "init",
+        "phase": "complete",
+        "tailId": null
+      },
+      "variables": {
+        "current": null,
+        "current_id": null,
+        "head": null,
+        "ids": [],
+        "length": 0,
+        "tail": null
+      }
+    },
+    {
+      "lessonStepId": "insert-head",
+      "line": 120,
+      "message": "创建节点 5：next 暂时为空 / create node with next = None",
+      "state": {
+        "focus": [
+          "n1"
+        ],
+        "type": "linked",
+        "values": []
+      },
+      "structure": {
+        "headId": null,
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": null,
+            "value": 5
+          }
+        ],
+        "operation": "create",
+        "phase": "intermediate",
+        "tailId": null,
+        "targetId": "n1"
+      },
+      "variables": {
+        "current": 5,
+        "current_id": "n1",
+        "head": null,
+        "ids": [],
+        "length": 0,
+        "tail": null
+      }
+    },
+    {
+      "lessonStepId": "insert-head",
+      "line": 123,
+      "message": "head = new：空表建立首节点 / first node",
+      "state": {
+        "focus": [
+          "n1"
+        ],
+        "type": "linked",
+        "values": [
+          5
+        ]
+      },
+      "structure": {
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": null,
+            "value": 5
+          }
+        ],
+        "operation": "set-head",
+        "phase": "intermediate",
+        "tailId": null,
+        "targetId": "n1"
+      },
+      "variables": {
+        "current": 5,
+        "current_id": "n1",
+        "head": 5,
+        "ids": [
+          "n1"
+        ],
+        "length": 1,
+        "tail": null
+      }
+    },
+    {
+      "lessonStepId": "insert-head",
+      "line": 125,
+      "message": "tail = new：单节点时 head = tail / one node is both ends",
+      "state": {
+        "focus": [
+          "n1"
+        ],
+        "type": "linked",
+        "values": [
+          5
+        ]
+      },
+      "structure": {
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": null,
+            "value": 5
+          }
+        ],
+        "operation": "set-tail",
+        "phase": "intermediate",
+        "tailId": "n1",
+        "targetId": "n1"
+      },
+      "variables": {
+        "current": 5,
+        "current_id": "n1",
+        "head": 5,
+        "ids": [
+          "n1"
+        ],
+        "length": 1,
+        "tail": 5
+      }
+    },
+    {
+      "lessonStepId": "insert-head",
+      "line": 127,
+      "message": "new.next = new：单节点自环闭合 / the single node points to itself",
+      "state": {
+        "focus": [
+          "n1"
+        ],
+        "type": "linked",
+        "values": [
+          5
+        ]
+      },
+      "structure": {
+        "change": {
+          "afterId": "n1",
+          "beforeId": null,
+          "field": "next",
+          "nodeId": "n1"
+        },
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n1",
+            "value": 5
+          }
+        ],
+        "operation": "set-next",
+        "phase": "complete",
+        "tailId": "n1",
+        "targetId": "n1"
+      },
+      "variables": {
+        "current": 5,
+        "current_id": "n1",
+        "head": 5,
+        "ids": [
+          "n1"
+        ],
+        "length": 1,
+        "tail": 5
+      }
+    },
+    {
+      "lessonStepId": "traverse-circle",
+      "line": 226,
+      "message": "访问 5，继续 current = current.next / visit, then follow next",
+      "state": {
+        "focus": [
+          "n1"
+        ],
+        "type": "linked",
+        "values": [
+          5
+        ]
+      },
+      "structure": {
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n1",
+            "value": 5
+          }
+        ],
+        "operation": "visit",
+        "phase": "complete",
+        "tailId": "n1",
+        "targetId": "n1"
+      },
+      "variables": {
+        "current": 5,
+        "current_id": "n1",
+        "head": 5,
+        "ids": [
+          "n1"
+        ],
+        "length": 1,
+        "tail": 5
+      }
+    },
+    {
+      "lessonStepId": "find",
+      "line": 104,
+      "message": "沿 next 查找 5：当前是 5 / walk next for 5",
+      "state": {
+        "focus": [
+          "n1"
+        ],
+        "type": "linked",
+        "values": [
+          5
+        ]
+      },
+      "structure": {
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n1",
+            "value": 5
+          }
+        ],
+        "operation": "visit",
+        "phase": "complete",
+        "tailId": "n1",
+        "targetId": "n1"
+      },
+      "variables": {
+        "current": 5,
+        "current_id": "n1",
+        "head": 5,
+        "ids": [
+          "n1"
+        ],
+        "length": 1,
+        "tail": 5
+      }
+    },
+    {
+      "lessonStepId": "find",
+      "line": 107,
+      "message": "查找 5：命中 n1，立即停止整圈扫描 / found before returning to head",
+      "state": {
+        "focus": [
+          "n1"
+        ],
+        "type": "linked",
+        "values": [
+          5
+        ]
+      },
+      "structure": {
+        "found": true,
+        "headId": "n1",
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n1",
+            "value": 5
+          }
+        ],
+        "operation": "found",
+        "phase": "complete",
+        "searchValue": 5,
+        "tailId": "n1",
+        "targetId": "n1"
+      },
+      "variables": {
+        "current": 5,
+        "current_id": "n1",
+        "head": 5,
+        "ids": [
+          "n1"
+        ],
+        "length": 1,
+        "tail": 5
+      }
+    },
+    {
+      "lessonStepId": "delete-head",
+      "line": 178,
+      "message": "head = None：删除唯一节点 / removing the only node",
+      "state": {
+        "focus": [],
+        "type": "linked",
+        "values": []
+      },
+      "structure": {
+        "headId": null,
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n1",
+            "value": 5
+          }
+        ],
+        "operation": "set-head",
+        "phase": "intermediate",
+        "tailId": "n1"
+      },
+      "variables": {
+        "current": null,
+        "current_id": null,
+        "head": null,
+        "ids": [],
+        "length": 0,
+        "tail": 5
+      }
+    },
+    {
+      "lessonStepId": "delete-head",
+      "line": 180,
+      "message": "tail = None：链表变空 / the list is empty",
+      "state": {
+        "focus": [],
+        "type": "linked",
+        "values": []
+      },
+      "structure": {
+        "headId": null,
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": "n1",
+            "value": 5
+          }
+        ],
+        "operation": "set-tail",
+        "phase": "intermediate",
+        "tailId": null
+      },
+      "variables": {
+        "current": null,
+        "current_id": null,
+        "head": null,
+        "ids": [],
+        "length": 0,
+        "tail": null
+      }
+    },
+    {
+      "lessonStepId": "delete-head",
+      "line": 182,
+      "message": "target.next = None：自环解除 / the self-loop is cleared",
+      "state": {
+        "focus": [
+          "n1"
+        ],
+        "type": "linked",
+        "values": []
+      },
+      "structure": {
+        "change": {
+          "afterId": null,
+          "beforeId": "n1",
+          "field": "next",
+          "nodeId": "n1"
+        },
+        "headId": null,
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": null,
+            "value": 5
+          }
+        ],
+        "operation": "set-next",
+        "phase": "intermediate",
+        "tailId": null,
+        "targetId": "n1"
+      },
+      "variables": {
+        "current": 5,
+        "current_id": "n1",
+        "head": null,
+        "ids": [],
+        "length": 0,
+        "tail": null
+      }
+    },
+    {
+      "lessonStepId": "delete-head",
+      "line": 184,
+      "message": "节点 n1 已脱离，head 与 tail 均为 None / detached, list is empty",
+      "state": {
+        "focus": [
+          "n1"
+        ],
+        "type": "linked",
+        "values": []
+      },
+      "structure": {
+        "headId": null,
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": null,
+            "value": 5
+          }
+        ],
+        "operation": "detach",
+        "phase": "complete",
+        "tailId": null,
+        "targetId": "n1"
+      },
+      "variables": {
+        "current": 5,
+        "current_id": "n1",
+        "head": null,
+        "ids": [],
+        "length": 0,
+        "tail": null
+      }
+    },
+    {
+      "lessonStepId": "done",
+      "line": 245,
+      "message": "循环单链表演示结束：非空时 tail.next 一定回到 head / Done: tail.next returns to head",
+      "state": {
+        "focus": [],
+        "type": "linked",
+        "values": []
+      },
+      "structure": {
+        "headId": null,
+        "kind": "circular-linked-list",
+        "nodes": [
+          {
+            "id": "n1",
+            "nextId": null,
+            "value": 5
+          }
+        ],
+        "operation": "done",
+        "phase": "complete",
+        "tailId": null
+      },
+      "variables": {
+        "current": null,
+        "current_id": null,
+        "head": null,
+        "ids": [],
+        "length": 0,
+        "tail": null
+      }
+    }
+  ]
+}
