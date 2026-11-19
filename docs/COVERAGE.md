@@ -1,6 +1,6 @@
 # AlgoViz 算法与课程覆盖清单
 
-快照：2026-11-19（L1B 从 L1A 最终记录 `4fab01b` 创建 `feat/l1b-sequential-list` 完成；UIX-V01 从 L1B 最终记录 `7c70176` 创建 `feat/uix-v01-array-canvas`，实现记录 `d190af0`；UIX-V02 记录 `2f57c14`（`0.27.2-uix02`）；UIX-G01A 从 `2f57c14` 创建 `feat/uix-g01a-mst-readability`（`0.27.3-uixg01a`）；UX-04C、T2、T3、T4、S1、S2、F1、F2、L1A、L1B、UIX-V01、UIX-V02 与 UIX-G01A 均未合并 `main`）
+快照：2026-11-19（L1B 从 L1A 最终记录 `4fab01b` 创建 `feat/l1b-sequential-list` 完成；UIX-V01 从 L1B 最终记录 `7c70176` 创建 `feat/uix-v01-array-canvas`，实现记录 `d190af0`；UIX-V02 记录 `2f57c14`（`0.27.2-uix02`）；UIX-G01A 从 `2f57c14` 创建 `feat/uix-g01a-mst-readability`，实现记录 `39a8498`（`0.27.3-uixg01a`）；UX-04C、T2、T3、T4、S1、S2、F1、F2、L1A、L1B、UIX-V01、UIX-V02 与 UIX-G01A 均未合并 `main`）
 
 ## 1. 口径
 

@@ -4,6 +4,7 @@
 
 - 分支：`feat/uix-g01a-mst-readability`
 - 基点：`2f57c14`（UIX-V02 最新提交，版本 `0.27.2-uix02`）
+- 实现提交：`39a8498`（`feat(uix-g01a): enlarge MST canvases and fit their viewports`）
 - 本轮版本：`0.27.3-uixg01a`
 - 只改 Prim / Kruskal 的 MST 主画布与局部侧栏比例：不新增算法，不改真实 Python Trace / 帧语义 / 课程内容，不改整站布局，不碰阶乘、斐波那契、其他图算法、排序柱高、导学默认展开、VisualGuide 结构或 AI/MCP。
 - 从 UIX-V02 最新提交独立切分支，未覆盖 `feat/uix-v02-visual-guide` 或其他 Agent 的工作。
