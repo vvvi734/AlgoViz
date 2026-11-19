@@ -395,7 +395,7 @@ export function SortingVisual({ model }: { model: SortingVisualModel }) {
                   }${isMerged ? ' is-merged' : ''}${isLeft ? ' is-left' : ''}${isRight ? ' is-right' : ''}${
                     isBufferSource ? ' is-buffer-source' : ''
                   }${isWriteTarget ? ' is-write-target' : ''}`}
-                  style={{ height: `${cell.height}px` }}
+                  style={{ height: `${Math.min(100, (cell.height / 165) * 100).toFixed(2)}%` }}
                   role="listitem"
                   aria-label={`${cell.value} at p${cell.index}${isSorted ? ', sorted' : ''}${
                     isFinal ? ', final' : ''

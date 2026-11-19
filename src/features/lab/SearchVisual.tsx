@@ -214,7 +214,7 @@ export function SearchVisual({ model }: { model: SearchVisualModel }) {
                     }${found ? ' is-found' : ''}${excluded ? ' is-excluded' : ''}${
                       liveRange ? ' is-range' : ''
                     }${left ? ' is-left' : ''}${right ? ' is-right' : ''}${mid ? ' is-mid' : ''}`}
-                    style={{ height: `${cell.height}px` }}
+                    style={{ height: `${Math.min(100, (cell.height / 165) * 100).toFixed(2)}%` }}
                   >
                     {cell.value}
                   </div>

@@ -592,7 +592,7 @@ export function VisualStage({ event }: { event: TraceEvent | undefined }) {
             <div className="bar-item" key={bar.index}>
               <div
                 className={`bar ${bar.focused ? 'focus' : bar.done ? 'done' : ''}`}
-                style={{ height: `${bar.height}px` }}
+                style={{ height: `${Math.min(100, (bar.height / 165) * 100).toFixed(2)}%` }}
               >
                 <span>{String(bar.value)}</span>
               </div>

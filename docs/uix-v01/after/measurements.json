@@ -1,0 +1,2996 @@
+[
+  {
+    "label": "after",
+    "mode": "expanded",
+    "viewport": "1440x900",
+    "algorithm": "bubble",
+    "frame": 2,
+    "operation": "legacy-bars",
+    "step": null,
+    "stage": {
+      "width": 675.8,
+      "height": 414,
+      "padding": {
+        "left": 16,
+        "right": 16,
+        "top": 16,
+        "bottom": 16
+      },
+      "innerWidth": 642,
+      "innerHeight": 380,
+      "scrollWidth": 674,
+      "clientWidth": 674
+    },
+    "array": {
+      "width": 641.8,
+      "height": 280
+    },
+    "maxBarHeight": 262,
+    "maxBarRatioOfInner": 68.9,
+    "maxBarRatioOfStage": 63.3,
+    "barCount": 6,
+    "bars": [
+      {
+        "height": 69.6,
+        "cssHeight": "69.5781px",
+        "index": null,
+        "value": "2"
+      },
+      {
+        "height": 174.8,
+        "cssHeight": "174.766px",
+        "index": null,
+        "value": "5"
+      },
+      {
+        "height": 262,
+        "cssHeight": "262px",
+        "index": null,
+        "value": "8"
+      },
+      {
+        "height": 35.6,
+        "cssHeight": "35.6406px",
+        "index": null,
+        "value": "1"
+      }
+    ],
+    "stageOverflowX": false,
+    "pageOverflowX": false,
+    "lastBarRight": 829.4,
+    "arrayRight": 932.8,
+    "railWidth": 436.3
+  },
+  {
+    "label": "after",
+    "mode": "focus",
+    "viewport": "1440x900",
+    "algorithm": "bubble",
+    "frame": 2,
+    "operation": "legacy-bars",
+    "step": null,
+    "stage": {
+      "width": 692.2,
+      "height": 512.6,
+      "padding": {
+        "left": 8,
+        "right": 8,
+        "top": 8,
+        "bottom": 8
+      },
+      "innerWidth": 674,
+      "innerHeight": 495,
+      "scrollWidth": 690,
+      "clientWidth": 690
+    },
+    "array": {
+      "width": 674.2,
+      "height": 340
+    },
+    "maxBarHeight": 322,
+    "maxBarRatioOfInner": 65.1,
+    "maxBarRatioOfStage": 62.8,
+    "barCount": 6,
+    "bars": [
+      {
+        "height": 84.5,
+        "cssHeight": "84.4844px",
+        "index": null,
+        "value": "2"
+      },
+      {
+        "height": 212.2,
+        "cssHeight": "212.219px",
+        "index": null,
+        "value": "5"
+      },
+      {
+        "height": 322,
+        "cssHeight": "322px",
+        "index": null,
+        "value": "8"
+      },
+      {
+        "height": 43.3,
+        "cssHeight": "43.2812px",
+        "index": null,
+        "value": "1"
+      }
+    ],
+    "stageOverflowX": false,
+    "pageOverflowX": false,
+    "lastBarRight": 830.6,
+    "arrayRight": 950.2,
+    "railWidth": 437.8,
+    "screenshot": "D:\\Desktop\\algolens_github_starter\\algolens-ui03\\docs\\uix-v01\\after\\bubble-swap-1440x900.png"
+  },
+  {
+    "label": "after",
+    "mode": "expanded",
+    "viewport": "1440x900",
+    "algorithm": "selection",
+    "frame": 9,
+    "operation": "select-swap",
+    "step": "select-swap",
+    "stage": {
+      "width": 675.8,
+      "height": 463.3,
+      "padding": {
+        "left": 16,
+        "right": 16,
+        "top": 16,
+        "bottom": 16
+      },
+      "innerWidth": 642,
+      "innerHeight": 429,
+      "scrollWidth": 674,
+      "clientWidth": 674
+    },
+    "array": {
+      "width": 641.8,
+      "height": 280
+    },
+    "maxBarHeight": 244,
+    "maxBarRatioOfInner": 56.9,
+    "maxBarRatioOfStage": 52.7,
+    "barCount": 6,
+    "bars": [
+      {
+        "height": 30.5,
+        "cssHeight": "30.5469px",
+        "index": "0",
+        "value": "1"
+      },
+      {
+        "height": 123.9,
+        "cssHeight": "123.859px",
+        "index": "1",
+        "value": "4"
+      },
+      {
+        "height": 244,
+        "cssHeight": "244px",
+        "index": "2",
+        "value": "9"
+      },
+      {
+        "height": 186.7,
+        "cssHeight": "186.672px",
+        "index": "3",
+        "value": "6"
+      }
+    ],
+    "stageOverflowX": false,
+    "pageOverflowX": false,
+    "lastBarRight": 829.4,
+    "arrayRight": 932.8,
+    "railWidth": 436.3
+  },
+  {
+    "label": "after",
+    "mode": "focus",
+    "viewport": "1440x900",
+    "algorithm": "selection",
+    "frame": 9,
+    "operation": "select-swap",
+    "step": "select-swap",
+    "stage": {
+      "width": 692.2,
+      "height": 512.6,
+      "padding": {
+        "left": 8,
+        "right": 8,
+        "top": 8,
+        "bottom": 8
+      },
+      "innerWidth": 674,
+      "innerHeight": 495,
+      "scrollWidth": 690,
+      "clientWidth": 690
+    },
+    "array": {
+      "width": 674.2,
+      "height": 359.3
+    },
+    "maxBarHeight": 323.3,
+    "maxBarRatioOfInner": 65.3,
+    "maxBarRatioOfStage": 63.1,
+    "barCount": 6,
+    "bars": [
+      {
+        "height": 39.2,
+        "cssHeight": "39.1875px",
+        "index": "0",
+        "value": "1"
+      },
+      {
+        "height": 159,
+        "cssHeight": "158.953px",
+        "index": "1",
+        "value": "4"
+      },
+      {
+        "height": 323.3,
+        "cssHeight": "323.312px",
+        "index": "2",
+        "value": "9"
+      },
+      {
+        "height": 239.5,
+        "cssHeight": "239.547px",
+        "index": "3",
+        "value": "6"
+      }
+    ],
+    "stageOverflowX": false,
+    "pageOverflowX": false,
+    "lastBarRight": 830.6,
+    "arrayRight": 950.2,
+    "railWidth": 437.8
+  },
+  {
+    "label": "after",
+    "mode": "expanded",
+    "viewport": "1440x900",
+    "algorithm": "insertion",
+    "frame": 3,
+    "operation": "insert-shift",
+    "step": "insert-shift",
+    "stage": {
+      "width": 675.8,
+      "height": 513.6,
+      "padding": {
+        "left": 16,
+        "right": 16,
+        "top": 16,
+        "bottom": 16
+      },
+      "innerWidth": 642,
+      "innerHeight": 480,
+      "scrollWidth": 674,
+      "clientWidth": 674
+    },
+    "array": {
+      "width": 641.8,
+      "height": 280
+    },
+    "maxBarHeight": 244,
+    "maxBarRatioOfInner": 50.8,
+    "maxBarRatioOfStage": 47.5,
+    "barCount": 6,
+    "bars": [
+      {
+        "height": 217.2,
+        "cssHeight": "217.219px",
+        "index": "0",
+        "value": "7"
+      },
+      {
+        "height": 217.2,
+        "cssHeight": "217.219px",
+        "index": "1",
+        "value": "7"
+      },
+      {
+        "height": 156.1,
+        "cssHeight": "156.125px",
+        "index": "2",
+        "value": "5"
+      },
+      {
+        "height": 30.5,
+        "cssHeight": "30.5469px",
+        "index": "3",
+        "value": "1"
+      }
+    ],
+    "stageOverflowX": false,
+    "pageOverflowX": false,
+    "lastBarRight": 829.4,
+    "arrayRight": 932.8,
+    "railWidth": 436.3
+  },
+  {
+    "label": "after",
+    "mode": "focus",
+    "viewport": "1440x900",
+    "algorithm": "insertion",
+    "frame": 3,
+    "operation": "insert-shift",
+    "step": "insert-shift",
+    "stage": {
+      "width": 692.2,
+      "height": 512.6,
+      "padding": {
+        "left": 8,
+        "right": 8,
+        "top": 8,
+        "bottom": 8
+      },
+      "innerWidth": 674,
+      "innerHeight": 495,
+      "scrollWidth": 690,
+      "clientWidth": 690
+    },
+    "array": {
+      "width": 674.2,
+      "height": 313
+    },
+    "maxBarHeight": 277,
+    "maxBarRatioOfInner": 56,
+    "maxBarRatioOfStage": 54,
+    "barCount": 6,
+    "bars": [
+      {
+        "height": 242.8,
+        "cssHeight": "242.828px",
+        "index": "0",
+        "value": "7"
+      },
+      {
+        "height": 242.8,
+        "cssHeight": "242.828px",
+        "index": "1",
+        "value": "7"
+      },
+      {
+        "height": 174.5,
+        "cssHeight": "174.531px",
+        "index": "2",
+        "value": "5"
+      },
+      {
+        "height": 34.1,
+        "cssHeight": "34.1406px",
+        "index": "3",
+        "value": "1"
+      }
+    ],
+    "stageOverflowX": false,
+    "pageOverflowX": false,
+    "lastBarRight": 830.6,
+    "arrayRight": 950.2,
+    "railWidth": 437.8,
+    "screenshot": "D:\\Desktop\\algolens_github_starter\\algolens-ui03\\docs\\uix-v01\\after\\insertion-shift-1440x900.png"
+  },
+  {
+    "label": "after",
+    "mode": "expanded",
+    "viewport": "1440x900",
+    "algorithm": "shell",
+    "frame": 2,
+    "operation": "shell-compare",
+    "step": "shell-compare",
+    "stage": {
+      "width": 675.8,
+      "height": 514.3,
+      "padding": {
+        "left": 16,
+        "right": 16,
+        "top": 16,
+        "bottom": 16
+      },
+      "innerWidth": 642,
+      "innerHeight": 480,
+      "scrollWidth": 674,
+      "clientWidth": 674
+    },
+    "array": {
+      "width": 641.8,
+      "height": 280
+    },
+    "maxBarHeight": 244,
+    "maxBarRatioOfInner": 50.8,
+    "maxBarRatioOfStage": 47.4,
+    "barCount": 8,
+    "bars": [
+      {
+        "height": 244,
+        "cssHeight": "244px",
+        "index": "0",
+        "value": "8"
+      },
+      {
+        "height": 93.3,
+        "cssHeight": "93.3125px",
+        "index": "1",
+        "value": "3"
+      },
+      {
+        "height": 217.2,
+        "cssHeight": "217.219px",
+        "index": "2",
+        "value": "7"
+      },
+      {
+        "height": 123.9,
+        "cssHeight": "123.859px",
+        "index": "3",
+        "value": "4"
+      }
+    ],
+    "stageOverflowX": false,
+    "pageOverflowX": false,
+    "lastBarRight": 903.4,
+    "arrayRight": 932.8,
+    "railWidth": 436.3
+  },
+  {
+    "label": "after",
+    "mode": "focus",
+    "viewport": "1440x900",
+    "algorithm": "shell",
+    "frame": 2,
+    "operation": "shell-compare",
+    "step": "shell-compare",
+    "stage": {
+      "width": 692.2,
+      "height": 512.6,
+      "padding": {
+        "left": 8,
+        "right": 8,
+        "top": 8,
+        "bottom": 8
+      },
+      "innerWidth": 674,
+      "innerHeight": 495,
+      "scrollWidth": 690,
+      "clientWidth": 690
+    },
+    "array": {
+      "width": 674.2,
+      "height": 312.4
+    },
+    "maxBarHeight": 276.4,
+    "maxBarRatioOfInner": 55.8,
+    "maxBarRatioOfStage": 53.9,
+    "barCount": 8,
+    "bars": [
+      {
+        "height": 276.4,
+        "cssHeight": "276.359px",
+        "index": "0",
+        "value": "8"
+      },
+      {
+        "height": 104.1,
+        "cssHeight": "104.109px",
+        "index": "1",
+        "value": "3"
+      },
+      {
+        "height": 242.3,
+        "cssHeight": "242.328px",
+        "index": "2",
+        "value": "7"
+      },
+      {
+        "height": 138.2,
+        "cssHeight": "138.188px",
+        "index": "3",
+        "value": "4"
+      }
+    ],
+    "stageOverflowX": false,
+    "pageOverflowX": false,
+    "lastBarRight": 904.6,
+    "arrayRight": 950.2,
+    "railWidth": 437.8,
+    "screenshot": "D:\\Desktop\\algolens_github_starter\\algolens-ui03\\docs\\uix-v01\\after\\shell-compare-1440x900.png"
+  },
+  {
+    "label": "after",
+    "mode": "expanded",
+    "viewport": "1440x900",
+    "algorithm": "quick",
+    "frame": 12,
+    "operation": "quick-place",
+    "step": "quick-place",
+    "stage": {
+      "width": 675.8,
+      "height": 464,
+      "padding": {
+        "left": 16,
+        "right": 16,
+        "top": 16,
+        "bottom": 16
+      },
+      "innerWidth": 642,
+      "innerHeight": 430,
+      "scrollWidth": 674,
+      "clientWidth": 674
+    },
+    "array": {
+      "width": 641.8,
+      "height": 280
+    },
+    "maxBarHeight": 244,
+    "maxBarRatioOfInner": 56.7,
+    "maxBarRatioOfStage": 52.6,
+    "barCount": 8,
+    "bars": [
+      {
+        "height": 93.3,
+        "cssHeight": "93.3125px",
+        "index": "0",
+        "value": "3"
+      },
+      {
+        "height": 30.5,
+        "cssHeight": "30.5469px",
+        "index": "1",
+        "value": "1"
+      },
+      {
+        "height": 62.8,
+        "cssHeight": "62.7656px",
+        "index": "2",
+        "value": "2"
+      },
+      {
+        "height": 123.9,
+        "cssHeight": "123.859px",
+        "index": "3",
+        "value": "4"
+      }
+    ],
+    "stageOverflowX": false,
+    "pageOverflowX": false,
+    "lastBarRight": 901.4,
+    "arrayRight": 932.8,
+    "railWidth": 436.3
+  },
+  {
+    "label": "after",
+    "mode": "focus",
+    "viewport": "1440x900",
+    "algorithm": "quick",
+    "frame": 12,
+    "operation": "quick-place",
+    "step": "quick-place",
+    "stage": {
+      "width": 692.2,
+      "height": 512.6,
+      "padding": {
+        "left": 8,
+        "right": 8,
+        "top": 8,
+        "bottom": 8
+      },
+      "innerWidth": 674,
+      "innerHeight": 495,
+      "scrollWidth": 690,
+      "clientWidth": 690
+    },
+    "array": {
+      "width": 674.2,
+      "height": 358.7
+    },
+    "maxBarHeight": 322.7,
+    "maxBarRatioOfInner": 65.2,
+    "maxBarRatioOfStage": 62.9,
+    "barCount": 8,
+    "bars": [
+      {
+        "height": 119.5,
+        "cssHeight": "119.531px",
+        "index": "0",
+        "value": "3"
+      },
+      {
+        "height": 39.1,
+        "cssHeight": "39.125px",
+        "index": "1",
+        "value": "1"
+      },
+      {
+        "height": 80.4,
+        "cssHeight": "80.4062px",
+        "index": "2",
+        "value": "2"
+      },
+      {
+        "height": 158.7,
+        "cssHeight": "158.656px",
+        "index": "3",
+        "value": "4"
+      }
+    ],
+    "stageOverflowX": false,
+    "pageOverflowX": false,
+    "lastBarRight": 902.6,
+    "arrayRight": 950.2,
+    "railWidth": 437.8,
+    "screenshot": "D:\\Desktop\\algolens_github_starter\\algolens-ui03\\docs\\uix-v01\\after\\quick-place-1440x900.png"
+  },
+  {
+    "label": "after",
+    "mode": "expanded",
+    "viewport": "1440x900",
+    "algorithm": "merge",
+    "frame": 100,
+    "operation": "merge-writeback",
+    "step": "merge-writeback",
+    "stage": {
+      "width": 675.8,
+      "height": 577,
+      "padding": {
+        "left": 16,
+        "right": 16,
+        "top": 16,
+        "bottom": 16
+      },
+      "innerWidth": 642,
+      "innerHeight": 543,
+      "scrollWidth": 674,
+      "clientWidth": 674
+    },
+    "array": {
+      "width": 641.8,
+      "height": 280
+    },
+    "maxBarHeight": 244,
+    "maxBarRatioOfInner": 44.9,
+    "maxBarRatioOfStage": 42.3,
+    "barCount": 8,
+    "bars": [
+      {
+        "height": 30.5,
+        "cssHeight": "30.5469px",
+        "index": "0",
+        "value": "1"
+      },
+      {
+        "height": 93.3,
+        "cssHeight": "93.3125px",
+        "index": "1",
+        "value": "3"
+      },
+      {
+        "height": 156.1,
+        "cssHeight": "156.125px",
+        "index": "2",
+        "value": "5"
+      },
+      {
+        "height": 217.2,
+        "cssHeight": "217.219px",
+        "index": "3",
+        "value": "7"
+      }
+    ],
+    "stageOverflowX": false,
+    "pageOverflowX": false,
+    "lastBarRight": 901.4,
+    "arrayRight": 932.8,
+    "railWidth": 436.3
+  },
+  {
+    "label": "after",
+    "mode": "focus",
+    "viewport": "1440x900",
+    "algorithm": "merge",
+    "frame": 100,
+    "operation": "merge-writeback",
+    "step": "merge-writeback",
+    "stage": {
+      "width": 692.2,
+      "height": 512.6,
+      "padding": {
+        "left": 8,
+        "right": 8,
+        "top": 8,
+        "bottom": 8
+      },
+      "innerWidth": 674,
+      "innerHeight": 495,
+      "scrollWidth": 690,
+      "clientWidth": 690
+    },
+    "array": {
+      "width": 674.2,
+      "height": 253.7
+    },
+    "maxBarHeight": 217.7,
+    "maxBarRatioOfInner": 44,
+    "maxBarRatioOfStage": 42.5,
+    "barCount": 8,
+    "bars": [
+      {
+        "height": 27.7,
+        "cssHeight": "27.6719px",
+        "index": "0",
+        "value": "1"
+      },
+      {
+        "height": 84.5,
+        "cssHeight": "84.5469px",
+        "index": "1",
+        "value": "3"
+      },
+      {
+        "height": 141.4,
+        "cssHeight": "141.438px",
+        "index": "2",
+        "value": "5"
+      },
+      {
+        "height": 196.8,
+        "cssHeight": "196.797px",
+        "index": "3",
+        "value": "7"
+      }
+    ],
+    "stageOverflowX": false,
+    "pageOverflowX": false,
+    "lastBarRight": 902.6,
+    "arrayRight": 950.2,
+    "railWidth": 437.8,
+    "screenshot": "D:\\Desktop\\algolens_github_starter\\algolens-ui03\\docs\\uix-v01\\after\\merge-writeback-1440x900.png"
+  },
+  {
+    "label": "after",
+    "mode": "expanded",
+    "viewport": "1440x900",
+    "algorithm": "linear",
+    "frame": 10,
+    "operation": "scan-compare",
+    "step": "scan-compare",
+    "stage": {
+      "width": 675.8,
+      "height": 485,
+      "padding": {
+        "left": 16,
+        "right": 16,
+        "top": 16,
+        "bottom": 16
+      },
+      "innerWidth": 642,
+      "innerHeight": 451,
+      "scrollWidth": 674,
+      "clientWidth": 674
+    },
+    "array": {
+      "width": 641.8,
+      "height": 280
+    },
+    "maxBarHeight": 244,
+    "maxBarRatioOfInner": 54.1,
+    "maxBarRatioOfStage": 50.3,
+    "barCount": 6,
+    "bars": [
+      {
+        "height": 186.7,
+        "cssHeight": "186.672px",
+        "index": "0",
+        "value": "6"
+      },
+      {
+        "height": 93.3,
+        "cssHeight": "93.3125px",
+        "index": "1",
+        "value": "3"
+      },
+      {
+        "height": 244,
+        "cssHeight": "244px",
+        "index": "2",
+        "value": "9"
+      },
+      {
+        "height": 62.8,
+        "cssHeight": "62.7656px",
+        "index": "3",
+        "value": "2"
+      }
+    ],
+    "stageOverflowX": false,
+    "pageOverflowX": false,
+    "lastBarRight": 829.4,
+    "arrayRight": 932.8,
+    "railWidth": 436.3
+  },
+  {
+    "label": "after",
+    "mode": "focus",
+    "viewport": "1440x900",
+    "algorithm": "linear",
+    "frame": 10,
+    "operation": "scan-compare",
+    "step": "scan-compare",
+    "stage": {
+      "width": 692.2,
+      "height": 512.6,
+      "padding": {
+        "left": 8,
+        "right": 8,
+        "top": 8,
+        "bottom": 8
+      },
+      "innerWidth": 674,
+      "innerHeight": 495,
+      "scrollWidth": 690,
+      "clientWidth": 690
+    },
+    "array": {
+      "width": 674.2,
+      "height": 341.7
+    },
+    "maxBarHeight": 305.7,
+    "maxBarRatioOfInner": 61.8,
+    "maxBarRatioOfStage": 59.6,
+    "barCount": 6,
+    "bars": [
+      {
+        "height": 227.8,
+        "cssHeight": "227.797px",
+        "index": "0",
+        "value": "6"
+      },
+      {
+        "height": 113.9,
+        "cssHeight": "113.875px",
+        "index": "1",
+        "value": "3"
+      },
+      {
+        "height": 305.7,
+        "cssHeight": "305.688px",
+        "index": "2",
+        "value": "9"
+      },
+      {
+        "height": 76.6,
+        "cssHeight": "76.5938px",
+        "index": "3",
+        "value": "2"
+      }
+    ],
+    "stageOverflowX": false,
+    "pageOverflowX": false,
+    "lastBarRight": 830.6,
+    "arrayRight": 950.2,
+    "railWidth": 437.8
+  },
+  {
+    "label": "after",
+    "mode": "expanded",
+    "viewport": "1440x900",
+    "algorithm": "binary",
+    "frame": 3,
+    "operation": "binary-exclude-left",
+    "step": "binary-narrow",
+    "stage": {
+      "width": 675.8,
+      "height": 485,
+      "padding": {
+        "left": 16,
+        "right": 16,
+        "top": 16,
+        "bottom": 16
+      },
+      "innerWidth": 642,
+      "innerHeight": 451,
+      "scrollWidth": 674,
+      "clientWidth": 674
+    },
+    "array": {
+      "width": 641.8,
+      "height": 280
+    },
+    "maxBarHeight": 244,
+    "maxBarRatioOfInner": 54.1,
+    "maxBarRatioOfStage": 50.3,
+    "barCount": 7,
+    "bars": [
+      {
+        "height": 23.7,
+        "cssHeight": "23.7344px",
+        "index": "0",
+        "value": "1"
+      },
+      {
+        "height": 64.5,
+        "cssHeight": "64.4688px",
+        "index": "1",
+        "value": "3"
+      },
+      {
+        "height": 106.9,
+        "cssHeight": "106.891px",
+        "index": "2",
+        "value": "5"
+      },
+      {
+        "height": 151,
+        "cssHeight": "151.031px",
+        "index": "3",
+        "value": "7"
+      }
+    ],
+    "stageOverflowX": false,
+    "pageOverflowX": false,
+    "lastBarRight": 864.4,
+    "arrayRight": 932.8,
+    "railWidth": 436.3
+  },
+  {
+    "label": "after",
+    "mode": "focus",
+    "viewport": "1440x900",
+    "algorithm": "binary",
+    "frame": 3,
+    "operation": "binary-exclude-left",
+    "step": "binary-narrow",
+    "stage": {
+      "width": 692.2,
+      "height": 512.6,
+      "padding": {
+        "left": 8,
+        "right": 8,
+        "top": 8,
+        "bottom": 8
+      },
+      "innerWidth": 674,
+      "innerHeight": 495,
+      "scrollWidth": 690,
+      "clientWidth": 690
+    },
+    "array": {
+      "width": 674.2,
+      "height": 341.7
+    },
+    "maxBarHeight": 305.7,
+    "maxBarRatioOfInner": 61.8,
+    "maxBarRatioOfStage": 59.6,
+    "barCount": 7,
+    "bars": [
+      {
+        "height": 29,
+        "cssHeight": "28.9688px",
+        "index": "0",
+        "value": "1"
+      },
+      {
+        "height": 78.7,
+        "cssHeight": "78.6875px",
+        "index": "1",
+        "value": "3"
+      },
+      {
+        "height": 130.5,
+        "cssHeight": "130.453px",
+        "index": "2",
+        "value": "5"
+      },
+      {
+        "height": 184.3,
+        "cssHeight": "184.297px",
+        "index": "3",
+        "value": "7"
+      }
+    ],
+    "stageOverflowX": false,
+    "pageOverflowX": false,
+    "lastBarRight": 865.6,
+    "arrayRight": 950.2,
+    "railWidth": 437.8,
+    "screenshot": "D:\\Desktop\\algolens_github_starter\\algolens-ui03\\docs\\uix-v01\\after\\binary-narrow-1440x900.png"
+  },
+  {
+    "label": "after",
+    "mode": "expanded",
+    "viewport": "1366x768",
+    "algorithm": "bubble",
+    "frame": 2,
+    "operation": "legacy-bars",
+    "step": null,
+    "stage": {
+      "width": 629.9,
+      "height": 360,
+      "padding": {
+        "left": 16,
+        "right": 16,
+        "top": 16,
+        "bottom": 16
+      },
+      "innerWidth": 596,
+      "innerHeight": 326,
+      "scrollWidth": 628,
+      "clientWidth": 628
+    },
+    "array": {
+      "width": 595.9,
+      "height": 280
+    },
+    "maxBarHeight": 262,
+    "maxBarRatioOfInner": 80.4,
+    "maxBarRatioOfStage": 72.8,
+    "barCount": 6,
+    "bars": [
+      {
+        "height": 69.6,
+        "cssHeight": "69.5781px",
+        "index": null,
+        "value": "2"
+      },
+      {
+        "height": 174.8,
+        "cssHeight": "174.766px",
+        "index": null,
+        "value": "5"
+      },
+      {
+        "height": 262,
+        "cssHeight": "262px",
+        "index": null,
+        "value": "8"
+      },
+      {
+        "height": 35.6,
+        "cssHeight": "35.6406px",
+        "index": null,
+        "value": "1"
+      }
+    ],
+    "stageOverflowX": false,
+    "pageOverflowX": false,
+    "lastBarRight": 806.4,
+    "arrayRight": 886.9,
+    "railWidth": 408.1
+  },
+  {
+    "label": "after",
+    "mode": "focus",
+    "viewport": "1366x768",
+    "algorithm": "bubble",
+    "frame": 2,
+    "operation": "legacy-bars",
+    "step": null,
+    "stage": {
+      "width": 646.4,
+      "height": 380.6,
+      "padding": {
+        "left": 8,
+        "right": 8,
+        "top": 8,
+        "bottom": 8
+      },
+      "innerWidth": 628,
+      "innerHeight": 363,
+      "scrollWidth": 644,
+      "clientWidth": 644
+    },
+    "array": {
+      "width": 628.4,
+      "height": 340
+    },
+    "maxBarHeight": 322,
+    "maxBarRatioOfInner": 88.7,
+    "maxBarRatioOfStage": 84.6,
+    "barCount": 6,
+    "bars": [
+      {
+        "height": 84.5,
+        "cssHeight": "84.4844px",
+        "index": null,
+        "value": "2"
+      },
+      {
+        "height": 212.2,
+        "cssHeight": "212.219px",
+        "index": null,
+        "value": "5"
+      },
+      {
+        "height": 322,
+        "cssHeight": "322px",
+        "index": null,
+        "value": "8"
+      },
+      {
+        "height": 43.3,
+        "cssHeight": "43.2812px",
+        "index": null,
+        "value": "1"
+      }
+    ],
+    "stageOverflowX": false,
+    "pageOverflowX": false,
+    "lastBarRight": 807.7,
+    "arrayRight": 904.4,
+    "railWidth": 409.6,
+    "screenshot": "D:\\Desktop\\algolens_github_starter\\algolens-ui03\\docs\\uix-v01\\after\\bubble-swap-1366x768.png"
+  },
+  {
+    "label": "after",
+    "mode": "expanded",
+    "viewport": "1366x768",
+    "algorithm": "selection",
+    "frame": 9,
+    "operation": "select-swap",
+    "step": "select-swap",
+    "stage": {
+      "width": 629.9,
+      "height": 463.3,
+      "padding": {
+        "left": 16,
+        "right": 16,
+        "top": 16,
+        "bottom": 16
+      },
+      "innerWidth": 596,
+      "innerHeight": 429,
+      "scrollWidth": 628,
+      "clientWidth": 628
+    },
+    "array": {
+      "width": 595.9,
+      "height": 280
+    },
+    "maxBarHeight": 244,
+    "maxBarRatioOfInner": 56.9,
+    "maxBarRatioOfStage": 52.7,
+    "barCount": 6,
+    "bars": [
+      {
+        "height": 30.5,
+        "cssHeight": "30.5469px",
+        "index": "0",
+        "value": "1"
+      },
+      {
+        "height": 123.9,
+        "cssHeight": "123.859px",
+        "index": "1",
+        "value": "4"
+      },
+      {
+        "height": 244,
+        "cssHeight": "244px",
+        "index": "2",
+        "value": "9"
+      },
+      {
+        "height": 186.7,
+        "cssHeight": "186.672px",
+        "index": "3",
+        "value": "6"
+      }
+    ],
+    "stageOverflowX": false,
+    "pageOverflowX": false,
+    "lastBarRight": 806.4,
+    "arrayRight": 886.9,
+    "railWidth": 408.1
+  },
+  {
+    "label": "after",
+    "mode": "focus",
+    "viewport": "1366x768",
+    "algorithm": "selection",
+    "frame": 9,
+    "operation": "select-swap",
+    "step": "select-swap",
+    "stage": {
+      "width": 646.4,
+      "height": 380.6,
+      "padding": {
+        "left": 8,
+        "right": 8,
+        "top": 8,
+        "bottom": 8
+      },
+      "innerWidth": 628,
+      "innerHeight": 363,
+      "scrollWidth": 644,
+      "clientWidth": 644
+    },
+    "array": {
+      "width": 628.4,
+      "height": 227.3
+    },
+    "maxBarHeight": 191.3,
+    "maxBarRatioOfInner": 52.7,
+    "maxBarRatioOfStage": 50.3,
+    "barCount": 6,
+    "bars": [
+      {
+        "height": 24.8,
+        "cssHeight": "24.7969px",
+        "index": "0",
+        "value": "1"
+      },
+      {
+        "height": 100.6,
+        "cssHeight": "100.562px",
+        "index": "1",
+        "value": "4"
+      },
+      {
+        "height": 191.3,
+        "cssHeight": "191.312px",
+        "index": "2",
+        "value": "9"
+      },
+      {
+        "height": 151.5,
+        "cssHeight": "151.547px",
+        "index": "3",
+        "value": "6"
+      }
+    ],
+    "stageOverflowX": false,
+    "pageOverflowX": false,
+    "lastBarRight": 807.7,
+    "arrayRight": 904.4,
+    "railWidth": 409.6
+  },
+  {
+    "label": "after",
+    "mode": "expanded",
+    "viewport": "1366x768",
+    "algorithm": "insertion",
+    "frame": 3,
+    "operation": "insert-shift",
+    "step": "insert-shift",
+    "stage": {
+      "width": 629.9,
+      "height": 513.6,
+      "padding": {
+        "left": 16,
+        "right": 16,
+        "top": 16,
+        "bottom": 16
+      },
+      "innerWidth": 596,
+      "innerHeight": 480,
+      "scrollWidth": 628,
+      "clientWidth": 628
+    },
+    "array": {
+      "width": 595.9,
+      "height": 280
+    },
+    "maxBarHeight": 244,
+    "maxBarRatioOfInner": 50.8,
+    "maxBarRatioOfStage": 47.5,
+    "barCount": 6,
+    "bars": [
+      {
+        "height": 217.2,
+        "cssHeight": "217.219px",
+        "index": "0",
+        "value": "7"
+      },
+      {
+        "height": 217.2,
+        "cssHeight": "217.219px",
+        "index": "1",
+        "value": "7"
+      },
+      {
+        "height": 156.1,
+        "cssHeight": "156.125px",
+        "index": "2",
+        "value": "5"
+      },
+      {
+        "height": 30.5,
+        "cssHeight": "30.5469px",
+        "index": "3",
+        "value": "1"
+      }
+    ],
+    "stageOverflowX": false,
+    "pageOverflowX": false,
+    "lastBarRight": 806.4,
+    "arrayRight": 886.9,
+    "railWidth": 408.1
+  },
+  {
+    "label": "after",
+    "mode": "focus",
+    "viewport": "1366x768",
+    "algorithm": "insertion",
+    "frame": 3,
+    "operation": "insert-shift",
+    "step": "insert-shift",
+    "stage": {
+      "width": 646.4,
+      "height": 380.6,
+      "padding": {
+        "left": 8,
+        "right": 8,
+        "top": 8,
+        "bottom": 8
+      },
+      "innerWidth": 628,
+      "innerHeight": 363,
+      "scrollWidth": 644,
+      "clientWidth": 644
+    },
+    "array": {
+      "width": 628.4,
+      "height": 205
+    },
+    "maxBarHeight": 169,
+    "maxBarRatioOfInner": 46.6,
+    "maxBarRatioOfStage": 44.4,
+    "barCount": 6,
+    "bars": [
+      {
+        "height": 159,
+        "cssHeight": "159.031px",
+        "index": "0",
+        "value": "7"
+      },
+      {
+        "height": 159,
+        "cssHeight": "159.031px",
+        "index": "1",
+        "value": "7"
+      },
+      {
+        "height": 114.3,
+        "cssHeight": "114.297px",
+        "index": "2",
+        "value": "5"
+      },
+      {
+        "height": 22.4,
+        "cssHeight": "22.3594px",
+        "index": "3",
+        "value": "1"
+      }
+    ],
+    "stageOverflowX": false,
+    "pageOverflowX": false,
+    "lastBarRight": 807.7,
+    "arrayRight": 904.4,
+    "railWidth": 409.6,
+    "screenshot": "D:\\Desktop\\algolens_github_starter\\algolens-ui03\\docs\\uix-v01\\after\\insertion-shift-1366x768.png"
+  },
+  {
+    "label": "after",
+    "mode": "expanded",
+    "viewport": "1366x768",
+    "algorithm": "shell",
+    "frame": 2,
+    "operation": "shell-compare",
+    "step": "shell-compare",
+    "stage": {
+      "width": 629.9,
+      "height": 514.3,
+      "padding": {
+        "left": 16,
+        "right": 16,
+        "top": 16,
+        "bottom": 16
+      },
+      "innerWidth": 596,
+      "innerHeight": 480,
+      "scrollWidth": 628,
+      "clientWidth": 628
+    },
+    "array": {
+      "width": 595.9,
+      "height": 280
+    },
+    "maxBarHeight": 244,
+    "maxBarRatioOfInner": 50.8,
+    "maxBarRatioOfStage": 47.4,
+    "barCount": 8,
+    "bars": [
+      {
+        "height": 244,
+        "cssHeight": "244px",
+        "index": "0",
+        "value": "8"
+      },
+      {
+        "height": 93.3,
+        "cssHeight": "93.3125px",
+        "index": "1",
+        "value": "3"
+      },
+      {
+        "height": 217.2,
+        "cssHeight": "217.219px",
+        "index": "2",
+        "value": "7"
+      },
+      {
+        "height": 123.9,
+        "cssHeight": "123.859px",
+        "index": "3",
+        "value": "4"
+      }
+    ],
+    "stageOverflowX": false,
+    "pageOverflowX": false,
+    "lastBarRight": 880.4,
+    "arrayRight": 886.9,
+    "railWidth": 408.1
+  },
+  {
+    "label": "after",
+    "mode": "focus",
+    "viewport": "1366x768",
+    "algorithm": "shell",
+    "frame": 2,
+    "operation": "shell-compare",
+    "step": "shell-compare",
+    "stage": {
+      "width": 646.4,
+      "height": 380.6,
+      "padding": {
+        "left": 8,
+        "right": 8,
+        "top": 8,
+        "bottom": 8
+      },
+      "innerWidth": 628,
+      "innerHeight": 363,
+      "scrollWidth": 644,
+      "clientWidth": 644
+    },
+    "array": {
+      "width": 628.4,
+      "height": 205
+    },
+    "maxBarHeight": 169,
+    "maxBarRatioOfInner": 46.6,
+    "maxBarRatioOfStage": 44.4,
+    "barCount": 8,
+    "bars": [
+      {
+        "height": 169,
+        "cssHeight": "169px",
+        "index": "0",
+        "value": "8"
+      },
+      {
+        "height": 68.3,
+        "cssHeight": "68.3125px",
+        "index": "1",
+        "value": "3"
+      },
+      {
+        "height": 159,
+        "cssHeight": "159.031px",
+        "index": "2",
+        "value": "7"
+      },
+      {
+        "height": 90.7,
+        "cssHeight": "90.6875px",
+        "index": "3",
+        "value": "4"
+      }
+    ],
+    "stageOverflowX": false,
+    "pageOverflowX": false,
+    "lastBarRight": 881.7,
+    "arrayRight": 904.4,
+    "railWidth": 409.6,
+    "screenshot": "D:\\Desktop\\algolens_github_starter\\algolens-ui03\\docs\\uix-v01\\after\\shell-compare-1366x768.png"
+  },
+  {
+    "label": "after",
+    "mode": "expanded",
+    "viewport": "1366x768",
+    "algorithm": "quick",
+    "frame": 12,
+    "operation": "quick-place",
+    "step": "quick-place",
+    "stage": {
+      "width": 629.9,
+      "height": 464,
+      "padding": {
+        "left": 16,
+        "right": 16,
+        "top": 16,
+        "bottom": 16
+      },
+      "innerWidth": 596,
+      "innerHeight": 430,
+      "scrollWidth": 628,
+      "clientWidth": 628
+    },
+    "array": {
+      "width": 595.9,
+      "height": 280
+    },
+    "maxBarHeight": 244,
+    "maxBarRatioOfInner": 56.7,
+    "maxBarRatioOfStage": 52.6,
+    "barCount": 8,
+    "bars": [
+      {
+        "height": 93.3,
+        "cssHeight": "93.3125px",
+        "index": "0",
+        "value": "3"
+      },
+      {
+        "height": 30.5,
+        "cssHeight": "30.5469px",
+        "index": "1",
+        "value": "1"
+      },
+      {
+        "height": 62.8,
+        "cssHeight": "62.7656px",
+        "index": "2",
+        "value": "2"
+      },
+      {
+        "height": 123.9,
+        "cssHeight": "123.859px",
+        "index": "3",
+        "value": "4"
+      }
+    ],
+    "stageOverflowX": false,
+    "pageOverflowX": false,
+    "lastBarRight": 878.4,
+    "arrayRight": 886.9,
+    "railWidth": 408.1
+  },
+  {
+    "label": "after",
+    "mode": "focus",
+    "viewport": "1366x768",
+    "algorithm": "quick",
+    "frame": 12,
+    "operation": "quick-place",
+    "step": "quick-place",
+    "stage": {
+      "width": 646.4,
+      "height": 380.6,
+      "padding": {
+        "left": 8,
+        "right": 8,
+        "top": 8,
+        "bottom": 8
+      },
+      "innerWidth": 628,
+      "innerHeight": 363,
+      "scrollWidth": 644,
+      "clientWidth": 644
+    },
+    "array": {
+      "width": 628.4,
+      "height": 226.7
+    },
+    "maxBarHeight": 190.7,
+    "maxBarRatioOfInner": 52.5,
+    "maxBarRatioOfStage": 50.1,
+    "barCount": 8,
+    "bars": [
+      {
+        "height": 75.5,
+        "cssHeight": "75.5312px",
+        "index": "0",
+        "value": "3"
+      },
+      {
+        "height": 24.7,
+        "cssHeight": "24.7188px",
+        "index": "1",
+        "value": "1"
+      },
+      {
+        "height": 50.8,
+        "cssHeight": "50.8125px",
+        "index": "2",
+        "value": "2"
+      },
+      {
+        "height": 100.3,
+        "cssHeight": "100.266px",
+        "index": "3",
+        "value": "4"
+      }
+    ],
+    "stageOverflowX": false,
+    "pageOverflowX": false,
+    "lastBarRight": 879.7,
+    "arrayRight": 904.4,
+    "railWidth": 409.6,
+    "screenshot": "D:\\Desktop\\algolens_github_starter\\algolens-ui03\\docs\\uix-v01\\after\\quick-place-1366x768.png"
+  },
+  {
+    "label": "after",
+    "mode": "expanded",
+    "viewport": "1366x768",
+    "algorithm": "merge",
+    "frame": 100,
+    "operation": "merge-writeback",
+    "step": "merge-writeback",
+    "stage": {
+      "width": 629.9,
+      "height": 577,
+      "padding": {
+        "left": 16,
+        "right": 16,
+        "top": 16,
+        "bottom": 16
+      },
+      "innerWidth": 596,
+      "innerHeight": 543,
+      "scrollWidth": 628,
+      "clientWidth": 628
+    },
+    "array": {
+      "width": 595.9,
+      "height": 280
+    },
+    "maxBarHeight": 244,
+    "maxBarRatioOfInner": 44.9,
+    "maxBarRatioOfStage": 42.3,
+    "barCount": 8,
+    "bars": [
+      {
+        "height": 30.5,
+        "cssHeight": "30.5469px",
+        "index": "0",
+        "value": "1"
+      },
+      {
+        "height": 93.3,
+        "cssHeight": "93.3125px",
+        "index": "1",
+        "value": "3"
+      },
+      {
+        "height": 156.1,
+        "cssHeight": "156.125px",
+        "index": "2",
+        "value": "5"
+      },
+      {
+        "height": 217.2,
+        "cssHeight": "217.219px",
+        "index": "3",
+        "value": "7"
+      }
+    ],
+    "stageOverflowX": false,
+    "pageOverflowX": false,
+    "lastBarRight": 878.4,
+    "arrayRight": 886.9,
+    "railWidth": 408.1
+  },
+  {
+    "label": "after",
+    "mode": "focus",
+    "viewport": "1366x768",
+    "algorithm": "merge",
+    "frame": 100,
+    "operation": "merge-writeback",
+    "step": "merge-writeback",
+    "stage": {
+      "width": 646.4,
+      "height": 380.6,
+      "padding": {
+        "left": 8,
+        "right": 8,
+        "top": 8,
+        "bottom": 8
+      },
+      "innerWidth": 628,
+      "innerHeight": 363,
+      "scrollWidth": 644,
+      "clientWidth": 644
+    },
+    "array": {
+      "width": 628.4,
+      "height": 205
+    },
+    "maxBarHeight": 169,
+    "maxBarRatioOfInner": 46.6,
+    "maxBarRatioOfStage": 44.4,
+    "barCount": 8,
+    "bars": [
+      {
+        "height": 22.4,
+        "cssHeight": "22.3594px",
+        "index": "0",
+        "value": "1"
+      },
+      {
+        "height": 68.3,
+        "cssHeight": "68.3125px",
+        "index": "1",
+        "value": "3"
+      },
+      {
+        "height": 114.3,
+        "cssHeight": "114.297px",
+        "index": "2",
+        "value": "5"
+      },
+      {
+        "height": 159,
+        "cssHeight": "159.031px",
+        "index": "3",
+        "value": "7"
+      }
+    ],
+    "stageOverflowX": false,
+    "pageOverflowX": false,
+    "lastBarRight": 879.7,
+    "arrayRight": 904.4,
+    "railWidth": 409.6,
+    "screenshot": "D:\\Desktop\\algolens_github_starter\\algolens-ui03\\docs\\uix-v01\\after\\merge-writeback-1366x768.png"
+  },
+  {
+    "label": "after",
+    "mode": "expanded",
+    "viewport": "1366x768",
+    "algorithm": "linear",
+    "frame": 10,
+    "operation": "scan-compare",
+    "step": "scan-compare",
+    "stage": {
+      "width": 629.9,
+      "height": 485,
+      "padding": {
+        "left": 16,
+        "right": 16,
+        "top": 16,
+        "bottom": 16
+      },
+      "innerWidth": 596,
+      "innerHeight": 451,
+      "scrollWidth": 628,
+      "clientWidth": 628
+    },
+    "array": {
+      "width": 595.9,
+      "height": 280
+    },
+    "maxBarHeight": 244,
+    "maxBarRatioOfInner": 54.1,
+    "maxBarRatioOfStage": 50.3,
+    "barCount": 6,
+    "bars": [
+      {
+        "height": 186.7,
+        "cssHeight": "186.672px",
+        "index": "0",
+        "value": "6"
+      },
+      {
+        "height": 93.3,
+        "cssHeight": "93.3125px",
+        "index": "1",
+        "value": "3"
+      },
+      {
+        "height": 244,
+        "cssHeight": "244px",
+        "index": "2",
+        "value": "9"
+      },
+      {
+        "height": 62.8,
+        "cssHeight": "62.7656px",
+        "index": "3",
+        "value": "2"
+      }
+    ],
+    "stageOverflowX": false,
+    "pageOverflowX": false,
+    "lastBarRight": 806.4,
+    "arrayRight": 886.9,
+    "railWidth": 408.1
+  },
+  {
+    "label": "after",
+    "mode": "focus",
+    "viewport": "1366x768",
+    "algorithm": "linear",
+    "frame": 10,
+    "operation": "scan-compare",
+    "step": "scan-compare",
+    "stage": {
+      "width": 646.4,
+      "height": 380.6,
+      "padding": {
+        "left": 8,
+        "right": 8,
+        "top": 8,
+        "bottom": 8
+      },
+      "innerWidth": 628,
+      "innerHeight": 363,
+      "scrollWidth": 644,
+      "clientWidth": 644
+    },
+    "array": {
+      "width": 628.4,
+      "height": 209.7
+    },
+    "maxBarHeight": 173.7,
+    "maxBarRatioOfInner": 47.9,
+    "maxBarRatioOfStage": 45.6,
+    "barCount": 6,
+    "bars": [
+      {
+        "height": 139.8,
+        "cssHeight": "139.797px",
+        "index": "0",
+        "value": "6"
+      },
+      {
+        "height": 69.9,
+        "cssHeight": "69.875px",
+        "index": "1",
+        "value": "3"
+      },
+      {
+        "height": 173.7,
+        "cssHeight": "173.688px",
+        "index": "2",
+        "value": "9"
+      },
+      {
+        "height": 47,
+        "cssHeight": "47px",
+        "index": "3",
+        "value": "2"
+      }
+    ],
+    "stageOverflowX": false,
+    "pageOverflowX": false,
+    "lastBarRight": 807.7,
+    "arrayRight": 904.4,
+    "railWidth": 409.6
+  },
+  {
+    "label": "after",
+    "mode": "expanded",
+    "viewport": "1366x768",
+    "algorithm": "binary",
+    "frame": 3,
+    "operation": "binary-exclude-left",
+    "step": "binary-narrow",
+    "stage": {
+      "width": 629.9,
+      "height": 485,
+      "padding": {
+        "left": 16,
+        "right": 16,
+        "top": 16,
+        "bottom": 16
+      },
+      "innerWidth": 596,
+      "innerHeight": 451,
+      "scrollWidth": 628,
+      "clientWidth": 628
+    },
+    "array": {
+      "width": 595.9,
+      "height": 280
+    },
+    "maxBarHeight": 244,
+    "maxBarRatioOfInner": 54.1,
+    "maxBarRatioOfStage": 50.3,
+    "barCount": 7,
+    "bars": [
+      {
+        "height": 23.7,
+        "cssHeight": "23.7344px",
+        "index": "0",
+        "value": "1"
+      },
+      {
+        "height": 64.5,
+        "cssHeight": "64.4688px",
+        "index": "1",
+        "value": "3"
+      },
+      {
+        "height": 106.9,
+        "cssHeight": "106.891px",
+        "index": "2",
+        "value": "5"
+      },
+      {
+        "height": 151,
+        "cssHeight": "151.031px",
+        "index": "3",
+        "value": "7"
+      }
+    ],
+    "stageOverflowX": false,
+    "pageOverflowX": false,
+    "lastBarRight": 841.4,
+    "arrayRight": 886.9,
+    "railWidth": 408.1
+  },
+  {
+    "label": "after",
+    "mode": "focus",
+    "viewport": "1366x768",
+    "algorithm": "binary",
+    "frame": 3,
+    "operation": "binary-exclude-left",
+    "step": "binary-narrow",
+    "stage": {
+      "width": 646.4,
+      "height": 380.6,
+      "padding": {
+        "left": 8,
+        "right": 8,
+        "top": 8,
+        "bottom": 8
+      },
+      "innerWidth": 628,
+      "innerHeight": 363,
+      "scrollWidth": 644,
+      "clientWidth": 644
+    },
+    "array": {
+      "width": 628.4,
+      "height": 209.7
+    },
+    "maxBarHeight": 173.7,
+    "maxBarRatioOfInner": 47.9,
+    "maxBarRatioOfStage": 45.6,
+    "barCount": 7,
+    "bars": [
+      {
+        "height": 17.8,
+        "cssHeight": "17.7812px",
+        "index": "0",
+        "value": "1"
+      },
+      {
+        "height": 48.3,
+        "cssHeight": "48.2812px",
+        "index": "1",
+        "value": "3"
+      },
+      {
+        "height": 80,
+        "cssHeight": "80.0469px",
+        "index": "2",
+        "value": "5"
+      },
+      {
+        "height": 113.1,
+        "cssHeight": "113.094px",
+        "index": "3",
+        "value": "7"
+      }
+    ],
+    "stageOverflowX": false,
+    "pageOverflowX": false,
+    "lastBarRight": 842.7,
+    "arrayRight": 904.4,
+    "railWidth": 409.6,
+    "screenshot": "D:\\Desktop\\algolens_github_starter\\algolens-ui03\\docs\\uix-v01\\after\\binary-narrow-1366x768.png"
+  },
+  {
+    "label": "after",
+    "mode": "expanded",
+    "viewport": "390x844",
+    "algorithm": "bubble",
+    "frame": 2,
+    "operation": "legacy-bars",
+    "step": null,
+    "stage": {
+      "width": 330,
+      "height": 250,
+      "padding": {
+        "left": 10,
+        "right": 10,
+        "top": 10,
+        "bottom": 10
+      },
+      "innerWidth": 308,
+      "innerHeight": 228,
+      "scrollWidth": 328,
+      "clientWidth": 328
+    },
+    "array": {
+      "width": 308,
+      "height": 220
+    },
+    "maxBarHeight": 202,
+    "maxBarRatioOfInner": 88.6,
+    "maxBarRatioOfStage": 80.8,
+    "barCount": 6,
+    "bars": [
+      {
+        "height": 54.7,
+        "cssHeight": "54.6562px",
+        "index": null,
+        "value": "2"
+      },
+      {
+        "height": 137.3,
+        "cssHeight": "137.312px",
+        "index": null,
+        "value": "5"
+      },
+      {
+        "height": 202,
+        "cssHeight": "202px",
+        "index": null,
+        "value": "8"
+      },
+      {
+        "height": 28,
+        "cssHeight": "28px",
+        "index": null,
+        "value": "1"
+      }
+    ],
+    "stageOverflowX": false,
+    "pageOverflowX": false,
+    "lastBarRight": 349,
+    "arrayRight": 349,
+    "railWidth": 366
+  },
+  {
+    "label": "after",
+    "mode": "focus",
+    "viewport": "390x844",
+    "algorithm": "bubble",
+    "frame": 2,
+    "operation": "legacy-bars",
+    "step": null,
+    "stage": {
+      "width": 330,
+      "height": 250,
+      "padding": {
+        "left": 10,
+        "right": 10,
+        "top": 10,
+        "bottom": 10
+      },
+      "innerWidth": 308,
+      "innerHeight": 228,
+      "scrollWidth": 328,
+      "clientWidth": 328
+    },
+    "array": {
+      "width": 308,
+      "height": 220
+    },
+    "maxBarHeight": 202,
+    "maxBarRatioOfInner": 88.6,
+    "maxBarRatioOfStage": 80.8,
+    "barCount": 6,
+    "bars": [
+      {
+        "height": 54.7,
+        "cssHeight": "54.6562px",
+        "index": null,
+        "value": "2"
+      },
+      {
+        "height": 137.3,
+        "cssHeight": "137.312px",
+        "index": null,
+        "value": "5"
+      },
+      {
+        "height": 202,
+        "cssHeight": "202px",
+        "index": null,
+        "value": "8"
+      },
+      {
+        "height": 28,
+        "cssHeight": "28px",
+        "index": null,
+        "value": "1"
+      }
+    ],
+    "stageOverflowX": false,
+    "pageOverflowX": false,
+    "lastBarRight": 349,
+    "arrayRight": 349,
+    "railWidth": 366,
+    "screenshot": "D:\\Desktop\\algolens_github_starter\\algolens-ui03\\docs\\uix-v01\\after\\bubble-swap-390x844.png"
+  },
+  {
+    "label": "after",
+    "mode": "expanded",
+    "viewport": "390x844",
+    "algorithm": "selection",
+    "frame": 9,
+    "operation": "select-swap",
+    "step": "select-swap",
+    "stage": {
+      "width": 330,
+      "height": 409.2,
+      "padding": {
+        "left": 10,
+        "right": 10,
+        "top": 10,
+        "bottom": 10
+      },
+      "innerWidth": 308,
+      "innerHeight": 387,
+      "scrollWidth": 328,
+      "clientWidth": 328
+    },
+    "array": {
+      "width": 308,
+      "height": 220
+    },
+    "maxBarHeight": 184,
+    "maxBarRatioOfInner": 47.5,
+    "maxBarRatioOfStage": 45,
+    "barCount": 6,
+    "bars": [
+      {
+        "height": 24,
+        "cssHeight": "24px",
+        "index": "0",
+        "value": "1"
+      },
+      {
+        "height": 97.3,
+        "cssHeight": "97.3125px",
+        "index": "1",
+        "value": "4"
+      },
+      {
+        "height": 184,
+        "cssHeight": "184px",
+        "index": "2",
+        "value": "9"
+      },
+      {
+        "height": 146.7,
+        "cssHeight": "146.672px",
+        "index": "3",
+        "value": "6"
+      }
+    ],
+    "stageOverflowX": false,
+    "pageOverflowX": false,
+    "lastBarRight": 349,
+    "arrayRight": 349,
+    "railWidth": 366
+  },
+  {
+    "label": "after",
+    "mode": "focus",
+    "viewport": "390x844",
+    "algorithm": "selection",
+    "frame": 9,
+    "operation": "select-swap",
+    "step": "select-swap",
+    "stage": {
+      "width": 330,
+      "height": 409.2,
+      "padding": {
+        "left": 10,
+        "right": 10,
+        "top": 10,
+        "bottom": 10
+      },
+      "innerWidth": 308,
+      "innerHeight": 387,
+      "scrollWidth": 328,
+      "clientWidth": 328
+    },
+    "array": {
+      "width": 308,
+      "height": 220
+    },
+    "maxBarHeight": 184,
+    "maxBarRatioOfInner": 47.5,
+    "maxBarRatioOfStage": 45,
+    "barCount": 6,
+    "bars": [
+      {
+        "height": 24,
+        "cssHeight": "24px",
+        "index": "0",
+        "value": "1"
+      },
+      {
+        "height": 97.3,
+        "cssHeight": "97.3125px",
+        "index": "1",
+        "value": "4"
+      },
+      {
+        "height": 184,
+        "cssHeight": "184px",
+        "index": "2",
+        "value": "9"
+      },
+      {
+        "height": 146.7,
+        "cssHeight": "146.672px",
+        "index": "3",
+        "value": "6"
+      }
+    ],
+    "stageOverflowX": false,
+    "pageOverflowX": false,
+    "lastBarRight": 349,
+    "arrayRight": 349,
+    "railWidth": 366
+  },
+  {
+    "label": "after",
+    "mode": "expanded",
+    "viewport": "390x844",
+    "algorithm": "insertion",
+    "frame": 3,
+    "operation": "insert-shift",
+    "step": "insert-shift",
+    "stage": {
+      "width": 330,
+      "height": 477.3,
+      "padding": {
+        "left": 10,
+        "right": 10,
+        "top": 10,
+        "bottom": 10
+      },
+      "innerWidth": 308,
+      "innerHeight": 455,
+      "scrollWidth": 328,
+      "clientWidth": 328
+    },
+    "array": {
+      "width": 308,
+      "height": 220
+    },
+    "maxBarHeight": 184,
+    "maxBarRatioOfInner": 40.4,
+    "maxBarRatioOfStage": 38.6,
+    "barCount": 6,
+    "bars": [
+      {
+        "height": 170.7,
+        "cssHeight": "170.672px",
+        "index": "0",
+        "value": "7"
+      },
+      {
+        "height": 170.7,
+        "cssHeight": "170.672px",
+        "index": "1",
+        "value": "7"
+      },
+      {
+        "height": 122.7,
+        "cssHeight": "122.672px",
+        "index": "2",
+        "value": "5"
+      },
+      {
+        "height": 24,
+        "cssHeight": "24px",
+        "index": "3",
+        "value": "1"
+      }
+    ],
+    "stageOverflowX": false,
+    "pageOverflowX": false,
+    "lastBarRight": 349,
+    "arrayRight": 349,
+    "railWidth": 366
+  },
+  {
+    "label": "after",
+    "mode": "focus",
+    "viewport": "390x844",
+    "algorithm": "insertion",
+    "frame": 3,
+    "operation": "insert-shift",
+    "step": "insert-shift",
+    "stage": {
+      "width": 330,
+      "height": 477.3,
+      "padding": {
+        "left": 10,
+        "right": 10,
+        "top": 10,
+        "bottom": 10
+      },
+      "innerWidth": 308,
+      "innerHeight": 455,
+      "scrollWidth": 328,
+      "clientWidth": 328
+    },
+    "array": {
+      "width": 308,
+      "height": 220
+    },
+    "maxBarHeight": 184,
+    "maxBarRatioOfInner": 40.4,
+    "maxBarRatioOfStage": 38.6,
+    "barCount": 6,
+    "bars": [
+      {
+        "height": 170.7,
+        "cssHeight": "170.672px",
+        "index": "0",
+        "value": "7"
+      },
+      {
+        "height": 170.7,
+        "cssHeight": "170.672px",
+        "index": "1",
+        "value": "7"
+      },
+      {
+        "height": 122.7,
+        "cssHeight": "122.672px",
+        "index": "2",
+        "value": "5"
+      },
+      {
+        "height": 24,
+        "cssHeight": "24px",
+        "index": "3",
+        "value": "1"
+      }
+    ],
+    "stageOverflowX": false,
+    "pageOverflowX": false,
+    "lastBarRight": 349,
+    "arrayRight": 349,
+    "railWidth": 366,
+    "screenshot": "D:\\Desktop\\algolens_github_starter\\algolens-ui03\\docs\\uix-v01\\after\\insertion-shift-390x844.png"
+  },
+  {
+    "label": "after",
+    "mode": "expanded",
+    "viewport": "390x844",
+    "algorithm": "shell",
+    "frame": 2,
+    "operation": "shell-compare",
+    "step": "shell-compare",
+    "stage": {
+      "width": 330,
+      "height": 487,
+      "padding": {
+        "left": 10,
+        "right": 10,
+        "top": 10,
+        "bottom": 10
+      },
+      "innerWidth": 308,
+      "innerHeight": 465,
+      "scrollWidth": 328,
+      "clientWidth": 328
+    },
+    "array": {
+      "width": 308,
+      "height": 220
+    },
+    "maxBarHeight": 184,
+    "maxBarRatioOfInner": 39.6,
+    "maxBarRatioOfStage": 37.8,
+    "barCount": 8,
+    "bars": [
+      {
+        "height": 184,
+        "cssHeight": "184px",
+        "index": "0",
+        "value": "8"
+      },
+      {
+        "height": 73.3,
+        "cssHeight": "73.3125px",
+        "index": "1",
+        "value": "3"
+      },
+      {
+        "height": 170.7,
+        "cssHeight": "170.672px",
+        "index": "2",
+        "value": "7"
+      },
+      {
+        "height": 97.3,
+        "cssHeight": "97.3125px",
+        "index": "3",
+        "value": "4"
+      }
+    ],
+    "stageOverflowX": false,
+    "pageOverflowX": false,
+    "lastBarRight": 349,
+    "arrayRight": 349,
+    "railWidth": 366
+  },
+  {
+    "label": "after",
+    "mode": "focus",
+    "viewport": "390x844",
+    "algorithm": "shell",
+    "frame": 2,
+    "operation": "shell-compare",
+    "step": "shell-compare",
+    "stage": {
+      "width": 330,
+      "height": 487,
+      "padding": {
+        "left": 10,
+        "right": 10,
+        "top": 10,
+        "bottom": 10
+      },
+      "innerWidth": 308,
+      "innerHeight": 465,
+      "scrollWidth": 328,
+      "clientWidth": 328
+    },
+    "array": {
+      "width": 308,
+      "height": 220
+    },
+    "maxBarHeight": 184,
+    "maxBarRatioOfInner": 39.6,
+    "maxBarRatioOfStage": 37.8,
+    "barCount": 8,
+    "bars": [
+      {
+        "height": 184,
+        "cssHeight": "184px",
+        "index": "0",
+        "value": "8"
+      },
+      {
+        "height": 73.3,
+        "cssHeight": "73.3125px",
+        "index": "1",
+        "value": "3"
+      },
+      {
+        "height": 170.7,
+        "cssHeight": "170.672px",
+        "index": "2",
+        "value": "7"
+      },
+      {
+        "height": 97.3,
+        "cssHeight": "97.3125px",
+        "index": "3",
+        "value": "4"
+      }
+    ],
+    "stageOverflowX": false,
+    "pageOverflowX": false,
+    "lastBarRight": 349,
+    "arrayRight": 349,
+    "railWidth": 366,
+    "screenshot": "D:\\Desktop\\algolens_github_starter\\algolens-ui03\\docs\\uix-v01\\after\\shell-compare-390x844.png"
+  },
+  {
+    "label": "after",
+    "mode": "expanded",
+    "viewport": "390x844",
+    "algorithm": "quick",
+    "frame": 12,
+    "operation": "quick-place",
+    "step": "quick-place",
+    "stage": {
+      "width": 330,
+      "height": 454.5,
+      "padding": {
+        "left": 10,
+        "right": 10,
+        "top": 10,
+        "bottom": 10
+      },
+      "innerWidth": 308,
+      "innerHeight": 432,
+      "scrollWidth": 328,
+      "clientWidth": 328
+    },
+    "array": {
+      "width": 308,
+      "height": 220
+    },
+    "maxBarHeight": 184,
+    "maxBarRatioOfInner": 42.6,
+    "maxBarRatioOfStage": 40.5,
+    "barCount": 8,
+    "bars": [
+      {
+        "height": 73.3,
+        "cssHeight": "73.3125px",
+        "index": "0",
+        "value": "3"
+      },
+      {
+        "height": 24,
+        "cssHeight": "24px",
+        "index": "1",
+        "value": "1"
+      },
+      {
+        "height": 49.3,
+        "cssHeight": "49.3125px",
+        "index": "2",
+        "value": "2"
+      },
+      {
+        "height": 97.3,
+        "cssHeight": "97.3125px",
+        "index": "3",
+        "value": "4"
+      }
+    ],
+    "stageOverflowX": false,
+    "pageOverflowX": false,
+    "lastBarRight": 347,
+    "arrayRight": 349,
+    "railWidth": 366
+  },
+  {
+    "label": "after",
+    "mode": "focus",
+    "viewport": "390x844",
+    "algorithm": "quick",
+    "frame": 12,
+    "operation": "quick-place",
+    "step": "quick-place",
+    "stage": {
+      "width": 330,
+      "height": 454.5,
+      "padding": {
+        "left": 10,
+        "right": 10,
+        "top": 10,
+        "bottom": 10
+      },
+      "innerWidth": 308,
+      "innerHeight": 432,
+      "scrollWidth": 328,
+      "clientWidth": 328
+    },
+    "array": {
+      "width": 308,
+      "height": 220
+    },
+    "maxBarHeight": 184,
+    "maxBarRatioOfInner": 42.6,
+    "maxBarRatioOfStage": 40.5,
+    "barCount": 8,
+    "bars": [
+      {
+        "height": 73.3,
+        "cssHeight": "73.3125px",
+        "index": "0",
+        "value": "3"
+      },
+      {
+        "height": 24,
+        "cssHeight": "24px",
+        "index": "1",
+        "value": "1"
+      },
+      {
+        "height": 49.3,
+        "cssHeight": "49.3125px",
+        "index": "2",
+        "value": "2"
+      },
+      {
+        "height": 97.3,
+        "cssHeight": "97.3125px",
+        "index": "3",
+        "value": "4"
+      }
+    ],
+    "stageOverflowX": false,
+    "pageOverflowX": false,
+    "lastBarRight": 347,
+    "arrayRight": 349,
+    "railWidth": 366,
+    "screenshot": "D:\\Desktop\\algolens_github_starter\\algolens-ui03\\docs\\uix-v01\\after\\quick-place-390x844.png"
+  },
+  {
+    "label": "after",
+    "mode": "expanded",
+    "viewport": "390x844",
+    "algorithm": "merge",
+    "frame": 100,
+    "operation": "merge-writeback",
+    "step": "merge-writeback",
+    "stage": {
+      "width": 330,
+      "height": 567,
+      "padding": {
+        "left": 10,
+        "right": 10,
+        "top": 10,
+        "bottom": 10
+      },
+      "innerWidth": 308,
+      "innerHeight": 545,
+      "scrollWidth": 328,
+      "clientWidth": 328
+    },
+    "array": {
+      "width": 308,
+      "height": 220
+    },
+    "maxBarHeight": 184,
+    "maxBarRatioOfInner": 33.8,
+    "maxBarRatioOfStage": 32.5,
+    "barCount": 8,
+    "bars": [
+      {
+        "height": 24,
+        "cssHeight": "24px",
+        "index": "0",
+        "value": "1"
+      },
+      {
+        "height": 73.3,
+        "cssHeight": "73.3125px",
+        "index": "1",
+        "value": "3"
+      },
+      {
+        "height": 122.7,
+        "cssHeight": "122.672px",
+        "index": "2",
+        "value": "5"
+      },
+      {
+        "height": 170.7,
+        "cssHeight": "170.672px",
+        "index": "3",
+        "value": "7"
+      }
+    ],
+    "stageOverflowX": false,
+    "pageOverflowX": false,
+    "lastBarRight": 347,
+    "arrayRight": 349,
+    "railWidth": 366
+  },
+  {
+    "label": "after",
+    "mode": "focus",
+    "viewport": "390x844",
+    "algorithm": "merge",
+    "frame": 100,
+    "operation": "merge-writeback",
+    "step": "merge-writeback",
+    "stage": {
+      "width": 330,
+      "height": 567,
+      "padding": {
+        "left": 10,
+        "right": 10,
+        "top": 10,
+        "bottom": 10
+      },
+      "innerWidth": 308,
+      "innerHeight": 545,
+      "scrollWidth": 328,
+      "clientWidth": 328
+    },
+    "array": {
+      "width": 308,
+      "height": 220
+    },
+    "maxBarHeight": 184,
+    "maxBarRatioOfInner": 33.8,
+    "maxBarRatioOfStage": 32.5,
+    "barCount": 8,
+    "bars": [
+      {
+        "height": 24,
+        "cssHeight": "24px",
+        "index": "0",
+        "value": "1"
+      },
+      {
+        "height": 73.3,
+        "cssHeight": "73.3125px",
+        "index": "1",
+        "value": "3"
+      },
+      {
+        "height": 122.7,
+        "cssHeight": "122.672px",
+        "index": "2",
+        "value": "5"
+      },
+      {
+        "height": 170.7,
+        "cssHeight": "170.672px",
+        "index": "3",
+        "value": "7"
+      }
+    ],
+    "stageOverflowX": false,
+    "pageOverflowX": false,
+    "lastBarRight": 347,
+    "arrayRight": 349,
+    "railWidth": 366,
+    "screenshot": "D:\\Desktop\\algolens_github_starter\\algolens-ui03\\docs\\uix-v01\\after\\merge-writeback-390x844.png"
+  },
+  {
+    "label": "after",
+    "mode": "expanded",
+    "viewport": "390x844",
+    "algorithm": "linear",
+    "frame": 10,
+    "operation": "scan-compare",
+    "step": "scan-compare",
+    "stage": {
+      "width": 330,
+      "height": 427.4,
+      "padding": {
+        "left": 10,
+        "right": 10,
+        "top": 10,
+        "bottom": 10
+      },
+      "innerWidth": 308,
+      "innerHeight": 405,
+      "scrollWidth": 328,
+      "clientWidth": 328
+    },
+    "array": {
+      "width": 308,
+      "height": 220
+    },
+    "maxBarHeight": 184,
+    "maxBarRatioOfInner": 45.4,
+    "maxBarRatioOfStage": 43,
+    "barCount": 6,
+    "bars": [
+      {
+        "height": 146.7,
+        "cssHeight": "146.672px",
+        "index": "0",
+        "value": "6"
+      },
+      {
+        "height": 73.3,
+        "cssHeight": "73.3125px",
+        "index": "1",
+        "value": "3"
+      },
+      {
+        "height": 184,
+        "cssHeight": "184px",
+        "index": "2",
+        "value": "9"
+      },
+      {
+        "height": 49.3,
+        "cssHeight": "49.3125px",
+        "index": "3",
+        "value": "2"
+      }
+    ],
+    "stageOverflowX": false,
+    "pageOverflowX": false,
+    "lastBarRight": 349,
+    "arrayRight": 349,
+    "railWidth": 366
+  },
+  {
+    "label": "after",
+    "mode": "focus",
+    "viewport": "390x844",
+    "algorithm": "linear",
+    "frame": 10,
+    "operation": "scan-compare",
+    "step": "scan-compare",
+    "stage": {
+      "width": 330,
+      "height": 427.4,
+      "padding": {
+        "left": 10,
+        "right": 10,
+        "top": 10,
+        "bottom": 10
+      },
+      "innerWidth": 308,
+      "innerHeight": 405,
+      "scrollWidth": 328,
+      "clientWidth": 328
+    },
+    "array": {
+      "width": 308,
+      "height": 220
+    },
+    "maxBarHeight": 184,
+    "maxBarRatioOfInner": 45.4,
+    "maxBarRatioOfStage": 43,
+    "barCount": 6,
+    "bars": [
+      {
+        "height": 146.7,
+        "cssHeight": "146.672px",
+        "index": "0",
+        "value": "6"
+      },
+      {
+        "height": 73.3,
+        "cssHeight": "73.3125px",
+        "index": "1",
+        "value": "3"
+      },
+      {
+        "height": 184,
+        "cssHeight": "184px",
+        "index": "2",
+        "value": "9"
+      },
+      {
+        "height": 49.3,
+        "cssHeight": "49.3125px",
+        "index": "3",
+        "value": "2"
+      }
+    ],
+    "stageOverflowX": false,
+    "pageOverflowX": false,
+    "lastBarRight": 349,
+    "arrayRight": 349,
+    "railWidth": 366
+  },
+  {
+    "label": "after",
+    "mode": "expanded",
+    "viewport": "390x844",
+    "algorithm": "binary",
+    "frame": 3,
+    "operation": "binary-exclude-left",
+    "step": "binary-narrow",
+    "stage": {
+      "width": 330,
+      "height": 476.1,
+      "padding": {
+        "left": 10,
+        "right": 10,
+        "top": 10,
+        "bottom": 10
+      },
+      "innerWidth": 308,
+      "innerHeight": 454,
+      "scrollWidth": 328,
+      "clientWidth": 328
+    },
+    "array": {
+      "width": 308,
+      "height": 220
+    },
+    "maxBarHeight": 184,
+    "maxBarRatioOfInner": 40.5,
+    "maxBarRatioOfStage": 38.6,
+    "barCount": 7,
+    "bars": [
+      {
+        "height": 18.6,
+        "cssHeight": "18.6406px",
+        "index": "0",
+        "value": "1"
+      },
+      {
+        "height": 50.7,
+        "cssHeight": "50.6562px",
+        "index": "1",
+        "value": "3"
+      },
+      {
+        "height": 84,
+        "cssHeight": "83.9844px",
+        "index": "2",
+        "value": "5"
+      },
+      {
+        "height": 118.7,
+        "cssHeight": "118.656px",
+        "index": "3",
+        "value": "7"
+      }
+    ],
+    "stageOverflowX": false,
+    "pageOverflowX": false,
+    "lastBarRight": 347,
+    "arrayRight": 349,
+    "railWidth": 366
+  },
+  {
+    "label": "after",
+    "mode": "focus",
+    "viewport": "390x844",
+    "algorithm": "binary",
+    "frame": 3,
+    "operation": "binary-exclude-left",
+    "step": "binary-narrow",
+    "stage": {
+      "width": 330,
+      "height": 476.1,
+      "padding": {
+        "left": 10,
+        "right": 10,
+        "top": 10,
+        "bottom": 10
+      },
+      "innerWidth": 308,
+      "innerHeight": 454,
+      "scrollWidth": 328,
+      "clientWidth": 328
+    },
+    "array": {
+      "width": 308,
+      "height": 220
+    },
+    "maxBarHeight": 184,
+    "maxBarRatioOfInner": 40.5,
+    "maxBarRatioOfStage": 38.6,
+    "barCount": 7,
+    "bars": [
+      {
+        "height": 18.6,
+        "cssHeight": "18.6406px",
+        "index": "0",
+        "value": "1"
+      },
+      {
+        "height": 50.7,
+        "cssHeight": "50.6562px",
+        "index": "1",
+        "value": "3"
+      },
+      {
+        "height": 84,
+        "cssHeight": "83.9844px",
+        "index": "2",
+        "value": "5"
+      },
+      {
+        "height": 118.7,
+        "cssHeight": "118.656px",
+        "index": "3",
+        "value": "7"
+      }
+    ],
+    "stageOverflowX": false,
+    "pageOverflowX": false,
+    "lastBarRight": 347,
+    "arrayRight": 349,
+    "railWidth": 366,
+    "screenshot": "D:\\Desktop\\algolens_github_starter\\algolens-ui03\\docs\\uix-v01\\after\\binary-narrow-390x844.png"
+  }
+]

@@ -1,6 +1,6 @@
 # AlgoViz 算法与课程覆盖清单
 
-快照：2026-11-19（L1B 从 L1A 最终记录 `4fab01b` 创建 `feat/l1b-sequential-list` 完成；UX-04C、T2、T3、T4、S1、S2、F1、F2、L1A 与 L1B 均未合并 `main`）
+快照：2026-11-19（L1B 从 L1A 最终记录 `4fab01b` 创建 `feat/l1b-sequential-list` 完成；UIX-V01 从 L1B 最终记录 `7c70176` 创建 `feat/uix-v01-array-canvas` 完成；UX-04C、T2、T3、T4、S1、S2、F1、F2、L1A、L1B 与 UIX-V01 均未合并 `main`）
 
 ## 1. 口径
 
@@ -255,6 +255,23 @@ L1B 设计要点：
 
 L1B 代表性截图：`docs/l1b/insert-middle-1440-light.png`（索引 2 插入 25 的真实右移帧）、`delete-middle-1440-light.png`（删除索引 1 的真实左移帧）、`full-insert-1440-light.png`（满表拒绝）、`empty-delete-1440-light.png`（空表删除拒绝）。
 
+## 10F. UIX-V01 排序与查找柱状图空间优化（不新增算法）
+
+| 范围 | 算法 | 修改 | 不变量 | 测量/测试 |
+| --- | --- | --- | --- | --- |
+| 共享数组画布 | `bubble`、`selection`、`insertion`、`shell`、`quick`、`merge`、`linear`、`binary` | 柱高由领域 `165px` 换算为轨内百分比；数组轨 `205/280/340px`（排序最高 `360px`），桌面收起导学后填满 stage 剩余高度；390 固定 `220px` 轨；归并缓冲区高度收紧但仍保留槽位/索引/写回来源 | 元素值、索引、key/空位、gap lane、pivot/i/j、L/R/MID、已排除区、归并主数组/缓冲区/写回标记全部保留；真实 Trace/帧、播放器、导学、右栏文案、教材目录、其他渲染器均未改 | 3 尺寸 × 8 算法 × 展开/收起共 48 条测量；专项 E2E 3/3；全量 E2E 149/149；单元 875/875 |
+
+UIX-V01 设计要点：
+
+- **只改渲染空间，不改领域数值**：`sortingModel.ts`、`searchModel.ts`、`model.ts` 仍输出 `14–165px` 的领域高度，领域单测不变；`SortingVisual`、`SearchVisual`、`VisualStage` 只把 `cell.height / 165` 映射为 `0–100%`，柱体绝对定位在真实高度的 `.bar-item` 轨道内。
+- **桌面焦点态**：`guide-open` 时保留原 280/360px 上限；导学收起后 stage 高度确定，`.sorting-visual` 与 `.sorting-array-wrap` 填满剩余高度，数组轨最高 340/360px，普通柱高由 158–165px 提升到 217.7–323.3px（1440）。
+- **移动端**：stage 高度由内容决定，百分比无法稳定解析，因此 390 下固定 `220px` 数组轨；柱高稳定为 184–202px，不再出现此前一次迭代的 10px 塌陷。
+- **归并**：缓冲区面板由 46px 槽位收紧到 34px，仅压缩空白与内间距，`b0…b7`、值、写回来源和 8/8 计数仍完整可读；因此 1440 焦点态归并柱高 217.7px，仍高于其他辅助内容更多的基线 158px。
+- **宽度不动**：实测 1440 主画布 674px、右栏 438px；1366 主画布 628px、右栏 410px，主画布没有被右栏过度挤压，所以没有改全局宽度比例，也没有缩小右栏字号。
+- **1366 物理上限**：768 高度下 stage 内高仅 363px，播放器、key 卡、gap 元信息、legend 与归并缓冲区都保留后，数组轨最多 205–227px；焦点态柱高 169–191px（基线 158–165px），占比与柱高均未回退。该尺寸不追求与 1440 相同的 1.5× 增幅。
+
+UIX-V01 证据：`docs/uix-v01/before/` 与 `docs/uix-v01/after/` 各 18 张截图（6 代表帧 × 3 尺寸）及 `measurements.json`；专项测试为 `e2e/uix01.spec.ts`。详细前后数值见 `docs/UIX_V01_REPORT.md`。
+
 ## 11. UX-01 / UX-01B / UX-02 导学与逐帧讲解（不新增算法）
 
 UX-01 首次加入顶部可折叠导学；UX-01B 在同一数据模型上重排阅读层级与高度；UX-02 把右侧 `LessonPanel` 收敛为与当前帧同步的四段讲解，并把旧课程资料/步骤跳转折叠保留。三批都没有新增算法入口，也没有修改 Python/Trace 语义；这批改造发生时算法入口与课程数保持不变，后续 T3、T4、S1、S2、F1、F2、L1A、L1B 才把它们扩展到 34 个入口与 33 门课程。
@@ -335,7 +352,7 @@ UX-02 证据：`docs/ux02/before/`（4 张基线）与 `docs/ux02/after/`（7 �
 | 项 | 结果 |
 | --- | --- |
 | `npm run typecheck` | ✅ 通过 |
-| `npm run build` | ✅ 通过；版本 `0.27.0-l1b`，1483 modules，`index-CumYtbGl.js` 1,926.63 kB（gzip 539.81 kB）、`monaco-setup-DMZIIKab.js` 4,122.24 kB（gzip 1,066.60 kB）、`index-DlzkhwaX.css` 218.15 kB（gzip 35.45 kB）、`monaco-setup-CX3ij07K.css` 186.75 kB（gzip 27.79 kB） |
+| `npm run build` | ✅ 通过；版本 `0.27.1-uix01`，1484 modules，`index-DXyl2egV.js` 1,926.73 kB（gzip 539.84 kB）、`monaco-setup-CzR1tBD-.js` 4,122.24 kB（gzip 1,066.59 kB）、`index-CX1f6qog.css` 220.02 kB（gzip 35.78 kB）、`monaco-setup-CX3ij07K.css` 186.75 kB（gzip 27.79 kB） |
 | 全量单测 | ✅ 105 个文件、875 tests 全部通过 |
 | F2 专项单测 | ✅ `hash.test.ts` 10 项、`hashVisual.test.tsx` 7 项、`hashLessons.test.ts` 7 项，合计 24 项 |
 | F2 独立 Python 校验 | ✅ `scripts/verify_hash_python.py` 752/752 帧 / 19 组输入：官方 + 空表、单元素、负整数、表长 2/17、长链、重复键、删除头/中/尾、墓碑继续、墓碑复用、回绕、表满；逐命令对照独立引用模型 |
@@ -349,12 +366,14 @@ UX-02 证据：`docs/ux02/before/`（4 张基线）与 `docs/ux02/after/`（7 �
 | L1B 独立 Python 校验 | ✅ `scripts/verify_seqlist_python.py` 官方 14 例 / 84 帧 + 边界 21 例 / 89 帧，合计 173 帧；逐帧对照独立 `Reference` 模型，检查 `length/capacity` 边界、槽位连续、完成帧区域不变量、`change.before/after` 与相邻帧一致、插入 `[4,3,2]→[5,4,3]` 与删除 `[2,3,4]→[1,2,3]` 方向、最终数组、满表/空表/越界拒绝、重复值/负数/单元素/初始溢出 |
 | L1B 真实帧 fixtures | ✅ `seqlist-official-frames.json` 84 帧（14 预设）、`seqlist-edge-frames.json` 89 帧（21 边界），全部通过 Zod `structureSchema` 与 `sequentialListSnapshotSchema` |
 | L1B 真实 Pyodide E2E | ✅ 3/3：默认 8 帧插入、9 帧删除、3 帧满表拒绝、2 帧空表拒绝；覆盖预设 pending→Run、`shift-right` 源 4→目标 5、`shift-left` 源 2→目标 1、`write`、`clear`、回退/跳帧同步、390 画布内滚动且页面无横向溢出；生成 4 张截图 |
+| UIX-V01 像素测量 | ✅ `docs/uix-v01/before/measurements.json` 与 `after/measurements.json` 各 48 条（8 算法 × 3 尺寸 × 展开/收起）；1440 焦点态最大柱高由 158–165px 提升至 217.7–323.3px，1366 由 158–165px 提升至 169–191.3px，390 由 124.2–146.2px 提升至 184–202px；两种模式均无页面横向溢出 |
+| UIX-V01 专项 E2E | ✅ `e2e/uix01.spec.ts` 3/3：1440/1366 × 8 算法检查数组高度、最大柱高、右栏宽度、柱/标签/标记无裁切重叠；390 检查固定 220px 轨与归并缓冲区 8 槽可读；播放/前后跳帧、中英、Light/Dark 均通过 |
 | F1 专项单测 | ✅ `search.test.ts` 10 项、`searchVisual.test.tsx` 6 项、`searchLessons.test.ts` 5 项、`searchInsight.test.ts` 3 项，合计 24 项 |
 | F1 独立 Python 校验 | ✅ `scripts/verify_search_python.py` 143/143 帧 / 23 组输入：官方 + 成功/失败、空数组、单元素、首尾命中、重复值、负数、中间目标、无序；linear 返回首次匹配，binary 返回任意合法匹配且无序只发 `invalid` |
 | F1 真实帧 fixtures | ✅ `search-default-frames.json` 12+10=22 帧、`search-edge-frames.json` 121 帧，全部通过 Zod `structureSchema` 与 `searchSnapshotSchema` |
 | F1 真实 Pyodide E2E | ✅ 2/2：linear 比较帧 p4=7、checked 4/6、第 11 帧 found 索引 4；binary 第 3 帧排除左半区 left=4/right=6、excluded=4、第 9 帧 found 索引 4；前后跳帧一致；无序输入 1 帧 invalid、警告可见、无 L/R/MID |
 | 官方知识包 E2E | ✅ 2/2：`algolens-fib-basics` 安装/预览/课程/重载/卸载，以及课程 Python 示例真实 Pyodide 运行到 `init/combine/done`；包内 5 文件、归档 5,502 B |
-| 全量 E2E | ✅ 146/146（既有 143 条基线 + L1B 3 条；真实 Edge + 本地 Pyodide，约 9.7 分钟） |
+| 全量 E2E | ✅ 149/149（既有 146 条基线 + UIX-V01 3 条；真实 Edge + 本地 Pyodide，约 10 分钟） |
 | S1 相关单测 | ✅ `sorting.test.ts` 9 项、`sortingLessons.test.ts` 4 项、`SortingVisual.test.tsx` 4 项，合计 17 项；另 `registry/catalog/textbook/frameInsight/App/AlgorithmSidebar` 联动断言全部通过 |
 | S1 独立 Python 校验 | ✅ `scripts/verify_sorting_python.py` 721/721 帧：3 算法 × 8 输入（官方 + 7 边界）；最终升序、多重集不变、选择每轮后缀最小与交换、插入前缀有序与真实右移、Shell gap 序列/lane/shift/gap=1 全局有序；稳定性身份样例验证插入稳定、选择与 Shell 不稳定 |
 | S1 真实帧 fixtures | ✅ `sorting-default-frames.json` 143 帧 + `sorting-edge-frames.json` 578 帧，全部通过 Zod `structureSchema` 与 `sortingSnapshotSchema` |
@@ -375,7 +394,7 @@ UX-02 证据：`docs/ux02/before/`（4 张基线）与 `docs/ux02/after/`（7 �
 | S1 E2E | ✅ 3/3：真实 Pyodide 依次运行选择 40 帧、插入 33 帧、Shell 70 帧；验证候选/交换、key/真实右移重复值/写回、gap 序列/lane/shift/gap-done、前进回退跳帧、done 全排序与 390 无页面横向溢出；生成 6 张截图 |
 | S2 E2E | ✅ 2/2：真实 Pyodide 执行 quick 32 帧与 merge 110 帧；验证 Lomuto pivot/真实交换/归位/递归/最终顺序、拆分/缓冲区写入/来源/写回/稳定终序、前进回退跳帧与 390 无页面横向溢出；生成 6 张截图 |
 | 独立 Python 校验 | ✅ `verify_bst_python.py`、`verify_avl_python.py`、`verify_heap_python.py`、`verify_huffman_python.py`、`verify_sorting_python.py`、`verify_divide_sort_python.py`、`verify_search_python.py`、`verify_hash_python.py` 与 `verify_l1a_python.py` 全部通过；S1 721 帧 + S2 923 帧 + F1 143 帧 + F2 752 帧 + L1A 516 帧 |
-| 回归 | ✅ BFS/DFS、Dijkstra、Floyd、Bellman-Ford、Prim、Kruskal、拓扑排序、关键路径、连通分量/SCC、二叉树遍历、栈/队列/链表、BST/AVL/最大堆/哈夫曼、S1 三排序、S2 两排序、F1 两查找、F2 链地址法/线性探测、L1A 双向/循环单链表与 L1B 顺序表在 146/146 全量 E2E 中通过 |
+| 回归 | ✅ BFS/DFS、Dijkstra、Floyd、Bellman-Ford、Prim、Kruskal、拓扑排序、关键路径、连通分量/SCC、二叉树遍历、栈/队列/链表、BST/AVL/最大堆/哈夫曼、S1 三排序、S2 两排序、F1 两查找、F2 链地址法/线性探测、L1A 双向/循环单链表与 L1B 顺序表在 149/149 全量 E2E 中通过 |
 | 入口数量 | ✅ 34 个入口 / 33 门课程 / 34 个真实 Python；仅 `fib` 无内置课程，作为官方知识包的目录安全回退载体 |
 
 ## 14. 已知边界
@@ -434,9 +453,14 @@ UX-02 证据：`docs/ux02/before/`（4 张基线）与 `docs/ux02/after/`（7 �
 - `index=length` 是合法插入位置（尾插），但不是合法访问位置；访问、删除都要求 `0 <= index < length`。官方预设与课程均明确这一区别。
 - L1B 复用现有数组 Trace、Timeline 与唯一播放器，新增的只是连续槽位画布；不创建第二套播放器，不重构 Schema，不修改顶部导学、教材目录层次或页面比例。
 - L1B 的 4 张证据截图均为 1440 Light；中英、Dark、390 窄屏画布内滚动与页面无横向溢出由真实 Pyodide E2E 断言覆盖，未额外保存移动端或 Dark 截图。
+- UIX-V01 只调整 `bubble/selection/insertion/shell/quick/merge/linear/binary` 共 8 个入口共享的数组/柱形画布；未新增算法，未改真实 Python Trace、执行帧、播放器数据结构、导学默认展开、右侧讲解文案、教材目录、其他树/图/链表渲染器，也未处理 UIX-02 阶段跳转。
+- 柱形高度仍在渲染层换算，`sortingModel.ts` / `searchModel.ts` / `model.ts` 的 `14–165px` 领域数值及其单测未改；柱体、标记带与索引标签共用一个定位轨道，普通数组预留 18px、排序/查找预留 36px，避免柱顶与 key/CMP/L/R/MID 重叠。
+- 1366×768 的绘图区受 768px 物理高度限制，保留播放器、key 卡、gap 元信息、legend 与归并缓冲区后，数组轨为 205–227px；本批优先保证语义完整与无裁切，不强行追平 1440 的 1.5× 柱高。
+- 390×844 使用固定 220px 数组轨，因为移动端 stage 高度由内容决定、百分比轨道无法稳定解析；该尺寸下所有页面级横向溢出为 0，归并缓冲区槽位最小高度 34px。
+- UIX-V01 未修改主画布与右栏的宽度比例；1440 实测右栏 437.8px、1366 实测 409.6px，均保持原有可读宽度。
 - `BST_PYTHON` / `AVL_PYTHON` 的 `line=` 是教学用近似源码行号，Monaco 实际行号以编辑器为准。
 - AVL 节点上的 ROOT/LEAF/当前角色徽标在 T2 中隐藏，避免与 height/BF 徽标叠字；当前节点由顶部指标与描边表达。
 
 ## 15. 下一批次（不在本批次执行）
 
-L1A 已完成并停止。按用户要求，本批次只开发双向链表与循环单链表，未开发顺序表、循环双向链表、图论定理、AI/MCP，未调整顶部导学/教材目录结构/页面布局，也未扩展任意用户 Python 代码的自动可视化。后续如继续，仍复用现有单一播放器、Trace 快照、链表/树/图布局与双语课程架构。
+UIX-V01 已完成并停止。本批次只做 8 个排序/查找入口的共享数组画布空间优化，未新增算法，未改真实 Python Trace、算法帧、播放器、导学默认展开策略、右侧讲解文案、教材目录或其他渲染器，也未实施 UIX-02 阶段跳转。后续如继续 UIX-02，应另开独立分支与独立验收，不复用本批测量结论作为 UI 功能验收。
