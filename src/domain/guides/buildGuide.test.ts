@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { ALGORITHM_CATALOG } from '../algorithms/catalog.generated';
+import { localizeComplexity } from '../lessons/localizeMessage';
 import { lessonRegistry } from '../lessons/registry';
 import { buildAlgorithmGuide } from './buildGuide';
 
@@ -24,7 +25,7 @@ describe('UX-01B algorithm guide content', () => {
     expect(guide.coreIdea?.zh.length).toBeGreaterThan(40);
     expect(guide.coreIdea?.en.length).toBeGreaterThan(40);
     expect(guide.stages.length).toBeGreaterThanOrEqual(3);
-    expect(guide.stages.length).toBeLessThanOrEqual(5);
+    expect(guide.stages).toHaveLength(guide.steps.length);
     expect(guide.steps.length).toBeGreaterThanOrEqual(7);
     expect(guide.conditions.zh.length).toBeGreaterThanOrEqual(4);
     expect(guide.conditions.en.length).toBeGreaterThanOrEqual(4);
@@ -57,25 +58,56 @@ describe('UX-01B algorithm guide content', () => {
     expect(guide.source).toBe('lesson');
     expect(guide.coreHeadline).toBeNull();
     expect(guide.problem).toEqual(lesson?.oneLiner);
-    expect(guide.coreIdea).toEqual(lesson?.intuition);
-    expect(guide.stages).toHaveLength(5);
+    expect(lesson?.intuition.zh.startsWith(guide.coreIdea?.zh ?? '')).toBe(true);
+    expect(lesson?.intuition.en.startsWith(guide.coreIdea?.en ?? '')).toBe(true);
+    expect(guide.stages).toHaveLength(lesson?.steps.length ?? 0);
     expect(guide.stages[0].title.zh).not.toMatch(/^[\u2460-\u2473]/);
     expect(guide.steps).toHaveLength(lesson?.steps.length ?? 0);
     expect(guide.steps[0].title.zh).not.toMatch(/^[\u2460-\u2473]/);
     expect(guide.complexity).toEqual(lesson?.complexity);
     expect(guide.pitfalls).toEqual(lesson?.commonMistakes);
-    expect(guide.conditions.zh).toEqual([]);
-    expect(guide.conditions.en).toEqual([]);
+    expect(guide.conditions).toEqual(lesson?.prerequisites);
   });
 
-  it('keeps long course steps in detail instead of inventing a stage grouping', () => {
+  it('turns every step of a long course into the complete overview flow', () => {
     const lesson = lessonRegistry.byAlgorithm('linked');
     expect(lesson).toBeDefined();
     const guide = buildAlgorithmGuide('linked', lesson, ALGORITHM_CATALOG.linked);
 
     expect(guide.steps).toHaveLength(lesson?.steps.length ?? 0);
-    expect(guide.stages).toEqual([]);
+    expect(guide.stages).toHaveLength(lesson?.steps.length ?? 0);
+    expect(guide.stages[0].title.zh).toBe('空链表与 HEAD → NULL');
+    expect(guide.stages[guide.stages.length - 1].title.zh).toBe('演示结束与复杂度');
     expect(guide.coreHeadline).toBeNull();
+  });
+
+  it('applies the same four-block guide to every registered formal course', () => {
+    for (const lesson of lessonRegistry.lessons) {
+      const guide = buildAlgorithmGuide(
+        lesson.algorithmId,
+        lesson,
+        ALGORITHM_CATALOG[lesson.algorithmId],
+      );
+      expect(guide.source).toMatch(/curated|lesson/);
+      expect(guide.coreIdea?.zh.trim().length).toBeGreaterThan(10);
+      expect(guide.coreIdea?.en.trim().length).toBeGreaterThan(10);
+      // Curated guides carry their own hand-written step list; lesson guides
+      // mirror every real course step so no core stage is dropped.
+      if (guide.source === 'lesson') expect(guide.stages.length).toBe(lesson.steps.length);
+      else expect(guide.stages.length).toBeGreaterThanOrEqual(4);
+      expect(guide.complexity?.time).toBeTruthy();
+      expect(guide.complexity?.space).toBeTruthy();
+      expect(localizeComplexity(guide.complexity?.time ?? '', 'en')).not.toMatch(/[\u3400-\u9fff]/);
+      expect(localizeComplexity(guide.complexity?.space ?? '', 'en')).not.toMatch(/[\u3400-\u9fff]/);
+      expect(guide.conditions.zh.length).toBe(guide.conditions.en.length);
+      expect(guide.pitfalls.zh.length).toBe(guide.pitfalls.en.length);
+      for (const stage of guide.stages) {
+        expect(stage.title.zh.trim().length).toBeGreaterThan(0);
+        expect(stage.title.en.trim().length).toBeGreaterThan(0);
+        expect(stage.summary.zh.trim().length).toBeGreaterThan(0);
+        expect(stage.summary.en.trim().length).toBeGreaterThan(0);
+      }
+    }
   });
 
   it('shows only catalog-confirmed text for an algorithm without a lesson', () => {

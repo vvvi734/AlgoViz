@@ -52,12 +52,7 @@ export async function collapseAlgorithmGuide(page: Page) {
  * real trace frames and the same playback controller.
  */
 export async function openLessonStepNav(page: Page) {
-  const toggle = page.getByTestId('lesson-steps-toggle');
-  await expect(toggle).toBeVisible({ timeout: 45_000 });
-  if ((await toggle.getAttribute('aria-expanded')) !== 'true') {
-    await toggle.click();
-  }
-  await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+  await expect(page.getByTestId('rail-stage-jumps')).toBeVisible({ timeout: 45_000 });
 }
 
 /**

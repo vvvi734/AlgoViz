@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { useI18n } from '../../i18n/I18nProvider';
 import type { BinaryTreeOperation, BinaryTreeTraversal } from '../../domain/trace/schema';
 import type {
@@ -190,7 +190,9 @@ export function BinaryTreeVisual({ model }: { model: BinaryTreeVisualModel }) {
                 width: `${model.width}px`,
                 height: `${model.height}px`,
                 transform: `scale(${scale})`,
-              }}
+                '--tree-font-floor': `${12 / Math.max(scale, 0.01)}px`,
+                '--tree-title-floor': `${16 / Math.max(scale, 0.01)}px`,
+              } as CSSProperties}
             >
               <svg
                 className="tree-edges"

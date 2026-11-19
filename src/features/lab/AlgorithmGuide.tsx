@@ -1,18 +1,16 @@
-import { useId, useState } from 'react';
 import type { AlgorithmGuideContent } from '../../domain/guides/types';
+import { localizeComplexity } from '../../domain/lessons/localizeMessage';
 import { useI18n } from '../../i18n/I18nProvider';
 import { GuideDiagram } from './GuideDiagram';
 
 export const ALGORITHM_GUIDE_ID = 'algorithm-guide';
 
 /**
- * UX-01B top-of-lab guide.
+ * UX-SIMPLIFY-02 review sheet.
  *
- * Three reading layers only: one-line framing + core idea, a compact 3–5 stage
- * flow, and a memory line. Everything else lives behind an explicit disclosure
- * so the real animation below can still reach the first screen. The panel owns
- * no trace, playhead or algorithm state; its only actions fold the guide or
- * disclose reference material.
+ * Four blocks only: core idea, complete flow, complexity/conditions, common
+ * mistakes and memory. Detailed course prose remains in the lesson data for
+ * compatibility and tests, but the default learning page never repeats it.
  */
 export function AlgorithmGuide({
   guide,
@@ -24,8 +22,6 @@ export function AlgorithmGuide({
   onStart: () => void;
 }) {
   const { t, lang } = useI18n();
-  const [detailsOpen, setDetailsOpen] = useState(false);
-  const detailsId = useId();
   const localized = (value: { zh: string; en: string } | null | undefined) =>
     value ? value[lang] : '';
   const sourceLabel =
@@ -36,17 +32,12 @@ export function AlgorithmGuide({
         : guide.source === 'catalog'
           ? t('guideSourceCatalog')
           : t('guideSourceNone');
-  const hasStages = guide.stages.length > 0;
-  const hasSteps = guide.steps.length > 0;
-  const hasPrerequisites = guide.prerequisites[lang].length > 0;
-  const hasConditions = guide.conditions[lang].length > 0;
-  const hasPitfalls = guide.pitfalls[lang].length > 0;
-  const hasDetails =
-    hasSteps || hasPrerequisites || hasConditions || hasPitfalls || !!guide.complexity;
+  const conditions = guide.conditions[lang].slice(0, 4);
+  const pitfalls = guide.pitfalls[lang].slice(0, 3);
 
   return (
     <article
-      className={`panel algorithm-guide guide-v2${detailsOpen ? ' is-details-open' : ''}`}
+      className="panel algorithm-guide review-guide guide-v2"
       id={ALGORITHM_GUIDE_ID}
       data-testid="algorithm-guide"
       data-source={guide.source}
@@ -60,206 +51,116 @@ export function AlgorithmGuide({
           <p>{t('guideEmptyBody')}</p>
         </div>
       ) : guide.source === 'catalog' ? (
-        <CatalogGuide
-          guide={guide}
-          algorithmName={algorithmName}
-          onStart={onStart}
-        />
+        <CatalogGuide guide={guide} algorithmName={algorithmName} onStart={onStart} />
       ) : (
         <>
-          <header className="guide-hero">
-            <div className="guide-hero-head">
+          <header className="review-head">
+            <div className="review-heading">
               <div className="guide-kicker" data-testid="guide-title">
                 <span className="guide-kicker-dot" aria-hidden="true" />
-                {t('guideOneLine')} · {algorithmName}
+                {t('guideReviewKicker')} · {algorithmName}
               </div>
-              <h2 className="guide-problem" data-testid="guide-problem">
-                {localized(guide.problem)}
-              </h2>
-            </div>
-
-            <div className="guide-hero-grid">
-              <section className="guide-core" aria-label={t('guideCoreTitle')}>
-                <div className="guide-overline">{t('guideCoreTitle')}</div>
-                {guide.coreHeadline ? (
-                  <h3 className="guide-core-headline" data-testid="guide-core-headline">
-                    {localized(guide.coreHeadline)}
-                  </h3>
-                ) : null}
-                {guide.coreIdea ? (
-                  <p className="guide-core-text" data-testid="guide-core">
-                    {localized(guide.coreIdea)}
-                  </p>
-                ) : null}
-              </section>
-              {guide.diagram ? (
-                <div className="guide-intuition">
-                  <GuideDiagram kind={guide.diagram} />
-                </div>
+              <div className="guide-overline">{t('guideCoreTitle')}</div>
+              {guide.coreHeadline ? (
+                <h2 className="guide-core-headline" data-testid="guide-core-headline">
+                  {localized(guide.coreHeadline)}
+                </h2>
               ) : null}
+              <p className="guide-core-text" data-testid="guide-core">
+                {localized(guide.coreIdea) || localized(guide.problem) || t('guideEmptyBody')}
+              </p>
+              <div className="review-source" data-testid="guide-source">
+                {sourceLabel}
+              </div>
             </div>
+            {guide.diagram ? (
+              <div className="review-diagram" aria-hidden="true">
+                <GuideDiagram kind={guide.diagram} />
+              </div>
+            ) : null}
           </header>
 
-          <section className="guide-flow" aria-labelledby={`${detailsId}-flow`}>
-            <div className="guide-flow-head">
-              <h3 id={`${detailsId}-flow`} className="guide-section-title">
-                {t('guideFlowTitle')}
-              </h3>
-              <span className="guide-flow-count" data-testid="guide-flow-count">
-                {t('guideStageCount').replace('{count}', String(guide.stages.length))}
-              </span>
-            </div>
-            {hasStages ? (
-              <ol className="guide-stage-list" data-testid="guide-stage-list">
+          <div className="review-grid">
+            <section className="review-flow" aria-labelledby="guide-flow-title">
+              <div className="review-section-head">
+                <h3 id="guide-flow-title">{t('guideFlowTitle')}</h3>
+                <span className="review-count" data-testid="guide-flow-count">
+                  {t('guideFlowCount').replace('{count}', String(guide.stages.length))}
+                </span>
+              </div>
+              <ol className="review-flow-list" data-testid="guide-stage-list">
                 {guide.stages.map((stage, index) => (
-                  <li key={`${guide.algorithmId}-stage-${index}`} className="guide-stage">
-                    <span className="guide-stage-index" aria-hidden="true">
+                  <li key={`${guide.algorithmId}-flow-${index}`}>
+                    <span className="review-flow-index" aria-hidden="true">
                       {String(index + 1).padStart(2, '0')}
                     </span>
-                    <div className="guide-stage-copy">
+                    <div>
                       <h4>{stage.title[lang]}</h4>
                       <p>{stage.summary[lang]}</p>
                     </div>
                   </li>
                 ))}
               </ol>
-            ) : (
-              <div className="guide-flow-fallback" data-testid="guide-flow-fallback">
-                {t('guideFlowFallback').replace('{count}', String(guide.steps.length))}
-              </div>
-            )}
-          </section>
+            </section>
 
-          <div className="guide-bottom">
-            {guide.memoryHook ? (
-              <div className="guide-memory" data-testid="guide-memory">
-                <span className="guide-memory-label">{t('guideMemoryTitle')}</span>
-                <p>{localized(guide.memoryHook)}</p>
-              </div>
-            ) : null}
-            <div className="guide-actions">
-              {hasDetails ? (
-                <button
-                  type="button"
-                  className="btn ghost guide-details-toggle"
-                  data-testid="guide-details-toggle"
-                  aria-expanded={detailsOpen}
-                  aria-controls={detailsOpen ? detailsId : undefined}
-                  onClick={() => setDetailsOpen((open) => !open)}
-                >
-                  {detailsOpen ? t('guideDetailsClose') : t('guideDetailsOpen')}
-                  <span aria-hidden="true">{detailsOpen ? '▴' : '▾'}</span>
-                </button>
-              ) : null}
-              <button
-                type="button"
-                className="btn primary guide-start"
-                data-testid="guide-start"
-                onClick={onStart}
-              >
-                {t('guideStartAnimation')}
-                <span aria-hidden="true">→</span>
-              </button>
+            <div className="review-side">
+              <section className="review-facts" aria-labelledby="guide-facts-title">
+                <div className="review-section-head">
+                  <h3 id="guide-facts-title">{t('guideComplexityTitle')}</h3>
+                </div>
+                <dl className="review-complexity">
+                  <div>
+                    <dt>{t('guideTime')}</dt>
+                    <dd>{guide.complexity ? localizeComplexity(guide.complexity.time, lang) : '—'}</dd>
+                  </div>
+                  <div>
+                    <dt>{t('guideSpace')}</dt>
+                    <dd>{guide.complexity ? localizeComplexity(guide.complexity.space, lang) : '—'}</dd>
+                  </div>
+                </dl>
+                {conditions.length > 0 ? (
+                  <ul className="review-list review-conditions">
+                    {conditions.map((item) => (
+                      <li key={item}>{item}</li>
+                    ))}
+                  </ul>
+                ) : null}
+              </section>
+
+              <section className="review-pitfalls" aria-labelledby="guide-pitfalls-title">
+                <div className="review-section-head">
+                  <h3 id="guide-pitfalls-title">{t('guideMistakesTitle')}</h3>
+                </div>
+                {pitfalls.length > 0 ? (
+                  <ul className="review-list">
+                    {pitfalls.map((item) => (
+                      <li key={item}>{item}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="review-muted">{t('guideNoMistakes')}</p>
+                )}
+                {guide.memoryHook ? (
+                  <p className="review-memory" data-testid="guide-memory">
+                    <b>{t('guideMemoryTitle')}</b>
+                    <span>{localized(guide.memoryHook)}</span>
+                  </p>
+                ) : null}
+              </section>
             </div>
           </div>
 
-          {detailsOpen && hasDetails ? (
-            <section
-              className="guide-details"
-              id={detailsId}
-              data-testid="guide-details"
-              aria-label={t('guideDetailsTitle')}
+          <div className="review-actions">
+            <button
+              type="button"
+              className="btn primary guide-start"
+              data-testid="guide-start"
+              onClick={onStart}
             >
-              {hasSteps ? (
-                <div className="guide-detail-section">
-                  <div className="guide-detail-head">
-                    <span className="guide-detail-number">A</span>
-                    <h3>{t('guideStepsTitle')}</h3>
-                  </div>
-                  <ol className="guide-step-list">
-                    {guide.steps.map((step, index) => (
-                      <li key={`${guide.algorithmId}-guide-step-${index}`}>
-                        <span className="guide-step-index" aria-hidden="true">
-                          {String(index + 1).padStart(2, '0')}
-                        </span>
-                        <div>
-                          <h4>{step.title[lang]}</h4>
-                          <p>{step.body[lang]}</p>
-                        </div>
-                      </li>
-                    ))}
-                  </ol>
-                </div>
-              ) : null}
-
-              <div className="guide-detail-grid">
-                {hasPrerequisites ? (
-                  <section className="guide-detail-section">
-                    <div className="guide-detail-head">
-                      <span className="guide-detail-number">B</span>
-                      <h3>{t('guidePrerequisitesTitle')}</h3>
-                    </div>
-                    <ul className="guide-bullets">
-                      {guide.prerequisites[lang].map((item) => (
-                        <li key={item}>{item}</li>
-                      ))}
-                    </ul>
-                  </section>
-                ) : null}
-
-                {guide.complexity ? (
-                  <section className="guide-detail-section">
-                    <div className="guide-detail-head">
-                      <span className="guide-detail-number">C</span>
-                      <h3>{t('guideComplexityTitle')}</h3>
-                    </div>
-                    <div className="guide-complexity-chips">
-                      <span>
-                        <b>{t('guideTime')}</b>
-                        {guide.complexity.time}
-                      </span>
-                      <span>
-                        <b>{t('guideSpace')}</b>
-                        {guide.complexity.space}
-                      </span>
-                    </div>
-                    {guide.complexity.note[lang] ? (
-                      <p className="guide-muted">{guide.complexity.note[lang]}</p>
-                    ) : null}
-                    {hasConditions ? (
-                      <div className="guide-conditions">
-                        <h4>{t('guideConditionsTitle')}</h4>
-                        <ul className="guide-bullets">
-                          {guide.conditions[lang].map((item) => (
-                            <li key={item}>{item}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    ) : null}
-                  </section>
-                ) : null}
-
-                {hasPitfalls ? (
-                  <section className="guide-detail-section">
-                    <div className="guide-detail-head">
-                      <span className="guide-detail-number">D</span>
-                      <h3>{t('guideMistakesTitle')}</h3>
-                    </div>
-                    <ul className="guide-bullets">
-                      {guide.pitfalls[lang].map((item) => (
-                        <li key={item}>{item}</li>
-                      ))}
-                    </ul>
-                  </section>
-                ) : null}
-              </div>
-
-              <footer className="guide-foot">
-                <span data-testid="guide-source">{sourceLabel}</span>
-                <span>{t('guideFootHint')}</span>
-              </footer>
-            </section>
-          ) : null}
+              {t('guideStartAnimation')}
+              <span aria-hidden="true">→</span>
+            </button>
+          </div>
         </>
       )}
     </article>
@@ -292,11 +193,11 @@ function CatalogGuide({
           <div className="guide-complexity-chips">
             <span>
               <b>{t('guideTime')}</b>
-              {guide.complexity?.time ?? '—'}
+              {guide.complexity ? localizeComplexity(guide.complexity.time, lang) : '—'}
             </span>
             <span>
               <b>{t('guideSpace')}</b>
-              {guide.complexity?.space ?? '—'}
+              {guide.complexity ? localizeComplexity(guide.complexity.space, lang) : '—'}
             </span>
           </div>
           <div className="guide-flow-fallback" data-testid="guide-no-steps">

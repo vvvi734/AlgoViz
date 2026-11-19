@@ -12,7 +12,7 @@
   min-height: 0;
   overflow: hidden;
   color: var(--txt);
-  font-size: 12px;
+  font-size: var(--font-ui);
   z-index: 1;
 }
 
@@ -42,7 +42,7 @@
   border-radius: 999px;
   background: var(--panel-2);
   color: var(--muted);
-  font-size: 9px;
+  font-size: var(--font-ui);
   font-weight: 850;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -91,13 +91,13 @@
   border-radius: 999px;
   background: var(--panel-2);
   color: var(--muted);
-  font-size: 9.5px;
+  font-size: var(--font-ui);
   white-space: nowrap;
 }
 
 .huffman-metric b {
   color: var(--txt);
-  font-size: 11px;
+  font-size: var(--font-ui);
   font-variant-numeric: tabular-nums;
 }
 
@@ -150,7 +150,7 @@
 
 .huffman-panel-title {
   color: var(--txt);
-  font-size: 10px;
+  font-size: var(--font-ui);
   font-weight: 850;
   letter-spacing: 0.02em;
   white-space: nowrap;
@@ -158,7 +158,7 @@
 
 .huffman-panel-note {
   color: var(--muted);
-  font-size: 8.5px;
+  font-size: var(--font-ui);
   font-weight: 650;
   white-space: nowrap;
   overflow: hidden;
@@ -187,7 +187,7 @@
   min-height: 120px;
   padding: 16px;
   color: var(--muted);
-  font-size: 11px;
+  font-size: var(--font-ui);
   line-height: 1.55;
   text-align: center;
 }
@@ -224,7 +224,7 @@
 
 .huffman-edge text {
   fill: var(--muted);
-  font-size: 9px;
+  font-size: var(--font-ui);
   font-weight: 850;
   pointer-events: none;
 }
@@ -258,14 +258,14 @@
 
 .huffman-node-id {
   fill: var(--muted);
-  font-size: 7.5px;
+  font-size: var(--font-ui);
   font-weight: 750;
   font-family: var(--mono, ui-monospace, monospace);
 }
 
 .huffman-node-tag {
   fill: var(--accent);
-  font-size: 6.5px;
+  font-size: var(--font-ui);
   font-weight: 850;
   letter-spacing: 0.08em;
 }
@@ -280,7 +280,7 @@
 
 .huffman-node-weight {
   fill: var(--txt);
-  font-size: 10px;
+  font-size: var(--font-ui);
   font-weight: 800;
   dominant-baseline: middle;
   font-variant-numeric: tabular-nums;
@@ -288,7 +288,7 @@
 
 .huffman-node-code {
   fill: var(--muted);
-  font-size: 7px;
+  font-size: var(--font-ui);
   font-weight: 700;
   dominant-baseline: middle;
   font-family: var(--mono, ui-monospace, monospace);
@@ -341,7 +341,7 @@
 .huffman-queue-note {
   flex: 0 0 auto;
   color: var(--muted);
-  font-size: 8px;
+  font-size: var(--font-ui);
   line-height: 1.35;
   font-family: var(--mono, ui-monospace, monospace);
   white-space: nowrap;
@@ -355,7 +355,7 @@
   border: 1px dashed var(--accent-2);
   border-radius: 5px;
   color: var(--accent-2);
-  font-size: 8.5px;
+  font-size: var(--font-ui);
   font-weight: 700;
   line-height: 1.35;
 }
@@ -386,26 +386,26 @@
 
 .huffman-queue-rank {
   color: var(--muted);
-  font-size: 8px;
+  font-size: var(--font-ui);
   font-weight: 750;
   white-space: nowrap;
 }
 
 .huffman-queue-rank.is-out {
   color: var(--warn);
-  font-size: 7px;
+  font-size: var(--font-ui);
   letter-spacing: 0.02em;
 }
 
 .huffman-queue-rank.is-new {
   color: var(--accent-2);
-  font-size: 7px;
+  font-size: var(--font-ui);
   font-weight: 850;
 }
 
 .huffman-queue-symbol {
   color: var(--node-fg);
-  font-size: 12px;
+  font-size: var(--font-ui);
   font-weight: 850;
   text-align: center;
   overflow: hidden;
@@ -415,14 +415,14 @@
 
 .huffman-queue-weight {
   color: var(--accent);
-  font-size: 11px;
+  font-size: var(--font-ui);
   font-weight: 850;
   text-align: right;
 }
 
 .huffman-queue-id {
   color: var(--muted);
-  font-size: 7.5px;
+  font-size: var(--font-ui);
   font-family: var(--mono, ui-monospace, monospace);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -432,7 +432,7 @@
 .huffman-queue-tag {
   grid-column: 2 / -1;
   color: var(--accent-2);
-  font-size: 7px;
+  font-size: var(--font-ui);
   font-weight: 800;
   letter-spacing: 0.03em;
 }
@@ -440,7 +440,7 @@
 .huffman-queue-empty {
   padding: 8px 4px;
   color: var(--muted);
-  font-size: 9.5px;
+  font-size: var(--font-ui);
   line-height: 1.45;
 }
 
@@ -471,7 +471,7 @@
 
 .huffman-fixed-note {
   color: var(--muted);
-  font-size: 8.5px;
+  font-size: var(--font-ui);
   line-height: 1.25;
   white-space: nowrap;
   overflow: hidden;
@@ -489,7 +489,7 @@
   width: 100%;
   min-width: 420px;
   border-collapse: collapse;
-  font-size: 10px;
+  font-size: var(--font-ui);
   font-variant-numeric: tabular-nums;
 }
 
@@ -501,7 +501,7 @@
   border-bottom: 1px solid var(--edge);
   background: var(--panel-2);
   color: var(--muted);
-  font-size: 8px;
+  font-size: var(--font-ui);
   font-weight: 750;
   letter-spacing: 0.025em;
   text-align: right;
@@ -544,7 +544,7 @@
 .huffman-code-empty {
   padding: 10px 9px;
   color: var(--muted);
-  font-size: 9.5px;
+  font-size: var(--font-ui);
   line-height: 1.5;
 }
 
@@ -552,7 +552,7 @@
   flex: 0 0 auto;
   padding: 3px 8px 4px;
   color: var(--muted);
-  font-size: 8.4px;
+  font-size: var(--font-ui);
   line-height: 1.4;
   border-top: 1px dashed var(--edge);
 }
@@ -571,7 +571,7 @@
   min-width: 0;
   padding: 1px 2px 0;
   color: var(--muted);
-  font-size: 9px;
+  font-size: var(--font-ui);
 }
 
 .huffman-path-label,
@@ -591,7 +591,7 @@
 
 .huffman-prefix-value {
   color: var(--accent);
-  font-size: 10px;
+  font-size: var(--font-ui);
   font-weight: 850;
   letter-spacing: 0.06em;
 }
@@ -636,7 +636,7 @@
 
   .huffman-command {
     max-width: 190px;
-    font-size: 11px;
+    font-size: var(--font-ui);
   }
 
   .huffman-metric:not(:first-child):not([data-testid]) {
@@ -650,7 +650,7 @@
 
   .huffman-code-table {
     min-width: 0;
-    font-size: 9px;
+    font-size: var(--font-ui);
   }
 
   .huffman-code-table th,
@@ -659,7 +659,7 @@
   }
 
   .huffman-pathbar {
-    font-size: 8.5px;
+    font-size: var(--font-ui);
   }
 
   .huffman-path-value {

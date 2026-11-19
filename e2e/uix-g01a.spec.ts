@@ -180,15 +180,15 @@ function expectReadable(data: Metrics, viewport: (typeof VIEWPORTS)[number], alg
   expect(data.graphCard!.width, `${label}: graph card has a real canvas`).toBeGreaterThan(280);
   if (algorithm === 'prim') {
     if (data.pq.count > 0) {
-      expect(data.pq.font, `${label}: priority queue font`).toBeGreaterThanOrEqual(10.5);
+      expect(data.pq.font, `${label}: priority queue font`).toBeGreaterThanOrEqual(12);
       expect(data.pq.rowHeight, `${label}: priority queue row`).toBeGreaterThanOrEqual(27);
     }
   } else {
     expect(data.sorted.count, `${label}: full sorted edge table`).toBe(6);
-    expect(data.sorted.font, `${label}: sorted table font`).toBeGreaterThanOrEqual(10.5);
+    expect(data.sorted.font, `${label}: sorted table font`).toBeGreaterThanOrEqual(12);
     expect(data.sorted.rowHeight, `${label}: sorted table row`).toBeGreaterThanOrEqual(27);
     expect(data.parent.count, `${label}: all union-find rows`).toBe(5);
-    expect(data.parent.font, `${label}: union-find font`).toBeGreaterThanOrEqual(9.5);
+    expect(data.parent.font, `${label}: union-find font`).toBeGreaterThanOrEqual(12);
     expect(data.parent.rowHeight, `${label}: union-find row`).toBeGreaterThanOrEqual(18);
   }
   expect(data.sideScroll).not.toBeNull();
@@ -199,6 +199,7 @@ async function expectSharedChrome(page: Page, algorithm: Algorithm) {
   if (algorithm === 'kruskal') {
     await expect(page.getByTestId('visual-guide')).toHaveCount(1);
     await expect(page.getByTestId('visual-guide')).toBeVisible();
+    await page.getByTestId('visual-guide').locator('summary').click();
     await expect(page.getByTestId('visual-guide-note')).toBeVisible();
   } else {
     // UIX-V02 deliberately renders no empty guide for Prim; the legend is its

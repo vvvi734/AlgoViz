@@ -12,7 +12,7 @@
 }
 
 .hash-algorithm-name {
-  font-size: 11px;
+  font-size: var(--font-ui);
   font-weight: 800;
   color: var(--muted);
   letter-spacing: .02em;
@@ -34,7 +34,7 @@
   padding: 5px 9px;
   background: color-mix(in srgb, var(--hash-amber) 7%, var(--panel-2));
   color: var(--txt);
-  font-size: 12px;
+  font-size: var(--font-ui);
   font-weight: 800;
 }
 
@@ -49,14 +49,14 @@
 }
 
 .hash-formula-label {
-  font-size: 10px;
+  font-size: var(--font-ui);
   font-weight: 700;
   color: var(--muted);
 }
 
 .hash-formula code {
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 11px;
+  font-size: var(--font-ui);
   font-weight: 800;
   color: var(--hash-blue);
   white-space: nowrap;
@@ -67,7 +67,7 @@
   align-items: center;
   border-radius: 999px;
   padding: 4px 10px;
-  font-size: 11px;
+  font-size: var(--font-ui);
   font-weight: 800;
   border: 1px solid var(--edge);
 }
@@ -83,7 +83,7 @@
 
 .hash-hash-index {
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 11px;
+  font-size: var(--font-ui);
   font-weight: 800;
   color: var(--hash-blue);
 }
@@ -99,7 +99,7 @@
   border: 1px solid var(--edge);
   border-radius: 999px;
   padding: 4px 10px;
-  font-size: 11px;
+  font-size: var(--font-ui);
   font-weight: 800;
 }
 .hash-result-chip.is-ok {
@@ -123,7 +123,7 @@
   border-radius: 8px;
   padding: 6px 9px;
   color: var(--muted);
-  font-size: 10px;
+  font-size: var(--font-ui);
 }
 
 /* ---------- separate chaining ---------- */
@@ -158,14 +158,14 @@
   flex: 0 0 82px;
   gap: 1px;
   color: var(--txt);
-  font-size: 10px;
+  font-size: var(--font-ui);
   font-weight: 800;
   line-height: 1.15;
 }
 .hash-bucket-index small {
   color: var(--muted);
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 9px;
+  font-size: var(--font-ui);
 }
 
 .hash-chain {
@@ -187,7 +187,7 @@
   border: 1px dashed var(--edge);
   border-radius: 7px;
   color: var(--muted);
-  font-size: 9px;
+  font-size: var(--font-ui);
   font-weight: 700;
   white-space: nowrap;
 }
@@ -214,7 +214,7 @@
   line-height: 1.05;
 }
 .hash-node-key { font-size: 13px; font-weight: 900; }
-.hash-node-id { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 8px; color: var(--muted); }
+.hash-node-id { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: var(--font-ui); color: var(--muted); }
 .hash-node.is-current, .hash-node.is-inserted {
   border-color: var(--hash-amber);
   background: color-mix(in srgb, var(--hash-amber) 12%, var(--panel-2));
@@ -228,7 +228,7 @@
 .hash-arrow {
   color: var(--hash-blue);
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 12px;
+  font-size: var(--font-ui);
   font-weight: 900;
 }
 .hash-arrow.is-null { color: var(--hash-muted); }
@@ -267,18 +267,18 @@
   left: 4px;
   color: var(--muted);
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 8px;
+  font-size: var(--font-ui);
   font-weight: 700;
 }
 .hash-slot-state {
   margin-top: 7px;
-  font-size: 8px;
+  font-size: var(--font-ui);
   font-weight: 900;
   letter-spacing: .04em;
   color: var(--muted);
 }
 .hash-slot-key { font-size: 20px; font-weight: 900; line-height: 1; }
-.hash-slot-id { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 8px; color: var(--muted); }
+.hash-slot-id { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: var(--font-ui); color: var(--muted); }
 .hash-slot-null { color: var(--muted); font-size: 18px; line-height: 1; }
 .hash-slot-tombstone { color: var(--hash-red); font-size: 20px; font-weight: 900; line-height: 1; }
 .hash-slot.is-empty { border-style: dashed; opacity: .8; }
@@ -306,7 +306,7 @@
   border-radius: 999px;
   padding: 0 4px;
   color: var(--hash-amber);
-  font-size: 7px;
+  font-size: var(--font-ui);
   font-weight: 900;
 }
 .hash-slot-mark.is-reused { border-color: var(--hash-green); color: var(--hash-green); max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -332,11 +332,11 @@
 .hash-probe-label {
   margin-right: 3px;
   color: var(--muted);
-  font-size: 9px;
+  font-size: var(--font-ui);
   font-weight: 800;
   white-space: nowrap;
 }
-.hash-probe-empty { color: var(--muted); font-size: 10px; }
+.hash-probe-empty { color: var(--muted); font-size: var(--font-ui); }
 .hash-probe-piece { display: inline-flex; align-items: center; gap: 3px; }
 .hash-probe-chip {
   display: inline-flex;
@@ -350,18 +350,18 @@
   color: var(--hash-blue);
   background: var(--panel-2);
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 10px;
+  font-size: var(--font-ui);
   font-weight: 800;
 }
 .hash-probe-chip.is-current { border-color: var(--hash-amber); color: var(--hash-amber); background: color-mix(in srgb, var(--hash-amber) 10%, var(--panel-2)); }
-.hash-probe-arrow { color: var(--muted); font-size: 10px; }
+.hash-probe-arrow { color: var(--muted); font-size: var(--font-ui); }
 
 .hash-reuse-note {
   border: 1px solid color-mix(in srgb, var(--hash-green) 50%, var(--edge));
   border-radius: 7px;
   padding: 3px 7px;
   color: var(--hash-green);
-  font-size: 9px;
+  font-size: var(--font-ui);
   font-weight: 800;
 }
 
@@ -371,7 +371,7 @@
   padding: 3px 7px;
   background: color-mix(in srgb, var(--hash-red) 5%, var(--panel-2));
   color: var(--muted);
-  font-size: 9px;
+  font-size: var(--font-ui);
   line-height: 1.4;
 }
 .hash-tombstone-note b { color: var(--hash-red); }
@@ -385,7 +385,7 @@
   padding: 4px 8px;
   background: color-mix(in srgb, var(--hash-red) 5%, var(--panel-2));
   color: var(--muted);
-  font-size: 9px;
+  font-size: var(--font-ui);
 }
 .hash-removed-label { font-weight: 700; }
 .hash-removed-node {
@@ -397,11 +397,11 @@
   border: 1px solid color-mix(in srgb, var(--hash-red) 50%, var(--edge));
   border-radius: 5px;
   color: var(--hash-red);
-  font-size: 12px;
+  font-size: var(--font-ui);
   font-weight: 900;
   text-decoration: line-through;
 }
-.hash-removed-id { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 8px; }
+.hash-removed-id { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: var(--font-ui); }
 
 .hash-legend-item.is-bucket::before { background: var(--hash-blue); border-color: var(--hash-blue); }
 .hash-legend-item.is-current::before { background: var(--hash-amber); border-color: var(--hash-amber); }
@@ -416,5 +416,5 @@
   .hash-node { min-width: 42px; height: 36px; }
   .hash-slot-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .hash-slot { min-height: 72px; }
-  .hash-formula code { font-size: 10px; }
+  .hash-formula code { font-size: var(--font-ui); }
 }

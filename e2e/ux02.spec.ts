@@ -42,13 +42,15 @@ test.describe('UX-02 — compact, frame-synchronised teaching rail', () => {
     await openApp(page);
     await selectAlgorithm(page, 'dijkstra', 46);
 
-    // Default rail: four parts, old course data and the step list folded away.
+    // Default rail: key state plus one current operation, with no duplicate
+    // course-detail or step-list panels.
+    await expect(page.getByTestId('key-state')).toBeVisible();
     await expect(page.getByTestId('current-step')).toBeVisible();
     await expect(page.getByTestId('current-step-title')).toContainText(/带权图|Weighted graph/i);
     await expect(page.getByTestId('lesson-explanation')).toContainText('∞');
     await expect(page.getByTestId('current-step-changes')).toBeVisible();
-    await expect(page.getByTestId('lesson-overview')).toBeHidden();
-    await expect(page.getByTestId('lesson-steps')).toBeHidden();
+    await expect(page.getByTestId('lesson-overview')).toHaveCount(0);
+    await expect(page.getByTestId('lesson-steps')).toHaveCount(0);
 
     await setFrame(page, 27, 46);
     await expect(page.getByTestId('lesson-active-step')).toHaveAttribute('data-step-id', 'relax');
@@ -82,18 +84,12 @@ test.describe('UX-02 — compact, frame-synchronised teaching rail', () => {
     await expect(page.getByTestId('current-step-changes')).toContainText('7');
     await page.screenshot({ path: resolve(SHOT_DIR, 'dijkstra-done-1440-light.png') });
 
-    // The old step jump still works, but only through the folded disclosure.
-    await page.getByTestId('lesson-steps-toggle').click();
-    await expect(page.getByTestId('lesson-steps')).toBeVisible();
+    // The compact stage strip still seeks to a real frame, without a second
+    // duplicate step list.
     await page.getByTestId('lesson-step-relax').click();
     await expect(page.getByTestId('lesson-active-step')).toHaveAttribute('data-step-id', 'relax');
     await expect(page.getByTestId('current-step-title')).toContainText(/松弛|Relax/i);
-
-    await page.getByTestId('lesson-details-toggle').click();
-    await expect(page.getByTestId('lesson-overview')).toBeVisible();
-    await expect(page.getByTestId('lesson-overview')).toContainText(/Dijkstra|最短路径/i);
-    await expect(page.getByTestId('lesson-tech')).toBeVisible();
-    await expect(page.getByTestId('lesson-message')).toBeVisible();
+    await expect(page.getByTestId('lesson-active-step')).toHaveCount(1);
   });
 
   test('Kahn: indegree, enqueue and dequeue all come from the real snapshot', async ({ page }) => {
@@ -182,7 +178,7 @@ test.describe('UX-02 — compact, frame-synchronised teaching rail', () => {
     await page.screenshot({ path: resolve(SHOT_DIR, 'bst-compare-390-light.png'), fullPage: true });
   });
 
-  test('Dijkstra English/Dark: the same four-part rail localises without losing the frame', async ({ page }) => {
+  test('Dijkstra English/Dark: key state and current operation localise without losing the frame', async ({ page }) => {
     test.setTimeout(600_000);
     await page.setViewportSize({ width: 1440, height: 900 });
     await openApp(page);

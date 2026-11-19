@@ -28,6 +28,8 @@ import './styles/uix01.css';
 import './styles/uix02.css';
 import './styles/g01a.css';
 import './styles/scc.css';
+import './styles/ux05.css';
+import './styles/typography.css';
 
 const container = document.getElementById('root');
 if (!container) throw new Error('Missing #root element');

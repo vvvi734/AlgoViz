@@ -32,7 +32,7 @@
 
 .visual-guide-kicker {
   color: var(--accent);
-  font: 800 8.5px/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font: 800 var(--font-ui)/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
   letter-spacing: 0.12em;
   white-space: nowrap;
 }
@@ -47,7 +47,7 @@
 
 .visual-guide-mark {
   color: var(--accent);
-  font-size: 14px;
+  font-size: var(--font-body);
   line-height: 1;
   opacity: 0.9;
 }
@@ -82,7 +82,7 @@
   border-radius: 4px;
   background: color-mix(in srgb, var(--accent) 9%, transparent);
   color: var(--accent);
-  font-size: 8.5px;
+  font-size: var(--font-ui);
   font-weight: 850;
   letter-spacing: 0.03em;
   white-space: nowrap;
@@ -101,7 +101,7 @@
 .visual-guide-row dd {
   margin: 0;
   color: var(--txt);
-  font-size: 10.8px;
+  font-size: var(--font-ui);
   line-height: 1.42;
 }
 
@@ -115,13 +115,13 @@
   border-radius: 0 5px 5px 0;
   background: color-mix(in srgb, var(--accent) 6%, transparent);
   color: var(--muted);
-  font-size: 9.8px;
+  font-size: var(--font-ui);
   line-height: 1.38;
 }
 
 .visual-guide-note b {
   color: var(--accent);
-  font-size: 8.5px;
+  font-size: var(--font-ui);
   letter-spacing: 0.04em;
   white-space: nowrap;
 }
@@ -138,7 +138,7 @@
 }
 
 .stage-head h2 {
-  font-size: 14px;
+  font-size: var(--font-body);
   line-height: 1.2;
   letter-spacing: 0.01em;
 }
@@ -182,13 +182,13 @@
 
 .stage-control-strip .tree-mode-title,
 .stage-control-strip .bst-picker-title {
-  font-size: 9px;
+  font-size: var(--font-ui);
   letter-spacing: 0.04em;
 }
 
 .stage-control-strip .tree-mode-actual,
 .stage-control-strip .bst-picker-actual {
-  font-size: 9px;
+  font-size: var(--font-ui);
   color: var(--muted);
 }
 
@@ -203,7 +203,7 @@
   flex: 0 1 auto;
   min-height: 27px;
   padding: 3px 8px;
-  font-size: 9.6px;
+  font-size: var(--font-ui);
   line-height: 1.2;
   border-radius: 999px;
   text-align: center;
@@ -213,7 +213,7 @@
 .stage-control-strip .bst-preset-btn {
   min-height: 27px;
   padding: 3px 8px;
-  font-size: 9.8px;
+  font-size: var(--font-ui);
 }
 
 .stage-control-strip .tree-mode-pending,
@@ -221,7 +221,7 @@
   flex: 1 1 100%;
   padding: 2px 0 0 8px;
   border-left-width: 2px;
-  font-size: 9.5px;
+  font-size: var(--font-ui);
   line-height: 1.35;
 }
 
@@ -254,7 +254,7 @@
 .huffman-code-table {
   display: block;
   min-width: 0;
-  font-size: 9.4px;
+  font-size: var(--font-ui);
 }
 
 .huffman-code-table thead {
@@ -288,7 +288,7 @@
 .huffman-code-table td {
   padding: 0;
   border: 0;
-  font-size: 9.2px;
+  font-size: var(--font-ui);
   line-height: 1.35;
   white-space: nowrap;
   overflow: hidden;
@@ -307,7 +307,7 @@
 }
 
 .huffman-fixed-note {
-  font-size: 8px;
+  font-size: var(--font-ui);
 }
 
 .stage-control-strip[data-testid='huffman-control-strip'] .bst-picker-head {
@@ -378,17 +378,17 @@
 
 .g1-toolbar .g1-op-line {
   color: var(--txt);
-  font-size: 11px;
+  font-size: var(--font-ui);
   max-width: none;
 }
 
 .g1-toolbar .g1-head-state {
-  font-size: 10.5px;
+  font-size: var(--font-ui);
 }
 
 .g1-toolbar .g1-badge {
   padding: 2px 7px;
-  font-size: 9.5px;
+  font-size: var(--font-ui);
 }
 
 .floyd-stage .g1-workbench {
@@ -406,7 +406,7 @@
 }
 
 .floyd-stage .floyd-matrix {
-  font-size: 11.5px;
+  font-size: var(--font-ui);
 }
 
 .floyd-stage .floyd-matrix th,
@@ -428,7 +428,7 @@
 .critical-stage .mst-subtitle {
   margin: 0;
   color: var(--muted);
-  font-size: 10px;
+  font-size: var(--font-ui);
   line-height: 1.25;
 }
 
@@ -464,18 +464,18 @@
 
 .critical-stage .g3-table th {
   padding: 2px 5px;
-  font-size: 8px;
+  font-size: var(--font-ui);
 }
 
 .critical-stage .g3-table td {
   padding: 1px 5px;
-  font-size: 9px;
+  font-size: var(--font-ui);
   line-height: 1.15;
 }
 
 .critical-stage .g3-phase {
   padding: 2px 6px;
-  font-size: 8.5px;
+  font-size: var(--font-ui);
 }
 
 .critical-stage .mst-result {
@@ -517,7 +517,7 @@
 
 .kruskal-stage .mst-subtitle {
   margin: 0;
-  font-size: 10px;
+  font-size: var(--font-ui);
 }
 
 /* ---------- Narrow screens: keep the guide readable, not another lecture ---------- */
@@ -539,7 +539,7 @@
   }
 
   .huffman-code-table td {
-    font-size: 9px;
+    font-size: var(--font-ui);
     line-height: 1.2;
   }
 }
@@ -555,7 +555,7 @@
   }
 
   .visual-guide-row dd {
-    font-size: 11px;
+    font-size: var(--font-ui);
     line-height: 1.5;
   }
 
@@ -569,7 +569,7 @@
     flex: 1 1 0;
     min-width: 0;
     padding: 3px 4px;
-    font-size: 9px;
+    font-size: var(--font-ui);
   }
 
   .stage-head {

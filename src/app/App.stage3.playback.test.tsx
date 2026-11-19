@@ -106,8 +106,9 @@ describe('Stage 3 playback fix — a new trace restarts the timeline', () => {
     fireEvent.click(screen.getByTestId('algo-factorial'));
     await waitFor(() => expect(screen.getByTestId('progress').textContent).toBe('1 / 4'));
 
-    // Frame 0 is a valid, rendered event again.
-    expect(screen.getByTestId('step-desc').textContent).toBe('调用 / call factorial(4)');
+    // Frame 0 is a valid, rendered event again. The timeline keeps only the
+    // active UI language, so the bilingual trace message is reduced to Chinese.
+    expect(screen.getByTestId('step-desc').textContent).toBe('调用');
 
     // The call stack shows only the outermost frame, active.
     expect(screen.getByTestId('call-frame-f1').className).toContain('active');

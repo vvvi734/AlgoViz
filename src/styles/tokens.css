@@ -7,6 +7,10 @@
 :root,
 :root[data-theme='dark'] {
   color-scheme: dark;
+  /* Typography floor: labels 12, teaching/body 14, operation titles 16. */
+  --font-ui: 12px;
+  --font-body: 14px;
+  --font-title: 16px;
   --bg: #0a1020;
   --bg-glow-a: #163354;
   --panel: #111b2e;
@@ -96,6 +100,9 @@
 
 :root[data-theme='light'] {
   color-scheme: light;
+  --font-ui: 12px;
+  --font-body: 14px;
+  --font-title: 16px;
   --bg: #f5f7fb;
   --bg-glow-a: #deebff;
   --panel: #ffffff;

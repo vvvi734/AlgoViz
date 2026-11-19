@@ -4,6 +4,7 @@ import { CURATED_GUIDES } from './algorithmGuides';
 import {
   EMPTY_LOCALIZED_LIST,
   type AlgorithmGuideContent,
+  type CuratedGuide,
   type GuideStage,
   type GuideStep,
 } from './types';
@@ -16,8 +17,26 @@ function stripLeadingOrdinal(text: string): string {
 function firstSentence(text: LocalizedText): LocalizedText {
   const take = (value: string) => {
     const trimmed = value.trim();
-    const sentence = trimmed.match(/^(.+?[。！？.!?])(?:\s|$)/)?.[1] ?? trimmed;
-    return sentence;
+    const zh = trimmed.match(/^(.+?[。！？])/)?.[1];
+    if (zh) return zh.trim();
+    const sentence = trimmed.match(/^(.+?[.!?])(?:\s|$)/)?.[1] ?? trimmed;
+    return sentence.trim();
+  };
+  return { zh: take(text.zh), en: take(text.en) };
+}
+
+/**
+ * A review guide shows at most two sentences of framing. The detailed course
+ * prose stays in the lesson data, but the default learning page is an outline,
+ * not a second textbook.
+ */
+function firstSentences(text: LocalizedText, limit = 2, maxChars = 240): LocalizedText {
+  const take = (value: string) => {
+    const normalized = value.replace(/\s+/g, ' ').trim();
+    if (!normalized) return '';
+    const sentences = normalized.match(/[^。！？.!?]+[。！？.!?]?/g) ?? [normalized];
+    const picked = sentences.slice(0, limit).join('').trim();
+    return picked.length > maxChars ? `${picked.slice(0, maxChars).trimEnd()}…` : picked;
   };
   return { zh: take(text.zh), en: take(text.en) };
 }
@@ -33,18 +52,24 @@ function lessonSteps(lesson: Lesson): GuideStep[] {
 }
 
 /**
- * A small course only gets a stage strip when its real steps are already
- * phase-sized (3–5). Longer courses keep all steps in the expandable details
- * instead of pretending that an arbitrary grouping is their phase structure.
+ * The overview flow is the course's real sequence, not an arbitrary 3–5
+ * grouping. Each stage is one sentence; the full explanation remains in
+ * `steps` for backwards compatibility but is no longer rendered by default.
  */
 function lessonStages(lesson: Lesson): GuideStage[] {
-  if (lesson.steps.length < 3 || lesson.steps.length > 5) return [];
   return lesson.steps.map((step) => ({
     title: {
       zh: stripLeadingOrdinal(step.title.zh),
       en: stripLeadingOrdinal(step.title.en),
     },
     summary: firstSentence(step.explanation),
+  }));
+}
+
+function curatedStages(curated: CuratedGuide): GuideStage[] {
+  return curated.steps.map((step) => ({
+    title: step.title,
+    summary: firstSentence(step.body),
   }));
 }
 
@@ -83,6 +108,8 @@ export function buildAlgorithmGuide(
     return {
       algorithmId,
       ...curated,
+      stages: curatedStages(curated),
+      coreIdea: firstSentences(curated.coreIdea ?? curated.problem ?? { zh: '', en: '' }),
       prerequisites: lesson?.prerequisites ?? emptyList(),
       complexity:
         lesson?.complexity ??
@@ -107,11 +134,11 @@ export function buildAlgorithmGuide(
       algorithmId,
       problem: lesson.oneLiner,
       coreHeadline: null,
-      coreIdea: lesson.intuition,
+      coreIdea: firstSentences(lesson.intuition),
       stages: lessonStages(lesson),
       steps: lessonSteps(lesson),
       prerequisites: lesson.prerequisites,
-      conditions: emptyList(),
+      conditions: lesson.prerequisites,
       complexity: lesson.complexity,
       pitfalls: lesson.commonMistakes,
       memoryHook: lesson.steps[lesson.steps.length - 1]?.tip ?? null,

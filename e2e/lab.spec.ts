@@ -191,9 +191,9 @@ test.describe('Stage 3B — teaching steps synced with real Pyodide execution', 
       { timeout: 120_000 },
     );
 
-    // `compare` is a repeated teaching stage, so its badge counts many frames.
+    // `compare` is a repeated teaching stage, so its badge carries many frames.
     const compareFrames = Number(
-      await page.locator('[data-testid="lesson-step-compare"] .lessonstep-count').textContent(),
+      await page.locator('[data-testid="lesson-step-compare"]').getAttribute('data-frame-count'),
     );
     expect(compareFrames).toBeGreaterThan(1);
 

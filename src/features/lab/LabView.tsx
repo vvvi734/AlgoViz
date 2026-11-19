@@ -11,9 +11,8 @@ import { sequentialListPresetFromInput } from '../../domain/algorithms/sequentia
 import { Timeline } from './Timeline';
 import { CodeDock } from './CodeDock';
 import { SyncPanel } from './SyncPanel';
-import { CallStackPanel } from './CallStackPanel';
-import { LessonPanel } from './LessonPanel';
-import { VisualGuide } from './VisualGuide';
+import { LearningRail } from './LearningRail';
+import { useSvgTextFloor } from './useSvgTextFloor';
 import { AlgorithmGuide, ALGORITHM_GUIDE_ID } from './AlgorithmGuide';
 import { useAlgorithmGuidePreferences } from './useAlgorithmGuidePreferences';
 import { buildAlgorithmGuide } from '../../domain/guides/buildGuide';
@@ -42,11 +41,12 @@ import { useTheme } from '../../theme/ThemeProvider';
  * Stage 7A learning workspace, re-laid out by UI-02.
  *
  * Information architecture:
- *  1. primary: sidebar → [animation + playback | synchronized explanation rail];
+ *  1. primary: sidebar → [animation + playback | learning rail];
  *     the code editor is a full-width, collapsed-by-default dock below both columns
  *     (UI-03);
- *  2. secondary: variables/call stack, AI mentor and session/tool panels in the
- *     on-demand tab strip;
+ *  2. the rail owns real variables, the optional call stack and the current
+ *     operation; advanced tabs keep AI, session and the source snapshot, without
+ *     duplicating variables or call frames;
  *  3. the lesson rail and the animation read the SAME `currentEvent` and
  *     `playback.index`; the rail never owns a second playhead.
  *
@@ -119,6 +119,8 @@ export function LabView({
   const [selectedFrameId, setSelectedFrameId] = useState<string | null>(null);
   const [tab, setTab] = useState<WorkspaceTabId>('state');
   const workbenchRef = useRef<HTMLDivElement | null>(null);
+  const shellRef = useRef<HTMLDivElement | null>(null);
+  useSvgTextFloor(shellRef);
   // UX-03: the directory is the authored textbook tree composed with the live
   // registry. It remains presentation-only; `currentAlgo` still owns selection.
   const textbookNav = useMemo(() => buildTextbookNavigation(lab.catalog), [lab.catalog]);
@@ -167,7 +169,6 @@ export function LabView({
     }
   }, [currentEvent, selectedFrameId]);
 
-  const hasCallStack = lab.events.some((event) => !!event.callStack?.length);
   const lesson = lessons.byAlgorithm(lab.currentAlgo);
   const algorithmGuideContent = buildAlgorithmGuide(lab.currentAlgo, lesson, entry);
   const activeStepIndex = lesson ? stepIndexForEvent(lesson, currentEvent) : -1;
@@ -182,19 +183,14 @@ export function LabView({
   const tabs = {
     state: (
       <div className="state-stack">
-        {hasCallStack && (
-          <CallStackPanel
-            event={currentEvent}
-            selectedFrameId={selectedFrameId}
-            onSelectFrame={setSelectedFrameId}
-          />
-        )}
         <SyncPanel
           event={currentEvent}
           source={lab.source}
           stale={lab.traceStale}
           selectedFrameId={selectedFrameId}
           showSource={false}
+          showVariables={false}
+          showExplanation={false}
         />
       </div>
     ),
@@ -225,6 +221,7 @@ export function LabView({
 
   return (
     <div
+      ref={shellRef}
       className={`lab-shell${sidebar.collapsed ? ' nav-collapsed' : ''}${algorithmGuide.isOpen ? ' guide-open' : ''}${lab.currentAlgo === 'scc' ? ' scc-focus' : ''}`}
       data-testid="learn-view"
     >
@@ -381,12 +378,14 @@ export function LabView({
           </section>
 
           <aside className="lab-explanation" data-testid="explanation-rail" aria-label={t('lessonPanel')}>
-            <VisualGuide algorithmId={lab.currentAlgo} />
-            <LessonPanel
+            <LearningRail
+              algorithmId={lab.currentAlgo}
               lesson={lesson}
               events={lab.events}
               index={lab.playback.index}
               currentEvent={currentEvent}
+              selectedFrameId={selectedFrameId}
+              onSelectFrame={setSelectedFrameId}
               onSeek={lab.playback.seek}
               originName={packOrigin ? packOrigin[lang] : undefined}
               hasExample={Boolean(courseExample)}
@@ -395,7 +394,6 @@ export function LabView({
                   ? () => lab.applyCourseExample(courseExample.code, courseExample.input)
                   : undefined
               }
-              variant="rail"
             />
           </aside>
         </div>

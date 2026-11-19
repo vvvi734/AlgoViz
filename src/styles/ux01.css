@@ -27,7 +27,7 @@
 
 .guide-toggle-chevron {
   color: var(--muted);
-  font-size: 9px;
+  font-size: var(--font-ui);
 }
 
 .guide-toggle:focus-visible,
@@ -65,7 +65,7 @@
   align-items: center;
   gap: 7px;
   color: var(--accent);
-  font-size: 11.5px;
+  font-size: var(--font-ui);
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -105,7 +105,7 @@
 
 .guide-overline {
   color: var(--muted);
-  font-size: 10.5px;
+  font-size: var(--font-ui);
   font-weight: 700;
   letter-spacing: 0.09em;
   text-transform: uppercase;
@@ -143,7 +143,7 @@
 .guide-figure figcaption {
   margin-top: 3px;
   color: var(--muted);
-  font-size: 11px;
+  font-size: var(--font-ui);
   line-height: 1.4;
 }
 
@@ -173,14 +173,14 @@
 
 .guide-svg-node-name {
   fill: var(--txt);
-  font-size: 11px;
+  font-size: var(--font-ui);
   text-anchor: middle;
   dominant-baseline: middle;
 }
 
 .guide-svg-dist {
   fill: var(--accent);
-  font-size: 8.5px;
+  font-size: var(--font-ui);
   text-anchor: middle;
 }
 
@@ -196,7 +196,7 @@
 
 .guide-svg-edge text {
   fill: var(--muted);
-  font-size: 8.5px;
+  font-size: var(--font-ui);
 }
 
 .guide-svg-arrow {
@@ -205,12 +205,12 @@
 
 .guide-svg-note {
   fill: var(--muted);
-  font-size: 9px;
+  font-size: var(--font-ui);
 }
 
 .guide-svg-label {
   fill: var(--accent);
-  font-size: 9.5px;
+  font-size: var(--font-ui);
   font-weight: 700;
 }
 
@@ -221,7 +221,7 @@
 
 .guide-svg-queue text {
   fill: var(--note-fg);
-  font-size: 9.5px;
+  font-size: var(--font-ui);
 }
 
 .guide-svg-cycle circle {
@@ -269,7 +269,7 @@
 
 .guide-flow-count {
   color: var(--muted);
-  font-size: 11.5px;
+  font-size: var(--font-ui);
   font-weight: 600;
 }
 
@@ -296,7 +296,7 @@
 .guide-stage-index {
   color: var(--accent);
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 10.5px;
+  font-size: var(--font-ui);
   font-weight: 700;
 }
 
@@ -310,7 +310,7 @@
 .guide-stage-copy p {
   margin: 3px 0 0;
   color: var(--muted);
-  font-size: 11.9px;
+  font-size: var(--font-ui);
   line-height: 1.45;
 }
 
@@ -347,7 +347,7 @@
 
 .guide-memory-label {
   color: var(--accent);
-  font-size: 10.5px;
+  font-size: var(--font-ui);
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -430,7 +430,7 @@
   background: var(--tag-bg);
   color: var(--tag-fg);
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 10px;
+  font-size: var(--font-ui);
   font-weight: 700;
 }
 
@@ -460,7 +460,7 @@
 .guide-step-index {
   color: var(--accent);
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 10px;
+  font-size: var(--font-ui);
   font-weight: 700;
 }
 
@@ -474,7 +474,7 @@
 .guide-step-list p {
   margin: 3px 0 0;
   color: var(--muted);
-  font-size: 11.8px;
+  font-size: var(--font-ui);
   line-height: 1.5;
 }
 
@@ -520,7 +520,7 @@
   background: var(--note-bg);
   color: var(--note-fg);
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 11px;
+  font-size: var(--font-ui);
 }
 
 .guide-complexity-chips b {
@@ -537,7 +537,7 @@
 .guide-conditions h4 {
   margin: 0;
   color: var(--accent);
-  font-size: 11.8px;
+  font-size: var(--font-ui);
 }
 
 .guide-muted {
@@ -555,7 +555,7 @@
   padding-top: 10px;
   border-top: 1px solid var(--edge);
   color: var(--muted);
-  font-size: 11.2px;
+  font-size: var(--font-ui);
 }
 
 .guide-foot [data-testid='guide-source'] {

@@ -1,10 +1,12 @@
 import type { Playback } from './usePlayback';
 import type { TraceEvent } from '../../domain/trace/schema';
+import { localizeTraceMessage } from '../../domain/lessons/localizeMessage';
 import { useI18n } from '../../i18n/I18nProvider';
 
 export function Timeline({ events, playback }: { events: TraceEvent[]; playback: Playback }) {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const last = Math.max(0, events.length - 1);
+  const message = localizeTraceMessage(events[playback.index]?.message ?? '', lang);
   return (
     <div className="stage-playback">
       <div className="stage-foot">
@@ -12,7 +14,7 @@ export function Timeline({ events, playback }: { events: TraceEvent[]; playback:
           {t('step')} {events.length ? playback.index + 1 : 0}
         </span>
         <span className="muted" data-testid="step-desc">
-          {events[playback.index]?.message || t('ready')}
+          {message || t('ready')}
         </span>
       </div>
       <input

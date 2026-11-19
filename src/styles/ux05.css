@@ -1,0 +1,498 @@
+/* ==========================================================================
+   UX-SIMPLIFY-02 — review-sheet guide and compact learning rail.
+
+   This file only lays out the four review blocks and the two rail sections. It
+   does not change the workbench columns, the stage height or any visual model:
+   the graph remains the visual centre and the player stays untouched.
+   ========================================================================== */
+
+/* ---------- Top algorithm review sheet ---------- */
+.review-guide {
+  display: grid;
+  gap: 14px;
+  padding: 16px 18px 14px;
+}
+
+.review-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 20px;
+}
+
+.review-heading {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.review-heading .guide-core-headline {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.review-heading .guide-core-text {
+  margin: 0;
+  max-width: 78ch;
+  color: var(--txt);
+}
+
+.review-source {
+  margin-top: 2px;
+  color: var(--muted);
+}
+
+.review-diagram {
+  width: min(280px, 28vw);
+  min-width: 180px;
+  opacity: .92;
+}
+
+.review-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(300px, .9fr);
+  gap: 12px;
+  align-items: start;
+}
+
+.review-flow,
+.review-facts,
+.review-pitfalls {
+  min-width: 0;
+  border: 1px solid color-mix(in srgb, var(--edge) 82%, transparent);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--panel-2) 54%, transparent);
+  padding: 12px 13px;
+}
+
+.review-section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.review-section-head h3 {
+  margin: 0;
+}
+
+.review-count {
+  flex: 0 0 auto;
+  color: var(--muted);
+}
+
+.review-flow-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px 14px;
+}
+
+.review-flow-list li {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr);
+  gap: 6px;
+  min-width: 0;
+  padding-top: 4px;
+  border-top: 1px solid color-mix(in srgb, var(--edge) 60%, transparent);
+}
+
+.review-flow-index {
+  color: var(--accent);
+  font: 800 12px/1.5 ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+
+.review-flow-list h4 {
+  margin: 0 0 1px;
+  overflow-wrap: anywhere;
+}
+
+.review-flow-list p {
+  margin: 0;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+.review-side {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+
+.review-complexity {
+  display: grid;
+  gap: 4px;
+  margin: 0 0 8px;
+}
+
+.review-complexity div {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  gap: 8px;
+  align-items: baseline;
+  padding: 3px 0;
+  border-bottom: 1px dashed color-mix(in srgb, var(--edge) 60%, transparent);
+}
+
+.review-complexity dt {
+  color: var(--muted);
+}
+
+.review-complexity dd {
+  margin: 0;
+  color: var(--txt);
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  overflow-wrap: anywhere;
+}
+
+.review-list {
+  margin: 0;
+  padding-left: 17px;
+  display: grid;
+  gap: 3px;
+  color: var(--txt);
+}
+
+.review-list li {
+  overflow-wrap: anywhere;
+}
+
+.review-memory {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+  margin: 8px 0 0;
+  padding: 6px 8px;
+  border-left: 2px solid var(--accent);
+  border-radius: 0 6px 6px 0;
+  background: color-mix(in srgb, var(--accent) 7%, transparent);
+}
+
+.review-memory b {
+  flex: 0 0 auto;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+.review-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* ---------- Right learning rail ---------- */
+.learning-rail {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.rail-key-state,
+.rail-operation {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+.rail-key-state {
+  padding-bottom: 11px;
+  border-bottom: 1px solid var(--edge);
+}
+
+.rail-section-head,
+.rail-operation-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.rail-kicker {
+  color: var(--muted);
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+
+.rail-section-head h2 {
+  margin: 1px 0 0;
+}
+
+.rail-section-head .tag {
+  flex: 0 0 auto;
+}
+
+.key-vars {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.key-vars-scope {
+  color: var(--accent);
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+
+.key-vars-empty {
+  color: var(--muted);
+}
+
+.key-vars-table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+}
+
+.key-vars-table th,
+.key-vars-table td {
+  padding: 3px 6px;
+  border-bottom: 1px solid color-mix(in srgb, var(--edge) 55%, transparent);
+  text-align: left;
+  vertical-align: top;
+  overflow-wrap: anywhere;
+}
+
+.key-vars-table th {
+  color: var(--muted);
+  font-weight: 650;
+}
+
+.key-vars-table th:first-child,
+.key-vars-table td.varname {
+  width: 42%;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+
+.key-vars-table td.varvalue {
+  color: var(--txt);
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+
+.key-vars-more summary {
+  cursor: pointer;
+  color: var(--muted);
+  padding: 3px 0;
+}
+
+.learning-rail [data-testid='call-stack-panel'] {
+  border: 0;
+  padding: 4px 0 0;
+  background: none;
+  box-shadow: none;
+}
+
+.learning-rail [data-testid='call-stack-panel'] .sectionhead {
+  margin: 0 0 5px;
+}
+
+.learning-rail [data-testid='call-stack-panel'] .sectionhead h2 {
+  font-size: var(--font-body);
+}
+
+.learning-rail .callstack {
+  max-height: 180px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.learning-rail .callstack-hint {
+  margin: 4px 0 0;
+  color: var(--muted);
+}
+
+.rail-operation {
+  padding-top: 1px;
+}
+
+.rail-operation-head {
+  align-items: center;
+}
+
+.rail-lesson-name {
+  margin: 2px 0 0;
+  color: var(--muted);
+  font-size: var(--font-body);
+  font-weight: 600;
+}
+
+.rail-lesson-empty {
+  margin: 2px 0 0;
+  color: var(--muted);
+}
+
+.rail-lesson-origin {
+  margin: 2px 0 0;
+  color: var(--muted);
+}
+
+.rail-example-button {
+  margin-top: 4px;
+  min-height: 26px;
+  padding: 3px 7px;
+  font-size: var(--font-ui);
+}
+
+.rail-stage {
+  display: inline-block;
+  margin-top: 2px;
+  color: var(--accent);
+}
+
+.rail-stage-jumps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+}
+
+.rail-stage-jump-button {
+  min-width: 26px;
+  min-height: 26px;
+  padding: 2px 5px;
+  border: 1px solid var(--edge);
+  border-radius: 5px;
+  background: var(--panel-2);
+  color: var(--muted);
+  font: 700 12px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+  cursor: pointer;
+}
+
+.rail-stage-jump-button[data-active='true'] {
+  border-color: var(--accent);
+  background: var(--alg-active-bg);
+  color: var(--accent);
+}
+
+.rail-stage-jump-button:disabled {
+  opacity: .45;
+  cursor: default;
+}
+
+.rail-operation-title {
+  margin: 1px 0 0;
+  color: var(--txt);
+  overflow-wrap: anywhere;
+}
+
+.rail-operation-text {
+  margin: 0;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+.rail-operation-change {
+  margin: 0;
+  padding: 5px 8px;
+  border-radius: 6px;
+  background: var(--stat-bg);
+  color: var(--txt);
+  overflow-wrap: anywhere;
+}
+
+.rail-why summary {
+  cursor: pointer;
+  color: var(--muted);
+}
+
+.rail-why p {
+  margin: 4px 0 0;
+  color: var(--txt);
+}
+
+.visual-guide-symbols {
+  border-top: 1px dashed color-mix(in srgb, var(--edge) 72%, transparent);
+  padding-top: 6px;
+}
+
+.visual-guide-symbols summary {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  cursor: pointer;
+  color: var(--accent);
+}
+
+.visual-guide-symbols summary strong {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.visual-guide-body {
+  display: grid;
+  gap: 5px;
+  padding: 5px 0 0;
+}
+
+.visual-guide-body dl {
+  display: grid;
+  gap: 3px;
+  margin: 0;
+}
+
+.visual-guide-body dl div {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  gap: 6px;
+}
+
+.visual-guide-body dt {
+  color: var(--accent);
+}
+
+.visual-guide-body dd {
+  margin: 0;
+  color: var(--txt);
+}
+
+.visual-guide-body .visual-guide-note {
+  margin: 0;
+  color: var(--muted);
+}
+
+/* ---------- Ranges ---------- */
+@media (max-width: 1120px) {
+  .review-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .review-side {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .review-head {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .review-diagram {
+    display: none;
+  }
+
+  .review-flow-list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .review-side {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .review-actions {
+    justify-content: stretch;
+  }
+
+  .review-actions .guide-start {
+    width: 100%;
+  }
+}
+
+@media (max-width: 460px) {
+  .review-guide {
+    padding: 12px 11px;
+  }
+
+  .rail-operation-head {
+    flex-wrap: wrap;
+  }
+}

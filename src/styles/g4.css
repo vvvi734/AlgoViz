@@ -88,7 +88,7 @@
 
 .g4-component-badge text {
   fill: var(--g4-component, var(--txt));
-  font: 900 9px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font: 900 var(--font-ui)/1 ui-monospace, SFMono-Regular, Consolas, monospace;
 }
 
 .g4-finish-badge circle {
@@ -99,12 +99,12 @@
 
 .g4-finish-badge text {
   fill: var(--warn);
-  font: 850 9px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font: 850 var(--font-ui)/1 ui-monospace, SFMono-Regular, Consolas, monospace;
 }
 
 .g4-node-role {
   fill: var(--accent-2);
-  font: 900 8px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font: 900 var(--font-ui)/1 ui-monospace, SFMono-Regular, Consolas, monospace;
   letter-spacing: 0.06em;
 }
 
@@ -136,7 +136,7 @@
 
 .g4-edge-label {
   fill: var(--muted);
-  font: 750 8px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font: 750 var(--font-ui)/1 ui-monospace, SFMono-Regular, Consolas, monospace;
   opacity: 0.9;
   pointer-events: none;
 }
@@ -147,7 +147,7 @@
   border-radius: 999px;
   background: var(--tag-orange-bg);
   color: var(--warn);
-  font: 850 10px/1.25 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font: 850 var(--font-ui)/1.25 ui-monospace, SFMono-Regular, Consolas, monospace;
 }
 
 .g4-stack {
@@ -169,7 +169,7 @@
   border: 1px solid var(--info-edge);
   border-radius: 5px;
   background: var(--info-bg);
-  font-size: 10px;
+  font-size: var(--font-ui);
 }
 
 .g4-stack-chip.is-added {
@@ -180,12 +180,12 @@
 
 .g4-stack-chip small {
   color: var(--muted);
-  font-size: 8px;
+  font-size: var(--font-ui);
 }
 
 .g4-stack-chip code {
   color: var(--txt);
-  font: 850 10px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font: 850 var(--font-ui)/1 ui-monospace, SFMono-Regular, Consolas, monospace;
 }
 
 .g4-stack-change {
@@ -193,7 +193,7 @@
   gap: 8px;
   flex-wrap: wrap;
   margin-top: 6px;
-  font: 800 9.5px/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font: 800 var(--font-ui)/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
 }
 
 .g4-stack-change .is-added {
@@ -237,7 +237,7 @@
   border-radius: 999px;
   background: var(--g4-component, var(--accent));
   color: var(--panel);
-  font: 900 10px/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font: 900 var(--font-ui)/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
 }
 
 .g4-group-chips {
@@ -253,12 +253,12 @@
   border-radius: 4px;
   color: var(--g4-component, var(--txt));
   background: var(--panel);
-  font: 850 9px/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font: 850 var(--font-ui)/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
 }
 
 .g4-component-state {
   color: var(--muted);
-  font-size: 8.5px;
+  font-size: var(--font-ui);
   font-weight: 750;
   white-space: nowrap;
 }
@@ -270,7 +270,7 @@
 .g4-panel-footer {
   margin-top: 6px;
   color: var(--muted);
-  font-size: 9.5px;
+  font-size: var(--font-ui);
 }
 
 .g4-table-wrap {
@@ -286,12 +286,12 @@
 
 .g4-inline-component {
   color: var(--g4-component, var(--txt));
-  font: 900 10px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font: 900 var(--font-ui)/1 ui-monospace, SFMono-Regular, Consolas, monospace;
 }
 
 .g4-row-mark {
   color: var(--accent-2);
-  font-size: 8px;
+  font-size: var(--font-ui);
   font-weight: 800;
 }
 
@@ -308,7 +308,7 @@
   border-radius: 999px;
   background: var(--stat-bg);
   color: var(--muted);
-  font-size: 9px;
+  font-size: var(--font-ui);
   font-weight: 750;
 }
 
@@ -326,7 +326,7 @@
 
 .g4-order-block > label {
   color: var(--muted);
-  font-size: 9px;
+  font-size: var(--font-ui);
   font-weight: 750;
 }
 
@@ -345,7 +345,7 @@
   border: 1px solid var(--info-edge);
   border-radius: 5px;
   background: var(--info-bg);
-  font-size: 10px;
+  font-size: var(--font-ui);
 }
 
 .g4-order-chip.is-current {
@@ -355,12 +355,12 @@
 
 .g4-order-chip small {
   color: var(--muted);
-  font-size: 8px;
+  font-size: var(--font-ui);
 }
 
 .g4-order-chip code {
   color: var(--txt);
-  font: 850 10px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font: 850 var(--font-ui)/1 ui-monospace, SFMono-Regular, Consolas, monospace;
 }
 
 @media (max-width: 980px) {

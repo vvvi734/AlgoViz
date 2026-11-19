@@ -109,7 +109,7 @@ describe('Stage 3B — teaching steps follow the single timeline cursor', () => 
     fireEvent.click(screen.getByTestId('algo-fib'));
     // The course-less algorithm must render an explicit empty state, never crash.
     await waitFor(() => expect(screen.getByTestId('lesson-no-lesson')).toBeTruthy());
-    expect(screen.getByTestId('lesson-no-lesson').textContent).toContain('尚未提供教学课程');
+    expect(screen.getByTestId('lesson-no-lesson').textContent).toContain('暂无正式课程');
     expect(screen.queryByTestId('lesson-steps')).toBeNull();
     // The rest of the lab keeps working: a trace arrives and the stage renders.
     await waitFor(() => expect(screen.getByTestId('progress').textContent).toMatch(/1 \/ \d+/));

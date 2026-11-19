@@ -27,7 +27,7 @@
 .mst-subtitle {
   margin: 0;
   color: var(--muted);
-  font-size: 12px;
+  font-size: var(--font-ui);
   line-height: 1.4;
 }
 
@@ -48,7 +48,7 @@
 .mst-metric span {
   display: block;
   color: var(--muted);
-  font-size: 9px;
+  font-size: var(--font-ui);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -56,7 +56,7 @@
 .mst-metric b {
   display: block;
   margin-top: 1px;
-  font: 800 16px/1.1 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font: 800 var(--font-title)/1.1 ui-monospace, SFMono-Regular, Consolas, monospace;
   color: var(--txt);
 }
 
@@ -88,14 +88,14 @@
 
 .mst-card-head b,
 .mst-panel-head b {
-  font-size: 12px;
+  font-size: var(--font-ui);
   color: var(--txt);
 }
 
 .mst-panel-head small,
 .mst-card-head small {
   color: var(--muted);
-  font-size: 9.5px;
+  font-size: var(--font-ui);
   line-height: 1.35;
 }
 
@@ -111,7 +111,7 @@
   align-items: center;
   gap: 4px;
   color: var(--muted);
-  font-size: 9.5px;
+  font-size: var(--font-ui);
 }
 
 .mst-legend-line {
@@ -217,7 +217,7 @@
 
 .mst-edge-weight text {
   fill: var(--txt);
-  font: 850 10px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font: 850 var(--font-ui)/1 ui-monospace, SFMono-Regular, Consolas, monospace;
 }
 
 .mst-edge-weight.is-selected rect {
@@ -253,7 +253,7 @@
 
 .mst-node-start {
   fill: var(--accent-2);
-  font: 900 9px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font: 900 var(--font-ui)/1 ui-monospace, SFMono-Regular, Consolas, monospace;
   letter-spacing: 0.08em;
 }
 
@@ -313,7 +313,7 @@
 
 .mst-node-root {
   fill: var(--muted);
-  font: 800 8px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font: 800 var(--font-ui)/1 ui-monospace, SFMono-Regular, Consolas, monospace;
 }
 
 @keyframes mst-node-pulse {
@@ -353,13 +353,13 @@
 
 .mst-strip-label {
   color: var(--muted);
-  font-size: 9.5px;
+  font-size: var(--font-ui);
   letter-spacing: 0.07em;
   text-transform: uppercase;
 }
 
 .mst-current-strip code {
-  font: 800 12px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font: 800 var(--font-ui)/1 ui-monospace, SFMono-Regular, Consolas, monospace;
   color: var(--txt);
 }
 
@@ -369,19 +369,19 @@
   border-radius: 4px;
   background: var(--tag-bg);
   color: var(--tag-fg);
-  font: 800 10px/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font: 800 var(--font-ui)/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
 }
 
 .mst-new-node {
   color: var(--accent);
-  font-size: 10px;
+  font-size: var(--font-ui);
   font-weight: 800;
 }
 
 .mst-cycle-badge {
   padding: 2px 7px;
   border-radius: 999px;
-  font-size: 9.5px;
+  font-size: var(--font-ui);
   font-weight: 800;
 }
 
@@ -406,7 +406,7 @@
 .mst-hint {
   margin: 7px 1px 0;
   color: var(--muted);
-  font-size: 10.5px;
+  font-size: var(--font-ui);
   line-height: 1.45;
 }
 
@@ -437,7 +437,7 @@
   border: 1px solid var(--info-edge);
   border-radius: 5px;
   background: var(--info-bg);
-  font-size: 10.5px;
+  font-size: var(--font-ui);
 }
 
 .mst-pq-entry.is-minimum {
@@ -464,14 +464,14 @@
   border-radius: 50%;
   background: var(--tag-bg);
   color: var(--tag-fg);
-  font: 800 9px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font: 800 var(--font-ui)/1 ui-monospace, SFMono-Regular, Consolas, monospace;
 }
 
 .mst-pq-entry code,
 .mst-sorted-entry code {
   overflow: hidden;
   color: var(--txt);
-  font: 800 10.5px/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font: 800 var(--font-ui)/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -479,7 +479,7 @@
 .mst-pq-entry b,
 .mst-sorted-entry b {
   color: var(--txt);
-  font: 850 11px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font: 850 var(--font-ui)/1 ui-monospace, SFMono-Regular, Consolas, monospace;
 }
 
 .mst-pq-min {
@@ -487,7 +487,7 @@
   border-radius: 999px;
   background: var(--tag-green-bg);
   color: var(--tag-green-fg);
-  font-size: 8px;
+  font-size: var(--font-ui);
   font-weight: 800;
 }
 
@@ -498,14 +498,14 @@
   flex-wrap: wrap;
   margin-top: 6px;
   color: var(--muted);
-  font-size: 9.5px;
+  font-size: var(--font-ui);
 }
 
 .mst-empty-inline,
 .mst-empty {
   margin: 8px 0;
   color: var(--muted);
-  font-size: 10.5px;
+  font-size: var(--font-ui);
   line-height: 1.4;
 }
 
@@ -524,7 +524,7 @@
   border-radius: 4px;
   background: var(--note-bg);
   color: var(--txt);
-  font: 800 9.5px/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font: 800 var(--font-ui)/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
 }
 
 .mst-edge-chip b {
@@ -551,7 +551,7 @@
 }
 
 .mst-sorted-state {
-  font-size: 8.5px;
+  font-size: var(--font-ui);
   font-weight: 800;
   letter-spacing: 0.03em;
   white-space: nowrap;
@@ -577,12 +577,12 @@
   border: 1px solid var(--accent);
   border-radius: 6px;
   background: var(--note-bg);
-  font-size: 10.5px;
+  font-size: var(--font-ui);
 }
 
 .mst-union-change code,
 .mst-roots code {
-  font: 850 11px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font: 850 var(--font-ui)/1 ui-monospace, SFMono-Regular, Consolas, monospace;
   color: var(--txt);
 }
 
@@ -592,7 +592,7 @@
 
 .mst-roots span {
   color: var(--muted);
-  font-size: 9.5px;
+  font-size: var(--font-ui);
 }
 
 .mst-components {
@@ -613,13 +613,13 @@
 }
 
 .mst-component-chip b {
-  font: 850 9.5px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font: 850 var(--font-ui)/1 ui-monospace, SFMono-Regular, Consolas, monospace;
   color: var(--accent);
 }
 
 .mst-component-chip small {
   color: var(--muted);
-  font-size: 8.5px;
+  font-size: var(--font-ui);
   letter-spacing: 0.04em;
 }
 
@@ -639,7 +639,7 @@
 .mst-parent-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 9.5px;
+  font-size: var(--font-ui);
 }
 
 .mst-parent-table th {
@@ -648,7 +648,7 @@
   padding: 4px 5px;
   background: var(--panel-2);
   color: var(--muted);
-  font-size: 8.5px;
+  font-size: var(--font-ui);
   font-weight: 700;
   text-align: left;
   white-space: nowrap;
@@ -658,7 +658,7 @@
   padding: 3px 5px;
   border-top: 1px solid var(--info-edge);
   color: var(--txt);
-  font: 800 9.5px/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font: 800 var(--font-ui)/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
 }
 
 .mst-parent-table td code {
@@ -675,7 +675,7 @@
   border-radius: 8px;
   background: var(--note-bg);
   color: var(--txt);
-  font-size: 10.5px;
+  font-size: var(--font-ui);
 }
 
 .mst-result strong {
@@ -685,7 +685,7 @@
 
 .mst-result-kicker {
   color: var(--muted);
-  font-size: 8.5px;
+  font-size: var(--font-ui);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -702,7 +702,7 @@
 .mst-forest-warning {
   width: 100%;
   color: var(--warn);
-  font-size: 10px;
+  font-size: var(--font-ui);
   line-height: 1.4;
 }
 
@@ -711,7 +711,7 @@
   border-radius: 999px;
   background: var(--tag-green-bg);
   color: var(--tag-green-fg);
-  font-size: 9px;
+  font-size: var(--font-ui);
   font-weight: 800;
 }
 

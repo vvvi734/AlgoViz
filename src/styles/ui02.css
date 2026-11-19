@@ -102,7 +102,7 @@
 
 .lesson-focus-stage {
   color: var(--muted);
-  font-size: 11.5px;
+  font-size: var(--font-ui);
   font-variant-numeric: tabular-nums;
 }
 
@@ -181,11 +181,11 @@
 .lab-explanation .lessonstep-num {
   width: 20px;
   height: 20px;
-  font-size: 10.5px;
+  font-size: var(--font-ui);
 }
 
 .lab-explanation .lessonstep-count {
-  font-size: 10px;
+  font-size: var(--font-ui);
 }
 
 .lab-explanation .lesson-subhead {
@@ -247,7 +247,7 @@
   }
 
   .lesson-focus-title {
-    font-size: 16px;
+    font-size: var(--font-title);
   }
 }
 
@@ -274,7 +274,7 @@
 
 .lessonpanel-compact .lesson-origin {
   margin: 3px 0 0;
-  font-size: 11.5px;
+  font-size: var(--font-ui);
   line-height: 1.45;
 }
 
@@ -285,7 +285,7 @@
 .lesson-example-compact .btn {
   min-height: 32px;
   padding: 4px 9px;
-  font-size: 12px;
+  font-size: var(--font-ui);
 }
 
 .lessonpanel-compact .lesson-focus {
@@ -297,7 +297,7 @@
 
 .lesson-focus-kicker {
   color: var(--accent);
-  font-size: 10.5px;
+  font-size: var(--font-ui);
   font-weight: 700;
   letter-spacing: .12em;
   line-height: 1.3;
@@ -316,7 +316,7 @@
   border: 1px solid var(--edge);
   border-radius: 6px;
   color: var(--muted);
-  font-size: 11px;
+  font-size: var(--font-ui);
   font-variant-numeric: tabular-nums;
   line-height: 1.4;
   white-space: nowrap;
@@ -340,7 +340,7 @@
 
 .lesson-block-label {
   color: var(--muted);
-  font-size: 11px;
+  font-size: var(--font-ui);
   font-weight: 700;
   letter-spacing: .02em;
   line-height: 1.4;
@@ -380,7 +380,7 @@
   flex: 0 0 auto;
   min-width: 62px;
   color: var(--muted);
-  font-size: 11px;
+  font-size: var(--font-ui);
   line-height: 1.45;
 }
 
@@ -421,14 +421,14 @@
 .lesson-change-detail {
   flex: 1 1 100%;
   color: var(--muted);
-  font-size: 11.5px;
+  font-size: var(--font-ui);
   line-height: 1.55;
   overflow-wrap: anywhere;
 }
 
 .lesson-change-empty {
   padding: 3px 0;
-  font-size: 12px;
+  font-size: var(--font-ui);
 }
 
 .lesson-memory {
@@ -440,14 +440,14 @@
   border-radius: 7px;
   background: var(--stat-bg);
   color: var(--txt);
-  font-size: 12px;
+  font-size: var(--font-ui);
   line-height: 1.55;
 }
 
 .lesson-memory-label {
   flex: 0 0 auto;
   color: var(--accent);
-  font-size: 10.5px;
+  font-size: var(--font-ui);
   font-weight: 700;
   letter-spacing: .02em;
   line-height: 1.55;
@@ -474,7 +474,7 @@
   color: var(--muted);
   cursor: pointer;
   font: inherit;
-  font-size: 11.5px;
+  font-size: var(--font-ui);
   line-height: 1.35;
 }
 
@@ -490,7 +490,7 @@
 
 .lesson-disclosure-icon {
   color: var(--accent);
-  font-size: 11px;
+  font-size: var(--font-ui);
   line-height: 1;
 }
 
@@ -498,7 +498,7 @@
   max-width: 16ch;
   overflow: hidden;
   color: var(--muted);
-  font-size: 10.5px;
+  font-size: var(--font-ui);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -508,7 +508,7 @@
   border-radius: 4px;
   background: var(--info-bg);
   color: var(--accent);
-  font-size: 10px;
+  font-size: var(--font-ui);
   font-variant-numeric: tabular-nums;
 }
 
@@ -532,7 +532,7 @@
 
 .lesson-detail-panel .lesson-oneliner {
   color: var(--muted);
-  font-size: 12px;
+  font-size: var(--font-ui);
 }
 
 .lesson-meta-compact {
@@ -557,7 +557,7 @@
 
 .lesson-meta-compact .stat span {
   color: var(--muted);
-  font-size: 11px;
+  font-size: var(--font-ui);
 }
 
 .lesson-meta-compact + p {
@@ -587,7 +587,7 @@
 
 .lesson-tech-title {
   color: var(--muted);
-  font-size: 10.5px;
+  font-size: var(--font-ui);
   font-weight: 700;
   letter-spacing: .04em;
 }
@@ -619,7 +619,7 @@
 
 .lesson-steps-panel .lesson-hint {
   margin: 0 0 6px;
-  font-size: 11.5px;
+  font-size: var(--font-ui);
   line-height: 1.5;
 }
 

@@ -37,7 +37,7 @@
 
 .workspace-tabs-hint {
   color: var(--muted);
-  font-size: 11.5px;
+  font-size: var(--font-ui);
   line-height: 1.35;
 }
 
@@ -49,7 +49,7 @@
 }
 
 .workspace-tabs-chevron {
-  font-size: 11px;
+  font-size: var(--font-ui);
   line-height: 1;
 }
 
@@ -106,7 +106,7 @@
 
   .app[data-view='learn'] .brand small {
     margin-top: -2px;
-    font-size: 10px;
+    font-size: var(--font-ui);
     letter-spacing: 1.2px;
   }
 
@@ -193,14 +193,14 @@
   }
 
   .app[data-view='learn'] .lab-shell:not(.guide-open) .stage-head h2 {
-    font-size: 14px;
+    font-size: var(--font-body);
     line-height: 1.25;
   }
 
   .app[data-view='learn'] .lab-shell:not(.guide-open) .stage-step-peek {
     max-width: 62%;
     padding: 2px 7px;
-    font-size: 10.5px;
+    font-size: var(--font-ui);
   }
 
   .app[data-view='learn'] .lab-shell:not(.guide-open) .stage-panel .stage {
@@ -248,7 +248,7 @@
     min-height: 0;
     padding: 2px 0 1px;
     gap: 8px;
-    font-size: 12px;
+    font-size: var(--font-ui);
   }
 
   .app[data-view='learn'] .lab-shell:not(.guide-open) .stage-foot .muted {
@@ -268,12 +268,12 @@
 
   .app[data-view='learn'] .lab-shell:not(.guide-open) .controls .btn {
     padding: 4px 8px;
-    font-size: 12px;
+    font-size: var(--font-ui);
   }
 
   .app[data-view='learn'] .lab-shell:not(.guide-open) .timeline {
     margin-top: 2px;
-    font-size: 11px;
+    font-size: var(--font-ui);
     line-height: 1.3;
   }
 
@@ -316,7 +316,7 @@
   }
 
   .app[data-view='learn'] .code-dock:not(.is-expanded) .code-dock-title-row h2 {
-    font-size: 14px;
+    font-size: var(--font-body);
     white-space: nowrap;
   }
 
@@ -338,7 +338,7 @@
   .app[data-view='learn'] .code-dock:not(.is-expanded) .code-dock-run,
   .app[data-view='learn'] .code-dock:not(.is-expanded) .code-dock-toggle {
     padding: 4px 9px;
-    font-size: 12px;
+    font-size: var(--font-ui);
   }
 
   .app[data-view='learn'] .workspace-tabs-body {
@@ -414,7 +414,7 @@
 
   .app[data-view='learn'] .graph-visual.is-weighted .graph-legend {
     gap: 8px;
-    font-size: 9.5px;
+    font-size: var(--font-ui);
     line-height: 1.25;
     flex-wrap: nowrap;
     overflow-x: auto;
@@ -436,23 +436,23 @@
 
   .app[data-view='learn'] .graph-visual.is-weighted .graph-current-copy {
     gap: 1px;
-    font-size: 10.5px;
+    font-size: var(--font-ui);
     line-height: 1.35;
   }
 
   .app[data-view='learn'] .graph-visual.is-weighted .graph-current-copy b {
-    font-size: 11px;
+    font-size: var(--font-ui);
   }
 
   .app[data-view='learn'] .graph-visual.is-weighted .graph-visit-order {
     gap: 3px;
-    font-size: 9.5px;
+    font-size: var(--font-ui);
   }
 
   .app[data-view='learn'] .graph-visual.is-weighted .graph-visit-list li {
     width: 20px;
     height: 20px;
-    font-size: 9px;
+    font-size: var(--font-ui);
   }
 
   .app[data-view='learn'] .graph-visual.is-weighted .dijkstra-distance-table {
@@ -491,12 +491,12 @@
   .app[data-view='learn'] .graph-priority-queue .graph-pq-operation {
     margin: 0;
     flex: 0 0 auto;
-    font-size: 9.5px;
+    font-size: var(--font-ui);
   }
 
   .app[data-view='learn'] .graph-priority-queue .graph-pq-empty {
     margin: 0;
-    font-size: 10px;
+    font-size: var(--font-ui);
     line-height: 1.3;
     white-space: nowrap;
   }
@@ -521,11 +521,11 @@
   }
 
   .app[data-view='learn'] .graph-visual.is-weighted .dijkstra-table-head b {
-    font-size: 10px;
+    font-size: var(--font-ui);
   }
 
   .app[data-view='learn'] .graph-visual.is-weighted .dijkstra-table-head small {
-    font-size: 9px;
+    font-size: var(--font-ui);
   }
 
   .app[data-view='learn'] .graph-visual.is-weighted .dijkstra-table-scroll {
@@ -536,12 +536,12 @@
 
   .app[data-view='learn'] .graph-visual.is-weighted .dijkstra-distance-table th {
     padding: 3px 6px;
-    font-size: 9px;
+    font-size: var(--font-ui);
   }
 
   .app[data-view='learn'] .graph-visual.is-weighted .dijkstra-distance-table td {
     padding: 3px 6px;
-    font-size: 10px;
+    font-size: var(--font-ui);
     line-height: 1.2;
   }
 
@@ -555,7 +555,7 @@
     grid-column: 1 / -1;
     grid-row: 4;
     margin: 0;
-    font-size: 9.5px;
+    font-size: var(--font-ui);
     line-height: 1.25;
   }
 
@@ -586,7 +586,7 @@
   }
 
   .app[data-view='learn'] .graph-visual .graph-distance-tag {
-    font-size: 9.5px;
+    font-size: var(--font-ui);
   }
 
   /* One compact information bar: legend on top; current action and visit
@@ -608,7 +608,7 @@
     overflow-x: auto;
     overflow-y: hidden;
     padding-bottom: 1px;
-    font-size: 9.5px;
+    font-size: var(--font-ui);
     line-height: 1.25;
     scrollbar-width: thin;
     overscroll-behavior-x: contain;
@@ -634,7 +634,7 @@
 
   .app[data-view='learn'] .graph-visual:not(.is-weighted) .graph-current-copy b {
     flex: 0 0 auto;
-    font-size: 11px;
+    font-size: var(--font-ui);
     line-height: 1.3;
   }
 
@@ -644,13 +644,13 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    font-size: 10px;
+    font-size: var(--font-ui);
     line-height: 1.3;
   }
 
   .app[data-view='learn'] .graph-visual:not(.is-weighted) .graph-current-node {
     flex: 0 0 auto;
-    font-size: 9.5px;
+    font-size: var(--font-ui);
   }
 
   .app[data-view='learn'] .graph-visual:not(.is-weighted) .graph-neighbor-node {
@@ -669,7 +669,7 @@
 
   .app[data-view='learn'] .graph-visual:not(.is-weighted) .graph-visit-label {
     flex: 0 0 auto;
-    font-size: 9px;
+    font-size: var(--font-ui);
   }
 
   .app[data-view='learn'] .graph-visual:not(.is-weighted) .graph-visit-list {
@@ -691,21 +691,21 @@
   .app[data-view='learn'] .graph-visual:not(.is-weighted) .graph-visit-list li span {
     min-width: 12px;
     height: 12px;
-    font-size: 7px;
+    font-size: var(--font-ui);
   }
 
   .app[data-view='learn'] .graph-visual:not(.is-weighted) .graph-visit-list li b {
-    font-size: 9px;
+    font-size: var(--font-ui);
   }
 
   .app[data-view='learn'] .graph-visual:not(.is-weighted) .graph-visit-count {
     flex: 0 0 auto;
     margin-left: 2px;
-    font-size: 9px;
+    font-size: var(--font-ui);
   }
 
   .app[data-view='learn'] .graph-visual:not(.is-weighted) .graph-visit-empty {
-    font-size: 9.5px;
+    font-size: var(--font-ui);
   }
 
   /* Queue/stack stays visible as a compact strip instead of a second card. */
@@ -737,21 +737,21 @@
     min-width: 32px;
     min-height: 28px;
     padding: 2px 4px;
-    font-size: 12px;
+    font-size: var(--font-ui);
   }
 
   .app[data-view='learn'] .queue-visual.is-compact .queue-rail {
     flex-basis: 34px;
     padding: 1px;
-    font-size: 8px;
+    font-size: var(--font-ui);
   }
 
   .app[data-view='learn'] .queue-visual.is-compact .queue-rail b {
-    font-size: 8.5px;
+    font-size: var(--font-ui);
   }
 
   .app[data-view='learn'] .queue-visual.is-compact .queue-rail span {
-    font-size: 10px;
+    font-size: var(--font-ui);
   }
 
   .app[data-view='learn'] .queue-visual.is-compact .queue-exit {
@@ -771,11 +771,11 @@
     min-width: 30px;
     min-height: 24px;
     padding: 1px 3px;
-    font-size: 11px;
+    font-size: var(--font-ui);
   }
 
   .app[data-view='learn'] .queue-visual.is-compact .queue-exit-inline .structure-tag {
-    font-size: 7px;
+    font-size: var(--font-ui);
     line-height: 1.1;
   }
 
@@ -792,7 +792,7 @@
 
   .app[data-view='learn'] .stack-visual.is-compact .stack-item {
     min-height: 24px;
-    font-size: 12px;
+    font-size: var(--font-ui);
   }
 
   .app[data-view='learn'] .stack-visual.is-compact .stack-topline {
@@ -859,7 +859,7 @@
     margin-top: 2px;
     padding: 2px 6px;
     overflow-x: auto;
-    font-size: 10px;
+    font-size: var(--font-ui);
     line-height: 1.2;
   }
 
@@ -874,7 +874,7 @@
   .app[data-view='learn'] .g4-phase-track .g4-phase {
     flex: 0 0 auto;
     padding: 1px 5px;
-    font-size: 9px;
+    font-size: var(--font-ui);
     line-height: 1.3;
   }
 
@@ -917,7 +917,7 @@
     padding-right: 2px;
     gap: 4px;
     align-content: start;
-    font-size: 10px;
+    font-size: var(--font-ui);
   }
 
   .app[data-view='learn'] .mst-side .mst-panel {
@@ -958,12 +958,12 @@
 
   .app[data-view='learn'] .mst-side .g4-order-chip {
     padding: 1px 4px;
-    font-size: 9px;
+    font-size: var(--font-ui);
   }
 
   .app[data-view='learn'] .mst-side .g4-node-chip {
     padding: 0 3px;
-    font-size: 8.5px;
+    font-size: var(--font-ui);
   }
 
   .app[data-view='learn'] .mst-side .g3-table th {
@@ -972,7 +972,7 @@
 
   .app[data-view='learn'] .mst-side .g3-table td {
     padding: 1px 6px;
-    font-size: 9px;
+    font-size: var(--font-ui);
   }
 
   .app[data-view='learn'] .mst-side .g3-queue {
@@ -1083,7 +1083,7 @@
     min-width: 40px;
     height: 24px;
     padding: 0 6px;
-    font-size: 10.5px;
+    font-size: var(--font-ui);
   }
 
   .app[data-view='learn'] .graph-visual:not(.is-weighted) .graph-mode-copy {
@@ -1091,7 +1091,7 @@
   }
 
   .app[data-view='learn'] .graph-visual:not(.is-weighted) .graph-mode-copy b {
-    font-size: 12px;
+    font-size: var(--font-ui);
   }
 
   .app[data-view='learn'] .graph-visual:not(.is-weighted) .graph-mode-copy small {
@@ -1103,7 +1103,7 @@
   }
 
   .app[data-view='learn'] .graph-visual:not(.is-weighted) .graph-frontier-order {
-    font-size: 10.5px;
+    font-size: var(--font-ui);
   }
 
   .app[data-view='learn'] .graph-visual:not(.is-weighted) .graph-status {
@@ -1112,16 +1112,16 @@
   }
 
   .app[data-view='learn'] .graph-visual:not(.is-weighted) .graph-legend {
-    font-size: 9px;
+    font-size: var(--font-ui);
     line-height: 1.2;
   }
 
   .app[data-view='learn'] .graph-visual:not(.is-weighted) .graph-current-copy b {
-    font-size: 10px;
+    font-size: var(--font-ui);
   }
 
   .app[data-view='learn'] .graph-visual:not(.is-weighted) .graph-current-hint {
-    font-size: 9.5px;
+    font-size: var(--font-ui);
   }
 
   .app[data-view='learn'] .graph-visual:not(.is-weighted) .graph-visit-list li {
@@ -1134,7 +1134,7 @@
   }
 
   .app[data-view='learn'] .graph-traversal-stage:not(.is-weighted) .graph-frontier-head b {
-    font-size: 10px;
+    font-size: var(--font-ui);
     line-height: 1.15;
   }
 
@@ -1147,7 +1147,7 @@
     min-width: 30px;
     min-height: 24px;
     padding: 1px 4px;
-    font-size: 11px;
+    font-size: var(--font-ui);
   }
 
   .app[data-view='learn'] .queue-visual.is-compact .queue-rail {
@@ -1157,12 +1157,12 @@
   }
 
   .app[data-view='learn'] .queue-visual.is-compact .queue-rail small {
-    font-size: 7.5px;
+    font-size: var(--font-ui);
     line-height: 1.2;
   }
 
   .app[data-view='learn'] .queue-visual.is-compact .queue-rail span {
-    font-size: 9px;
+    font-size: var(--font-ui);
   }
 
   .app[data-view='learn'] .stack-visual.is-compact .stack-body {

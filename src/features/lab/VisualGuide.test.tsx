@@ -12,17 +12,17 @@ function renderGuide(algorithmId: string) {
 }
 
 describe('UIX-V02 VisualGuide', () => {
-  it('renders exactly three reading rows plus one key note for Huffman', () => {
+  it('keeps a collapsed symbol summary plus two optional reading notes for Huffman', () => {
     renderGuide('huffman');
     const guide = screen.getByTestId('visual-guide');
 
     expect(guide.dataset.algorithm).toBe('huffman');
-    expect(guide.textContent).toContain('画面说明');
+    expect(guide.textContent).toContain('画面');
+    expect(guide.textContent).toContain('黄=当前合并');
     expect(guide.textContent).toContain('先看');
-    expect(guide.textContent).toContain('符号');
     expect(guide.textContent).toContain('分区');
     expect(screen.getByTestId('visual-guide-note').textContent).toContain('建树只看堆');
-    expect(guide.querySelectorAll('.visual-guide-row')).toHaveLength(3);
+    expect(guide.querySelectorAll('.visual-guide-body dl div')).toHaveLength(2);
     expect(guide.textContent).not.toContain('当前做什么');
     expect(guide.textContent).not.toContain('为什么这样做');
   });

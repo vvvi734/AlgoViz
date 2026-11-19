@@ -65,7 +65,7 @@
   align-items: center;
   padding: 0 12px 6px;
   color: var(--accent);
-  font: 850 12px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font: 850 var(--font-ui)/1 ui-monospace, SFMono-Regular, Consolas, monospace;
   letter-spacing: 1.4px;
 }
 
@@ -85,7 +85,7 @@
   color: var(--muted);
   text-align: center;
   padding: 7px 8px;
-  font: 750 11px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font: 750 var(--font-ui)/1 ui-monospace, SFMono-Regular, Consolas, monospace;
   letter-spacing: 1.8px;
 }
 
@@ -109,7 +109,7 @@
   border-radius: 10px;
   background: var(--stat-bg);
   color: var(--muted);
-  font-size: 11px;
+  font-size: var(--font-ui);
   letter-spacing: .7px;
   text-align: center;
   padding: 8px 4px;
@@ -117,11 +117,11 @@
 
 .queue-rail b {
   color: var(--txt);
-  font: 850 12px/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font: 850 var(--font-ui)/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
   letter-spacing: 1.2px;
 }
 
-.queue-rail small { font-size: 11px; line-height: 1.25; color: var(--muted); }
+.queue-rail small { font-size: var(--font-ui); line-height: 1.25; color: var(--muted); }
 .queue-rail span { color: var(--accent); font-size: 18px; line-height: 1; }
 .queue-rail.is-active {
   border-color: var(--accent);
@@ -203,13 +203,13 @@
   min-height: 54px;
   padding: 4px 8px;
   border-radius: 10px;
-  font: 800 16px/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font: 800 var(--font-title)/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
 }
 
 .structure-value { min-width: 1ch; overflow-wrap: anywhere; text-align: center; }
 
 .structure-tag {
-  font-size: 10px;
+  font-size: var(--font-ui);
   line-height: 1.2;
   letter-spacing: .6px;
   color: var(--tag-green-fg);
@@ -262,7 +262,7 @@
 
 .queue-exit-label {
   color: var(--muted);
-  font-size: 11px;
+  font-size: var(--font-ui);
   letter-spacing: .5px;
 }
 
@@ -302,10 +302,10 @@
   .queue-exit { padding-left: 52px; }
   .queue-track { gap: 5px; }
   .queue-rail { flex-basis: 46px; padding: 6px 3px; }
-  .queue-rail b { font-size: 10.5px; letter-spacing: .7px; }
-  .queue-rail small { font-size: 10px; }
+  .queue-rail b { font-size: var(--font-ui); letter-spacing: .7px; }
+  .queue-rail small { font-size: var(--font-ui); }
   .queue-lane { gap: 6px; padding: 10px 8px; min-height: 112px; }
-  .queue-item { min-width: 46px; min-height: 48px; padding: 3px 6px; font-size: 14px; }
+  .queue-item { min-width: 46px; min-height: 48px; padding: 3px 6px; font-size: var(--font-body); }
   .structure-hint { flex-basis: 100%; text-align: left; }
 }
 

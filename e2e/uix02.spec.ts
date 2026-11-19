@@ -29,7 +29,7 @@ async function expectNoPageOverflow(page: Page) {
 }
 
 test.describe('UIX-V02 visual guide and stage de-cluttering', () => {
-  test('guide sits above Teaching Course and stays compact on all four priority pages', async ({ page }) => {
+  test('guide stays compact inside key state on all four priority pages', async ({ page }) => {
     test.setTimeout(240_000);
     await page.setViewportSize({ width: 1440, height: 900 });
 
@@ -38,20 +38,20 @@ test.describe('UIX-V02 visual guide and stage de-cluttering', () => {
       const guide = page.getByTestId('visual-guide');
       await expect(guide).toBeVisible();
       await expect(guide).toHaveAttribute('data-algorithm', item.id);
-      await expect(guide.locator('.visual-guide-row')).toHaveCount(3);
+      await expect(guide.locator('.visual-guide-body dl div')).toHaveCount(2);
       await expect(guide).toContainText('先看');
-      await expect(guide).toContainText('符号');
+      await expect(guide).toContainText('画面说明');
       await expect(guide).toContainText('分区');
       await expect(guide).not.toContainText('当前做什么');
       await expect(guide).not.toContainText('为什么这样做');
 
       const guideBox = await guide.boundingBox();
-      const lessonBox = await page.locator('.lessonpanel.is-rail').boundingBox();
+      const operationBox = await page.getByTestId('current-step').boundingBox();
       expect(guideBox).not.toBeNull();
-      expect(lessonBox).not.toBeNull();
-      expect((guideBox?.y ?? 0) < (lessonBox?.y ?? 0)).toBe(true);
+      expect(operationBox).not.toBeNull();
+      expect((guideBox?.y ?? 0) < (operationBox?.y ?? 0)).toBe(true);
       const guideHeight = guideBox?.height ?? 0;
-      expect(guideHeight).toBeGreaterThan(100);
+      expect(guideHeight).toBeGreaterThan(18);
       expect(guideHeight).toBeLessThan(210);
 
       const longText = await page.evaluate(() =>
@@ -118,7 +118,7 @@ test.describe('UIX-V02 visual guide and stage de-cluttering', () => {
     await openAt(page, CASES[0]);
 
     const guideBox = await page.getByTestId('visual-guide').boundingBox();
-    const lessonBox = await page.locator('.lessonpanel.is-rail').boundingBox();
+    const lessonBox = await page.getByTestId('current-step').boundingBox();
     expect((guideBox?.y ?? 0) < (lessonBox?.y ?? 0)).toBe(true);
     const treeBox = await page.getByTestId('huffman-tree-panel').boundingBox();
     const queueBox = await page.getByTestId('huffman-queue-panel').boundingBox();

@@ -33,7 +33,7 @@
   border: 1px solid var(--node-edge);
   background: var(--panel);
   color: var(--muted);
-  font: 800 8px/1.25 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font: 800 var(--font-ui)/1.25 ui-monospace, SFMono-Regular, Consolas, monospace;
   white-space: nowrap;
   box-shadow: 0 0 0 1px var(--panel);
 }
@@ -76,7 +76,7 @@
   border-radius: 999px;
   background: var(--node-focus-bg);
   color: var(--accent-2);
-  font: 800 9.5px/1.3 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font: 800 var(--font-ui)/1.3 ui-monospace, SFMono-Regular, Consolas, monospace;
   white-space: nowrap;
 }
 
@@ -100,20 +100,20 @@
 
 .avl-rotation-label {
   color: var(--muted);
-  font: 800 9px/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font: 800 var(--font-ui)/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
   letter-spacing: .6px;
   text-transform: uppercase;
 }
 
 .avl-rotation-item b {
   color: var(--accent-2);
-  font: 850 11px/1.35 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font: 850 var(--font-ui)/1.35 ui-monospace, SFMono-Regular, Consolas, monospace;
   overflow-wrap: anywhere;
 }
 
 .avl-current-metric .avl-height-pill {
   color: var(--accent-2);
-  font: 800 10px/1.3 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font: 800 var(--font-ui)/1.3 ui-monospace, SFMono-Regular, Consolas, monospace;
 }
 
 .avl-toolbar .avl-rotation-chip { margin-left: 2px; }
@@ -123,5 +123,5 @@
 }
 @media (max-width: 430px) {
   .avl-rotation-panel { grid-template-columns: 1fr; }
-  .avl-node-badge { font-size: 7.5px; }
+  .avl-node-badge { font-size: var(--font-ui); }
 }

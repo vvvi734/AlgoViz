@@ -51,6 +51,8 @@ export function SyncPanel({
   stale,
   selectedFrameId,
   showSource = true,
+  showVariables = true,
+  showExplanation = true,
 }: {
   event: TraceEvent | undefined;
   source: string;
@@ -58,6 +60,10 @@ export function SyncPanel({
   selectedFrameId: string | null;
   /** Stage 7A: Monaco is the primary code surface; the snapshot here is opt-in. */
   showSource?: boolean;
+  /** UX-SIMPLIFY-02: variables live in the learning rail, not the advanced panel. */
+  showVariables?: boolean;
+  /** UX-SIMPLIFY-02: current-operation copy lives in the learning rail. */
+  showExplanation?: boolean;
 }) {
   const { t } = useI18n();
   const [openSnapshot, setOpenSnapshot] = useState(false);
@@ -118,42 +124,46 @@ export function SyncPanel({
           </div>
         )}
 
-        <div className="sync-col">
-          <h3 className="smalltext muted">{t('variablesWatch')}</h3>
-          {scopeLabel && (
-            <div className="scope-label" data-testid="variables-scope">
-              {t('scope')}: {scopeLabel}
-            </div>
-          )}
-          {!rows?.length ? (
-            <div className="empty smalltext" data-testid="variables-empty">{t('noVariables')}</div>
-          ) : (
-            <table className="vartable" data-testid="variables-watch">
-              <thead>
-                <tr>
-                  <th>{t('name')}</th>
-                  <th>{t('type')}</th>
-                  <th>{t('value')}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map((variable, index) => (
-                  <tr key={`${frameId ?? 'global'}-${variable.name}-${index}`}>
-                    <td className="varname">{variable.name}</td>
-                    <td className="vartype">{variable.type}</td>
-                    <td className="varvalue">{formatValue(variable.value)}</td>
+        {showVariables ? (
+          <div className="sync-col">
+            <h3 className="smalltext muted">{t('variablesWatch')}</h3>
+            {scopeLabel && (
+              <div className="scope-label" data-testid="variables-scope">
+                {t('scope')}: {scopeLabel}
+              </div>
+            )}
+            {!rows?.length ? (
+              <div className="empty smalltext" data-testid="variables-empty">{t('noVariables')}</div>
+            ) : (
+              <table className="vartable" data-testid="variables-watch">
+                <thead>
+                  <tr>
+                    <th>{t('name')}</th>
+                    <th>{t('type')}</th>
+                    <th>{t('value')}</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </div>
+                </thead>
+                <tbody>
+                  {rows.map((variable, index) => (
+                    <tr key={`${frameId ?? 'global'}-${variable.name}-${index}`}>
+                      <td className="varname">{variable.name}</td>
+                      <td className="vartype">{variable.type}</td>
+                      <td className="varvalue">{formatValue(variable.value)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+        ) : null}
       </div>
 
-      <div className="sync-explanation">
-        <h3 className="smalltext muted">{t('stepExplanation')}</h3>
-        <p data-testid="step-explanation">{event?.message || t('noMessage')}</p>
-      </div>
+      {showExplanation ? (
+        <div className="sync-explanation">
+          <h3 className="smalltext muted">{t('stepExplanation')}</h3>
+          <p data-testid="step-explanation">{event?.message || t('noMessage')}</p>
+        </div>
+      ) : null}
     </section>
   );
 }

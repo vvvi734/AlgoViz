@@ -78,12 +78,12 @@
 }
 .graph-target-tag {
   fill: var(--accent-2);
-  font: 850 9.5px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font: 850 var(--font-ui)/1 ui-monospace, SFMono-Regular, Consolas, monospace;
   letter-spacing: 1.1px;
 }
 .graph-distance-tag {
   fill: var(--muted);
-  font: 800 8.5px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font: 800 var(--font-ui)/1 ui-monospace, SFMono-Regular, Consolas, monospace;
 }
 
 .graph-swatch-target {
@@ -110,7 +110,7 @@
   border-radius: 7px;
   background: var(--info-bg);
   color: var(--txt);
-  font-size: 11px;
+  font-size: var(--font-ui);
   line-height: 1.35;
 }
 .graph-relax-arrow {
@@ -122,7 +122,7 @@
   border: 1px solid var(--node-edge);
   border-radius: 4px;
   background: var(--panel);
-  font: 850 12px/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font: 850 var(--font-ui)/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
 }
 .graph-relax-strip code.is-new {
   color: var(--accent);
@@ -130,7 +130,7 @@
 }
 .graph-relax-previous {
   color: var(--muted);
-  font: 750 10.5px/1.35 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font: 750 var(--font-ui)/1.35 ui-monospace, SFMono-Regular, Consolas, monospace;
 }
 
 /* ---------- distance table ---------- */
@@ -152,13 +152,13 @@
 }
 .dijkstra-table-head b {
   color: var(--txt);
-  font: 850 11px/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font: 850 var(--font-ui)/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
   letter-spacing: .7px;
   text-transform: uppercase;
 }
 .dijkstra-table-head small {
   color: var(--muted);
-  font-size: 10.5px;
+  font-size: var(--font-ui);
   line-height: 1.35;
 }
 .dijkstra-table-scroll {
@@ -169,7 +169,7 @@
 .dijkstra-distance-table table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 11.5px;
+  font-size: var(--font-ui);
 }
 .dijkstra-distance-table th {
   position: sticky;
@@ -180,7 +180,7 @@
   color: var(--muted);
   border-top: 1px solid var(--edge);
   border-bottom: 1px solid var(--node-edge);
-  font: 800 9.5px/1.3 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font: 800 var(--font-ui)/1.3 ui-monospace, SFMono-Regular, Consolas, monospace;
   letter-spacing: .4px;
   text-align: left;
   text-transform: uppercase;
@@ -190,7 +190,7 @@
   padding: 4px 8px;
   border-bottom: 1px solid var(--edge);
   color: var(--txt);
-  font: 700 11px/1.35 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font: 700 var(--font-ui)/1.35 ui-monospace, SFMono-Regular, Consolas, monospace;
   white-space: nowrap;
 }
 .dijkstra-distance-table tbody tr:last-child td { border-bottom: 0; }
@@ -219,7 +219,7 @@
   gap: 5px 8px;
   flex-wrap: wrap;
   min-width: 0;
-  font: 800 10.5px/1.35 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font: 800 var(--font-ui)/1.35 ui-monospace, SFMono-Regular, Consolas, monospace;
 }
 .graph-pq-op-label {
   padding: 1px 6px;
@@ -285,12 +285,12 @@
   border-radius: 50%;
   background: var(--stat-bg);
   color: var(--muted);
-  font: 850 9px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font: 850 var(--font-ui)/1 ui-monospace, SFMono-Regular, Consolas, monospace;
 }
 .graph-pq-key {
   min-width: 0;
   color: var(--txt);
-  font: 850 11.5px/1.35 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font: 850 var(--font-ui)/1.35 ui-monospace, SFMono-Regular, Consolas, monospace;
   overflow-wrap: anywhere;
 }
 .graph-pq-entry.is-stale .graph-pq-key {
@@ -304,7 +304,7 @@
   border: 1px dashed var(--muted);
   border-radius: 999px;
   color: var(--muted);
-  font: 750 8.5px/1.5 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font: 750 var(--font-ui)/1.5 ui-monospace, SFMono-Regular, Consolas, monospace;
 }
 .graph-pq-empty {
   margin: 0;
@@ -312,7 +312,7 @@
   border: 1px dashed var(--edge);
   border-radius: 6px;
   color: var(--muted);
-  font-size: 11px;
+  font-size: var(--font-ui);
   text-align: center;
 }
 .graph-pq-footer {
@@ -324,7 +324,7 @@
   border-top: 1px dashed var(--edge);
   padding-top: 4px;
   color: var(--muted);
-  font-size: 10px;
+  font-size: var(--font-ui);
   line-height: 1.35;
 }
 
@@ -343,7 +343,7 @@
 }
 .dijkstra-path-summary > b {
   color: var(--txt);
-  font: 850 11px/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font: 850 var(--font-ui)/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
   letter-spacing: .5px;
   text-transform: uppercase;
 }
@@ -363,7 +363,7 @@
   border-radius: 999px;
   background: var(--panel);
   color: var(--txt);
-  font: 850 11px/1.45 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font: 850 var(--font-ui)/1.45 ui-monospace, SFMono-Regular, Consolas, monospace;
 }
 .dijkstra-path-node i {
   color: var(--accent-2);
@@ -373,27 +373,27 @@
 .dijkstra-path-distance {
   margin-left: auto;
   color: var(--muted);
-  font-size: 10.5px;
+  font-size: var(--font-ui);
 }
 .dijkstra-path-distance code {
   color: var(--accent);
-  font: 850 12px/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font: 850 var(--font-ui)/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
 }
 .dijkstra-path-empty {
   color: var(--muted);
-  font-size: 11px;
+  font-size: var(--font-ui);
   line-height: 1.4;
 }
 
 @media (max-width: 760px) {
   .graph-pq-list { grid-template-columns: 1fr; max-height: 230px; }
-  .graph-pq-operation { font-size: 10px; }
-  .graph-pq-key { font-size: 11px; }
-  .graph-relax-strip { font-size: 10.5px; }
-  .graph-relax-previous { font-size: 10px; }
+  .graph-pq-operation { font-size: var(--font-ui); }
+  .graph-pq-key { font-size: var(--font-ui); }
+  .graph-relax-strip { font-size: var(--font-ui); }
+  .graph-relax-previous { font-size: var(--font-ui); }
   .dijkstra-table-head { padding: 6px 8px 4px; }
   .dijkstra-distance-table th,
-  .dijkstra-distance-table td { padding: 3px 6px; font-size: 10px; }
+  .dijkstra-distance-table td { padding: 3px 6px; font-size: var(--font-ui); }
   .dijkstra-path-summary { padding: 6px 8px; }
   .dijkstra-path-distance { margin-left: 0; }
 }
@@ -404,10 +404,10 @@
   .graph-relax-previous { flex-basis: 100%; }
   .dijkstra-table-scroll { max-height: 200px; }
   .dijkstra-distance-table th,
-  .dijkstra-distance-table td { padding: 3px 5px; font-size: 9.5px; }
+  .dijkstra-distance-table td { padding: 3px 5px; font-size: var(--font-ui); }
   .graph-priority-queue { padding: 6px 7px 7px; }
   .graph-pq-footer span:first-child { display: none; }
-  .dijkstra-path-node { font-size: 10px; }
+  .dijkstra-path-node { font-size: var(--font-ui); }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -43,7 +43,7 @@
 
 .scc-graph-id b {
   color: var(--txt);
-  font-size: 12px;
+  font-size: var(--font-ui);
   line-height: 1.2;
 }
 
@@ -55,7 +55,7 @@
 
 .scc-graph-head .g4-phase {
   padding: 2px 6px;
-  font-size: 8.5px;
+  font-size: var(--font-ui);
   white-space: nowrap;
 }
 
@@ -86,16 +86,16 @@
 }
 
 .scc-graph-svg .mst-node-label {
-  font-size: 16px;
+  font-size: var(--font-title);
 }
 
 .scc-graph-svg .g4-component-badge text,
 .scc-graph-svg .g4-finish-badge text {
-  font-size: 11px;
+  font-size: var(--font-ui);
 }
 
 .scc-graph-svg .g4-node-role {
-  font-size: 9px;
+  font-size: var(--font-ui);
 }
 
 .scc-side {
@@ -127,7 +127,7 @@
 
 .scc-key-head b {
   color: var(--txt);
-  font-size: 11px;
+  font-size: var(--font-ui);
 }
 
 .scc-key-phase {
@@ -136,7 +136,7 @@
   border-radius: 999px;
   background: var(--stat-bg);
   color: var(--muted);
-  font-size: 8.5px;
+  font-size: var(--font-ui);
   font-weight: 800;
   white-space: nowrap;
 }
@@ -157,7 +157,7 @@
   margin: 0;
   padding: 0 1px;
   color: var(--muted);
-  font-size: 9px;
+  font-size: var(--font-ui);
   line-height: 1.4;
 }
 
@@ -173,7 +173,7 @@
   display: block;
   overflow: hidden;
   color: var(--muted);
-  font-size: 8.5px;
+  font-size: var(--font-ui);
   line-height: 1.2;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -198,13 +198,13 @@
   justify-content: space-between;
   gap: 6px;
   color: var(--muted);
-  font-size: 9px;
+  font-size: var(--font-ui);
   font-weight: 750;
 }
 
 .scc-key-label em {
   color: var(--accent);
-  font: 850 8.5px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font: 850 var(--font-ui)/1 ui-monospace, SFMono-Regular, Consolas, monospace;
   font-style: normal;
 }
 
@@ -218,11 +218,11 @@
 }
 
 .scc-key-order .g4-order-chip small {
-  font-size: 7.5px;
+  font-size: var(--font-ui);
 }
 
 .scc-key-order .g4-order-chip code {
-  font-size: 9.5px;
+  font-size: var(--font-ui);
 }
 
 .scc-stack {
@@ -237,18 +237,18 @@
 }
 
 .scc-stack .g4-stack-chip small {
-  font-size: 7.5px;
+  font-size: var(--font-ui);
 }
 
 .scc-stack .g4-stack-chip code {
-  font-size: 9.5px;
+  font-size: var(--font-ui);
 }
 
 .scc-empty {
   margin: 0;
   padding: 4px 1px;
   color: var(--muted);
-  font-size: 9px;
+  font-size: var(--font-ui);
   line-height: 1.35;
 }
 
@@ -264,7 +264,7 @@
 
 .scc-side .g4-component-id {
   min-width: 24px;
-  font-size: 9px;
+  font-size: var(--font-ui);
 }
 
 .scc-final {
@@ -285,12 +285,12 @@
 
 .scc-final-head strong {
   color: var(--txt);
-  font-size: 11px;
+  font-size: var(--font-ui);
 }
 
 .scc-final-head span {
   color: var(--muted);
-  font-size: 9px;
+  font-size: var(--font-ui);
 }
 
 .scc-final-head .mst-tree-badge {
@@ -316,12 +316,12 @@
 
 .scc-final-grid .g4-component-id {
   min-width: 22px;
-  font-size: 8.5px;
+  font-size: var(--font-ui);
 }
 
 .scc-final-grid .g4-node-chip {
   padding: 1px 3px;
-  font-size: 8px;
+  font-size: var(--font-ui);
 }
 
 /* Kosaraju's step knowledge is carried by the phase track, finish-order chips

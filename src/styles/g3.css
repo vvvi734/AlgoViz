@@ -107,12 +107,12 @@
 
 .g3-indegree-badge text {
   fill: var(--txt);
-  font: 850 9px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font: 850 var(--font-ui)/1 ui-monospace, SFMono-Regular, Consolas, monospace;
 }
 
 .g3-node-role {
   fill: var(--accent-2);
-  font: 900 8px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font: 900 var(--font-ui)/1 ui-monospace, SFMono-Regular, Consolas, monospace;
   letter-spacing: 0.08em;
 }
 
@@ -126,7 +126,7 @@
   border-radius: 999px;
   background: var(--tag-orange-bg);
   color: var(--warn);
-  font: 850 10px/1.25 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font: 850 var(--font-ui)/1.25 ui-monospace, SFMono-Regular, Consolas, monospace;
 }
 
 .g3-table-wrap {
@@ -139,7 +139,7 @@
 .g3-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 9.5px;
+  font-size: var(--font-ui);
 }
 
 .g3-table th {
@@ -149,7 +149,7 @@
   padding: 4px 6px;
   background: var(--panel-2);
   color: var(--muted);
-  font-size: 8.5px;
+  font-size: var(--font-ui);
   font-weight: 700;
   text-align: left;
   white-space: nowrap;
@@ -159,7 +159,7 @@
   padding: 3px 6px;
   border-top: 1px solid var(--info-edge);
   color: var(--txt);
-  font: 800 9.5px/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font: 800 var(--font-ui)/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
   white-space: nowrap;
 }
 
@@ -203,7 +203,7 @@
   border: 1px solid var(--info-edge);
   border-radius: 5px;
   background: var(--info-bg);
-  font-size: 10px;
+  font-size: var(--font-ui);
 }
 
 .g3-queue-chip.is-added,
@@ -220,13 +220,13 @@
 .g3-queue-chip small,
 .g3-order-chip small {
   color: var(--muted);
-  font-size: 8px;
+  font-size: var(--font-ui);
 }
 
 .g3-queue-chip code,
 .g3-order-chip code {
   color: var(--txt);
-  font: 850 10px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font: 850 var(--font-ui)/1 ui-monospace, SFMono-Regular, Consolas, monospace;
 }
 
 .g3-queue-change {
@@ -234,7 +234,7 @@
   gap: 8px;
   flex-wrap: wrap;
   margin-top: 6px;
-  font-size: 9.5px;
+  font-size: var(--font-ui);
   font-weight: 800;
 }
 
@@ -250,7 +250,7 @@
   border-radius: 999px;
   background: var(--stat-bg);
   color: var(--muted);
-  font-size: 9px;
+  font-size: var(--font-ui);
   font-weight: 700;
 }
 
@@ -263,7 +263,7 @@
 .g3-phase-current {
   margin: 6px 0 0;
   color: var(--muted);
-  font-size: 9.5px;
+  font-size: var(--font-ui);
 }
 
 .g3-paths {
@@ -282,7 +282,7 @@
   border: 1px solid var(--accent);
   border-radius: 5px;
   background: var(--tag-green-bg);
-  font-size: 10px;
+  font-size: var(--font-ui);
 }
 
 .g3-paths li span {
@@ -293,19 +293,19 @@
   border-radius: 50%;
   background: var(--accent);
   color: var(--panel);
-  font: 800 8px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font: 800 var(--font-ui)/1 ui-monospace, SFMono-Regular, Consolas, monospace;
 }
 
 .g3-paths li code {
   color: var(--accent);
-  font: 850 10px/1.25 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font: 850 var(--font-ui)/1.25 ui-monospace, SFMono-Regular, Consolas, monospace;
   overflow-wrap: anywhere;
 }
 
 .g3-cycle-note {
   margin: 6px 0 0;
   color: var(--red);
-  font-size: 9.5px;
+  font-size: var(--font-ui);
   line-height: 1.4;
 }
 
@@ -326,6 +326,6 @@
   }
 
   .g3-paths li code {
-    font-size: 9px;
+    font-size: var(--font-ui);
   }
 }

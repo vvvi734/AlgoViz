@@ -1,0 +1,138 @@
+/*
+ * UX-SIMPLIFY-02 typography floors.
+ *
+ * `tokens.css` owns the three legal sizes:
+ *   --font-ui   12px  labels, legends, node annotations
+ *   --font-body 14px  teaching prose, guide copy, current-operation text
+ *   --font-title 16px operation names and important headings
+ *
+ * Component CSS may still use intermediate values for dense chrome, but no
+ * teaching copy or important operation name falls below these floors.
+ */
+
+/* ---------- Algorithm review sheet ---------- */
+.review-guide .guide-core-text,
+.review-guide .review-flow p,
+.review-guide .review-list li,
+.review-guide .review-memory span,
+.review-guide .review-muted {
+  font-size: var(--font-body);
+  line-height: 1.6;
+}
+
+.review-guide .guide-core-headline,
+.review-guide .review-flow h4,
+.review-guide .review-facts h3,
+.review-guide .review-pitfalls h3,
+.review-guide .review-section-head h3 {
+  font-size: var(--font-title);
+  line-height: 1.35;
+}
+
+.review-guide .review-source,
+.review-guide .review-count,
+.review-guide .review-complexity dt,
+.review-guide .review-complexity dd,
+.review-guide .guide-kicker,
+.review-guide .guide-overline,
+.review-guide .review-memory b {
+  font-size: var(--font-ui);
+}
+
+/* ---------- Learning rail ---------- */
+.learning-rail .rail-kicker,
+.learning-rail .rail-stage,
+.learning-rail .key-vars-scope,
+.learning-rail .key-vars-more summary,
+.learning-rail .rail-why summary,
+.learning-rail .callstack-hint,
+.learning-rail .key-vars-empty {
+  font-size: var(--font-ui);
+}
+
+.learning-rail .rail-section-head h2,
+.learning-rail .rail-operation-title {
+  font-size: var(--font-title);
+  line-height: 1.4;
+}
+
+.learning-rail .rail-operation-text,
+.learning-rail .rail-operation-change,
+.learning-rail .rail-why p {
+  font-size: var(--font-body);
+  line-height: 1.6;
+}
+
+.learning-rail .vartable th,
+.learning-rail .vartable td,
+.learning-rail .callframe {
+  font-size: var(--font-ui);
+}
+
+.learning-rail .callframe-name {
+  font-size: var(--font-body);
+}
+
+.learning-rail .visual-guide-symbols,
+.learning-rail .visual-guide-symbols summary,
+.learning-rail .visual-guide-body dt,
+.learning-rail .visual-guide-body dd,
+.learning-rail .visual-guide-body .visual-guide-note {
+  font-size: var(--font-ui);
+  line-height: 1.5;
+}
+
+/* ---------- Legacy Teaching Course selectors still used by unit tests ---------- */
+.lesson-oneliner,
+.lesson-overview p,
+.lessonstep-text,
+.lessonstep-tip,
+.lesson-current,
+.lesson-focus-explanation,
+.lesson-memory,
+.lesson-memory span,
+.lesson-mistakes li,
+.lesson-subhead {
+  font-size: var(--font-body);
+  line-height: 1.6;
+}
+
+.lessonstep-title,
+.lesson-focus-title {
+  font-size: var(--font-title);
+}
+
+.lesson-block-label,
+.lesson-memory-label,
+.lesson-origin {
+  font-size: var(--font-ui);
+}
+
+/* ---------- Shared headings / operation titles ---------- */
+.sectionhead h2,
+.current-step-copy strong,
+.graph-pq-operation,
+.huffman-operation strong {
+  font-size: var(--font-title);
+}
+
+/* ---------- SVG ----------
+ * The runtime hook `useSvgTextFloor` measures the real screen CTM and lifts
+ * each rendered text node to an actual 12/16px floor. Normal CSS font sizes are
+ * in viewBox user units, so no static `font-size: 12px` here can promise a
+ * screen-size floor.
+ */
+
+/* ---------- Transform-scaled HTML tree nodes ---------- */
+.tree-node-value {
+  font-size: max(var(--font-title), var(--tree-title-floor, 0px));
+}
+
+.tree-node-id,
+.tree-node-order,
+.tree-node-role,
+.tree-node-current,
+.bst-node-tag,
+.avl-node-badge {
+  font-size: max(var(--font-ui), var(--tree-font-floor, 0px));
+}

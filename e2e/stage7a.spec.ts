@@ -110,10 +110,13 @@ test.describe('Stage 7A — workspace UX (UI-03 layout)', () => {
     await page.selectOption('[data-testid="mobile-algo-select"]', 'fib');
     await expect(page.locator('[data-testid="lab-title"]')).toContainText('斐波那契');
     await expect(page.locator('[data-testid="visual-stage"]')).toBeVisible();
-    // UI-02: `fib` has no built-in course, so the rail shows the explicit empty
-    // state instead of a fabricated "current step".
+    // UI-SIMPLIFY-02: `fib` has no built-in course, so the rail shows the
+    // explicit empty state plus the frame-level current operation, never a
+    // fabricated lesson-linked step.
     await expect(page.locator('[data-testid="lesson-no-lesson"]')).toBeVisible();
-    await expect(page.locator('[data-testid="current-step"]')).toHaveCount(0);
+    await expect(page.locator('[data-testid="current-step"]')).toBeVisible();
+    await expect(page.locator('[data-testid="lesson-unlinked"]')).toBeVisible();
+    await expect(page.locator('[data-testid="lesson-active-step"]')).toHaveCount(0);
 
     await page.selectOption('[data-testid="mobile-algo-select"]', 'bubble');
     await expect(page.locator('[data-testid="lab-title"]')).toContainText('冒泡排序');

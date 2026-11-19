@@ -9,9 +9,9 @@ body {
 }
 
 .smalltext { font-size: 13px; }
-.eyebrow { font-size: 12px; letter-spacing: 1.6px; }
-.tag { font-size: 12px; padding: 3px 8px; }
-.sectionhead h2 { font-size: 16px; }
+.eyebrow { font-size: var(--font-ui); letter-spacing: 1.6px; }
+.tag { font-size: var(--font-ui); padding: 3px 8px; }
+.sectionhead h2 { font-size: var(--font-title); }
 .sectionhead { margin-bottom: 12px; }
 
 /* Primary navigation: two live destinations + a restrained tools menu. */
@@ -115,7 +115,7 @@ body {
   border-bottom: 1px solid var(--edge);
 }
 .sidebar-title {
-  font-size: 11px;
+  font-size: var(--font-ui);
   font-weight: 600;
   letter-spacing: 1.3px;
   text-transform: uppercase;
@@ -196,7 +196,7 @@ body {
   border-radius: 999px;
   background: var(--alg-hover);
   color: var(--muted);
-  font-size: 10.5px;
+  font-size: var(--font-ui);
   font-variant-numeric: tabular-nums;
 }
 
@@ -397,7 +397,7 @@ body {
 
 /* Compact teaching course: current step + clickable stage chips. */
 .lessonpanel.is-compact .sectionhead { margin-bottom: 7px; }
-.lessonpanel.is-compact .lesson-oneliner { font-size: 14px; max-width: 76ch; }
+.lessonpanel.is-compact .lesson-oneliner { font-size: var(--font-body); max-width: 76ch; }
 .lessonpanel.is-compact .lesson-meta { margin-bottom: 4px; }
 .lessonpanel.is-compact .lessonsteps {
   display: flex;
@@ -425,15 +425,15 @@ body {
   overscroll-behavior: contain;
 }
 .lesson-overview p, .lessonstep-text, .lesson-mistakes ul { font-size: 13.5px; line-height: 1.65; }
-.lessonstep-title { font-size: 14px; }
-.lesson-current { font-size: 14px; }
+.lessonstep-title { font-size: var(--font-body); }
+.lesson-current { font-size: var(--font-body); }
 .lesson-vars .chip { font-size: 12.5px; }
 
 /* Secondary panel typography and tables. */
 .vartable { font-size: 13px; }
-.vartable th { font-size: 12px; }
+.vartable th { font-size: var(--font-ui); }
 .codeview { font-size: 13px; }
-.sync-col h3, .sync-explanation h3, .lesson-subhead, .sidebar h3 { font-size: 12px; }
+.sync-col h3, .sync-explanation h3, .lesson-subhead, .sidebar h3 { font-size: var(--font-ui); }
 .sync-snapshot { display: flex; flex-direction: column; align-items: flex-start; gap: 7px; }
 .sync-snapshot .btn { align-self: flex-start; }
 
@@ -441,11 +441,11 @@ body {
 .mentor { margin-top: 0; }
 .mentor-row { grid-template-columns: repeat(2, minmax(180px, 260px)); }
 .mentor textarea.prompt { min-height: 92px; }
-.mentor-answer-body { font-size: 14px; }
+.mentor-answer-body { font-size: var(--font-body); }
 .mentor-answer ul { font-size: 13.5px; }
 .mentor-offline.is-error { border-color: var(--edge); background: var(--info-bg); }
 .mentor-offline.is-error .mentor-error { color: var(--red); }
-.mentor .sectionhead .tag { font-size: 12px; }
+.mentor .sectionhead .tag { font-size: var(--font-ui); }
 
 /* Reading improves without shrinking or nesting every card. */
 .info p, .note, .packbanner, .sessionwarn { line-height: 1.6; }
@@ -490,7 +490,7 @@ body {
   .stage-panel .stage { min-height: 240px; padding: 10px; }
   .bars { height: 170px; min-width: 0; gap: 5px; }
   .bar-item { min-width: 0; max-width: 48px; }
-  .bar-label { font-size: 11px; }
+  .bar-label { font-size: var(--font-ui); }
   .code-panel .monaco-wrap { min-height: 280px; height: 38vh; }
   .current-step { padding: 10px 12px; gap: 8px; }
   .current-step-main { flex: 1 1 100%; }

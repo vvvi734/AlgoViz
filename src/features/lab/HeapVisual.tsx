@@ -84,9 +84,6 @@ export function HeapVisual({ model }: { model: HeapVisualModel }) {
         '--heap-wide-height': `${Math.ceil(model.layoutHeight)}px`,
       } as CSSProperties)
     : undefined;
-  const valueSize = Math.max(11, Math.round(model.nodeRadius * 0.62));
-  const idSize = Math.max(7, Math.round(model.nodeRadius * 0.3));
-  const slotSize = Math.max(8, Math.round(model.nodeRadius * 0.32));
 
   return (
     <div
@@ -191,11 +188,11 @@ export function HeapVisual({ model }: { model: HeapVisualModel }) {
                     transform={`translate(${node.x} ${node.y})`}
                   >
                     <circle className="heap-node-circle" r={model.nodeRadius} />
-                    <text className="heap-node-id" y={-model.nodeRadius + 9} fontSize={idSize}>{node.id}</text>
-                    <text className="heap-node-value" y={5} fontSize={valueSize}>{displayValue(node.value)}</text>
-                    <text className="heap-node-slot" y={model.nodeRadius - 7} fontSize={slotSize}>#{node.slot}</text>
+                    <text className="heap-node-id" y={-model.nodeRadius + 9}>{node.id}</text>
+                    <text className="heap-node-value" y={5}>{displayValue(node.value)}</text>
+                    <text className="heap-node-slot" y={model.nodeRadius - 7}>#{node.slot}</text>
                     {node.root && (
-                      <text className="heap-node-role" y={-model.nodeRadius - 4} fontSize={slotSize}>
+                      <text className="heap-node-role" y={-model.nodeRadius - 4}>
                         {t('heapRootTag')}
                       </text>
                     )}

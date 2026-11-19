@@ -13,7 +13,7 @@ import { computeGraphViewBox, layoutGraph, type GraphLayoutEdge, type GraphViewB
  * UIX-G01A: MST gets a larger local node radius. It is passed explicitly to
  * layoutGraph so BFS/DFS/Dijkstra/AOE/SCC keep the shared 23-unit geometry.
  */
-export const MST_NODE_RADIUS = 29;
+export const MST_NODE_RADIUS = 33;
 /** Room below the node for Kruskal's `↳root` tag and Prim's `+` tag. */
 export const MST_LABEL_GUTTER = 16;
 

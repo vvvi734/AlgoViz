@@ -7,7 +7,7 @@
 }
 
 .search-algorithm-name {
-  font-size: 11px;
+  font-size: var(--font-ui);
   font-weight: 800;
   color: var(--muted);
   letter-spacing: .02em;
@@ -29,7 +29,7 @@
   padding: 5px 9px;
   background: color-mix(in srgb, var(--search-amber) 7%, var(--panel-2));
   color: var(--txt);
-  font-size: 12px;
+  font-size: var(--font-ui);
   font-weight: 800;
 }
 
@@ -38,7 +38,7 @@
   align-items: center;
   border-radius: 999px;
   padding: 4px 10px;
-  font-size: 11px;
+  font-size: var(--font-ui);
   font-weight: 800;
   border: 1px solid var(--edge);
 }
@@ -69,7 +69,7 @@
   padding: 8px 10px;
   background: color-mix(in srgb, var(--red) 6%, var(--panel-2));
   color: var(--txt);
-  font-size: 11px;
+  font-size: var(--font-ui);
   line-height: 1.5;
 }
 
@@ -81,7 +81,7 @@
   border: 1px dashed var(--edge);
   border-radius: 12px;
   color: var(--muted);
-  font-size: 12px;
+  font-size: var(--font-ui);
   text-align: center;
   padding: 18px;
 }
@@ -151,7 +151,7 @@
 
 .search-index-label {
   text-align: center;
-  font-size: 9px;
+  font-size: var(--font-ui);
   color: var(--muted);
   line-height: 1.2;
 }
@@ -166,5 +166,5 @@
 @media (max-width: 720px) {
   .search-bars { height: 170px; }
   .search-bar-item { min-width: 30px; }
-  .search-target-card { font-size: 11px; }
+  .search-target-card { font-size: var(--font-ui); }
 }
