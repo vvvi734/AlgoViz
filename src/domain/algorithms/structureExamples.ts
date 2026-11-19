@@ -63,6 +63,12 @@ import {
   SORTING_PYTHON,
 } from './sortingExamples';
 import { BINARY_DEFAULT_INPUT, BINARY_PYTHON, LINEAR_DEFAULT_INPUT, LINEAR_PYTHON } from './searchExamples';
+import {
+  CHAINING_PYTHON,
+  HASH_CHAIN_INPUT,
+  HASH_PROBE_INPUT,
+  PROBING_PYTHON,
+} from './hashExamples';
 
 export const STACK_DEFAULT_INPUT: unknown = [
   ['push', 3],
@@ -195,6 +201,8 @@ const STRUCTURE_PYTHON: Record<string, string> = {
   merge: SORTING_PYTHON.merge,
   linear: LINEAR_PYTHON,
   binary: BINARY_PYTHON,
+  'hash-chain': CHAINING_PYTHON,
+  'hash-probe': PROBING_PYTHON,
 };
 
 const STRUCTURE_INPUT: Record<string, unknown> = {
@@ -223,6 +231,8 @@ const STRUCTURE_INPUT: Record<string, unknown> = {
   merge: MERGE_DEFAULT_INPUT,
   linear: LINEAR_DEFAULT_INPUT,
   binary: BINARY_DEFAULT_INPUT,
+  'hash-chain': HASH_CHAIN_INPUT,
+  'hash-probe': HASH_PROBE_INPUT,
 };
 
 export function structurePythonExample(algorithmId: string): string | undefined {

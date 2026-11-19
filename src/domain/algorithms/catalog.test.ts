@@ -13,10 +13,10 @@ function visualFrames(code: string, input: unknown): TraceFrame[] {
   return result.frames;
 }
 
-describe('legacy algorithm catalogue (29 presets)', () => {
-  it('ships the original presets plus the S1 shell and S2 quick/merge presets', () => {
-    expect(algorithmIds()).toHaveLength(29);
-    expect(Object.keys(expected)).toHaveLength(29);
+describe('legacy algorithm catalogue (31 presets)', () => {
+  it('ships the original presets plus the S1 shell, S2 quick/merge and F2 hash presets', () => {
+    expect(algorithmIds()).toHaveLength(31);
+    expect(Object.keys(expected)).toHaveLength(31);
   });
 
   it.each(Object.keys(catalog))('%s reproduces the pre-refactor frame stream byte-for-byte', (id) => {

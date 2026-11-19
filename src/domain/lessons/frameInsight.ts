@@ -22,6 +22,7 @@ import type {
   HuffmanSnapshot,
   SearchSnapshot,
   SortingSnapshot,
+  HashSnapshot,
   TopologicalSortSnapshot,
   TraceEvent,
   WeightedGraphSnapshot,
@@ -1684,6 +1685,219 @@ function sortingInsight(
 }
 
 /**
+ * F2: concise right-rail insight for hash tables. It names the real key, bucket
+ * or slot, collision and result; chaining and probing use different vocabulary
+ * because their state is different, not because of a frame counter.
+ */
+function hashInsight(
+  snapshot: HashSnapshot,
+  lang: LessonLang,
+  lesson: Lesson | undefined,
+  event: TraceEvent,
+  previousEvent: TraceEvent | undefined,
+): FrameInsight {
+  const activeStep = resolveStep(lesson, event.lessonStepId);
+  const previous = previousEvent?.structure?.kind === 'hash' ? previousEvent.structure : null;
+  const node = snapshot.currentNodeId
+    ? snapshot.nodes.find((item) => item.id === snapshot.currentNodeId) ?? null
+    : null;
+  const slot = snapshot.currentIndex === null ? null : snapshot.slots[snapshot.currentIndex] ?? null;
+  const keyText = snapshot.key === null ? '—' : String(snapshot.key);
+  const slotState = slot
+    ? slot.state === 'occupied'
+      ? `OCCUPIED(${slot.key})`
+      : slot.state === 'deleted'
+        ? 'DELETED'
+        : 'EMPTY'
+    : '—';
+
+  let action = event.message;
+  let why = event.message;
+  switch (snapshot.operation) {
+    case 'init':
+      action = tx(lang, `初始化空哈希表：表长 ${snapshot.tableSize}`, `Initialize an empty hash table of size ${snapshot.tableSize}`);
+      why = tx(
+        lang,
+        snapshot.algorithm === 'chaining'
+          ? '每个桶的头指针先置为 NULL；空表没有任何真实节点。'
+          : '每个槽先标记为 EMPTY；EMPTY 表示从未使用，和删除后的 DELETED 不同。',
+        snapshot.algorithm === 'chaining'
+          ? 'Every bucket head starts as NULL; the empty table owns no real node.'
+          : 'Every slot starts as EMPTY, which is different from a DELETED tombstone after a removal.',
+      );
+      break;
+    case 'hash':
+      action = tx(lang, `计算 h(${keyText}) = ${keyText} % ${snapshot.tableSize} = ${snapshot.hashIndex ?? '—'}`, `Compute h(${keyText}) = ${keyText} % ${snapshot.tableSize} = ${snapshot.hashIndex ?? '—'}`);
+      why = tx(lang, '哈希函数只给出起点；它不保证不同键得到不同结果，冲突正是从这里开始。', 'The hash function only gives a starting point; it cannot promise distinct keys map to distinct slots, which is where collisions begin.');
+      break;
+    case 'bucket':
+      action = tx(lang, `定位桶 ${snapshot.bucketIndex ?? '—'}`, `Locate bucket ${snapshot.bucketIndex ?? '—'}`);
+      why = snapshot.conflict
+        ? tx(lang, '桶内已经有节点，说明这个键与其他键发生了冲突；接下来沿真实 next 链逐个比较。', 'The bucket already owns nodes, so this key collides with another key; next we compare along the real next chain.')
+        : tx(lang, '桶为空，没有冲突；新节点会直接成为这个桶的头节点。', 'The bucket is empty, so there is no collision; a new node can become this bucket head directly.');
+      break;
+    case 'chain-compare':
+      action = tx(
+        lang,
+        `比较节点 ${node?.id ?? '—'}：键 ${node?.key ?? '—'} ${snapshot.comparison === 'equal' ? '=' : '≠'} ${keyText}`,
+        `Compare node ${node?.id ?? '—'}: key ${node?.key ?? '—'} ${snapshot.comparison === 'equal' ? '=' : '≠'} ${keyText}`,
+      );
+      why = tx(lang, '冲突元素挂在同一条链表上，只能逐个节点比较；不同就沿 next 继续，直到命中或 NULL。', 'Colliding entries share one chain, so nodes are compared one by one; on a different key follow next until a match or NULL.');
+      break;
+    case 'insert':
+      if (snapshot.algorithm === 'chaining') {
+        action = tx(lang, `新节点 ${node?.id ?? '—'} 成为桶 ${snapshot.bucketIndex ?? '—'} 的头节点`, `New node ${node?.id ?? '—'} becomes the head of bucket ${snapshot.bucketIndex ?? '—'}`);
+        why = tx(lang, '真实 Python 把新节点的 next 指向原桶头，再更新桶头指针；节点 ID 稳定，不是动画重新生成的假对象。', 'Real Python points the new node next at the old head, then updates the bucket head; the node id is stable, not a regenerated animation object.');
+      } else {
+        action = tx(lang, `键 ${keyText} 写入槽 ${snapshot.currentIndex ?? '—'}`, `Key ${keyText} is written into slot ${snapshot.currentIndex ?? '—'}`);
+        why = snapshot.reusedDeleted
+          ? tx(lang, '插入复用了探测路径上的第一个 DELETED 槽；墓碑重新变为 OCCUPIED，元素数增加 1，探测链保持连通。', 'The insert reused the first DELETED slot on the probe path; the tombstone becomes OCCUPIED, the count increases by one and the probe path stays connected.')
+          : tx(lang, '探测在 EMPTY 槽停止并写入；EMPTY 变为 OCCUPIED，元素数增加 1。若路径上有墓碑，插入仍会优先复用第一个 DELETED。', 'The probe stopped at an EMPTY slot and wrote there; EMPTY becomes OCCUPIED and the count increases by one. If the path had a tombstone, the first DELETED would be reused first.');
+      }
+      break;
+    case 'duplicate':
+      action = tx(lang, `键 ${keyText} 已存在：拒绝重复插入`, `Key ${keyText} already exists: duplicate insert rejected`);
+      why = tx(lang, '本实现规定键唯一；发现相同键就返回 duplicate，不覆盖旧值，元素数不变。', 'This implementation requires unique keys; a duplicate returns explicitly and never overwrites the old value, so the count stays unchanged.');
+      break;
+    case 'found':
+      action = tx(
+        lang,
+        snapshot.algorithm === 'chaining'
+          ? `命中节点 ${node?.id ?? '—'}（键 ${keyText}）`
+          : `命中槽 ${snapshot.currentIndex ?? '—'}（键 ${keyText}）`,
+        snapshot.algorithm === 'chaining'
+          ? `Hit node ${node?.id ?? '—'} for key ${keyText}`
+          : `Hit slot ${snapshot.currentIndex ?? '—'} for key ${keyText}`,
+      );
+      why = tx(lang, '平均/期望 O(1) 依赖散列分布与装载因子；链变长或探测变长时，最坏仍可能退化到 O(n)。', 'Average/expected O(1) depends on the hash distribution and load factor; a long chain or probe run can still degrade to O(n) worst case.');
+      if (snapshot.algorithm === 'probing' && snapshot.probePath.some((index) => snapshot.slots[index]?.state === 'deleted')) {
+        why = tx(
+          lang,
+          '本次探测路径经过 DELETED 墓碑但没有停止；只有 EMPTY 才能证明键不存在，删除标记不能截断后续查找。',
+          'This probe path crossed a DELETED tombstone without stopping; only EMPTY can prove absence, so a tombstone must not cut off later lookups.',
+        );
+      }
+      break;
+    case 'not-found':
+      action = tx(lang, `未找到键 ${keyText}`, `Key ${keyText} not found`);
+      why = tx(
+        lang,
+        snapshot.algorithm === 'chaining'
+          ? '沿链表到达 NULL 仍未命中；冲突越多，链越长，查找越慢。'
+          : '探测到 EMPTY 才确定失败；DELETED 只是墓碑，不能让查找提前停止。',
+        snapshot.algorithm === 'chaining'
+          ? 'The chain reached NULL without a match; more collisions mean longer chains and slower lookup.'
+          : 'Only EMPTY proves absence; a DELETED tombstone must not stop the lookup early.',
+      );
+      break;
+    case 'delete-head':
+      action = tx(lang, `删除桶头 ${node?.id ?? '—'}（键 ${keyText}）`, `Remove bucket head ${node?.id ?? '—'} for key ${keyText}`);
+      why = tx(lang, '桶头指针改成被删节点的 next；其余节点保持原来的真实引用。', 'The bucket head becomes the removed node next; every other node keeps its real reference.');
+      break;
+    case 'delete-middle':
+      action = tx(lang, `删除中间节点 ${snapshot.removed?.kind === 'node' ? snapshot.removed.id : '—'}（键 ${keyText}）`, `Remove middle node ${snapshot.removed?.kind === 'node' ? snapshot.removed.id : '—'} for key ${keyText}`);
+      why = tx(lang, '前驱的 next 直接指向被删节点的 next，链表不能断开，也不能留下环。', 'The previous node next skips directly to the removed node next; the chain must stay connected and acyclic.');
+      break;
+    case 'delete-tail':
+      action = tx(lang, `删除尾节点 ${snapshot.removed?.kind === 'node' ? snapshot.removed.id : '—'}（键 ${keyText}）`, `Remove tail node ${snapshot.removed?.kind === 'node' ? snapshot.removed.id : '—'} for key ${keyText}`);
+      why = tx(lang, '前驱的 next 置为 NULL；被删节点不再属于任何可达链表。', 'The previous node next becomes NULL, so the removed node is no longer reachable from any chain.');
+      break;
+    case 'delete-missing':
+      action = tx(lang, `删除失败：键 ${keyText} 不存在`, `Delete failed: key ${keyText} is absent`);
+      why = tx(lang, '没有命中真实节点/槽位就不修改结构；删除失败是明确结果。', 'Without a real node or slot hit, the structure is untouched; a failed delete is an explicit result.');
+      break;
+    case 'probe-check':
+      action = tx(lang, `检查槽 ${snapshot.currentIndex ?? '—'}：${slotState}`, `Inspect slot ${snapshot.currentIndex ?? '—'}: ${slotState}`);
+      why = slot?.state === 'empty'
+        ? tx(lang, 'EMPTY 表示从未使用；查找在这里可以确定失败，插入可以写入。', 'EMPTY means never used; a lookup can fail here and an insert can write here.')
+        : slot?.state === 'deleted'
+          ? tx(lang, 'DELETED 是删除墓碑，不是空槽；查找必须继续向后，否则会截断同一条冲突链。', 'DELETED is a tombstone, not an empty slot; lookup must continue or the same collision path would be cut off.')
+          : snapshot.comparison === 'equal'
+            ? tx(lang, '占用槽的键相等，命中；不需要继续探测。', 'The occupied slot holds the same key, so this is a hit; no further probing is needed.')
+            : tx(lang, '槽被另一个键占用，发生冲突；线性探测只能顺序检查下一槽。', 'The slot is occupied by another key, so a collision occurred; linear probing can only inspect the next slot in order.');
+      break;
+    case 'probe-next':
+      action = tx(lang, `探测指针移到槽 ${snapshot.currentIndex ?? '—'}`, `Probe pointer moves to slot ${snapshot.currentIndex ?? '—'}`);
+      why = tx(lang, '下一个槽位由 (h(key) + i) % m 真实计算；i 增加，超过末尾就回绕到 0。', 'The next slot is computed by (h(key) + i) % m; i grows and wraps to 0 after the end.');
+      break;
+    case 'delete':
+      action = tx(lang, `删除槽 ${snapshot.currentIndex ?? '—'} 的键 ${keyText}，留下 DELETED`, `Remove key ${keyText} from slot ${snapshot.currentIndex ?? '—'}, leaving DELETED`);
+      why = tx(lang, '删除不能把槽写回 EMPTY；否则后续查找会在墓碑处误判失败。这里写入 DELETED，保留冲突链。', 'A deletion cannot write EMPTY back, or later lookups would fail at the tombstone; DELETED preserves the collision path.');
+      break;
+    case 'table-full':
+      action = tx(lang, `连续 ${snapshot.tableSize} 个槽均为 OCCUPIED：表满，插入失败`, `All ${snapshot.tableSize} slots are OCCUPIED: table full, insert failed`);
+      why = tx(lang, '没有 EMPTY 也没有 DELETED 可写；循环必须有界，返回 full 而不是无限探测。', 'There is no EMPTY or DELETED slot to write; the loop must be bounded and return full instead of probing forever.');
+      break;
+    case 'done':
+      action = tx(lang, `最终表：${snapshot.elementCount} 个元素，装载因子 ${snapshot.loadFactor.toFixed(3)}`, `Final table: ${snapshot.elementCount} entries, load factor ${snapshot.loadFactor.toFixed(3)}`);
+      why = tx(lang, '元素数等于真实节点数或占用槽数；装载因子 = 元素数 / 表长，只描述当前快照。', 'The count equals real nodes or occupied slots; load factor = entries / table size and describes this snapshot only.');
+      break;
+    default:
+      break;
+  }
+
+  const changes: FrameChange[] = [
+    { label: tx(lang, '当前键', 'key'), after: keyText, tone: 'neutral' },
+    {
+      label: snapshot.algorithm === 'chaining' ? tx(lang, '哈希 → 桶', 'hash → bucket') : tx(lang, '哈希 → 槽', 'hash → slot'),
+      after:
+        snapshot.hashIndex === null
+          ? '—'
+          : snapshot.algorithm === 'chaining'
+            ? `${snapshot.hashIndex} → ${snapshot.bucketIndex ?? '—'}`
+            : `${snapshot.hashIndex}${snapshot.currentIndex === null ? '' : ` → ${snapshot.currentIndex}`}`,
+      tone: 'neutral',
+    },
+  ];
+  if (snapshot.algorithm === 'chaining' && node) {
+    changes.push({
+      label: tx(lang, '链表节点', 'chain node'),
+      after: `${node.id} = ${node.key} → ${node.nextId ?? 'NULL'}`,
+      tone: snapshot.comparison === 'equal' ? 'success' : 'update',
+    });
+  }
+  if (snapshot.algorithm === 'probing' && slot) {
+    changes.push({
+      label: tx(lang, '槽状态', 'slot state'),
+      after: `${slot.index}: ${slotState}`,
+      tone: slot.state === 'occupied' ? 'update' : slot.state === 'deleted' ? 'warning' : 'neutral',
+    });
+    changes.push({
+      label: tx(lang, '探测路径', 'probe path'),
+      after: snapshot.probePath.length ? snapshot.probePath.join(' → ') : '—',
+      tone: snapshot.probePath.length > 1 ? 'update' : 'neutral',
+    });
+  }
+  if (snapshot.removed) {
+    changes.push({
+      label: tx(lang, '被删除', 'removed'),
+      after:
+        snapshot.removed.kind === 'node'
+          ? `${snapshot.removed.id}（${snapshot.removed.position}）`
+          : `slot ${snapshot.removed.index}（${snapshot.removed.key}）`,
+      tone: 'warning',
+    });
+  }
+  if (snapshot.result !== null) {
+    changes.push({ label: tx(lang, '结果', 'result'), after: snapshot.result, tone: snapshot.found ? 'success' : 'warning' });
+  }
+  changes.push({
+    label: tx(lang, '元素 / 装载因子', 'count / load'),
+    before: previous ? `${previous.elementCount} / ${previous.loadFactor.toFixed(3)}` : undefined,
+    after: `${snapshot.elementCount} / ${snapshot.loadFactor.toFixed(3)}`,
+    tone: previous && previous.elementCount !== snapshot.elementCount ? 'update' : 'neutral',
+  });
+
+  const memory = activeStep?.tip
+    ? firstSentence(activeStep.tip[lang], 140)
+    : snapshot.algorithm === 'chaining'
+      ? tx(lang, '链地址法：同桶元素挂真实 next 链，平均 O(1)，最坏 O(n)。', 'Chaining: same-bucket entries share a real next chain; average O(1), worst O(n).')
+      : tx(lang, '线性探测：冲突顺序找下一槽；删除留 DELETED，查找遇 EMPTY 才失败。', 'Linear probing: collisions walk forward; delete leaves DELETED, and lookup fails only on EMPTY.');
+
+  return { semantic: true, action, why, changes, memory };
+}
+
+/**
  * F1: operation-specific insight for sequential and binary search. The action
  * names the real comparison / boundary move; it does not reuse sorting wording.
  */
@@ -1911,6 +2125,8 @@ export function buildFrameInsight(
         return sortingInsight(structure, lang, lesson, currentEvent, previousEvent);
       case 'search':
         return searchInsight(structure, lang, lesson, currentEvent, previousEvent);
+      case 'hash':
+        return hashInsight(structure, lang, lesson, currentEvent, previousEvent);
       default:
         break;
     }

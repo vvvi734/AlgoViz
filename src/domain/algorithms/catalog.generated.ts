@@ -229,6 +229,178 @@ export const ALGORITHM_CATALOG: AlgorithmCatalog = {
     },
     "code": "const a=input.nums; trace({type:'array',values:[...a]},'开始 / Start');\nlet found=false;\nfor(let i=0;i<a.length;i++){trace({type:'array',values:[...a],focus:[i]},'检查当前位置 / Inspect');if(a[i]===input.target){trace({type:'array',values:[...a],focus:[i],done:true},'找到目标 / Found');found=true;break;}}\nif(!found)trace({type:'array',values:[...a]},'未找到 / Not found');"
   },
+  "hash-chain": {
+    "group": "search",
+    "icon": "⌗",
+    "name": [
+      "链地址法散列表",
+      "Hash table · separate chaining"
+    ],
+    "desc": [
+      "真实 Python Node 对象按 h(key)=key % 7 落入桶中，桶内用真实 next 引用串成链表；演示冲突、逐节点比较、插入、查找以及删除桶头/中间/尾节点后的重连。键唯一：重复插入被明确拒绝。",
+      "Real Python Node objects land in buckets by h(key)=key % 7 and are linked by real next references; the demo shows collisions, node-by-node comparison, insertion, lookup and relinking after deleting a head, middle or tail node. Keys are unique: duplicates are explicitly rejected."
+    ],
+    "time": "平均 O(1) · 最坏 O(n)",
+    "space": "O(n+m)",
+    "input": {
+      "tableSize": 7,
+      "operations": [
+        [
+          "insert",
+          1
+        ],
+        [
+          "insert",
+          8
+        ],
+        [
+          "insert",
+          15
+        ],
+        [
+          "insert",
+          8
+        ],
+        [
+          "find",
+          8
+        ],
+        [
+          "find",
+          99
+        ],
+        [
+          "delete",
+          8
+        ],
+        [
+          "find",
+          1
+        ],
+        [
+          "delete",
+          1
+        ],
+        [
+          "find",
+          15
+        ],
+        [
+          "delete",
+          15
+        ],
+        [
+          "insert",
+          22
+        ],
+        [
+          "find",
+          22
+        ]
+      ]
+    },
+    "code": "trace({type:'array',values:['Separate chaining: use the Python preset'],done:true},'请在 Python 模式运行 / Run the Python preset');"
+  },
+  "hash-probe": {
+    "group": "search",
+    "icon": "⌗",
+    "name": [
+      "线性探测散列表",
+      "Hash table · linear probing"
+    ],
+    "desc": [
+      "真实 Python 数组使用三态槽位 EMPTY / OCCUPIED / DELETED；冲突后按 (h(key)+i) % m 顺序探测并回绕，删除留下 DELETED 墓碑以便后续查找继续，插入优先复用墓碑，表满时明确失败。键唯一：重复插入被明确拒绝。",
+      "A real Python array uses tri-state slots EMPTY / OCCUPIED / DELETED; collisions probe (h(key)+i) % m with wraparound, deletion leaves a DELETED tombstone so later lookups continue, insertion reuses tombstones first, and a full table fails explicitly. Keys are unique: duplicates are explicitly rejected."
+    ],
+    "time": "平均 O(1) · 最坏 O(n)",
+    "space": "O(m)",
+    "input": {
+      "tableSize": 7,
+      "operations": [
+        [
+          "insert",
+          1
+        ],
+        [
+          "insert",
+          8
+        ],
+        [
+          "insert",
+          15
+        ],
+        [
+          "find",
+          8
+        ],
+        [
+          "find",
+          99
+        ],
+        [
+          "delete",
+          8
+        ],
+        [
+          "find",
+          15
+        ],
+        [
+          "delete",
+          99
+        ],
+        [
+          "insert",
+          22
+        ],
+        [
+          "insert",
+          3
+        ],
+        [
+          "insert",
+          10
+        ],
+        [
+          "insert",
+          17
+        ],
+        [
+          "insert",
+          24
+        ],
+        [
+          "insert",
+          31
+        ],
+        [
+          "delete",
+          15
+        ],
+        [
+          "find",
+          24
+        ],
+        [
+          "delete",
+          24
+        ],
+        [
+          "find",
+          31
+        ],
+        [
+          "insert",
+          31
+        ],
+        [
+          "insert",
+          38
+        ]
+      ]
+    },
+    "code": "trace({type:'array',values:['Linear probing: use the Python preset'],done:true},'请在 Python 模式运行 / Run the Python preset');"
+  },
   "stack": {
     "group": "ds",
     "icon": "▤",

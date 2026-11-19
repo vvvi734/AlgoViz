@@ -3369,6 +3369,30 @@
       "message": "找到目标 / Found"
     }
   ],
+  "hash-chain": [
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          "Separate chaining: use the Python preset"
+        ],
+        "done": true
+      },
+      "message": "请在 Python 模式运行 / Run the Python preset"
+    }
+  ],
+  "hash-probe": [
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          "Linear probing: use the Python preset"
+        ],
+        "done": true
+      },
+      "message": "请在 Python 模式运行 / Run the Python preset"
+    }
+  ],
   "stack": [
     {
       "state": {

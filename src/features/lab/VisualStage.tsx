@@ -32,6 +32,8 @@ import { SortingVisual } from './SortingVisual';
 import type { SortingVisualModel } from '../../domain/visualization/sortingModel';
 import { SearchVisual } from './SearchVisual';
 import type { SearchVisualModel } from '../../domain/visualization/searchModel';
+import { HashVisual } from './HashVisual';
+import type { HashVisualModel } from '../../domain/visualization/hashModel';
 import type { KruskalVisualModel, PrimVisualModel } from '../../domain/visualization/mstModel';
 import type { CriticalVisualModel, TopologicalVisualModel } from '../../domain/visualization/dagModel';
 import type { ConnectedComponentsVisualModel, SccVisualModel } from '../../domain/visualization/componentsModel';
@@ -449,6 +451,9 @@ export function VisualStage({ event }: { event: TraceEvent | undefined }) {
     case 'search':
       content = <SearchVisual model={model as SearchVisualModel} />;
       break;
+    case 'hash':
+      content = <HashVisual model={model as HashVisualModel} />;
+      break;
     case 'floyd-matrix':
       content = (
         <FloydVisual
@@ -643,6 +648,7 @@ export function VisualStage({ event }: { event: TraceEvent | undefined }) {
     model.kind === 'huffman' ||
     model.kind === 'sorting' ||
     model.kind === 'search' ||
+    model.kind === 'hash' ||
     model.kind === 'graph-traversal' ||
     model.kind === 'floyd-matrix' ||
     model.kind === 'bellman-table' ||

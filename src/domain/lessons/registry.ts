@@ -33,6 +33,8 @@ import { connectedComponentsLesson } from './connectedComponentsLesson';
 import { stronglyConnectedComponentsLesson } from './stronglyConnectedComponentsLesson';
 import { linearSearchLesson } from './linearSearchLesson';
 import { binarySearchLesson } from './binarySearchLesson';
+import { hashChainingLesson } from './hashChainingLesson';
+import { hashProbingLesson } from './hashProbingLesson';
 import { validateLessonSet } from './schema';
 import type { Lesson, LessonValidationResult } from './types';
 
@@ -94,6 +96,8 @@ const BUNDLED: unknown[] = [
   stronglyConnectedComponentsLesson,
   linearSearchLesson,
   binarySearchLesson,
+  hashChainingLesson,
+  hashProbingLesson,
 ];
 
 /** Courses shipped with the app itself (bubble, factorial, stack, queue, linked-list, binary-tree). */

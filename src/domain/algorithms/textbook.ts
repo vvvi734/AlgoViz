@@ -365,8 +365,7 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
       {
         id: 'hash-search',
         title: { zh: '散列表查找', en: 'Hash-table search' },
-        algorithms: [],
-        planned: true,
+        algorithms: [{ id: 'hash-chain' }, { id: 'hash-probe' }],
       },
     ],
   },

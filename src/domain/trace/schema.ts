@@ -5713,6 +5713,427 @@ export type SortingSnapshot = z.infer<typeof sortingSnapshotSchema>;
  * the renderer derives excluded cells only from `left`/`right`, never from a
  * frame counter.
  * ------------------------------------------------------------------------- */
+/** F2 hash tables: chaining stores real linked nodes, probing stores tri-state slots. */
+export const HASH_ALGORITHMS = ['chaining', 'probing'] as const;
+export type HashAlgorithm = (typeof HASH_ALGORITHMS)[number];
+
+export const HASH_OPERATIONS = [
+  'init', 'hash', 'bucket', 'chain-compare', 'insert', 'duplicate', 'found', 'not-found',
+  'delete-head', 'delete-middle', 'delete-tail', 'delete-missing',
+  'probe-check', 'probe-next', 'delete', 'table-full', 'done',
+] as const;
+export type HashOperation = (typeof HASH_OPERATIONS)[number];
+
+const HASH_OPS_BY_ALGORITHM: Record<HashAlgorithm, readonly HashOperation[]> = {
+  chaining: [
+    'init', 'hash', 'bucket', 'chain-compare', 'insert', 'duplicate', 'found', 'not-found',
+    'delete-head', 'delete-middle', 'delete-tail', 'delete-missing', 'done',
+  ],
+  probing: [
+    'init', 'hash', 'probe-check', 'probe-next', 'insert', 'duplicate', 'found', 'not-found',
+    'delete', 'delete-missing', 'table-full', 'done',
+  ],
+};
+
+export const HASH_PHASES = ['init', 'hash', 'locate', 'compare', 'relink', 'insert', 'result', 'failed', 'full'] as const;
+export type HashPhase = (typeof HASH_PHASES)[number];
+
+const HASH_PHASE_BY_OPERATION: Record<HashOperation, HashPhase> = {
+  init: 'init',
+  hash: 'hash',
+  bucket: 'locate',
+  'chain-compare': 'compare',
+  insert: 'insert',
+  duplicate: 'compare',
+  found: 'result',
+  'not-found': 'failed',
+  'delete-head': 'relink',
+  'delete-middle': 'relink',
+  'delete-tail': 'relink',
+  'delete-missing': 'failed',
+  'probe-check': 'compare',
+  'probe-next': 'locate',
+  delete: 'relink',
+  'table-full': 'full',
+  done: 'result',
+};
+
+export const HASH_RESULTS = ['inserted', 'found', 'not-found', 'deleted', 'missing', 'duplicate', 'full'] as const;
+export type HashResult = (typeof HASH_RESULTS)[number];
+
+export const HASH_COMPARISONS = ['equal', 'different'] as const;
+export type HashComparison = (typeof HASH_COMPARISONS)[number];
+
+export const HASH_SLOT_STATES = ['empty', 'occupied', 'deleted'] as const;
+export type HashSlotState = (typeof HASH_SLOT_STATES)[number];
+
+export const HASH_LIMITS = {
+  MIN_TABLE_SIZE: 2,
+  MAX_TABLE_SIZE: 17,
+  MAX_ENTRIES: 32,
+  MAX_ABS_KEY: 1_000_000_000_000,
+} as const;
+
+export const hashBucketSchema = z.object({
+  index: z.number().int().nonnegative().max(HASH_LIMITS.MAX_TABLE_SIZE - 1),
+  headId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+});
+export type HashBucket = z.infer<typeof hashBucketSchema>;
+
+export const hashNodeSchema = z.object({
+  id: z.string().min(1).max(LIMITS.MAX_NAME_CHARS),
+  key: z.number().int().min(-HASH_LIMITS.MAX_ABS_KEY).max(HASH_LIMITS.MAX_ABS_KEY),
+  bucket: z.number().int().nonnegative().max(HASH_LIMITS.MAX_TABLE_SIZE - 1),
+  nextId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+});
+export type HashNode = z.infer<typeof hashNodeSchema>;
+
+export const hashSlotSchema = z.object({
+  index: z.number().int().nonnegative().max(HASH_LIMITS.MAX_TABLE_SIZE - 1),
+  state: z.enum(HASH_SLOT_STATES),
+  key: z.number().int().min(-HASH_LIMITS.MAX_ABS_KEY).max(HASH_LIMITS.MAX_ABS_KEY).nullable(),
+  id: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+});
+export type HashSlot = z.infer<typeof hashSlotSchema>;
+
+export const hashRemovedNodeSchema = z.object({
+  kind: z.literal('node'),
+  id: z.string().min(1).max(LIMITS.MAX_NAME_CHARS),
+  key: z.number().int().min(-HASH_LIMITS.MAX_ABS_KEY).max(HASH_LIMITS.MAX_ABS_KEY),
+  nextId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+  position: z.enum(['head', 'middle', 'tail']),
+});
+export const hashRemovedSlotSchema = z.object({
+  kind: z.literal('slot'),
+  index: z.number().int().nonnegative().max(HASH_LIMITS.MAX_TABLE_SIZE - 1),
+  key: z.number().int().min(-HASH_LIMITS.MAX_ABS_KEY).max(HASH_LIMITS.MAX_ABS_KEY),
+  id: z.string().min(1).max(LIMITS.MAX_NAME_CHARS),
+});
+export const hashRemovedSchema = z.union([hashRemovedNodeSchema, hashRemovedSlotSchema]);
+export type HashRemoved = z.infer<typeof hashRemovedSchema>;
+
+export const hashSnapshotSchema = z
+  .object({
+    kind: z.literal('hash'),
+    algorithm: z.enum(HASH_ALGORITHMS),
+    operation: z.enum(HASH_OPERATIONS),
+    phase: z.enum(HASH_PHASES),
+    tableSize: z.number().int().min(HASH_LIMITS.MIN_TABLE_SIZE).max(HASH_LIMITS.MAX_TABLE_SIZE),
+    key: z.number().int().min(-HASH_LIMITS.MAX_ABS_KEY).max(HASH_LIMITS.MAX_ABS_KEY).nullable().default(null),
+    hashIndex: z.number().int().nonnegative().max(HASH_LIMITS.MAX_TABLE_SIZE - 1).nullable().default(null),
+    bucketIndex: z.number().int().nonnegative().max(HASH_LIMITS.MAX_TABLE_SIZE - 1).nullable().default(null),
+    currentNodeId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable().default(null),
+    previousNodeId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable().default(null),
+    comparison: z.enum(HASH_COMPARISONS).nullable().default(null),
+    buckets: z.array(hashBucketSchema).max(HASH_LIMITS.MAX_TABLE_SIZE).default([]),
+    nodes: z.array(hashNodeSchema).max(HASH_LIMITS.MAX_ENTRIES).default([]),
+    slots: z.array(hashSlotSchema).max(HASH_LIMITS.MAX_TABLE_SIZE).default([]),
+    probePath: z
+      .array(z.number().int().nonnegative().max(HASH_LIMITS.MAX_TABLE_SIZE - 1))
+      .max(HASH_LIMITS.MAX_TABLE_SIZE)
+      .default([]),
+    currentIndex: z.number().int().nonnegative().max(HASH_LIMITS.MAX_TABLE_SIZE - 1).nullable().default(null),
+    reusedDeleted: z.boolean().default(false),
+    conflict: z.boolean().nullable().default(null),
+    removed: hashRemovedSchema.nullable().default(null),
+    result: z.enum(HASH_RESULTS).nullable().default(null),
+    found: z.boolean().nullable().default(null),
+    elementCount: z.number().int().nonnegative().max(HASH_LIMITS.MAX_ENTRIES),
+    loadFactor: z.number().min(0),
+    reason: z.enum(['full']).nullable().default(null),
+  })
+  .superRefine((snapshot, ctx) => {
+    const add = (path: (string | number)[], message: string) =>
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path, message });
+    const m = snapshot.tableSize;
+
+    if (!HASH_OPS_BY_ALGORITHM[snapshot.algorithm].includes(snapshot.operation)) {
+      add(['operation'], `operation "${snapshot.operation}" is not valid for ${snapshot.algorithm}`);
+    }
+    if (snapshot.phase !== HASH_PHASE_BY_OPERATION[snapshot.operation]) {
+      add(['phase'], `phase "${snapshot.phase}" does not match operation "${snapshot.operation}"`);
+    }
+    if (snapshot.algorithm === 'probing' && snapshot.loadFactor > 1) {
+      add(['loadFactor'], 'probing load factor cannot exceed 1 because each slot holds at most one entry');
+    }
+    if (Math.abs(snapshot.loadFactor - snapshot.elementCount / m) > 1e-9) {
+      add(['loadFactor'], 'loadFactor must equal elementCount / tableSize');
+    }
+    if (snapshot.key === null) {
+      if (snapshot.hashIndex !== null) add(['hashIndex'], 'hashIndex requires a key');
+      if (snapshot.operation !== 'init' && snapshot.operation !== 'done') {
+        add(['key'], `${snapshot.operation} requires a key`);
+      }
+    } else {
+      if (snapshot.hashIndex === null) add(['hashIndex'], 'a key requires its real hash index');
+      if (snapshot.hashIndex !== null && snapshot.hashIndex !== ((snapshot.key % m) + m) % m) {
+        add(['hashIndex'], 'hashIndex must equal key % tableSize');
+      }
+    }
+
+    if (snapshot.algorithm === 'chaining') {
+      if (snapshot.slots.length > 0 || snapshot.probePath.length > 0 || snapshot.currentIndex !== null || snapshot.reusedDeleted) {
+        add(['algorithm'], 'chaining has no probing slots or probe path');
+      }
+      if (snapshot.operation !== 'done' && snapshot.operation !== 'init' && snapshot.bucketIndex === null) {
+        add(['bucketIndex'], 'chaining operations locate a bucket');
+      }
+      if (snapshot.buckets.length !== m) add(['buckets'], `chaining needs exactly ${m} buckets`);
+      snapshot.buckets.forEach((bucket, index) => {
+        if (bucket.index !== index) add(['buckets', index], 'bucket indices must be 0..m-1 in order');
+      });
+      const nodeById = new Map(snapshot.nodes.map((node) => [node.id, node]));
+      if (nodeById.size !== snapshot.nodes.length) add(['nodes'], 'node ids must be unique');
+      snapshot.nodes.forEach((node, index) => {
+        if (node.bucket < 0 || node.bucket >= m) add(['nodes', index, 'bucket'], 'node bucket is out of range');
+        if (node.nextId !== null && !nodeById.has(node.nextId)) {
+          add(['nodes', index, 'nextId'], 'node nextId must reference a real node');
+        }
+        if (node.nextId !== null) {
+          const next = nodeById.get(node.nextId);
+          if (next && next.bucket !== node.bucket) add(['nodes', index, 'nextId'], 'next node must stay in the same bucket');
+        }
+      });
+      const reached = new Set<string>();
+      snapshot.buckets.forEach((bucket, bucketIndex) => {
+        const local = new Set<string>();
+        let id = bucket.headId;
+        while (id !== null) {
+          if (local.has(id)) {
+            add(['buckets', bucketIndex], 'bucket chain must not contain a cycle');
+            break;
+          }
+          const node = nodeById.get(id);
+          if (!node) {
+            add(['buckets', bucketIndex, 'headId'], 'bucket head must reference a real node');
+            break;
+          }
+          if (node.bucket !== bucketIndex) add(['buckets', bucketIndex], 'bucket chain crosses into another bucket');
+          local.add(id);
+          reached.add(id);
+          id = node.nextId;
+        }
+      });
+      if (reached.size !== snapshot.nodes.length) add(['nodes'], 'every node must be reachable from exactly one bucket');
+      if (snapshot.elementCount !== snapshot.nodes.length) add(['elementCount'], 'elementCount must equal the node count');
+      const current = snapshot.currentNodeId === null ? null : nodeById.get(snapshot.currentNodeId) ?? null;
+      if (snapshot.currentNodeId !== null && current === null) {
+        add(['currentNodeId'], 'currentNodeId must reference a real node');
+      }
+      if (snapshot.previousNodeId !== null && !nodeById.has(snapshot.previousNodeId)) {
+        add(['previousNodeId'], 'previousNodeId must reference a real node');
+      }
+      if (snapshot.operation === 'init') {
+        if (snapshot.key !== null || snapshot.bucketIndex !== null || current !== null) {
+          add(['operation'], 'init has no key, bucket or current node');
+        }
+        if (snapshot.nodes.length !== 0) add(['nodes'], 'init starts empty');
+      }
+      if (snapshot.operation === 'hash' || snapshot.operation === 'bucket') {
+        if (current !== null || snapshot.result !== null || snapshot.found !== null) {
+          add(['operation'], `${snapshot.operation} does not select or return a node`);
+        }
+      }
+      if (snapshot.operation === 'chain-compare') {
+        if (current === null || snapshot.bucketIndex === null || current.bucket !== snapshot.bucketIndex) {
+          add(['currentNodeId'], 'chain-compare must point at a node in the located bucket');
+        }
+        if (current && snapshot.key !== null) {
+          const expected = current.key === snapshot.key ? 'equal' : 'different';
+          if (snapshot.comparison !== expected) add(['comparison'], 'comparison must match the real node key');
+        }
+        if (snapshot.result !== null || snapshot.found !== null) add(['operation'], 'chain-compare is not terminal');
+      }
+      if (snapshot.operation === 'insert') {
+        if (snapshot.bucketIndex === null || current === null || current.bucket !== snapshot.bucketIndex) {
+          add(['currentNodeId'], 'insert must point at the new node in its bucket');
+        }
+        const head = snapshot.buckets[snapshot.bucketIndex ?? 0]?.headId ?? null;
+        if (current && head !== current.id) add(['currentNodeId'], 'a new chaining node becomes the bucket head');
+        if (snapshot.result !== 'inserted' || snapshot.found !== null) add(['result'], 'insert reports inserted');
+      }
+      if (snapshot.operation === 'duplicate') {
+        if (current === null || snapshot.result !== 'duplicate') add(['result'], 'duplicate points at the existing key');
+      }
+      if (snapshot.operation === 'found') {
+        if (current === null || snapshot.result !== 'found' || snapshot.found !== true) {
+          add(['result'], 'found needs a real matching node');
+        }
+        if (current && snapshot.key !== null && current.key !== snapshot.key) add(['currentNodeId'], 'found node key mismatch');
+      }
+      if (snapshot.operation === 'not-found') {
+        if (current !== null || snapshot.result !== 'not-found' || snapshot.found !== false) {
+          add(['result'], 'not-found returns no current node and found=false');
+        }
+      }
+      if (snapshot.operation === 'delete-head' || snapshot.operation === 'delete-middle' || snapshot.operation === 'delete-tail') {
+        if (snapshot.removed === null || snapshot.removed.kind !== 'node') {
+          add(['removed'], 'delete needs the removed node snapshot');
+        } else {
+          const removed = snapshot.removed;
+          if (snapshot.key !== removed.key) add(['key'], 'delete key must equal the removed node key');
+          if (snapshot.result !== 'deleted' || snapshot.found !== null) add(['result'], 'delete reports deleted');
+          if (nodeById.has(removed.id)) add(['removed'], 'the removed node must no longer be in the live chain');
+          if (snapshot.operation === 'delete-head') {
+            if (removed.position !== 'head') add(['removed'], 'delete-head removed node must be the head');
+            if (snapshot.bucketIndex === null || snapshot.buckets[snapshot.bucketIndex]?.headId !== removed.nextId) {
+              add(['buckets'], 'delete-head must replace the head with removed.nextId');
+            }
+          }
+          if (snapshot.operation === 'delete-middle') {
+            if (removed.position !== 'middle' || snapshot.previousNodeId === null) {
+              add(['previousNodeId'], 'delete-middle needs a previous node');
+            }
+            const prev = snapshot.previousNodeId === null ? null : nodeById.get(snapshot.previousNodeId) ?? null;
+            if (prev === null || prev.nextId !== removed.nextId) {
+              add(['previousNodeId'], 'delete-middle must relink previous.nextId to removed.nextId');
+            }
+          }
+          if (snapshot.operation === 'delete-tail') {
+            if (removed.position !== 'tail' || removed.nextId !== null) add(['removed'], 'delete-tail removes a node with next=null');
+            const prev = snapshot.previousNodeId === null ? null : nodeById.get(snapshot.previousNodeId) ?? null;
+            if (snapshot.previousNodeId !== null && (prev === null || prev.nextId !== null)) {
+              add(['previousNodeId'], 'delete-tail must set previous.nextId to null');
+            }
+          }
+        }
+      }
+      if (snapshot.operation === 'delete-missing') {
+        if (snapshot.removed !== null || snapshot.result !== 'missing' || snapshot.found !== false) {
+          add(['result'], 'delete-missing removes nothing and returns missing');
+        }
+      }
+      if (snapshot.operation === 'done') {
+        if (snapshot.key !== null || snapshot.bucketIndex !== null || current !== null || snapshot.result !== null) {
+          add(['operation'], 'done only reports the final table');
+        }
+      }
+    } else {
+      // Probing.
+      if (snapshot.buckets.length > 0 || snapshot.nodes.length > 0 || snapshot.currentNodeId !== null || snapshot.previousNodeId !== null) {
+        add(['algorithm'], 'probing has no bucket chains');
+      }
+      if (snapshot.slots.length !== m) add(['slots'], `probing needs exactly ${m} slots`);
+      snapshot.slots.forEach((slot, index) => {
+        if (slot.index !== index) add(['slots', index], 'slot indices must be 0..m-1 in order');
+        if (slot.state === 'empty' && (slot.key !== null || slot.id !== null)) add(['slots', index], 'empty slot carries no key');
+        if (slot.state === 'deleted' && (slot.key !== null || slot.id !== null)) add(['slots', index], 'deleted slot carries no key');
+        if (slot.state === 'occupied' && (slot.key === null || slot.id === null)) add(['slots', index], 'occupied slot needs key and id');
+      });
+      const occupied = snapshot.slots.filter((slot) => slot.state === 'occupied');
+      if (new Set(occupied.map((slot) => slot.id)).size !== occupied.length) add(['slots'], 'occupied entry ids must be unique');
+      if (new Set(occupied.map((slot) => slot.key)).size !== occupied.length) add(['slots'], 'occupied keys must stay unique');
+      if (snapshot.elementCount !== occupied.length) add(['elementCount'], 'elementCount must equal occupied slots');
+      const path = snapshot.probePath;
+      if (path.length > 0) {
+        if (snapshot.hashIndex === null || path[0] !== snapshot.hashIndex) add(['probePath'], 'probe path must start at the hash index');
+        for (let i = 0; i < path.length; i += 1) {
+          if (i > 0 && path[i] !== (path[i - 1]! + 1) % m) add(['probePath'], 'probe path must move one slot with wraparound');
+        }
+        if (new Set(path).size !== path.length) add(['probePath'], 'probe path visits each slot at most once');
+      }
+      if (snapshot.currentIndex !== null && !path.includes(snapshot.currentIndex)) {
+        add(['currentIndex'], 'currentIndex must be on the real probe path');
+      }
+      if (snapshot.operation === 'init') {
+        if (snapshot.key !== null || snapshot.hashIndex !== null || path.length > 0 || snapshot.currentIndex !== null) {
+          add(['operation'], 'init has no key or probe path');
+        }
+        if (occupied.length !== 0 || snapshot.slots.some((slot) => slot.state !== 'empty')) add(['slots'], 'init starts empty');
+      }
+      if (snapshot.operation === 'hash') {
+        if (path.length > 0 || snapshot.currentIndex !== null || snapshot.result !== null || snapshot.conflict !== null) {
+          add(['operation'], 'hash only computes the initial slot');
+        }
+      }
+      if (snapshot.operation === 'probe-check') {
+        if (path.length === 0 || snapshot.currentIndex !== path[path.length - 1]) {
+          add(['currentIndex'], 'probe-check points at the last probed slot');
+        }
+        if (snapshot.currentIndex !== null) {
+          const slot = snapshot.slots[snapshot.currentIndex];
+          if (slot) {
+            if (slot.state === 'occupied' && snapshot.key !== null) {
+              const expected = slot.key === snapshot.key ? 'equal' : 'different';
+              if (snapshot.comparison !== expected) add(['comparison'], 'comparison must match the occupied slot key');
+              if (snapshot.conflict !== (expected === 'different')) add(['conflict'], 'conflict means an occupied slot holds another key');
+            } else if (snapshot.comparison !== null || snapshot.conflict !== false) {
+              add(['comparison'], 'empty or deleted slots have no key comparison and no collision');
+            }
+          }
+        }
+        if (snapshot.result !== null || snapshot.found !== null) add(['operation'], 'probe-check is not terminal');
+      }
+      if (snapshot.operation === 'probe-next') {
+        if (path.length < 2 || snapshot.currentIndex !== path[path.length - 1]) {
+          add(['currentIndex'], 'probe-next advances to the last path slot');
+        }
+        if (snapshot.result !== null || snapshot.found !== null || snapshot.comparison !== null) {
+          add(['operation'], 'probe-next only moves the probe pointer');
+        }
+      }
+      if (snapshot.operation === 'insert') {
+        if (snapshot.currentIndex === null || snapshot.result !== 'inserted' || snapshot.found !== null) {
+          add(['result'], 'insert writes into the current slot');
+        }
+        const slot = snapshot.currentIndex === null ? null : snapshot.slots[snapshot.currentIndex];
+        if (slot === undefined || slot === null || slot.state !== 'occupied' || slot.key !== snapshot.key) {
+          add(['slots'], 'insert must leave the key in the current occupied slot');
+        }
+        if (!snapshot.reusedDeleted && snapshot.probePath.length === 0) add(['probePath'], 'insert needs a real probe path');
+      }
+      if (snapshot.operation === 'duplicate') {
+        if (snapshot.currentIndex === null || snapshot.result !== 'duplicate') add(['result'], 'duplicate points at the existing slot');
+        const slot = snapshot.currentIndex === null ? null : snapshot.slots[snapshot.currentIndex];
+        if (slot === null || slot.state !== 'occupied' || slot.key !== snapshot.key) add(['slots'], 'duplicate slot must hold the key');
+      }
+      if (snapshot.operation === 'found') {
+        if (snapshot.currentIndex === null || snapshot.result !== 'found' || snapshot.found !== true) {
+          add(['result'], 'found needs a matching occupied slot');
+        }
+        const slot = snapshot.currentIndex === null ? null : snapshot.slots[snapshot.currentIndex];
+        if (slot === null || slot.state !== 'occupied' || slot.key !== snapshot.key) add(['slots'], 'found slot must hold the key');
+        if (snapshot.comparison !== 'equal') add(['comparison'], 'found records equality');
+      }
+      if (snapshot.operation === 'not-found') {
+        if (snapshot.result !== 'not-found' || snapshot.found !== false) add(['result'], 'not-found returns found=false');
+      }
+      if (snapshot.operation === 'delete') {
+        if (snapshot.removed === null || snapshot.removed.kind !== 'slot') {
+          add(['removed'], 'delete needs the removed slot snapshot');
+        } else {
+          const removed = snapshot.removed;
+          if (removed.key !== snapshot.key) add(['key'], 'delete key must equal the removed slot key');
+          if (snapshot.currentIndex !== removed.index) add(['currentIndex'], 'delete points at the removed slot');
+          if (snapshot.slots[removed.index]?.state !== 'deleted') add(['slots'], 'delete leaves a DELETED tombstone');
+          if (snapshot.result !== 'deleted' || snapshot.found !== null) add(['result'], 'delete reports deleted');
+          if (snapshot.slots.some((slot) => slot.state === 'occupied' && slot.id === removed.id)) {
+            add(['removed'], 'the removed entry id must no longer be occupied');
+          }
+        }
+      }
+      if (snapshot.operation === 'delete-missing') {
+        if (snapshot.removed !== null || snapshot.result !== 'missing' || snapshot.found !== false) {
+          add(['result'], 'delete-missing removes nothing and returns missing');
+        }
+      }
+      if (snapshot.operation === 'table-full') {
+        if (snapshot.result !== 'full' || snapshot.reason !== 'full') add(['result'], 'table-full reports full');
+        if (snapshot.elementCount !== m) add(['elementCount'], 'table-full requires every slot occupied');
+        if (path.length !== m) add(['probePath'], 'table-full probes every slot');
+      }
+      if (snapshot.operation !== 'table-full' && snapshot.reason !== null) {
+        add(['reason'], 'reason=full is reserved for table-full');
+      }
+      if (snapshot.operation === 'done') {
+        if (snapshot.key !== null || snapshot.currentIndex !== null || snapshot.result !== null) {
+          add(['operation'], 'done only reports the final table');
+        }
+      }
+    }
+  });
+export type HashSnapshot = z.infer<typeof hashSnapshotSchema>;
+
 export const SEARCH_ALGORITHMS = ['linear', 'binary'] as const;
 export type SearchAlgorithm = (typeof SEARCH_ALGORITHMS)[number];
 
@@ -6043,10 +6464,11 @@ export const searchSnapshotSchema = z
   });
 export type SearchSnapshot = z.infer<typeof searchSnapshotSchema>;
 
-/** Stage 7B stack/queue + Stage 7C linked-list + Stage 7D binary-tree + T1 BST + T2 AVL + T3 max-heap + T4 Huffman + S1/S2 sorting + F1 search + Stage 7E/7F/G1/G2/G3/G4 graphs. */
+/** Stage 7B stack/queue + Stage 7C linked-list + Stage 7D binary-tree + T1 BST + T2 AVL + T3 max-heap + T4 Huffman + S1/S2 sorting + F1 search + F2 hash + Stage 7E/7F/G1/G2/G3/G4 graphs. */
 export const structureSchema = z.union([
   sortingSnapshotSchema,
   searchSnapshotSchema,
+  hashSnapshotSchema,
   huffmanSnapshotSchema,
   maxHeapSnapshotSchema,
   structureSnapshotSchema,

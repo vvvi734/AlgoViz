@@ -34,7 +34,7 @@ describe('App UI regression (Phase 1)', () => {
   it('renders all 29 presets and loads a timeline on startup', async () => {
     renderApp();
     await waitFor(() => expect(screen.getByTestId('progress').textContent).toBe('1 / 3'));
-    expect(screen.getAllByTestId(/^algo-/)).toHaveLength(29);
+    expect(screen.getAllByTestId(/^algo-/)).toHaveLength(31);
     expect(screen.getByTestId('algo-bst')).toBeTruthy();
     expect(screen.getByTestId('algo-heap')).toBeTruthy();
     expect(screen.getByTestId('algo-huffman')).toBeTruthy();

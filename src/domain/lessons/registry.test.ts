@@ -52,6 +52,8 @@ describe('Lesson registry (Stage 3B)', () => {
       'strongly-connected-components-kosaraju',
       'linear-search-basics',
       'binary-search-basics',
+      'hash-chaining-basics',
+      'hash-probing-basics',
     ]);
   });
 
@@ -86,7 +88,7 @@ describe('Lesson registry (Stage 3B)', () => {
   it('leaves the other algorithms without a course, and that is legal', () => {
     const covered = lessonRegistry.lessons.map((lesson) => lesson.algorithmId);
     const uncovered = catalogIds.filter((id) => !covered.includes(id));
-    expect(catalogIds.length).toBe(29);
+    expect(catalogIds.length).toBe(31);
     expect(uncovered.length).toBe(1);
     expect(uncovered).toEqual(['fib']);
   });

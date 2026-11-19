@@ -56,7 +56,7 @@ test.describe('UX-03B — compact textbook navigation', () => {
 
     // Multi-algorithm topics keep one disclosure and all their children.
     const groups = page.locator('.textbook-nav .textbook-topic[data-kind="group"]');
-    await expect(groups).toHaveCount(5);
+    await expect(groups).toHaveCount(6);
     await openTextbookChapter(page, 'ch7-graph');
     const shortest = page.getByTestId('topic-shortest-path');
     await expect(shortest).toHaveAttribute('aria-expanded', 'false');
@@ -103,7 +103,7 @@ test.describe('UX-03B — compact textbook navigation', () => {
     await expect(planned.locator('button')).toHaveCount(0);
 
     // The compact tree still contains every registered algorithm exactly once.
-    await expect(page.locator('[data-testid^="algo-"]')).toHaveCount(29);
+    await expect(page.locator('[data-testid^="algo-"]')).toHaveCount(31);
   });
 
   test('keeps playback and selection intact while folding or reloading the directory', async ({
