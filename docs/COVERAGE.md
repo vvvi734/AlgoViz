@@ -1,12 +1,12 @@
 # AlgoViz 算法与课程覆盖清单
 
-快照：2026-11-19（T4 从 T3 定稿 `f939f3e` 创建 `feat/t4-huffman` 完成；UX-04C、T2、T3 与 T4 均未合并 `main`）
+快照：2026-11-19（S1 从 T4 定稿 `dc3469c` 创建 `feat/s1-sorting` 完成；UX-04C、T2、T3、T4 与 S1 均未合并 `main`）
 
 ## 1. 口径
 
-- **算法入口**：`src/domain/algorithms/catalog.generated.ts` 的 27 个 id。
-- **教学课程**：`src/domain/lessons/registry.ts` 注册的 21 门内置课程；27 个入口中 21 个有课程，6 个暂无内置课程。
-- **真实 Python**：选中 Python 后由 Pyodide Worker 执行真实代码并记录结构化 Trace；Dijkstra、Floyd-Warshall、Bellman-Ford、Prim、Kruskal、拓扑排序、关键路径、连通分量、强连通分量、BST、AVL、最大堆/堆排序、哈夫曼树/哈夫曼编码的 JS 入口是提示桩，不伪造结构动画。
+- **算法入口**：`src/domain/algorithms/catalog.generated.ts` 的 28 个 id。
+- **教学课程**：`src/domain/lessons/registry.ts` 注册的 24 门内置课程；28 个入口中 24 个有课程，4 个暂无内置课程。
+- **真实 Python**：选中 Python 后由 Pyodide Worker 执行真实代码并记录结构化 Trace；Dijkstra、Floyd-Warshall、Bellman-Ford、Prim、Kruskal、拓扑排序、关键路径、连通分量、强连通分量、BST、AVL、最大堆/堆排序、哈夫曼树/哈夫曼编码、简单选择排序、直接插入排序、希尔排序的 JS 入口是提示桩，不伪造结构动画。
 
 ## 2. G1 新增算法
 
@@ -125,20 +125,42 @@ T4 设计要点：
 - **边界口径**：单字符 `single` 理论树 WPL 为 `0`，但实际采用 1 位码 `0`，总位数按 `weight×1=7` 计；空输入只有 `init` 与 `done(result='empty')`，不建树、不编码、metrics 全 0；重复字符在 Python 中按首次出现顺序累加频率。`MAX_SYMBOLS=16`、`MAX_NODES=33`、`MAX_CODE_BITS=16`。
 - **Schema 不信任画面**：`huffmanSnapshotSchema` 逐帧校验节点 ID 唯一、`order` 连续、每个节点双孩子或无孩子、叶/内部符号、父权值等于两孩子和、单父、全节点从根可达无环、队列只含森林根并满足最小堆序、`merge-select` 恰好弹出当前最小两个、`merge-create` 父/孩子对应、编码路径与码表一致、WPL 由真实深度重算、done 时叶与码一一对应。
 - **视觉复用与滚动**：复用现有舞台、播放器、课程与树布局思路；`huffmanLayout` 固定节点 88×58，先算子宽再摆放，父节点居中于两孩子；不缩小节点以塞满一屏，树画布允许内部横向/纵向滚动。`HuffmanVisual` 的树、队列、码表三区共享同一快照，码表在完成阶段自动增高以显示官方全部 6 行。
-- **课程与目录**：`huffmanLesson` 10 步严格映射 Python `lesson_step`，覆盖 WPL、最优二叉树、为什么合并两个最小、最小堆作用、左 0 右 1、前缀码、高频短码、定长对比、`O(n log n)`（建树 n−1 次合并 × 堆操作，编码 O(n)）、编码不唯一、单字符口径与 7 条常见错误；口诀「两小合一，重复建树；左零右一，走到叶子」明确只适用于本页二叉编码约定。教材 `ch6-tree/huffman` 从 planned 变为 authored，目录总计 27 个入口。
+- **课程与目录**：`huffmanLesson` 10 步严格映射 Python `lesson_step`，覆盖 WPL、最优二叉树、为什么合并两个最小、最小堆作用、左 0 右 1、前缀码、高频短码、定长对比、`O(n log n)`（建树 n−1 次合并 × 堆操作，编码 O(n)）、编码不唯一、单字符口径与 7 条常见错误；口诀「两小合一，重复建树；左零右一，走到叶子」明确只适用于本页二叉编码约定。教材 `ch6-tree/huffman` 从 planned 变为 authored，T4 完成时目录总计 27 个入口（S1 后为 28）。
 - **测试口径**：独立 `scripts/verify_huffman_python.py` 用不依赖 Trace 树的 `reference_wpl` 累加每次合并的父权值，逐帧校验 69 帧；专项 `huffman.test.ts` 11 项覆盖 Schema、布局、等权/单字符/空/重复、回退；E2E 验证官方 29 帧的关键帧、码表 6 行、回退同步、Dark 与 390 无页面横向溢出。编码存在多解，测试验证前缀性和 WPL 最优，不只比固定码串。
 
 T4 代表性截图：`docs/t4/huffman-merge-select-1440-light.png`、`huffman-build-done-1440-light.png`、`huffman-build-done-tree-bottom-1440-light.png`、`huffman-encode-path-1440-light.png`、`huffman-final-table-1440-light.png`、`huffman-final-table-1440-dark.png`、`huffman-final-table-390-light.png`、`huffman-single-symbol-1440-light.png`。
 
-## 10. UX-01 / UX-01B / UX-02 导学与逐帧讲解（不新增算法）
+## 10. S1 新增排序算法
 
-UX-01 首次加入顶部可折叠导学；UX-01B 在同一数据模型上重排阅读层级与高度；UX-02 把右侧 `LessonPanel` 收敛为与当前帧同步的四段讲解，并把旧课程资料/步骤跳转折叠保留。三批都没有新增算法入口，也没有修改 Python/Trace 语义；这批改造发生时算法入口与课程数保持不变，后续 T3、T4 才把它们扩展到 27 个入口与 21 门课程。
+| id | 算法 | Python 示例 | Trace | 动画 | 中英课程 | 测试 |
+| --- | --- | --- | --- | --- | --- | --- |
+| `selection` | 简单选择排序 | ✅ 真实 Python `SELECTION_PYTHON`，复用既有 `selection` legacy 入口与 ID | ✅ 官方 40 帧；7 种操作 `init/select-start/select-compare/select-candidate/select-swap/select-done/done` | ✅ 复用数组柱状图；已排序前缀、未排序区、当前最小候选、正在比较、轮末交换、`MIN/CMP/⇄` 标记 | ✅ `selection-sort-basics`，7 步 | ✅ 独立 CPython + 专项单测 + 真实 Pyodide E2E + 2 张截图 |
+| `insertion` | 直接插入排序 | ✅ 真实 Python `INSERTION_PYTHON`，复用既有 `insertion` legacy 入口与 ID | ✅ 官方 33 帧；6 种操作 `init/insert-key/insert-compare/insert-shift/insert-place/done` | ✅ 同一柱状图；有序前缀、key 卡片、向左比较、真实右移产生的重复值、写回空位 | ✅ `insertion-sort-basics`，6 步 | ✅ 独立 CPython + 专项单测 + 真实 Pyodide E2E + 2 张截图 |
+| `shell` | 希尔排序 | ✅ 真实 Python `SHELL_PYTHON`，新增 legacy 入口 `shell` | ✅ 官方 70 帧；7 种操作 `init/gap-change/shell-compare/shell-shift/shell-place/gap-done/done` | ✅ 同一柱状图；gap 轮次、gap 序列、lane、跨 gap 比较与右移、key 写回；无关元素保持可见 | ✅ `shell-sort-basics`，7 步 | ✅ 独立 CPython + 专项单测 + 真实 Pyodide E2E + 2 张截图 |
+
+S1 设计要点：
+
+- **一个快照、一个渲染器、一个播放器**：三种排序共用一个 `sortingSnapshotSchema`、一个 `SortingVisual` 与既有的 `Timeline`/播放控制；没有三套数组组件，也没有第二套播放器。数组槽位固定 `p0…p(n-1)`，每帧 `state.values` 与 `structure.elements` 逐槽一致。
+- **真实 Python 执行**：三份源码均为 CPython 可执行程序，从 `input` 归一化最多 20 个有限数值；`trace()` 每帧写入真实数组、焦点、变量、`lesson_step` 与完整结构快照。官方默认输入分别为选择 `[6,4,9,1,7,2]`、插入 `[7,3,5,1,9,2]`、希尔 `[8,3,7,4,9,2,6,1]`。
+- **选择排序语义**：每轮从未排序后缀选最小并只做一次轮末交换。官方 6 轮、15 次比较、5 次候选更新、6 次交换（含最后一轮自交换），最终 `[1,2,4,6,7,9]`。多帧显式区分 `select-start` 的扫描起点、`select-compare` 的正在比较、`select-candidate` 的候选迁移、`select-swap` 的实际交换。标准交换式选择排序不稳定，最好/平均/最坏均为 `O(n²)`，辅助空间 `O(1)`。
+- **插入排序语义**：取出 `key=a[i]` 后，只有 `a[j] > key` 才执行 `a[j+1]=a[j]` 并发 `insert-shift`，相等不移动；最后把 key 写回 `insert-place`。官方 5 轮、12 次比较、9 次真实右移、5 次写回；第 1 轮 `key=3` 让 `7` 从 p0 移到 p1，再写回 p0。右移过程中数组暂时出现真实重复值，不伪造“洞已填好”。标准直接插入排序稳定，最好 `O(n)`、平均/最坏 `O(n²)`，辅助空间 `O(1)`。
+- **希尔排序语义**：官方 gap 序列为 `n//2` 反复减半 `[4,2,1]`，每个 gap 内按 lane（`i % gap`）做跨 gap 插入。官方 3 个 gap 轮次、28 次比较、17 次右移、17 次写回；`gap=1` 是普通插入排序，最后保证全局有序，最终 `[1,2,3,4,6,7,8,9]`。gap 缩小使 lane 合并、有序性增强；复杂度取决于间隔序列，本页只声明该 `n//2` 序列最坏 `O(n²)`，不笼统声称所有希尔排序都是 `O(n log n)`；通常不稳定，辅助空间 `O(1)`。
+- **Schema 校验**：`SORTING_LIMITS.MAX_VALUES=20`、`MAX_ROUNDS=64`、`MAX_ABS_VALUE=1_000_000_000_000`；逐帧校验槽位顺序、已排序前缀非降、done 全局升序、选择扫描区间/交换、插入真实右移重复与 key 写回、Shell gap 序列/lane/shift 距离/key 落点。
+- **共享视觉**：已排序用绿色，比较用红色，候选用蓝色，key 用红色虚线，shift target 用斜纹，lane 用虚线轮廓；所有元素保持可见，不用“隐藏无关元素”制造焦点。390 px 使用既有单列布局，无页面横向溢出。
+- **课程与目录**：三课分别 7/6/7 步，与真实 Python `lesson_step` 严格一致；课程明确比较三种算法的稳定性、复杂度和适用场景。教材 `ch9-sort/selection-sort`、`insertion-sort`、`shell-sort` 均为 authored，`merge-sort` 仍是唯一 planned 排序主题。
+- **边界**：普通乱序、已有序、完全逆序、重复元素、负数、单元素、空数组、浮点混合均进入独立 CPython 与 fixtures；空数组只发出 `init` 与 `done(result='empty')`，不伪造柱子。
+
+S1 代表性截图：`docs/s1/selection-candidate-1440-light.png`、`selection-done-390-light.png`、`insertion-shift-1440-light.png`、`insertion-done-390-light.png`、`shell-shift-1440-light.png`、`shell-done-390-light.png`。
+
+## 11. UX-01 / UX-01B / UX-02 导学与逐帧讲解（不新增算法）
+
+UX-01 首次加入顶部可折叠导学；UX-01B 在同一数据模型上重排阅读层级与高度；UX-02 把右侧 `LessonPanel` 收敛为与当前帧同步的四段讲解，并把旧课程资料/步骤跳转折叠保留。三批都没有新增算法入口，也没有修改 Python/Trace 语义；这批改造发生时算法入口与课程数保持不变，后续 T3、T4、S1 才把它们扩展到 28 个入口与 24 门课程。
 
 | 导学来源 | 覆盖 | 内容 |
 | --- | --- | --- |
 | 原创精选 | Dijkstra、拓扑排序（Kahn）、强连通分量（Kosaraju），共 3 个 | 问题、核心思想与静态示意图、7～8 个真实执行步骤、必要前置、显式适用条件与关键限制、复杂度、常见错误、记忆重点；中英双语 |
-| 课程派生 | 其余 18 门有课程的算法 | 复用 Lesson 的 `oneLiner / intuition / steps / prerequisites / complexity / commonMistakes`；步骤标题去掉课程自带序号，末步 `tip` 作为记忆重点；不另写算法事实 |
-| 目录安全回退 | 插入、选择、快速、二分、线性、斐波那契，共 6 个 | 只显示 `catalog.generated.ts` 已确认的简介、时间/空间复杂度与“步骤待补充”说明；不显示虚构步骤、前置或记忆口诀 |
+| 课程派生 | 其余 21 门有课程的算法 | 复用 Lesson 的 `oneLiner / intuition / steps / prerequisites / complexity / commonMistakes`；步骤标题去掉课程自带序号，末步 `tip` 作为记忆重点；不另写算法事实 |
+| 目录安全回退 | 快速、二分、线性、斐波那契，共 4 个 | 只显示 `catalog.generated.ts` 已确认的简介、时间/空间复杂度与“步骤待补充”说明；不显示虚构步骤、前置或记忆口诀 |
 
 UX-01 设计要点：
 
@@ -150,7 +172,7 @@ UX-01 设计要点：
 
 UX-01 证据：`docs/ux01/guide-expanded-1440-light.png`、`guide-collapsed-1440-light.png`、`guide-expanded-390-light.png`。
 
-### 10.1 UX-01B 排版与视觉层级（基线）
+### 11.1 UX-01B 排版与视觉层级（基线）
 
 UX-01B 只调整导学区的排版、内容层级和静态示意图，不进入 UX-02，也不改左侧目录、右侧逐帧讲解、Trace、算法数量或整页网格。
 
@@ -163,7 +185,7 @@ UX-01B 只调整导学区的排版、内容层级和静态示意图，不进入 
 
 UX-01B 证据：`docs/ux01b/before/`（4 张优化前）与 `docs/ux01b/after/`（7 张优化后，含 Dijkstra 展开/详情/收起、Kahn 展开、Kosaraju 展开、Kosaraju Dark、390 展开）。
 
-### 10.2 UX-02 右侧逐帧讲解（当前）
+### 11.2 UX-02 右侧逐帧讲解（当前）
 
 UX-02 只改右侧 `Teaching Course` 的默认信息架构，不改顶部导学、左侧目录、整页网格、代码编辑器、变量区或 Trace 协议。
 
@@ -176,11 +198,11 @@ UX-02 只改右侧 `Teaching Course` 的默认信息架构，不改顶部导学�
 
 UX-02 证据：`docs/ux02/before/`（4 张基线）与 `docs/ux02/after/`（7 张本分支，含 Dijkstra 松弛/完成、Kahn 减度、Kosaraju 第二遍、BST 查找/390、Dijkstra 英文 Dark）。
 
-## 11. 全量矩阵
+## 12. 全量矩阵
 
 | 分组 | 算法 | 课程 |
 | --- | --- | --- |
-| 排序 | 冒泡、插入、选择、快速、最大堆/堆排序 | 冒泡、堆排序 |
+| 排序 | 冒泡、直接插入、简单选择、快速、希尔、最大堆/堆排序 | 冒泡、直接插入、简单选择、希尔、堆排序 |
 | 查找 | 二分、线性 | — |
 | 线性结构 | 栈、队列、单链表 | 栈、队列、链表 |
 | 图 | BFS、DFS、Dijkstra、Floyd-Warshall、Bellman-Ford、Prim、Kruskal、拓扑排序、关键路径、连通分量、强连通分量 | BFS、DFS、Dijkstra、Floyd、Bellman-Ford、Prim、Kruskal、拓扑排序、关键路径、连通分量、强连通分量 |
@@ -189,44 +211,46 @@ UX-02 证据：`docs/ux02/before/`（4 张基线）与 `docs/ux02/after/`（7 �
 
 ### 覆盖小结
 
-- 27 个算法入口；22 个真实 Python 入口。
-- 21 门双语课程；6 个暂无课程（插入、选择、快速、二分、线性、斐波那契）。
-- 导学覆盖：3 个原创精选、18 个课程派生、6 个目录安全回退；27 个入口全部有导学入口或明确“简介待补充”状态。
-- 结构化可视化新增 `huffman`，不影响既有 `stack/queue/linked-list/graph/binary-tree/bst/weighted-graph/floyd-matrix/bellman-table/prim-mst/kruskal-mst/topological-sort/critical-path/connected-components/kosaraju/max-heap`。
+- 28 个算法入口；25 个真实 Python 入口。
+- 24 门双语课程；4 个暂无课程（快速、二分、线性、斐波那契）。
+- 导学覆盖：3 个原创精选、21 个课程派生、4 个目录安全回退；28 个入口全部有导学入口或明确“简介待补充”状态。
+- 结构化可视化新增 `sorting`，不影响既有 `stack/queue/linked-list/graph/binary-tree/bst/weighted-graph/floyd-matrix/bellman-table/prim-mst/kruskal-mst/topological-sort/critical-path/connected-components/kosaraju/max-heap/huffman`。
 - T2 默认 AVL 预设刻意覆盖四种旋转、无需旋转的普通插入、叶子/单孩子/双孩子（根）/缺失键删除，以及一次叶子删除触发两个祖先 LR 双旋的连续重平衡。
 - T3 默认 `heap` 预设覆盖四个操作：建堆 17 帧、插入 7 帧、删除堆顶 10 帧、堆排序 45 帧；另有空堆/单元素/重复值 62 帧边界夹具。堆排序默认预设的重复值验证相等不交换，最终 `[1,2,3,5,6,9,9]` 升序。
 - T4 官方 `huffman` 预设 A5/B9/C12/D13/E16/F45 共 29 帧，最终 WPL=总位数=224、定长对比 300；等权 19 帧 WPL32、单字符 5 帧实际总位数 7、空输入 2 帧、重复频率 14 帧 WPL39，边界夹具共 40 帧。
+- S1 官方 `selection` 40 帧、`insertion` 33 帧、`shell` 70 帧，合计 143 帧；7 类边界输入合计 578 帧；总计 721 帧全部通过 Schema 与独立 CPython 参考。
 
-## 12. 验证
+## 13. 验证
 
 本地复核环境：Windows + Microsoft Edge（Playwright `channel=msedge`）+ 真实 Pyodide 0.27.7。
 
 | 项 | 结果 |
 | --- | --- |
 | `npm run typecheck` | ✅ 通过 |
-| `npm run build` | ✅ 通过；`index-DH6SJzdP.js` 1,493.50 kB、`monaco-setup-CTppBAf0.js` 4,122.24 kB、`index-CssMgkvo.css` 177,775 B |
-| 全量单测 | ✅ 90 个文件、756 tests 全部通过 |
-| T4 相关单测 | ✅ `huffman.test.ts` 11 项、`huffmanLesson.test.ts` 4 项、`frameInsight.test.ts` 10 项、`schema.test.ts` 11 项、`catalog.test.ts` 64 项、`registry.test.ts` 8 项、`textbook.test.ts` 10 项、`AlgorithmSidebar.test.tsx` 9 项均通过；全量 756 项同步通过 |
-| T4 独立 Python 校验 | ✅ `scripts/verify_huffman_python.py` 69/69 帧：official 29 帧 WPL224、equal 19 帧 WPL32、single 5 帧 WPL0/实际 7 位、empty 2 帧、duplicate 14 帧 WPL39；逐帧验证两个最小根、父权值、真实森林、heapq 最小堆顺序、前缀与码路径、单字符 `0`，并用最终码表编解码往返 |
-| T4 真实帧 fixtures | ✅ `huffman-default-frames.json` 29 帧 + `huffman-edge-frames.json` 40 帧，全部通过 Zod `structureSchema` 与 `huffmanSnapshotSchema` |
+| `npm run build` | ✅ 通过；版本 `0.22.0-s1`，产物哈希见 S1 报告 |
+| 全量单测 | ✅ 93 个文件、776 tests 全部通过 |
+| S1 相关单测 | ✅ `sorting.test.ts` 9 项、`sortingLessons.test.ts` 4 项、`SortingVisual.test.tsx` 4 项，合计 17 项；另 `registry/catalog/textbook/frameInsight/App/AlgorithmSidebar` 联动断言全部通过 |
+| S1 独立 Python 校验 | ✅ `scripts/verify_sorting_python.py` 721/721 帧：3 算法 × 8 输入（官方 + 7 边界）；最终升序、多重集不变、选择每轮后缀最小与交换、插入前缀有序与真实右移、Shell gap 序列/lane/shift/gap=1 全局有序；稳定性身份样例验证插入稳定、选择与 Shell 不稳定 |
+| S1 真实帧 fixtures | ✅ `sorting-default-frames.json` 143 帧 + `sorting-edge-frames.json` 578 帧，全部通过 Zod `structureSchema` 与 `sortingSnapshotSchema` |
 | T3 独立 Python 校验 | ✅ `scripts/verify_heap_python.py` 16 个用例全部通过：4 个官方预设 + 12 个空堆/单元素/重复值边界；逐帧检查父子槽位、比较、交换、removed/replacement、已排序后缀、终帧结果，并用独立 `RefMaxHeap` 验证最终数组与堆性质 |
 | UX-02 相关单测 | ✅ `frameInsight.test.ts` 9 项 + `LessonPanel.test.tsx` 18 项，合计 27 项通过；覆盖四算法真实结构变化/回退与无结构降级、默认四项、资料/步骤折叠、展开后旧数据仍在、步骤跳转同步 |
 | UX-01B 相关单测 | ✅ `buildGuide.test.ts` 7 项 + `AlgorithmGuide.test.tsx` 7 项 + `useAlgorithmGuidePreferences.test.ts` 3 项，合计 17 项通过；覆盖三算法双语完整性、3～5 阶段、课程长步骤回退、目录安全回退、详情默认收起/展开、折叠不碰播放器与按算法偏好 |
 | T1 相关单测 | ✅ `bst.test.ts` 14 项 + `bstLesson.test.ts` 3 项，合计 17 项通过 |
 | T2 相关单测 | ✅ `avl.test.ts` 9 项 + `avlLesson.test.ts` 3 项，合计 12 项通过；覆盖 176 帧 Schema、稳定 ID、四种旋转/双旋两阶段、删除三案例、根变化、连续重平衡、回退视觉同步、非法快照拒绝与课程帧映射 |
-| 全量 E2E | ✅ 131/131（T4 前 129 条既有基线 + 2 条 T4） |
+| 全量 E2E | ✅ 134/134（T4 前 129 条既有基线 + 2 条 T4 + 3 条 S1） |
 | UX-02 E2E | ✅ 5/5：Dijkstra 默认四项/旧资料折叠/frame 27 relax `6→4`/frame 21 回退/frame 40 stale/frame 45 done 路径与权重/步骤导航跳转/资料展开；Kahn frame 5 入度 `2→1`、8 入队、9 出队、31 完成；Kosaraju 14/26/27/59；BST 5 比较 b5(40)、7 完成与 390 无溢出；英文 Dark 与 390 无溢出；生成 7 张 after 截图 |
 | UX-01B E2E | ✅ 2/2：1440 导学三层/阶段数/详情默认收起/展开后 7 步与知识/高度与动画首屏、Dijkstra 第 11/46 帧折叠再展开不丢帧、键盘、三算法切换、按算法偏好、英文、Dark/System、目录安全回退；390 展开/详情/收起与无横向溢出；生成 7 张 after 截图 |
 | T1 E2E | ✅ 1/1：真实 Pyodide 依次运行查找、插入、叶子/单孩子/双孩子删除；验证根 b1→b6、后继 b6 保留 ID、65 重连、前进/回退/跳帧同步、390 无页面横向溢出 |
 | T2 E2E | ✅ 1/1：真实 Pyodide 运行 10 个官方预设；验证四种旋转、双旋 chip、删除三案例/根变化/连续重平衡、节点 ID 与 height/BF、前进/回退/跳帧、390 根居中与页面无横向溢出、英文切换；并生成 6 张截图 |
 | T4 E2E | ✅ 2/2：官方 29 帧 `A5/B9` 弹出、`n7=14` 新父、真实回队、build-done 11 节点/WPL224、F 路径 `0`、最终 6 行码表与回退同步；equal/single/empty 边界、Dark、390 无页面横向溢出；生成 8 张截图 |
-| 独立 Python 校验 | ✅ `verify_bst_python.py`、`verify_avl_python.py`、`verify_heap_python.py` 与 `verify_huffman_python.py` 全部通过；哈夫曼覆盖 5 个场景 69 帧、最小堆序、WPL/前缀码/往返编码 |
-| 回归 | ✅ BFS/DFS、Dijkstra、Floyd、Bellman-Ford、Prim、Kruskal、拓扑排序、关键路径、连通分量/SCC、二叉树遍历、栈/队列/链表、BST/AVL/最大堆在 131/131 全量 E2E 中通过 |
-| 入口数量 | ✅ 26→27、课程 20→21、真实 Python 21→22 的旧断言已修正并复跑通过 |
+| S1 E2E | ✅ 3/3：真实 Pyodide 依次运行选择 40 帧、插入 33 帧、Shell 70 帧；验证候选/交换、key/真实右移重复值/写回、gap 序列/lane/shift/gap-done、前进回退跳帧、done 全排序与 390 无页面横向溢出；生成 6 张截图 |
+| 独立 Python 校验 | ✅ `verify_bst_python.py`、`verify_avl_python.py`、`verify_heap_python.py`、`verify_huffman_python.py` 与 `verify_sorting_python.py` 全部通过；S1 覆盖 721 帧与稳定性身份见证 |
+| 回归 | ✅ BFS/DFS、Dijkstra、Floyd、Bellman-Ford、Prim、Kruskal、拓扑排序、关键路径、连通分量/SCC、二叉树遍历、栈/队列/链表、BST/AVL/最大堆/哈夫曼在 134/134 全量 E2E 中通过 |
+| 入口数量 | ✅ 27→28、课程 21→24、真实 Python 22→25 的旧断言已修正并复跑通过 |
 
-## 13. 已知边界
+## 14. 已知边界
 
-- T1/T2/T3/T4/UX-01B/UX-02 只保证官方 Python 示例、预设输入与内置导学/逐帧讲解内容；任意用户改写代码后的完整自动可视化、通用堆识别、通用哈夫曼识别或自动导学仍不在本批次范围。
+- T1/T2/T3/T4/S1/UX-01B/UX-02 只保证官方 Python 示例、预设输入与内置导学/逐帧讲解内容；任意用户改写代码后的完整自动可视化、通用堆识别、通用哈夫曼识别或自动导学仍不在本批次范围。
 - 哈夫曼只实现官方 `official/equal/single/empty` 预设与重复频率边界；不读取任意用户提交的频率表，不支持任意字符集、多叉哈夫曼、加权外部路径长度以外的变体。`MAX_SYMBOLS=16`、`MAX_NODES=33`、`MAX_CODE_BITS=16`。
 - 哈夫曼编码不唯一：左右子树交换或等权节点采用不同合并顺序会得到不同合法码串，但最优 WPL 不变；页面展示的是真实 `(weight, order)` 确定性顺序下的一条合法编码，不应被当作唯一答案。
 - 单字符场景理论 WPL=0，但实际采用 1 位码 `0`，因此页面同时展示 WPL=0、码长=1、总位数=`weight×1`；不要把理论 WPL 与传输位数混为一谈。
@@ -234,19 +258,23 @@ UX-02 证据：`docs/ux02/before/`（4 张基线）与 `docs/ux02/after/`（7 �
 - 最大堆只实现官方 `build/push/extract/sort` 四种操作；用户改写后的非标准堆操作、任意比较器或泛型堆不在 T3 范围。`MAX_HEAP_LIMITS.MAX_ELEMENTS = 24`，超过上限的输入不会得到教学 Trace。
 - 堆排序的“原地 O(1)”只指算法自身辅助数组；本页额外保存每帧 Trace、稳定 ID 与展示快照，复杂度教学明确排除这部分存储。
 - 堆排序是不稳定排序；重复值在相等父子比较时不交换，但相等元素的原相对次序不保证保留。
+- S1 三种排序只实现官方 Python 源码与内置输入（含 7 类边界）；用户改写后的任意排序代码不会自动获得通用可视化，也不在 S1 范围。
+- 选择排序的 6 次 `select-swap` 包含最后一轮单元素自交换；标准交换式选择排序每轮只交换一次，且不稳定，不能因为“只在轮末交换”就误认为稳定。
+- 插入排序右移帧中的数组会短暂出现两个相同值，这是真实 `a[j+1]=a[j]` 的中间状态；key 单独保存在 key 卡片，直到 `insert-place` 才写回空位，不伪造“洞已填好”。
+- 希尔排序本页只使用 `n//2` 反复减半的确定 gap 序列；复杂度取决于间隔序列，不能笼统声明所有 Shell Sort 都是 `O(n log n)`。标准 Shell Sort 通常不稳定，身份样例已验证 `2a/2b` 可在 gap=2 轮次被跨越。
 - 390 px 下堆数组使用四列网格展示全部槽位，树画布保持在容器内，不制造页面级横向溢出；没有为 T3 改动顶部导学、左侧目录或右侧讲解布局。
 - 双孩子删除采用“物理移植中序后继”策略，不采用“复制后继值再删除后继”的显示方式；因此同一节点 ID 会换位置，教学时不要把位置变化误读为新节点。
 - 删除帧的 `current` 常为空（目标已摘除），路径/目标高亮因此清空；最终结果、摘除对象、指针与根变化仍由 `removedNode`、`oldRootId/rootId` 明确记录。
 - `delete-cascade` 的删除分类是叶子删除，但会连续触发两个不同祖先的 LR 双旋；不能把它当成双孩子删除，也不能假设删除后至多旋转一次。
 - 旋转帧在 `before/after` 之间允许 `|BF|>1`，但 `init/done` 必须满足 AVL 条件，Schema 和测试都按此校验。
 - 390 px 下 BST/AVL 树画布在容器内横向滚动，AVL 会自动把根居中；页面本身无横向溢出，没有为了 T1/T2 调整页面主布局。
-- UX-01B 的完整原创导学仍只有 Dijkstra、Kahn、Kosaraju 三个；其余 18 门课程直接复用 Lesson 结构，6 个无课程入口只显示目录简介与复杂度。课程只有 3～5 个真实步骤时才生成阶段条；6 步及以上只显示紧凑回退，完整步骤仍可展开。
+- UX-01B 的完整原创导学仍只有 Dijkstra、Kahn、Kosaraju 三个；其余 21 门课程直接复用 Lesson 结构，4 个无课程入口只显示目录简介与复杂度。课程只有 3～5 个真实步骤时才生成阶段条；6 步及以上只显示紧凑回退，完整步骤仍可展开。
 - 导学静态示意图是教学示意，不是按真实输入计算出的图形；真实结构、指针与帧状态始终由下方 `VisualStage` 的 Trace 决定。
 - UX-01B 不改变左侧目录、整页双栏比例或任一 Python/Trace 语义；UX-02 只更新右侧讲解面板，同样不改这些结构。左侧目录层级与整页高度比例已分别由 UX-03 / UX-04 改造完成，T3 没有再次调整。
-- G2、G3、G4、T1、T2、T3、T4、UX-01、UX-01B、UX-02 与 UX-03 均尚未合并 `main`；T4 从包含 T3 定稿的最新有效提交 `f939f3e` 创建 `feat/t4-huffman`，没有从落后的 `main`（`10f9a68`）开发，也没有重置或覆盖任何既有分支。
+- G2、G3、G4、T1、T2、T3、T4、S1、UX-01、UX-01B、UX-02 与 UX-03 均尚未合并 `main`；S1 从 T4 定稿 `dc3469c` 创建 `feat/s1-sorting`，没有从落后的 `main`（`10f9a68`）开发，也没有重置或覆盖任何既有分支。
 - `BST_PYTHON` / `AVL_PYTHON` 的 `line=` 是教学用近似源码行号，Monaco 实际行号以编辑器为准。
 - AVL 节点上的 ROOT/LEAF/当前角色徽标在 T2 中隐藏，避免与 height/BF 徽标叠字；当前节点由顶部指标与描边表达。
 
-## 14. 下一批次（不在本批次执行）
+## 15. 下一批次（不在本批次执行）
 
-T4 已完成并停止；按用户要求，本批次不自动进入其他排序、查找或图算法，也不继续页面结构或 UI 优化。后续如继续，仍复用现有单一播放器、Trace 快照、树/图布局与双语课程架构。
+S1 已完成并停止；按用户要求，本批次不自动进入 S2（快速排序、归并排序）、其他排序、查找或图算法，也不继续页面结构或 UI 优化。后续如继续，仍复用现有单一播放器、Trace 快照、数组/树/图布局与双语课程架构。
