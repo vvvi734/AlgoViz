@@ -130,5 +130,7 @@ S1 的选择/插入/Shell 与 S2 的快速/归并共用一个播放器、一个�
 - 分支：`feat/s2-sorting`，从 `ccc8553` 建立
 - 基线提交：`ccc8553 docs(s1): finalize delivery commit and push record`
 - S2 实现、测试、截图与文档提交：`f18818c feat(s2): add real Python quick and merge sort visualizations`
+- 归并进度 chip 修正：`29faef0 fix(s2): distinguish merge progress from quick finalized slots`
+- 最终门禁：修复后 `typecheck`、S2 专项 16/16、全量单测 96 文件 795/795、`build`、S2 E2E 2/2、全量 E2E 136/136 均通过
 - 远端：`https://gitee.com/vvvi734/algolens.git`
 - 最终分支状态与推送结果以本轮 Git 输出为准；没有直接覆盖 `main`。
