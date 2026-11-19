@@ -1,12 +1,12 @@
 # AlgoViz 算法与课程覆盖清单
 
-快照：2026-11-19（L1A 从 F2 最终记录 `27f7354` 创建 `feat/l1a-linked-lists` 完成；UX-04C、T2、T3、T4、S1、S2、F1、F2 与 L1A 均未合并 `main`）
+快照：2026-11-19（L1B 从 L1A 最终记录 `4fab01b` 创建 `feat/l1b-sequential-list` 完成；UX-04C、T2、T3、T4、S1、S2、F1、F2、L1A 与 L1B 均未合并 `main`）
 
 ## 1. 口径
 
-- **算法入口**：`src/domain/algorithms/catalog.generated.ts` 的 33 个 id。
-- **教学课程**：`src/domain/lessons/registry.ts` 注册的 32 门内置课程；33 个入口中 32 个有课程，仅斐波那契暂无内置课程。
-- **真实 Python**：33 个入口全部有官方真实 Python 示例，选中 Python 后由 Pyodide Worker 执行真实代码并记录结构化 Trace。Dijkstra、Floyd-Warshall、Bellman-Ford、Prim、Kruskal、拓扑排序、关键路径、连通分量、强连通分量、BST、AVL、最大堆/堆排序、哈夫曼树/哈夫曼编码、简单选择排序、直接插入排序、希尔排序、快速排序、归并排序、顺序查找、二分查找、链地址法、线性探测、双向链表、循环单链表的 JS 入口是提示桩或旧演示，不伪造结构动画。快速排序保留旧 JavaScript 演示，但默认 Python 课程来自真实 Lomuto Python；归并排序新增 legacy 入口与旧 JS 演示，官方课程来自真实自顶向下 Python；顺序查找/二分查找复用既有 `linear`/`binary` legacy ID，链地址法/线性探测新增 `hash-chain`/`hash-probe`，双向链表/循环单链表新增 `doubly`/`circular`，官方课程均来自真实 Python。
+- **算法入口**：`src/domain/algorithms/catalog.generated.ts` 的 34 个 id。
+- **教学课程**：`src/domain/lessons/registry.ts` 注册的 33 门内置课程；34 个入口中 33 个有课程，仅斐波那契暂无内置课程。
+- **真实 Python**：34 个入口全部有官方真实 Python 示例，选中 Python 后由 Pyodide Worker 执行真实代码并记录结构化 Trace。Dijkstra、Floyd-Warshall、Bellman-Ford、Prim、Kruskal、拓扑排序、关键路径、连通分量、强连通分量、BST、AVL、最大堆/堆排序、哈夫曼树/哈夫曼编码、简单选择排序、直接插入排序、希尔排序、快速排序、归并排序、顺序查找、二分查找、链地址法、线性探测、双向链表、循环单链表、顺序表的 JS 入口是提示桩或旧演示，不伪造结构动画。快速排序保留旧 JavaScript 演示，但默认 Python 课程来自真实 Lomuto Python；归并排序新增 legacy 入口与旧 JS 演示，官方课程来自真实自顶向下 Python；顺序查找/二分查找复用既有 `linear`/`binary` legacy ID，链地址法/线性探测新增 `hash-chain`/`hash-probe`，双向链表/循环单链表新增 `doubly`/`circular`，顺序表新增 `seqlist`，官方课程均来自真实 Python。
 
 ## 2. G1 新增算法
 
@@ -237,14 +237,32 @@ L1A 设计要点：
 
 L1A 代表性截图：`docs/l1a/doubly-empty-1440-light.png`、`doubly-five-1440-light.png`、`doubly-delete-middle-1440-light.png`、`circular-single-1440-light.png`、`circular-five-1440-light.png`、`circular-empty-1440-light.png`。
 
+## 10E. L1B 新增顺序表
+
+| id | 算法 | Python 示例 | Trace | 动画 | 中英课程 | 测试 |
+| --- | --- | --- | --- | --- | --- | --- |
+| `seqlist` | 顺序表 · 按索引访问 / 按值查找 / 指定位置插入 / 指定位置删除 / 遍历 | ✅ 真实固定容量 `data=[None]*capacity`，显式赋值搬移，无 `list.insert()` / `list.pop()` | ✅ 14 个官方预设 84 帧 + 21 个边界用例 89 帧；`init/access/search/insert/delete/traverse/done`；`read/compare/visit/check/shift-right/write/save/shift-left/clear/complete/reject`；`intermediate/complete` | ✅ 连续槽位 + 索引 + 值 + `length/capacity` + 有效/空闲/临时区域 + 源/目标/当前槽位 + 真实 `before→after` + 插入右移/删除左移方向条 + 拒绝/命中/遍历结果 | ✅ `sequential-list-basics`，7 步；顶部导学解释顺序存储、固定容量、O(1) 访问、搬移方向与链表差异 | ✅ 独立 CPython 173 帧 + 8 项专项单测 + 真实 Pyodide E2E 3/3 + 4 张截图 |
+
+L1B 设计要点：
+
+- **容量与长度分开**：快照固定携带 `capacity`、`length` 与恰好 `capacity` 个槽位；`[0,length)` 是有效区，`[length,capacity)` 是空闲区。视觉模型只用 `index < length` 判定有效元素，空闲槽位即使在本帧持有真实复制值也只标为 `temporary`，绝不渲染为有效数据。
+- **真实搬移，不是结果替换**：插入从 `old_length-1` 向 `index` 倒序执行 `data[i+1]=data[i]`，删除从 `index` 向 `length-2` 正序执行 `data[i]=data[i+1]`。每步都产生独立 `change={index,before,after}` 帧；默认插入 8 帧、默认删除 9 帧。中间帧可以出现重复值或临时空位，完成帧必须恢复 `[0,length)` 全非空、空闲区全空。
+- **Schema 拒绝伪状态**：`shift-right` 只能属于 insert 且 `targetIndex=sourceIndex+1`；`shift-left` 只能属于 delete 且 `targetIndex=sourceIndex-1`；`write` 必须带目标槽与 change；`clear` 必须清空 `data[length]`；`save` 必须记录被删值与索引；`reject` 必须带错误且不改槽位。`complete` 帧才强制最终不变量。
+- **五类操作与预设**：按索引访问、按值查找、插入、删除、遍历各有一个统一入口；14 个官方预设覆盖中间/头部/尾部访问与插入删除、命中/未命中、正常遍历、空表、空表删除、满表插入、越界访问。预设只改输入，点击 Run 后才由真实 Python 生成 Trace。
+- **视觉复用与范围**：复用现有 `VisualStage`、Trace、Timeline、播放控制器与课程面板；新增 `SequentialListVisual` 只替换画布为连续槽位，不创建第二套播放器，不改页面比例、顶部导学层级或教材目录结构。
+- **课程与教材**：`sequential-list-basics` 7 步，覆盖顺序存储、连续空间、`length`/`capacity`、O(1) 随机访问原因、插入从后往前与删除从前往后的原因、顺序表与链表差异、越界错误与固定容量前提；教材第 3 章原有 `sequential-list` 概念专题升级为 `seqlist` 真实入口，章节与专题顺序不变。
+- **范围**：固定容量实现，不开发动态扩容；不实现循环双向链表、静态链表或其他算法；不扩展任意用户 Python 代码的通用可视化，不新增 AI/MCP 功能。
+
+L1B 代表性截图：`docs/l1b/insert-middle-1440-light.png`（索引 2 插入 25 的真实右移帧）、`delete-middle-1440-light.png`（删除索引 1 的真实左移帧）、`full-insert-1440-light.png`（满表拒绝）、`empty-delete-1440-light.png`（空表删除拒绝）。
+
 ## 11. UX-01 / UX-01B / UX-02 导学与逐帧讲解（不新增算法）
 
-UX-01 首次加入顶部可折叠导学；UX-01B 在同一数据模型上重排阅读层级与高度；UX-02 把右侧 `LessonPanel` 收敛为与当前帧同步的四段讲解，并把旧课程资料/步骤跳转折叠保留。三批都没有新增算法入口，也没有修改 Python/Trace 语义；这批改造发生时算法入口与课程数保持不变，后续 T3、T4、S1、S2、F1、F2、L1A 才把它们扩展到 33 个入口与 32 门课程。
+UX-01 首次加入顶部可折叠导学；UX-01B 在同一数据模型上重排阅读层级与高度；UX-02 把右侧 `LessonPanel` 收敛为与当前帧同步的四段讲解，并把旧课程资料/步骤跳转折叠保留。三批都没有新增算法入口，也没有修改 Python/Trace 语义；这批改造发生时算法入口与课程数保持不变，后续 T3、T4、S1、S2、F1、F2、L1A、L1B 才把它们扩展到 34 个入口与 33 门课程。
 
 | 导学来源 | 覆盖 | 内容 |
 | --- | --- | --- |
 | 原创精选 | Dijkstra、拓扑排序（Kahn）、强连通分量（Kosaraju），共 3 个 | 问题、核心思想与静态示意图、7～8 个真实执行步骤、必要前置、显式适用条件与关键限制、复杂度、常见错误、记忆重点；中英双语 |
-| 课程派生 | 其余 29 门有课程的算法 | 复用 Lesson 的 `oneLiner / intuition / steps / prerequisites / complexity / commonMistakes`；步骤标题去掉课程自带序号，末步 `tip` 作为记忆重点；不另写算法事实 |
+| 课程派生 | 其余 30 门有课程的算法 | 复用 Lesson 的 `oneLiner / intuition / steps / prerequisites / complexity / commonMistakes`；步骤标题去掉课程自带序号，末步 `tip` 作为记忆重点；不另写算法事实 |
 | 目录安全回退 | 斐波那契，共 1 个 | 只显示 `catalog.generated.ts` 已确认的简介、时间/空间复杂度与“步骤待补充”说明；不显示虚构步骤、前置或记忆口诀 |
 
 UX-01 设计要点：
@@ -296,10 +314,10 @@ UX-02 证据：`docs/ux02/before/`（4 张基线）与 `docs/ux02/after/`（7 �
 
 ### 覆盖小结
 
-- 33 个算法入口；33 个真实 Python 入口。
-- 32 门双语课程；仅 1 个暂无课程（斐波那契）。
-- 导学覆盖：3 个原创精选、29 个课程派生、1 个目录安全回退；33 个入口全部有导学入口或明确“简介待补充”状态。
-- 结构化可视化新增 `hash`（链地址法与线性探测共用同一个 `HashSnapshot` 判别联合）与 `doubly-linked-list`、`circular-linked-list`（L1A 两个独立快照分支）；不影响既有 `sorting/search/stack/queue/linked-list/graph/binary-tree/bst/avl/weighted-graph/floyd-matrix/bellman-table/prim-mst/kruskal-mst/topological-sort/critical-path/connected-components/kosaraju/max-heap/huffman` 等结构。
+- 34 个算法入口；34 个真实 Python 入口。
+- 33 门双语课程；仅 1 个暂无课程（斐波那契）。
+- 导学覆盖：3 个原创精选、30 个课程派生、1 个目录安全回退；34 个入口全部有导学入口或明确“简介待补充”状态。
+- 结构化可视化新增 `hash`（链地址法与线性探测共用同一个 `HashSnapshot` 判别联合）、`doubly-linked-list`、`circular-linked-list`（L1A 两个独立快照分支）与 `sequential-list`（L1B 独立快照分支，不复用排序数组快照）；不影响既有 `sorting/search/stack/queue/linked-list/graph/binary-tree/bst/avl/weighted-graph/floyd-matrix/bellman-table/prim-mst/kruskal-mst/topological-sort/critical-path/connected-components/kosaraju/max-heap/huffman` 等结构。
 - T2 默认 AVL 预设刻意覆盖四种旋转、无需旋转的普通插入、叶子/单孩子/双孩子（根）/缺失键删除，以及一次叶子删除触发两个祖先 LR 双旋的连续重平衡。
 - T3 默认 `heap` 预设覆盖四个操作：建堆 17 帧、插入 7 帧、删除堆顶 10 帧、堆排序 45 帧；另有空堆/单元素/重复值 62 帧边界夹具。堆排序默认预设的重复值验证相等不交换，最终 `[1,2,3,5,6,9,9]` 升序。
 - T4 官方 `huffman` 预设 A5/B9/C12/D13/E16/F45 共 29 帧，最终 WPL=总位数=224、定长对比 300；等权 19 帧 WPL32、单字符 5 帧实际总位数 7、空输入 2 帧、重复频率 14 帧 WPL39，边界夹具共 40 帧。
@@ -308,6 +326,7 @@ UX-02 证据：`docs/ux02/before/`（4 张基线）与 `docs/ux02/after/`（7 �
 - F1 官方 `linear` 12 帧、`binary` 10 帧；独立 CPython 校验 143 帧 / 23 组输入，覆盖成功、失败、空数组、单元素、首尾命中、重复值、负数、中间目标、无序与重复值二分；`linear` 返回首次匹配，`binary` 返回任意合法匹配且无序输入只发 `invalid`。
 - F2 官方 `hash-chain` 60 帧、`hash-probe` 182 帧，默认合计 242 帧；边界夹具 510 帧（链地址法 5 组 174 帧、线性探测 14 组 336 帧），共 752 帧全部通过 Schema 与独立 CPython 参考。
 - L1A 官方 `doubly` 89 帧、`circular` 80 帧；四份 fixtures 合计 514 帧（双向 89+174、循环 80+171），独立 CPython 的 18 组场景共 516 帧全部通过；专项单测 14 项，真实 Pyodide E2E 3/3。
+- L1B 官方 14 个预设共 84 帧（默认插入 8、中间删除 9、满表插入 3 等），21 个边界用例共 89 帧；独立 CPython 173 帧全部通过，fixtures 与专项单测 8 项通过，真实 Pyodide E2E 3/3。
 
 ## 13. 验证
 
@@ -316,8 +335,8 @@ UX-02 证据：`docs/ux02/before/`（4 张基线）与 `docs/ux02/after/`（7 �
 | 项 | 结果 |
 | --- | --- |
 | `npm run typecheck` | ✅ 通过 |
-| `npm run build` | ✅ 通过；版本 `0.26.0-l1a`，`index-Dsx06dbZ.js` 1,869.83 kB（gzip 523.61 kB）、`monaco-setup-DCiCr8Np.js` 4,122.24 kB（gzip 1,066.59 kB）、`index-Zg0Bjj0l.css` 208.90 kB（gzip 34.01 kB）、`monaco-setup-CX3ij07K.css` 186.75 kB（gzip 27.79 kB） |
-| 全量单测 | ✅ 104 个文件、865 tests 全部通过 |
+| `npm run build` | ✅ 通过；版本 `0.27.0-l1b`，1483 modules，`index-CumYtbGl.js` 1,926.63 kB（gzip 539.81 kB）、`monaco-setup-DMZIIKab.js` 4,122.24 kB（gzip 1,066.60 kB）、`index-DlzkhwaX.css` 218.15 kB（gzip 35.45 kB）、`monaco-setup-CX3ij07K.css` 186.75 kB（gzip 27.79 kB） |
+| 全量单测 | ✅ 105 个文件、875 tests 全部通过 |
 | F2 专项单测 | ✅ `hash.test.ts` 10 项、`hashVisual.test.tsx` 7 项、`hashLessons.test.ts` 7 项，合计 24 项 |
 | F2 独立 Python 校验 | ✅ `scripts/verify_hash_python.py` 752/752 帧 / 19 组输入：官方 + 空表、单元素、负整数、表长 2/17、长链、重复键、删除头/中/尾、墓碑继续、墓碑复用、回绕、表满；逐命令对照独立引用模型 |
 | F2 真实帧 fixtures | ✅ `hash-default-frames.json` 242 帧（链 60 + 探测 182）、`hash-edge-frames.json` 510 帧，全部通过 Zod `structureSchema` 与 `hashSnapshotSchema` |
@@ -326,12 +345,16 @@ UX-02 证据：`docs/ux02/before/`（4 张基线）与 `docs/ux02/after/`（7 �
 | L1A 独立 Python 校验 | ✅ `scripts/verify_l1a_python.py` 18 组 / 516 帧：官方 + 空表、单节点正反向、头尾删除、中间插入删除、缺失值、删到空、重建、顺序场景；逐帧对照独立 CPython 参考模型，最终输出 `ALL L1A INDEPENDENT CHECKS PASS` |
 | L1A 真实帧 fixtures | ✅ `l1a-doubly-default-frames.json` 89 帧、`l1a-circular-default-frames.json` 80 帧、`l1a-doubly-edge-frames.json` 174 帧、`l1a-circular-edge-frames.json` 171 帧；全部通过 Zod `structureSchema` 与两个专用 Schema |
 | L1A 真实 Pyodide E2E | ✅ 3/3：双向 89 帧、循环 80 帧；覆盖空表/单节点、5 节点双向 prev/next、中间插入 `n2.prev=n4` 中间态、中间删除重连、正/反向遍历、整圈 5 帧无重复、命中/未命中、头/尾/中删除、删到空、单节点自环、回退跳帧、中英 Dark/Light、390 无页面横向溢出；生成 6 张截图 |
+| L1B 专项单测 | ✅ `sequentialList.test.ts` 8 项：全部官方/边界帧通过 `structureSchema` 与专用 Schema；默认插入右移方向/`change`/`write`/终态；默认删除 `save`/左移/`clear`/终态；满表、空表、越界拒绝不改数据；空闲槽临时值不被当作有效元素；回退/跳帧后 length 与 occupied 槽同步；重复值/负数/单元素/初始溢出；focus 标志与 snapshot 同步 |
+| L1B 独立 Python 校验 | ✅ `scripts/verify_seqlist_python.py` 官方 14 例 / 84 帧 + 边界 21 例 / 89 帧，合计 173 帧；逐帧对照独立 `Reference` 模型，检查 `length/capacity` 边界、槽位连续、完成帧区域不变量、`change.before/after` 与相邻帧一致、插入 `[4,3,2]→[5,4,3]` 与删除 `[2,3,4]→[1,2,3]` 方向、最终数组、满表/空表/越界拒绝、重复值/负数/单元素/初始溢出 |
+| L1B 真实帧 fixtures | ✅ `seqlist-official-frames.json` 84 帧（14 预设）、`seqlist-edge-frames.json` 89 帧（21 边界），全部通过 Zod `structureSchema` 与 `sequentialListSnapshotSchema` |
+| L1B 真实 Pyodide E2E | ✅ 3/3：默认 8 帧插入、9 帧删除、3 帧满表拒绝、2 帧空表拒绝；覆盖预设 pending→Run、`shift-right` 源 4→目标 5、`shift-left` 源 2→目标 1、`write`、`clear`、回退/跳帧同步、390 画布内滚动且页面无横向溢出；生成 4 张截图 |
 | F1 专项单测 | ✅ `search.test.ts` 10 项、`searchVisual.test.tsx` 6 项、`searchLessons.test.ts` 5 项、`searchInsight.test.ts` 3 项，合计 24 项 |
 | F1 独立 Python 校验 | ✅ `scripts/verify_search_python.py` 143/143 帧 / 23 组输入：官方 + 成功/失败、空数组、单元素、首尾命中、重复值、负数、中间目标、无序；linear 返回首次匹配，binary 返回任意合法匹配且无序只发 `invalid` |
 | F1 真实帧 fixtures | ✅ `search-default-frames.json` 12+10=22 帧、`search-edge-frames.json` 121 帧，全部通过 Zod `structureSchema` 与 `searchSnapshotSchema` |
 | F1 真实 Pyodide E2E | ✅ 2/2：linear 比较帧 p4=7、checked 4/6、第 11 帧 found 索引 4；binary 第 3 帧排除左半区 left=4/right=6、excluded=4、第 9 帧 found 索引 4；前后跳帧一致；无序输入 1 帧 invalid、警告可见、无 L/R/MID |
 | 官方知识包 E2E | ✅ 2/2：`algolens-fib-basics` 安装/预览/课程/重载/卸载，以及课程 Python 示例真实 Pyodide 运行到 `init/combine/done`；包内 5 文件、归档 5,502 B |
-| 全量 E2E | ✅ 143/143（F1 138 条基线 + F2 2 条 + L1A 3 条；真实 Edge + 本地 Pyodide，约 9.9 分钟） |
+| 全量 E2E | ✅ 146/146（既有 143 条基线 + L1B 3 条；真实 Edge + 本地 Pyodide，约 9.7 分钟） |
 | S1 相关单测 | ✅ `sorting.test.ts` 9 项、`sortingLessons.test.ts` 4 项、`SortingVisual.test.tsx` 4 项，合计 17 项；另 `registry/catalog/textbook/frameInsight/App/AlgorithmSidebar` 联动断言全部通过 |
 | S1 独立 Python 校验 | ✅ `scripts/verify_sorting_python.py` 721/721 帧：3 算法 × 8 输入（官方 + 7 边界）；最终升序、多重集不变、选择每轮后缀最小与交换、插入前缀有序与真实右移、Shell gap 序列/lane/shift/gap=1 全局有序；稳定性身份样例验证插入稳定、选择与 Shell 不稳定 |
 | S1 真实帧 fixtures | ✅ `sorting-default-frames.json` 143 帧 + `sorting-edge-frames.json` 578 帧，全部通过 Zod `structureSchema` 与 `sortingSnapshotSchema` |
@@ -352,8 +375,8 @@ UX-02 证据：`docs/ux02/before/`（4 张基线）与 `docs/ux02/after/`（7 �
 | S1 E2E | ✅ 3/3：真实 Pyodide 依次运行选择 40 帧、插入 33 帧、Shell 70 帧；验证候选/交换、key/真实右移重复值/写回、gap 序列/lane/shift/gap-done、前进回退跳帧、done 全排序与 390 无页面横向溢出；生成 6 张截图 |
 | S2 E2E | ✅ 2/2：真实 Pyodide 执行 quick 32 帧与 merge 110 帧；验证 Lomuto pivot/真实交换/归位/递归/最终顺序、拆分/缓冲区写入/来源/写回/稳定终序、前进回退跳帧与 390 无页面横向溢出；生成 6 张截图 |
 | 独立 Python 校验 | ✅ `verify_bst_python.py`、`verify_avl_python.py`、`verify_heap_python.py`、`verify_huffman_python.py`、`verify_sorting_python.py`、`verify_divide_sort_python.py`、`verify_search_python.py`、`verify_hash_python.py` 与 `verify_l1a_python.py` 全部通过；S1 721 帧 + S2 923 帧 + F1 143 帧 + F2 752 帧 + L1A 516 帧 |
-| 回归 | ✅ BFS/DFS、Dijkstra、Floyd、Bellman-Ford、Prim、Kruskal、拓扑排序、关键路径、连通分量/SCC、二叉树遍历、栈/队列/链表、BST/AVL/最大堆/哈夫曼、S1 三排序、S2 两排序、F1 两查找、F2 链地址法/线性探测与 L1A 双向/循环单链表在 143/143 全量 E2E 中通过 |
-| 入口数量 | ✅ 33 个入口 / 32 门课程 / 33 个真实 Python；仅 `fib` 无内置课程，作为官方知识包的目录安全回退载体 |
+| 回归 | ✅ BFS/DFS、Dijkstra、Floyd、Bellman-Ford、Prim、Kruskal、拓扑排序、关键路径、连通分量/SCC、二叉树遍历、栈/队列/链表、BST/AVL/最大堆/哈夫曼、S1 三排序、S2 两排序、F1 两查找、F2 链地址法/线性探测、L1A 双向/循环单链表与 L1B 顺序表在 146/146 全量 E2E 中通过 |
+| 入口数量 | ✅ 34 个入口 / 33 门课程 / 34 个真实 Python；仅 `fib` 无内置课程，作为官方知识包的目录安全回退载体 |
 
 ## 14. 已知边界
 
@@ -375,10 +398,10 @@ UX-02 证据：`docs/ux02/before/`（4 张基线）与 `docs/ux02/after/`（7 �
 - `delete-cascade` 的删除分类是叶子删除，但会连续触发两个不同祖先的 LR 双旋；不能把它当成双孩子删除，也不能假设删除后至多旋转一次。
 - 旋转帧在 `before/after` 之间允许 `|BF|>1`，但 `init/done` 必须满足 AVL 条件，Schema 和测试都按此校验。
 - 390 px 下 BST/AVL 树画布在容器内横向滚动，AVL 会自动把根居中；页面本身无横向溢出，没有为了 T1/T2 调整页面主布局。
-- UX-01B 的完整原创导学仍只有 Dijkstra、Kahn、Kosaraju 三个；其余 29 门课程直接复用 Lesson 结构，1 个无课程入口（`fib`）只显示目录简介与复杂度。课程只有 3～5 个真实步骤时才生成阶段条；6 步及以上只显示紧凑回退，完整步骤仍可展开。
+- UX-01B 的完整原创导学仍只有 Dijkstra、Kahn、Kosaraju 三个；其余 30 门课程直接复用 Lesson 结构，1 个无课程入口（`fib`）只显示目录简介与复杂度。课程只有 3～5 个真实步骤时才生成阶段条；6 步及以上只显示紧凑回退，完整步骤仍可展开。
 - 导学静态示意图是教学示意，不是按真实输入计算出的图形；真实结构、指针与帧状态始终由下方 `VisualStage` 的 Trace 决定。
 - UX-01B 不改变左侧目录、整页双栏比例或任一 Python/Trace 语义；UX-02 只更新右侧讲解面板，同样不改这些结构。左侧目录层级与整页高度比例已分别由 UX-03 / UX-04 改造完成，T3 没有再次调整。
-- G2、G3、G4、T1、T2、T3、T4、S1、S2、F1、UX-01、UX-01B、UX-02 与 UX-03 均尚未合并 `main`；S1 从 T4 定稿 `dc3469c` 创建 `feat/s1-sorting`，S2 从 S1 最终记录 `ccc8553` 创建 `feat/s2-sorting`，F1 从 S2 最终记录 `1e17dfe` 创建 `feat/f1-searching`，没有从落后的 `main`（`10f9a68`）开发，也没有重置或覆盖任何既有分支。
+- G2、G3、G4、T1、T2、T3、T4、S1、S2、F1、UX-01、UX-01B、UX-02 与 UX-03 均尚未合并 `main`；S1 从 T4 定稿 `dc3469c` 创建 `feat/s1-sorting`，S2 从 S1 最终记录 `ccc8553` 创建 `feat/s2-sorting`，F1 从 S2 最终记录 `1e17dfe` 创建 `feat/f1-searching`，F2 从 F1 最终记录创建，L1A 从 F2 最终记录 `27f7354` 创建 `feat/l1a-linked-lists`，L1B 从 L1A 最终记录 `4fab01b` 创建 `feat/l1b-sequential-list`；没有从落后的 `main`（`10f9a68`）开发，也没有重置或覆盖任何既有分支。
 - S2 只实现 quick/merge 官方 Python 与内置输入（含 7 类边界）；快速排序固定 Lomuto 末尾 pivot，不提供 Hoare/随机 pivot/三路分区；归并固定自顶向下数组归并，不提供自底向上或原地归并。
 - 归并写回是逐槽覆盖的真实中间状态：主数组在写回期间可能暂时出现重复或缺失槽位，缓冲区始终持有完整区间内容；`merge-range-done` 与 final 恢复完整多重集。教学时不能把写回中间帧当作已完成的排序结果。
 - 快速排序标准原地 Lomuto 版本通常不稳定；课程与 hints 明确这一点，不用“分区只换边界”误判为稳定。归并只在 `a[left] <= a[right]` 时取左，才保持相等键的原有相对次序。
@@ -405,6 +428,12 @@ UX-02 证据：`docs/ux02/before/`（4 张基线）与 `docs/ux02/after/`（7 �
 - 循环回环边与普通 next 边同时存在，但回环使用虚线曲线和独立文字标签，不只靠颜色区分；390 px 下画布内部滚动，不制造页面级横向溢出。
 - L1A 的 6 张证据截图均为 1440 Light；中英与 Dark 通过 E2E 断言验证，未额外保存 Dark 截图。
 - L1A 的真实 Pyodide E2E 只执行官方 Python 源码与内置输入；任意用户 Python 链表的自动识别与可视化不在本批次范围。
+- L1B 只实现固定容量顺序表；`capacity` 在官方示例中最大 16，不开发动态扩容、缩容、重新分配或装载因子策略。`length <= capacity` 始终成立，插入前必须同时检查索引与剩余容量。
+- 顺序表插入必须从最后一个有效元素向 `index` 倒序搬移，删除必须从 `index` 向尾部正序搬移；搬移方向不是视觉偏好，写反会覆盖尚未搬走的元素。
+- 中间帧允许空闲槽位暂时持有真实复制值、也允许源与目标短暂出现相同值；视觉上这类槽位标为 `temporary` 而非有效元素。只有 `phase='complete'` 帧才要求 `[0,length)` 全非空、`[length,capacity)` 全空。
+- `index=length` 是合法插入位置（尾插），但不是合法访问位置；访问、删除都要求 `0 <= index < length`。官方预设与课程均明确这一区别。
+- L1B 复用现有数组 Trace、Timeline 与唯一播放器，新增的只是连续槽位画布；不创建第二套播放器，不重构 Schema，不修改顶部导学、教材目录层次或页面比例。
+- L1B 的 4 张证据截图均为 1440 Light；中英、Dark、390 窄屏画布内滚动与页面无横向溢出由真实 Pyodide E2E 断言覆盖，未额外保存移动端或 Dark 截图。
 - `BST_PYTHON` / `AVL_PYTHON` 的 `line=` 是教学用近似源码行号，Monaco 实际行号以编辑器为准。
 - AVL 节点上的 ROOT/LEAF/当前角色徽标在 T2 中隐藏，避免与 height/BF 徽标叠字；当前节点由顶部指标与描边表达。
 
