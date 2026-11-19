@@ -162,8 +162,8 @@ test.describe('UX-01B — compact guide hierarchy', () => {
     await expectNoPageOverflow(page);
 
     // A catalog-only algorithm stays short, safe and free of empty stage cards.
-    await selectAlgorithm(page, 'insertion', 'sort');
-    await expect(page.locator('[data-testid="lab-title"]')).toContainText('Insertion');
+    await selectAlgorithm(page, 'quick', 'sort');
+    await expect(page.locator('[data-testid="lab-title"]')).toContainText('Quick');
     await expect(page.locator('[data-testid="algorithm-guide"]')).toHaveAttribute('data-source', 'catalog');
     await expect(page.locator('[data-testid="guide-no-steps"]')).toBeVisible();
     await expect(page.locator('[data-testid="guide-catalog-note"]')).toBeVisible();

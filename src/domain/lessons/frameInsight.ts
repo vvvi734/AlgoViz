@@ -20,6 +20,7 @@ import type {
   KosarajuSnapshot,
   MaxHeapSnapshot,
   HuffmanSnapshot,
+  SortingSnapshot,
   TopologicalSortSnapshot,
   TraceEvent,
   WeightedGraphSnapshot,
@@ -1227,6 +1228,214 @@ function genericStateChanges(event: TraceEvent, previousEvent: TraceEvent | unde
   return [{ label, before, after, tone: 'update' }];
 }
 
+function sortingAction(snapshot: SortingSnapshot, lang: LessonLang): string {
+  const value = (index: number | null): string =>
+    index === null ? '—' : `p${index}=${snapshot.elements[index]?.value ?? '—'}`;
+  switch (snapshot.operation) {
+    case 'init':
+      return tx(lang, `初始化数组：${snapshot.elements.map((element) => element.value).join(', ')}`, `Initial array: ${snapshot.elements.map((element) => element.value).join(', ')}`);
+    case 'select-start':
+      return tx(lang, `第 ${snapshot.round} 轮：从 ${value(snapshot.candidate)} 开始找最小值`, `Pass ${snapshot.round}: search the minimum from ${value(snapshot.candidate)}`);
+    case 'select-compare':
+      return tx(lang, `比较 ${value(snapshot.compare)} 与候选 ${value(snapshot.candidate)}`, `Compare ${value(snapshot.compare)} with candidate ${value(snapshot.candidate)}`);
+    case 'select-candidate':
+      return tx(lang, `最小候选更新为 ${value(snapshot.candidate)}`, `Minimum candidate moves to ${value(snapshot.candidate)}`);
+    case 'select-swap':
+      return tx(lang, `本轮交换 ${value(snapshot.swapped?.[0] ?? null)} ⇄ ${value(snapshot.swapped?.[1] ?? null)}`, `Swap ${value(snapshot.swapped?.[0] ?? null)} ⇄ ${value(snapshot.swapped?.[1] ?? null)}`);
+    case 'select-done':
+      return tx(lang, `第 ${snapshot.round} 轮完成：前 ${snapshot.sortedFrom} 个位置已确定`, `Pass ${snapshot.round} done: ${snapshot.sortedFrom} slots fixed`);
+    case 'insert-key':
+      return tx(lang, `取出 key=${snapshot.key?.value ?? '—'}（原 ${value(snapshot.key?.origin ?? null)}）`, `Lift key=${snapshot.key?.value ?? '—'} from ${value(snapshot.key?.origin ?? null)}`);
+    case 'insert-compare':
+      return tx(lang, `key=${snapshot.key?.value ?? '—'} 向左比较 ${value(snapshot.compare)}`, `Compare key=${snapshot.key?.value ?? '—'} with ${value(snapshot.compare)}`);
+    case 'insert-shift':
+      return tx(lang, `${value(snapshot.shifted?.from ?? null)} 右移到 ${value(snapshot.shifted?.to ?? null)}`, `Shift ${value(snapshot.shifted?.from ?? null)} right to ${value(snapshot.shifted?.to ?? null)}`);
+    case 'insert-place':
+      return tx(lang, `key=${snapshot.key?.value ?? '—'} 写入 ${value(snapshot.insertedAt)}`, `Write key=${snapshot.key?.value ?? '—'} into ${value(snapshot.insertedAt)}`);
+    case 'gap-change':
+      return tx(lang, `切换到 gap=${snapshot.gap ?? '—'}`, `Switch to gap=${snapshot.gap ?? '—'}`);
+    case 'shell-compare':
+      return tx(lang, `gap=${snapshot.gap} lane=${snapshot.lane}：比较 ${value(snapshot.compare)} 与 key=${snapshot.key?.value ?? '—'}`, `gap=${snapshot.gap} lane=${snapshot.lane}: compare ${value(snapshot.compare)} with key=${snapshot.key?.value ?? '—'}`);
+    case 'shell-shift':
+      return tx(lang, `${value(snapshot.shifted?.from ?? null)} 按 gap 右移到 ${value(snapshot.shifted?.to ?? null)}`, `Shift ${value(snapshot.shifted?.from ?? null)} right by one gap to ${value(snapshot.shifted?.to ?? null)}`);
+    case 'shell-place':
+      return tx(lang, `key=${snapshot.key?.value ?? '—'} 写回 ${value(snapshot.insertedAt)}`, `Write key=${snapshot.key?.value ?? '—'} back into ${value(snapshot.insertedAt)}`);
+    case 'gap-done':
+      return tx(lang, `gap=${snapshot.gap} 轮完成`, `Gap ${snapshot.gap} pass complete`);
+    case 'done':
+      return tx(lang, '排序完成：整个数组升序', 'Sorting complete: the whole array is ascending');
+  }
+}
+
+function sortingWhy(snapshot: SortingSnapshot, lang: LessonLang): string {
+  if (snapshot.algorithm === 'selection') {
+    return tx(
+      lang,
+      '每轮只在未排序区选出一个最小元素，并在轮末交换一次；因此比较次数固定为 n(n-1)/2，交换最多 n-1 次，标准交换式选择排序不稳定。',
+      'Each pass finds one minimum in the unsorted suffix and swaps once at the end; comparisons are n(n-1)/2 and swaps at most n-1, and the standard swap version is unstable.',
+    );
+  }
+  if (snapshot.algorithm === 'insertion') {
+    return tx(
+      lang,
+      '把 key 插入已经有序的前缀；严格大于 key 的元素右移，相等元素不移动，所以直接插入排序稳定。',
+      'Insert the key into the sorted prefix; values strictly greater than the key shift right, while equal keys do not move, so direct insertion sort is stable.',
+    );
+  }
+  return tx(
+    lang,
+    '对每个 gap 子序列做插入排序，再缩小 gap；gap=1 是普通插入排序，保证全局有序，但复杂度取决于间隔序列且通常不稳定。',
+    'Insertion-sort every gap lane, then shrink the gap; gap=1 is ordinary insertion sort and guarantees global order, while the cost depends on the gap sequence and the sort is usually unstable.',
+  );
+}
+
+function sortingInsight(
+  snapshot: SortingSnapshot,
+  lang: LessonLang,
+  lesson: Lesson | undefined,
+  event: TraceEvent,
+  previousEvent: TraceEvent | undefined,
+): FrameInsight {
+  const activeStep = resolveStep(lesson, event.lessonStepId);
+  const previous = previousEvent?.structure?.kind === 'sorting' ? previousEvent.structure : null;
+  const values = snapshot.elements.map((element) => element.value);
+  const valueAt = (index: number | null): string => (index === null ? '—' : String(values[index] ?? '—'));
+  const changes: FrameChange[] = [
+    {
+      label: tx(lang, '已排序前缀', 'sorted prefix'),
+      before: previous ? String(previous.sortedFrom) : undefined,
+      after: `${snapshot.sortedFrom} / ${snapshot.elements.length}`,
+      tone: previous && snapshot.sortedFrom > previous.sortedFrom ? 'success' : 'neutral',
+    },
+  ];
+
+  switch (snapshot.operation) {
+    case 'select-compare':
+      changes.push({
+        label: tx(lang, '比较', 'comparison'),
+        detail: `a[p${snapshot.compare}]=${valueAt(snapshot.compare)} vs a[p${snapshot.candidate}]=${valueAt(snapshot.candidate)}`,
+        tone: 'neutral',
+      });
+      break;
+    case 'select-candidate':
+      changes.push({
+        label: tx(lang, '最小候选', 'minimum candidate'),
+        before: previous?.candidate === null || previous?.candidate === undefined ? undefined : `p${previous.candidate}`,
+        after: `p${snapshot.candidate} (${valueAt(snapshot.candidate)})`,
+        tone: 'update',
+      });
+      break;
+    case 'select-swap':
+      changes.push({
+        label: tx(lang, '本轮交换', 'pass swap'),
+        after: `p${snapshot.swapped?.[0] ?? '—'} ⇄ p${snapshot.swapped?.[1] ?? '—'}`,
+        detail: tx(lang, '一轮只发生一次真实交换。', 'Exactly one real swap happens in this pass.'),
+        tone: 'success',
+      });
+      break;
+    case 'insert-key':
+      changes.push({
+        label: tx(lang, '当前 key', 'current key'),
+        detail: `key=${snapshot.key?.value ?? '—'} from p${snapshot.key?.origin ?? '—'}`,
+        tone: 'update',
+      });
+      break;
+    case 'insert-compare':
+      changes.push({
+        label: tx(lang, '向左比较', 'compare left'),
+        detail: `a[p${snapshot.compare}]=${valueAt(snapshot.compare)} ${snapshot.key && values[snapshot.compare ?? 0]! > snapshot.key.value ? '>' : '≤'} key=${snapshot.key?.value ?? '—'}`,
+        tone: 'neutral',
+      });
+      break;
+    case 'insert-shift':
+      changes.push({
+        label: tx(lang, '真实右移', 'real shift'),
+        before: `p${snapshot.shifted?.from ?? '—'}=${valueAt(snapshot.shifted?.from ?? null)}`,
+        after: `p${snapshot.shifted?.to ?? '—'}=${valueAt(snapshot.shifted?.from ?? null)}`,
+        detail: tx(lang, '数组中间帧出现重复值是移动过程的真实状态。', 'The duplicate in this intermediate frame is the real state during a move.'),
+        tone: 'update',
+      });
+      break;
+    case 'insert-place':
+      changes.push({
+        label: tx(lang, 'key 插入', 'key placement'),
+        before: `key=${snapshot.key?.value ?? '—'}`,
+        after: `p${snapshot.insertedAt}=${valueAt(snapshot.insertedAt)}`,
+        detail: tx(lang, '前缀重新有序并扩大一格。', 'The prefix is sorted again and grows by one slot.'),
+        tone: 'success',
+      });
+      break;
+    case 'gap-change':
+      changes.push({
+        label: tx(lang, '当前 gap', 'current gap'),
+        before: previous?.gap === null || previous?.gap === undefined ? undefined : String(previous.gap),
+        after: String(snapshot.gap ?? '—'),
+        detail: `${tx(lang, '序列', 'sequence')}: ${snapshot.gapSequence.join(' → ')}`,
+        tone: 'update',
+      });
+      break;
+    case 'shell-compare':
+      changes.push({
+        label: tx(lang, '跨 gap 比较', 'gap comparison'),
+        detail: `gap=${snapshot.gap} lane=${snapshot.lane} · a[p${snapshot.compare}]=${valueAt(snapshot.compare)} vs key=${snapshot.key?.value ?? '—'}`,
+        tone: 'neutral',
+      });
+      break;
+    case 'shell-shift':
+      changes.push({
+        label: tx(lang, '按 gap 右移', 'gap shift'),
+        before: `p${snapshot.shifted?.from ?? '—'}=${valueAt(snapshot.shifted?.from ?? null)}`,
+        after: `p${snapshot.shifted?.to ?? '—'}=${valueAt(snapshot.shifted?.from ?? null)}`,
+        detail: `gap=${snapshot.gap}`,
+        tone: 'update',
+      });
+      break;
+    case 'shell-place':
+      changes.push({
+        label: tx(lang, 'lane 写回', 'lane placement'),
+        after: `p${snapshot.insertedAt}=${valueAt(snapshot.insertedAt)} · lane=${snapshot.lane}`,
+        tone: 'success',
+      });
+      break;
+    case 'gap-done':
+      changes.push({
+        label: tx(lang, '本轮 gap', 'completed gap'),
+        after: String(snapshot.gap ?? '—'),
+        detail: snapshot.gap === 1
+          ? tx(lang, 'gap=1 完成，整个数组已有序。', 'gap=1 is done, so the whole array is ordered.')
+          : tx(lang, '该 gap 的子序列已处理完，继续缩小 gap。', 'This gap lane is done; the gap will shrink again.'),
+        tone: snapshot.gap === 1 ? 'success' : 'neutral',
+      });
+      break;
+    case 'done':
+      changes.push({
+        label: tx(lang, '最终数组', 'final array'),
+        after: `[${values.join(', ')}]`,
+        detail: tx(lang, '升序，且元素多重集与输入一致。', 'Ascending, with the same multiset as the input.'),
+        tone: 'success',
+      });
+      break;
+    default:
+      break;
+  }
+
+  const memory = activeStep?.tip
+    ? firstSentence(activeStep.tip[lang], 140)
+    : snapshot.algorithm === 'selection'
+      ? tx(lang, '选择排序：每轮只选一个最小，轮末才交换。', 'Selection: one minimum per pass, one swap at the end.')
+      : snapshot.algorithm === 'insertion'
+        ? tx(lang, '插入排序：取 key、右移较大元素、写回空位；不是连续冒泡交换。', 'Insertion: lift key, shift larger values right, write key back; not bubble swapping.')
+        : tx(lang, '希尔排序：gap 子序列各自插入排序，gap=1 才保证全局有序。', 'Shell: insertion-sort each gap lane; only gap=1 guarantees global order.');
+
+  return {
+    semantic: true,
+    action: sortingAction(snapshot, lang),
+    why: sortingWhy(snapshot, lang),
+    changes,
+    memory,
+  };
+}
+
 /**
  * Build the compact, frame-synchronised insight for the right rail.
  *
@@ -1260,6 +1469,8 @@ export function buildFrameInsight(
         return heapInsight(structure, lang, hasStep, lesson, currentEvent, previousEvent);
       case 'huffman':
         return huffmanInsight(structure, lang, hasStep, lesson, currentEvent, previousEvent);
+      case 'sorting':
+        return sortingInsight(structure, lang, lesson, currentEvent, previousEvent);
       default:
         break;
     }

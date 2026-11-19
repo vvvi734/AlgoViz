@@ -28,6 +28,8 @@ import { BstVisual } from './BstVisual';
 import { AvlVisual } from './AvlVisual';
 import { HeapVisual } from './HeapVisual';
 import { HuffmanVisual } from './HuffmanVisual';
+import { SortingVisual } from './SortingVisual';
+import type { SortingVisualModel } from '../../domain/visualization/sortingModel';
 import type { KruskalVisualModel, PrimVisualModel } from '../../domain/visualization/mstModel';
 import type { CriticalVisualModel, TopologicalVisualModel } from '../../domain/visualization/dagModel';
 import type { ConnectedComponentsVisualModel, SccVisualModel } from '../../domain/visualization/componentsModel';
@@ -439,6 +441,9 @@ export function VisualStage({ event }: { event: TraceEvent | undefined }) {
     case 'huffman':
       content = <HuffmanVisual model={model} />;
       break;
+    case 'sorting':
+      content = <SortingVisual model={model as SortingVisualModel} />;
+      break;
     case 'floyd-matrix':
       content = (
         <FloydVisual
@@ -631,6 +636,7 @@ export function VisualStage({ event }: { event: TraceEvent | undefined }) {
     model.kind === 'avl' ||
     model.kind === 'max-heap' ||
     model.kind === 'huffman' ||
+    model.kind === 'sorting' ||
     model.kind === 'graph-traversal' ||
     model.kind === 'floyd-matrix' ||
     model.kind === 'bellman-table' ||

@@ -54,6 +54,12 @@ import {
   HUFFMAN_DEFAULT_INPUT,
   HUFFMAN_PYTHON,
 } from './huffmanExamples';
+import {
+  INSERTION_DEFAULT_INPUT,
+  SELECTION_DEFAULT_INPUT,
+  SHELL_DEFAULT_INPUT,
+  SORTING_PYTHON,
+} from './sortingExamples';
 
 export const STACK_DEFAULT_INPUT: unknown = [
   ['push', 3],
@@ -179,6 +185,9 @@ const STRUCTURE_PYTHON: Record<string, string> = {
   scc: kosarajuPythonExample(),
   heap: HEAP_PYTHON,
   huffman: HUFFMAN_PYTHON,
+  selection: SORTING_PYTHON.selection,
+  insertion: SORTING_PYTHON.insertion,
+  shell: SORTING_PYTHON.shell,
 };
 
 const STRUCTURE_INPUT: Record<string, unknown> = {
@@ -200,6 +209,9 @@ const STRUCTURE_INPUT: Record<string, unknown> = {
   scc: SCC_DEFAULT_INPUT,
   heap: HEAP_DEFAULT_INPUT,
   huffman: HUFFMAN_DEFAULT_INPUT,
+  selection: SELECTION_DEFAULT_INPUT,
+  insertion: INSERTION_DEFAULT_INPUT,
+  shell: SHELL_DEFAULT_INPUT,
 };
 
 export function structurePythonExample(algorithmId: string): string | undefined {

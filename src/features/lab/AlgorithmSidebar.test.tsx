@@ -159,14 +159,18 @@ describe('AlgorithmSidebar — textbook chapters (UX-03)', () => {
     expect(screen.getAllByTestId(/^algo-/).filter((item) => item.getAttribute('aria-current') === 'true')).toHaveLength(1);
   });
 
-  it('renders concepts and planned topics as static rows while authored Huffman is a real entry', () => {
+  it('renders concepts and planned topics as static rows while authored sorting topics are real entries', () => {
     render(<Harness />);
+    const mergeSort = screen.getByTestId('topic-merge-sort');
+    expect(mergeSort.tagName).toBe('DIV');
+    expect(mergeSort.getAttribute('aria-disabled')).toBe('true');
+    expect(mergeSort.getAttribute('data-kind')).toBe('planned');
+    expect(mergeSort.textContent).toContain('待完善');
+    expect(within(mergeSort).queryByTestId(/^algo-/)).toBeNull();
+
     const shellSort = screen.getByTestId('topic-shell-sort');
-    expect(shellSort.tagName).toBe('DIV');
-    expect(shellSort.getAttribute('aria-disabled')).toBe('true');
-    expect(shellSort.getAttribute('data-kind')).toBe('planned');
-    expect(shellSort.textContent).toContain('待完善');
-    expect(within(shellSort).queryByTestId(/^algo-/)).toBeNull();
+    expect(shellSort.getAttribute('data-kind')).toBe('algorithm');
+    expect(screen.getByTestId('algo-shell')).toBeTruthy();
 
     const huffman = screen.getByTestId('topic-huffman');
     expect(huffman.getAttribute('data-kind')).toBe('algorithm');

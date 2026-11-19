@@ -1602,6 +1602,752 @@
       "message": "完成 / Done"
     }
   ],
+  "shell": [
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          8,
+          3,
+          7,
+          4,
+          9,
+          2,
+          6,
+          1
+        ]
+      },
+      "message": "开始 / Start"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          8,
+          3,
+          7,
+          4,
+          9,
+          2,
+          6,
+          1
+        ]
+      },
+      "message": "gap=4 / Gap pass"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          8,
+          3,
+          7,
+          4,
+          9,
+          2,
+          6,
+          1
+        ],
+        "focus": [
+          4
+        ]
+      },
+      "message": "写回 key / Place key"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          8,
+          3,
+          7,
+          4,
+          9,
+          3,
+          6,
+          1
+        ],
+        "focus": [
+          1,
+          5
+        ]
+      },
+      "message": "按 gap 右移 / Shift by gap"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          8,
+          2,
+          7,
+          4,
+          9,
+          3,
+          6,
+          1
+        ],
+        "focus": [
+          1
+        ]
+      },
+      "message": "写回 key / Place key"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          8,
+          2,
+          7,
+          4,
+          9,
+          3,
+          7,
+          1
+        ],
+        "focus": [
+          2,
+          6
+        ]
+      },
+      "message": "按 gap 右移 / Shift by gap"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          8,
+          2,
+          6,
+          4,
+          9,
+          3,
+          7,
+          1
+        ],
+        "focus": [
+          2
+        ]
+      },
+      "message": "写回 key / Place key"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          8,
+          2,
+          6,
+          4,
+          9,
+          3,
+          7,
+          4
+        ],
+        "focus": [
+          3,
+          7
+        ]
+      },
+      "message": "按 gap 右移 / Shift by gap"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          8,
+          2,
+          6,
+          1,
+          9,
+          3,
+          7,
+          4
+        ],
+        "focus": [
+          3
+        ]
+      },
+      "message": "写回 key / Place key"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          8,
+          2,
+          6,
+          1,
+          9,
+          3,
+          7,
+          4
+        ]
+      },
+      "message": "gap=2 / Gap pass"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          8,
+          2,
+          8,
+          1,
+          9,
+          3,
+          7,
+          4
+        ],
+        "focus": [
+          0,
+          2
+        ]
+      },
+      "message": "按 gap 右移 / Shift by gap"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          6,
+          2,
+          8,
+          1,
+          9,
+          3,
+          7,
+          4
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "写回 key / Place key"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          6,
+          2,
+          8,
+          2,
+          9,
+          3,
+          7,
+          4
+        ],
+        "focus": [
+          1,
+          3
+        ]
+      },
+      "message": "按 gap 右移 / Shift by gap"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          6,
+          1,
+          8,
+          2,
+          9,
+          3,
+          7,
+          4
+        ],
+        "focus": [
+          1
+        ]
+      },
+      "message": "写回 key / Place key"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          6,
+          1,
+          8,
+          2,
+          9,
+          3,
+          7,
+          4
+        ],
+        "focus": [
+          4
+        ]
+      },
+      "message": "写回 key / Place key"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          6,
+          1,
+          8,
+          2,
+          9,
+          3,
+          7,
+          4
+        ],
+        "focus": [
+          5
+        ]
+      },
+      "message": "写回 key / Place key"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          6,
+          1,
+          8,
+          2,
+          9,
+          3,
+          9,
+          4
+        ],
+        "focus": [
+          4,
+          6
+        ]
+      },
+      "message": "按 gap 右移 / Shift by gap"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          6,
+          1,
+          8,
+          2,
+          8,
+          3,
+          9,
+          4
+        ],
+        "focus": [
+          2,
+          4
+        ]
+      },
+      "message": "按 gap 右移 / Shift by gap"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          6,
+          1,
+          7,
+          2,
+          8,
+          3,
+          9,
+          4
+        ],
+        "focus": [
+          2
+        ]
+      },
+      "message": "写回 key / Place key"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          6,
+          1,
+          7,
+          2,
+          8,
+          3,
+          9,
+          4
+        ],
+        "focus": [
+          7
+        ]
+      },
+      "message": "写回 key / Place key"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          6,
+          1,
+          7,
+          2,
+          8,
+          3,
+          9,
+          4
+        ]
+      },
+      "message": "gap=1 / Gap pass"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          6,
+          6,
+          7,
+          2,
+          8,
+          3,
+          9,
+          4
+        ],
+        "focus": [
+          0,
+          1
+        ]
+      },
+      "message": "按 gap 右移 / Shift by gap"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          6,
+          7,
+          2,
+          8,
+          3,
+          9,
+          4
+        ],
+        "focus": [
+          0
+        ]
+      },
+      "message": "写回 key / Place key"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          6,
+          7,
+          2,
+          8,
+          3,
+          9,
+          4
+        ],
+        "focus": [
+          2
+        ]
+      },
+      "message": "写回 key / Place key"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          6,
+          7,
+          7,
+          8,
+          3,
+          9,
+          4
+        ],
+        "focus": [
+          2,
+          3
+        ]
+      },
+      "message": "按 gap 右移 / Shift by gap"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          6,
+          6,
+          7,
+          8,
+          3,
+          9,
+          4
+        ],
+        "focus": [
+          1,
+          2
+        ]
+      },
+      "message": "按 gap 右移 / Shift by gap"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          6,
+          7,
+          8,
+          3,
+          9,
+          4
+        ],
+        "focus": [
+          1
+        ]
+      },
+      "message": "写回 key / Place key"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          6,
+          7,
+          8,
+          3,
+          9,
+          4
+        ],
+        "focus": [
+          4
+        ]
+      },
+      "message": "写回 key / Place key"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          6,
+          7,
+          8,
+          8,
+          9,
+          4
+        ],
+        "focus": [
+          4,
+          5
+        ]
+      },
+      "message": "按 gap 右移 / Shift by gap"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          6,
+          7,
+          7,
+          8,
+          9,
+          4
+        ],
+        "focus": [
+          3,
+          4
+        ]
+      },
+      "message": "按 gap 右移 / Shift by gap"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          6,
+          6,
+          7,
+          8,
+          9,
+          4
+        ],
+        "focus": [
+          2,
+          3
+        ]
+      },
+      "message": "按 gap 右移 / Shift by gap"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          3,
+          6,
+          7,
+          8,
+          9,
+          4
+        ],
+        "focus": [
+          2
+        ]
+      },
+      "message": "写回 key / Place key"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          3,
+          6,
+          7,
+          8,
+          9,
+          4
+        ],
+        "focus": [
+          6
+        ]
+      },
+      "message": "写回 key / Place key"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          3,
+          6,
+          7,
+          8,
+          9,
+          9
+        ],
+        "focus": [
+          6,
+          7
+        ]
+      },
+      "message": "按 gap 右移 / Shift by gap"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          3,
+          6,
+          7,
+          8,
+          8,
+          9
+        ],
+        "focus": [
+          5,
+          6
+        ]
+      },
+      "message": "按 gap 右移 / Shift by gap"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          3,
+          6,
+          7,
+          7,
+          8,
+          9
+        ],
+        "focus": [
+          4,
+          5
+        ]
+      },
+      "message": "按 gap 右移 / Shift by gap"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          3,
+          6,
+          6,
+          7,
+          8,
+          9
+        ],
+        "focus": [
+          3,
+          4
+        ]
+      },
+      "message": "按 gap 右移 / Shift by gap"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          3,
+          4,
+          6,
+          7,
+          8,
+          9
+        ],
+        "focus": [
+          3
+        ]
+      },
+      "message": "写回 key / Place key"
+    },
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          1,
+          2,
+          3,
+          4,
+          6,
+          7,
+          8,
+          9
+        ],
+        "done": true
+      },
+      "message": "完成 / Done"
+    }
+  ],
   "heap": [
     {
       "state": {

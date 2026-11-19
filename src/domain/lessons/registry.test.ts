@@ -25,6 +25,9 @@ describe('Lesson registry (Stage 3B)', () => {
   it('exposes all bundled courses in registration order', () => {
     expect(lessonRegistry.lessons.map((lesson) => lesson.lessonId)).toEqual([
       'bubble-sort-basics',
+      'selection-sort-basics',
+      'insertion-sort-basics',
+      'shell-sort-basics',
       'factorial-recursion-basics',
       'stack-lifo-basics',
       'queue-fifo-basics',
@@ -79,7 +82,7 @@ describe('Lesson registry (Stage 3B)', () => {
   it('leaves the other algorithms without a course, and that is legal', () => {
     const covered = lessonRegistry.lessons.map((lesson) => lesson.algorithmId);
     const uncovered = catalogIds.filter((id) => !covered.includes(id));
-    expect(catalogIds.length).toBe(27);
-    expect(uncovered.length).toBe(6);
+    expect(catalogIds.length).toBe(28);
+    expect(uncovered.length).toBe(4);
   });
 });

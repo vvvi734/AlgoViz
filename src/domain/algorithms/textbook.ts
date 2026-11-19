@@ -400,8 +400,7 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
       {
         id: 'shell-sort',
         title: { zh: '希尔排序', en: 'Shell sort' },
-        algorithms: [],
-        planned: true,
+        algorithms: [{ id: 'shell' }],
       },
       {
         id: 'heap-sort',

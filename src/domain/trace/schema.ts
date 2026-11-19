@@ -5013,8 +5013,368 @@ export const huffmanSnapshotSchema = z
   });
 export type HuffmanSnapshot = z.infer<typeof huffmanSnapshotSchema>;
 
-/** Stage 7B stack/queue + Stage 7C linked-list + Stage 7D binary-tree + T1 BST + T2 AVL + T3 max-heap + T4 Huffman + Stage 7E/7F/G1/G2/G3/G4 graphs. */
+/* ------------------------------------------------------------------------- *
+ * S1: selection sort, direct insertion sort and Shell sort.
+ *
+ * One typed snapshot serves all three array algorithms, so the renderer, the
+ * playback and the course rail never need three independent state machines.
+ * Every field below is recorded by the real Python program:
+ *
+ *   elements     the actual array after the operation, one id per slot `p0..`.
+ *   operation    init / selection round / insertion shift / Shell gap event.
+ *   round        1-based pass for selection and insertion, 1-based gap pass for
+ *                Shell. `init` and `done` use 0.
+ *   sortedFrom   number of leading slots already final (0 for Shell gaps > 1).
+ *   candidate    selection's current minimum index.
+ *   compare      the index currently compared (left index for insertion/Shell).
+ *   key          insertion / Shell key lifted out of the array: value + origin.
+ *   gap, lane    Shell's current gap and current congruence class.
+ *   gapSequence  deterministic halving sequence, last item 1 when n >= 2.
+ *   shifted      source -> target of a right shift by one or by `gap`.
+ *   swapped      the two real slots exchanged by selection.
+ *   insertedAt   slot where the key was finally written.
+ *
+ * The array is allowed to contain the real intermediate duplicate produced by
+ * `a[j + 1] = a[j]`; pretending the hole is already filled would fabricate a
+ * state Python never had.
+ * ------------------------------------------------------------------------- */
+export const SORTING_ALGORITHMS = ['selection', 'insertion', 'shell'] as const;
+export type SortingAlgorithm = (typeof SORTING_ALGORITHMS)[number];
+
+export const SORTING_OPERATIONS = [
+  'init',
+  'select-start',
+  'select-compare',
+  'select-candidate',
+  'select-swap',
+  'select-done',
+  'insert-key',
+  'insert-compare',
+  'insert-shift',
+  'insert-place',
+  'gap-change',
+  'shell-compare',
+  'shell-shift',
+  'shell-place',
+  'gap-done',
+  'done',
+] as const;
+export type SortingOperation = (typeof SORTING_OPERATIONS)[number];
+
+const SORTING_OPS_BY_ALGORITHM: Record<SortingAlgorithm, readonly SortingOperation[]> = {
+  selection: ['init', 'select-start', 'select-compare', 'select-candidate', 'select-swap', 'select-done', 'done'],
+  insertion: ['init', 'insert-key', 'insert-compare', 'insert-shift', 'insert-place', 'done'],
+  shell: ['init', 'gap-change', 'shell-compare', 'shell-shift', 'shell-place', 'gap-done', 'done'],
+};
+
+export const SORTING_LIMITS = {
+  MAX_VALUES: 20,
+  MAX_ROUNDS: 64,
+  MAX_ABS_VALUE: 1_000_000_000_000,
+} as const;
+
+export const sortingElementSchema = z.object({
+  id: z.string().regex(/^p\d+$/, 'slot ids must be p0, p1, ...'),
+  value: z.number().finite().min(-SORTING_LIMITS.MAX_ABS_VALUE).max(SORTING_LIMITS.MAX_ABS_VALUE),
+});
+export type SortingElement = z.infer<typeof sortingElementSchema>;
+
+export const sortingKeySchema = z.object({
+  value: z.number().finite().min(-SORTING_LIMITS.MAX_ABS_VALUE).max(SORTING_LIMITS.MAX_ABS_VALUE),
+  origin: z.number().int().nonnegative().max(SORTING_LIMITS.MAX_VALUES - 1),
+});
+export type SortingKey = z.infer<typeof sortingKeySchema>;
+
+export const sortingShiftSchema = z.object({
+  from: z.number().int().nonnegative().max(SORTING_LIMITS.MAX_VALUES - 1),
+  to: z.number().int().nonnegative().max(SORTING_LIMITS.MAX_VALUES - 1),
+});
+export type SortingShift = z.infer<typeof sortingShiftSchema>;
+
+export const sortingSnapshotSchema = z
+  .object({
+    kind: z.literal('sorting'),
+    algorithm: z.enum(SORTING_ALGORITHMS),
+    operation: z.enum(SORTING_OPERATIONS),
+    elements: z.array(sortingElementSchema).max(SORTING_LIMITS.MAX_VALUES),
+    round: z.number().int().nonnegative().max(SORTING_LIMITS.MAX_ROUNDS),
+    sortedFrom: z.number().int().nonnegative().max(SORTING_LIMITS.MAX_VALUES),
+    candidate: z.number().int().nonnegative().max(SORTING_LIMITS.MAX_VALUES - 1).nullable(),
+    compare: z.number().int().nonnegative().max(SORTING_LIMITS.MAX_VALUES - 1).nullable(),
+    key: sortingKeySchema.nullable(),
+    gap: z.number().int().positive().max(SORTING_LIMITS.MAX_VALUES).nullable(),
+    gapSequence: z.array(z.number().int().positive().max(SORTING_LIMITS.MAX_VALUES)).max(8),
+    lane: z.number().int().nonnegative().max(SORTING_LIMITS.MAX_VALUES - 1).nullable(),
+    shifted: sortingShiftSchema.nullable(),
+    swapped: z.tuple([z.number().int().nonnegative(), z.number().int().nonnegative()]).nullable(),
+    insertedAt: z.number().int().nonnegative().max(SORTING_LIMITS.MAX_VALUES - 1).nullable(),
+    result: z.enum(['sorted', 'empty']).nullable(),
+  })
+  .superRefine((snapshot, ctx) => {
+    const add = (path: (string | number)[], message: string) =>
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path, message });
+    const n = snapshot.elements.length;
+    const values = snapshot.elements.map((element) => element.value);
+
+    if (!SORTING_OPS_BY_ALGORITHM[snapshot.algorithm].includes(snapshot.operation)) {
+      add(['operation'], `operation "${snapshot.operation}" is not valid for ${snapshot.algorithm}`);
+    }
+    snapshot.elements.forEach((element, index) => {
+      if (element.id !== `p${index}`) add(['elements', index, 'id'], 'slot ids must be p0..p(n-1) in order');
+    });
+    if (snapshot.sortedFrom > n) add(['sortedFrom'], 'sortedFrom exceeds the array length');
+    if (snapshot.gap !== null && snapshot.gap > n) add(['gap'], 'gap exceeds the array length');
+    if (snapshot.lane !== null && snapshot.gap !== null && snapshot.lane >= snapshot.gap) {
+      add(['lane'], 'lane must be inside [0, gap)');
+    }
+    if (snapshot.round > SORTING_LIMITS.MAX_ROUNDS) add(['round'], 'round is too large');
+
+    const expectedGaps = (() => {
+      if (snapshot.algorithm !== 'shell') return [] as number[];
+      const gaps: number[] = [];
+      let gap = Math.floor(n / 2);
+      while (gap > 0) {
+        gaps.push(gap);
+        gap = Math.floor(gap / 2);
+      }
+      return gaps;
+    })();
+    if (
+      snapshot.gapSequence.length !== expectedGaps.length ||
+      snapshot.gapSequence.some((gap, index) => gap !== expectedGaps[index])
+    ) {
+      add(['gapSequence'], 'gapSequence must be the deterministic halving sequence for this length');
+    }
+
+    const prefixSorted = (length: number) => {
+      for (let index = 1; index < length; index += 1) {
+        if (values[index - 1]! > values[index]!) return false;
+      }
+      return true;
+    };
+    const ascending = () => prefixSorted(n);
+    const keyMatchesSlot = (origin: number, value: number) =>
+      origin >= 0 && origin < n && values[origin] === value;
+
+    if (snapshot.operation === 'init') {
+      if (snapshot.round !== 0 || snapshot.sortedFrom !== 0) add(['round'], 'init starts at round 0 with no sorted prefix');
+      if (
+        snapshot.candidate !== null ||
+        snapshot.compare !== null ||
+        snapshot.key !== null ||
+        snapshot.gap !== null ||
+        snapshot.lane !== null ||
+        snapshot.shifted !== null ||
+        snapshot.swapped !== null ||
+        snapshot.insertedAt !== null ||
+        snapshot.result !== null
+      ) {
+        add(['operation'], 'init cannot carry active sort metadata');
+      }
+      return;
+    }
+
+    if (snapshot.operation === 'done') {
+      if (snapshot.result === null) add(['result'], 'done must report a sorted or empty result');
+      if (snapshot.result === 'empty' && n !== 0) add(['result'], 'only an empty array may report result = empty');
+      if (snapshot.result === 'sorted' && n > 0 && !ascending()) add(['elements'], 'done must be globally ascending');
+      if (snapshot.result === 'sorted' && n === 0) add(['result'], 'an empty array must report result = empty');
+      if (snapshot.sortedFrom !== n) add(['sortedFrom'], 'done marks every slot as final');
+      if (
+        snapshot.candidate !== null ||
+        snapshot.compare !== null ||
+        snapshot.key !== null ||
+        snapshot.gap !== null ||
+        snapshot.lane !== null ||
+        snapshot.shifted !== null ||
+        snapshot.swapped !== null ||
+        snapshot.insertedAt !== null
+      ) {
+        add(['operation'], 'done cannot carry active sort metadata');
+      }
+      return;
+    }
+
+    if (snapshot.result !== null) add(['result'], 'only done reports a result');
+    if (!prefixSorted(snapshot.sortedFrom)) {
+      add(['sortedFrom'], 'the claimed sorted prefix must be non-decreasing');
+    }
+
+    if (snapshot.algorithm === 'selection') {
+      const index = snapshot.round - 1;
+      if (snapshot.round < 1 || index >= n) add(['round'], 'selection round must address a real slot');
+      if (snapshot.gap !== null || snapshot.lane !== null || snapshot.key !== null || snapshot.shifted !== null || snapshot.insertedAt !== null) {
+        add(['operation'], 'selection cannot carry gap/key metadata');
+      }
+
+      if (snapshot.operation === 'select-start') {
+        if (snapshot.sortedFrom !== index) add(['sortedFrom'], 'select-start begins with round index sorted slots');
+        if (snapshot.candidate !== index) add(['candidate'], 'select-start sets the candidate to the round start');
+        if (snapshot.compare !== null || snapshot.swapped !== null) add(['compare'], 'select-start has not compared or swapped yet');
+      }
+      if (snapshot.operation === 'select-compare') {
+        if (snapshot.sortedFrom !== index) add(['sortedFrom'], 'compare keeps the current round boundary');
+        if (snapshot.candidate === null) add(['candidate'], 'select-compare needs a current minimum');
+        if (snapshot.compare === null) add(['compare'], 'select-compare needs a scanned slot');
+        if (snapshot.compare !== null && snapshot.compare <= index) add(['compare'], 'selection scans only the unsorted suffix');
+        if (snapshot.candidate !== null && snapshot.compare !== null && snapshot.candidate >= snapshot.compare) {
+          add(['candidate'], 'before a comparison the candidate must be left of the scanned slot');
+        }
+        if (snapshot.swapped !== null) add(['swapped'], 'compare does not swap');
+      }
+      if (snapshot.operation === 'select-candidate') {
+        if (snapshot.sortedFrom !== index) add(['sortedFrom'], 'candidate update stays in the current round');
+        if (snapshot.candidate === null || snapshot.compare === null || snapshot.candidate !== snapshot.compare) {
+          add(['candidate'], 'select-candidate moves the minimum to the scanned slot');
+        }
+      }
+      if (snapshot.operation === 'select-swap') {
+        if (snapshot.sortedFrom !== index + 1) add(['sortedFrom'], 'the real swap completes one more slot');
+        if (snapshot.swapped === null) add(['swapped'], 'select-swap must record the exchanged slots');
+        if (snapshot.swapped !== null) {
+          if (snapshot.swapped[0] !== index) add(['swapped'], 'selection swaps the round start');
+          if (snapshot.candidate !== snapshot.swapped[1]) add(['candidate'], 'the candidate is the other swapped slot');
+          if (snapshot.swapped[1]! < index || snapshot.swapped[1]! >= n) add(['swapped'], 'swap target is outside the unsorted suffix');
+        }
+        if (snapshot.compare !== null) add(['compare'], 'select-swap has finished comparing');
+      }
+      if (snapshot.operation === 'select-done') {
+        if (snapshot.sortedFrom !== index + 1) add(['sortedFrom'], 'select-done completes one slot');
+        if (snapshot.candidate !== null || snapshot.compare !== null || snapshot.swapped !== null) {
+          add(['candidate'], 'select-done has no pending candidate or swap');
+        }
+      }
+    }
+
+    if (snapshot.algorithm === 'insertion') {
+      if (snapshot.round < 1 || snapshot.round >= n) add(['round'], 'insertion round must address a real key');
+      if (snapshot.gap !== null || snapshot.lane !== null || snapshot.shifted !== null && snapshot.shifted.to !== snapshot.shifted.from + 1) {
+        add(['gap'], 'insertion is gap-free and shifts by exactly one slot');
+      }
+      if (snapshot.swapped !== null) add(['swapped'], 'insertion never swaps');
+      if (snapshot.key === null) add(['key'], 'insertion must expose the lifted key');
+      else if (snapshot.key.origin !== snapshot.round) add(['key'], 'key origin must equal the insertion round');
+      else if (snapshot.operation === 'insert-key' && !keyMatchesSlot(snapshot.round, snapshot.key.value)) {
+        add(['key'], 'key value must be the real value at its origin');
+      }
+      if (snapshot.operation === 'insert-key') {
+        if (snapshot.sortedFrom !== snapshot.round) add(['sortedFrom'], 'before insertion the prefix through origin-1 is sorted');
+        if (snapshot.compare !== null) add(['compare'], 'insert-key has not compared left yet');
+        if (snapshot.shifted !== null || snapshot.insertedAt !== null) add(['shifted'], 'insert-key has not shifted or placed the key');
+      }
+      if (snapshot.operation === 'insert-compare') {
+        if (snapshot.sortedFrom !== snapshot.round) add(['sortedFrom'], 'comparison keeps the prefix boundary');
+        if (snapshot.compare === null || snapshot.compare >= snapshot.round) add(['compare'], 'compare walks left of the key');
+        if (snapshot.shifted !== null || snapshot.insertedAt !== null) add(['shifted'], 'compare does not shift yet');
+      }
+      if (snapshot.operation === 'insert-shift') {
+        if (snapshot.sortedFrom !== snapshot.round) add(['sortedFrom'], 'shifting keeps the prefix boundary');
+        if (snapshot.compare === null) add(['compare'], 'insert-shift must identify the shifted source');
+        if (snapshot.shifted === null) add(['shifted'], 'insert-shift must record the move');
+        if (snapshot.shifted !== null) {
+          if (snapshot.shifted.to !== snapshot.shifted.from + 1) add(['shifted'], 'insertion shifts one slot right');
+          if (snapshot.shifted.from >= n || snapshot.shifted.to >= n) add(['shifted'], 'shift target is out of range');
+          if (values[snapshot.shifted.to] !== values[snapshot.shifted.from]) {
+            add(['elements'], 'the real intermediate duplicate must be preserved');
+          }
+        }
+        if (snapshot.insertedAt !== null) add(['insertedAt'], 'the key is not placed before the shifting ends');
+      }
+      if (snapshot.operation === 'insert-place') {
+        if (snapshot.sortedFrom !== snapshot.round + 1) add(['sortedFrom'], 'placing the key extends the sorted prefix');
+        if (snapshot.insertedAt === null) add(['insertedAt'], 'insert-place must record the final slot');
+        if (snapshot.insertedAt !== null) {
+          if (snapshot.insertedAt > snapshot.round) add(['insertedAt'], 'the key cannot move right of its origin');
+          if (snapshot.key !== null && values[snapshot.insertedAt] !== snapshot.key.value) {
+            add(['elements'], 'the final slot must hold the key value');
+          }
+        }
+        if (snapshot.compare !== null && snapshot.insertedAt !== snapshot.compare + 1) {
+          add(['insertedAt'], 'the key is placed immediately right of the last compared slot');
+        }
+        if (snapshot.shifted !== null) add(['shifted'], 'insert-place is not a shift');
+      }
+    }
+
+    if (snapshot.algorithm === 'shell') {
+      const gaps = snapshot.gapSequence;
+      if (snapshot.round < 1 || snapshot.round > gaps.length) add(['round'], 'Shell round must address a real gap');
+      if (snapshot.gap === null) add(['gap'], 'Shell operations require the current gap');
+      if (snapshot.gap !== null && gaps[snapshot.round - 1] !== snapshot.gap) add(['gap'], 'gap must match the recorded sequence');
+      if (snapshot.candidate !== null || snapshot.swapped !== null) add(['candidate'], 'Shell does not use a minimum candidate or swap');
+      if (snapshot.operation === 'gap-change') {
+        if (snapshot.key !== null || snapshot.compare !== null || snapshot.shifted !== null || snapshot.insertedAt !== null || snapshot.lane !== null) {
+          add(['key'], 'gap-change has no active key or lane');
+        }
+        if (snapshot.sortedFrom !== (snapshot.gap === 1 ? 1 : 0)) add(['sortedFrom'], 'a gap change starts a new pass');
+      }
+      if (snapshot.operation === 'gap-done') {
+        if (snapshot.key !== null || snapshot.compare !== null || snapshot.shifted !== null || snapshot.insertedAt !== null || snapshot.lane !== null) {
+          add(['key'], 'gap-done has no active key');
+        }
+        if (snapshot.sortedFrom !== (snapshot.gap === 1 ? n : 0)) add(['sortedFrom'], 'the last gap leaves the whole array final');
+      }
+      if (snapshot.operation === 'shell-compare') {
+        if (snapshot.key === null) add(['key'], 'shell-compare needs the lifted key');
+        if (snapshot.compare === null) add(['compare'], 'shell-compare needs the compared slot');
+        if (snapshot.lane === null) add(['lane'], 'shell-compare must identify the gap lane');
+        if (snapshot.shifted !== null || snapshot.insertedAt !== null) add(['shifted'], 'compare does not shift');
+      }
+      if (snapshot.operation === 'shell-shift') {
+        if (snapshot.key === null || snapshot.compare === null || snapshot.lane === null) add(['shifted'], 'shell-shift needs key, source and lane');
+        if (snapshot.shifted === null) add(['shifted'], 'shell-shift must record the move');
+        if (snapshot.shifted !== null && snapshot.gap !== null) {
+          if (snapshot.shifted.to !== snapshot.shifted.from + snapshot.gap) add(['shifted'], 'Shell shifts by exactly one gap');
+          if (snapshot.shifted.to >= n) add(['shifted'], 'Shell shift is out of range');
+          if (values[snapshot.shifted.to] !== values[snapshot.shifted.from]) {
+            add(['elements'], 'the real intermediate duplicate must be preserved');
+          }
+        }
+        if (snapshot.insertedAt !== null) add(['insertedAt'], 'the key is not placed before shifting ends');
+      }
+      if (snapshot.operation === 'shell-place') {
+        if (snapshot.key === null || snapshot.lane === null) add(['key'], 'shell-place needs the key and lane');
+        if (snapshot.insertedAt === null) add(['insertedAt'], 'shell-place must record the final slot');
+        if (snapshot.insertedAt !== null && snapshot.key !== null) {
+          if (values[snapshot.insertedAt] !== snapshot.key.value) add(['elements'], 'the final slot must hold the key value');
+          if (snapshot.gap === null) {
+            add(['gap'], 'shell-place needs an active gap');
+          } else {
+            if (snapshot.insertedAt % snapshot.gap !== snapshot.lane) add(['insertedAt'], 'the key must stay in its gap lane');
+            if (snapshot.compare !== null && snapshot.insertedAt !== snapshot.compare + snapshot.gap) {
+              add(['insertedAt'], 'the key is placed one gap right of the last compared slot');
+            }
+            if (snapshot.compare === null && snapshot.insertedAt !== snapshot.lane) {
+              add(['insertedAt'], 'a key shifted past the lane start returns to the lane slot');
+            }
+          }
+        }
+        if (snapshot.shifted !== null) add(['shifted'], 'place is not a shift');
+      }
+      if (snapshot.operation === 'shell-compare' || snapshot.operation === 'shell-shift' || snapshot.operation === 'shell-place') {
+        if (snapshot.key && snapshot.gap) {
+          if (snapshot.lane !== snapshot.key.origin % snapshot.gap) add(['lane'], 'lane must be the key origin residue');
+          if (snapshot.key.origin >= n) add(['key'], 'key origin is outside the array');
+          if (snapshot.compare !== null) {
+            if (snapshot.compare >= snapshot.key.origin) add(['compare'], 'Shell compares only left of the key');
+            if (snapshot.compare % snapshot.gap !== snapshot.lane) add(['compare'], 'comparison must stay in the same gap lane');
+          }
+          const expectedFrom = snapshot.gap === 1 ? snapshot.key.origin : 0;
+          if (snapshot.operation !== 'shell-place' && snapshot.sortedFrom !== expectedFrom) {
+            add(['sortedFrom'], 'gap=1 grows a sorted prefix; larger gaps do not');
+          }
+          if (snapshot.operation === 'shell-place' && snapshot.sortedFrom !== (snapshot.gap === 1 ? snapshot.key.origin + 1 : 0)) {
+            add(['sortedFrom'], 'placing a gap=1 key extends the sorted prefix');
+          }
+        }
+      }
+    }
+  });
+export type SortingSnapshot = z.infer<typeof sortingSnapshotSchema>;
+
+/** Stage 7B stack/queue + Stage 7C linked-list + Stage 7D binary-tree + T1 BST + T2 AVL + T3 max-heap + T4 Huffman + S1 sorting + Stage 7E/7F/G1/G2/G3/G4 graphs. */
 export const structureSchema = z.union([
+  sortingSnapshotSchema,
   huffmanSnapshotSchema,
   maxHeapSnapshotSchema,
   structureSnapshotSchema,

@@ -21,6 +21,7 @@ import {
 } from './componentsModel';
 import { buildHeapModel, type HeapVisualModel } from './heapModel';
 import { buildHuffmanModel, type HuffmanVisualModel } from './huffmanModel';
+import { buildSortingModel, type SortingVisualModel } from './sortingModel';
 
 /**
  * Pure mapping from a trace state to a renderable model. React components only
@@ -78,6 +79,7 @@ export type VisualModel =
   | AvlVisualModel
   | HeapVisualModel
   | HuffmanVisualModel
+  | SortingVisualModel
   | GraphVisualModel
   | FloydVisualModel
   | BellmanVisualModel
@@ -102,6 +104,7 @@ export interface VisualLabels {
   emptyGraph?: string;
   emptyHeap?: string;
   emptyHuffman?: string;
+  emptySorting?: string;
 }
 
 const TREE_COORDS: Array<[number, number]> = [
@@ -240,6 +243,13 @@ export function buildVisualModel(
   const s = state as TraceState;
   const kind = s.type || 'array';
   const focus = asFocusSet(s);
+
+  if (structure !== undefined && structure.kind === 'sorting') {
+    if (kind !== 'array') return { kind: 'raw', text: labels.invalid };
+    const model = buildSortingModel(structure, s);
+    if (!model) return { kind: 'raw', text: labels.invalid };
+    return model;
+  }
 
   if (structure !== undefined && structure.kind === 'huffman') {
     if (kind !== 'array') return { kind: 'raw', text: labels.invalid };

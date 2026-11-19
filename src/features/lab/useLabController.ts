@@ -302,7 +302,7 @@ export function useLabController(): LabController {
     // real Python presets. Default those courses to Python; the user can still
     // switch to JS (legacy frames remain available).
     const preferredLang: CodeLanguage =
-      id === 'stack' || id === 'queue' || id === 'linked' || id === 'inorder' || id === 'bst' || id === 'avl' || id === 'heap' || id === 'huffman' || isGraphAlgorithm(id) ? 'python' : codeLang;
+      id === 'stack' || id === 'queue' || id === 'linked' || id === 'inorder' || id === 'bst' || id === 'avl' || id === 'heap' || id === 'huffman' || id === 'selection' || id === 'insertion' || id === 'shell' || isGraphAlgorithm(id) ? 'python' : codeLang;
     if (preferredLang !== codeLang) {
       setCodeLangState(preferredLang);
       safeSet(CODE_LANG_KEY, preferredLang);

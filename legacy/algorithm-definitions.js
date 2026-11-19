@@ -46,6 +46,16 @@ function sort(l,r){if(l>=r)return; const pivot=a[r];let i=l;
 for(let j=l;j<r;j++){trace({type:'array',values:[...a],focus:[j,r]},'与枢轴比较 / Compare pivot');if(a[j]<pivot){[a[i],a[j]]=[a[j],a[i]];trace({type:'array',values:[...a],focus:[i,j]},'分区交换 / Partition swap');i++;}}
 [a[i],a[r]]=[a[r],a[i]];trace({type:'array',values:[...a],focus:[i]},'枢轴归位 / Pivot placed');sort(l,i-1);sort(i+1,r);}
 sort(0,a.length-1);trace({type:'array',values:[...a],done:true},'完成 / Done');`},
+ shell:{group:'sort',icon:'▦',name:['希尔排序','Shell sort'],desc:['按不断减半的 gap 对子序列做插入排序，gap=1 时完成全局排序。','Insertion-sort each gap lane while halving the gap; the gap=1 pass finishes the global order.'],time:'取决于间隔序列，约 O(n log n)～O(n²)',space:'O(1)',input:[8,3,7,4,9,2,6,1],code:`const a=[...input];trace({type:'array',values:[...a]},'开始 / Start');
+for(let gap=Math.floor(a.length/2);gap>0;gap=Math.floor(gap/2)){
+  trace({type:'array',values:[...a]},'gap='+gap+' / Gap pass');
+  for(let i=gap;i<a.length;i++){
+    const key=a[i];let j=i-gap;
+    while(j>=0 && a[j]>key){a[j+gap]=a[j];trace({type:'array',values:[...a],focus:[j,j+gap]},'按 gap 右移 / Shift by gap');j-=gap;}
+    a[j+gap]=key;trace({type:'array',values:[...a],focus:[j+gap]},'写回 key / Place key');
+  }
+}
+trace({type:'array',values:[...a],done:true},'完成 / Done');`},
  heap:{group:'sort',icon:'◬',name:['最大堆与堆排序','Max heap & heap sort'],desc:['在真实 Python 数组中完成自底向上建堆、插入上浮、删除堆顶下沉和原地堆排序；完全二叉树与数组槽位读取同一份 Trace，稳定 id 区分元素身份与数组位置。','Build a max heap bottom-up, push with sift-up, extract the maximum with sift-down and sort in place on a real Python array; the complete tree and array slots read one Trace while stable ids separate element identity from array position.'],time:'O(n log n)',space:'O(1)',input:{preset:'build',operation:'build',heap:[4,9,2,7,5,9,1],value:null},code:`trace({type:'array',values:['Max heap: run the Python preset'],done:true},'请在 Python 模式运行 / Run the Python preset');`},
  binary:{group:'search',icon:'⌕',name:['二分查找','Binary search'],desc:['在有序数组中每次排除一半搜索范围。输入对象包含 nums 与 target。','On a sorted array, eliminate half the search interval each step. Input has nums and target.'],time:'O(log n)',space:'O(1)',input:{nums:[1,3,5,7,9,11,13],target:9},code:`const a=input.nums, target=input.target;let l=0,r=a.length-1;
 trace({type:'array',values:[...a]},'有序数组 / Sorted array');

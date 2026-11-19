@@ -7,6 +7,9 @@
  * file system assumptions live here.
  */
 import { bubbleSortLesson } from './bubbleSort';
+import { selectionSortLesson } from './selectionSortLesson';
+import { insertionSortLesson } from './insertionSortLesson';
+import { shellSortLesson } from './shellSortLesson';
 import { queueLesson } from './queue';
 import { stackLesson } from './stack';
 import { factorialLesson } from './factorial';
@@ -60,6 +63,9 @@ export function createLessonRegistry(input: unknown[]): LessonRegistry {
 
 const BUNDLED: unknown[] = [
   bubbleSortLesson,
+  selectionSortLesson,
+  insertionSortLesson,
+  shellSortLesson,
   factorialLesson,
   stackLesson,
   queueLesson,
