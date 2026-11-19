@@ -1,0 +1,80 @@
+/* ==========================================================================
+   UIX-G01A — Prim / Kruskal canvas readability.
+   Local to the two MST stages: a larger node radius, a content-fitted viewBox,
+   a compact legend in the card header and a narrower auxiliary rail.
+   The shared graph layout, every Trace frame and the single player stay intact.
+   ========================================================================== */
+
+.app[data-view='learn'] .mst-stage .mst-graph-card {
+  padding: 8px;
+}
+
+.app[data-view='learn'] .mst-stage .mst-card-head {
+  align-items: center;
+  justify-content: flex-start;
+  gap: 4px 8px;
+  min-height: 22px;
+  margin-bottom: 4px;
+}
+
+.app[data-view='learn'] .mst-stage .mst-card-head .mst-legend {
+  flex: 1 1 auto;
+  gap: 3px 8px;
+  padding: 0;
+}
+
+.app[data-view='learn'] .mst-stage .mst-card-head .mst-legend-item {
+  gap: 3px;
+  font-size: 8.5px;
+  line-height: 1.25;
+}
+
+.app[data-view='learn'] .mst-stage .mst-card-head .mst-legend-line {
+  width: 14px;
+}
+
+.app[data-view='learn'] .mst-stage .mst-card-head .tag {
+  flex: 0 0 auto;
+  margin-left: auto;
+  padding: 1px 6px;
+  font-size: 9px;
+}
+
+.app[data-view='learn'] .mst-stage .mst-edge-weight text {
+  font-size: 12.5px;
+  font-weight: 850;
+}
+
+.app[data-view='learn'] .mst-stage .mst-node-label {
+  font-size: 13.5px;
+  font-weight: 900;
+}
+
+.app[data-view='learn'] .mst-stage .mst-node-start,
+.app[data-view='learn'] .mst-stage .mst-node-root {
+  font-size: 9.5px;
+}
+
+.app[data-view='learn'] .mst-stage .mst-node-new {
+  font-size: 15px;
+}
+
+@media (min-width: 981px) {
+  .app[data-view='learn'] .mst-stage .mst-layout {
+    grid-template-columns: minmax(0, 1fr) 210px;
+    gap: 8px;
+  }
+
+  .app[data-view='learn'] .mst-stage .mst-graph-svg {
+    min-width: 0;
+  }
+}
+
+/* Mobile: fit the fitted viewBox to the card instead of leaving a 10px
+   horizontal pan. This keeps every node inside the scroll port. */
+@media (max-width: 560px) {
+  .app[data-view='learn'] .mst-stage .mst-graph-svg {
+    min-width: 0;
+    width: 100%;
+  }
+}

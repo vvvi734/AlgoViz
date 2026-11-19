@@ -126,12 +126,13 @@ function positionsFor(nodes: LayoutNodeInput[]): GraphLayoutNode[] {
 function trimEdge(
   a: GraphLayoutNode,
   b: GraphLayoutNode,
+  radius: number,
 ): { x1: number; y1: number; x2: number; y2: number } {
   const dx = b.x - a.x;
   const dy = b.y - a.y;
   const length = Math.hypot(dx, dy);
   if (length < 1) return { x1: a.x, y1: a.y, x2: b.x, y2: b.y };
-  const trim = Math.min(GRAPH_NODE_RADIUS + 2, length / 2 - 1);
+  const trim = Math.min(radius + 2, length / 2 - 1);
   if (trim <= 0) return { x1: a.x, y1: a.y, x2: b.x, y2: b.y };
   const ux = dx / length;
   const uy = dy / length;
@@ -146,8 +147,12 @@ function trimEdge(
 /**
  * Lay out a small undirected graph. Edges whose endpoint is not in `nodes`
  * are skipped defensively; the schema rejects them before rendering.
+ *
+ * `radius` is an explicit opt-in for a local presentation (MST uses 29 user
+ * units for legibility). The default keeps every existing graph algorithm's
+ * geometry byte-for-byte unchanged.
  */
-export function layoutGraph(nodes: LayoutNodeInput[], edges: GraphEdge[]): GraphLayout {
+export function layoutGraph(nodes: LayoutNodeInput[], edges: GraphEdge[], radius = GRAPH_NODE_RADIUS): GraphLayout {
   const positions = positionsFor(nodes);
   const byId = new Map(positions.map((node) => [node.id, node]));
   const laidEdges: GraphLayoutEdge[] = [];
@@ -159,13 +164,13 @@ export function layoutGraph(nodes: LayoutNodeInput[], edges: GraphEdge[]): Graph
       id: edge.id,
       fromId: edge.fromId,
       toId: edge.toId,
-      ...trimEdge(from, to),
+      ...trimEdge(from, to, radius),
     });
   }
   return {
     width: GRAPH_LAYOUT_WIDTH,
     height: GRAPH_LAYOUT_HEIGHT,
-    nodeRadius: GRAPH_NODE_RADIUS,
+    nodeRadius: radius,
     nodes: positions,
     edges: laidEdges,
   };

@@ -1,6 +1,6 @@
 # AlgoViz 算法与课程覆盖清单
 
-快照：2026-11-19（L1B 从 L1A 最终记录 `4fab01b` 创建 `feat/l1b-sequential-list` 完成；UIX-V01 从 L1B 最终记录 `7c70176` 创建 `feat/uix-v01-array-canvas`，实现记录 `d190af0`；UX-04C、T2、T3、T4、S1、S2、F1、F2、L1A、L1B 与 UIX-V01 均未合并 `main`）
+快照：2026-11-19（L1B 从 L1A 最终记录 `4fab01b` 创建 `feat/l1b-sequential-list` 完成；UIX-V01 从 L1B 最终记录 `7c70176` 创建 `feat/uix-v01-array-canvas`，实现记录 `d190af0`；UIX-V02 记录 `2f57c14`（`0.27.2-uix02`）；UIX-G01A 从 `2f57c14` 创建 `feat/uix-g01a-mst-readability`（`0.27.3-uixg01a`）；UX-04C、T2、T3、T4、S1、S2、F1、F2、L1A、L1B、UIX-V01、UIX-V02 与 UIX-G01A 均未合并 `main`）
 
 ## 1. 口径
 
@@ -272,6 +272,23 @@ UIX-V01 设计要点：
 
 UIX-V01 证据：`docs/uix-v01/before/` 与 `docs/uix-v01/after/` 各 18 张截图（6 代表帧 × 3 尺寸）及 `measurements.json`；专项测试为 `e2e/uix01.spec.ts`。详细前后数值见 `docs/UIX_V01_REPORT.md`。
 
+## 10G. UIX-G01A Prim / Kruskal 主画布可读性（不新增算法）
+
+| 范围 | 算法 | 修改 | 不变量 | 测量/测试 |
+| --- | --- | --- | --- | --- |
+| MST 主画布与局部侧栏 | `prim`、`kruskal` | MST 节点半径 23→29（直径 58 SVG 单位）；固定 580×380 viewBox 改为内容自适应并保留 16 单位底部标签余量；图例并入图卡 header；删除重复图卡标题与 Prim 长 hint；桌面侧栏 250→210px；边权/节点标签字号提升；C–D 权值对 E 节点做确定性避让；390 SVG 贴合卡片消除 10px 横向滚动 | 带权图、候选边、已选/拒绝边、Prim heapq、Kruskal 排序表/并查集/父表、总权重与全部 Trace 帧保留；共享默认半径仍为 23，BFS/DFS/Dijkstra/AOE/SCC 几何不变；播放器、课程、VisualGuide、导学默认展开与整站布局未改 | 12 条前后测量；专项 E2E 3/3；全量单测 888/888；全量 E2E 156/156 |
+
+UIX-G01A 设计要点：
+
+- **只放大 MST，不改共享布局**：`layoutGraph` / `trimEdge` 的 `radius` 是可选参数，默认 23；只有 `mstModel.ts` 的 Prim/Kruskal 传 `MST_NODE_RADIUS = 29`。其他图算法继续使用原坐标与裁边长度。
+- **内容自适应而非固定画布**：`computeMstViewBox` 从已构建视觉模型计算内容边界，裁掉原固定 580×380 的空白；底部加 `MST_LABEL_GUTTER = 16`，保留 Kruskal `↳root` 与 Prim `+`。空图回退固定画布；函数不读 Trace，帧间稳定。
+- **不牺牲算法数据**：图卡只保留图、图例、当前边条，不重复标题或长说明；Prim 的 heapq、Kruskal 的 6 行排序表、并查集变化、5 行 parent/rank/find 根表、已选/拒绝边与总权重全部保留。排序表与并查集表在 1366 仍使用右栏既有局部滚动，没有删行或缩字。
+- **边权避让**：权重默认在边中点；若矩形碰到节点，依次沿边 ±26、垂直 ±22 找第一个无碰点。候选只依赖图模型，拖动/跳帧不会跳字；官方 C–D 边不再压住 E。
+- **移动端取舍**：390 图卡宽 308px、内容宽约 541 单位；SVG 贴合 290px 滚动区后节点 30.99px（原 23.79px），页面无横向溢出。没有为了达到桌面 42px 而强行引入大幅横向滚动。
+- **范围**：未新增算法/课程/Trace 字段，未改阶乘、斐波那契、排序柱高、导学默认展开或 VisualGuide 的 9 个入口；未开发 AI/MCP、知识包或阶段跳转。
+
+UIX-G01A 证据：`docs/uix-g01a/before/` 与 `after/` 各 30 张截图（Prim 2 态 + Kruskal 3 态 × 3 尺寸 × 整页/舞台）及 `measurements.json`；专项测试 `e2e/uix-g01a.spec.ts`；详细数值与边界见 `docs/UIX_G01A_REPORT.md`。
+
 ## 11. UX-01 / UX-01B / UX-02 导学与逐帧讲解（不新增算法）
 
 UX-01 首次加入顶部可折叠导学；UX-01B 在同一数据模型上重排阅读层级与高度；UX-02 把右侧 `LessonPanel` 收敛为与当前帧同步的四段讲解，并把旧课程资料/步骤跳转折叠保留。三批都没有新增算法入口，也没有修改 Python/Trace 语义；这批改造发生时算法入口与课程数保持不变，后续 T3、T4、S1、S2、F1、F2、L1A、L1B 才把它们扩展到 34 个入口与 33 门课程。
@@ -373,6 +390,10 @@ UX-02 证据：`docs/ux02/before/`（4 张基线）与 `docs/ux02/after/`（7 �
 | UIX-V02 专项 E2E | ✅ `e2e/uix02.spec.ts` 4/4：四页右栏说明区位于 Teaching Course 之前且高度 100–210px；画布内无 >24 字可见长句；哈夫曼 1366 六行码表均不越出面板；二叉树无图例、Floyd 无 `g1-head`、AOE 无图例且事件 6 行/活动 7 行/result 11；390 哈夫曼树/队列改上下布局且六行码表保留；无页面横向溢出 |
 | UIX-V02 回归 | ✅ `t4.spec.ts` 2/2、`g1.spec.ts` 3/3、`g3.spec.ts` 4/4、`stage7d.spec.ts` 6/6，共 15/15：哈夫曼真实 heapq/WPL/六行不裁切、Floyd 当前三元更新、AOE 事件/活动/关键路径、二叉树三种遍历与移动端 scroll hint 均未受布局调整影响 |
 | UIX-V02 布局修正 | ✅ `uix01.spec.ts` 3/3 与 `ux04c.spec.ts` 4/4：归并主数组在 1440 为 252.2px，1366 插入排序 footer 收回舞台内，BFS 1366 队列底部 565.4px ≤ stage 565.34px+1，Dijkstra 1366 SVG 222.75px ≥ 220px；未放宽任何既有尺寸断言 |
+| UIX-G01A 像素测量 | ✅ `docs/uix-g01a/before` 与 `after` 各 12 条（Prim 2 态 + Kruskal 3 态 × 3 尺寸）：1440 节点 31.11→46.94px、权值 8→12px；1366 节点 20.10–20.56→42.01px、权值 5→10px；390 节点 23.79→30.99px、权值 6→8px；12 条均为节点/权值越界 0、权值重叠 0、节点-权值重叠 0、页面 `scrollWidth == clientWidth` |
+| UIX-G01A 专项单测 | ✅ `graphLayout.test.ts` 12 项 + `mst.test.ts` 7 项 = 19/19：默认半径 23 不变、MST 显式 29、边裁切随半径变化、`computeMstViewBox` 内容边界/底部 gutter/空图 580×380 回退 |
+| UIX-G01A 专项 E2E | ✅ `e2e/uix-g01a.spec.ts` 3/3：1440/1366/390 各覆盖 Prim 与 Kruskal；节点/权值/节点标签阈值、无越界/重叠、无页面横向溢出、Prim heapq 与 Kruskal 排序表/并查集表可读、播放/暂停、回退/前进、跳帧、Teaching Course active step 与帧号同步 |
+| UIX-G01A 回归 | ✅ `g2.spec.ts` 4/4（真实 heapq/并查集/负权/森林/有向图）、`ux04c.spec.ts` 4/4（BFS/Dijkstra 非 MST 画布未放宽）、全量单测 888/888、全量 E2E 156/156 |
 | F1 专项单测 | ✅ `search.test.ts` 10 项、`searchVisual.test.tsx` 6 项、`searchLessons.test.ts` 5 项、`searchInsight.test.ts` 3 项，合计 24 项 |
 | F1 独立 Python 校验 | ✅ `scripts/verify_search_python.py` 143/143 帧 / 23 组输入：官方 + 成功/失败、空数组、单元素、首尾命中、重复值、负数、中间目标、无序；linear 返回首次匹配，binary 返回任意合法匹配且无序只发 `invalid` |
 | F1 真实帧 fixtures | ✅ `search-default-frames.json` 12+10=22 帧、`search-edge-frames.json` 121 帧，全部通过 Zod `structureSchema` 与 `searchSnapshotSchema` |
@@ -463,9 +484,15 @@ UX-02 证据：`docs/ux02/before/`（4 张基线）与 `docs/ux02/after/`（7 �
 - 1366×768 的绘图区受 768px 物理高度限制，保留播放器、key 卡、gap 元信息、legend 与归并缓冲区后，数组轨为 205–227px；本批优先保证语义完整与无裁切，不强行追平 1440 的 1.5× 柱高。
 - 390×844 使用固定 220px 数组轨，因为移动端 stage 高度由内容决定、百分比轨道无法稳定解析；该尺寸下所有页面级横向溢出为 0，归并缓冲区槽位最小高度 34px。
 - UIX-V01 未修改主画布与右栏的宽度比例；1440 实测右栏 437.8px、1366 实测 409.6px，均保持原有可读宽度。
+- UIX-G01A 只调整 `prim` / `kruskal` 的 MST 节点半径、viewBox、图例位置、局部字号与桌面侧栏宽度；共享 `layoutGraph` 默认半径仍为 23，BFS/DFS/Dijkstra/AOE/SCC 的节点与边坐标未改。
+- UIX-G01A 的 390 节点为 30.99px，未达到桌面 42–46px 目标；原因是图卡宽 308px、内容宽约 541 单位，继续放大必须引入大幅横向滚动或改变图布局。本轮按“整体清晰、无裁切、无页面横向溢出”优先。
+- Kruskal 1366 右栏仍是既有内部滚动：排序表 6 行与当前边完整可见，Union-Find 表需在右栏内向下滚动；没有删行、缩字或制造页面级滚动。
+- UIX-G01A 的 30 张 before / 30 张 after 截图保存在 `docs/uix-g01a/`；390 的 `*-stage.png` 受元素自身 full-bleed 标题影响出现左侧裁切，整页截图与 `scrollWidth == clientWidth` 证明页面本身没有横向溢出。
 - `BST_PYTHON` / `AVL_PYTHON` 的 `line=` 是教学用近似源码行号，Monaco 实际行号以编辑器为准。
 - AVL 节点上的 ROOT/LEAF/当前角色徽标在 T2 中隐藏，避免与 height/BF 徽标叠字；当前节点由顶部指标与描边表达。
 
 ## 15. 下一批次（不在本批次执行）
 
 UIX-V01 已完成并停止。本批次只做 8 个排序/查找入口的共享数组画布空间优化，未新增算法，未改真实 Python Trace、算法帧、播放器、导学默认展开策略、右侧讲解文案、教材目录或其他渲染器，也未实施 UIX-02 阶段跳转。后续如继续 UIX-02，应另开独立分支与独立验收，不复用本批测量结论作为 UI 功能验收。
+
+UIX-G01A 已完成并停止。本批次只优化 Prim / Kruskal 的 MST 主画布可读性，未新增算法、未改真实 Python Trace / 课程 / VisualGuide 结构 / 整站布局，未碰阶乘、斐波那契、排序柱高或其他图算法。完成后不自动修改 Kahn、SCC、AOE 或其他算法；后续应另开独立分支与独立验收。

@@ -6,7 +6,13 @@
  * frontier; Kruskal's is the sorted edge stream plus the live union-find table.
  */
 import { useI18n } from '../../i18n/I18nProvider';
-import type { KruskalVisualModel, PrimEdgeVisual, PrimVisualModel, KruskalEdgeVisual } from '../../domain/visualization/mstModel';
+import {
+  computeMstViewBox,
+  type KruskalVisualModel,
+  type PrimEdgeVisual,
+  type PrimVisualModel,
+  type KruskalEdgeVisual,
+} from '../../domain/visualization/mstModel';
 
 function weightText(value: number): string {
   return Number.isInteger(value) ? String(value) : value.toFixed(2);
@@ -14,6 +20,57 @@ function weightText(value: number): string {
 
 function edgeName(fromId: string, toId: string): string {
   return `${fromId}–${toId}`;
+}
+
+function viewBoxFor(model: PrimVisualModel | KruskalVisualModel): string {
+  const box = computeMstViewBox(model);
+  return `${box.x} ${box.y} ${box.width} ${box.height}`;
+}
+
+const WEIGHT_HALF_WIDTH = 17;
+const WEIGHT_HALF_HEIGHT = 9;
+
+/**
+ * Keep the weight chip on the edge unless its midpoint would sit on a node.
+ * The official C–D edge passes close to E; at r=29 the old midpoint chip
+ * clipped E's ring. Candidate points stay deterministic, so scrubbing cannot
+ * make the label jump.
+ */
+function weightLabelPoint(
+  edge: PrimEdgeVisual | KruskalEdgeVisual,
+  nodes: ReadonlyArray<{ x: number; y: number }>,
+  radius: number,
+): { x: number; y: number } {
+  const midX = (edge.x1 + edge.x2) / 2;
+  const midY = (edge.y1 + edge.y2) / 2;
+  const dx = edge.x2 - edge.x1;
+  const dy = edge.y2 - edge.y1;
+  const length = Math.hypot(dx, dy) || 1;
+  const ux = dx / length;
+  const uy = dy / length;
+  const px = -uy;
+  const py = ux;
+
+  const hitsNode = (x: number, y: number) => {
+    const left = x - WEIGHT_HALF_WIDTH;
+    const right = x + WEIGHT_HALF_WIDTH;
+    const top = y - WEIGHT_HALF_HEIGHT;
+    const bottom = y + WEIGHT_HALF_HEIGHT;
+    return nodes.some((node) => {
+      const nx = Math.max(left, Math.min(node.x, right));
+      const ny = Math.max(top, Math.min(node.y, bottom));
+      return Math.hypot(node.x - nx, node.y - ny) < radius + 3;
+    });
+  };
+
+  if (!hitsNode(midX, midY)) return { x: midX, y: midY };
+  const candidates = [
+    { x: midX + ux * 26, y: midY + uy * 26 },
+    { x: midX - ux * 26, y: midY - uy * 26 },
+    { x: midX + px * 22, y: midY + py * 22 },
+    { x: midX - px * 22, y: midY - py * 22 },
+  ];
+  return candidates.find((point) => !hitsNode(point.x, point.y)) ?? { x: midX, y: midY };
 }
 
 function Legend({ states }: { states: Array<{ state: string; label: string }> }) {
@@ -34,7 +91,7 @@ function PrimGraph({ model }: { model: PrimVisualModel }) {
     <div className="mst-graph-scroll">
       <svg
         className="mst-graph-svg prim-graph-svg"
-        viewBox={`0 0 ${model.width} ${model.height}`}
+        viewBox={viewBoxFor(model)}
         role="img"
         aria-label="Prim weighted undirected graph"
         data-testid="prim-graph-svg"
@@ -43,8 +100,7 @@ function PrimGraph({ model }: { model: PrimVisualModel }) {
       >
         <g className="mst-edges">
           {model.edges.map((edge) => {
-            const midX = (edge.x1 + edge.x2) / 2;
-            const midY = (edge.y1 + edge.y2) / 2;
+            const label = weightLabelPoint(edge, model.nodes, model.nodeRadius);
             return (
               <g
                 key={edge.id}
@@ -60,7 +116,7 @@ function PrimGraph({ model }: { model: PrimVisualModel }) {
                   x2={edge.x2}
                   y2={edge.y2}
                 />
-                <g className={`mst-edge-weight is-${edge.state}`} transform={`translate(${midX}, ${midY})`}>
+                <g className={`mst-edge-weight is-${edge.state}`} transform={`translate(${label.x}, ${label.y})`}>
                   <rect x="-17" y="-9" width="34" height="18" rx="5" />
                   <text textAnchor="middle" y="3.5">{weightText(edge.weight)}</text>
                 </g>
@@ -101,7 +157,7 @@ function KruskalGraph({ model }: { model: KruskalVisualModel }) {
     <div className="mst-graph-scroll">
       <svg
         className="mst-graph-svg kruskal-graph-svg"
-        viewBox={`0 0 ${model.width} ${model.height}`}
+        viewBox={viewBoxFor(model)}
         role="img"
         aria-label="Kruskal weighted undirected graph"
         data-testid="kruskal-graph-svg"
@@ -110,8 +166,7 @@ function KruskalGraph({ model }: { model: KruskalVisualModel }) {
       >
         <g className="mst-edges">
           {model.edges.map((edge: KruskalEdgeVisual) => {
-            const midX = (edge.x1 + edge.x2) / 2;
-            const midY = (edge.y1 + edge.y2) / 2;
+            const label = weightLabelPoint(edge, model.nodes, model.nodeRadius);
             return (
               <g
                 key={edge.id}
@@ -128,7 +183,7 @@ function KruskalGraph({ model }: { model: KruskalVisualModel }) {
                   x2={edge.x2}
                   y2={edge.y2}
                 />
-                <g className={`mst-edge-weight is-${edge.state}`} transform={`translate(${midX}, ${midY})`}>
+                <g className={`mst-edge-weight is-${edge.state}`} transform={`translate(${label.x}, ${label.y})`}>
                   <rect x="-17" y="-9" width="34" height="18" rx="5" />
                   <text textAnchor="middle" y="3.5">{weightText(edge.weight)}</text>
                 </g>
@@ -193,11 +248,9 @@ function PrimResult({ model }: { model: PrimVisualModel }) {
 export function PrimVisual({
   model,
   operationText,
-  hint,
 }: {
   model: PrimVisualModel;
   operationText: string;
-  hint: string;
 }) {
   const { t } = useI18n();
   const current = model.currentEdge;
@@ -234,18 +287,17 @@ export function PrimVisual({
       <div className="mst-layout">
         <section className="mst-graph-card">
           <div className="mst-card-head">
-            <b>{t('primGraphTitle')}</b>
+            <Legend
+              states={[
+                { state: 'idle', label: t('mstEdgeIdle') },
+                { state: 'candidate', label: t('mstEdgeCandidate') },
+                { state: 'current', label: t('mstEdgeCurrent') },
+                { state: 'selected', label: t('mstEdgeSelected') },
+                { state: 'skipped', label: t('mstEdgeSkipped') },
+              ]}
+            />
             <span className="tag green">{t('mstUndirectedBadge')}</span>
           </div>
-          <Legend
-            states={[
-              { state: 'idle', label: t('mstEdgeIdle') },
-              { state: 'candidate', label: t('mstEdgeCandidate') },
-              { state: 'current', label: t('mstEdgeCurrent') },
-              { state: 'selected', label: t('mstEdgeSelected') },
-              { state: 'skipped', label: t('mstEdgeSkipped') },
-            ]}
-          />
           <PrimGraph model={model} />
           <div
             className={`mst-current-strip${model.selectedEdge ? ' is-success' : ''}${currentSkipped ? ' is-skip' : ''}`}
@@ -270,7 +322,6 @@ export function PrimVisual({
               </span>
             )}
           </div>
-          <p className="mst-hint">{hint}</p>
         </section>
 
         <aside className="mst-side">
@@ -405,17 +456,16 @@ export function KruskalVisual({
       <div className="mst-layout kruskal-layout">
         <section className="mst-graph-card">
           <div className="mst-card-head">
-            <b>{t('kruskalGraphTitle')}</b>
+            <Legend
+              states={[
+                { state: 'idle', label: t('mstEdgeIdle') },
+                { state: 'current', label: t('mstEdgeCurrent') },
+                { state: 'selected', label: t('mstEdgeSelected') },
+                { state: 'rejected', label: t('mstEdgeRejected') },
+              ]}
+            />
             <span className="tag green">{t('mstUndirectedBadge')}</span>
           </div>
-          <Legend
-            states={[
-              { state: 'idle', label: t('mstEdgeIdle') },
-              { state: 'current', label: t('mstEdgeCurrent') },
-              { state: 'selected', label: t('mstEdgeSelected') },
-              { state: 'rejected', label: t('mstEdgeRejected') },
-            ]}
-          />
           <KruskalGraph model={model} />
           <div
             className={`mst-current-strip${model.formsCycle ? ' is-reject' : ''}`}

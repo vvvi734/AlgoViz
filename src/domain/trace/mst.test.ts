@@ -7,7 +7,13 @@ import {
   type KruskalMstSnapshot,
   type PrimMstSnapshot,
 } from './schema';
-import { buildKruskalVisualModel, buildPrimVisualModel } from '../visualization/mstModel';
+import {
+  buildKruskalVisualModel,
+  buildPrimVisualModel,
+  computeMstViewBox,
+  MST_LABEL_GUTTER,
+  MST_NODE_RADIUS,
+} from '../visualization/mstModel';
 
 type Frame = { structure: PrimMstSnapshot | KruskalMstSnapshot };
 const frames = rawFrames as unknown as { prim: Frame[]; kruskal: Frame[] };
@@ -46,6 +52,27 @@ describe('G2 MST Python trace fixture', () => {
     expect(final.rejectedEdgeIds).toHaveLength(2);
     expect(final.componentCount).toBe(1);
     expect(final.forest).toBe(false);
+  });
+
+  it('fits the MST viewport to the drawing while preserving the label gutter', () => {
+    const prim = buildPrimVisualModel(frames.prim[0].structure as PrimMstSnapshot, 'empty')!;
+    expect(prim.nodeRadius).toBe(MST_NODE_RADIUS);
+    const box = computeMstViewBox(prim);
+    expect(box.width).toBeLessThan(prim.width);
+    expect(box.height).toBeLessThan(prim.height);
+    for (const node of prim.nodes) {
+      expect(node.x - prim.nodeRadius).toBeGreaterThan(box.x);
+      expect(node.x + prim.nodeRadius).toBeLessThan(box.x + box.width);
+      expect(node.y - prim.nodeRadius).toBeGreaterThan(box.y);
+      expect(node.y + prim.nodeRadius + MST_LABEL_GUTTER).toBeLessThanOrEqual(box.y + box.height);
+    }
+    const empty = buildPrimVisualModel({
+      ...frames.prim[0].structure,
+      nodes: [],
+      edges: [],
+      startNodeId: null,
+    } as PrimMstSnapshot, 'empty')!;
+    expect(computeMstViewBox(empty)).toEqual({ x: 0, y: 0, width: 580, height: 380 });
   });
 
   it('keeps the real algorithms distinct while both remain minimum', () => {

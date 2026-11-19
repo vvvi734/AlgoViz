@@ -137,17 +137,6 @@ const PRIM_OPERATION_KEYS: Record<PrimOperation, string> = {
   done: 'primOpDone',
 };
 
-const PRIM_HINT_KEYS: Record<PrimOperation, string> = {
-  init: 'primHintInit',
-  start: 'primHintStart',
-  push: 'primHintPush',
-  pop: 'primHintPop',
-  'select-edge': 'primHintSelect',
-  skip: 'primHintSkip',
-  'component-start': 'primHintComponent',
-  done: 'primHintDone',
-};
-
 const KRUSKAL_OPERATION_KEYS: Record<KruskalOperation, string> = {
   init: 'kruskalOpInit',
   sort: 'kruskalOpSort',
@@ -444,7 +433,6 @@ export function VisualStage({ event }: { event: TraceEvent | undefined }) {
         <PrimVisual
           model={model as PrimVisualModel}
           operationText={t(PRIM_OPERATION_KEYS[model.operation])}
-          hint={t(PRIM_HINT_KEYS[model.operation])}
         />
       );
       break;

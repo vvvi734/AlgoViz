@@ -30,6 +30,18 @@ function distances(nodes: Array<{ x: number; y: number }>): number[] {
 }
 
 describe('Stage 7E deterministic graph layout', () => {
+  it('keeps the shared default radius and lets MST opt into a larger local radius', () => {
+    const standard = layoutGraph(DEFAULT_NODES, DEFAULT_EDGES);
+    const mst = layoutGraph(DEFAULT_NODES, DEFAULT_EDGES, 29);
+    expect(standard.nodeRadius).toBe(23);
+    expect(mst.nodeRadius).toBe(29);
+    const standardEdge = standard.edges.find((edge) => edge.id === 'e1')!;
+    const mstEdge = mst.edges.find((edge) => edge.id === 'e1')!;
+    expect(Math.hypot(mstEdge.x2 - mstEdge.x1, mstEdge.y2 - mstEdge.y1)).toBeLessThan(
+      Math.hypot(standardEdge.x2 - standardEdge.x1, standardEdge.y2 - standardEdge.y1),
+    );
+  });
+
   it('uses stable hand-placed coordinates for the official A–G graph', () => {
     const layout = layoutGraph(DEFAULT_NODES, DEFAULT_EDGES);
     expect(layout.width).toBe(GRAPH_LAYOUT_WIDTH);

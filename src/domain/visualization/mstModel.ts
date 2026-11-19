@@ -7,7 +7,15 @@
  * playhead lives here.
  */
 import type { KruskalMstSnapshot, PrimMstSnapshot } from '../trace/schema';
-import { layoutGraph, type GraphLayoutEdge } from './graphLayout';
+import { computeGraphViewBox, layoutGraph, type GraphLayoutEdge, type GraphViewBox } from './graphLayout';
+
+/**
+ * UIX-G01A: MST gets a larger local node radius. It is passed explicitly to
+ * layoutGraph so BFS/DFS/Dijkstra/AOE/SCC keep the shared 23-unit geometry.
+ */
+export const MST_NODE_RADIUS = 29;
+/** Room below the node for Kruskal's `↳root` tag and Prim's `+` tag. */
+export const MST_LABEL_GUTTER = 16;
 
 export type PrimEdgeState = 'idle' | 'candidate' | 'current' | 'selected' | 'skipped';
 export type KruskalEdgeState = 'idle' | 'current' | 'selected' | 'rejected';
@@ -169,7 +177,7 @@ export function buildPrimVisualModel(snapshot: PrimMstSnapshot, emptyLabel: stri
   if (snapshot.treeNodeIds.some((id) => !nodeIds.has(id))) return null;
   if (snapshot.frontierItems.some((entry) => !nodeIds.has(entry.fromId) || !nodeIds.has(entry.toId))) return null;
 
-  const layout = layoutGraph(snapshot.nodes, snapshot.edges);
+  const layout = layoutGraph(snapshot.nodes, snapshot.edges, MST_NODE_RADIUS);
   const positions = new Map(layout.nodes.map((node) => [node.id, node]));
   const edgeById = new Map(snapshot.edges.map((edge) => [edge.id, edge]));
   const tree = new Set(snapshot.treeNodeIds);
@@ -265,6 +273,35 @@ export function buildPrimVisualModel(snapshot: PrimMstSnapshot, emptyLabel: stri
   };
 }
 
+/**
+ * UIX-G01A: fit the SVG to the drawn MST instead of the fixed 580×380 sheet.
+ *
+ * The old viewport kept large unused bands, so the same 31px nodes looked even
+ * smaller at 1366. This is a pure projection of the already-built visual model:
+ * no trace state is read, no coordinates move between frames, and a small
+ * bottom gutter preserves Kruskal's `↳root` and Prim's `+` labels.
+ */
+export function computeMstViewBox(model: PrimVisualModel | KruskalVisualModel): GraphViewBox {
+  if (model.nodes.length === 0) {
+    return { x: 0, y: 0, width: model.width, height: model.height };
+  }
+  const nodes = model.nodes.map((node) => ({
+    x: node.x,
+    y: node.y,
+    label: node.label,
+    start: 'start' in node ? node.start : false,
+  }));
+  const edges = model.edges.map((edge) => ({
+    x1: edge.x1,
+    y1: edge.y1,
+    x2: edge.x2,
+    y2: edge.y2,
+    weight: edge.weight,
+  }));
+  const box = computeGraphViewBox(nodes, edges, model.nodeRadius);
+  return { ...box, height: box.height + MST_LABEL_GUTTER };
+}
+
 export function buildKruskalVisualModel(
   snapshot: KruskalMstSnapshot,
   emptyLabel: string,
@@ -281,7 +318,7 @@ export function buildKruskalVisualModel(
   if (snapshot.parent.some((row) => !nodeIds.has(row.nodeId) || !nodeIds.has(row.parentId))) return null;
   if (snapshot.sortedEdgeIds.some((id) => !snapshot.edges.some((edge) => edge.id === id))) return null;
 
-  const layout = layoutGraph(snapshot.nodes, snapshot.edges);
+  const layout = layoutGraph(snapshot.nodes, snapshot.edges, MST_NODE_RADIUS);
   const positions = new Map(layout.nodes.map((node) => [node.id, node]));
   const edgeById = new Map(snapshot.edges.map((edge) => [edge.id, edge]));
   const rowByNode = new Map(snapshot.parent.map((row) => [row.nodeId, row]));
