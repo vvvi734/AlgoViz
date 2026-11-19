@@ -157,14 +157,18 @@ export function SortingVisual({ model }: { model: SortingVisualModel }) {
       </div>
 
       <div className="sorting-meta" data-testid="sorting-meta">
-        <span className="sorting-meta-chip is-sorted">
-          {isDivide
+        <span className="sorting-meta-chip is-sorted" data-testid="sorting-progress">
+          {isQuick
             ? t('sortingFinalCount')
                 .replace('{count}', String(model.sortedCount))
                 .replace('{total}', String(model.total))
-            : t('sortingSortedPrefix')
-                .replace('{count}', String(model.sortedCount))
-                .replace('{total}', String(model.total))}
+            : isMerge
+              ? t('sortingMergedCount')
+                  .replace('{count}', String(model.sortedCount))
+                  .replace('{total}', String(model.total))
+              : t('sortingSortedPrefix')
+                  .replace('{count}', String(model.sortedCount))
+                  .replace('{total}', String(model.total))}
         </span>
         {isShell ? (
           <>

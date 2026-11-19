@@ -247,7 +247,7 @@ UX-02 证据：`docs/ux02/before/`（4 张基线）与 `docs/ux02/after/`（7 �
 | 项 | 结果 |
 | --- | --- |
 | `npm run typecheck` | ✅ 通过 |
-| `npm run build` | ✅ 通过；版本 `0.23.0-s2`，`index-D5cHUaFa.js` 1,636.51 kB、`monaco-setup-BEbmHtIE.js` 4,122.24 kB、`index-B0YGFqNf.css` 189.25 kB |
+| `npm run build` | ✅ 通过；版本 `0.23.0-s2`，`index-w83PwDwm.js` 1,636.75 kB、`monaco-setup-zLH1Qmcz.js` 4,122.24 kB、`index-B0YGFqNf.css` 189.25 kB |
 | 全量单测 | ✅ 96 个文件、795 tests 全部通过 |
 | S1 相关单测 | ✅ `sorting.test.ts` 9 项、`sortingLessons.test.ts` 4 项、`SortingVisual.test.tsx` 4 项，合计 17 项；另 `registry/catalog/textbook/frameInsight/App/AlgorithmSidebar` 联动断言全部通过 |
 | S1 独立 Python 校验 | ✅ `scripts/verify_sorting_python.py` 721/721 帧：3 算法 × 8 输入（官方 + 7 边界）；最终升序、多重集不变、选择每轮后缀最小与交换、插入前缀有序与真实右移、Shell gap 序列/lane/shift/gap=1 全局有序；稳定性身份样例验证插入稳定、选择与 Shell 不稳定 |

@@ -40,6 +40,7 @@ describe('S2 divide-and-conquer sorting visuals', () => {
     expect(screen.getByTestId('sorting-range').textContent).toContain(`[${snapshot.range!.low}, ${snapshot.range!.high}]`);
     expect(screen.getByTestId('sorting-pivot').textContent).toContain(`p${snapshot.pivot}`);
     expect(screen.getByTestId('sorting-boundary').textContent).toContain(`i = ${snapshot.boundary}`);
+    expect(screen.getByTestId('sorting-progress').textContent).toContain('已确定终位');
     expect(screen.getByTestId('sorting-swap').textContent).toContain(`p${snapshot.swapped![0]} ⇄ p${snapshot.swapped![1]}`);
     const bars = screen.getAllByTestId('sorting-bar');
     expect(bars[snapshot.pivot!]!.getAttribute('data-pivot')).toBe('true');
@@ -73,6 +74,8 @@ describe('S2 divide-and-conquer sorting visuals', () => {
     const snapshot = frame.structure as Extract<TraceEvent['structure'], { kind: 'sorting' }>;
     const bars = screen.getAllByTestId('sorting-bar');
     expect(screen.getByTestId('sorting-visual').getAttribute('data-phase')).toBe('writeback');
+    expect(screen.getByTestId('sorting-progress').textContent).toContain('已归并区间');
+    expect(screen.getByTestId('sorting-progress').textContent).not.toContain('已确定终位');
     expect(bars[snapshot.writeAt!]!.getAttribute('data-marks')).toContain('write-target');
     expect(bars[snapshot.writeAt!]!.getAttribute('data-value')).toBe(String(snapshot.buffer[snapshot.writeAt! - snapshot.range!.low]));
     expect(screen.getByTestId('sorting-merged-ranges').textContent).toContain(`[${snapshot.range!.low}, ${snapshot.split}]`);

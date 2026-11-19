@@ -60,7 +60,8 @@ S1 的选择/插入/Shell 与 S2 的快速/归并共用一个播放器、一个�
   - 当前递归区间轮廓、`range-start/range-end`；
   - quick 的 `PIV` 标记、`CMP` 比较标记、边界 `i` 虚线、已确定终位 `✓`、真实交换 `⇄` 与交换 chip；
   - merge 的左/右候选 `L/R`、`split` chip、独立 `sorting-buffer` 面板、`B` 缓冲来源、`↓` 写回目标、已归并区间 chip。
-- 新 testid：`sorting-range`、`sorting-pivot`、`sorting-boundary`、`sorting-split`、`sorting-left`、`sorting-right`、`sorting-swap`、`sorting-buffer`、`sorting-buffer-slot`、`sorting-merged-ranges`。
+- 新 testid：`sorting-range`、`sorting-pivot`、`sorting-boundary`、`sorting-split`、`sorting-left`、`sorting-right`、`sorting-swap`、`sorting-buffer`、`sorting-buffer-slot`、`sorting-merged-ranges`、`sorting-progress`。
+- 进度语义独立：quick 显示「已确定终位」，merge 显示「已归并区间」；merge 写回帧不再误用 quick 的终位文案。
 - 新 `src/styles/s1.css` 追加 S2 样式，S1 原样式和既有排序标记保持不变；390 px 继续沿用单列布局。
 - 课程：
   - `quickSortLesson.ts`，5 步：`init / quick-partition / quick-swap / quick-place / done`；
@@ -118,8 +119,8 @@ S1 的选择/插入/Shell 与 S2 的快速/归并共用一个播放器、一个�
 
 `npm run build`：
 
-- `dist/assets/index-D5cHUaFa.js` 1,636.51 kB（gzip 462.52 kB）；
-- `dist/assets/monaco-setup-BEbmHtIE.js` 4,122.24 kB（gzip 1,066.59 kB）；
+- `dist/assets/index-w83PwDwm.js` 1,636.75 kB（gzip 462.57 kB）；
+- `dist/assets/monaco-setup-zLH1Qmcz.js` 4,122.24 kB（gzip 1,066.60 kB）；
 - `dist/assets/index-B0YGFqNf.css` 189.25 kB（gzip 31.32 kB）。
 
 `dist/index.html` 1.36 kB。构建版本 `0.23.0-s2`。
