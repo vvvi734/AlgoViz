@@ -34,6 +34,10 @@ import {
   heapPresetInput,
   type HeapPresetId,
 } from '../../domain/algorithms/heapExamples';
+import {
+  huffmanPresetInput,
+  type HuffmanPresetId,
+} from '../../domain/algorithms/huffmanExamples';
 import { useI18n } from '../../i18n/I18nProvider';
 import { usePlayback, type Playback } from './usePlayback';
 
@@ -125,6 +129,11 @@ export interface LabController {
    * by rewriting the object input. It never runs code.
    */
   selectHeapPreset: (preset: HeapPresetId) => void;
+  /**
+   * T4: select one official Huffman example by rewriting the `{preset, symbols}`
+   * input. It never runs code; a real Trace still requires Run.
+   */
+  selectHuffmanPreset: (preset: HuffmanPresetId) => void;
   runVisualization: () => void;
   restorePreset: () => void;
   randomizeInput: () => void;
@@ -293,7 +302,7 @@ export function useLabController(): LabController {
     // real Python presets. Default those courses to Python; the user can still
     // switch to JS (legacy frames remain available).
     const preferredLang: CodeLanguage =
-      id === 'stack' || id === 'queue' || id === 'linked' || id === 'inorder' || id === 'bst' || id === 'avl' || id === 'heap' || isGraphAlgorithm(id) ? 'python' : codeLang;
+      id === 'stack' || id === 'queue' || id === 'linked' || id === 'inorder' || id === 'bst' || id === 'avl' || id === 'heap' || id === 'huffman' || isGraphAlgorithm(id) ? 'python' : codeLang;
     if (preferredLang !== codeLang) {
       setCodeLangState(preferredLang);
       safeSet(CODE_LANG_KEY, preferredLang);
@@ -368,6 +377,12 @@ export function useLabController(): LabController {
   const selectHeapPreset = useCallback((preset: HeapPresetId) => {
     playback.stop();
     setInputJson(JSON.stringify(heapPresetInput(preset)));
+    setStatus({ text: '', error: false });
+  }, [playback]);
+
+  const selectHuffmanPreset = useCallback((preset: HuffmanPresetId) => {
+    playback.stop();
+    setInputJson(JSON.stringify(huffmanPresetInput(preset)));
     setStatus({ text: '', error: false });
   }, [playback]);
 
@@ -530,6 +545,7 @@ export function useLabController(): LabController {
     selectBstPreset,
     selectAvlPreset,
     selectHeapPreset,
+    selectHuffmanPreset,
     runVisualization,
     restorePreset,
     randomizeInput,

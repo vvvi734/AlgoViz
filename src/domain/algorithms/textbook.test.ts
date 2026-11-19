@@ -36,7 +36,7 @@ describe('textbook directory (UX-03)', () => {
     expect(ids).toHaveLength(Object.keys(catalog).length);
     expect(new Set(ids).size).toBe(ids.length);
     expect(new Set(ids)).toEqual(new Set(Object.keys(catalog)));
-    expect(ids).toHaveLength(26);
+    expect(ids).toHaveLength(27);
   });
 
   it('places MST before shortest paths and marks Bellman-Ford / connectivity as extensions', () => {
@@ -70,14 +70,14 @@ describe('textbook directory (UX-03)', () => {
     expect(connectivity.algorithms.map((algorithm) => algorithm.id)).toEqual(['components', 'scc']);
   });
 
-  it('puts BST and AVL under 查找, not under 树; Huffman remains a planned tree topic', () => {
+  it('puts BST and AVL under 查找, not under 树; Huffman is now an authored tree topic', () => {
     const tree = nav.find((chapter) => chapter.id === 'ch6-tree')!;
     const search = nav.find((chapter) => chapter.id === 'ch8-search')!;
     expect(tree.topics.find((topic) => topic.id === 'binary-tree-traversal')?.algorithms).toEqual([
       expect.objectContaining({ id: 'inorder' }),
     ]);
-    expect(tree.topics.find((topic) => topic.id === 'huffman')?.planned).toBe(true);
-    expect(tree.topics.find((topic) => topic.id === 'huffman')?.algorithms).toHaveLength(0);
+    expect(tree.topics.find((topic) => topic.id === 'huffman')?.planned).toBeUndefined();
+    expect(tree.topics.find((topic) => topic.id === 'huffman')?.algorithms[0].id).toBe('huffman');
     expect(search.topics.find((topic) => topic.id === 'bst')?.algorithms[0].id).toBe('bst');
     expect(search.topics.find((topic) => topic.id === 'avl')?.algorithms[0].id).toBe('avl');
     expect(search.topics.find((topic) => topic.id === 'sequential-search')?.algorithms[0].id).toBe('linear');
@@ -136,6 +136,7 @@ describe('textbook directory (UX-03)', () => {
       'stack-basics',
       'queue-basics',
       'binary-tree-traversal',
+      'huffman',
       'topological',
       'critical-path',
       'sequential-search',

@@ -402,6 +402,50 @@ export const ALGORITHM_CATALOG: AlgorithmCatalog = {
     },
     "code": "trace({type:'array',values:['AVL: use the Python preset'],done:true},'请在 Python 模式运行 / Run the Python preset');"
   },
+  "huffman": {
+    "group": "tree",
+    "icon": "⌁",
+    "name": [
+      "哈夫曼树与哈夫曼编码",
+      "Huffman tree & prefix codes"
+    ],
+    "desc": [
+      "用真实 heapq 最小堆逐次取出两个最小权值，创建带真实 left/right 引用的父节点并重新入堆；建树后从根走到叶子生成 0/1 前缀编码，并计算 WPL 与定长编码对比。",
+      "Use a real heapq min-priority queue to pop two minimum weights, create a parent with real left/right references and requeue it; then walk the finished tree from root to leaves to produce 0/1 prefix codes, WPL and a fixed-length comparison."
+    ],
+    "time": "O(n log n)",
+    "space": "O(n)",
+    "input": {
+      "preset": "official",
+      "symbols": [
+        [
+          "A",
+          5
+        ],
+        [
+          "B",
+          9
+        ],
+        [
+          "C",
+          12
+        ],
+        [
+          "D",
+          13
+        ],
+        [
+          "E",
+          16
+        ],
+        [
+          "F",
+          45
+        ]
+      ]
+    },
+    "code": "trace({type:'array',values:['Huffman: use the Python preset'],done:true},'请在 Python 模式运行 / Run the Python preset');"
+  },
   "factorial": {
     "group": "recursion",
     "icon": "↺",

@@ -27,6 +27,7 @@ import { ConnectedComponentsVisual, KosarajuVisual } from './ComponentVisuals';
 import { BstVisual } from './BstVisual';
 import { AvlVisual } from './AvlVisual';
 import { HeapVisual } from './HeapVisual';
+import { HuffmanVisual } from './HuffmanVisual';
 import type { KruskalVisualModel, PrimVisualModel } from '../../domain/visualization/mstModel';
 import type { CriticalVisualModel, TopologicalVisualModel } from '../../domain/visualization/dagModel';
 import type { ConnectedComponentsVisualModel, SccVisualModel } from '../../domain/visualization/componentsModel';
@@ -406,6 +407,7 @@ export function VisualStage({ event }: { event: TraceEvent | undefined }) {
           emptyAvl: t('avlEmpty'),
           emptyGraph: t('graphEmpty'),
           emptyHeap: t('heapEmpty'),
+          emptyHuffman: t('huffmanEmpty'),
         },
         event.structure,
       )
@@ -433,6 +435,9 @@ export function VisualStage({ event }: { event: TraceEvent | undefined }) {
       break;
     case 'max-heap':
       content = <HeapVisual model={model} />;
+      break;
+    case 'huffman':
+      content = <HuffmanVisual model={model} />;
       break;
     case 'floyd-matrix':
       content = (
@@ -625,6 +630,7 @@ export function VisualStage({ event }: { event: TraceEvent | undefined }) {
     model.kind === 'bst' ||
     model.kind === 'avl' ||
     model.kind === 'max-heap' ||
+    model.kind === 'huffman' ||
     model.kind === 'graph-traversal' ||
     model.kind === 'floyd-matrix' ||
     model.kind === 'bellman-table' ||

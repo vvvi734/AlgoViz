@@ -159,14 +159,18 @@ describe('AlgorithmSidebar — textbook chapters (UX-03)', () => {
     expect(screen.getAllByTestId(/^algo-/).filter((item) => item.getAttribute('aria-current') === 'true')).toHaveLength(1);
   });
 
-  it('renders concepts and planned topics as static rows with truthful status', () => {
+  it('renders concepts and planned topics as static rows while authored Huffman is a real entry', () => {
     render(<Harness />);
+    const shellSort = screen.getByTestId('topic-shell-sort');
+    expect(shellSort.tagName).toBe('DIV');
+    expect(shellSort.getAttribute('aria-disabled')).toBe('true');
+    expect(shellSort.getAttribute('data-kind')).toBe('planned');
+    expect(shellSort.textContent).toContain('待完善');
+    expect(within(shellSort).queryByTestId(/^algo-/)).toBeNull();
+
     const huffman = screen.getByTestId('topic-huffman');
-    expect(huffman.tagName).toBe('DIV');
-    expect(huffman.getAttribute('aria-disabled')).toBe('true');
-    expect(huffman.getAttribute('data-kind')).toBe('planned');
-    expect(huffman.textContent).toContain('待完善');
-    expect(within(huffman).queryByTestId(/^algo-/)).toBeNull();
+    expect(huffman.getAttribute('data-kind')).toBe('algorithm');
+    expect(screen.getByTestId('algo-huffman')).toBeTruthy();
 
     const graphBasics = screen.getByTestId('topic-graph-basics');
     expect(graphBasics.tagName).toBe('DIV');

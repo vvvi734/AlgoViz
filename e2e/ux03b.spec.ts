@@ -48,7 +48,7 @@ test.describe('UX-03B — compact textbook navigation', () => {
 
     // Every single-algorithm topic is structurally direct, not just bubble.
     const directTopics = page.locator('.textbook-nav .textbook-topic[data-direct="true"]');
-    await expect(directTopics).toHaveCount(15);
+    await expect(directTopics).toHaveCount(16);
     const directCounts = await directTopics.evaluateAll((nodes) =>
       nodes.map((node) => node.querySelectorAll('[data-testid^="algo-"]').length),
     );
@@ -95,7 +95,7 @@ test.describe('UX-03B — compact textbook navigation', () => {
     await expect(page.getByTestId('algo-shell')).toHaveCount(0);
 
     // The compact tree still contains every registered algorithm exactly once.
-    await expect(page.locator('[data-testid^="algo-"]')).toHaveCount(26);
+    await expect(page.locator('[data-testid^="algo-"]')).toHaveCount(27);
   });
 
   test('keeps playback and selection intact while folding or reloading the directory', async ({

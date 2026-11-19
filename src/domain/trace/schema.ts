@@ -4473,8 +4473,549 @@ export const maxHeapSnapshotSchema = z
   });
 export type MaxHeapSnapshot = z.infer<typeof maxHeapSnapshotSchema>;
 
-/** Stage 7B stack/queue + Stage 7C linked-list + Stage 7D binary-tree + T1 BST + T2 AVL + T3 max-heap + Stage 7E/7F/G1/G2/G3/G4 graphs. */
+/* ------------------------------------------------------------------------- *
+ * T4: Huffman tree + Huffman coding.
+ *
+ * One schema covers the complete lecture: a real `heapq` forest is merged
+ * bottom-up, then the resulting binary tree is walked to produce prefix codes.
+ * The snapshot stores only facts the Python program actually observed:
+ *
+ *   nodes      every node ever created, with stable id, symbol, weight and the
+ *              real left/right child references. Internal nodes never carry a
+ *              symbol, leaves always do.
+ *   queueIds   the real `heapq` internal array order after the operation. It is
+ *              validated as a min-heap under `(weight, order)`, never as a
+ *              pre-sorted list. `order` is the unique deterministic tie-break.
+ *   pickedIds  the two nodes a merge step popped, in pop order.
+ *   createdId  the internal parent created from those two nodes.
+ *   pathIds    the root-to-active path during the encoding walk.
+ *   prefix     the real bits accumulated on that path.
+ *   codes      only the leaves already reached by the encoding walk.
+ *   metrics    leaf count, total weight, WPL, actual encoded bits and the
+ *              fixed-length comparison; checked against the tree itself.
+ *
+ * Equality matters: equal weights are ordered by `order`, so the official
+ * example is reproducible even though Huffman codes are not unique.
+ * ------------------------------------------------------------------------- */
+export const HUFFMAN_LIMITS = {
+  MAX_SYMBOLS: 16,
+  MAX_NODES: 33,
+  MAX_WEIGHT: 1_000_000_000_000,
+  MAX_CODE_BITS: 16,
+} as const;
+
+export const huffmanOperationSchema = z.enum([
+  'init',
+  'merge-select',
+  'merge-create',
+  'merge-requeue',
+  'build-done',
+  'encode-start',
+  'encode-left',
+  'encode-right',
+  'encode-leaf',
+  'done',
+]);
+export type HuffmanOperation = z.infer<typeof huffmanOperationSchema>;
+
+export const huffmanNodeSchema = z.object({
+  id: z.string().min(1).max(64),
+  symbol: z.string().min(1).max(8).nullable(),
+  weight: z.number().int().positive().max(HUFFMAN_LIMITS.MAX_WEIGHT),
+  order: z.number().int().nonnegative().max(HUFFMAN_LIMITS.MAX_NODES - 1),
+  leftId: z.string().min(1).max(64).nullable(),
+  rightId: z.string().min(1).max(64).nullable(),
+});
+export type HuffmanNode = z.infer<typeof huffmanNodeSchema>;
+
+export const huffmanCodeRowSchema = z.object({
+  symbol: z.string().min(1).max(8),
+  nodeId: z.string().min(1).max(64),
+  code: z.string().regex(/^[01]+$/).max(HUFFMAN_LIMITS.MAX_CODE_BITS),
+  length: z.number().int().positive().max(HUFFMAN_LIMITS.MAX_CODE_BITS),
+  weight: z.number().int().positive().max(HUFFMAN_LIMITS.MAX_WEIGHT),
+  contribution: z.number().int().nonnegative().max(HUFFMAN_LIMITS.MAX_WEIGHT * HUFFMAN_LIMITS.MAX_CODE_BITS),
+});
+export type HuffmanCodeRow = z.infer<typeof huffmanCodeRowSchema>;
+
+export const huffmanMetricsSchema = z.object({
+  leafCount: z.number().int().nonnegative().max(HUFFMAN_LIMITS.MAX_SYMBOLS),
+  totalWeight: z.number().int().nonnegative().max(HUFFMAN_LIMITS.MAX_WEIGHT * HUFFMAN_LIMITS.MAX_SYMBOLS),
+  wpl: z.number().int().nonnegative().max(HUFFMAN_LIMITS.MAX_WEIGHT * HUFFMAN_LIMITS.MAX_SYMBOLS * HUFFMAN_LIMITS.MAX_CODE_BITS),
+  totalBits: z.number().int().nonnegative().max(HUFFMAN_LIMITS.MAX_WEIGHT * HUFFMAN_LIMITS.MAX_SYMBOLS * HUFFMAN_LIMITS.MAX_CODE_BITS),
+  fixedBitsPerChar: z.number().int().nonnegative().max(HUFFMAN_LIMITS.MAX_CODE_BITS),
+  fixedBits: z.number().int().nonnegative().max(HUFFMAN_LIMITS.MAX_WEIGHT * HUFFMAN_LIMITS.MAX_SYMBOLS * HUFFMAN_LIMITS.MAX_CODE_BITS),
+});
+export type HuffmanMetrics = z.infer<typeof huffmanMetricsSchema>;
+
+export const huffmanSnapshotSchema = z
+  .object({
+    kind: z.literal('huffman'),
+    /** Input preset id, recorded by the real program (not used for drawing). */
+    preset: z.string().min(1).max(32),
+    operation: huffmanOperationSchema,
+    nodes: z.array(huffmanNodeSchema).max(HUFFMAN_LIMITS.MAX_NODES),
+    /** Real heap array of ids. A min-heap under (weight, order). */
+    queueIds: z.array(z.string().min(1).max(64)).max(HUFFMAN_LIMITS.MAX_SYMBOLS),
+    activeNodeId: z.string().min(1).max(64).nullable(),
+    pathIds: z.array(z.string().min(1).max(64)).max(HUFFMAN_LIMITS.MAX_CODE_BITS + 1),
+    prefix: z.string().regex(/^[01]*$/).max(HUFFMAN_LIMITS.MAX_CODE_BITS),
+    pickedIds: z.array(z.string().min(1).max(64)).length(2).nullable(),
+    createdId: z.string().min(1).max(64).nullable(),
+    viaSide: z.enum(['left', 'right']).nullable(),
+    codes: z.array(huffmanCodeRowSchema).max(HUFFMAN_LIMITS.MAX_SYMBOLS),
+    metrics: huffmanMetricsSchema.nullable(),
+    result: z.enum(['encoded', 'empty']).nullable(),
+  })
+  .superRefine((snapshot, ctx) => {
+    const add = (path: Array<string | number>, message: string) => {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path, message });
+    };
+    const nodes = snapshot.nodes;
+    const byId = new Map<string, HuffmanNode>();
+    for (const node of nodes) {
+      if (byId.has(node.id)) {
+        add(['nodes'], `duplicate Huffman node id "${node.id}"`);
+        return;
+      }
+      byId.set(node.id, node);
+    }
+
+    // Orders are creation indices: contiguous 0..n-1, unique, and a later
+    // internal node is always newer than both children. This makes the
+    // heap tie-break reproducible instead of relying on insertion accidents.
+    const orders = nodes.map((node) => node.order).sort((a, b) => a - b);
+    for (let index = 0; index < orders.length; index += 1) {
+      if (orders[index] !== index) {
+        add(['nodes'], 'node orders must be contiguous creation indices 0..n-1');
+        break;
+      }
+    }
+
+    const parentOf = new Map<string, string>();
+    const leaves: HuffmanNode[] = [];
+    let badChild = false;
+    for (const node of nodes) {
+      const hasLeft = node.leftId !== null;
+      const hasRight = node.rightId !== null;
+      if (hasLeft !== hasRight) {
+        add(['nodes'], `node "${node.id}" must have either both children or neither`);
+        badChild = true;
+      }
+      if (!hasLeft) {
+        leaves.push(node);
+        if (node.symbol === null) add(['nodes'], `leaf "${node.id}" must carry a symbol`);
+      } else {
+        if (node.symbol !== null) add(['nodes'], `internal node "${node.id}" must not carry a symbol`);
+        const left = node.leftId ? byId.get(node.leftId) : undefined;
+        const right = node.rightId ? byId.get(node.rightId) : undefined;
+        if (!left || !right) {
+          add(['nodes'], `node "${node.id}" points at a missing child`);
+          badChild = true;
+        } else {
+          if (left.weight + right.weight !== node.weight) {
+            add(['nodes'], `node "${node.id}" weight must equal its two children's sum`);
+          }
+          for (const child of [left, right]) {
+            if (parentOf.has(child.id)) {
+              add(['nodes'], `node "${child.id}" has more than one parent`);
+            } else {
+              parentOf.set(child.id, node.id);
+            }
+          }
+        }
+      }
+    }
+    if (badChild) return;
+
+    const symbols = new Set<string>();
+    for (const leaf of leaves) {
+      if (leaf.symbol !== null) {
+        if (symbols.has(leaf.symbol)) {
+          add(['nodes'], `duplicate leaf symbol "${leaf.symbol}"`);
+        }
+        symbols.add(leaf.symbol);
+      }
+    }
+    if (leaves.length > HUFFMAN_LIMITS.MAX_SYMBOLS) {
+      add(['nodes'], 'too many leaves for the Huffman teaching demo');
+    }
+
+    const roots = nodes.filter((node) => !parentOf.has(node.id));
+    // A forest is parentless roots; visit them to prove there are no cycles or
+    // unreachable nodes and that every root is a real binary tree.
+    const seen = new Set<string>();
+    const visiting = new Set<string>();
+    let cycle = false;
+    const visit = (id: string) => {
+      if (visiting.has(id)) {
+        cycle = true;
+        return;
+      }
+      if (seen.has(id)) return;
+      const node = byId.get(id);
+      if (!node) return;
+      seen.add(id);
+      visiting.add(id);
+      if (node.leftId) visit(node.leftId);
+      if (node.rightId) visit(node.rightId);
+      visiting.delete(id);
+    };
+    roots.forEach((root) => visit(root.id));
+    if (cycle) add(['nodes'], 'Huffman tree must not contain a cycle');
+    if (seen.size !== nodes.length) add(['nodes'], 'every Huffman node must be reachable from a parentless root');
+
+    const priority = (id: string): [number, number] => {
+      const node = byId.get(id);
+      return node ? [node.weight, node.order] : [Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY];
+    };
+    const less = (a: string, b: string): boolean => {
+      const pa = priority(a);
+      const pb = priority(b);
+      return pa[0] < pb[0] || (pa[0] === pb[0] && pa[1] < pb[1]);
+    };
+    const queue = snapshot.queueIds;
+    if (new Set(queue).size !== queue.length) add(['queueIds'], 'queue ids must be unique');
+    for (const id of queue) {
+      if (!byId.has(id)) add(['queueIds'], `queue references missing node "${id}"`);
+      if (parentOf.has(id)) add(['queueIds'], `queue node "${id}" must be a current forest root`);
+    }
+    // The queue is the real heapq array, so check heap order instead of
+    // pretending it is a sorted list.
+    for (let index = 1; index < queue.length; index += 1) {
+      const parent = queue[Math.floor((index - 1) / 2)]!;
+      if (!less(parent, queue[index]!)) {
+        add(['queueIds'], 'queueIds must satisfy the min-heap order on (weight, order)');
+        break;
+      }
+    }
+
+    const picked = snapshot.pickedIds;
+    if (picked) {
+      if (picked[0] === picked[1]) add(['pickedIds'], 'the two picked nodes must be different');
+      for (const id of picked) if (!byId.has(id)) add(['pickedIds'], `picked node "${id}" does not exist`);
+    }
+    const created = snapshot.createdId ? byId.get(snapshot.createdId) : undefined;
+    if (snapshot.createdId && !created) add(['createdId'], `created node "${snapshot.createdId}" does not exist`);
+
+    const expectedRoots = (operation: HuffmanOperation): string[] => {
+      if (operation === 'init') return roots.map((node) => node.id);
+      if (operation === 'merge-select') {
+        return roots.filter((node) => !picked?.includes(node.id)).map((node) => node.id);
+      }
+      if (operation === 'merge-create') {
+        return roots.filter((node) => node.id !== snapshot.createdId).map((node) => node.id);
+      }
+      if (operation === 'merge-requeue') return roots.map((node) => node.id);
+      if (nodes.length === 0) return [];
+      return roots.length === 1 ? [roots[0]!.id] : [];
+    };
+    const expected = expectedRoots(snapshot.operation);
+    if (queue.length !== expected.length || queue.some((id) => !expected.includes(id))) {
+      add(['queueIds'], `queueIds does not match the real forest state for operation "${snapshot.operation}"`);
+    }
+
+    const sortedRoots = [...roots].sort((a, b) => {
+      return a.weight - b.weight || a.order - b.order;
+    });
+
+    if (snapshot.operation === 'merge-select') {
+      if (!picked) add(['pickedIds'], 'merge-select must record the two popped nodes');
+      else {
+        if (sortedRoots[0]?.id !== picked[0]) add(['pickedIds'], 'the first popped node must be a minimum root');
+        if (sortedRoots[1]?.id !== picked[1]) add(['pickedIds'], 'the second popped node must be the next minimum root');
+      }
+    }
+
+    if (snapshot.operation === 'merge-create') {
+      if (!picked) add(['pickedIds'], 'merge-create must remember the two popped nodes');
+      if (!created) add(['createdId'], 'merge-create must create an internal parent');
+      else {
+        if (created.leftId !== picked?.[0] || created.rightId !== picked?.[1]) {
+          add(['createdId'], 'the new parent must point at the two popped nodes as left/right');
+        }
+        if (created.symbol !== null) add(['createdId'], 'the new parent must be an internal node');
+        if (created.order !== Math.max(...nodes.map((node) => node.order))) {
+          add(['createdId'], 'the new parent must be the newest node');
+        }
+      }
+      if (snapshot.viaSide !== null) add(['viaSide'], 'merge-create is not an encoding step');
+      if (snapshot.codes.length > 0 || snapshot.metrics !== null) {
+        add(['codes'], 'merge-create must not contain codes or metrics yet');
+      }
+    }
+
+    if (snapshot.operation === 'merge-requeue') {
+      if (!created) add(['createdId'], 'merge-requeue must keep the newly created parent');
+      else {
+        if (created.leftId === null || created.rightId === null) {
+          add(['createdId'], 'a requeued parent must be a real internal node');
+        }
+        if (!queue.includes(created.id)) add(['queueIds'], 'the requeued parent must be present in the real heap');
+      }
+      if (picked) add(['pickedIds'], 'merge-requeue has no current pop pair');
+    }
+
+    if (snapshot.operation === 'init') {
+      if (nodes.some((node) => node.leftId !== null)) add(['nodes'], 'init must only contain independent leaves');
+      if (picked || created || snapshot.metrics || snapshot.codes.length) {
+        add(['operation'], 'init must not contain merge, code or metric state');
+      }
+      if (snapshot.activeNodeId !== null || snapshot.pathIds.length > 0 || snapshot.prefix !== '') {
+        add(['operation'], 'init is not an encoding step');
+      }
+      if (snapshot.result !== null) add(['result'], 'init has no final result');
+    }
+
+    if (snapshot.operation === 'build-done') {
+      if (roots.length !== 1) add(['nodes'], 'build-done requires exactly one final root');
+      if (queue.length !== 1) add(['queueIds'], 'build-done leaves exactly the final root in the heap');
+      if (!snapshot.metrics) add(['metrics'], 'build-done must report WPL and bit metrics');
+      if (snapshot.codes.length > 0) add(['codes'], 'build-done happens before encoding');
+      if (picked || created) add(['operation'], 'build-done has no merge pair');
+      if (snapshot.activeNodeId !== null || snapshot.pathIds.length > 0 || snapshot.prefix !== '') {
+        add(['operation'], 'build-done is not an encoding step');
+      }
+      if (snapshot.result !== null) add(['result'], 'build-done is not the final result');
+    }
+
+    const encoding = snapshot.operation.startsWith('encode-');
+    if (encoding) {
+      if (roots.length !== 1) add(['nodes'], 'encoding needs exactly one root');
+      if (queue.length !== 1 || queue[0] !== roots[0]?.id) {
+        add(['queueIds'], 'during encoding the heap holds only the final root');
+      }
+      if (!snapshot.metrics) add(['metrics'], 'encoding frames must report WPL and bit metrics');
+      if (picked || created) add(['operation'], 'encoding frames have no merge pair');
+      if (snapshot.result !== null) add(['result'], 'encoding frames are not final');
+      if (snapshot.activeNodeId === null) add(['activeNodeId'], 'encoding frames need an active node');
+      if (!snapshot.pathIds.length) add(['pathIds'], 'encoding frames need a real root-to-active path');
+      const activeId = snapshot.activeNodeId as string;
+
+      if (snapshot.operation === 'encode-start') {
+        if (snapshot.activeNodeId !== roots[0]?.id) add(['activeNodeId'], 'encoding starts at the root');
+        if (snapshot.pathIds.length !== 1 || snapshot.pathIds[0] !== roots[0]?.id) {
+          add(['pathIds'], 'encoding-start path must be exactly the root');
+        }
+        if (snapshot.prefix !== '') add(['prefix'], 'encoding starts with an empty prefix');
+        if (snapshot.viaSide !== null) add(['viaSide'], 'the root has no incoming side');
+        if (snapshot.codes.length > 0) add(['codes'], 'encoding starts with an empty table');
+      }
+
+      if (snapshot.operation === 'encode-left' || snapshot.operation === 'encode-right') {
+        const expectedSide = snapshot.operation === 'encode-left' ? 'left' : 'right';
+        if (snapshot.viaSide !== expectedSide) add(['viaSide'], `${snapshot.operation} requires viaSide=${expectedSide}`);
+        const active = byId.get(activeId);
+        if (!active) add(['activeNodeId'], 'active node is missing');
+        else if (active.leftId === null) add(['activeNodeId'], 'a leaf arrival must use encode-leaf');
+        const parentId = parentOf.get(activeId);
+        if (!parentId) add(['activeNodeId'], 'an encoded child must have a parent');
+        else if (snapshot.pathIds[snapshot.pathIds.length - 2] !== parentId) {
+          add(['pathIds'], 'encoding path must contain the active node’s parent');
+        }
+      }
+
+      if (snapshot.operation === 'encode-leaf') {
+        const active = byId.get(activeId);
+        if (!active) add(['activeNodeId'], 'active leaf is missing');
+        else if (active.leftId !== null) add(['activeNodeId'], 'encode-leaf must point at a real leaf');
+        const parentId = parentOf.get(activeId);
+        if (parentId === undefined) {
+          if (snapshot.viaSide !== null) add(['viaSide'], 'a root leaf has no incoming side');
+          if (snapshot.pathIds.length !== 1 || snapshot.pathIds[0] !== snapshot.activeNodeId) {
+            add(['pathIds'], 'a single root leaf must be the whole path');
+          }
+        } else {
+          if (snapshot.viaSide === null) add(['viaSide'], 'a non-root leaf needs the incoming side');
+          if (snapshot.pathIds[snapshot.pathIds.length - 2] !== parentId) {
+            add(['pathIds'], 'encoding path must contain the active leaf’s parent');
+          }
+        }
+        if (!snapshot.codes.some((row) => row.nodeId === snapshot.activeNodeId)) {
+          add(['codes'], 'encode-leaf must append the active leaf’s code');
+        }
+      }
+    }
+
+    if (snapshot.operation === 'done') {
+      if (picked || created) add(['operation'], 'done has no merge pair');
+      if (snapshot.activeNodeId !== null || snapshot.pathIds.length > 0 || snapshot.prefix !== '') {
+        add(['operation'], 'done ends the encoding path');
+      }
+      if (roots.length === 0) {
+        if (snapshot.result !== 'empty') add(['result'], 'an empty input must finish with result=empty');
+        if (snapshot.codes.length > 0) add(['codes'], 'an empty input has no codes');
+        if (queue.length > 0) add(['queueIds'], 'an empty input has an empty queue');
+      } else {
+        if (roots.length !== 1) add(['nodes'], 'done with input requires exactly one final root');
+        if (snapshot.result !== 'encoded') add(['result'], 'a non-empty Huffman run finishes as encoded');
+        if (snapshot.codes.length !== leaves.length) add(['codes'], 'done must contain one code per leaf');
+      }
+    }
+
+    if (
+      snapshot.operation !== 'encode-left' &&
+      snapshot.operation !== 'encode-right' &&
+      snapshot.operation !== 'encode-leaf' &&
+      snapshot.viaSide !== null
+    ) {
+      add(['viaSide'], 'viaSide only belongs to encoding arrival frames');
+    }
+    if (snapshot.operation !== 'merge-select' && snapshot.operation !== 'merge-create' && picked) {
+      add(['pickedIds'], 'pickedIds only belongs to merge frames');
+    }
+    if (
+      snapshot.operation !== 'merge-create' &&
+      snapshot.operation !== 'merge-requeue' &&
+      created
+    ) {
+      add(['createdId'], 'createdId only belongs to the parent creation frames');
+    }
+    if (!encoding && snapshot.operation !== 'done') {
+      if (snapshot.activeNodeId !== null || snapshot.pathIds.length > 0 || snapshot.prefix !== '') {
+        add(['activeNodeId'], 'only encoding frames carry an active path');
+      }
+    }
+
+    if (!snapshot.metrics) {
+      if (snapshot.operation === 'done' && roots.length === 0) {
+        // Empty input still reports explicit zero metrics.
+        add(['metrics'], 'empty done must report zero metrics');
+      }
+      if (snapshot.codes.length > 0) add(['codes'], 'codes require final metrics');
+      return;
+    }
+    const metric = snapshot.metrics;
+
+    // Check every reported metric against the actual tree. This is the point
+    // that catches a pretty picture baked from a precomputed answer.
+    // Empty input finishes with explicit zero metrics; there is no tree to walk.
+    if (roots.length === 0) {
+      if (
+        metric.leafCount !== 0 ||
+        metric.totalWeight !== 0 ||
+        metric.wpl !== 0 ||
+        metric.totalBits !== 0 ||
+        metric.fixedBitsPerChar !== 0 ||
+        metric.fixedBits !== 0
+      ) {
+        add(['metrics'], 'empty metrics must all be zero');
+      }
+      return;
+    }
+    if (roots.length !== 1) {
+      add(['metrics'], 'metrics require exactly one final root');
+      return;
+    }
+    const leafDepths = new Map<string, number>();
+    const leafBits = new Map<string, string>();
+    const walk = (id: string, depth: number, bits: string) => {
+      const node = byId.get(id);
+      if (!node) return;
+      if (node.leftId === null || node.rightId === null) {
+        leafDepths.set(id, depth);
+        leafBits.set(id, bits);
+        return;
+      }
+      walk(node.leftId, depth + 1, `${bits}0`);
+      walk(node.rightId, depth + 1, `${bits}1`);
+    };
+    walk(roots[0]!.id, 0, '');
+    const computedLeafCount = leaves.length;
+    const totalWeight = leaves.reduce((sum, leaf) => sum + leaf.weight, 0);
+    const wpl = leaves.reduce((sum, leaf) => sum + leaf.weight * (leafDepths.get(leaf.id) ?? 0), 0);
+    const single = computedLeafCount === 1;
+    const totalBits = single ? totalWeight : wpl;
+    const fixedBitsPerChar = computedLeafCount <= 1 ? (computedLeafCount === 1 ? 1 : 0) : Math.ceil(Math.log2(computedLeafCount));
+    const fixedBits = totalWeight * fixedBitsPerChar;
+
+    if (metric.leafCount !== computedLeafCount) add(['metrics', 'leafCount'], 'leafCount must match the actual leaves');
+    if (metric.totalWeight !== totalWeight) add(['metrics', 'totalWeight'], 'totalWeight must match the leaf frequencies');
+    if (metric.wpl !== wpl) add(['metrics', 'wpl'], 'WPL must equal Σ(weight × depth) over all leaves');
+    if (metric.totalBits !== totalBits) {
+      add(['metrics', 'totalBits'], single
+        ? 'a single-symbol code uses one actual bit per character'
+        : 'totalBits must equal the real weighted path length');
+    }
+    if (metric.fixedBitsPerChar !== fixedBitsPerChar) {
+      add(['metrics', 'fixedBitsPerChar'], 'fixedBitsPerChar must be ceil(log2(leafCount)), or 1 for one symbol');
+    }
+    if (metric.fixedBits !== fixedBits) add(['metrics', 'fixedBits'], 'fixedBits must equal totalWeight × fixedBitsPerChar');
+
+    if (snapshot.operation === 'merge-create' || snapshot.operation === 'merge-requeue' || snapshot.operation === 'merge-select') {
+      add(['metrics'], 'merge frames happen before final metrics exist');
+    }
+
+    const codeByNode = new Map<string, HuffmanCodeRow>();
+    for (const row of snapshot.codes) {
+      if (codeByNode.has(row.nodeId)) add(['codes'], `duplicate code row for node "${row.nodeId}"`);
+      codeByNode.set(row.nodeId, row);
+      const node = byId.get(row.nodeId);
+      if (!node || node.leftId !== null) {
+        add(['codes'], `code row "${row.symbol}" must point at a leaf`);
+        continue;
+      }
+      if (node.symbol !== row.symbol) add(['codes'], `code row symbol must match leaf "${node.id}"`);
+      if (node.weight !== row.weight) add(['codes'], `code row weight must match leaf "${node.id}"`);
+      if (row.length !== row.code.length) add(['codes'], `code row "${row.symbol}" length must match its code`);
+      if (row.contribution !== row.weight * row.length) {
+        add(['codes'], `code row "${row.symbol}" contribution must be weight × length`);
+      }
+      if (single) {
+        if (row.code !== '0') add(['codes'], 'a single-symbol tree uses the actual code 0');
+      } else {
+        const expectedBits = leafBits.get(node.id);
+        if (expectedBits === undefined || row.code !== expectedBits) {
+          add(['codes'], `code row "${row.symbol}" must follow the real root-to-leaf bits`);
+        }
+      }
+    }
+
+    // `prefix` and `pathIds` are the encoding walk, so both must agree with
+    // the actual parent chain and the actual 0/1 edges.
+    if (encoding) {
+      const path = snapshot.pathIds;
+      if (path[0] !== roots[0]?.id) add(['pathIds'], 'encoding path must start at the root');
+      for (let index = 1; index < path.length; index += 1) {
+        const parent = byId.get(path[index - 1]!);
+        const child = byId.get(path[index]!);
+        if (!parent || !child || (parent.leftId !== child.id && parent.rightId !== child.id)) {
+          add(['pathIds'], 'each encoding path step must follow a real child reference');
+          break;
+        }
+      }
+      if (path[path.length - 1] !== snapshot.activeNodeId) {
+        add(['pathIds'], 'encoding path must end at the active node');
+      }
+      if (new Set(path).size !== path.length) add(['pathIds'], 'encoding path must not contain a cycle');
+      let pathBits = '';
+      for (let index = 1; index < path.length; index += 1) {
+        const parent = byId.get(path[index - 1]!);
+        if (parent?.leftId === path[index]) pathBits += '0';
+        else if (parent?.rightId === path[index]) pathBits += '1';
+        else pathBits += '?';
+      }
+      if (snapshot.operation !== 'encode-start' && snapshot.prefix !== pathBits) {
+        add(['prefix'], 'prefix must equal the real bits from the root to the active node');
+      }
+      if (path.length > HUFFMAN_LIMITS.MAX_CODE_BITS + 1) add(['pathIds'], 'encoding path is too deep');
+    }
+
+    if (snapshot.operation === 'done' && roots.length > 0) {
+      for (const leaf of leaves) {
+        const row = codeByNode.get(leaf.id);
+        if (!row) add(['codes'], `done is missing the code for leaf "${leaf.symbol ?? leaf.id}"`);
+        else if (row.length !== (single ? 1 : leafDepths.get(leaf.id))) {
+          add(['codes'], `leaf "${leaf.symbol ?? leaf.id}" code length must equal its real depth`);
+        }
+      }
+    }
+  });
+export type HuffmanSnapshot = z.infer<typeof huffmanSnapshotSchema>;
+
+/** Stage 7B stack/queue + Stage 7C linked-list + Stage 7D binary-tree + T1 BST + T2 AVL + T3 max-heap + T4 Huffman + Stage 7E/7F/G1/G2/G3/G4 graphs. */
 export const structureSchema = z.union([
+  huffmanSnapshotSchema,
   maxHeapSnapshotSchema,
   structureSnapshotSchema,
   linkedListSnapshotSchema,

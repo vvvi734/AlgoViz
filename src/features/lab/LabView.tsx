@@ -5,6 +5,7 @@ import { TreeTraversalPicker } from './TreeTraversalPicker';
 import { BstPicker } from './BstPicker';
 import { AvlPicker } from './AvlPicker';
 import { HeapPicker } from './HeapPicker';
+import { HuffmanPicker } from './HuffmanPicker';
 import { Timeline } from './Timeline';
 import { CodeDock } from './CodeDock';
 import { SyncPanel } from './SyncPanel';
@@ -30,6 +31,7 @@ import { stepIndexForEvent } from '../../domain/lessons/sync';
 import { bstPresetFromInput } from '../../domain/algorithms/bstExamples';
 import { avlPresetFromInput } from '../../domain/algorithms/avlExamples';
 import { heapPresetFromInput } from '../../domain/algorithms/heapExamples';
+import { huffmanPresetFromInput } from '../../domain/algorithms/huffmanExamples';
 import { useI18n } from '../../i18n/I18nProvider';
 import { useTheme } from '../../theme/ThemeProvider';
 
@@ -75,6 +77,7 @@ export function LabView({
   const showBstPicker = lab.currentAlgo === 'bst' && lab.codeLang === 'python';
   const showAvlPicker = lab.currentAlgo === 'avl' && lab.codeLang === 'python';
   const showHeapPicker = lab.currentAlgo === 'heap' && lab.codeLang === 'python';
+  const showHuffmanPicker = lab.currentAlgo === 'huffman' && lab.codeLang === 'python';
   const actualBstPreset =
     currentEvent?.structure?.kind === 'bst'
       ? bstPresetFromInput({ preset: currentEvent.structure.preset })
@@ -86,6 +89,10 @@ export function LabView({
   const actualHeapPreset =
     currentEvent?.structure?.kind === 'max-heap'
       ? heapPresetFromInput({ preset: currentEvent.structure.preset })
+      : null;
+  const actualHuffmanPreset =
+    currentEvent?.structure?.kind === 'huffman'
+      ? huffmanPresetFromInput({ preset: currentEvent.structure.preset })
       : null;
   const showGraphStepPeek =
     lab.currentAlgo === 'bfs' || lab.currentAlgo === 'dfs' || lab.currentAlgo === 'dijkstra' ||
@@ -343,6 +350,13 @@ export function LabView({
                 inputJson={lab.inputJson}
                 actualPreset={actualHeapPreset}
                 onSelect={lab.selectHeapPreset}
+              />
+            ) : null}
+            {showHuffmanPicker ? (
+              <HuffmanPicker
+                inputJson={lab.inputJson}
+                actualPreset={actualHuffmanPreset}
+                onSelect={lab.selectHuffmanPreset}
               />
             ) : null}
             <Timeline events={lab.events} playback={lab.playback} />

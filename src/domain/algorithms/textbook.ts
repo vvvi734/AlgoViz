@@ -264,9 +264,8 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
       },
       {
         id: 'huffman',
-        title: { zh: '赫夫曼树及其应用', en: 'Huffman trees and applications' },
-        algorithms: [],
-        planned: true,
+        title: { zh: '哈夫曼树与哈夫曼编码', en: 'Huffman trees and Huffman coding' },
+        algorithms: [{ id: 'huffman' }],
       },
     ],
   },

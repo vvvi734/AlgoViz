@@ -15,6 +15,7 @@ import { binaryTreeLesson } from './binaryTree';
 import { bstLesson } from './bstLesson';
 import { avlLesson } from './avlLesson';
 import { heapLesson } from './heapLesson';
+import { huffmanLesson } from './huffmanLesson';
 import { bfsLesson, dfsLesson } from './graphLessons';
 import { dijkstraLesson } from './dijkstraLesson';
 import { floydWarshallLesson } from './floydWarshallLesson';
@@ -67,6 +68,7 @@ const BUNDLED: unknown[] = [
   bstLesson,
   avlLesson,
   heapLesson,
+  huffmanLesson,
   bfsLesson,
   dfsLesson,
   dijkstraLesson,

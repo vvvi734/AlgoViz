@@ -50,6 +50,10 @@ import {
   HEAP_DEFAULT_INPUT,
   HEAP_PYTHON,
 } from './heapExamples';
+import {
+  HUFFMAN_DEFAULT_INPUT,
+  HUFFMAN_PYTHON,
+} from './huffmanExamples';
 
 export const STACK_DEFAULT_INPUT: unknown = [
   ['push', 3],
@@ -174,6 +178,7 @@ const STRUCTURE_PYTHON: Record<string, string> = {
   components: connectedComponentsPythonExample(),
   scc: kosarajuPythonExample(),
   heap: HEAP_PYTHON,
+  huffman: HUFFMAN_PYTHON,
 };
 
 const STRUCTURE_INPUT: Record<string, unknown> = {
@@ -194,6 +199,7 @@ const STRUCTURE_INPUT: Record<string, unknown> = {
   components: CONNECTED_COMPONENTS_DEFAULT_INPUT,
   scc: SCC_DEFAULT_INPUT,
   heap: HEAP_DEFAULT_INPUT,
+  huffman: HUFFMAN_DEFAULT_INPUT,
 };
 
 export function structurePythonExample(algorithmId: string): string | undefined {

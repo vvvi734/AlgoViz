@@ -19,6 +19,7 @@ import type {
   BstSnapshot,
   KosarajuSnapshot,
   MaxHeapSnapshot,
+  HuffmanSnapshot,
   TopologicalSortSnapshot,
   TraceEvent,
   WeightedGraphSnapshot,
@@ -640,6 +641,131 @@ function heapInsight(
   };
 }
 
+function huffmanInsight(
+  snapshot: HuffmanSnapshot,
+  lang: LessonLang,
+  hasStep: boolean,
+  lesson: Lesson | undefined,
+  event: TraceEvent,
+  previousEvent: TraceEvent | undefined,
+): FrameInsight {
+  const byId = new Map(snapshot.nodes.map((node) => [node.id, node]));
+  const label = (id: string | null) => {
+    if (!id) return '—';
+    const node = byId.get(id);
+    if (!node) return id;
+    return node.symbol === null ? `Σ${node.weight}(${node.id})` : `${node.symbol}=${node.weight}(${node.id})`;
+  };
+  const previous = previousEvent?.structure?.kind === 'huffman' ? previousEvent.structure : undefined;
+  const rootId = snapshot.nodes.find((node) => !snapshot.nodes.some((other) => other.leftId === node.id || other.rightId === node.id))?.id ?? null;
+  const metrics = snapshot.metrics;
+
+  const action = (() => {
+    switch (snapshot.operation) {
+      case 'init':
+        return tx(lang, `初始化：${snapshot.nodes.length} 个字符各自成为叶子并进入最小堆`, `Init: ${snapshot.nodes.length} symbols become leaves in the min-heap`);
+      case 'merge-select':
+        return tx(lang, `取出两个最小根：${label(snapshot.pickedIds?.[0] ?? null)} 与 ${label(snapshot.pickedIds?.[1] ?? null)}`, `Pop the two minima: ${label(snapshot.pickedIds?.[0] ?? null)} and ${label(snapshot.pickedIds?.[1] ?? null)}`);
+      case 'merge-create': {
+        const created = snapshot.createdId ? byId.get(snapshot.createdId) : undefined;
+        const left = created?.leftId ? byId.get(created.leftId) : undefined;
+        const right = created?.rightId ? byId.get(created.rightId) : undefined;
+        return tx(
+          lang,
+          `合并出新父节点 ${label(snapshot.createdId)}，权值 ${left?.weight ?? '?'}+${right?.weight ?? '?'}=${created?.weight ?? '?'}`,
+          `Create parent ${label(snapshot.createdId)} with weight ${left?.weight ?? '?'}+${right?.weight ?? '?'}=${created?.weight ?? '?'}`,
+        );
+      }
+      case 'merge-requeue':
+        return tx(lang, `新父节点 ${label(snapshot.createdId)} 重新入堆；当前堆顶 ${label(snapshot.queueIds[0] ?? null)}`, `Requeue ${label(snapshot.createdId)}; heap top is ${label(snapshot.queueIds[0] ?? null)}`);
+      case 'build-done':
+        return tx(lang, `建树完成：森林只剩根 ${label(rootId)}，WPL=${metrics?.wpl ?? '—'}`, `Build complete: single root ${label(rootId)}, WPL=${metrics?.wpl ?? '—'}`);
+      case 'encode-start':
+        return tx(lang, `从根 ${label(snapshot.activeNodeId)} 开始编码，左 0 右 1`, `Encode from root ${label(snapshot.activeNodeId)}; left 0, right 1`);
+      case 'encode-left':
+        return tx(lang, `走左分支追加 0，前缀 ${snapshot.prefix || '(空)'} → ${label(snapshot.activeNodeId)}`, `Take left and append 0: prefix ${snapshot.prefix || '(empty)'} → ${label(snapshot.activeNodeId)}`);
+      case 'encode-right':
+        return tx(lang, `走右分支追加 1，前缀 ${snapshot.prefix || '(空)'} → ${label(snapshot.activeNodeId)}`, `Take right and append 1: prefix ${snapshot.prefix || '(empty)'} → ${label(snapshot.activeNodeId)}`);
+      case 'encode-leaf': {
+        const node = snapshot.activeNodeId ? byId.get(snapshot.activeNodeId) : undefined;
+        const code = snapshot.codes.find((row) => row.nodeId === snapshot.activeNodeId)?.code;
+        return tx(lang, `到达叶子 ${node?.symbol ?? '?'}，编码 ${code ?? '?'}，码长 ${code?.length ?? 0}`, `Leaf ${node?.symbol ?? '?'} reached: code ${code ?? '?'}, length ${code?.length ?? 0}`);
+      }
+      case 'done':
+        return snapshot.result === 'empty'
+          ? tx(lang, '空输入：不建树、不编码，WPL 与位数均为 0', 'Empty input: no tree, no codes, WPL and bits are 0')
+          : tx(lang, `编码完成：${metrics?.leafCount ?? 0} 个前缀码，WPL=${metrics?.wpl ?? '—'}，共 ${metrics?.totalBits ?? '—'} 位`, `Encoding complete: ${metrics?.leafCount ?? 0} prefix codes, WPL=${metrics?.wpl ?? '—'}, ${metrics?.totalBits ?? '—'} bits`);
+    }
+  })();
+
+  const fallbackWhy = tx(
+    lang,
+    '哈夫曼建树与编码读同一份真实 Python 快照：树、最小堆和编码表同时来自当前帧。',
+    'Huffman build and coding read one real Python snapshot: tree, min-heap and code table all come from the current frame.',
+  );
+  const changes: FrameChange[] = [];
+  const previousQueue = previous?.queueIds.length ?? null;
+  changes.push({
+    label: tx(lang, '最小堆大小', 'heap size'),
+    before: previousQueue === null ? undefined : String(previousQueue),
+    after: String(snapshot.queueIds.length),
+    detail: snapshot.queueIds.length ? snapshot.queueIds.join(' ') : tx(lang, '空', 'empty'),
+    tone: snapshot.queueIds.length !== previousQueue ? 'update' : 'neutral',
+  });
+  if (snapshot.pickedIds) {
+    changes.push({
+      label: tx(lang, '取出的两个最小根', 'popped minima'),
+      after: snapshot.pickedIds.map((id) => label(id)).join(' + '),
+      tone: 'warning',
+    });
+  }
+  if (snapshot.createdId) {
+    const created = byId.get(snapshot.createdId);
+    changes.push({
+      label: tx(lang, '新父节点', 'new parent'),
+      before: snapshot.operation === 'merge-create' ? tx(lang, '尚未入堆', 'not yet in heap') : undefined,
+      after: created ? `${created.id}: ${created.weight}` : snapshot.createdId,
+      tone: 'success',
+    });
+  }
+  if (snapshot.operation === 'build-done' && rootId) {
+    changes.push({ label: tx(lang, '唯一根', 'single root'), after: label(rootId), tone: 'success' });
+  }
+  if (snapshot.activeNodeId) {
+    changes.push({
+      label: tx(lang, 'active / 当前前缀', 'active / prefix'),
+      after: `${label(snapshot.activeNodeId)} · ${snapshot.prefix || '(空)'}`,
+      tone: 'update',
+    });
+  }
+  if (snapshot.operation === 'encode-leaf') {
+    const row = snapshot.codes.find((item) => item.nodeId === snapshot.activeNodeId);
+    if (row) {
+      changes.push({
+        label: tx(lang, '新增编码行', 'new code row'),
+        after: `${row.symbol} → ${row.code} (${row.length})`,
+        tone: 'success',
+      });
+    }
+  }
+  if (metrics) {
+    changes.push({
+      label: tx(lang, 'WPL / 实际总位数', 'WPL / total bits'),
+      after: `${metrics.wpl} / ${metrics.totalBits}`,
+      detail: tx(lang, `定长 ${metrics.fixedBitsPerChar} 位/字符 → ${metrics.fixedBits} 位`, `fixed ${metrics.fixedBitsPerChar} bits/symbol → ${metrics.fixedBits} bits`),
+      tone: 'neutral',
+    });
+  }
+
+  return {
+    semantic: true,
+    action,
+    why: hasStep ? firstSentence(lesson?.steps.find((step) => step.stepId === event.lessonStepId)?.explanation[lang] ?? fallbackWhy) : fallbackWhy,
+    changes: changes.slice(0, 4),
+    memory: hasStep ? firstSentence(lesson?.steps.find((step) => step.stepId === event.lessonStepId)?.tip?.[lang] ?? '', 140) || null : null,
+  };
+}
+
 function dijkstraInsight(
   snapshot: WeightedGraphSnapshot,
   lang: LessonLang,
@@ -1132,6 +1258,8 @@ export function buildFrameInsight(
         return { semantic: true, ...treeAction(structure, lang, true), memory: activeStep?.tip ? firstSentence(activeStep.tip[lang], 140) : null };
       case 'max-heap':
         return heapInsight(structure, lang, hasStep, lesson, currentEvent, previousEvent);
+      case 'huffman':
+        return huffmanInsight(structure, lang, hasStep, lesson, currentEvent, previousEvent);
       default:
         break;
     }

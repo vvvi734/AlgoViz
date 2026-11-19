@@ -1,0 +1,668 @@
+/* T4: Huffman build + coding. Three regions read one Python trace:
+   the tree canvas keeps fixed node size and scrolls, the narrow queue column
+   shows the real heapq order, and the code table grows one leaf at a time. */
+
+.huffman-visual {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  color: var(--txt);
+  font-size: 12px;
+  z-index: 1;
+}
+
+.huffman-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 5px 10px;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.huffman-op-group {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+}
+
+.huffman-phase {
+  display: inline-flex;
+  align-items: center;
+  height: 19px;
+  padding: 0 7px;
+  border: 1px solid var(--edge);
+  border-radius: 999px;
+  background: var(--panel-2);
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.huffman-phase.is-build {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.huffman-phase.is-encode {
+  border-color: var(--warn);
+  color: var(--warn);
+}
+
+.huffman-phase.is-done {
+  border-color: var(--accent-2);
+  color: var(--accent-2);
+}
+
+.huffman-command {
+  color: var(--accent);
+  font-weight: 850;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 420px;
+}
+
+.huffman-metrics,
+.huffman-code-metrics {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.huffman-metric {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+  padding: 2px 7px;
+  border: 1px solid var(--edge);
+  border-radius: 999px;
+  background: var(--panel-2);
+  color: var(--muted);
+  font-size: 9.5px;
+  white-space: nowrap;
+}
+
+.huffman-metric b {
+  color: var(--txt);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+.huffman-main {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) clamp(148px, 19%, 196px);
+  gap: 7px;
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 150px;
+}
+
+.huffman-tree-panel,
+.huffman-queue-panel,
+.huffman-code-panel {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  border: 1px solid var(--stage-edge);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--panel-2) 72%, transparent);
+  overflow: hidden;
+}
+
+.huffman-tree-panel.is-focus-on,
+.huffman-queue-panel.is-focus-on,
+.huffman-code-panel.is-focus-on {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 22%, transparent) inset;
+}
+
+.huffman-tree-panel.is-focus-off,
+.huffman-queue-panel.is-focus-off,
+.huffman-code-panel.is-focus-off {
+  opacity: 0.88;
+}
+
+.huffman-panel-head,
+.huffman-code-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 6px;
+  flex: 0 0 auto;
+  min-width: 0;
+  padding: 4px 7px 3px;
+  border-bottom: 1px solid var(--edge);
+}
+
+.huffman-panel-title {
+  color: var(--txt);
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.huffman-panel-note {
+  color: var(--muted);
+  font-size: 8.5px;
+  font-weight: 650;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.huffman-tree-scroll {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: 2px;
+}
+
+.huffman-svg {
+  display: block;
+  flex: 0 0 auto;
+  overflow: visible;
+}
+
+.huffman-tree-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 120px;
+  padding: 16px;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.55;
+  text-align: center;
+}
+
+.huffman-edge line {
+  stroke: var(--graph-line);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  opacity: 0.86;
+}
+
+.huffman-edge.is-on-path line {
+  stroke: var(--accent);
+  stroke-width: 3.3;
+  opacity: 1;
+}
+
+.huffman-edge.is-active line {
+  stroke: var(--warn);
+  stroke-width: 3.8;
+}
+
+.huffman-edge.is-picked line {
+  stroke: var(--warn);
+  stroke-width: 3.2;
+  stroke-dasharray: 5 3;
+}
+
+.huffman-edge rect {
+  fill: var(--panel);
+  stroke: var(--edge);
+  stroke-width: 1;
+}
+
+.huffman-edge text {
+  fill: var(--muted);
+  font-size: 9px;
+  font-weight: 850;
+  pointer-events: none;
+}
+
+.huffman-edge.is-on-path rect {
+  stroke: var(--accent);
+}
+
+.huffman-edge.is-on-path text {
+  fill: var(--accent);
+}
+
+.huffman-edge.is-active rect {
+  stroke: var(--warn);
+}
+
+.huffman-edge.is-active text {
+  fill: var(--warn);
+}
+
+.huffman-node {
+  pointer-events: none;
+}
+
+.huffman-node-box {
+  fill: var(--node-bg);
+  stroke: var(--node-edge);
+  stroke-width: 2;
+  transition: stroke 120ms ease, fill 120ms ease;
+}
+
+.huffman-node-id {
+  fill: var(--muted);
+  font-size: 7.5px;
+  font-weight: 750;
+  font-family: var(--mono, ui-monospace, monospace);
+}
+
+.huffman-node-tag {
+  fill: var(--accent);
+  font-size: 6.5px;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+}
+
+.huffman-node-symbol {
+  fill: var(--node-fg);
+  font-size: 17px;
+  font-weight: 850;
+  dominant-baseline: middle;
+  font-variant-numeric: tabular-nums;
+}
+
+.huffman-node-weight {
+  fill: var(--txt);
+  font-size: 10px;
+  font-weight: 800;
+  dominant-baseline: middle;
+  font-variant-numeric: tabular-nums;
+}
+
+.huffman-node-code {
+  fill: var(--muted);
+  font-size: 7px;
+  font-weight: 700;
+  dominant-baseline: middle;
+  font-family: var(--mono, ui-monospace, monospace);
+}
+
+.huffman-node.is-internal .huffman-node-symbol {
+  fill: var(--muted);
+  font-size: 15px;
+}
+
+.huffman-node.is-picked .huffman-node-box {
+  stroke: var(--warn);
+  stroke-width: 3.2;
+  stroke-dasharray: 5 3;
+}
+
+.huffman-node.is-created .huffman-node-box {
+  stroke: var(--accent-2);
+  stroke-width: 3.8;
+  fill: var(--node-focus-bg);
+}
+
+.huffman-node.is-on-path .huffman-node-box {
+  stroke: var(--accent);
+  stroke-width: 2.6;
+}
+
+.huffman-node.is-active .huffman-node-box {
+  stroke: var(--warn);
+  stroke-width: 4.2;
+  fill: var(--node-focus-bg);
+  filter: drop-shadow(0 0 6px var(--node-focus-ring));
+}
+
+.huffman-node.is-encoded .huffman-node-box {
+  fill: var(--node-focus-bg);
+}
+
+.huffman-queue-body {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: 4px 5px;
+}
+
+.huffman-queue-note {
+  flex: 0 0 auto;
+  color: var(--muted);
+  font-size: 8px;
+  line-height: 1.35;
+  font-family: var(--mono, ui-monospace, monospace);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.huffman-queue-banner {
+  flex: 0 0 auto;
+  padding: 3px 6px;
+  border: 1px dashed var(--accent-2);
+  border-radius: 5px;
+  color: var(--accent-2);
+  font-size: 8.5px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.huffman-queue-entry {
+  display: grid;
+  grid-template-columns: 30px 24px minmax(24px, auto) minmax(0, 1fr);
+  align-items: center;
+  gap: 4px;
+  flex: 0 0 auto;
+  min-height: 24px;
+  padding: 2px 4px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: var(--panel-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.huffman-queue-entry.is-out,
+.huffman-queue-entry.is-picked {
+  border-color: var(--warn);
+  background: var(--alg-active-bg);
+}
+
+.huffman-queue-entry.is-created {
+  border-color: var(--accent-2);
+}
+
+.huffman-queue-rank {
+  color: var(--muted);
+  font-size: 8px;
+  font-weight: 750;
+  white-space: nowrap;
+}
+
+.huffman-queue-rank.is-out {
+  color: var(--warn);
+  font-size: 7px;
+  letter-spacing: 0.02em;
+}
+
+.huffman-queue-rank.is-new {
+  color: var(--accent-2);
+  font-size: 7px;
+  font-weight: 850;
+}
+
+.huffman-queue-symbol {
+  color: var(--node-fg);
+  font-size: 12px;
+  font-weight: 850;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.huffman-queue-weight {
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 850;
+  text-align: right;
+}
+
+.huffman-queue-id {
+  color: var(--muted);
+  font-size: 7.5px;
+  font-family: var(--mono, ui-monospace, monospace);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.huffman-queue-tag {
+  grid-column: 2 / -1;
+  color: var(--accent-2);
+  font-size: 7px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+}
+
+.huffman-queue-empty {
+  padding: 8px 4px;
+  color: var(--muted);
+  font-size: 9.5px;
+  line-height: 1.45;
+}
+
+.huffman-code-panel {
+  flex: 0 0 auto;
+  min-height: 126px;
+  max-height: 188px;
+}
+
+/* The finished code table is the answer of the lab: let all six official rows
+   fit instead of leaving the last row behind an avoidable inner scroll. */
+.huffman-visual[data-phase='done'] .huffman-code-panel {
+  max-height: 248px;
+  min-height: 210px;
+}
+
+.huffman-code-head {
+  align-items: center;
+}
+
+.huffman-code-title {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.huffman-fixed-note {
+  color: var(--muted);
+  font-size: 8.5px;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.huffman-code-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+.huffman-code-table {
+  width: 100%;
+  min-width: 420px;
+  border-collapse: collapse;
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+}
+
+.huffman-code-table th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: 3px 7px;
+  border-bottom: 1px solid var(--edge);
+  background: var(--panel-2);
+  color: var(--muted);
+  font-size: 8px;
+  font-weight: 750;
+  letter-spacing: 0.025em;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.huffman-code-table th:first-child,
+.huffman-code-table td:first-child {
+  text-align: left;
+}
+
+.huffman-code-table td {
+  padding: 3px 7px;
+  border-bottom: 1px solid color-mix(in srgb, var(--edge) 62%, transparent);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.huffman-code-table tbody tr.is-active {
+  background: var(--alg-active-bg);
+}
+
+.huffman-code-table tbody tr.is-active td {
+  color: var(--warn);
+  font-weight: 800;
+}
+
+.huffman-code-symbol {
+  color: var(--node-fg);
+  font-weight: 850;
+}
+
+.huffman-code-bits {
+  color: var(--accent);
+  font-family: var(--mono, ui-monospace, monospace);
+  font-weight: 750;
+  letter-spacing: 0.08em;
+}
+
+.huffman-code-empty {
+  padding: 10px 9px;
+  color: var(--muted);
+  font-size: 9.5px;
+  line-height: 1.5;
+}
+
+.huffman-note {
+  flex: 0 0 auto;
+  padding: 3px 8px 4px;
+  color: var(--muted);
+  font-size: 8.4px;
+  line-height: 1.4;
+  border-top: 1px dashed var(--edge);
+}
+
+.huffman-note.is-warning {
+  border-top-color: var(--warn);
+  color: var(--warn);
+}
+
+.huffman-pathbar {
+  display: flex;
+  align-items: center;
+  gap: 5px 8px;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  min-width: 0;
+  padding: 1px 2px 0;
+  color: var(--muted);
+  font-size: 9px;
+}
+
+.huffman-path-label,
+.huffman-prefix-label {
+  font-weight: 750;
+  white-space: nowrap;
+}
+
+.huffman-path-value {
+  max-width: 40%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--txt);
+  font-family: var(--mono, ui-monospace, monospace);
+}
+
+.huffman-prefix-value {
+  color: var(--accent);
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: 0.06em;
+}
+
+.huffman-hint {
+  flex: 1 1 220px;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+  .huffman-main {
+    grid-template-columns: minmax(0, 1fr) clamp(132px, 24%, 168px);
+  }
+
+  .huffman-code-panel {
+    max-height: 164px;
+  }
+
+  .huffman-command {
+    max-width: 260px;
+  }
+
+  .huffman-hint {
+    display: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .huffman-main {
+    grid-template-columns: minmax(0, 1fr) 122px;
+    min-height: 138px;
+  }
+
+  .huffman-panel-note,
+  .huffman-queue-note,
+  .huffman-fixed-note {
+    display: none;
+  }
+
+  .huffman-command {
+    max-width: 190px;
+    font-size: 11px;
+  }
+
+  .huffman-metric:not(:first-child):not([data-testid]) {
+    display: none;
+  }
+
+  .huffman-code-panel {
+    min-height: 118px;
+    max-height: 150px;
+  }
+
+  .huffman-code-table {
+    min-width: 0;
+    font-size: 9px;
+  }
+
+  .huffman-code-table th,
+  .huffman-code-table td {
+    padding: 2px 4px;
+  }
+
+  .huffman-pathbar {
+    font-size: 8.5px;
+  }
+
+  .huffman-path-value {
+    max-width: 48%;
+  }
+}

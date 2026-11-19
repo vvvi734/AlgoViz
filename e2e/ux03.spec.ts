@@ -68,9 +68,9 @@ test.describe('UX-03 — textbook navigation', () => {
       await expect(page.getByTestId(`chapter-${id}`)).toHaveAttribute('aria-expanded', 'false');
     }
 
-    // 26 shipped algorithms, each rendered once with exactly one primary home.
+    // 27 shipped algorithms, each rendered once with exactly one primary home.
     const algorithms = page.locator('[data-testid^="algo-"]');
-    await expect(algorithms).toHaveCount(26);
+    await expect(algorithms).toHaveCount(27);
     const placements = await algorithms.evaluateAll((nodes) =>
       nodes.map((node) => ({
         id: node.getAttribute('data-testid'),
@@ -78,7 +78,7 @@ test.describe('UX-03 — textbook navigation', () => {
         topic: node.getAttribute('data-topic'),
       })),
     );
-    expect(new Set(placements.map((item) => item.id)).size).toBe(26);
+    expect(new Set(placements.map((item) => item.id)).size).toBe(27);
     for (const item of placements) {
       expect(item.chapter).toBeTruthy();
       expect(item.topic).toBeTruthy();
@@ -107,10 +107,11 @@ test.describe('UX-03 — textbook navigation', () => {
     await expect(page.getByTestId('topic-graph-basics')).toHaveAttribute('aria-disabled', 'true');
     await expect(page.getByTestId('topic-graph-basics').getByRole('button')).toHaveCount(0);
 
-    // BST/AVL belong to 查找, Huffman is a planned 树 topic, not an algorithm.
+    // BST/AVL belong to 查找, while Huffman is now an authored 树 algorithm.
     await openTextbookChapter(page, 'ch6-tree');
-    await expect(page.getByTestId('topic-huffman')).toHaveAttribute('aria-disabled', 'true');
-    await expect(page.getByTestId('algo-huffman')).toHaveCount(0);
+    await expect(page.getByTestId('topic-huffman')).toHaveAttribute('data-kind', 'algorithm');
+    await expect(page.getByTestId('topic-huffman')).toHaveAttribute('data-direct', 'true');
+    await expect(page.getByTestId('algo-huffman')).toBeVisible();
     await openTextbookChapter(page, 'ch8-search');
     await openTextbookTopic(page, 'bst');
     await openTextbookTopic(page, 'avl');
