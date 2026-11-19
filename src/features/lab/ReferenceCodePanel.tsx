@@ -1,14 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
 import {
-  REFERENCE_CONVENIENCE_SOURCE_NOTES,
   REFERENCE_LANGUAGE_LABELS,
   REFERENCE_LANGUAGES,
   REFERENCE_LICENSE,
-  REFERENCE_SOURCE_NOTES,
   loadReferenceCode,
   referenceFileMeta,
   referenceImplementations,
   referenceLanguages,
+  referenceSourceNote,
   type ReferenceImplementation,
   type ReferenceLanguage,
 } from '../../domain/reference-code/registry';
@@ -251,11 +250,7 @@ export function ReferenceCodePanel({
 
           <footer className="reference-source" data-testid="reference-source">
             <b>{t('referenceSourceLabel')}</b>
-            <span>
-              {activeImplementation === 'principle'
-                ? REFERENCE_SOURCE_NOTES[language][lang]
-                : REFERENCE_CONVENIENCE_SOURCE_NOTES[language][lang]}
-            </span>
+            <span>{referenceSourceNote(algorithmId, language, activeImplementation)[lang]}</span>
             <span className="reference-license">MIT License · AlgoViz contributors</span>
           </footer>
         </>

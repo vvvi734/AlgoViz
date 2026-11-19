@@ -1,0 +1,27 @@
+"""AlgoViz convenience implementation: sorted list with bisect.
+
+Original code written for this repository under the MIT License.
+bisect.insort keeps the list sorted after each insertion; membership
+uses bisect_left. This is O(n) per insertion because list shifts.
+"""
+
+from __future__ import annotations
+
+from bisect import bisect_left, insort
+
+
+def main() -> None:
+    tree: list[int] = []
+    for key in [5, 2, 7, 1, 4, 6, 8, 3]:
+        insort(tree, key)
+
+    print("inorder:", tree)
+    print("contains 4:", tree[bisect_left(tree, 4)] == 4)
+    print("contains 9:", bisect_left(tree, 9) < len(tree) and tree[bisect_left(tree, 9)] == 9)
+
+    tree.remove(5)
+    print("after remove 5:", tree)
+
+
+if __name__ == "__main__":
+    main()

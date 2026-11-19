@@ -112,11 +112,11 @@ describe('ReferenceCodePanel', () => {
       expect(screen.getByTestId('reference-code-fallback').textContent).toContain('compare_int'),
     );
 
-    rerender(panel('binary', '二分查找'));
+    rerender(panel('merge', '归并排序'));
     await waitFor(() =>
-      expect(screen.getByTestId('reference-code-fallback').textContent).toContain('int binary_search'),
+      expect(screen.getByTestId('reference-code-fallback').textContent).toContain('void merge_sort'),
     );
-    expect(screen.getByTestId('reference-file-name').textContent).toBe('binary_search.c');
+    expect(screen.getByTestId('reference-file-name').textContent).toBe('merge_sort.c');
     expect(screen.queryByTestId('reference-implementation-tabs')).toBeNull();
   });
 
@@ -137,7 +137,7 @@ describe('ReferenceCodePanel', () => {
   });
 
   it('shows an explicit unavailable state instead of borrowing another algorithm code', () => {
-    renderPanel('shell', '希尔排序');
+    renderPanel('unknown-algorithm', '未知算法');
     expect(screen.getByTestId('reference-code-unavailable').textContent).toContain('暂未收录');
     expect(screen.queryByTestId('reference-lang-c')).toBeNull();
     expect(screen.queryByTestId('reference-code-viewer')).toBeNull();

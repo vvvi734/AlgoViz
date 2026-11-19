@@ -12,15 +12,41 @@ import {
 } from './registry';
 
 describe('three-language reference registry', () => {
-  it('registers the seven covered algorithms with all three principle implementations', () => {
+  it('registers all 33 formal courses with three principle implementations', () => {
     expect(REFERENCE_CODE_ALGORITHMS.sort()).toEqual([
+      'avl',
+      'bellman-ford',
+      'bfs',
       'binary',
+      'bst',
       'bubble',
+      'circular',
+      'components',
+      'critical-path',
+      'dfs',
       'dijkstra',
+      'doubly',
+      'factorial',
+      'floyd-warshall',
+      'hash-chain',
+      'hash-probe',
+      'heap',
+      'huffman',
+      'inorder',
       'insertion',
+      'kruskal',
+      'linear',
       'linked',
       'merge',
+      'prim',
+      'queue',
+      'quick',
+      'scc',
       'selection',
+      'seqlist',
+      'shell',
+      'stack',
+      'topological',
     ]);
     for (const algorithmId of REFERENCE_CODE_ALGORITHMS) {
       expect(referenceLanguages(algorithmId)).toEqual(REFERENCE_LANGUAGES);
@@ -32,8 +58,8 @@ describe('three-language reference registry', () => {
     }
   });
 
-  it('exposes convenience versions only for the three sorts and shares one resource', () => {
-    for (const algorithmId of ['bubble', 'selection', 'insertion']) {
+  it('exposes shared convenience versions for the sorts and search', () => {
+    for (const algorithmId of ['bubble', 'selection', 'insertion', 'shell', 'quick']) {
       for (const language of REFERENCE_LANGUAGES) {
         expect(referenceImplementations(algorithmId, language)).toEqual(['principle', 'convenience']);
         expect(referenceFileMeta(algorithmId, language, 'convenience')).toMatchObject({
@@ -42,15 +68,30 @@ describe('three-language reference registry', () => {
         });
       }
     }
-    expect(referenceImplementations('binary', 'c')).toEqual(['principle']);
-    expect(referenceFileMeta('binary', 'c', 'convenience')).toBeNull();
+    for (const language of REFERENCE_LANGUAGES) {
+      expect(referenceImplementations('binary', language)).toEqual(['principle', 'convenience']);
+      expect(referenceFileMeta('binary', language, 'convenience')).toMatchObject({
+        fileName: 'builtin_search.' + (language === 'python' ? 'py' : language),
+        path: 'shared/builtin_search.' + (language === 'python' ? 'py' : language),
+      });
+    }
   });
 
-  it('keeps the remaining 26 formal courses in the backlog instead of inventing code', () => {
-    expect(REFERENCE_CODE_BACKLOG).toHaveLength(26);
+  it('offers convenience versions only where a language adds a distinct route', () => {
+    expect(referenceImplementations('merge', 'c')).toEqual(['principle']);
+    expect(referenceImplementations('stack', 'c')).toEqual(['principle']);
+    expect(referenceImplementations('stack', 'cpp')).toEqual(['principle', 'convenience']);
+    expect(referenceImplementations('stack', 'python')).toEqual(['principle', 'convenience']);
+    expect(referenceImplementations('factorial', 'python')).toEqual(['principle', 'convenience']);
+    expect(referenceImplementations('factorial', 'cpp')).toEqual(['principle']);
+    expect(referenceImplementations('avl', 'c')).toEqual(['principle']);
+  });
+
+  it('has no remaining formal course outside the registry', () => {
+    expect(REFERENCE_CODE_BACKLOG).toHaveLength(0);
     expect(REFERENCE_CODE_ALGORITHMS.length + REFERENCE_CODE_BACKLOG.length).toBe(33);
-    expect(referenceLanguages('shell')).toEqual([]);
-    expect(referenceFileMeta('shell', 'c')).toBeNull();
+    expect(referenceLanguages('shell')).toEqual(REFERENCE_LANGUAGES);
+    expect(referenceFileMeta('shell', 'c')).not.toBeNull();
   });
 
   it('loads principle and shared convenience sources on demand', async () => {
@@ -84,11 +125,20 @@ describe('three-language reference registry', () => {
     const dijkstraPy = await loadReferenceCode('dijkstra', 'python');
     expect(dijkstraPy).toContain('heapq');
     expect(dijkstraPy).not.toContain('trace(');
+
+    const shellC = await loadReferenceCode('shell', 'c');
+    expect(shellC).toContain('void shell_sort');
+
+    const binaryConvenience = await loadReferenceCode('binary', 'c', 'convenience');
+    expect(binaryConvenience).toContain('bsearch(');
+
+    const stackConvenience = await loadReferenceCode('stack', 'cpp', 'convenience');
+    expect(stackConvenience).toContain('std::stack');
   });
 
-  it('returns null for unregistered, missing or unavailable implementation combinations', async () => {
-    expect(await loadReferenceCode('shell', 'c')).toBeNull();
-    expect(await loadReferenceCode('binary', 'c', 'convenience')).toBeNull();
+  it('returns null for unregistered or unavailable implementation combinations', async () => {
+    expect(await loadReferenceCode('unknown-algorithm', 'c')).toBeNull();
+    expect(await loadReferenceCode('factorial', 'cpp', 'convenience')).toBeNull();
     expect(await loadReferenceCode('linked', 'python')).not.toBeNull();
   });
 
