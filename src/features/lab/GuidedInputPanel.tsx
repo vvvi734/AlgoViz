@@ -5,6 +5,7 @@ import {
   buildGuidedInput,
   defaultGuidedScenario,
   guidedDraftFromInput,
+  guidedExecutionLanguage,
   guidedRandomScenarios,
   randomGuidedDraft,
   type GuidedInputAlgorithm,
@@ -108,7 +109,7 @@ export function GuidedInputPanel({ lab }: { lab: LabController }) {
     }
     setIssue(null);
     setRandomFilled(false);
-    lab.runInput(input);
+    lab.runInput(input, guidedExecutionLanguage(id, mode) ?? undefined);
   };
 
   const randomize = () => {

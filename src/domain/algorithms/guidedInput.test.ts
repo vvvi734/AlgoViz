@@ -3,6 +3,7 @@ import {
   buildGuidedInput,
   defaultGuidedScenario,
   guidedDraftFromInput,
+  guidedExecutionLanguage,
   guidedRandomScenarios,
   guidedLanguageFor,
   randomGuidedDraft,
@@ -140,6 +141,11 @@ describe('INPUT-01 guided input parsing', () => {
     expect(guidedLanguageFor('binary')).toBe('python');
     expect(guidedLanguageFor('kmp')).toBe('python');
     expect(guidedLanguageFor('selection')).toBeNull();
+    expect(guidedExecutionLanguage('bubble', 'official')).toBe('js');
+    expect(guidedExecutionLanguage('bubble', 'custom')).toBe('python');
+    expect(guidedExecutionLanguage('bubble', 'random')).toBe('python');
+    expect(guidedExecutionLanguage('binary', 'random')).toBe('python');
+    expect(guidedExecutionLanguage('selection', 'custom')).toBeNull();
   });
 });
 

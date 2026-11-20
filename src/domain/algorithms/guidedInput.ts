@@ -14,8 +14,9 @@ export type GuidedInputAlgorithm = (typeof GUIDED_INPUT_ALGORITHMS)[number];
 export type GuidedInputMode = 'official' | 'custom' | 'random';
 
 export const GUIDED_INPUT_LANGUAGE: Record<GuidedInputAlgorithm, CodeLanguage> = {
-  // Bubble keeps its established JavaScript classroom trace (25 frames for the
-  // official five values); binary and KMP already run real Python programs.
+  // The official bubble lesson keeps its established 25-frame JavaScript
+  // classroom trace. Generated bubble traces use real Python; see
+  // guidedExecutionLanguage below.
   bubble: 'js',
   binary: 'python',
   kmp: 'python',
@@ -92,6 +93,18 @@ export function isGuidedInputAlgorithm(id: string): id is GuidedInputAlgorithm {
 
 export function guidedLanguageFor(id: string): CodeLanguage | null {
   return isGuidedInputAlgorithm(id) ? GUIDED_INPUT_LANGUAGE[id] : null;
+}
+
+/**
+ * Language used for a generated trace. The bubble official preset stays on its
+ * 25-frame JavaScript lesson; every non-official bubble run goes through the
+ * real Python bubble program so the trace is genuinely regenerated from the
+ * student's data, including variables and lesson steps.
+ */
+export function guidedExecutionLanguage(id: string, mode: GuidedInputMode): CodeLanguage | null {
+  const language = guidedLanguageFor(id);
+  if (!language) return null;
+  return id === 'bubble' && mode !== 'official' ? 'python' : language;
 }
 
 export function guidedRandomScenarios(id: GuidedInputAlgorithm): readonly GuidedRandomScenario[] {

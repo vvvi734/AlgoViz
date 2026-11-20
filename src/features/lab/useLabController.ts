@@ -113,7 +113,7 @@ export interface LabController {
    * current algorithm. Used by the guided input panel so a generated animation
    * can never read a stale `inputJson` from a previous render.
    */
-  runInput: (input: unknown) => void;
+  runInput: (input: unknown, language?: CodeLanguage) => void;
   /**
    * INPUT-01: invalidate any in-flight run and clear the old trace before
    * reporting an input error. The canvas must not keep playing frames that
@@ -211,10 +211,10 @@ export function useLabController(): LabController {
     setStatus({ text: message, error: true });
   }, [playback]);
 
-  const runInput = useCallback((input: unknown) => {
+  const runInput = useCallback((input: unknown, requestedLanguage?: CodeLanguage) => {
     const entry = catalog[currentAlgo];
     if (!entry) return;
-    const language = guidedLanguageFor(currentAlgo) ?? codeLang;
+    const language = requestedLanguage ?? guidedLanguageFor(currentAlgo) ?? codeLang;
     const code = language === codeLang ? editorCode : exampleFor(currentAlgo, language);
     const rawInput = JSON.stringify(input);
     if (rawInput === undefined) {

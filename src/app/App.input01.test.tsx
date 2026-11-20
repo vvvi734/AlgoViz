@@ -61,7 +61,7 @@ describe('INPUT-01 custom inputs really execute', () => {
     await waitFor(() => expect(screen.getByTestId('progress').textContent).toBe('1 / 2'));
     const call = mockedRun.mock.calls.at(-1);
     expect(call?.[2]).toEqual([8, 3, 5, 1, 7]);
-    expect(call?.[4]).toBe('js');
+    expect(call?.[4]).toBe('python');
     await waitFor(() => expect(screen.getByTestId('step-desc').textContent).toContain('FIRST 8,3,5,1,7'));
   });
 
@@ -163,7 +163,7 @@ describe('INPUT-01 custom inputs really execute', () => {
       expect((values as number[]).length).toBeGreaterThanOrEqual(8);
       expect((values as number[]).length).toBeLessThanOrEqual(11);
     });
-    expect(mockedRun.mock.calls.at(-1)?.[4]).toBe('js');
+    expect(mockedRun.mock.calls.at(-1)?.[4]).toBe('python');
   });
 
   it('passes a new KMP text and pattern to the real Python executor', async () => {
