@@ -2336,6 +2336,275 @@ export const CONCEPT_PAGES: readonly ConceptPage[] = [
     },
     takeaway: ['先记逻辑契约，再记物理指针：顺序栈 top 指栈顶元素且空为 -1；链栈 top 指首节点；顺序队列 front 指队首、rear 指下一次入队；带头结点链式队列空时 front == rear == 头结点，删掉最后一个数据结点后 rear 要回到头结点。', 'Learn the contract first, then the physical pointers: an array stack has top at the top element and -1 for empty; a linked stack has top at the first node; an array queue has front at the head and rear at the next slot; a headed linked queue is empty when front == rear == head, and rear must return to the head after the last data node is removed.'],
   },
+  {
+    id: 'tree-storage',
+    topicId: 'tree-basics',
+    title: ['树的存储结构', 'Tree storage structures'],
+    chapter: ['第 6 章 · 树', 'Chapter 6 · Trees'],
+    summary: [
+      '树是一种一对多的层次结构，存储时要同时记录“数据”和“关系”。双亲表示法存父下标，孩子表示法挂孩子链表，孩子兄弟表示法用 firstChild 与 nextSibling 两个指针把普通树写成二叉链表。',
+      'A tree is a one-to-many hierarchy, so storage must record both data and relationships. Parent representation stores a parent index, child representation links each node’s children, and child-sibling representation uses firstChild and nextSibling to encode an ordinary tree as a binary linked structure.',
+    ],
+    diagram: 'tree-storage',
+    definitions: [
+      {
+        term: ['双亲表示法', 'Parent representation'],
+        text: ['用连续数组保存每个节点，并在每个元素中记录其双亲在数组中的下标；根的双亲记为 −1。', 'Store every node in a contiguous array and record its parent’s array index; the root’s parent is −1.'],
+      },
+      {
+        term: ['孩子表示法', 'Child representation'],
+        text: ['数组保存每个节点，另为每个节点建立一条孩子链表，按从左到右的顺序串起它的孩子。', 'An array stores the nodes, and each node owns a linked list of its children in left-to-right order.'],
+      },
+      {
+        term: ['孩子兄弟表示法', 'Child-sibling representation'],
+        text: ['每个节点只保留两个指针：firstChild 指向第一个孩子，nextSibling 指向下一个兄弟。', 'Each node keeps two pointers: firstChild to its first child and nextSibling to its next sibling.'],
+      },
+      {
+        term: ['firstChild 与 nextSibling', 'firstChild and nextSibling'],
+        text: ['firstChild 描述“向下”的第一个孩子；nextSibling 描述“向右”的同层兄弟。两者含义不同，不能混为父子关系。', 'firstChild goes down to the first child; nextSibling goes right to a same-level sibling. They encode different relations and must not be confused with parent-child links.'],
+      },
+      {
+        term: ['二叉链表形式', 'Binary linked form'],
+        text: ['节点含 data、左指针、右指针，正好对应二叉树的存储形状；把 firstChild 当左指针、nextSibling 当右指针，普通树就写成二叉树。', 'A node with data plus left and right pointers has exactly the shape of a binary tree. Treating firstChild as left and nextSibling as right turns an ordinary tree into a binary tree.'],
+      },
+    ],
+    sections: [
+      {
+        title: ['先固定一棵示例树', 'Fix one example tree first'],
+        body: [
+          '本页三种表示法都使用同一棵树：A(B(E,F), C, D(G))。A 是根，B、C、D 是 A 的三个孩子，E、F 是 B 的孩子，G 是 D 的孩子，共 7 个节点。统一示例才能看出三种结构只是在记录同一组关系。',
+          'All three layouts on this page use the same tree: A(B(E,F), C, D(G)). A is the root; B, C and D are A’s three children; E and F are B’s children; G is D’s child; there are 7 nodes. One shared example makes clear that the layouts only record the same relationships differently.',
+        ],
+        points: [
+          ['节点数固定为 7，转换的是“关系怎么存”，不是树本身。', 'The node count stays 7; only the way relationships are stored changes.'],
+          ['三种表示都不改变 A 是根、E/F 是 B 的孩子、G 是 D 的孩子这些事实。', 'All three preserve the facts that A is the root, E/F are B’s children and G is D’s child.'],
+          ['若节点编号不统一，后面的数组下标和指针示例就无法互相对照。', 'Without one shared numbering, the array indices and pointer examples cannot be cross-checked.'],
+        ],
+      },
+      {
+        title: ['双亲表示法：一个 parent 整数', 'Parent representation: one parent integer'],
+        body: [
+          '把 A–G 依次放进下标 0–6 的数组。每个元素只额外保存 parent：A 的 parent 为 −1，B/C/D 的 parent 为 0，E/F 的 parent 为 1，G 的 parent 为 3。找某个节点的双亲只需一次下标访问。',
+          'Place A-G at indices 0-6. Each slot stores only an extra parent value: A is −1, B/C/D are 0, E/F are 1 and G is 3. Finding a node’s parent is one array access.',
+        ],
+        points: [
+          ['查找双亲：parent[i] 直接给出下标，O(1)。', 'Find parent: parent[i] directly returns the index, O(1).'],
+          ['查找孩子：必须扫描整张表，找出所有 parent 等于 i 的节点，O(n)。', 'Find children: scan the whole table for every node whose parent equals i, O(n).'],
+          ['结构简单，适合并查集、父指针树或“经常向上找、很少向下找”的场景。', 'Simple and suitable for union-find, parent-pointer trees, or workloads that walk upward far more often than downward.'],
+          ['只有 parent 字段时，兄弟关系也要借助双亲再扫描孩子，不能直接得到。', 'With only parent fields, sibling relations also require going through the parent and scanning its children.'],
+        ],
+        formula: 'parent[0] = −1；parent[1..3] = 0；parent[4..5] = 1；parent[6] = 3',
+      },
+      {
+        title: ['孩子表示法：数组 + 孩子链表', 'Child representation: array plus child lists'],
+        body: [
+          '仍用 A–G 的数组，但每个元素改存 firstChild。A 的孩子链是 B → C → D，B 的孩子链是 E → F，D 的孩子链是 G；C、E、F、G 没有孩子，链表为空。找某个节点的全部孩子时，直接从它的 firstChild 顺着 next 走完即可。',
+          'Keep the A-G array but store firstChild instead. A’s child list is B → C → D, B’s is E → F and D’s is G; C, E, F and G have empty lists. To enumerate a node’s children, start at its firstChild and follow next.',
+        ],
+        points: [
+          ['查找孩子：从 firstChild 出发走完整条链，O(1 + 孩子数)。', 'Find children: walk from firstChild through the list, O(1 + degree).'],
+          ['查找双亲：孩子链只向下指，必须额外保存 parent，或扫描所有链表，O(n)。', 'Find parent: child links point downward only; store an extra parent or scan all lists in O(n).'],
+          ['适合需要频繁枚举某个节点的孩子、且孩子数量差异较大的树。', 'Fits trees where enumerating one node’s children is frequent and degrees vary widely.'],
+          ['每个孩子链表都要处理空链；实现时通常区分“无孩子”和“链表结束”。', 'Every child list needs an empty case; implementations distinguish “no children” from “end of list”.'],
+        ],
+        formula: 'A → B → C → D；B → E → F；D → G；其余 firstChild = NULL',
+      },
+      {
+        title: ['孩子兄弟表示法：两个指针写成二叉链表', 'Child-sibling representation: two pointers, binary shape'],
+        body: [
+          '每个节点只保留 firstChild 和 nextSibling。A 的 firstChild 是 B，B 的 nextSibling 是 C，C 的 nextSibling 是 D；B 的 firstChild 是 E，E 的 nextSibling 是 F；D 的 firstChild 是 G。这样每个节点恰好两个指针，和二叉树节点完全同形。',
+          'Each node keeps only firstChild and nextSibling. A’s firstChild is B; B’s nextSibling is C; C’s nextSibling is D. B’s firstChild is E and E’s nextSibling is F; D’s firstChild is G. Every node then has exactly two pointers, the same shape as a binary-tree node.',
+        ],
+        points: [
+          ['firstChild 指向第一个孩子；nextSibling 指向同层的下一个兄弟。', 'firstChild points to the first child; nextSibling points to the next same-level sibling.'],
+          ['找第一个孩子和下一个兄弟都是 O(1)，但找双亲不直接，通常要额外保存 parent 或从根重新搜索。', 'The first child and next sibling are O(1), but a parent is not directly reachable; store an extra parent or search from the root.'],
+          ['普通树因此可以套用二叉树的存储、遍历和转换方法。', 'An ordinary tree can therefore reuse binary-tree storage, traversal and conversion methods.'],
+          ['关键不是“树变成了二叉树”，而是“用二叉链表解释树的孩子与兄弟关系”。', 'The point is not that the tree becomes a binary tree, but that a binary linked layout interprets child and sibling relations.'],
+        ],
+        formula: 'firstChild(A)=B；nextSibling(B)=C；nextSibling(C)=D；firstChild(B)=E；nextSibling(E)=F；firstChild(D)=G',
+      },
+      {
+        title: ['三种表示怎么选', 'Choosing a representation'],
+        body: [
+          '选择依据是访问方向，而不是“哪种更高级”。经常找双亲，选双亲表示法；经常枚举孩子，选孩子表示法；既要孩子关系又要兄弟关系，或准备转换成二叉树，选孩子兄弟表示法。三种结构都能表示同一棵树，差别在查询代价和指针数量。',
+          'Choose by access direction, not by which sounds more advanced. Frequent parent queries favor parent representation; frequent child enumeration favors child representation; needing both child and sibling relations, or preparing for binary-tree conversion, favors child-sibling representation. All three represent the same tree; they differ in query cost and pointer count.',
+        ],
+        points: [
+          ['双亲表示法最省指针，但向下访问最弱。', 'Parent representation uses the fewest pointers but is weakest downward.'],
+          ['孩子表示法的孩子链长度等于该节点的度；高度数节点会拉长链表。', 'In child representation a list length equals the node’s degree; high-degree nodes create long lists.'],
+          ['孩子兄弟表示法把“第一个孩子”和“下一个兄弟”固定成两个指针，结构最规整。', 'Child-sibling representation fixes the first child and next sibling into two pointers, giving the most regular shape.'],
+        ],
+      },
+    ],
+    comparison: {
+      title: ['三种树存储结构', 'Three tree storage layouts'],
+      columns: [
+        ['比较项', 'Aspect'],
+        ['双亲表示法', 'Parent'],
+        ['孩子表示法', 'Child'],
+        ['孩子兄弟表示法', 'Child-sibling'],
+      ],
+      rows: [
+        [
+          ['每个节点存什么', 'Per-node fields'],
+          ['data + parent 下标', 'data + parent index'],
+          ['data + firstChild 链表', 'data + firstChild list'],
+          ['data + firstChild + nextSibling', 'data + firstChild + nextSibling'],
+        ],
+        [
+          ['查找双亲', 'Find parent'],
+          ['O(1)', 'O(1)'],
+          ['需额外 parent 或扫描 O(n)', 'extra parent or O(n) scan'],
+          ['不直接，需额外结构', 'not direct; extra structure needed'],
+        ],
+        [
+          ['查找孩子', 'Find children'],
+          ['扫描全表 O(n)', 'scan table O(n)'],
+          ['沿链表 O(1 + 度)', 'follow list O(1 + degree)'],
+          ['第一个 O(1)，其余沿 nextSibling', 'first O(1), rest via nextSibling'],
+        ],
+        [
+          ['查找下一个兄弟', 'Find next sibling'],
+          ['经双亲再扫描', 'via parent, then scan'],
+          ['经双亲再扫描', 'via parent, then scan'],
+          ['nextSibling O(1)', 'nextSibling O(1)'],
+        ],
+        [
+          ['典型用途', 'Typical use'],
+          ['并查集、父指针树', 'union-find, parent-pointer trees'],
+          ['一般树的孩子表', 'child table for a general tree'],
+          ['树转二叉树、森林转换', 'tree-to-binary and forest conversion'],
+        ],
+      ],
+    },
+    takeaway: ['双亲表示法向上快、向下慢；孩子表示法向下快、向上慢；孩子兄弟表示法用 firstChild/nextSibling 两个指针把树写成二叉链表，是树与森林转换的基础。', 'Parent representation is fast upward and slow downward; child representation is fast downward and slow upward; child-sibling representation uses firstChild/nextSibling to encode a tree as a binary linked structure and underpins tree/forest conversion.'],
+  },
+  {
+    id: 'forest-conversion',
+    topicId: 'forest-conversion',
+    title: ['树与森林的转换', 'Tree and forest conversion'],
+    chapter: ['第 6 章 · 树', 'Chapter 6 · Trees'],
+    summary: [
+      '树、森林与二叉树可以相互转换，靠的是孩子兄弟表示法：第一个孩子变左孩子，下一个兄弟变右孩子。森林只是把多棵树的根也看成兄弟，沿右链串起来；逆向转换时，沿根层右链把二叉树拆回多棵树。',
+      'Trees, forests and binary trees convert into one another through child-sibling links: the first child becomes the left child and the next sibling becomes the right child. A forest treats the roots of its trees as siblings along a right chain; reversing the conversion splits that root-level right chain back into separate trees.',
+    ],
+    diagram: 'forest-conversion',
+    definitions: [
+      {
+        term: ['树转换为二叉树', 'Tree-to-binary conversion'],
+        text: ['对每个节点，把第一个孩子放为左孩子，把下一个兄弟放为右孩子；得到的二叉树与原树节点数相同。', 'For every node, put its first child as the left child and its next sibling as the right child; the resulting binary tree has the same node count.'],
+      },
+      {
+        term: ['森林转换为二叉树', 'Forest-to-binary conversion'],
+        text: ['先按树转二叉树处理每一棵树，再把后一棵树的根作为前一棵树根的右孩子，形成根层右链。', 'Convert each tree first, then make the next tree’s root the right child of the previous tree’s root, forming a root-level right chain.'],
+      },
+      {
+        term: ['二叉树还原为树或森林', 'Binary-to-tree/forest conversion'],
+        text: ['若节点有左孩子，左孩子是它的第一个孩子；右孩子是它的下一个兄弟。根层右链上的每个节点分别是一棵新树的根。', 'If a node has a left child, that child is its first child; a right child is its next sibling. Every node on the root-level right chain is the root of a separate tree.'],
+      },
+      {
+        term: ['根层右链', 'Root-level right chain'],
+        text: ['从第一棵树的根出发，沿右指针依次串起各棵树的根。它表示“树根互为兄弟”，不是原树中的父子关系。', 'Starting at the first tree’s root, right pointers link the roots of the forest. It means the roots are siblings, not parent-child relations in the original tree.'],
+      },
+      {
+        term: ['左孩子 / 右兄弟', 'Left child / right sibling'],
+        text: ['转换后的左指针承载“第一个孩子”，右指针承载“下一个兄弟”。链接含义变了，节点本身和节点数没有变。', 'After conversion the left pointer carries “first child” and the right pointer carries “next sibling”. Link meanings change; nodes and node count do not.'],
+      },
+    ],
+    sections: [
+      {
+        title: ['树 → 二叉树：左孩子、右兄弟', 'Tree → binary tree: left child, right sibling'],
+        body: [
+          '对 A(B(E,F), C, D(G)) 逐点套规则：A 的第一个孩子 B 成为 A 的左孩子；B 的下一个兄弟 C 成为 B 的右孩子；C 的下一个兄弟 D 成为 C 的右孩子。B 的第一个孩子 E 成为 B 的左孩子，E 的下一个兄弟 F 成为 E 的右孩子；D 的第一个孩子 G 成为 D 的左孩子。',
+          'Apply the rule to A(B(E,F), C, D(G)): A’s first child B becomes A’s left child; B’s next sibling C becomes B’s right child; C’s next sibling D becomes C’s right child. B’s first child E becomes B’s left child and E’s next sibling F becomes E’s right child; D’s first child G becomes D’s left child.',
+        ],
+        points: [
+          ['左孩子 = 原树的第一个孩子；右孩子 = 原树的下一个兄弟。', 'Left child = the original first child; right child = the original next sibling.'],
+          ['转换后 B 的右孩子是 C，但 C 是 B 的兄弟，不是 B 的孩子。这是最重要的易错点。', 'After conversion C is B’s right child, but C is B’s sibling, not B’s child. This is the key trap.'],
+          ['每个节点仍然只有一个左指针和一个右指针，所以节点数不变，树的高度可能改变。', 'Every node still has one left and one right pointer, so the node count is unchanged while the height may change.'],
+          ['转换得到的二叉树没有“右孩子一定是孩子”的含义，必须回到孩子兄弟表示法解释。', 'The resulting binary tree does not mean every right child is a child; interpret it through child-sibling links.'],
+        ],
+        formula: 'left(v) = firstChild(v)；right(v) = nextSibling(v)',
+      },
+      {
+        title: ['森林 → 二叉树：树根也当兄弟', 'Forest → binary tree: roots are siblings too'],
+        body: [
+          '以三棵树 A–G、H–I、J 为例。先分别转换每棵树：A–G 得到一棵二叉树，H–I 得到 H 左孩子 I，J 是单节点。再把 H 接到 A 的右指针上，把 J 接到 H 的右指针上，根层右链就是 A → H → J。整棵二叉树共 10 个节点。',
+          'Take three trees A-G, H-I and J. Convert each first: A-G becomes one binary tree, H-I gives H with left child I, and J is a single node. Then attach H to A’s right pointer and J to H’s right pointer, producing the root-level right chain A → H → J. The whole binary tree has 10 nodes.',
+        ],
+        points: [
+          ['森林的每一棵树先独立转换；树内兄弟仍走右指针。', 'Convert each tree independently; siblings inside a tree still use right pointers.'],
+          ['不同树的根之间没有原树父子关系，只在转换结果里结成“根层兄弟链”。', 'Roots of different trees have no original parent-child relation; they become a root-level sibling chain only in the result.'],
+          ['A 的右孩子 H 表示“下一棵树的根”，不是 A 的孩子。', 'A’s right child H means “the next tree’s root”, not A’s child.'],
+          ['节点总数不变：7 + 2 + 1 = 10。', 'The total node count is unchanged: 7 + 2 + 1 = 10.'],
+        ],
+        formula: 'root(T1) → right → root(T2) → right → root(T3)',
+      },
+      {
+        title: ['二叉树 → 森林：沿根层右链拆树', 'Binary tree → forest: split the root-level right chain'],
+        body: [
+          '逆向操作先看左指针：若节点有左孩子，左孩子就是它在原树中的第一个孩子；再沿左孩子的右链，依次得到同一父节点的其他孩子。接着看最外层：从二叉树根开始沿右指针走，根层右链上的每个节点都是一棵独立树的根，把它们断开即可。',
+          'Reverse the process by reading left pointers first: a left child is the node’s first child in the original tree; following that child’s right chain yields the other children of the same parent. Then inspect the outermost chain: starting at the binary root, every node reached by right pointers is the root of a separate tree, so cut those links.',
+        ],
+        points: [
+          ['左孩子：恢复为第一个孩子；左孩子的右链：恢复为同一父节点的其余孩子。', 'Left child: restore as the first child; its right chain: restore the remaining children of the same parent.'],
+          ['根层右链：拆开，每个节点成为一棵新树的根；树内的右链不能乱拆。', 'Root-level right chain: split so each node becomes a new root; do not split right chains inside a tree.'],
+          ['还原后 C、D 是 B 的兄弟，不是 B 的孩子；A、H、J 分别是三棵树的根。', 'After restoration C and D are B’s siblings, not B’s children; A, H and J are the roots of three trees.'],
+          ['判断“根层”看当前节点是否还没有被分到任何一棵树；不要只看它有没有右孩子。', 'Decide “root level” by whether the node has not yet been assigned to a tree, not merely by whether it has a right child.'],
+        ],
+      },
+      {
+        title: ['遍历对应与易错点', 'Traversal correspondence and traps'],
+        body: [
+          '孩子兄弟转换保持节点数，却改变了链接含义，因此遍历名称也要对应到正确位置。树的先根遍历对应转换后二叉树的先序遍历；树的后根遍历对应这棵二叉树的中序遍历。森林的先序遍历、中序遍历也分别对应转换后二叉树的先序、中序。',
+          'Child-sibling conversion preserves the node count but changes link meanings, so traversal names must map to the right positions. A tree’s preorder corresponds to the converted binary tree’s preorder, and a tree’s postorder corresponds to its inorder. A forest’s preorder and inorder likewise correspond to the converted binary tree’s preorder and inorder.',
+        ],
+        points: [
+          ['转换只改链接解释，不改节点数；不要因为“变成二叉树”就新增或删除节点。', 'Conversion changes link interpretation, not the node count; do not add or remove nodes just because it “becomes a binary tree”.'],
+          ['右孩子在本树内是兄弟，在根层是下一棵树的根，不能一律当作孩子。', 'A right child is a sibling inside a tree and the next tree’s root at root level; it is never automatically a child.'],
+          ['二叉树还原时，根层右链要断开；树内右链保留为兄弟链。', 'When restoring, cut the root-level right chain but keep right chains inside a tree as sibling links.'],
+          ['树的后根不是二叉树的“后序”；对应的是二叉树的中序。', 'A tree’s postorder is not the binary tree’s postorder; it corresponds to the binary tree’s inorder.'],
+        ],
+        formula: '树的先根 = 二叉树先序；树的后根 = 二叉树中序；森林先序/中序 = 二叉树先序/中序',
+      },
+    ],
+    comparison: {
+      title: ['转换中的链接含义', 'Link meanings during conversion'],
+      columns: [
+        ['关系', 'Relation'],
+        ['转换后在二叉树中的位置', 'Position in the binary tree'],
+        ['还原时的处理', 'Reverse handling'],
+      ],
+      rows: [
+        [
+          ['第一个孩子', 'First child'],
+          ['左孩子', 'Left child'],
+          ['恢复为第一个孩子', 'restore as first child'],
+        ],
+        [
+          ['下一个兄弟', 'Next sibling'],
+          ['右孩子', 'Right child'],
+          ['恢复为同层兄弟', 'restore as a same-level sibling'],
+        ],
+        [
+          ['下一棵树的根', 'Next tree root'],
+          ['根层右孩子', 'root-level right child'],
+          ['断开，成为新树根', 'cut and make a new root'],
+        ],
+        [
+          ['节点数', 'Node count'],
+          ['不变', 'unchanged'],
+          ['不增删节点', 'add or remove none'],
+        ],
+        [
+          ['树的先根 / 后根', 'Tree preorder / postorder'],
+          ['二叉树先序 / 中序', 'binary preorder / inorder'],
+          ['按遍历序列还原结构', 'reconstruct from the traversal order'],
+        ],
+      ],
+    },
+    takeaway: ['记牢“左孩子是第一个孩子，右孩子是下一个兄弟”；森林只是把各棵树的根也串成右链。还原时先还原孩子链，再断开根层右链，节点数始终不变。', 'Remember “left child = first child, right child = next sibling”; a forest simply strings the tree roots into a right chain. When restoring, rebuild child chains first and then cut the root-level right chain; the node count never changes.'],
+  },
 ];
 
 const BY_ID = new Map(CONCEPT_PAGES.map((page) => [page.id, page]));

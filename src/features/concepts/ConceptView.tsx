@@ -3,6 +3,7 @@ import type { Bilingual, ConceptPage } from '../../domain/concepts/types';
 import { ConceptDiagram } from './ConceptDiagram';
 import { SearchConceptDiagram } from './SearchConceptDiagrams';
 import { QueueConceptDiagram } from './QueueConceptDiagrams';
+import { TreeConceptDiagram } from './TreeConceptDiagrams';
 import '../../styles/concepts.css';
 
 /**
@@ -39,6 +40,8 @@ export function ConceptView({ concept }: { concept: ConceptPage }) {
             <SearchConceptDiagram kind={concept.diagram} lang={lang} />
           ) : concept.diagram === 'circular-queue' || concept.diagram === 'stack-queue-storage' ? (
             <QueueConceptDiagram kind={concept.diagram} lang={lang} />
+          ) : concept.diagram === 'tree-storage' || concept.diagram === 'forest-conversion' ? (
+            <TreeConceptDiagram kind={concept.diagram} lang={lang} />
           ) : (
             <ConceptDiagram kind={concept.diagram} lang={lang} />
           )}

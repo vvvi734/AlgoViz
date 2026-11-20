@@ -86,10 +86,13 @@ describe('AlgorithmSidebar — textbook chapters (UX-03)', () => {
     for (const chapter of nav) {
       expect(screen.getByTestId(`chapter-${chapter.id}`)).toBeTruthy();
       const count = chapter.algorithmCount;
+      const pendingOnly = chapter.topics.every((topic) => topic.category === 'pending');
       if (count > 0) {
         expect(within(screen.getByTestId(`chapter-${chapter.id}`)).getByText(String(count))).toBeTruthy();
-      } else {
+      } else if (pendingOnly) {
         expect(within(screen.getByTestId(`chapter-${chapter.id}`)).getByText('待完善')).toBeTruthy();
+      } else {
+        expect(within(screen.getByTestId(`chapter-${chapter.id}`)).queryByText('待完善')).toBeNull();
       }
     }
     expect(screen.getAllByTestId(/^algo-/)).toHaveLength(Object.keys(catalog).length);
@@ -178,7 +181,9 @@ describe('AlgorithmSidebar — textbook chapters (UX-03)', () => {
     render(<Harness onSelectConcept={onSelectConcept} />);
     const mergeSort = screen.getByTestId('topic-merge-sort');
     expect(mergeSort.getAttribute('data-kind')).toBe('algorithm');
+    expect(mergeSort.getAttribute('data-category')).toBe('visual');
     expect(screen.getByTestId('algo-merge')).toBeTruthy();
+    expect(within(mergeSort).getByText('可视化')).toBeTruthy();
 
     const shellSort = screen.getByTestId('topic-shell-sort');
     expect(shellSort.getAttribute('data-kind')).toBe('algorithm');
@@ -186,13 +191,16 @@ describe('AlgorithmSidebar — textbook chapters (UX-03)', () => {
 
     const huffman = screen.getByTestId('topic-huffman');
     expect(huffman.getAttribute('data-kind')).toBe('algorithm');
+    expect(huffman.getAttribute('data-category')).toBe('visual');
     expect(screen.getByTestId('algo-huffman')).toBeTruthy();
 
     const graphBasics = screen.getByTestId('topic-graph-basics');
     expect(graphBasics.tagName).toBe('BUTTON');
     expect(graphBasics.getAttribute('data-kind')).toBe('concept');
+    expect(graphBasics.getAttribute('data-category')).toBe('theory');
     expect(graphBasics.getAttribute('aria-disabled')).toBeNull();
-    expect(graphBasics.textContent).toContain('阅读');
+    expect(within(graphBasics).getByText('理论')).toBeTruthy();
+    expect(graphBasics.querySelector('.textbook-category.is-theory')).toBeTruthy();
     expect(graphBasics.getAttribute('data-concept-id')).toBe('graph-basics');
     fireEvent.click(graphBasics);
     expect(onSelectConcept).toHaveBeenCalledWith('graph-basics');
@@ -200,8 +208,38 @@ describe('AlgorithmSidebar — textbook chapters (UX-03)', () => {
     const unAuthored = screen.getByTestId('topic-string-storage');
     expect(unAuthored.tagName).toBe('DIV');
     expect(unAuthored.getAttribute('aria-disabled')).toBe('true');
-    expect(unAuthored.textContent).toContain('知识讲解');
+    expect(unAuthored.getAttribute('data-category')).toBe('pending');
+    expect(unAuthored.textContent).toContain('待完善');
+    expect(unAuthored.querySelector('.textbook-category')).toBeNull();
     expect(within(unAuthored).queryByRole('button')).toBeNull();
+
+    const planned = screen.getByTestId('topic-threaded-tree');
+    expect(planned.getAttribute('data-category')).toBe('pending');
+    expect(planned.textContent).toContain('待完善');
+    expect(planned.querySelector('.textbook-category')).toBeNull();
+
+    const group = screen.getByTestId('topic-shortest-path');
+    expect(group.getAttribute('data-category')).toBe('visual');
+    expect(within(group).getByText('可视化')).toBeTruthy();
+  });
+
+  it('marks the two new tree theory lessons without making static SVGs visual', () => {
+    render(<Harness />);
+    const storage = screen.getByTestId('topic-tree-basics');
+    expect(storage.getAttribute('data-kind')).toBe('concept');
+    expect(storage.getAttribute('data-category')).toBe('theory');
+    expect(storage.getAttribute('data-concept-id')).toBe('tree-storage');
+    expect(within(storage).getByText('理论')).toBeTruthy();
+
+    const conversion = screen.getByTestId('topic-forest-conversion');
+    expect(conversion.getAttribute('data-kind')).toBe('concept');
+    expect(conversion.getAttribute('data-category')).toBe('theory');
+    expect(conversion.getAttribute('data-concept-id')).toBe('forest-conversion');
+    expect(within(conversion).getByText('理论')).toBeTruthy();
+
+    const traversal = screen.getByTestId('topic-binary-tree-traversal');
+    expect(traversal.getAttribute('data-category')).toBe('visual');
+    expect(within(traversal).getByText('可视化')).toBeTruthy();
   });
 
   it('uses one toggle to collapse every open branch, then expand all', () => {

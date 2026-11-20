@@ -50,6 +50,7 @@ describe('textbook directory (UX-03)', () => {
       'binary-tree',
       'bplus-tree',
       'circular-queue',
+      'forest-conversion',
       'graph-basics',
       'graph-storage',
       'indexed-search',
@@ -64,6 +65,7 @@ describe('textbook directory (UX-03)', () => {
       'special-matrices',
       'stack-queue-storage',
       'string-basics',
+      'tree-basics',
     ]);
     for (const topic of conceptTopics) {
       expect(conceptById(topic.conceptId!)).toBeTruthy();
@@ -160,6 +162,24 @@ describe('textbook directory (UX-03)', () => {
   it('puts BST and AVL under 查找, not under 树; Huffman is now an authored tree topic', () => {
     const tree = nav.find((chapter) => chapter.id === 'ch6-tree')!;
     const search = nav.find((chapter) => chapter.id === 'ch8-search')!;
+    expect(tree.topics.map((topic) => topic.id)).toEqual([
+      'tree-basics',
+      'binary-tree',
+      'binary-tree-traversal',
+      'threaded-tree',
+      'forest-conversion',
+      'huffman',
+    ]);
+    expect(tree.topics.find((topic) => topic.id === 'tree-basics')?.conceptId).toBe('tree-storage');
+    expect(tree.topics.find((topic) => topic.id === 'forest-conversion')?.conceptId).toBe(
+      'forest-conversion',
+    );
+    expect(tree.topics.find((topic) => topic.id === 'tree-basics')?.category).toBe('theory');
+    expect(tree.topics.find((topic) => topic.id === 'binary-tree')?.category).toBe('theory');
+    expect(tree.topics.find((topic) => topic.id === 'forest-conversion')?.category).toBe('theory');
+    expect(tree.topics.find((topic) => topic.id === 'binary-tree-traversal')?.category).toBe('visual');
+    expect(tree.topics.find((topic) => topic.id === 'huffman')?.category).toBe('visual');
+    expect(tree.topics.find((topic) => topic.id === 'threaded-tree')?.category).toBe('pending');
     expect(tree.topics.find((topic) => topic.id === 'binary-tree-traversal')?.algorithms).toEqual([
       expect.objectContaining({ id: 'inorder' }),
     ]);
@@ -169,6 +189,34 @@ describe('textbook directory (UX-03)', () => {
     expect(search.topics.find((topic) => topic.id === 'avl')?.algorithms[0].id).toBe('avl');
     expect(search.topics.find((topic) => topic.id === 'sequential-search')?.algorithms[0].id).toBe('linear');
     expect(search.topics.find((topic) => topic.id === 'ordered-search')?.algorithms[0].id).toBe('binary');
+  });
+
+  it('derives theory, visual and pending categories from row semantics', () => {
+    const topics = nav.flatMap((chapter) => chapter.topics);
+    const theory = topics.filter((topic) => topic.category === 'theory');
+    const visual = topics.filter((topic) => topic.category === 'visual');
+    const pending = topics.filter((topic) => topic.category === 'pending');
+
+    expect(theory.length).toBeGreaterThan(0);
+    expect(visual.length).toBeGreaterThan(0);
+    expect(pending.length).toBeGreaterThan(0);
+    expect(theory.every((topic) => topic.kind === 'concept' && Boolean(topic.conceptId))).toBe(true);
+    expect(visual.every((topic) => topic.kind === 'algorithm' || topic.kind === 'group')).toBe(true);
+    expect(
+      pending.every(
+        (topic) =>
+          topic.kind === 'planned' ||
+          (topic.kind === 'concept' && Boolean(topic.conceptId) === false),
+      ),
+    ).toBe(true);
+
+    const graphStorage = topics.find((topic) => topic.id === 'graph-storage')!;
+    const circularQueue = topics.find((topic) => topic.id === 'circular-queue')!;
+    const sparseTranspose = topics.find((topic) => topic.id === 'sparse-transpose')!;
+    expect(graphStorage.category).toBe('theory');
+    expect(circularQueue.category).toBe('theory');
+    expect(sparseTranspose.category).toBe('visual');
+    expect(topics.find((topic) => topic.id === 'recursion-extension')?.category).toBe('visual');
   });
 
   it('wires the B-tree and B+ tree concept pages plus the B-tree demo into chapter 8', () => {

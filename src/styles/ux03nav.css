@@ -252,7 +252,7 @@
 }
 /* The chevron already says "open"; "阅读" only steals width from the name and
    forces short concept titles into orphan lines at the enlarged font. */
-.textbook-topic.is-concept .textbook-kind-status { display: none; }
+.textbook-topic.is-concept.is-link .textbook-kind-status { display: none; }
 .textbook-topic.is-planned .textbook-kind-icon {
   opacity: .78;
 }
@@ -277,6 +277,49 @@
 .textbook-topic.is-concept .textbook-kind-status {
   color: var(--accent);
   opacity: .58;
+}
+
+/* Directory category: low-saturation pill, icon plus text, never a card. It sits
+   inline after the title so long English titles keep the full row width. */
+.textbook-topic-copy {
+  flex: 1 1 auto;
+  min-width: 0;
+  line-height: 1.35;
+}
+.textbook-topic-copy .textbook-topic-name {
+  display: inline;
+  flex: none;
+  line-height: inherit;
+}
+.textbook-category {
+  display: inline-flex;
+  vertical-align: middle;
+  align-items: center;
+  gap: 3px;
+  margin-left: 4px;
+  padding: 1px 5px;
+  border: 1px solid var(--edge);
+  border-radius: 6px;
+  font-size: var(--font-ui);
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+.textbook-category-icon {
+  flex: 0 0 auto;
+  font-size: var(--font-ui);
+  line-height: 1;
+  opacity: .9;
+}
+.textbook-category.is-theory {
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--edge));
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  color: var(--accent);
+}
+.textbook-category.is-visual {
+  border-color: color-mix(in srgb, var(--accent-2) 38%, var(--edge));
+  background: color-mix(in srgb, var(--accent-2) 10%, transparent);
+  color: var(--accent-2);
 }
 
 .textbook-topic-head {
@@ -351,11 +394,17 @@
   gap: 1px;
 }
 .textbook-direct-title {
+  display: inline;
   min-width: 0;
   font-size: var(--font-ui);
   font-weight: 600;
   line-height: 1.3;
   overflow-wrap: anywhere;
+}
+.textbook-direct-title-row {
+  display: block;
+  min-width: 0;
+  line-height: 1.3;
 }
 .textbook-direct-algorithm {
   min-width: 0;

@@ -79,6 +79,40 @@ describe('ConceptView (CORE-REFINE-01)', () => {
     expect(screen.getByTestId('concept-definition').textContent).toContain('头结点');
   });
 
+  it('keeps the three tree storage layouts on the same A-G example', () => {
+    renderConcept('tree-storage');
+    const diagram = screen.getByTestId('concept-diagram');
+    const text = diagram.textContent ?? '';
+    expect(diagram.querySelectorAll('svg')).toHaveLength(3);
+    expect(text).toContain('parent[1] = 0 → A');
+    expect(text).toContain('孩子链表');
+    expect(text).toContain('firstChild');
+    expect(text).toContain('nextSibling');
+    expect(text).toContain('NULL');
+    expect(text).toContain('找双亲 O(1)');
+    expect(screen.getByTestId('concept-definition').textContent).toContain('双亲表示法');
+    expect(screen.getByTestId('concept-definition').textContent).toContain('孩子兄弟表示法');
+    expect(screen.getByTestId('concept-comparison').textContent).toContain('孩子兄弟表示法');
+  });
+
+  it('shows tree, forest and reverse conversion with correct link meanings', () => {
+    renderConcept('forest-conversion');
+    const diagram = screen.getByTestId('concept-diagram');
+    const text = diagram.textContent ?? '';
+    expect(diagram.querySelectorAll('svg')).toHaveLength(3);
+    expect(text).toContain('注意：B 的右孩子是 C');
+    expect(text).toContain('A → H → J');
+    expect(text).toContain('断开 ①');
+    expect(text).toContain('节点数仍为 10');
+    expect(text).toContain('nextSibling');
+    const formulas = Array.from(document.querySelectorAll('.concept-formula'))
+      .map((node) => node.textContent ?? '')
+      .join('\n');
+    expect(formulas).toContain('left(v) = firstChild(v)');
+    expect(formulas).toContain('树的后根 = 二叉树中序');
+    expect(screen.getByTestId('concept-comparison').textContent).toContain('下一棵树的根');
+  });
+
   it('has a diagram for each concept kind', () => {
     for (const concept of CONCEPT_PAGES) {
       renderConcept(concept.id);

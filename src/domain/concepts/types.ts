@@ -20,7 +20,9 @@ export type ConceptDiagramKind =
   | 'asl-decision-tree'
   | 'block-search'
   | 'circular-queue'
-  | 'stack-queue-storage';
+  | 'stack-queue-storage'
+  | 'tree-storage'
+  | 'forest-conversion';
 
 export interface ConceptDefinition {
   term: Bilingual;

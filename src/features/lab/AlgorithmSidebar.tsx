@@ -213,7 +213,7 @@ export function AlgorithmSidebar({
                 {holdsCurrent && <span className="textbook-current-dot" aria-hidden="true" />}
                 {chapter.algorithmCount > 0 ? (
                   <span className="textbook-count" aria-hidden="true">{chapter.algorithmCount}</span>
-                ) : (
+                ) : chapter.topics.some((topic) => topic.category !== 'pending') ? null : (
                   <span className="textbook-pending" aria-hidden="true">{t('textbookPending')}</span>
                 )}
                 <span className="textbook-chapter-chevron" aria-hidden="true">›</span>
@@ -252,6 +252,28 @@ export function AlgorithmSidebar({
   );
 }
 
+function TextbookCategoryBadge({
+  category,
+  label,
+  longLabel,
+}: {
+  category: TextbookTopicView['category'];
+  label: string;
+  longLabel: string;
+}) {
+  if (category !== 'theory' && category !== 'visual') return null;
+  return (
+    <span
+      className={`textbook-category is-${category}`}
+      title={longLabel}
+      aria-hidden="true"
+    >
+      <span className="textbook-category-icon">{category === 'theory' ? '▤' : '▶'}</span>
+      {label}
+    </span>
+  );
+}
+
 function TextbookTopicRow({
   chapterId,
   topic,
@@ -277,18 +299,15 @@ function TextbookTopicRow({
 }) {
   const { lang, pick, t } = useI18n();
   const title = textbookTitle(topic.title, lang);
+  const categoryLabel = topic.category === 'theory' ? t('textbookTheory') : t('textbookVisual');
+  const categoryLong = topic.category === 'theory' ? t('textbookTheoryLong') : t('textbookVisualLong');
 
   if (topic.kind === 'concept' || topic.kind === 'planned') {
     const conceptId = topic.conceptId;
     const hasLesson = topic.kind === 'concept' && conceptId && onSelectConcept;
     const active = hasLesson && currentConceptId === conceptId;
-    const status = hasLesson
-      ? t('textbookConceptOpen')
-      : topic.kind === 'concept'
-        ? t('textbookConcept')
-        : t('textbookPending');
     const accessibleStatus = hasLesson
-      ? t('textbookConceptOpen')
+      ? categoryLong
       : topic.kind === 'concept'
         ? t('textbookConceptPending')
         : t('textbookPending');
@@ -299,6 +318,7 @@ function TextbookTopicRow({
           className={`textbook-topic is-${topic.kind}`}
           data-topic={topic.id}
           data-kind={topic.kind}
+          data-category={topic.category}
           data-testid={`topic-${topic.id}`}
           aria-disabled="true"
           aria-label={`${title} · ${accessibleStatus}`}
@@ -308,7 +328,7 @@ function TextbookTopicRow({
             {topic.kind === 'concept' ? '◇' : '△'}
           </span>
           <span className="textbook-topic-name">{title}</span>
-          <span className="textbook-kind-status">{status}</span>
+          <span className="textbook-kind-status">{t('textbookPending')}</span>
         </div>
       );
     }
@@ -319,6 +339,7 @@ function TextbookTopicRow({
         className={`textbook-topic is-concept is-link${active ? ' active' : ''}`}
         data-topic={topic.id}
         data-kind="concept"
+        data-category={topic.category}
         data-concept-id={conceptId}
         data-testid={`topic-${topic.id}`}
         aria-current={active ? 'true' : undefined}
@@ -326,10 +347,11 @@ function TextbookTopicRow({
         title={`${title} · ${accessibleStatus}`}
         onClick={() => onSelectConcept(conceptId)}
       >
-        <span className="textbook-kind-icon" aria-hidden="true">◇</span>
-        <span className="textbook-topic-name">{title}</span>
+        <span className="textbook-topic-copy">
+          <span className="textbook-topic-name">{title}</span>
+          <TextbookCategoryBadge category={topic.category} label={categoryLabel} longLabel={categoryLong} />
+        </span>
         {active && <span className="textbook-current-dot" aria-hidden="true" />}
-        <span className="textbook-kind-status">{status}</span>
         <span className="textbook-topic-chevron" aria-hidden="true">›</span>
       </button>
     );
@@ -346,6 +368,7 @@ function TextbookTopicRow({
         className="textbook-topic is-direct"
         data-topic={topic.id}
         data-kind="algorithm"
+        data-category={topic.category}
         data-direct="true"
         data-has-current={holdsCurrent ? 'true' : 'false'}
         data-testid={`topic-${topic.id}`}
@@ -358,14 +381,18 @@ function TextbookTopicRow({
           data-chapter={chapterId}
           data-topic={topic.id}
           data-kind="algorithm"
+          data-category={topic.category}
           data-direct="true"
           aria-current={active ? 'true' : undefined}
-          aria-label={`${title} · ${algorithmName} · ${t('textbookAlgorithm')}`}
+          aria-label={`${title} · ${algorithmName} · ${categoryLong}`}
           title={algorithmName}
         >
           <span className="alg-icon" aria-hidden="true">{entry.icon}</span>
           <span className="textbook-direct-copy">
-            <span className="textbook-direct-title">{title}</span>
+            <span className="textbook-direct-title-row">
+              <span className="textbook-direct-title">{title}</span>
+              <TextbookCategoryBadge category={topic.category} label={categoryLabel} longLabel={categoryLong} />
+            </span>
             {algorithmName !== title && (
               <span className="textbook-direct-algorithm">{algorithmName}</span>
             )}
@@ -380,20 +407,29 @@ function TextbookTopicRow({
   }
 
   return (
-    <section className="textbook-topic" data-topic={topic.id} data-kind="group">
+    <section
+      className="textbook-topic"
+      data-topic={topic.id}
+      data-kind="group"
+      data-category={topic.category}
+    >
       <button
         type="button"
         className="textbook-topic-head"
         aria-expanded={open}
         aria-controls={`topic-${topic.id}-body`}
-        aria-label={`${title} · ${t('textbookAlgorithmGroup')}`}
+        aria-label={`${title} · ${categoryLong}`}
         data-testid={`topic-${topic.id}`}
         data-kind="group"
+        data-category={topic.category}
         data-has-current={holdsCurrent ? 'true' : 'false'}
         onClick={onToggle}
       >
         <span className="textbook-topic-chevron" aria-hidden="true">›</span>
-        <span className="textbook-topic-name">{title}</span>
+        <span className="textbook-topic-copy">
+          <span className="textbook-topic-name">{title}</span>
+          <TextbookCategoryBadge category={topic.category} label={categoryLabel} longLabel={categoryLong} />
+        </span>
         {topic.extension && (
           <span className="textbook-extension" aria-hidden="true">{t('textbookExtension')}</span>
         )}

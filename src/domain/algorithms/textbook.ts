@@ -288,9 +288,10 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
     topics: [
       {
         id: 'tree-basics',
-        title: { zh: '树的定义与存储结构', en: 'Tree definition and storage' },
+        title: { zh: '树的存储结构', en: 'Tree storage structures' },
         algorithms: [],
         concept: true,
+        conceptId: 'tree-storage',
       },
       {
         id: 'binary-tree',
@@ -315,6 +316,7 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
         title: { zh: '树、森林与二叉树的转换', en: 'Tree, forest and binary tree conversion' },
         algorithms: [],
         concept: true,
+        conceptId: 'forest-conversion',
       },
       {
         id: 'huffman',
@@ -521,9 +523,18 @@ export interface TextbookAlgorithmNode {
  */
 export type TextbookTopicKind = 'concept' | 'planned' | 'algorithm' | 'group';
 
+/**
+ * Directory classification, derived from authored semantics rather than from
+ * whether a page happens to contain an SVG. A concept page with a lesson is a
+ * theory topic; only a shipped algorithm/group is a visual topic. Planned and
+ * still-unbound concept slots stay pending.
+ */
+export type TextbookTopicCategory = 'theory' | 'visual' | 'pending';
+
 export interface TextbookTopicView extends TextbookTopic {
   algorithms: TextbookAlgorithmNode[];
   kind: TextbookTopicKind;
+  category: TextbookTopicCategory;
 }
 
 export interface TextbookChapterView extends Omit<TextbookChapter, 'topics'> {
@@ -552,6 +563,21 @@ function textbookTopicKind(
 }
 
 /**
+ * Keep the two axes explicit: `kind` describes the row structure, while
+ * `category` describes how the student should read it. A concept slot without
+ * a lesson is not a theory page yet; an authored static SVG does not turn it
+ * into a visual algorithm either.
+ */
+export function textbookTopicCategory(
+  topic: TextbookTopic,
+  kind: TextbookTopicKind,
+): TextbookTopicCategory {
+  if (kind === 'concept') return topic.conceptId ? 'theory' : 'pending';
+  if (kind === 'algorithm' || kind === 'group') return 'visual';
+  return 'pending';
+}
+
+/**
  * Composes the authored table with the live registry.
  *
  * Rules:
@@ -572,7 +598,13 @@ export function buildTextbookNavigation(catalog: AlgorithmCatalog): TextbookChap
         mapped.add(ref.id);
         algorithms.push({ id: ref.id, extension: ref.extension === true });
       }
-      return { ...topic, algorithms, kind: textbookTopicKind(topic, algorithms) };
+      const kind = textbookTopicKind(topic, algorithms);
+      return {
+        ...topic,
+        algorithms,
+        kind,
+        category: textbookTopicCategory(topic, kind),
+      };
     });
 
     if (chapter.extension && topics.every((topic) => topic.algorithms.length === 0)) continue;
@@ -602,6 +634,7 @@ export function buildTextbookNavigation(catalog: AlgorithmCatalog): TextbookChap
         title: { zh: '其他算法', en: 'Other algorithms' },
         algorithms: unmapped.map((id) => ({ id, extension: true })),
         kind: unmapped.length === 1 ? 'algorithm' : 'group',
+        category: 'visual',
         extension: true,
       });
       extension.algorithmCount += unmapped.length;

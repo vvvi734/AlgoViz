@@ -122,6 +122,24 @@
   stroke-width: 1.2;
 }
 
+.diagram-table-head {
+  fill: var(--tab-active-bg);
+  stroke: var(--accent);
+  stroke-width: 1.2;
+}
+
+.diagram-tree-node {
+  fill: var(--graph-node);
+  stroke: var(--graph-node-edge);
+  stroke-width: 1.6;
+}
+
+.diagram-tree-node.is-root {
+  fill: var(--tab-active-bg);
+  stroke: var(--accent);
+  stroke-width: 2;
+}
+
 /* `diagram-cell` is defined after `diagram-accent`; keep highlighted cells
    visibly green for the search cases and the adjacency-matrix 1 entries. */
 .diagram-cell.diagram-accent {
@@ -252,6 +270,28 @@
 
 .diagram-directed {
   stroke: var(--accent);
+}
+
+.diagram-sibling {
+  stroke: var(--accent-2);
+  stroke-width: 2;
+  stroke-dasharray: 6 4;
+}
+
+.diagram-cut {
+  stroke: var(--red);
+  stroke-width: 2.2;
+  stroke-dasharray: 7 5;
+}
+
+.diagram-edge-tag {
+  fill: var(--accent-2);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.diagram-cut-tag {
+  fill: var(--red);
 }
 
 .diagram-arrow {
