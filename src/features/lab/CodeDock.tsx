@@ -1,5 +1,7 @@
 import { useId } from 'react';
 import { useI18n } from '../../i18n/I18nProvider';
+import { isGuidedInputAlgorithm } from '../../domain/algorithms/guidedInput';
+import { GuidedInputPanel } from './GuidedInputPanel';
 import type { LabController } from './useLabController';
 
 /**
@@ -12,6 +14,7 @@ import type { LabController } from './useLabController';
 export function CodeDock({ lab }: { lab: LabController }) {
   const { t } = useI18n();
   const titleId = useId();
+  const guided = isGuidedInputAlgorithm(lab.currentAlgo);
   const status = lab.status.text || t('codeDockReady');
 
   return (
@@ -30,35 +33,45 @@ export function CodeDock({ lab }: { lab: LabController }) {
           <span className="code-dock-hint">{t('codeDockHint')}</span>
         </div>
         <div className="code-dock-actions">
-          <button className="btn small" type="button" onClick={lab.restorePreset} data-testid="restore-btn">
-            {t('restore')}
-          </button>
-          <button className="btn primary code-dock-run" type="button" onClick={lab.runVisualization} data-testid="run-btn">
-            {t('run')}
-          </button>
+          {!guided ? (
+            <>
+              <button className="btn small" type="button" onClick={lab.restorePreset} data-testid="restore-btn">
+                {t('restore')}
+              </button>
+              <button className="btn primary code-dock-run" type="button" onClick={lab.runVisualization} data-testid="run-btn">
+                {t('run')}
+              </button>
+            </>
+          ) : null}
         </div>
       </header>
       <div className="code-dock-body is-compact" data-testid="code-dock-body">
-        <div className="code-dock-input-row">
-          <label className="code-dock-input-label" htmlFor="run-input">{t('input')}</label>
-          <input
-            id="run-input"
-            className="input code-dock-input"
-            data-testid="run-input"
-            value={lab.inputJson}
-            onChange={(event) => lab.setInputJson(event.target.value)}
-            spellCheck={false}
-          />
-          <button className="btn small code-dock-random" type="button" onClick={lab.randomizeInput} data-testid="random-btn">
-            {t('random')}
-          </button>
-        </div>
-        <div
-          className={`code-dock-feedback note${lab.status.error ? ' error' : ' muted'}`}
-          data-testid="run-feedback"
-        >
-          {status}
-        </div>
+        {guided ? (
+          <GuidedInputPanel lab={lab} />
+        ) : (
+          <>
+            <div className="code-dock-input-row">
+              <label className="code-dock-input-label" htmlFor="run-input">{t('input')}</label>
+              <input
+                id="run-input"
+                className="input code-dock-input"
+                data-testid="run-input"
+                value={lab.inputJson}
+                onChange={(event) => lab.setInputJson(event.target.value)}
+                spellCheck={false}
+              />
+              <button className="btn small code-dock-random" type="button" onClick={lab.randomizeInput} data-testid="random-btn">
+                {t('random')}
+              </button>
+            </div>
+            <div
+              className={`code-dock-feedback note${lab.status.error ? ' error' : ' muted'}`}
+              data-testid="run-feedback"
+            >
+              {status}
+            </div>
+          </>
+        )}
       </div>
     </section>
   );

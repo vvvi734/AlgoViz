@@ -1,0 +1,271 @@
+import { useEffect, useRef, useState } from 'react';
+import { useI18n } from '../../i18n/I18nProvider';
+import { defaultInputFor } from '../../domain/algorithms/examples';
+import {
+  buildGuidedInput,
+  defaultGuidedScenario,
+  guidedDraftFromInput,
+  guidedRandomScenarios,
+  randomGuidedDraft,
+  type GuidedInputAlgorithm,
+  type GuidedInputDraft,
+  type GuidedInputError,
+  type GuidedInputMode,
+  type GuidedRandomScenario,
+} from '../../domain/algorithms/guidedInput';
+import type { LabController } from './useLabController';
+
+function parseInput(raw: string): unknown {
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
+}
+
+function fieldDraft(id: GuidedInputAlgorithm, input: unknown): GuidedInputDraft {
+  return guidedDraftFromInput(id, input);
+}
+
+/**
+ * INPUT-01: one compact input surface shared by the first three algorithms.
+ *
+ * Official / Custom / Random describe where the values came from, not three
+ * separate execution systems. Every accepted draft is converted by the domain
+ * input model and then handed to `lab.runInput`, which calls the same executor
+ * and playback controller as the official preset.
+ */
+export function GuidedInputPanel({ lab }: { lab: LabController }) {
+  const { t, b, lang } = useI18n();
+  const id = lab.currentAlgo as GuidedInputAlgorithm;
+  const [mode, setMode] = useState<GuidedInputMode>('official');
+  const [draft, setDraft] = useState<GuidedInputDraft>(() => fieldDraft(id, parseInput(lab.inputJson)));
+  const [scenario, setScenario] = useState<string>(() => defaultGuidedScenario(id));
+  const [issue, setIssue] = useState<string | null>(null);
+  const [randomFilled, setRandomFilled] = useState(false);
+  const previousAlgo = useRef(id);
+  const previousInput = useRef(lab.inputJson);
+
+  useEffect(() => {
+    if (previousAlgo.current === id && previousInput.current === lab.inputJson) return;
+    const algorithmChanged = previousAlgo.current !== id;
+    previousAlgo.current = id;
+    previousInput.current = lab.inputJson;
+    setDraft(fieldDraft(id, parseInput(lab.inputJson)));
+    setIssue(null);
+    setRandomFilled(false);
+    if (algorithmChanged) {
+      setMode('official');
+      setScenario(defaultGuidedScenario(id));
+    }
+  }, [id, lab.inputJson]);
+
+  const scenarios = guidedRandomScenarios(id);
+
+  const setField = (key: keyof GuidedInputDraft, value: string) => {
+    setDraft((current) => ({ ...current, [key]: value }));
+    setMode('custom');
+    setIssue(null);
+    setRandomFilled(false);
+  };
+
+  const loadOfficial = () => {
+    setMode('official');
+    setIssue(null);
+    setRandomFilled(false);
+    lab.runInput(defaultInputFor(id));
+  };
+
+  const switchMode = (next: GuidedInputMode) => {
+    if (next === 'official') {
+      loadOfficial();
+      return;
+    }
+    setMode(next);
+    setIssue(null);
+    setRandomFilled(false);
+  };
+
+  const errorText = (error: GuidedInputError) =>
+    t(error.key).replace('{max}', String(error.max ?? ''));
+
+  const generate = () => {
+    let input: unknown;
+    if (mode === 'official') {
+      input = defaultInputFor(id);
+    } else {
+      const built = buildGuidedInput(id, draft);
+      if (!built.ok) {
+        const message = errorText(built.error);
+        setIssue(message);
+        setRandomFilled(false);
+        // Clearing is deliberate: the previous animation belongs to different
+        // data and must not keep playing behind an invalid draft.
+        lab.rejectInput(`${t('error')}: ${message}`);
+        return;
+      }
+      input = built.input;
+    }
+    setIssue(null);
+    setRandomFilled(false);
+    lab.runInput(input);
+  };
+
+  const randomize = () => {
+    setDraft(randomGuidedDraft(id, scenario));
+    setMode('random');
+    setIssue(null);
+    setRandomFilled(true);
+  };
+
+  const selectScenario = (next: string) => {
+    setScenario(next);
+    if (mode === 'random') {
+      setDraft(randomGuidedDraft(id, next));
+      setIssue(null);
+      setRandomFilled(true);
+    }
+  };
+
+  const statusText = issue ?? (randomFilled ? t('guidedRandomFilled') : lab.status.text || t('codeDockReady'));
+  const error = issue !== null || lab.status.error;
+
+  return (
+    <div className="guided-input" data-testid="guided-input" data-algorithm={id}>
+      <div className="guided-mode-row" role="group" aria-label={b('输入方式', 'Input mode')}>
+        <div className="guided-modes">
+          {(['official', 'custom', 'random'] as const).map((candidate) => (
+            <button
+              key={candidate}
+              className={`guided-mode${mode === candidate ? ' is-active' : ''}`}
+              type="button"
+              aria-pressed={mode === candidate}
+              onClick={() => switchMode(candidate)}
+              data-testid={`guided-mode-${candidate}`}
+            >
+              {t(`guidedMode${candidate[0]!.toUpperCase()}${candidate.slice(1)}`)}
+            </button>
+          ))}
+        </div>
+        {mode === 'random' ? (
+          <label className="guided-scenario">
+            <span>{t('guidedScenarioLabel')}</span>
+            <select
+              className="input"
+              value={scenario}
+              onChange={(event) => selectScenario(event.target.value)}
+              data-testid="guided-random-scenario"
+            >
+              {scenarios.map((item: GuidedRandomScenario) => (
+                <option key={item.id} value={item.id}>
+                  {item.label[lang === 'zh' ? 0 : 1]}
+                </option>
+              ))}
+            </select>
+          </label>
+        ) : null}
+      </div>
+
+      {id === 'bubble' ? (
+        <div className="guided-field-row">
+          <label className="guided-field-label" htmlFor="run-input">{t('guidedValuesLabel')}</label>
+          <input
+            id="run-input"
+            className="input code-dock-input"
+            data-testid="run-input"
+            value={draft.values}
+            onChange={(event) => setField('values', event.target.value)}
+            placeholder="8, 3, 5, 1, 7"
+            spellCheck={false}
+            autoComplete="off"
+          />
+        </div>
+      ) : null}
+
+      {id === 'binary' ? (
+        <div className="guided-field-grid">
+          <label className="guided-field">
+            <span>{t('guidedBinaryNumsLabel')}</span>
+            <input
+              id="run-input"
+              className="input code-dock-input"
+              data-testid="run-input"
+              value={draft.nums}
+              onChange={(event) => setField('nums', event.target.value)}
+              placeholder="1, 3, 5, 7, 9"
+              spellCheck={false}
+              autoComplete="off"
+            />
+          </label>
+          <label className="guided-field guided-field-target">
+            <span>{t('guidedBinaryTargetLabel')}</span>
+            <input
+              id="binary-target"
+              className="input code-dock-input"
+              data-testid="binary-target"
+              value={draft.target}
+              onChange={(event) => setField('target', event.target.value)}
+              placeholder="9"
+              inputMode="numeric"
+              spellCheck={false}
+              autoComplete="off"
+            />
+          </label>
+        </div>
+      ) : null}
+
+      {id === 'kmp' ? (
+        <div className="guided-field-grid">
+          <label className="guided-field">
+            <span>{t('guidedKmpTextLabel')}</span>
+            <input
+              id="run-input"
+              className="input code-dock-input"
+              data-testid="run-input"
+              value={draft.text}
+              onChange={(event) => setField('text', event.target.value)}
+              placeholder="ABABABCABABABC"
+              spellCheck={false}
+              autoComplete="off"
+            />
+          </label>
+          <label className="guided-field guided-field-pattern">
+            <span>{t('guidedKmpPatternLabel')}</span>
+            <input
+              id="kmp-pattern"
+              className="input code-dock-input"
+              data-testid="kmp-pattern"
+              value={draft.pattern}
+              onChange={(event) => setField('pattern', event.target.value)}
+              placeholder="ABABC"
+              spellCheck={false}
+              autoComplete="off"
+            />
+          </label>
+        </div>
+      ) : null}
+
+      <p className="guided-hint note muted">
+        {id === 'bubble'
+          ? t('guidedBubbleHint')
+          : id === 'binary'
+            ? t('guidedBinaryHint')
+            : t('guidedKmpHint')}
+        {mode === 'official' ? ` ${t('guidedOfficialHint')}` : mode === 'random' ? ` ${t('guidedRandomHint')}` : ''}
+      </p>
+
+      <div className="guided-actions">
+        <button className="btn small code-dock-random" type="button" onClick={randomize} data-testid="random-btn">
+          {t('guidedRandomize')}
+        </button>
+        <button className="btn primary code-dock-run" type="button" onClick={generate} data-testid="run-btn">
+          {t('guidedRun')}
+        </button>
+      </div>
+
+      <div className={`code-dock-feedback note${error ? ' error' : ' muted'}`} data-testid="run-feedback">
+        {statusText}
+      </div>
+    </div>
+  );
+}

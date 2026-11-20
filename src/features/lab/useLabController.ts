@@ -6,14 +6,14 @@ import {
   groups,
 } from '../../domain/algorithms/examples';
 import type { AlgorithmCatalog, CodeLanguage } from '../../domain/algorithms/types';
-import { CODE_LANGUAGES } from '../../domain/algorithms/types';
 import type { TraceEvent } from '../../domain/trace/schema';
 import { parseTraceDocument } from '../../domain/trace/schema';
 import { framesToTraceDocument } from '../../domain/trace/adapter';
 import type { VisualRunResult } from '../../domain/trace/types';
 import { ExecutionError, formatDiagnostic, type ExecutionDiagnostic } from '../../domain/trace/diagnostic';
 import { runForLanguage, isVisualResult } from '../../runtime/execute';
-import { safeGet, safeSet } from '../../runtime/storage';
+import { safeSet } from '../../runtime/storage';
+import { guidedLanguageFor } from '../../domain/algorithms/guidedInput';
 import { withTreeMode, type TreeMode } from '../../domain/algorithms/treeTraversalExamples';
 import {
   bstPresetInput,
@@ -51,11 +51,6 @@ function isGraphAlgorithm(id: string): boolean {
 export interface StatusMessage {
   text: string;
   error: boolean;
-}
-
-function storedLanguage(): CodeLanguage {
-  const value = safeGet(CODE_LANG_KEY);
-  return CODE_LANGUAGES.includes(value as CodeLanguage) ? (value as CodeLanguage) : 'js';
 }
 
 export interface LabController {
@@ -113,6 +108,18 @@ export interface LabController {
    */
   selectSequentialListPreset: (preset: SequentialListPresetId) => void;
   runVisualization: () => void;
+  /**
+   * INPUT-01: run an already validated object through the same executor as the
+   * current algorithm. Used by the guided input panel so a generated animation
+   * can never read a stale `inputJson` from a previous render.
+   */
+  runInput: (input: unknown) => void;
+  /**
+   * INPUT-01: invalidate any in-flight run and clear the old trace before
+   * reporting an input error. The canvas must not keep playing frames that
+   * belong to different data.
+   */
+  rejectInput: (message: string) => void;
   restorePreset: () => void;
   randomizeInput: () => void;
 }
@@ -121,11 +128,11 @@ export function useLabController(): LabController {
   const { t, b } = useI18n();
   const catalog: AlgorithmCatalog = baseCatalog;
   const [currentAlgo, setCurrentAlgo] = useState('bubble');
-  const [codeLang, setCodeLangState] = useState<CodeLanguage>(storedLanguage);
-  const [editorCode, setEditorCodeState] = useState(() => {
-    const initialLang = storedLanguage();
-    return exampleFor('bubble', initialLang);
-  });
+  // The initial visible course is bubble sort. Its established JavaScript
+  // example is the official 25-frame teaching trace, regardless of which
+  // language a previous session used for another algorithm.
+  const [codeLang, setCodeLangState] = useState<CodeLanguage>('js');
+  const [editorCode, setEditorCodeState] = useState(() => exampleFor('bubble', 'js'));
   const [inputJson, setInputJson] = useState(() => JSON.stringify(baseCatalog.bubble.input));
   const [events, setEvents] = useState<TraceEvent[]>([]);
   const [source, setSource] = useState('');
@@ -135,16 +142,31 @@ export function useLabController(): LabController {
   const runId = useRef(0);
 
   const runVisualizationWith = useCallback(async (code: string, rawInput: string, language: CodeLanguage = codeLang) => {
+    // Invalidate any in-flight run before parsing. Editing and running again
+    // must never let a late result from the previous input overwrite the new
+    // animation.
+    const id = ++runId.current;
     let input: unknown;
     try {
       input = JSON.parse(rawInput);
     } catch {
+      playback.stop();
+      setEvents([]);
+      setSource('');
+      setDiagnostics([]);
       setStatus({ text: t('syntax'), error: true });
       return;
     }
-    const id = ++runId.current;
-    setStatus({ text: t('running'), error: false });
+
+    // Clear the previous trace immediately. While Pyodide or the JS worker is
+    // running, the canvas and timeline must not keep showing frames that belong
+    // to different data.
+    playback.stop();
+    setEvents([]);
+    setSource('');
     setDiagnostics([]);
+    setStatus({ text: t('running'), error: false });
+
     try {
       const output = await runForLanguage('visual', code, input, null, language, {
         jsTimeout: t('workerTimeout'),
@@ -177,7 +199,38 @@ export function useLabController(): LabController {
       const text = diagnostic ? formatDiagnostic(diagnostic) : (error as Error).message;
       setStatus({ text: `${t('error')}: ${text}`, error: true });
     }
-  }, [codeLang, t, b]);
+  }, [codeLang, t, b, playback]);
+
+  const rejectInput = useCallback((message: string) => {
+    // A newer generation supersedes any pending validation or execution.
+    ++runId.current;
+    playback.stop();
+    setEvents([]);
+    setSource('');
+    setDiagnostics([]);
+    setStatus({ text: message, error: true });
+  }, [playback]);
+
+  const runInput = useCallback((input: unknown) => {
+    const entry = catalog[currentAlgo];
+    if (!entry) return;
+    const language = guidedLanguageFor(currentAlgo) ?? codeLang;
+    const code = language === codeLang ? editorCode : exampleFor(currentAlgo, language);
+    const rawInput = JSON.stringify(input);
+    if (rawInput === undefined) {
+      rejectInput(t('syntax'));
+      return;
+    }
+    if (language !== codeLang) {
+      setCodeLangState(language);
+      safeSet(CODE_LANG_KEY, language);
+    }
+    setEditorCodeState(code);
+    setInputJson(rawInput);
+    setDiagnostics([]);
+    setStatus({ text: '', error: false });
+    void runVisualizationWith(code, rawInput, language);
+  }, [catalog, currentAlgo, codeLang, editorCode, rejectInput, runVisualizationWith, t]);
 
   const runVisualization = useCallback(() => {
     void runVisualizationWith(editorCode, inputJson);
@@ -195,10 +248,15 @@ export function useLabController(): LabController {
     if (!entry) return;
     playback.stop();
     // Stack/queue/linked-list/binary-tree only emit structured frames from the
-    // real Python presets. Default those courses to Python; the legacy JS
-    // examples remain available for the simpler array courses.
+    // real Python presets. Default those courses to Python; bubble keeps its
+    // established JavaScript classroom example, while the remaining simple
+    // array courses keep the language already selected.
     const preferredLang: CodeLanguage =
-      id === 'stack' || id === 'queue' || id === 'linked' || id === 'doubly' || id === 'circular' || id === 'seqlist' || id === 'inorder' || id === 'bst' || id === 'avl' || id === 'btree' || id === 'heap' || id === 'huffman' || id === 'selection' || id === 'insertion' || id === 'shell' || id === 'quick' || id === 'merge' || id === 'linear' || id === 'binary' || id === 'hash-chain' || id === 'hash-probe' || id === 'kmp' || id === 'sparse-transpose' || id === 'factorial' || id === 'fib' || isGraphAlgorithm(id) ? 'python' : codeLang;
+      id === 'bubble'
+        ? 'js'
+        : id === 'stack' || id === 'queue' || id === 'linked' || id === 'doubly' || id === 'circular' || id === 'seqlist' || id === 'inorder' || id === 'bst' || id === 'avl' || id === 'btree' || id === 'heap' || id === 'huffman' || id === 'selection' || id === 'insertion' || id === 'shell' || id === 'quick' || id === 'merge' || id === 'linear' || id === 'binary' || id === 'hash-chain' || id === 'hash-probe' || id === 'kmp' || id === 'sparse-transpose' || id === 'factorial' || id === 'fib' || isGraphAlgorithm(id)
+          ? 'python'
+          : codeLang;
     if (preferredLang !== codeLang) {
       setCodeLangState(preferredLang);
       safeSet(CODE_LANG_KEY, preferredLang);
@@ -370,6 +428,8 @@ export function useLabController(): LabController {
     selectHuffmanPreset,
     selectSequentialListPreset,
     runVisualization,
+    runInput,
+    rejectInput,
     restorePreset,
     randomizeInput,
   };
