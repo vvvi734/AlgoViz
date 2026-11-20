@@ -6,7 +6,7 @@ const SHOT_DIR = resolve(process.cwd(), 'docs/ui03');
 mkdirSync(SHOT_DIR, { recursive: true });
 
 async function openDijkstra(page: Page) {
-  await page.goto('/');
+  await page.goto('/?view=lab');
   await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
   await chooseAlgorithm(page, 'dijkstra');
   await expect(page.locator('[data-testid="graph-visual"]')).toHaveAttribute('data-algorithm', 'dijkstra', {

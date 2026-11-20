@@ -18,11 +18,11 @@ vi.mock('../runtime/execute', () => {
   };
 });
 
-function renderApp() {
+function renderApp(initialConcept?: string | null) {
   return render(
     <ThemeProvider>
       <I18nProvider>
-        <App />
+        <App initialConcept={initialConcept} />
       </I18nProvider>
     </ThemeProvider>,
   );
@@ -34,7 +34,7 @@ async function ready() {
 
 describe('UX-03 textbook directory does not touch learning state', () => {
   it('collapses and restores the sidebar while the playhead stays put', async () => {
-    renderApp();
+    renderApp(null);
     await ready();
 
     fireEvent.click(screen.getByTestId('next-btn'));
@@ -60,7 +60,7 @@ describe('UX-03 textbook directory does not touch learning state', () => {
   });
 
   it('re-opens the chapter and topic that receive a newly selected algorithm', async () => {
-    renderApp();
+    renderApp(null);
     await ready();
 
     fireEvent.click(screen.getByTestId('chapter-ch9-sort'));
@@ -76,7 +76,7 @@ describe('UX-03 textbook directory does not touch learning state', () => {
   });
 
   it('opens a concept topic from the mobile directory selector', async () => {
-    renderApp();
+    renderApp(null);
     await ready();
 
     fireEvent.change(screen.getByTestId('mobile-algo-select'), { target: { value: 'concept:adt' } });
@@ -84,19 +84,19 @@ describe('UX-03 textbook directory does not touch learning state', () => {
     expect(screen.getByTestId('concept-title').textContent).toContain('抽象数据类型');
     expect((screen.getByTestId('mobile-algo-select') as HTMLSelectElement).value).toBe('concept:adt');
 
-    fireEvent.click(screen.getByTestId('concept-back'));
+    fireEvent.change(screen.getByTestId('mobile-algo-select'), { target: { value: 'insertion' } });
     await waitFor(() => expect(screen.queryByTestId('concept-page')).toBeNull());
     expect(screen.getByTestId('visual-stage')).toBeTruthy();
   });
 
   it('restores the collapsed layout after a remount', async () => {
-    const first = renderApp();
+    const first = renderApp(null);
     await ready();
     fireEvent.click(screen.getByTestId('sidebar-collapse'));
     expect(screen.getByTestId('sidebar').getAttribute('data-collapsed')).toBe('true');
     first.unmount();
 
-    renderApp();
+    renderApp(null);
     await ready();
     expect(screen.getByTestId('sidebar').getAttribute('data-collapsed')).toBe('true');
     expect(screen.getByTestId('sidebar-expand')).toBeTruthy();

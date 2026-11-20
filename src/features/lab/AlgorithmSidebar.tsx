@@ -78,6 +78,8 @@ export function AlgorithmSidebar({
       ? textbookTitle(chapter.title, lang)
       : `${t('textbookChapterNumber').replace('{number}', String(chapter.number))} · ${textbookTitle(chapter.title, lang)}`;
 
+  const anyChapterOpen = chapters.some((chapter) => isChapterOpen(chapter.id));
+
   if (collapsed) {
     return (
       <aside
@@ -170,19 +172,21 @@ export function AlgorithmSidebar({
       <div className="sidebar-actions" role="group" aria-label={t('textbookExpandActions')}>
         <button
           type="button"
-          className="sidebar-action"
-          data-testid="sidebar-expand-all"
-          onClick={() => onExpandAll(chapters.map((chapter) => chapter.id), expandableTopicIds)}
+          className="sidebar-action sidebar-action-toggle"
+          data-testid="sidebar-toggle-all"
+          data-expanded={anyChapterOpen ? 'true' : 'false'}
+          aria-label={anyChapterOpen ? t('textbookCollapseAll') : t('textbookExpandAll')}
+          title={anyChapterOpen ? t('textbookCollapseAll') : t('textbookExpandAll')}
+          onClick={() => {
+            if (anyChapterOpen) {
+              onCollapseAll();
+              return;
+            }
+            onExpandAll(chapters.map((chapter) => chapter.id), expandableTopicIds);
+          }}
         >
-          {t('textbookExpandAll')}
-        </button>
-        <button
-          type="button"
-          className="sidebar-action"
-          data-testid="sidebar-collapse-all"
-          onClick={onCollapseAll}
-        >
-          {t('textbookCollapseAll')}
+          <span className="sidebar-action-mark" aria-hidden="true">{anyChapterOpen ? '⌃' : '⌄'}</span>
+          {anyChapterOpen ? t('textbookCollapseAll') : t('textbookExpandAll')}
         </button>
       </div>
 

@@ -6,7 +6,7 @@ const SHOT_DIR = resolve(process.cwd(), 'docs/f1');
 mkdirSync(SHOT_DIR, { recursive: true });
 
 async function openSearch(page: Page, algorithm: 'linear' | 'binary', total: number) {
-  await page.goto('/');
+  await page.goto('/?view=lab');
   await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
   await chooseAlgorithm(page, algorithm);
   const visual = page.locator('[data-testid="search-visual"]');

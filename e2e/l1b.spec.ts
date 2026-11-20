@@ -6,7 +6,7 @@ const SHOT_DIR = resolve(process.cwd(), 'docs/l1b');
 mkdirSync(SHOT_DIR, { recursive: true });
 
 async function openApp(page: Page) {
-  await page.goto('/');
+  await page.goto('/?view=lab');
   await expect(page.getByTestId('code-dock')).toBeVisible({ timeout: 45_000 });
 }
 

@@ -22,7 +22,7 @@ async function expectNoPageOverflow(page: Page) {
 test.describe('MATRIX-01 — arrays, special matrices and sparse fast transpose', () => {
   test('three static concept pages explain mapping, compression and triplets without a player', async ({ page }) => {
     test.setTimeout(180_000);
-    await page.goto('/');
+    await page.goto('/?view=lab');
     await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
     await openTextbookChapter(page, 'ch5-array');
 
@@ -60,7 +60,7 @@ test.describe('MATRIX-01 — arrays, special matrices and sparse fast transpose'
   test('real Python fast transpose: count, cpot, write and a clean backwards jump', async ({ page }) => {
     test.setTimeout(600_000);
     await page.setViewportSize({ width: 1440, height: 1000 });
-    await page.goto('/');
+    await page.goto('/?view=lab');
     await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
     await selectAlgorithm(page, 'sparse-transpose');
 

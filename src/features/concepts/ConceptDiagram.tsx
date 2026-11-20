@@ -9,36 +9,49 @@ export function ConceptDiagram({ kind, lang }: { kind: ConceptDiagramKind; lang:
   const L = (zh: string, en: string) => (lang === 'zh' ? zh : en);
 
   if (kind === 'classification') {
+    const logical = [
+      [109, L('集合', 'Set')],
+      [179, L('线性', 'Linear')],
+      [249, L('树', 'Tree')],
+      [319, L('图', 'Graph')],
+    ] as Array<[number, string]>;
+    const storage = [
+      [459, L('顺序', 'Sequential')],
+      [529, L('链式', 'Linked')],
+      [599, L('索引', 'Indexed')],
+      [669, L('散列', 'Hashed')],
+    ] as Array<[number, string]>;
     return (
       <svg className="concept-svg" viewBox="0 0 760 360" role="img" aria-label={L('数据结构的分类示意', 'Data structure classification')}>
         <rect className="diagram-box diagram-accent" x="280" y="18" width="200" height="44" rx="10" />
         <text className="diagram-label diagram-label-strong" x="380" y="46" textAnchor="middle">{L('数据结构', 'Data structure')}</text>
-        <line className="diagram-line" x1="340" y1="62" x2="230" y2="102" />
-        <line className="diagram-line" x1="420" y1="62" x2="530" y2="102" />
-        <rect className="diagram-box" x="110" y="102" width="240" height="42" rx="9" />
-        <text className="diagram-label" x="230" y="128" textAnchor="middle">{L('逻辑结构', 'Logical structure')}</text>
-        <rect className="diagram-box" x="410" y="102" width="240" height="42" rx="9" />
-        <text className="diagram-label" x="530" y="128" textAnchor="middle">{L('存储结构', 'Storage structure')}</text>
-        {[
-          [85, L('集合', 'Set')],
-          [160, L('线性', 'Linear')],
-          [235, L('树', 'Tree')],
-          [310, L('图', 'Graph')],
-          [405, L('顺序', 'Sequential')],
-          [480, L('链式', 'Linked')],
-          [555, L('索引', 'Indexed')],
-          [630, L('散列', 'Hashed')],
-        ].map(([x, label]) => (
-          <g key={String(label)}>
-            <rect className="diagram-chip" x={Number(x)} y="178" width="65" height="38" rx="8" />
-            <text className="diagram-label" x={Number(x) + 32.5} y="202" textAnchor="middle">{label}</text>
+        <line className="diagram-line" x1="350" y1="62" x2="210" y2="100" />
+        <line className="diagram-line" x1="410" y1="62" x2="550" y2="100" />
+        <rect className="diagram-box" x="60" y="102" width="290" height="42" rx="9" />
+        <text className="diagram-label" x="205" y="128" textAnchor="middle">{L('逻辑结构', 'Logical structure')}</text>
+        <rect className="diagram-box" x="410" y="102" width="290" height="42" rx="9" />
+        <text className="diagram-label" x="555" y="128" textAnchor="middle">{L('存储结构', 'Storage structure')}</text>
+        <line className="diagram-line" x1="205" y1="144" x2="205" y2="164" />
+        <line className="diagram-line" x1="78" y1="164" x2="350" y2="164" />
+        <line className="diagram-line" x1="555" y1="144" x2="555" y2="164" />
+        <line className="diagram-line" x1="428" y1="164" x2="700" y2="164" />
+        {logical.map(([x, label]) => (
+          <g key={label}>
+            <rect className="diagram-chip" x={x - 31} y="178" width="62" height="38" rx="8" />
+            <text className="diagram-label" x={x} y="202" textAnchor="middle">{label}</text>
+            <line className="diagram-line" x1={x} y1="164" x2={x} y2="178" />
           </g>
         ))}
-        <line className="diagram-line" x1="230" y1="144" x2="230" y2="170" />
-        <line className="diagram-line" x1="530" y1="144" x2="530" y2="170" />
-        <text className="diagram-note" x="230" y="268" textAnchor="middle">{L('描述元素之间的关系', 'Relationships between elements')}</text>
-        <text className="diagram-note" x="530" y="268" textAnchor="middle">{L('关系在内存中的实现', 'How relationships are stored')}</text>
-        <rect className="diagram-band" x="110" y="292" width="540" height="42" rx="9" />
+        {storage.map(([x, label]) => (
+          <g key={label}>
+            <rect className="diagram-chip" x={x - 31} y="178" width="62" height="38" rx="8" />
+            <text className="diagram-label" x={x} y="202" textAnchor="middle">{label}</text>
+            <line className="diagram-line" x1={x} y1="164" x2={x} y2="178" />
+          </g>
+        ))}
+        <text className="diagram-note" x="205" y="268" textAnchor="middle">{L('描述元素之间的关系', 'Relationships between elements')}</text>
+        <text className="diagram-note" x="555" y="268" textAnchor="middle">{L('关系在内存中的实现', 'How relationships are stored')}</text>
+        <rect className="diagram-band" x="60" y="292" width="640" height="42" rx="9" />
         <text className="diagram-label" x="380" y="318" textAnchor="middle">
           {L('数据结构 = 逻辑结构 + 存储结构 + 运算', 'Data structure = logical + storage + operations')}
         </text>
@@ -48,22 +61,27 @@ export function ConceptDiagram({ kind, lang }: { kind: ConceptDiagramKind; lang:
 
   if (kind === 'complexity') {
     return (
-      <svg className="concept-svg" viewBox="0 0 760 360" role="img" aria-label={L('常见复杂度增长曲线', 'Common complexity growth curves')}>
-        <line className="diagram-axis" x1="88" y1="300" x2="700" y2="300" />
-        <line className="diagram-axis" x1="88" y1="300" x2="88" y2="40" />
-        <text className="diagram-note" x="730" y="304" textAnchor="end">{L('输入规模 n', 'Input size n')}</text>
-        <text className="diagram-note" x="78" y="44" textAnchor="end" transform="rotate(-90 78 44)">{L('操作次数', 'Operations')}</text>
-        <line className="diagram-curve curve-flat" x1="100" y1="226" x2="660" y2="226" />
-        <text className="diagram-label" x="692" y="222" textAnchor="end">O(1)</text>
-        <path className="diagram-curve curve-log" d="M100 226 C260 226 420 200 660 146" />
-        <text className="diagram-label" x="692" y="142" textAnchor="end">O(log n)</text>
-        <line className="diagram-curve curve-linear" x1="100" y1="294" x2="660" y2="118" />
-        <text className="diagram-label" x="692" y="114" textAnchor="end">O(n)</text>
-        <path className="diagram-curve curve-nlog" d="M100 294 C300 286 470 220 660 78" />
-        <text className="diagram-label" x="692" y="74" textAnchor="end">O(n log n)</text>
-        <path className="diagram-curve curve-quad" d="M100 294 C260 292 420 250 520 170 C600 105 650 58 680 42" />
-        <text className="diagram-label" x="692" y="40" textAnchor="end">O(n²)</text>
-        <text className="diagram-note" x="380" y="344" textAnchor="middle">{L('n 增大后，高阶项决定增长趋势', 'As n grows, the dominant term decides the trend')}</text>
+      <svg className="concept-svg" viewBox="0 0 760 380" role="img" aria-label={L('常见复杂度增长曲线', 'Common complexity growth curves')}>
+        <line className="diagram-axis" x1="96" y1="320" x2="690" y2="320" />
+        <line className="diagram-axis" x1="96" y1="320" x2="96" y2="52" />
+        <text className="diagram-note" x="700" y="326" textAnchor="end">{L('输入规模 n →', 'Input size n →')}</text>
+        <text className="diagram-note" x="78" y="44" textAnchor="end" transform="rotate(-90 78 44)">{L('相对操作次数', 'Relative operations')}</text>
+        {[96, 236, 376, 516, 656].map((x) => (
+          <line key={x} className="diagram-line" x1={x} y1="320" x2={x} y2="326" />
+        ))}
+        <line className="diagram-curve curve-flat" x1="96" y1="308" x2="656" y2="308" />
+        <text className="diagram-label" x="672" y="304">O(1)</text>
+        <path className="diagram-curve curve-log" d="M96 320 C220 318 400 306 656 270" />
+        <text className="diagram-label" x="672" y="266">O(log n)</text>
+        <line className="diagram-curve curve-linear" x1="96" y1="320" x2="656" y2="190" />
+        <text className="diagram-label" x="672" y="186">O(n)</text>
+        <path className="diagram-curve curve-nlog" d="M96 320 C200 270 430 205 656 126" />
+        <text className="diagram-label" x="672" y="122">O(n log n)</text>
+        <path className="diagram-curve curve-quad" d="M96 320 C170 270 330 180 450 120 C540 78 610 55 656 44" />
+        <text className="diagram-label" x="672" y="40">O(n²)</text>
+        <text className="diagram-note" x="380" y="366" textAnchor="middle">
+          {L('示意：纵轴为相对运算量，非线性刻度；只比较增长趋势', 'Illustrative: the vertical axis is relative and non-linear; only growth order is compared')}
+        </text>
       </svg>
     );
   }
@@ -152,28 +170,28 @@ export function ConceptDiagram({ kind, lang }: { kind: ConceptDiagramKind; lang:
         <text className="diagram-note" x="222" y="224" textAnchor="middle">{L('地址连续：a[i] 可直接计算', 'Contiguous: a[i] is computed directly')}</text>
         <text className="diagram-note" x="222" y="248" textAnchor="middle">{L('插入/删除中间元素需要搬移', 'Middle insert/delete shifts elements')}</text>
         <line className="diagram-divider" x1="408" y1="34" x2="408" y2="330" />
-        <text className="diagram-label diagram-label-strong" x="446" y="40">{L('链式存储', 'Linked storage')}</text>
-        <text className="diagram-note" x="446" y="64">{L('节点分散存放，指针表达顺序', 'Nodes are scattered; pointers express order')}</text>
+        <text className="diagram-label diagram-label-strong" x="426" y="40">{L('链式存储', 'Linked storage')}</text>
+        <text className="diagram-note" x="426" y="64">{L('节点分散存放，指针表达顺序', 'Nodes are scattered; pointers express order')}</text>
         {[0, 1, 2].map((index) => {
-          const x = 446 + index * 100;
+          const x = 426 + index * 98;
           return (
             <g key={index}>
-              <rect className="diagram-node" x={x} y="92" width="86" height="58" rx="8" />
-              <line className="diagram-node-split" x1={x + 54} y1="92" x2={x + 54} y2="150" />
-              <text className="diagram-label" x={x + 27} y="126" textAnchor="middle">{L('数据', 'data')}</text>
+              <rect className="diagram-node" x={x} y="92" width="90" height="58" rx="8" />
+              <line className="diagram-node-split" x1={x + 52} y1="92" x2={x + 52} y2="150" />
+              <text className="diagram-label" x={x + 26} y="126" textAnchor="middle">{L('数据', 'data')}</text>
               <text className="diagram-label" x={x + 70} y="126" textAnchor="middle">next</text>
               {index < 2 && (
                 <>
-                  <line className="diagram-line" x1={x + 86} y1="121" x2={x + 100} y2="121" />
-                  <polygon className="diagram-arrow" points={`${x + 100},121 ${x + 92},116 ${x + 92},126`} />
+                  <line className="diagram-line" x1={x + 90} y1="121" x2={x + 98} y2="121" />
+                  <polygon className="diagram-arrow" points={`${x + 98},121 ${x + 90},116 ${x + 90},126`} />
                 </>
               )}
             </g>
           );
         })}
-        <text className="diagram-note" x="446" y="194">{L('HEAD → 节点 1 → 节点 2 → 节点 3 → NULL', 'HEAD → node 1 → node 2 → node 3 → NULL')}</text>
-        <text className="diagram-note" x="446" y="224">{L('已知前驱插入/删除：改指针 O(1)', 'Insert/delete with predecessor known: relink O(1)')}</text>
-        <text className="diagram-note" x="446" y="248">{L('按下标访问：从头走 O(n)', 'Indexed access: walk from head, O(n)')}</text>
+        <text className="diagram-note" x="426" y="194">{L('HEAD → 节点 1 → 节点 2 → 节点 3 → NULL', 'HEAD → node 1 → node 2 → node 3 → NULL')}</text>
+        <text className="diagram-note" x="426" y="224">{L('已知前驱插入/删除：改指针 O(1)', 'Insert/delete with predecessor known: relink O(1)')}</text>
+        <text className="diagram-note" x="426" y="248">{L('按下标访问：从头走 O(n)', 'Indexed access: walk from head, O(n)')}</text>
         <rect className="diagram-band" x="60" y="292" width="640" height="42" rx="9" />
         <text className="diagram-label" x="380" y="318" textAnchor="middle">{L('随机访问选顺序；频繁插删选链式', 'Random access → sequential; frequent insert/delete → linked')}</text>
       </svg>
@@ -181,7 +199,7 @@ export function ConceptDiagram({ kind, lang }: { kind: ConceptDiagramKind; lang:
   }
 
   if (kind === 'tree') {
-    const levels = [95, 175, 255, 335];
+    const levels = [68, 148, 228];
     const nodes: Array<[string, number, number]> = [
       ['A', 380, 68], ['B', 260, 148], ['C', 500, 148],
       ['D', 190, 228], ['E', 330, 228], ['F', 570, 228],
@@ -190,8 +208,8 @@ export function ConceptDiagram({ kind, lang }: { kind: ConceptDiagramKind; lang:
       <svg className="concept-svg" viewBox="0 0 760 360" role="img" aria-label={L('树与二叉树术语示意', 'Tree and binary tree terminology')}>
         {levels.map((y, index) => (
           <g key={y}>
-            <line className="diagram-guide" x1="54" y1={y} x2="710" y2={y} />
-            <text className="diagram-note" x="48" y={y + 18} textAnchor="end">{L(`第 ${index + 1} 层`, `Level ${index + 1}`)}</text>
+            <line className="diagram-guide" x1="54" y1={y} x2="620" y2={y} />
+            <text className="diagram-note" x="48" y={y + 5} textAnchor="end">{L(`第 ${index + 1} 层`, `Level ${index + 1}`)}</text>
           </g>
         ))}
         <line className="diagram-line" x1="380" y1="68" x2="260" y2="148" />
@@ -206,14 +224,14 @@ export function ConceptDiagram({ kind, lang }: { kind: ConceptDiagramKind; lang:
           </g>
         ))}
         <text className="diagram-label" x="380" y="28" textAnchor="middle">{L('根节点 A', 'Root A')}</text>
-        <text className="diagram-label" x="300" y="112" textAnchor="end">{L('父节点', 'Parent')}</text>
-        <text className="diagram-label" x="458" y="112">{L('子节点', 'Child')}</text>
+        <text className="diagram-label" x="220" y="130" textAnchor="end">{L('父节点', 'Parent')}</text>
+        <text className="diagram-label" x="540" y="130" textAnchor="start">{L('子节点', 'Child')}</text>
         <text className="diagram-note" x="380" y="164" textAnchor="middle">{L('B 与 C 是兄弟', 'B and C are siblings')}</text>
         <text className="diagram-label" x="190" y="278" textAnchor="middle">{L('叶子 D', 'Leaf D')}</text>
         <text className="diagram-label" x="330" y="278" textAnchor="middle">{L('叶子 E', 'Leaf E')}</text>
         <text className="diagram-label" x="570" y="278" textAnchor="middle">{L('叶子 F', 'Leaf F')}</text>
         <text className="diagram-note" x="650" y="66" textAnchor="end">{L('A 的度 = 2', 'degree(A) = 2')}</text>
-        <text className="diagram-note" x="650" y="90" textAnchor="end">{L('树的高度 = 3', 'height = 3')}</text>
+        <text className="diagram-note" x="650" y="90" textAnchor="end">{L('树的高度（层数）= 3', 'height (levels) = 3')}</text>
       </svg>
     );
   }
@@ -292,26 +310,27 @@ export function ConceptDiagram({ kind, lang }: { kind: ConceptDiagramKind; lang:
     const cell = 38;
     const step = 44;
     const x0 = 58;
-    const yText = 58;
-    const yPattern = 104;
-    const yTextKmp = 198;
-    const yPatternKmp = 248;
+    const yText = 70;
+    const yPattern = 136;
+    const yTextKmp = 236;
+    const yPatternKmp = 292;
+    const iX = x0 + 4 * step + cell / 2;
     return (
-      <svg className="concept-svg" viewBox="0 0 760 430" role="img" aria-label={L('朴素匹配与 KMP 的静态对齐示意', 'Static alignment comparison of naive matching and KMP')}>
-        <text className="diagram-label diagram-label-strong" x={x0} y="32">
+      <svg className="concept-svg" viewBox="0 0 760 520" role="img" aria-label={L('朴素匹配与 KMP 的静态对齐示意', 'Static alignment comparison of naive matching and KMP')}>
+        <text className="diagram-label diagram-label-strong" x={x0} y="30">
           {L('同一段主串，两种失配后的处理', 'One text, two ways to handle a mismatch')}
         </text>
 
-        <text className="diagram-label" x={x0} y="52">{L('朴素匹配：首次对齐从 s = 0 开始', 'Naive: the first alignment starts at s = 0')}</text>
-        <text className="diagram-note" x="20" y={yText + 25}>T</text>
-        <text className="diagram-note" x="20" y={yPattern + 25}>P</text>
+        <text className="diagram-label" x={x0} y="54">{L('朴素匹配：首次对齐从 s = 0 开始', 'Naive: the first alignment starts at s = 0')}</text>
+        <text className="diagram-note" x="20" y={yText + 21}>T</text>
+        <text className="diagram-note" x="20" y={yPattern + 21}>P</text>
         {textCells.map((char, index) => {
           const tone = index < 4 ? 'diagram-cell diagram-accent' : index === 4 ? 'diagram-cell diagram-cell-mismatch' : 'diagram-cell';
           return (
             <g key={`naive-text-${index}`}>
               <rect className={tone} x={x0 + index * step} y={yText} width={cell} height="30" rx="5" />
               <text className="diagram-label" x={x0 + index * step + cell / 2} y={yText + 21} textAnchor="middle">{char}</text>
-              <text className="diagram-note" x={x0 + index * step + cell / 2} y={yText + 44} textAnchor="middle">{index}</text>
+              <text className="diagram-note" x={x0 + index * step + cell / 2} y={yText + 47} textAnchor="middle">{index}</text>
             </g>
           );
         })}
@@ -324,15 +343,16 @@ export function ConceptDiagram({ kind, lang }: { kind: ConceptDiagramKind; lang:
             </g>
           );
         })}
-        <text className="diagram-note" x={x0 + 5 * step + 10} y={yPattern + 20}>
+        <line className="diagram-guide" x1={x0 + 4 * step + cell / 2} y1={yPattern - 5} x2={x0 + 4 * step + cell / 2} y2={yPattern + 35} />
+        <text className="diagram-note" x={x0 + 5 * step + 16} y={yPattern + 21}>
           {L('j = 4 失配：A ≠ C', 'Mismatch at j = 4: A ≠ C')}
         </text>
-        <line className="diagram-divider" x1="24" y1="168" x2="736" y2="168" />
+        <line className="diagram-divider" x1="24" y1="184" x2="736" y2="184" />
 
-        <text className="diagram-label" x={x0} y="190">
+        <text className="diagram-label" x={x0} y="212">
           {L('KMP：i 停在 4，j 回退到 lps[3] = 2', 'KMP: i stays at 4, j falls back to lps[3] = 2')}
         </text>
-        <text className="diagram-note" x="20" y={yTextKmp + 20}>T</text>
+        <text className="diagram-note" x="20" y={yTextKmp + 21}>T</text>
         {textCells.map((char, index) => {
           const tone = index >= 2 && index < 4
             ? 'diagram-cell diagram-accent'
@@ -346,10 +366,10 @@ export function ConceptDiagram({ kind, lang }: { kind: ConceptDiagramKind; lang:
             </g>
           );
         })}
-        <line className="diagram-guide" x1={x0 + 4 * step + cell / 2} y1={yTextKmp - 6} x2={x0 + 4 * step + cell / 2} y2={yTextKmp + 34} />
-        <text className="diagram-label" x={x0 + 4 * step + cell / 2} y={yTextKmp - 10} textAnchor="middle">i</text>
+        <line className="diagram-guide" x1={iX} y1={yTextKmp - 4} x2={iX} y2={yTextKmp + 34} />
+        <text className="diagram-label" x={iX} y={yTextKmp - 8} textAnchor="middle">i</text>
 
-        <text className="diagram-note" x="20" y={yPatternKmp + 20}>P</text>
+        <text className="diagram-note" x="20" y={yPatternKmp + 21}>P</text>
         {patternCells.map((char, index) => {
           const x = x0 + (index + 2) * step;
           const tone = index < 2
@@ -364,35 +384,29 @@ export function ConceptDiagram({ kind, lang }: { kind: ConceptDiagramKind; lang:
             </g>
           );
         })}
-        <line className="diagram-guide" x1={x0 + 4 * step + cell / 2} y1={yPatternKmp - 6} x2={x0 + 4 * step + cell / 2} y2={yPatternKmp + 40} />
-        <text className="diagram-label" x={x0 + 4 * step + cell / 2} y={yPatternKmp + 54} textAnchor="middle">j</text>
+        <line className="diagram-guide" x1={iX} y1={yPatternKmp + 30} x2={iX} y2={yPatternKmp + 48} />
+        <text className="diagram-label" x={iX} y={yPatternKmp + 62} textAnchor="middle">j</text>
 
-        <text className="diagram-note" x={x0 + 7 * step + 14} y={yTextKmp + 20}>
-          {L('i 不回退', 'i never rewinds')}
-        </text>
-        <text className="diagram-note" x={x0 + 7 * step + 14} y={yTextKmp + 42}>
-          {L('前缀 AB 复用', 'prefix AB is reused')}
-        </text>
-        <text className="diagram-note" x={x0 + 7 * step + 14} y={yTextKmp + 64}>
-          {L('下一次对齐从 s = 2 继续', 'next alignment continues at s = 2')}
-        </text>
+        <text className="diagram-note" x="500" y="310">{L('i 不回退', 'i never rewinds')}</text>
+        <text className="diagram-note" x="500" y="332">{L('前缀 AB 复用', 'prefix AB is reused')}</text>
+        <text className="diagram-note" x="500" y="354">{L('下一次对齐从 s = 2 继续', 'next alignment continues at s = 2')}</text>
 
-        <line className="diagram-divider" x1="24" y1="326" x2="736" y2="326" />
-        <text className="diagram-label" x={x0} y="350">{L('lps 表（0 基）', 'lps table (0-based)')}</text>
-        <text className="diagram-note" x={x0} y="370">{L('P', 'P')}</text>
+        <line className="diagram-divider" x1="24" y1="382" x2="736" y2="382" />
+        <text className="diagram-label" x={x0} y="406">{L('lps 表（0 基）', 'lps table (0-based)')}</text>
+        <text className="diagram-note" x="20" y="435">{L('P', 'P')}</text>
         {patternCells.map((char, index) => {
           const x = x0 + 36 + index * 56;
           return (
             <g key={`lps-${index}`}>
-              <rect className="diagram-cell" x={x} y="338" width="44" height="28" rx="5" />
-              <text className="diagram-label" x={x + 22} y="358" textAnchor="middle">{char}</text>
-              <rect className={index === 3 ? 'diagram-cell diagram-accent' : 'diagram-cell'} x={x} y="374" width="44" height="28" rx="5" />
-              <text className="diagram-label" x={x + 22} y="394" textAnchor="middle">{lpsCells[index]}</text>
-              <text className="diagram-note" x={x + 22} y="414" textAnchor="middle">{index}</text>
+              <rect className="diagram-cell" x={x} y="418" width="44" height="26" rx="5" />
+              <text className="diagram-label" x={x + 22} y="436" textAnchor="middle">{char}</text>
+              <rect className={index === 3 ? 'diagram-cell diagram-accent' : 'diagram-cell'} x={x} y="450" width="44" height="26" rx="5" />
+              <text className="diagram-label" x={x + 22} y="468" textAnchor="middle">{lpsCells[index]}</text>
+              <text className="diagram-note" x={x + 22} y="488" textAnchor="middle">{index}</text>
             </g>
           );
         })}
-        <text className="diagram-note" x={x0 + 36 + 5 * 56 + 12} y="392">
+        <text className="diagram-note" x="386" y="468">
           {L('lps[3] = 2 → 回退后对齐到 s = 2', 'lps[3] = 2 → realign at s = 2')}
         </text>
       </svg>
@@ -409,7 +423,7 @@ export function ConceptDiagram({ kind, lang }: { kind: ConceptDiagramKind; lang:
     const cell = 52;
     const gap = 5;
     return (
-      <svg className="concept-svg" viewBox="0 0 760 390" role="img" aria-label={L('二维数组的行优先与列优先映射', 'Row-major and column-major mapping of a 2D array')}>
+      <svg className="concept-svg" viewBox="0 0 760 410" role="img" aria-label={L('二维数组的行优先与列优先映射', 'Row-major and column-major mapping of a 2D array')}>
         <text className="diagram-label diagram-label-strong" x="36" y="30">
           {L('二维数组 A[2][3]（下标从 0 开始）', '2D array A[2][3] (0-based)')}
         </text>
@@ -480,11 +494,11 @@ export function ConceptDiagram({ kind, lang }: { kind: ConceptDiagramKind; lang:
           </g>
         ))}
 
-        <rect className="diagram-band" x="30" y="344" width="700" height="34" rx="8" />
-        <text className="diagram-label" x="380" y="358" textAnchor="middle">
+        <rect className="diagram-band" x="30" y="344" width="700" height="48" rx="8" />
+        <text className="diagram-label" x="380" y="362" textAnchor="middle">
           {L('行优先 Loc(i,j)=base+(i*C+j)*w；列优先 Loc(i,j)=base+(j*R+i)*w（0 基）', 'Row-major Loc(i,j)=base+(i*C+j)*w; column-major Loc(i,j)=base+(j*R+i)*w (0-based)')}
         </text>
-        <text className="diagram-label" x="380" y="374" textAnchor="middle">
+        <text className="diagram-label" x="380" y="382" textAnchor="middle">
           {L('若下标从 1 开始，先把 i、j 各减 1，再代入公式', 'If indices start at 1, subtract 1 from i and j before substituting')}
         </text>
       </svg>
@@ -513,7 +527,7 @@ export function ConceptDiagram({ kind, lang }: { kind: ConceptDiagramKind; lang:
     const cell = 46;
     const gap = 5;
     return (
-      <svg className="concept-svg" viewBox="0 0 760 480" role="img" aria-label={L('对称矩阵下三角压缩存储', 'Lower-triangle compression of a symmetric matrix')}>
+      <svg className="concept-svg" viewBox="0 0 760 500" role="img" aria-label={L('对称矩阵下三角压缩存储', 'Lower-triangle compression of a symmetric matrix')}>
         <text className="diagram-label diagram-label-strong" x="30" y="30">
           {L('对称矩阵 A[4][4]：只存下三角的 10 个元素', 'Symmetric A[4][4]: store only the 10 lower-triangle entries')}
         </text>
@@ -644,8 +658,8 @@ export function ConceptDiagram({ kind, lang }: { kind: ConceptDiagramKind; lang:
               />
             )),
           )}
-          <text className="diagram-note" x="310" y="442">{L('只存 |i−j| ≤ 1', 'Store only |i−j| ≤ 1')}</text>
-          <text className="diagram-note" x="310" y="460">{L('k = 2i + j（0 基）', 'k = 2i + j (0-based)')}</text>
+          <text className="diagram-note" x="310" y="452">{L('只存 |i−j| ≤ 1', 'Store only |i−j| ≤ 1')}</text>
+          <text className="diagram-note" x="310" y="474">{L('k = 2i + j（0 基）', 'k = 2i + j (0-based)')}</text>
         </g>
         <rect className="diagram-band" x="470" y="330" width="260" height="128" rx="9" />
         <text className="diagram-label" x="600" y="356" textAnchor="middle">{L('压缩的前提', 'When compression pays off')}</text>
@@ -675,7 +689,7 @@ export function ConceptDiagram({ kind, lang }: { kind: ConceptDiagramKind; lang:
     const gap = 4;
     const x0 = 62;
     return (
-      <svg className="concept-svg" viewBox="0 0 760 430" role="img" aria-label={L('稀疏矩阵的三元组表示', 'Triplet representation of a sparse matrix')}>
+      <svg className="concept-svg" viewBox="0 0 760 440" role="img" aria-label={L('稀疏矩阵的三元组表示', 'Triplet representation of a sparse matrix')}>
         <text className="diagram-label diagram-label-strong" x="30" y="30">
           {L('稀疏矩阵 A[4][5]：20 个位置只有 6 个非零元素', 'Sparse A[4][5]: only 6 non-zeros in 20 positions')}
         </text>
@@ -777,14 +791,14 @@ export function ConceptDiagram({ kind, lang }: { kind: ConceptDiagramKind; lang:
           {L('恢复：逐条读 (r,c,v) 写回 B[r][c]；CSR 用 row_ptr 记录每一行的起点。', 'Restore: read (r,c,v) and write B[r][c]; CSR marks each row start in row_ptr.')}
         </text>
 
-        <rect className="diagram-band" x="30" y="330" width="700" height="52" rx="8" />
-        <text className="diagram-label" x="380" y="352" textAnchor="middle">
+        <rect className="diagram-band" x="30" y="326" width="700" height="84" rx="8" />
+        <text className="diagram-label" x="380" y="350" textAnchor="middle">
           {L('稀疏因子 δ = t / (m·n)；只有 t 远小于 m·n 时，三元组表才真正省空间', 'Sparsity δ = t / (m·n); a triplet list pays off only when t is far below m·n')}
         </text>
-        <text className="diagram-label" x="380" y="374" textAnchor="middle">
+        <text className="diagram-label" x="380" y="372" textAnchor="middle">
           {L('三元组表本身是 O(t)，但每个元素占 3 个字段；CSR 把行号压进 row_ptr', 'A triplet list is O(t) but uses three fields per entry; CSR folds row numbers into row_ptr')}
         </text>
-        <text className="diagram-note" x="380" y="400" textAnchor="middle">
+        <text className="diagram-note" x="380" y="398" textAnchor="middle">
           {L('稀疏矩阵适合按行/列扫描；随机访问 A[i][j] 仍要额外查找，通常不如二维数组直接。', 'Sparse layouts favour row/column scans; random A[i][j] needs a lookup and is usually slower than a dense array.')}
         </text>
       </svg>
@@ -954,8 +968,8 @@ export function ConceptDiagram({ kind, lang }: { kind: ConceptDiagramKind; lang:
       <line className="diagram-line" x1="240" y1="240" x2="430" y2="250" />
       <line className="diagram-line" x1="500" y1="140" x2="620" y2="220" />
       <line className="diagram-line" x1="430" y1="250" x2="620" y2="220" />
-      <line className="diagram-line diagram-directed" x1="240" y1="240" x2="500" y2="140" />
-      <polygon className="diagram-arrow" points="500,140 488,136 490,147" />
+      <line className="diagram-line diagram-directed" x1="240" y1="240" x2="472" y2="151" />
+      <polygon className="diagram-arrow" points="472,151 464,160 460,150" />
       {graphNodes.map(([label, x, y]) => (
         <g key={label}>
           <circle className="diagram-node-round" cx={x} cy={y} r="28" />
@@ -963,11 +977,10 @@ export function ConceptDiagram({ kind, lang }: { kind: ConceptDiagramKind; lang:
         </g>
       ))}
       <text className="diagram-label" x="170" y="62" textAnchor="middle">{L('顶点', 'Vertex')}</text>
-      <text className="diagram-note" x="250" y="106" textAnchor="middle">{L('边', 'Edge')}</text>
-      <text className="diagram-label" x="380" y="196" textAnchor="middle">{L('有向边', 'Directed edge')}</text>
+      <text className="diagram-note" x="250" y="84" textAnchor="middle">{L('无向边 (A, B)', 'undirected (A, B)')}</text>
+      <text className="diagram-label" x="448" y="186" textAnchor="start">{L('有向边', 'Directed edge')}</text>
       <text className="diagram-note" x="620" y="292" textAnchor="middle">{L('F 的度 = 2', 'degree(F) = 2')}</text>
       <text className="diagram-note" x="240" y="306" textAnchor="middle">{L('路径 A → D → E', 'Path A → D → E')}</text>
-      <text className="diagram-note" x="700" y="50" textAnchor="end">{L('无向边 (A, B)', 'undirected (A, B)')}</text>
       <rect className="diagram-band" x="60" y="320" width="640" height="34" rx="8" />
       <text className="diagram-label" x="380" y="342" textAnchor="middle">{L('图 = 顶点集合 V + 边集合 E', 'Graph = vertex set V + edge set E')}</text>
     </svg>

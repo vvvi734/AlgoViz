@@ -4,8 +4,8 @@
 
 面向学生的浏览器端数据结构与算法学习平台：**Python 在浏览器内运行**，根据真实执行结果生成逐帧动画，并同步展示代码位置、变量值与步骤讲解。完全本地运行，无需租服务器。
 
-> **当前版本：v0.27.0 L1B。** 用户可见品牌为 **AlgoViz**，旧 localStorage / IndexedDB / `.algopack` / `.algosession.json` / `.algocontext.json` / MCP Tool / AI Gateway 标识保持兼容。G1 补齐 **Floyd-Warshall 全源最短路** 与 **Bellman-Ford 单源最短路**；G2 补齐 **Prim** 与 **Kruskal 最小生成树**；G3 补齐 **Kahn 拓扑排序** 与 **AOE 关键路径**；G4 补齐 **无向图连通分量** 与 **Kosaraju 强连通分量**；T1 补齐 **二叉搜索树（BST）查找 / 插入 / 删除**；T2 补齐 **AVL 平衡二叉搜索树插入 / 删除 / 失衡检测 / 四种旋转**；T3 补齐 **最大堆建堆 / 插入 / 删除 / 堆排序**；T4 补齐 **哈夫曼树与编码**；S1 补齐 **选择 / 插入 / 希尔排序**；S2 补齐 **快速 / 归并排序**；F1 补齐 **顺序查找** 与 **迭代二分查找**；F2 补齐 **链地址法** 与 **线性探测**；L1A 补齐 **双向链表** 与 **循环单链表**，真实 Python 驱动稳定节点 ID、prev/next 双向指针、循环回环、中间帧与完成帧；L1B 补齐 **固定容量顺序表**，真实 Python 驱动 `capacity/length/data`、O(1) 下标访问、插入右移、删除左移与临时中间帧。UX-01B 将顶部 **算法导学** 收敛为三层阅读顺序；UX-02 将右侧 **Teaching Course** 收敛为四项逐帧讲解；UX-03 按程杰《大话数据结构》九章顺序，把左侧目录重构为 **章 → 专题 → 算法**，34 个算法入口全部唯一归属，保留 33 门课程、真实 Trace 与唯一播放器。当前门禁：**875 项单测 / 146 条真实浏览器 E2E / L1B 四张证据截图**；真实 Ollama / 云端模型仍未实测。
-> 定位已收敛：**Python 为主要教学语言**，JavaScript 作为前端实现语言继续支持 34 个算法入口（Dijkstra / Floyd-Warshall / Bellman-Ford / Prim / Kruskal / 拓扑排序 / 关键路径 / 连通分量 / 强连通分量 / BST / AVL / 链地址法 / 线性探测 / 双向链表 / 循环单链表 / 顺序表的 JS 入口只提示使用 Python）；**C / C++ 与在线判题已从规划中取消**。详见 [阶段一总结](docs/STAGE1_REPORT.md)、[阶段二总结](docs/STAGE2_REPORT.md)、[阶段三总结](docs/STAGE3_REPORT.md)、[阶段 3B 总结](docs/STAGE3B_REPORT.md)、[阶段四总结](docs/STAGE4_REPORT.md)、[阶段 5A 总结](docs/STAGE5A_REPORT.md)、[阶段 6A 总结](docs/STAGE6A_REPORT.md)、[阶段 7A 总结](docs/STAGE7A_REPORT.md)、[阶段 7B 总结](docs/STAGE7B_REPORT.md)、[阶段 7C 总结](docs/STAGE7C_REPORT.md)、[阶段 7D 总结](docs/STAGE7D_REPORT.md)、[阶段 7E 总结](docs/STAGE7E_REPORT.md) 与 [阶段 7F 总结](docs/STAGE7F_REPORT.md)；课程与算法覆盖见 [COVERAGE](docs/COVERAGE.md)；F2 交付细节见 [F2_REPORT](docs/F2_REPORT.md)、L1A 交付细节见 [L1A_REPORT](docs/L1A_REPORT.md)、L1B 交付细节见 [L1B_REPORT](docs/L1B_REPORT.md)；品牌边界见 [BRAND_MIGRATION](docs/BRAND_MIGRATION.md)；知识包格式与作者指引见 [PACK_FORMAT_V1](docs/PACK_FORMAT_V1.md)、[PACK_AUTHOR_GUIDE](docs/PACK_AUTHOR_GUIDE.md)；MCP 安装与宿主配置见 [MCP_INSTALL](docs/MCP_INSTALL.md)；AI Gateway 安装与安全边界见 [AI_GATEWAY](docs/AI_GATEWAY.md)；T1/T2 交付细节见 [T1_REPORT](docs/T1_REPORT.md)、[T2_REPORT](docs/T2_REPORT.md)；UX-01B 交付细节见 [UX01B_REPORT](docs/UX01B_REPORT.md)、UX-02 交付细节见 [UX02_REPORT](docs/UX02_REPORT.md)。
+> **当前版本：v0.27.0 L1B。** 用户可见品牌为 **AlgoViz**，旧 localStorage / IndexedDB / `.algopack` / `.algosession.json` / `.algocontext.json` / MCP Tool / AI Gateway 标识保持兼容。G1 补齐 **Floyd-Warshall 全源最短路** 与 **Bellman-Ford 单源最短路**；G2 补齐 **Prim** 与 **Kruskal 最小生成树**；G3 补齐 **Kahn 拓扑排序** 与 **AOE 关键路径**；G4 补齐 **无向图连通分量** 与 **Kosaraju 强连通分量**；T1 补齐 **二叉搜索树（BST）查找 / 插入 / 删除**；T2 补齐 **AVL 平衡二叉搜索树插入 / 删除 / 失衡检测 / 四种旋转**；T3 补齐 **最大堆建堆 / 插入 / 删除 / 堆排序**；T4 补齐 **哈夫曼树与编码**；S1 补齐 **选择 / 插入 / 希尔排序**；S2 补齐 **快速 / 归并排序**；F1 补齐 **顺序查找** 与 **迭代二分查找**；F2 补齐 **链地址法** 与 **线性探测**；L1A 补齐 **双向链表** 与 **循环单链表**，真实 Python 驱动稳定节点 ID、prev/next 双向指针、循环回环、中间帧与完成帧；L1B 补齐 **固定容量顺序表**，真实 Python 驱动 `capacity/length/data`、O(1) 下标访问、插入右移、删除左移与临时中间帧。UX-01B 将顶部 **算法导学** 收敛为三层阅读顺序；UX-02 将右侧 **Teaching Course** 收敛为四项逐帧讲解；UX-03 按程杰《大话数据结构》九章顺序，把左侧目录重构为 **章 → 专题 → 算法**，34 个算法入口全部唯一归属，保留 33 门课程、真实 Trace 与唯一播放器。当前门禁：**804 项单测 / 146 条真实浏览器 E2E / L1B 四张证据截图**；真实 Ollama / 云端模型仍未实测。
+> 定位已收敛：**Python 为主要教学语言**，JavaScript 作为前端实现语言继续支持 34 个算法入口（Dijkstra / Floyd-Warshall / Bellman-Ford / Prim / Kruskal / 拓扑排序 / 关键路径 / 连通分量 / 强连通分量 / BST / AVL / 链地址法 / 线性探测 / 双向链表 / 循环单链表 / 顺序表的 JS 入口只提示使用 Python）；**C / C++ 的在线编辑执行与判题已取消，只保留只读参考代码**。详见 [阶段一总结](docs/STAGE1_REPORT.md)、[阶段二总结](docs/STAGE2_REPORT.md)、[阶段三总结](docs/STAGE3_REPORT.md)、[阶段 3B 总结](docs/STAGE3B_REPORT.md)、[阶段四总结](docs/STAGE4_REPORT.md)、[阶段 5A 总结](docs/STAGE5A_REPORT.md)、[阶段 6A 总结](docs/STAGE6A_REPORT.md)、[阶段 7A 总结](docs/STAGE7A_REPORT.md)、[阶段 7B 总结](docs/STAGE7B_REPORT.md)、[阶段 7C 总结](docs/STAGE7C_REPORT.md)、[阶段 7D 总结](docs/STAGE7D_REPORT.md)、[阶段 7E 总结](docs/STAGE7E_REPORT.md) 与 [阶段 7F 总结](docs/STAGE7F_REPORT.md)；课程与算法覆盖见 [COVERAGE](docs/COVERAGE.md)；F2 交付细节见 [F2_REPORT](docs/F2_REPORT.md)、L1A 交付细节见 [L1A_REPORT](docs/L1A_REPORT.md)、L1B 交付细节见 [L1B_REPORT](docs/L1B_REPORT.md)；品牌边界见 [BRAND_MIGRATION](docs/BRAND_MIGRATION.md)；知识包格式与作者指引见 [PACK_FORMAT_V1](docs/PACK_FORMAT_V1.md)、[PACK_AUTHOR_GUIDE](docs/PACK_AUTHOR_GUIDE.md)；MCP 安装与宿主配置见 [MCP_INSTALL](docs/MCP_INSTALL.md)；AI Gateway 安装与安全边界见 [AI_GATEWAY](docs/AI_GATEWAY.md)；T1/T2 交付细节见 [T1_REPORT](docs/T1_REPORT.md)、[T2_REPORT](docs/T2_REPORT.md)；UX-01B 交付细节见 [UX01B_REPORT](docs/UX01B_REPORT.md)、UX-02 交付细节见 [UX02_REPORT](docs/UX02_REPORT.md)。
 
 ---
 
@@ -67,17 +67,17 @@
 | Python 错误诊断 | ✅ 已实现 | SyntaxError/NameError/… 结构化抽取，行列映射为 Monaco Marker |
 | 本地代码自动保存 | ✅ 已实现 | 按算法×语言 debounce 自动保存，刷新/切换恢复，两步确认恢复默认 |
 | 源码一致性与异步隔离 | ✅ 已实现 | 编辑后旧 Trace 不高亮新代码并提示重跑；`runId` 丢弃过期结果 |
-| 练习题库（原创示例） | ✅ 已实现 | 8 道原创题 + 3 级循序提示 + 本机学习记录 |
-| 练习「运行并查看输出」 | ✅ 已实现 | 仅展示输入 → 输出，**不再自动判题**；完成状态由用户手动标记 |
-| C / C++ | 🚫 已取消 | 语言入口、占位模板与 `/api/execute` 执行后端均已移除 |
+| 练习题库 | 🚫 已移除 | 题目数据、类型、`PracticeView`、`ProblemList`、控制器及导航入口均已删除；不再保留本地练习记录界面 |
+| 教材阅读默认页 | ✅ 已实现 | 启动即打开「数据结构绪论 · 数据结构的基本概念」；顶部无导航标签，算法工作区仅保留 `?view=lab` 回归深链 |
+| C / C++ 在线执行 | 🚫 已取消 | 语言运行入口、占位模板与 `/api/execute` 执行后端均已移除；只读参考代码查看器继续保留 C / C++ 示例 |
 | 在线 Judge / 自动判题 | 🚫 已取消 | 相关入口与宣传已清理 |
 | 中英文界面 / 移动端适配 | ⚠️ 部分 | Stage 7A 修复 390–1920 横向溢出与 1024 布局；Stage 7B 栈/队列、Stage 7F 带权图在 1440/1024/390 与 Light/Dark 下实测无页面横向溢出；390 宽图保持可读最小宽度并在画布内横向滚动；仍未安装 axe-core，触控尺寸未逐项审计 |
-| 自动化测试 | ✅ 已实现 | 875 项单测 / 帧回归 / jsdom 冒烟 + 146 条真实浏览器 E2E（Playwright + Edge，含真实 Pyodide、知识包、会话文件、AI 导师真实帧/离线/防剧透、Stage 7A 布局与标签状态、Stage 7B 栈/队列、Stage 7C 链表节点/箭头/回退、Stage 7D 二叉树三模式/递归调用栈/回退、Stage 7E BFS/DFS 图与 Frontier/回退/跳帧、Stage 7F Dijkstra、G1 Floyd/Bellman-Ford、G2 Prim/Kruskal、G3 Kahn/AOE、G4 连通分量/Kosaraju、T1 BST、T2 AVL、T3 最大堆、T4 哈夫曼、S1/S2 排序、F1 顺序/二分查找、F2 链地址法/线性探测、L1A 双向/循环链表 prev/next、循环回环、单节点自环、删到空与回退跳帧、L1B 顺序表插入右移/删除左移/满表空表拒绝与回退跳帧、UX-01B/UX-02/UX-03 教学布局与目录、以及 T1 8 张、T2 6 张、F2 6 张、L1A 6 张、L1B 4 张、UX-01B 11 张、UX-02 11 张、UX-03 10 张证据截图）；另有 MCP 协议测试 20 项与 stdio 冒烟 9 项通过 + 1 项按配置跳过 |
+| 自动化测试 | ✅ 已实现 | 804 项单测 / 帧回归 / jsdom 冒烟 + 146 条真实浏览器 E2E（Playwright + Edge，含真实 Pyodide、知识包、会话文件、AI 导师真实帧/离线/防剧透、Stage 7A 布局与标签状态、Stage 7B 栈/队列、Stage 7C 链表节点/箭头/回退、Stage 7D 二叉树三模式/递归调用栈/回退、Stage 7E BFS/DFS 图与 Frontier/回退/跳帧、Stage 7F Dijkstra、G1 Floyd/Bellman-Ford、G2 Prim/Kruskal、G3 Kahn/AOE、G4 连通分量/Kosaraju、T1 BST、T2 AVL、T3 最大堆、T4 哈夫曼、S1/S2 排序、F1 顺序/二分查找、F2 链地址法/线性探测、L1A 双向/循环链表 prev/next、循环回环、单节点自环、删到空与回退跳帧、L1B 顺序表插入右移/删除左移/满表空表拒绝与回退跳帧、UX-01B/UX-02/UX-03 教学布局与目录、以及 T1 8 张、T2 6 张、F2 6 张、L1A 6 张、L1B 4 张、UX-01B 11 张、UX-02 11 张、UX-03 10 张证据截图）；另有 MCP 协议测试 20 项与 stdio 冒烟 9 项通过 + 1 项按配置跳过 |
 | 知识包远程市场 / 包签名 | ⏳ 后续 | 本版只有本地文件导入；无远程仓库、无自动下载、无签名校验 |
 | 网页 AI 导师（本地 Gateway） | ✅ 已实现（真机未验证） | Stage 7A 将其收进工作区标签页，连接状态与错误详情保留；Stage 6A：Ollama + OpenAI Chat Completions 适配、五级教学 Schema、防剧透降级、同源代理；本机无 Ollama/云端 Key，真实模型未验证 |
 | AI Gateway 安全边界 | ✅ 已实现 | 仅 127.0.0.1、Origin + 自定义头、96 KiB 请求 / 30s / 20 rpm、严格 Zod、目标地址仅启动配置、密钥只存 Gateway 环境变量 |
 | 多模态 / RAG / 自动判题 / Agent 实时同步 | ⏳ 后续 | Stage 6A 明确不做；文件桥与 stdio MCP 保持独立 |
-| 练习页编辑器 | ⏳ 后续 | 练习页仍为 textarea；Monaco 仅用于实验室主编辑器 |
+| 练习页编辑器 | 🚫 已移除 | 练习页与题库一并删除；Monaco 仅用于算法工作区主编辑器 |
 | GitHub Pages 部署 | ✅ 已实现 | workflow 构建 `dist/` 后发布 |
 | 开源贡献规范 | ✅ 基础版 | [CONTRIBUTING.md](CONTRIBUTING.md)、[行为准则](CODE_OF_CONDUCT.md) |
 
@@ -87,7 +87,7 @@
 npm ci
 npm run dev            # 开发服务器
 npm run typecheck      # TypeScript 严格检查
-npm test               # Vitest（875 项）
+npm test               # Vitest（804 项）
 npm run build          # tsc -b && vite build → dist/
 npm run preview        # 预览构建产物
 npm run test:e2e       # Playwright E2E（默认驱动本机 Microsoft Edge，146 条）
@@ -169,7 +169,7 @@ scripts/       从 legacy 定义生成类型化数据、build-pack.mjs、validat
 
 - 宽屏：左侧可折叠算法目录；中间动画 + 右侧 Monaco；「当前步骤」紧接动画下方；底部标签页为教学步骤 / 变量与调用栈 / AI 导师 / 学习工具。
 - ≤1279px：单列顺序为动画 → 当前步骤 → 代码 → 标签页；≤899px 目录改为顶部算法选择；≤760px 单列且无页面级横向滚动。
-- 标签页只隐藏 DOM，不卸载面板，因此 Monaco、Trace、草稿与 AI 会话状态不因切换而重建。题库与 AI 导入入口位于「更多工具」菜单，代码与数据未删除。
+- 标签页只隐藏 DOM，不卸载面板，因此 Monaco、Trace、草稿与 AI 会话状态不因切换而重建。题库与「更多工具」入口已移除；默认启动为教材绪论，算法工作区仅通过 `?view=lab` 保留给回归与深链。
 
 详细证据与已知限制见 [阶段 7A 总结](docs/STAGE7A_REPORT.md)，实际截图位于 `docs/stage7a/`。
 
@@ -179,7 +179,7 @@ scripts/       从 legacy 定义生成类型化数据、build-pack.mjs、validat
 - 请求中的 `context` 复用 Stage 5A 的真实帧字段：`algorithmId`、当前 `event`（Trace Schema v1）、`stepIndex/totalEvents`、`lessonStepId` 与课程阶段文案、`traceStale`；`stepIndex` 必须等于 `event.step`。源码默认不发送，只有用户勾选后才包含（上限 40k 字符）。
 - 五级教学：`level 1..5` 默认 1；Level 5 必须在前端确认并携带 `confirmFullSolution: true`，否则 Gateway 返回 403 `level5-confirmation-required`。回复经共享 Zod Schema 校验；低等级下完整代码围栏会被替换，`answerDisclosure` 超契约时降级。
 - 旧请求与步骤绑定：卡片显示算法/帧号；切换步骤会中止在途请求，旧回复不会被标成新步骤答案。
-- 旧版 `POST /api/ai` 仍保留给练习页/自定义导入使用的“用户自部署代理”协议（`{"action":"review_code", ...}`）；AI 导师不走这个接口，也不需要用户自己搭代理。
+- 旧版 `POST /api/ai` 协议仅作为历史兼容保留；练习页与自定义导入入口已移除。AI 导师不走这个接口，也不需要用户自己搭代理。
 - **不要把 API key 写进前端、GitHub 仓库或浏览器 localStorage。** 云端 Key 只放在 Gateway 进程环境（`.env` 被 gitignore；仓库只提交 `.env.example`）。
 
 ### 安全说明
@@ -220,7 +220,7 @@ T2（已完成，待合并）：AVL 插入 / 删除 / 失衡检测 / LL·RR·LR�
 UX-01（已完成，待合并）：实验室顶部可折叠算法导学；三算法原创双语、课程派生与目录安全回退、每算法折叠偏好、键盘操作、390 手机端；独立分支 `feat/ux01-algorithm-guide`。
 UX-01B（已完成，待合并）：在 UX-01 基线上把导学收敛为“一句话理解 + 核心思想 → 3～5 个阶段 → 记忆重点”三层；详细步骤/前置/复杂度/条件/错误默认收起，展开后完整保留；静态图缩小；Dijkstra/Kahn/Kosaraju 各自使用真实阶段结构；1440×900 首屏可见动画顶部；独立分支 `feat/ux01b-guide-hierarchy`。
 UX-02（已完成，待合并）：右侧 Teaching Course 默认只保留“当前做什么 / 为什么这样做 / 真实状态变化 / 可选记忆重点”四段；Dijkstra、Kahn、Kosaraju、BST/AVL 读取强类型结构，其他算法按相邻帧 `state` 降级；旧课程资料与步骤跳转折叠保留；右栏 1440 高度降到 405～427px，390 单栏可读；独立分支 `feat/ux02-lesson-panel`。
-后续：堆、哈夫曼树与页面主布局改造继续复用现有树布局、Trace 快照与单一播放器；Agent ↔ 浏览器实时同步（Stage 5B 候选）、RAG、题库扩充、练习页 Monaco 迁移、远程包市场与包签名、axe 可访问性。
+后续：堆、哈夫曼树与页面主布局改造继续复用现有树布局、Trace 快照与单一播放器；Agent ↔ 浏览器实时同步（Stage 5B 候选）、RAG、教材静态图扩充、远程包市场与包签名、axe 可访问性。
 
 ### License
 
@@ -252,7 +252,7 @@ AlgoViz is a browser-first algorithm visualization learning platform where **Pyt
 npm ci
 npm run dev
 npm run typecheck
-npm test          # 875 tests (incl. 20 MCP protocol tests + gateway tests)
+npm test          # 804 tests (incl. 20 MCP protocol tests + gateway tests)
 npm run build
 npm run test:e2e  # 146 Playwright tests (local Microsoft Edge; mock provider)
 npm run pack -- packs/algolens-fib-basics.algopack   # validate a pack (same chain as the browser)

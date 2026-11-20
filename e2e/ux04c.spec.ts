@@ -18,7 +18,7 @@ mkdirSync(AFTER, { recursive: true });
 type Box = { x: number; y: number; width: number; height: number; bottom: number; right: number };
 
 async function openApp(page: Page) {
-  await page.goto('/');
+  await page.goto('/?view=lab');
   await page.getByTestId('code-dock').waitFor({ state: 'visible', timeout: 45_000 });
 }
 

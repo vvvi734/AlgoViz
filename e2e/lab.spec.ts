@@ -2,7 +2,7 @@ import { expect, openCodePanel, openLessonStepNav, selectAlgorithm as chooseAlgo
 
 test.describe('Stage 3 — Python recursion in the real browser', () => {
   test('Stage 3 — Python factorial recursion: real Pyodide call stack, result 24', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/?view=lab');
     await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
     await openCodePanel(page);
 
@@ -41,7 +41,7 @@ test.describe('Stage 3 — Python recursion in the real browser', () => {
   });
 
   test('Stage 3 — Python Fibonacci recursion: real Pyodide branches, result 3', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/?view=lab');
     await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
     await openCodePanel(page);
 
@@ -70,7 +70,7 @@ test.describe('Stage 3 — Python recursion in the real browser', () => {
  */
 test.describe('Stage 3B — teaching steps synced with real Pyodide execution', () => {
   test('factorial recursion: lesson stages track the real call stack, answer stays 24', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/?view=lab');
     await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
     await openCodePanel(page);
 
@@ -116,7 +116,7 @@ test.describe('Stage 3B — teaching steps synced with real Pyodide execution', 
  */
 test.describe('Stage 3 fix — switching traces resets the timeline', () => {
   test('scrubbing the 25-frame bubble sort then switching to the 10-frame binary search lands on frame 1', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/?view=lab');
     await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
 
     // Bubble sort is the longest legacy trace: 25 frames.

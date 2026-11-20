@@ -49,6 +49,19 @@
   cursor: pointer;
 }
 
+/* One state-aware control replaces the old side-by-side expand / collapse pair. */
+.sidebar-action-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.sidebar-action-mark {
+  font-size: 13px;
+  line-height: 1;
+}
+
 .sidebar-action:hover,
 .sidebar-action:focus-visible {
   border-color: var(--accent);

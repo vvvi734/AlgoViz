@@ -55,13 +55,16 @@ import { useI18n } from '../../i18n/I18nProvider';
 export function LabView({
   lab,
   lessons,
+  initialConceptId = null,
 }: {
   lab: LabController;
   lessons: LessonCatalog;
+  /** Concept shown on first paint; `null` keeps the legacy algorithm workspace. */
+  initialConceptId?: string | null;
 }) {
   const { t, pick, lang } = useI18n();
   const entry = lab.catalog[lab.currentAlgo];
-  const [conceptId, setConceptId] = useState<string | null>(null);
+  const [conceptId, setConceptId] = useState<string | null>(initialConceptId);
   const concept = conceptById(conceptId);
   const currentEvent = lab.events[lab.playback.index];
   const actualTreeTraversal =
@@ -167,7 +170,6 @@ export function LabView({
   const algorithmGuideContent = buildAlgorithmGuide(lab.currentAlgo, lesson, entry);
   const activeStepIndex = lesson ? stepIndexForEvent(lesson, currentEvent) : -1;
   const activeStep = activeStepIndex >= 0 ? lesson?.steps[activeStepIndex] : undefined;
-  const conceptTitle = concept ? concept.title[lang === 'zh' ? 0 : 1] : null;
 
   const selectAlgorithm = (id: string) => {
     setConceptId(null);
@@ -200,13 +202,11 @@ export function LabView({
       </div>
 
       <div className="lab-main">
-        <header className="lab-head panel">
+        <header className={`lab-head panel${concept ? ' concept-head' : ''}`}>
           <div className="lab-head-main">
             <div>
               <div className="eyebrow">{concept ? t('conceptKicker') : t('interactive')}</div>
-              <h1 data-testid="lab-title">
-                {conceptTitle ?? (entry ? pick(entry.name) : lab.currentAlgo)}
-              </h1>
+              {concept ? null : <h1 data-testid="lab-title">{entry ? pick(entry.name) : lab.currentAlgo}</h1>}
             </div>
             {concept ? null : (
               <span className="tag green">{(entry?.group ?? '').toUpperCase()}</span>
@@ -220,71 +220,62 @@ export function LabView({
             ) : null}
           </div>
           <div className="lab-head-actions">
-            {concept ? (
+            {!concept ? (
               <button
                 type="button"
-                className="btn small"
-                data-testid="concept-back"
-                onClick={() => setConceptId(null)}
+                className="guide-toggle"
+                data-testid="guide-toggle"
+                aria-expanded={algorithmGuide.isOpen}
+                aria-controls={algorithmGuide.isOpen ? ALGORITHM_GUIDE_ID : undefined}
+                aria-label={algorithmGuide.isOpen ? t('guideCollapse') : t('guideExpand')}
+                onClick={algorithmGuide.toggle}
               >
-                {t('conceptBackToLab')}
+                <span className="guide-toggle-mark" aria-hidden="true">▤</span>
+                {algorithmGuide.isOpen ? t('guideCollapse') : t('guideExpand')}
+                <span className="guide-toggle-chevron" aria-hidden="true">
+                  {algorithmGuide.isOpen ? '▲' : '▼'}
+                </span>
               </button>
-            ) : (
-                <button
-                  type="button"
-                  className="guide-toggle"
-                  data-testid="guide-toggle"
-                  aria-expanded={algorithmGuide.isOpen}
-                  aria-controls={algorithmGuide.isOpen ? ALGORITHM_GUIDE_ID : undefined}
-                  aria-label={algorithmGuide.isOpen ? t('guideCollapse') : t('guideExpand')}
-                  onClick={algorithmGuide.toggle}
+            ) : null}
+            <select
+              className="mobile-algo-select"
+              aria-label={t('algorithmDirectory')}
+              value={concept ? `concept:${concept.id}` : lab.currentAlgo}
+              data-testid="mobile-algo-select"
+              onChange={(change) => {
+                const value = change.target.value;
+                if (value.startsWith('concept:')) {
+                  setConceptId(value.slice('concept:'.length));
+                  return;
+                }
+                selectAlgorithm(value);
+              }}
+            >
+              {textbookNav.map((chapter) => (
+                <optgroup
+                  key={chapter.id}
+                  label={`${chapter.extension ? '' : `${chapter.number}. `}${textbookTitle(chapter.title, lang)}`}
                 >
-                  <span className="guide-toggle-mark" aria-hidden="true">▤</span>
-                  {algorithmGuide.isOpen ? t('guideCollapse') : t('guideExpand')}
-                  <span className="guide-toggle-chevron" aria-hidden="true">
-                    {algorithmGuide.isOpen ? '▲' : '▼'}
-                  </span>
-                </button>
-            )}
-                <select
-                  className="mobile-algo-select"
-                  aria-label={t('algorithmDirectory')}
-                  value={concept ? `concept:${concept.id}` : lab.currentAlgo}
-                  data-testid="mobile-algo-select"
-                  onChange={(change) => {
-                    const value = change.target.value;
-                    if (value.startsWith('concept:')) {
-                      setConceptId(value.slice('concept:'.length));
-                      return;
-                    }
-                    selectAlgorithm(value);
-                  }}
-                >
-                  {textbookNav.map((chapter) => (
-                    <optgroup
-                      key={chapter.id}
-                      label={`${chapter.extension ? '' : `${chapter.number}. `}${textbookTitle(chapter.title, lang)}`}
-                    >
-                      {chapter.topics.flatMap((topic) =>
-                        topic.algorithms.map((algorithm) => {
-                          const item = lab.catalog[algorithm.id];
-                          return item ? (
-                            <option key={algorithm.id} value={algorithm.id}>
-                              {pick(item.name)}
-                            </option>
-                          ) : null;
-                        }),
-                      )}
-                    </optgroup>
-                  ))}
-                  <optgroup label={t('conceptKicker')}>
-                    {CONCEPT_PAGES.map((page) => (
-                      <option key={page.id} value={`concept:${page.id}`}>
-                        {page.title[lang === 'zh' ? 0 : 1]}
-                      </option>
-                    ))}
-                  </optgroup>
-                </select>
+                  {chapter.topics.flatMap((topic) =>
+                    topic.algorithms.map((algorithm) => {
+                      const item = lab.catalog[algorithm.id];
+                      return item ? (
+                        <option key={algorithm.id} value={algorithm.id}>
+                          {pick(item.name)}
+                        </option>
+                      ) : null;
+                    }),
+                  )}
+                </optgroup>
+              ))}
+              <optgroup label={t('conceptKicker')}>
+                {CONCEPT_PAGES.map((page) => (
+                  <option key={page.id} value={`concept:${page.id}`}>
+                    {page.title[lang === 'zh' ? 0 : 1]}
+                  </option>
+                ))}
+              </optgroup>
+            </select>
           </div>
         </header>
 

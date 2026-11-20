@@ -33,7 +33,7 @@ async function expectNoPageOverflow(page: Page) {
 test.describe('STR-01 — strings concept and real Python KMP', () => {
   test('concept page explains strings and pattern matching without a player', async ({ page }) => {
     test.setTimeout(180_000);
-    await page.goto('/');
+    await page.goto('/?view=lab');
     await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
     await openTextbookChapter(page, 'ch5-string');
     await page.getByTestId('topic-string-basics').click();
@@ -61,7 +61,7 @@ test.describe('STR-01 — strings concept and real Python KMP', () => {
   test('KMP: real Python lps build, fallback, two matches and all three reference languages', async ({ page }) => {
     test.setTimeout(600_000);
     await page.setViewportSize({ width: 1440, height: 1000 });
-    await page.goto('/');
+    await page.goto('/?view=lab');
     await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
     await selectAlgorithm(page, 'kmp');
 

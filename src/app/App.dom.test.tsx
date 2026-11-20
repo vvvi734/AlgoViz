@@ -20,11 +20,11 @@ vi.mock('../runtime/execute', () => {
   };
 });
 
-function renderApp() {
+function renderApp(initialConcept?: string | null) {
   return render(
     <ThemeProvider>
       <I18nProvider>
-        <App />
+        <App initialConcept={initialConcept} />
       </I18nProvider>
     </ThemeProvider>,
   );
@@ -32,7 +32,7 @@ function renderApp() {
 
 describe('App UI regression (Phase 1)', () => {
   it('renders all 37 presets and loads a timeline on startup', async () => {
-    renderApp();
+    renderApp(null);
     await waitFor(() => expect(screen.getByTestId('progress').textContent).toBe('1 / 3'));
     expect(screen.getAllByTestId(/^algo-/)).toHaveLength(37);
     expect(screen.getByTestId('algo-kmp')).toBeTruthy();
@@ -59,7 +59,7 @@ describe('App UI regression (Phase 1)', () => {
   });
 
   it('keeps play / pause / rewind / step / scrub behaviour', async () => {
-    renderApp();
+    renderApp(null);
     await waitFor(() => expect(screen.getByTestId('progress').textContent).toBe('1 / 3'));
     fireEvent.click(screen.getByTestId('next-btn'));
     await waitFor(() => expect(screen.getByTestId('step-desc').textContent).toBe('STEP TWO'));
@@ -76,7 +76,7 @@ describe('App UI regression (Phase 1)', () => {
 
   it('supports light / dark / system and follows OS changes live', async () => {
     setSystemDark(true);
-    renderApp();
+    renderApp(null);
     await waitFor(() => expect(screen.getByTestId('progress').textContent).toBe('1 / 3'));
     expect(document.documentElement.dataset.theme).toBe('dark');
 
@@ -92,15 +92,15 @@ describe('App UI regression (Phase 1)', () => {
     expect(document.documentElement.dataset.theme).toBe('dark');
   });
 
-  it('switches UI language and keeps the practice bank available', async () => {
+  it('starts on the data-structure introduction without practice or navigation', async () => {
     renderApp();
-    await waitFor(() => expect(screen.getByTestId('progress').textContent).toBe('1 / 3'));
-    fireEvent.click(screen.getByRole('button', { name: 'Switch language' }));
-    expect(screen.getByTestId('play-btn').textContent).toBe('▶ Play');
+    await waitFor(() => expect(screen.getByTestId('concept-title').textContent).toBe('数据结构的基本概念'));
+    expect(screen.getByTestId('concept-page').dataset.conceptId).toBe('data-structure-basics');
+    expect(screen.queryByTestId('lab-workbench')).toBeNull();
+    expect(screen.queryByTestId('nav-more')).toBeNull();
+    expect(screen.queryAllByTestId(/^problem-/)).toHaveLength(0);
 
-    fireEvent.click(screen.getByTestId('nav-more'));
-    expect(screen.queryByTestId('nav-custom')).toBeNull();
-    fireEvent.click(screen.getByTestId('nav-practice'));
-    expect(screen.getAllByTestId(/^problem-/)).toHaveLength(8);
+    fireEvent.click(screen.getByRole('button', { name: 'Switch language' }));
+    expect(screen.getByTestId('concept-title').textContent).toBe('Basic concepts of data structures');
   });
 });

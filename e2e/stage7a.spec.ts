@@ -7,7 +7,7 @@ import { collapseAlgorithmGuide, expect, openAdvancedPanels, openCodePanel, sele
  */
 
 async function openApp(page: Page) {
-  await page.goto('/');
+  await page.goto('/?view=lab');
   await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
   await collapseAlgorithmGuide(page);
 }
@@ -117,14 +117,15 @@ test.describe('Stage 7A — workspace UX (UI-03 layout)', () => {
     await expect(page.locator('[data-testid="workspace-tabs"]')).toBeVisible();
   });
 
-  test('I. the More tools menu supports Escape without touching the lab', async ({ page }) => {
-    await openApp(page);
-    await page.click('[data-testid="nav-more"]');
-    await expect(page.locator('[data-testid="nav-more-menu"]')).toBeVisible();
-    await page.keyboard.press('Escape');
-    await expect(page.locator('[data-testid="nav-more-menu"]')).toHaveCount(0);
-    await expect(page.locator('[data-testid="nav-more"]')).toBeFocused();
-    await expect(page.locator('[data-testid="visual-stage"]')).toBeVisible();
+  test('I. the removed navigation entry leaves the data-structure introduction as the default', async ({ page }) => {
+    await page.goto('/');
+    await expect(page.getByTestId('concept-page')).toBeVisible();
+    await expect(page.getByTestId('concept-title')).toContainText('数据结构的基本概念');
+    await expect(page.getByTestId('concept-page')).toHaveAttribute('data-concept-id', 'data-structure-basics');
+    await expect(page.locator('[data-testid="nav-more"]')).toHaveCount(0);
+    await expect(page.locator('[data-testid="nav-practice"]')).toHaveCount(0);
+    await expect(page.locator('[data-testid="lab-workbench"]')).toHaveCount(0);
+    await expect(page.locator('.app')).toHaveAttribute('data-view', 'learn');
   });
 
   test('J. reference code opens as a read-only C / C++ / Python viewer', async ({ page }) => {

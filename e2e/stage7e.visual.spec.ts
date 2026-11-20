@@ -13,7 +13,7 @@ const VIEWPORTS = [
 const THEMES = ['light', 'dark'] as const;
 
 async function openApp(page: Page, id: 'bfs' | 'dfs') {
-  await page.goto('/');
+  await page.goto('/?view=lab');
   await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
   await chooseAlgorithm(page, id);
   await expect(page.locator('[data-testid="graph-visual"]')).toHaveAttribute('data-algorithm', id, { timeout: 60_000 });

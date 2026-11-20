@@ -16,11 +16,11 @@ vi.mock('../runtime/execute', () => {
   };
 });
 
-function renderApp() {
+function renderApp(initialConcept?: string | null) {
   return render(
     <ThemeProvider>
       <I18nProvider>
-        <App />
+        <App initialConcept={initialConcept} />
       </I18nProvider>
     </ThemeProvider>,
   );
@@ -31,8 +31,8 @@ async function ready() {
 }
 
 describe('CORE-REFINE-01 shell integration', () => {
-  it('opens a concept lesson without a player, trace or code editor and returns to the algorithm', async () => {
-    renderApp();
+  it('opens a concept lesson without a player, trace or code editor and can switch back to an algorithm', async () => {
+    renderApp(null);
     await ready();
 
     fireEvent.click(screen.getByTestId('chapter-ch7-graph'));
@@ -46,14 +46,14 @@ describe('CORE-REFINE-01 shell integration', () => {
     expect(screen.queryByTestId('workspace-tabs')).toBeNull();
     expect(screen.queryByTestId('reference-code-panel')).toBeNull();
 
-    fireEvent.click(screen.getByTestId('concept-back'));
+    fireEvent.change(screen.getByTestId('mobile-algo-select'), { target: { value: 'bubble' } });
     expect(screen.queryByTestId('concept-page')).toBeNull();
+    await waitFor(() => expect(screen.getByTestId('progress').textContent).toBe('1 / 3'));
     expect(screen.getByTestId('visual-stage')).toBeTruthy();
-    expect(screen.getByTestId('progress').textContent).toBe('1 / 3');
   });
 
   it('shows only the trilingual reference panel in the advanced area', async () => {
-    renderApp();
+    renderApp(null);
     await ready();
 
     expect(screen.queryByTestId('workspace-tab-state')).toBeNull();
@@ -73,20 +73,26 @@ describe('CORE-REFINE-01 shell integration', () => {
     expect(screen.getByTestId('reference-code-panel').getAttribute('data-language')).toBe('cpp');
   });
 
-  it('expands and collapses the whole textbook directory without losing the selected algorithm', async () => {
-    renderApp();
+  it('uses one state-aware control to collapse or expand the whole textbook directory', async () => {
+    renderApp(null);
     await ready();
     const selected = screen.getByTestId('algo-bubble');
     expect(selected.getAttribute('aria-current')).toBe('true');
+    const toggle = screen.getByTestId('sidebar-toggle-all');
+    expect(toggle.getAttribute('data-expanded')).toBe('true');
+    expect(toggle.textContent).toContain('全部收起');
 
-    fireEvent.click(screen.getByTestId('sidebar-collapse-all'));
+    fireEvent.click(toggle);
     for (const chapter of ['ch1-intro', 'ch2-algorithm', 'ch9-sort']) {
       expect(screen.getByTestId(`chapter-${chapter}`).getAttribute('aria-expanded')).toBe('false');
     }
     expect(screen.getByTestId('algo-bubble').getAttribute('aria-current')).toBe('true');
     expect(screen.getByTestId('progress').textContent).toBe('1 / 3');
+    expect(screen.getByTestId('sidebar-toggle-all').getAttribute('data-expanded')).toBe('false');
+    expect(screen.getByTestId('sidebar-toggle-all').textContent).toContain('全部展开');
 
-    fireEvent.click(screen.getByTestId('sidebar-expand-all'));
+    fireEvent.click(screen.getByTestId('sidebar-toggle-all'));
+    expect(screen.getByTestId('sidebar-toggle-all').getAttribute('data-expanded')).toBe('true');
     expect(screen.getByTestId('chapter-ch2-algorithm').getAttribute('aria-expanded')).toBe('true');
     expect(screen.getByTestId('topic-shortest-path').getAttribute('aria-expanded')).toBe('true');
     expect(screen.getByTestId('algo-dijkstra')).toBeTruthy();

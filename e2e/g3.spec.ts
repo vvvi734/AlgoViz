@@ -1,7 +1,7 @@
 import { expect, openCodePanel, selectAlgorithm as chooseAlgorithm, test, type Page } from './fixtures';
 
 async function openApp(page: Page) {
-  await page.goto('/');
+  await page.goto('/?view=lab');
   await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
 }
 

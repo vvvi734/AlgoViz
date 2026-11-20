@@ -6,7 +6,7 @@ const SHOT_DIR = resolve(process.cwd(), 'docs/g1');
 mkdirSync(SHOT_DIR, { recursive: true });
 
 async function openAlgorithm(page: Page, id: string, total: number) {
-  await page.goto('/');
+  await page.goto('/?view=lab');
   await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
   await chooseAlgorithm(page, id);
   await expect(page.locator('[data-testid="progress"]')).toHaveText(`1 / ${total}`, { timeout: 60_000 });

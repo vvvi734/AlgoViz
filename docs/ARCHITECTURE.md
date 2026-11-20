@@ -134,7 +134,7 @@ flowchart TD
 - **单一代码面**：`SyncPanel` 保留只读源码能力，但 `LabView` 传 `showSource={false}`，只显示「查看已执行源码快照」；Monaco 继续持有草稿、行高亮、Marker 与 traceStale。
 - **状态不随面板卸载**：`WorkspaceTabs` 同时挂载四个 panel，只切换 `hidden` 与 `aria-selected`；Monaco、时间轴、Trace 位于标签之外。`WorkspaceTabs.test.tsx` 用输入框草稿证明隐藏面板不丢状态，E2E 再验证真实 Monaco 草稿与运行进度不变。
 - **响应式是顺序变化而非第二套布局**：≤1279px 令 `.lab-primary { display:contents }`，按动画 → 当前步骤 → 代码 → 标签页重排；≤899px 目录变顶部算法选择；≤760px 单列，课程 steps 纵向内部滚动。`scripts/capture-ui.mjs` 在五个视口实测 `scrollWidth == clientWidth`。
-- **导航收敛**：`NavTabs` 只保留学习实验室、知识包、更多工具；题库（暂停）与 AI 导入（实验）在 `nav-more-menu` 中保留原页面与数据，不删除兼容逻辑。
+- **导航收敛**：`App` 固定为教材阅读壳层，顶部不再有 `NavTabs`，启动直接打开 `data-structure-basics`。题库及 `PracticeView` 已移除；算法工作区仅通过 `?view=lab` 供回归与深链使用，不作为一级入口。教材目录的展开/收起合并为一个状态按钮：任意章节展开时执行“全部收起”，全部收起后执行“全部展开”。
 
 ### 3.11 栈/队列专属动画：结构语义与纯映射（Stage 7B）
 - **协议向后兼容**：`TraceEvent.structure?` 是可选的 `{kind, operation, items[], targetId?, removed?}`。`items` 是操作之后的容器快照（栈 bottom→top，队列 front→rear），元素有稳定 `id`；`pop/dequeue` 必须同时带 `removed`，`targetId` 必须匹配它。旧 Trace 没有该字段时仍通过 Schema v1，继续使用 legacy nodes。

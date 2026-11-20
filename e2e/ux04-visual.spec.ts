@@ -36,7 +36,7 @@ test.describe('UX-04 after screenshots', () => {
   test('captures 1366 full page, desktop algorithms and 1920 proof', async ({ page }) => {
     test.setTimeout(600_000);
     await page.setViewportSize({ width: 1366, height: 768 });
-    await page.goto('/');
+    await page.goto('/?view=lab');
     await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
 
     await openRealAlgorithm(page, 'dijkstra', '[data-testid="graph-visual"][data-algorithm="dijkstra"]', 27);
@@ -70,7 +70,7 @@ test.describe('UX-04 after screenshots', () => {
   test('captures 1440 before/after comparison frames', async ({ page }) => {
     test.setTimeout(600_000);
     await page.setViewportSize({ width: 1440, height: 900 });
-    await page.goto('/');
+    await page.goto('/?view=lab');
     await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
 
     await openRealAlgorithm(page, 'dijkstra', '[data-testid="graph-visual"][data-algorithm="dijkstra"]', 27);

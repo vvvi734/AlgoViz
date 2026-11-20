@@ -65,7 +65,7 @@ function renderApp() {
   return render(
     <ThemeProvider>
       <I18nProvider>
-        <App />
+        <App initialConcept={null} />
       </I18nProvider>
     </ThemeProvider>,
   );

@@ -88,6 +88,10 @@ body {
 .lab-head-main { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; min-width: 0; }
 .lab-head h1 { margin: 1px 0 0; font-size: 23px; line-height: 1.25; letter-spacing: -.3px; }
 .lab-head-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+/* Concept lessons carry their own hero; the player header is only needed on
+   narrow screens, where it hosts the directory selector. */
+.lab-head.concept-head { display: none; }
+.lab-head.concept-head .lab-head-main { display: none; }
 .mobile-algo-select {
   display: none;
   min-width: 180px;
@@ -436,6 +440,7 @@ body {
   .lab-sidebar-wrap { display: none; }
   .sidebar-toggle { display: none; }
   .mobile-algo-select { display: block; }
+  .lab-head.concept-head { display: flex; }
   .lab-head { padding: 11px 13px; }
   .lab-head h1 { font-size: 21px; }
   .current-step { position: static; }

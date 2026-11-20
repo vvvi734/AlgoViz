@@ -38,9 +38,14 @@ async function horizontalOverflow(page: Page) {
 test.describe('GLOBAL-SCROLL — one document scroll', () => {
   test('1440 restores the directory as a bounded catalogue with its own scrollbar', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
-    await page.goto('/');
+    await page.goto('/?view=lab');
     await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
-    await page.getByTestId('sidebar-expand-all').click();
+    const directoryToggle = page.getByTestId('sidebar-toggle-all');
+    if ((await directoryToggle.getAttribute('data-expanded')) === 'true') {
+      await directoryToggle.click();
+    }
+    await directoryToggle.click();
+    await expect(directoryToggle).toHaveAttribute('data-expanded', 'true');
     await page.waitForTimeout(250);
 
     const data = await page.evaluate(() => {
@@ -104,7 +109,7 @@ test.describe('GLOBAL-SCROLL — one document scroll', () => {
       { width: 390, height: 844 },
     ]) {
       await page.setViewportSize(viewport);
-      await page.goto('/');
+      await page.goto('/?view=lab');
       await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
       await openDijkstra(page);
       const sizes = await horizontalOverflow(page);
@@ -119,7 +124,7 @@ test.describe('GLOBAL-SCROLL — one document scroll', () => {
 
   test('guide start keeps the frame, trace and run feedback', async ({ page }) => {
     await page.setViewportSize({ width: 1366, height: 768 });
-    await page.goto('/');
+    await page.goto('/?view=lab');
     await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
     await selectAlgorithm(page, 'dijkstra');
     await expect(page.locator('[data-testid="graph-visual"][data-algorithm="dijkstra"]')).toBeVisible({ timeout: 180_000 });
@@ -141,7 +146,7 @@ test.describe('GLOBAL-SCROLL — one document scroll', () => {
 
   test('open reference keeps the frame and the compact run bar', async ({ page }) => {
     await page.setViewportSize({ width: 1366, height: 768 });
-    await page.goto('/');
+    await page.goto('/?view=lab');
     await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
     await selectAlgorithm(page, 'dijkstra');
     await expect(page.locator('[data-testid="graph-visual"][data-algorithm="dijkstra"]')).toBeVisible({ timeout: 180_000 });
@@ -185,7 +190,7 @@ test.describe('GLOBAL-SCROLL — one document scroll', () => {
 
   test('collapsing the directory never resets the trace or frame', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
-    await page.goto('/');
+    await page.goto('/?view=lab');
     await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
     await openDijkstra(page);
     await setFrame(page, 27);

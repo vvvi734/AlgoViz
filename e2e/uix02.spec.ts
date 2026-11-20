@@ -8,7 +8,7 @@ const CASES = [
 ] as const;
 
 async function openAt(page: Page, item: (typeof CASES)[number]) {
-  await page.goto('/');
+  await page.goto('/?view=lab');
   await expect(page.getByTestId('code-dock')).toBeVisible({ timeout: 45_000 });
   await selectAlgorithm(page, item.id);
   await expect(page.getByTestId(item.visual)).toBeVisible({ timeout: 60_000 });

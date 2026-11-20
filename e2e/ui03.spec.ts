@@ -7,7 +7,7 @@ import { expect, openCodePanel, selectAlgorithm as chooseAlgorithm, test, type P
  */
 
 async function openApp(page: Page) {
-  await page.goto('/');
+  await page.goto('/?view=lab');
   await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
   await expect(page.locator('[data-testid="progress"]')).toContainText('/');
 }

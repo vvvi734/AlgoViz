@@ -204,18 +204,24 @@ describe('AlgorithmSidebar — textbook chapters (UX-03)', () => {
     expect(within(unAuthored).queryByRole('button')).toBeNull();
   });
 
-  it('expands every chapter and group topic, then collapses to the first level', () => {
+  it('uses one toggle to collapse every open branch, then expand all', () => {
     render(<Harness />);
     const sort = screen.getByTestId('chapter-ch9-sort');
     const graph = screen.getByTestId('chapter-ch7-graph');
     const search = screen.getByTestId('chapter-ch8-search');
-    fireEvent.click(screen.getByTestId('sidebar-collapse-all'));
+    const toggle = screen.getByTestId('sidebar-toggle-all');
+    expect(toggle.getAttribute('data-expanded')).toBe('true');
+    expect(toggle.textContent).toContain('全部收起');
+
+    fireEvent.click(toggle);
     expect(sort.getAttribute('aria-expanded')).toBe('false');
     expect(graph.getAttribute('aria-expanded')).toBe('false');
     expect(search.getAttribute('aria-expanded')).toBe('false');
     expect(screen.getByTestId('topic-bubble-sort').getAttribute('data-has-current')).toBe('true');
+    expect(screen.getByTestId('sidebar-toggle-all').getAttribute('data-expanded')).toBe('false');
+    expect(screen.getByTestId('sidebar-toggle-all').textContent).toContain('全部展开');
 
-    fireEvent.click(screen.getByTestId('sidebar-expand-all'));
+    fireEvent.click(screen.getByTestId('sidebar-toggle-all'));
     for (const chapter of nav) {
       expect(screen.getByTestId(`chapter-${chapter.id}`).getAttribute('aria-expanded')).toBe('true');
     }

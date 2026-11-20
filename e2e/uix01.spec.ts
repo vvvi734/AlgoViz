@@ -35,7 +35,7 @@ async function setFrame(page: Page, frame: number, total: number) {
 }
 
 async function openAlgorithm(page: Page, id: keyof typeof TOTALS) {
-  await page.goto('/');
+  await page.goto('/?view=lab');
   await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
   await selectAlgorithm(page, id);
   await expect(page.locator('[data-testid="progress"]')).toHaveText(`1 / ${TOTALS[id]}`, { timeout: 60_000 });
@@ -136,7 +136,7 @@ async function expectPlaybackWorks(page: Page) {
 test.describe('UIX-V01 — shared array canvas utilization', () => {
   test('desktop: bars fill the stage and never clip across all eight algorithms', async ({ page }) => {
     test.setTimeout(600_000);
-    await page.goto('/');
+    await page.goto('/?view=lab');
     for (const viewport of [
       { width: 1440, height: 900 },
       { width: 1366, height: 768 },

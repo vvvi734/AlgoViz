@@ -11,7 +11,7 @@ import { expect, selectAlgorithm as chooseAlgorithm, test, type Page } from './f
  */
 
 async function openApp(page: Page) {
-  await page.goto('/');
+  await page.goto('/?view=lab');
   await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
   await page.evaluate(() => window.scrollTo(0, 0));
 }

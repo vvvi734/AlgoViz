@@ -6,7 +6,7 @@ const SHOT_DIR = resolve(process.cwd(), 'docs/f2');
 mkdirSync(SHOT_DIR, { recursive: true });
 
 async function openHash(page: Page, algorithm: 'hash-chain' | 'hash-probe', total: number) {
-  await page.goto('/');
+  await page.goto('/?view=lab');
   await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
   await selectAlgorithm(page, algorithm);
   const visual = page.locator('[data-testid="hash-visual"]');

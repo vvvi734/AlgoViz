@@ -6,7 +6,7 @@ const SHOT_DIR = resolve(process.cwd(), 'docs/t3');
 mkdirSync(SHOT_DIR, { recursive: true });
 
 async function openAlgorithm(page: Page, total: number) {
-  await page.goto('/');
+  await page.goto('/?view=lab');
   await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
   await chooseAlgorithm(page, 'heap');
   await expect(page.locator('[data-testid="heap-visual"]')).toBeVisible({ timeout: 60_000 });

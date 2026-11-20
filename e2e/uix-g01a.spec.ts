@@ -19,7 +19,7 @@ const VIEWPORTS = [
 ] as const;
 
 async function openApp(page: Page) {
-  await page.goto('/');
+  await page.goto('/?view=lab');
   await page.getByTestId('code-dock').waitFor({ state: 'visible', timeout: 45_000 });
 }
 

@@ -12,7 +12,7 @@ mkdirSync(DIR, { recursive: true });
 test.describe('UX-03 — directory screenshots', () => {
   test('current path, multiple open chapters and the collapsed rail', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
-    await page.goto('/');
+    await page.goto('/?view=lab');
     await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
     await page.selectOption('[data-testid="theme-select"]', 'light');
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
@@ -43,7 +43,7 @@ test.describe('UX-03 — directory screenshots', () => {
 
   test('phone keeps a chapter-grouped selector instead of the directory', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/');
+    await page.goto('/?view=lab');
     await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
     await page.selectOption('[data-testid="theme-select"]', 'light');
     const mobile = page.getByTestId('mobile-algo-select');
