@@ -139,6 +139,40 @@
   font-size: var(--font-ui);
 }
 
+.tree-queue {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  flex-basis: 100%;
+  min-width: 0;
+  padding-top: 2px;
+}
+.tree-queue-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 7px;
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--accent) 8%, var(--panel-2));
+  color: var(--txt);
+  font: 800 var(--font-ui)/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+.tree-queue-front {
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: var(--accent);
+  color: var(--panel);
+  font-size: var(--font-ui);
+}
+.tree-queue-rear {
+  color: var(--muted);
+  font-size: var(--font-ui);
+  font-weight: 700;
+}
+.tree-queue-value { color: var(--accent); }
+
 .tree-scroll-hint {
   display: none;
 }

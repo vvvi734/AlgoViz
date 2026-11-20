@@ -16,6 +16,8 @@ function displayValue(value: unknown): string {
 
 const OP_KEY: Record<BinaryTreeOperation, string> = {
   init: 'treeOpInit',
+  enqueue: 'treeOpEnqueue',
+  dequeue: 'treeOpDequeue',
   enter: 'treeOpEnter',
   visit: 'treeOpVisit',
   left: 'treeOpLeft',
@@ -28,6 +30,7 @@ const MODE_KEY: Record<BinaryTreeTraversal, string> = {
   preorder: 'treeModePreorder',
   inorder: 'treeModeInorder',
   postorder: 'treeModePostorder',
+  levelorder: 'treeModeLevelorder',
 };
 
 function nodeClass(node: BinaryTreeVisualNode): string {
@@ -122,7 +125,9 @@ export function BinaryTreeVisual({ model }: { model: BinaryTreeVisualModel }) {
 
       <div className="tree-summary-row">
         <div className="tree-path" data-testid="tree-path" data-current-id={model.currentNodeId ?? ''}>
-          <span className="tree-summary-label">{t('treePathLabel')}</span>
+          <span className="tree-summary-label">
+            {t(model.traversal === 'levelorder' ? 'treeAncestorPathLabel' : 'treePathLabel')}
+          </span>
           {model.pathIds.length === 0 ? (
             <span className="tree-summary-empty">∅</span>
           ) : (
@@ -160,6 +165,38 @@ export function BinaryTreeVisual({ model }: { model: BinaryTreeVisualModel }) {
             ))
           )}
         </div>
+
+        {model.traversal === 'levelorder' && (
+          <div
+            className="tree-queue"
+            data-testid="tree-queue"
+            data-queue-ids={model.queueIds.join(',')}
+            data-queue-count={model.queueIds.length}
+          >
+            <span className="tree-summary-label">{t('treeQueueLabel')}</span>
+            {model.queueIds.length === 0 ? (
+              <span className="tree-summary-empty" data-testid="tree-queue-empty">
+                {t('treeQueueEmpty')}
+              </span>
+            ) : (
+              model.queueIds.map((id, index) => (
+                <span
+                  key={id}
+                  className="tree-queue-item"
+                  data-testid="tree-queue-item"
+                  data-node-id={id}
+                  data-queue-index={index}
+                >
+                  {index === 0 && <span className="tree-queue-front">{t('treeQueueFront')}</span>}
+                  <span className="tree-queue-value">{labels.get(id) ?? id}</span>
+                  {index === model.queueIds.length - 1 && model.queueIds.length > 1 && (
+                    <span className="tree-queue-rear">{t('treeQueueRear')}</span>
+                  )}
+                </span>
+              ))
+            )}
+          </div>
+        )}
       </div>
 
       {model.nodes.length > 1 && (

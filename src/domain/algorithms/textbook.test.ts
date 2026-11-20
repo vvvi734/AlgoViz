@@ -65,6 +65,7 @@ describe('textbook directory (UX-03)', () => {
       'special-matrices',
       'stack-queue-storage',
       'string-basics',
+      'threaded-tree',
       'tree-basics',
     ]);
     for (const topic of conceptTopics) {
@@ -179,7 +180,10 @@ describe('textbook directory (UX-03)', () => {
     expect(tree.topics.find((topic) => topic.id === 'forest-conversion')?.category).toBe('theory');
     expect(tree.topics.find((topic) => topic.id === 'binary-tree-traversal')?.category).toBe('visual');
     expect(tree.topics.find((topic) => topic.id === 'huffman')?.category).toBe('visual');
-    expect(tree.topics.find((topic) => topic.id === 'threaded-tree')?.category).toBe('pending');
+    expect(tree.topics.find((topic) => topic.id === 'threaded-tree')?.conceptId).toBe(
+      'threaded-binary-tree',
+    );
+    expect(tree.topics.find((topic) => topic.id === 'threaded-tree')?.category).toBe('theory');
     expect(tree.topics.find((topic) => topic.id === 'binary-tree-traversal')?.algorithms).toEqual([
       expect.objectContaining({ id: 'inorder' }),
     ]);

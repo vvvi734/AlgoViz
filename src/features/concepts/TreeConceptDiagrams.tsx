@@ -1,6 +1,9 @@
 import type { Lang } from '../../i18n/types';
 
-export type TreeConceptDiagramKind = 'tree-storage' | 'forest-conversion';
+export type TreeConceptDiagramKind =
+  | 'tree-storage'
+  | 'forest-conversion'
+  | 'threaded-binary-tree';
 
 function TreeBox({
   x,
@@ -69,6 +72,10 @@ export function TreeConceptDiagram({
   lang: Lang;
 }) {
   const L = (zh: string, en: string) => (lang === 'zh' ? zh : en);
+
+  if (kind === 'threaded-binary-tree') {
+    return <ThreadedBinaryTreeDiagram lang={lang} />;
+  }
 
   if (kind === 'tree-storage') {
     const nodes = {
@@ -577,6 +584,232 @@ export function TreeConceptDiagram({
 
         <text className="diagram-note" x="28" y="522">
           {L('C、D 回到 B 的兄弟位置；A、H、J 被拆成三棵树的根。节点数仍为 10。', 'C and D return to B’s sibling positions; A, H and J become the roots of three trees. Node count stays 10.')}
+        </text>
+      </svg>
+    </div>
+  );
+}
+
+const THREAD_NODES = {
+  root: { x: 450, y: 110, value: '4', ltag: 0, rtag: 0 },
+  left: { x: 270, y: 225, value: '2', ltag: 0, rtag: 0 },
+  right: { x: 630, y: 225, value: '6', ltag: 1, rtag: 1 },
+  leafLeft: { x: 120, y: 340, value: '1', ltag: 1, rtag: 1 },
+  leafRight: { x: 400, y: 340, value: '3', ltag: 1, rtag: 1 },
+} as const;
+
+function ThreadTag({
+  x,
+  y,
+  label,
+  thread,
+}: {
+  x: number;
+  y: number;
+  label: string;
+  thread: boolean;
+}) {
+  return (
+    <g>
+      <rect
+        className={`diagram-tag${thread ? ' is-thread' : ''}`}
+        x={x - 29}
+        y={y}
+        width="58"
+        height="22"
+        rx="5"
+      />
+      <text className="diagram-label" x={x} y={y + 15} textAnchor="middle">
+        {label}
+      </text>
+    </g>
+  );
+}
+
+function ThreadNode({
+  x,
+  y,
+  value,
+}: {
+  x: number;
+  y: number;
+  value: string;
+}) {
+  return (
+    <g>
+      <circle className="diagram-node diagram-node-round" cx={x} cy={y} r="24" />
+      <text className="diagram-node-text" x={x} y={y + 6} textAnchor="middle">
+        {value}
+      </text>
+    </g>
+  );
+}
+
+function ThreadedBinaryTreeDiagram({ lang }: { lang: Lang }) {
+  const L = (zh: string, en: string) => (lang === 'zh' ? zh : en);
+  const n = THREAD_NODES;
+
+  return (
+    <div className="diagram-stack">
+      <svg
+        className="concept-svg concept-svg-wide"
+        viewBox="0 0 900 410"
+        role="img"
+        aria-label={L(
+          '原始二叉链表：5 个节点、10 个指针域，其中 6 个为空',
+          'Original binary linked list: 5 nodes, 10 pointer fields, 6 of them null',
+        )}
+      >
+        <defs>
+          <marker
+            id="thread-original-child-arrow"
+            markerWidth="8"
+            markerHeight="8"
+            refX="7"
+            refY="4"
+            orient="auto"
+          >
+            <path className="diagram-arrow" d="M0,0 L8,4 L0,8 Z" />
+          </marker>
+        </defs>
+        <text className="diagram-label diagram-thread-title" x="28" y="28">
+          {L('① 原始二叉链表：真实孩子与空指针', '1. Original binary linked list: real children and null pointers')}
+        </text>
+        <text className="diagram-note" x="28" y="50">
+          {L('5 个节点，2n = 10 个指针域；4 条孩子链接，6 个空指针。', '5 nodes, 2n = 10 pointer fields: 4 child links and 6 null pointers.')}
+        </text>
+        <text className="diagram-note" x="872" y="50" textAnchor="end">
+          {L('实线 = 孩子链接；∅ = 空指针', 'solid = child link; ∅ = null')}
+        </text>
+
+        <line className="diagram-line diagram-directed" x1="430" y1="123" x2="290" y2="212" markerEnd="url(#thread-original-child-arrow)" />
+        <line className="diagram-line diagram-directed" x1="470" y1="123" x2="610" y2="212" markerEnd="url(#thread-original-child-arrow)" />
+        <line className="diagram-line diagram-directed" x1="251" y1="240" x2="139" y2="325" markerEnd="url(#thread-original-child-arrow)" />
+        <line className="diagram-line diagram-directed" x1="287" y1="241" x2="382" y2="324" markerEnd="url(#thread-original-child-arrow)" />
+
+        <ThreadNode x={n.root.x} y={n.root.y} value={n.root.value} />
+        <ThreadNode x={n.left.x} y={n.left.y} value={n.left.value} />
+        <ThreadNode x={n.right.x} y={n.right.y} value={n.right.value} />
+        <ThreadNode x={n.leafLeft.x} y={n.leafLeft.y} value={n.leafLeft.value} />
+        <ThreadNode x={n.leafRight.x} y={n.leafRight.y} value={n.leafRight.value} />
+
+        {[
+          [90, 346, '∅'],
+          [150, 346, '∅'],
+          [370, 346, '∅'],
+          [430, 346, '∅'],
+          [600, 231, '∅'],
+          [660, 231, '∅'],
+        ].map(([x, y, mark], index) => (
+          <text
+            key={`null-${index}`}
+            className="diagram-null"
+            x={x}
+            y={y}
+            textAnchor="middle"
+          >
+            {mark}
+          </text>
+        ))}
+
+        <text className="diagram-note" x="28" y="390">
+          {L('节点 1、3、6 的左右指针都为空，是下一步线索化要利用的位置。', 'Nodes 1, 3 and 6 have null left/right pointers; those are the fields threading can reuse.')}
+        </text>
+      </svg>
+
+      <svg
+        className="concept-svg concept-svg-wide"
+        viewBox="0 0 900 410"
+        role="img"
+        aria-label={L(
+          '中序线索二叉树：实线为孩子链接，虚线为前驱后继线索，节点上方标注 ltag 与 rtag',
+          'Inorder threaded binary tree: solid child links, dashed predecessor/successor threads, ltag and rtag above each node',
+        )}
+      >
+        <defs>
+          <marker
+            id="thread-child-arrow"
+            markerWidth="8"
+            markerHeight="8"
+            refX="7"
+            refY="4"
+            orient="auto"
+          >
+            <path className="diagram-arrow" d="M0,0 L8,4 L0,8 Z" />
+          </marker>
+          <marker
+            id="thread-link-arrow"
+            markerWidth="8"
+            markerHeight="8"
+            refX="7"
+            refY="4"
+            orient="auto"
+          >
+            <path className="diagram-thread-arrow" d="M0,0 L8,4 L0,8 Z" />
+          </marker>
+        </defs>
+        <text className="diagram-label diagram-thread-title" x="28" y="28">
+          {L('② 中序线索化后：空指针变成前驱/后继线索', '2. After inorder threading: null pointers become predecessor/successor threads')}
+        </text>
+        <text className="diagram-note" x="28" y="50">
+          {L('中序：1 → 2 → 3 → 4 → 6；虚线 = 线索，实线 = 真实孩子。', 'Inorder: 1 → 2 → 3 → 4 → 6; dashed = thread, solid = real child.')}
+        </text>
+        <text className="diagram-note" x="872" y="50" textAnchor="end">
+          {L('无头结点：首前驱、末后继为空', 'no header: first predecessor and last successor are null')}
+        </text>
+
+        <line className="diagram-line diagram-directed" x1="430" y1="123" x2="290" y2="212" markerEnd="url(#thread-child-arrow)" />
+        <line className="diagram-line diagram-directed" x1="470" y1="123" x2="610" y2="212" markerEnd="url(#thread-child-arrow)" />
+        <line className="diagram-line diagram-directed" x1="251" y1="240" x2="139" y2="325" markerEnd="url(#thread-child-arrow)" />
+        <line className="diagram-line diagram-directed" x1="287" y1="241" x2="382" y2="324" markerEnd="url(#thread-child-arrow)" />
+
+        <path
+          className="diagram-thread"
+          d="M 138 348 C 175 310, 210 255, 252 238"
+          markerEnd="url(#thread-link-arrow)"
+        />
+        <path
+          className="diagram-thread"
+          d="M 382 348 C 345 310, 315 255, 288 238"
+          markerEnd="url(#thread-link-arrow)"
+        />
+        <path
+          className="diagram-thread"
+          d="M 424 340 C 435 270, 440 185, 450 136"
+          markerEnd="url(#thread-link-arrow)"
+        />
+        <path
+          className="diagram-thread"
+          d="M 606 225 C 565 175, 520 132, 474 110"
+          markerEnd="url(#thread-link-arrow)"
+        />
+
+        <ThreadTag x={n.root.x - 31} y={n.root.y - 51} label="ltag=0" thread={false} />
+        <ThreadTag x={n.root.x + 31} y={n.root.y - 51} label="rtag=0" thread={false} />
+        <ThreadTag x={n.left.x - 31} y={n.left.y - 51} label="ltag=0" thread={false} />
+        <ThreadTag x={n.left.x + 31} y={n.left.y - 51} label="rtag=0" thread={false} />
+        <ThreadTag x={n.right.x - 31} y={n.right.y - 51} label="ltag=1" thread />
+        <ThreadTag x={n.right.x + 31} y={n.right.y - 51} label="rtag=1" thread />
+        <ThreadTag x={n.leafLeft.x - 31} y={n.leafLeft.y - 51} label="ltag=1" thread />
+        <ThreadTag x={n.leafLeft.x + 31} y={n.leafLeft.y - 51} label="rtag=1" thread />
+        <ThreadTag x={n.leafRight.x - 31} y={n.leafRight.y - 51} label="ltag=1" thread />
+        <ThreadTag x={n.leafRight.x + 31} y={n.leafRight.y - 51} label="rtag=1" thread />
+
+        <ThreadNode x={n.root.x} y={n.root.y} value={n.root.value} />
+        <ThreadNode x={n.left.x} y={n.left.y} value={n.left.value} />
+        <ThreadNode x={n.right.x} y={n.right.y} value={n.right.value} />
+        <ThreadNode x={n.leafLeft.x} y={n.leafLeft.y} value={n.leafLeft.value} />
+        <ThreadNode x={n.leafRight.x} y={n.leafRight.y} value={n.leafRight.value} />
+
+        <text className="diagram-note" x="92" y="346" textAnchor="end">
+          {L('∅ 前驱', '∅ pred.')}
+        </text>
+        <text className="diagram-note" x="686" y="231">
+          {L('∅ 后继', '∅ successor')}
+        </text>
+
+        <text className="diagram-note" x="28" y="390">
+          {L('6 个空指针都按线索处理：4 个指向真实前驱/后继，首前驱和末后继仍为空。', 'All 6 null fields become threads: 4 point to real neighbors; the first predecessor and last successor stay null.')}
         </text>
       </svg>
     </div>

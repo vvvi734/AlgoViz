@@ -159,6 +159,73 @@ describe('Stage 7D binary-tree Trace schema', () => {
     })).success).toBe(false);
   });
 
+  it('accepts real level-order queue states and rejects inconsistent ones', () => {
+    expect(binaryTreeSnapshotSchema.safeParse(snapshot({
+      traversal: 'levelorder',
+      operation: 'init',
+      currentNodeId: null,
+      pathIds: [],
+      queueIds: [],
+    })).success).toBe(true);
+    expect(binaryTreeSnapshotSchema.safeParse(snapshot({
+      traversal: 'levelorder',
+      operation: 'enqueue',
+      currentNodeId: 'n1',
+      pathIds: ['n1'],
+      queueIds: ['n1'],
+    })).success).toBe(true);
+    expect(binaryTreeSnapshotSchema.safeParse(snapshot({
+      traversal: 'levelorder',
+      operation: 'enqueue',
+      currentNodeId: 'n4',
+      pathIds: ['n1', 'n2', 'n4'],
+      queueIds: ['n2', 'n3', 'n4'],
+    })).success).toBe(true);
+    expect(binaryTreeSnapshotSchema.safeParse(snapshot({
+      traversal: 'levelorder',
+      operation: 'dequeue',
+      currentNodeId: 'n2',
+      pathIds: ['n1', 'n2'],
+      queueIds: ['n3'],
+    })).success).toBe(true);
+    expect(binaryTreeSnapshotSchema.safeParse(snapshot({
+      traversal: 'levelorder',
+      operation: 'visit',
+      currentNodeId: 'n1',
+      pathIds: ['n1'],
+      visitedIds: ['n1'],
+      queueIds: ['n2', 'n3'],
+    })).success).toBe(true);
+
+    expect(binaryTreeSnapshotSchema.safeParse(snapshot({
+      traversal: 'levelorder',
+      operation: 'enqueue',
+      currentNodeId: 'n1',
+      queueIds: [],
+    })).success).toBe(false);
+    expect(binaryTreeSnapshotSchema.safeParse(snapshot({
+      traversal: 'levelorder',
+      operation: 'dequeue',
+      currentNodeId: 'n1',
+      queueIds: ['n1'],
+    })).success).toBe(false);
+    expect(binaryTreeSnapshotSchema.safeParse(snapshot({
+      traversal: 'levelorder',
+      operation: 'enqueue',
+      currentNodeId: 'n1',
+      pathIds: ['n1'],
+      queueIds: ['n1', 'n1'],
+    })).success).toBe(false);
+    expect(binaryTreeSnapshotSchema.safeParse(snapshot({
+      traversal: 'levelorder',
+      operation: 'enter',
+    })).success).toBe(false);
+    expect(binaryTreeSnapshotSchema.safeParse(snapshot({
+      traversal: 'inorder',
+      queueIds: ['n1'],
+    })).success).toBe(false);
+  });
+
   it('rejects more than 40 nodes', () => {
     const many: BinaryTreeNode[] = Array.from({ length: 41 }, (_, index) => ({
       id: `n${index}`,
@@ -334,6 +401,25 @@ describe('Stage 7D binary-tree visual model', () => {
     expect(activeEdge?.fromId).toBe('n2');
     expect(activeEdge?.toId).toBe('n4');
     expect(model.edges.filter((edge) => edge.onPath)).toHaveLength(1);
+  });
+
+  it('maps the level-order queue and enqueue edge without inventing visits', () => {
+    const model = buildBinaryTreeModel(snapshot({
+      traversal: 'levelorder',
+      operation: 'enqueue',
+      currentNodeId: 'n4',
+      pathIds: ['n1', 'n2', 'n4'],
+      queueIds: ['n2', 'n3', 'n4'],
+    }), 'empty');
+    expect(model).not.toBeNull();
+    if (!model) return;
+    expect(model.queueIds).toEqual(['n2', 'n3', 'n4']);
+    expect(model.nextChildId).toBe('n4');
+    expect(model.nodes.find((node) => node.id === 'n4')?.active).toBe(true);
+    expect(model.nodes.find((node) => node.id === 'n4')?.visited).toBe(false);
+    const activeEdge = model.edges.find((edge) => edge.active);
+    expect(activeEdge?.fromId).toBe('n2');
+    expect(activeEdge?.toId).toBe('n4');
   });
 
   it('renders an empty tree and distinguishes same-value nodes', () => {

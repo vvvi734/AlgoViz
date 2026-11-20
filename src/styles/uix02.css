@@ -570,6 +570,8 @@
     min-width: 0;
     padding: 3px 4px;
     font-size: var(--font-ui);
+    white-space: normal;
+    overflow-wrap: anywhere;
   }
 
   .stage-head {

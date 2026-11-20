@@ -22,7 +22,8 @@ export type ConceptDiagramKind =
   | 'circular-queue'
   | 'stack-queue-storage'
   | 'tree-storage'
-  | 'forest-conversion';
+  | 'forest-conversion'
+  | 'threaded-binary-tree';
 
 export interface ConceptDefinition {
   term: Bilingual;
@@ -34,6 +35,8 @@ export interface ConceptSection {
   body: Bilingual;
   points?: readonly Bilingual[];
   formula?: string;
+  /** Optional English rendering for a formula whose labels are prose. */
+  formulaEn?: string;
 }
 
 export interface ConceptComparison {

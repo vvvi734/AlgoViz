@@ -940,11 +940,11 @@ export type SequentialListSnapshot = z.infer<typeof sequentialListSnapshotSchema
  * `visit`/`left`/`right` come from explicit trace calls in the Python source.
  */
 export const BINARY_TREE_OPERATIONS = [
-  'init', 'enter', 'visit', 'left', 'right', 'return', 'done',
+  'init', 'enqueue', 'dequeue', 'enter', 'visit', 'left', 'right', 'return', 'done',
 ] as const;
 export type BinaryTreeOperation = (typeof BINARY_TREE_OPERATIONS)[number];
 
-export const BINARY_TREE_TRAVERSALS = ['preorder', 'inorder', 'postorder'] as const;
+export const BINARY_TREE_TRAVERSALS = ['preorder', 'inorder', 'postorder', 'levelorder'] as const;
 export type BinaryTreeTraversal = (typeof BINARY_TREE_TRAVERSALS)[number];
 
 export const binaryTreeNodeSchema = z.object({
@@ -968,6 +968,8 @@ export const binaryTreeSnapshotSchema = z
     currentNodeId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
     visitedIds: z.array(z.string().min(1).max(LIMITS.MAX_NAME_CHARS)).max(40),
     pathIds: z.array(z.string().min(1).max(LIMITS.MAX_NAME_CHARS)).max(40),
+    /** FIFO order for level-order traversal: index 0 is the FRONT. */
+    queueIds: z.array(z.string().min(1).max(LIMITS.MAX_NAME_CHARS)).max(40).default([]),
   })
   .superRefine((snapshot, ctx) => {
     const ids = new Set<string>();
@@ -1099,6 +1101,25 @@ export const binaryTreeSnapshotSchema = z
       visited.add(id);
     });
 
+    const queue = new Set<string>();
+    snapshot.queueIds.forEach((id, index) => {
+      if (!ids.has(id)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['queueIds', index],
+          message: `queue id "${id}" does not refer to a node`,
+        });
+      }
+      if (queue.has(id)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['queueIds', index],
+          message: `queueIds contains duplicate node "${id}"`,
+        });
+      }
+      queue.add(id);
+    });
+
     // Path validation: starts at the root, follows real parent→child edges,
     // ends at the current node, and never repeats a node.
     snapshot.pathIds.forEach((id, index) => {
@@ -1195,6 +1216,70 @@ export const binaryTreeSnapshotSchema = z
           code: z.ZodIssueCode.custom,
           path: ['operation'],
           message: 'right requires the current node to have a right child',
+        });
+      }
+    }
+
+    if (snapshot.traversal === 'levelorder') {
+      const levelOperations = new Set<BinaryTreeOperation>([
+        'init', 'enqueue', 'dequeue', 'visit', 'done',
+      ]);
+      if (!levelOperations.has(snapshot.operation)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['operation'],
+          message: `${snapshot.operation} is not a level-order operation`,
+        });
+      }
+      if (snapshot.operation === 'init' || snapshot.operation === 'done') {
+        if (snapshot.queueIds.length > 0) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['queueIds'],
+            message: `${snapshot.operation} must leave the queue empty`,
+          });
+        }
+      }
+      if (snapshot.operation === 'enqueue' && snapshot.currentNodeId !== null) {
+        if (!queue.has(snapshot.currentNodeId)) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['queueIds'],
+            message: 'an enqueue frame must include currentNodeId in queueIds',
+          });
+        }
+        if (snapshot.queueIds[snapshot.queueIds.length - 1] !== snapshot.currentNodeId) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['queueIds'],
+            message: 'an enqueue frame must append currentNodeId at the REAR',
+          });
+        }
+      }
+      if (
+        (snapshot.operation === 'dequeue' || snapshot.operation === 'visit') &&
+        snapshot.currentNodeId !== null &&
+        queue.has(snapshot.currentNodeId)
+      ) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['queueIds'],
+          message: `${snapshot.operation} requires currentNodeId to be out of the queue`,
+        });
+      }
+    } else {
+      if (snapshot.operation === 'enqueue' || snapshot.operation === 'dequeue') {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['operation'],
+          message: `${snapshot.operation} is only valid for level-order traversal`,
+        });
+      }
+      if (snapshot.queueIds.length > 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['queueIds'],
+          message: 'only level-order traversal may carry queueIds',
         });
       }
     }

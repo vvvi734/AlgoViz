@@ -310,6 +310,7 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
         title: { zh: '线索二叉树', en: 'Threaded binary tree' },
         algorithms: [],
         concept: true,
+        conceptId: 'threaded-binary-tree',
       },
       {
         id: 'forest-conversion',

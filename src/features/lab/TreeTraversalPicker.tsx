@@ -7,6 +7,7 @@ const MODES: Array<{ mode: TreeMode; label: string; testId: string }> = [
   { mode: 'preorder', label: 'treeModePreorder', testId: 'tree-mode-preorder' },
   { mode: 'inorder', label: 'treeModeInorder', testId: 'tree-mode-inorder' },
   { mode: 'postorder', label: 'treeModePostorder', testId: 'tree-mode-postorder' },
+  { mode: 'levelorder', label: 'treeModeLevelorder', testId: 'tree-mode-levelorder' },
 ];
 
 export function TreeTraversalPicker({

@@ -298,6 +298,39 @@
   fill: var(--accent);
 }
 
+.diagram-thread {
+  stroke: var(--accent-2);
+  stroke-width: 2;
+  stroke-dasharray: 7 5;
+  fill: none;
+}
+
+.diagram-thread-arrow {
+  fill: var(--accent-2);
+}
+
+.diagram-thread-title {
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.diagram-tag {
+  fill: var(--panel-2);
+  stroke: var(--node-edge);
+  stroke-width: 1;
+}
+
+.diagram-tag.is-thread {
+  fill: color-mix(in srgb, var(--accent-2) 13%, var(--panel-2));
+  stroke: var(--accent-2);
+}
+
+.diagram-null {
+  fill: var(--muted);
+  font-size: 14px;
+  font-weight: 800;
+}
+
 .diagram-curve {
   stroke: var(--accent-2);
   stroke-width: 2;

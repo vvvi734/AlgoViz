@@ -113,6 +113,22 @@ describe('ConceptView (CORE-REFINE-01)', () => {
     expect(screen.getByTestId('concept-comparison').textContent).toContain('下一棵树的根');
   });
 
+  it('shows the threaded tree with child links, threads and ltag/rtag', () => {
+    renderConcept('threaded-binary-tree');
+    const diagram = screen.getByTestId('concept-diagram');
+    const text = diagram.textContent ?? '';
+    expect(diagram.querySelectorAll('svg')).toHaveLength(2);
+    expect(text).toContain('中序：1 → 2 → 3 → 4 → 6');
+    expect(text).toContain('ltag=1');
+    expect(text).toContain('rtag=0');
+    expect(text).toContain('∅ 前驱');
+    expect(text).toContain('∅ 后继');
+    expect(text).toContain('6 个空指针都按线索处理');
+    expect(text).toContain('4 个指向真实前驱/后继');
+    expect(screen.getByTestId('concept-definition').textContent).toContain('线索');
+    expect(screen.getByTestId('concept-comparison').textContent).toContain('中序前驱');
+  });
+
   it('has a diagram for each concept kind', () => {
     for (const concept of CONCEPT_PAGES) {
       renderConcept(concept.id);

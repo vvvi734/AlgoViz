@@ -328,6 +328,10 @@ export const CONCEPT_PAGES: readonly ConceptPage[] = [
         term: ['二叉树', 'Binary tree'],
         text: ['每个节点至多有两个子节点，且左右子树有顺序之分。', 'Each node has at most two children, and left/right subtrees are ordered.'],
       },
+      {
+        term: ['二叉链表节点', 'Binary linked-list node'],
+        text: ['节点含数据域 data、左孩子指针 left、右孩子指针 right；孩子不存在时对应指针为空。', 'A node holds a data field and left/right child pointers; a missing child is represented by a null pointer.'],
+      },
     ],
     sections: [
       {
@@ -354,6 +358,19 @@ export const CONCEPT_PAGES: readonly ConceptPage[] = [
           ['叶子数 n0 与度为 2 的节点数 n2 满足 n0 = n2 + 1。', 'Leaf count n0 and degree-2 node count n2 satisfy n0 = n2 + 1.'],
         ],
         formula: 'n0 = n2 + 1；深度 k 最多 2^k − 1 个节点',
+      },
+      {
+        title: ['二叉链表：数据域与两个指针域', 'Binary linked list: data plus two pointers'],
+        body: [
+          '二叉链表是最常用的二叉树存储方式：每个节点保存 data、left 和 right。left 指向左孩子，right 指向右孩子；没有对应孩子时指针为空。n 个节点共有 2n 个指针域，其中 n−1 个指向真实孩子，另 n+1 个为空。',
+          'The binary linked list is the usual binary-tree storage: each node stores data, left and right. left points to the left child and right to the right child; a missing child is null. n nodes have 2n pointer fields: n−1 point to real children and n+1 are null.',
+        ],
+        points: [
+          ['数据域保存元素；左右指针域保存“有没有孩子、孩子是谁”。', 'The data field stores the element; the two pointer fields record whether a child exists and which node it is.'],
+          ['空指针表示无对应孩子，不能把它解释为某个值为 null 的节点。', 'A null pointer means no such child; it is not a node whose value is null.'],
+          ['普通树的孩子兄弟表示法也用两个指针，但存的是 firstChild 与 nextSibling，语义不是 left/right 孩子。', 'The child-sibling layout for ordinary trees also uses two pointers, but they mean firstChild and nextSibling, not left/right children.'],
+        ],
+        formula: '2n 个指针域 = (n−1) 条孩子链 + (n+1) 个空指针',
       },
       {
         title: ['满二叉树与完全二叉树', 'Full and complete binary trees'],
@@ -2604,6 +2621,142 @@ export const CONCEPT_PAGES: readonly ConceptPage[] = [
       ],
     },
     takeaway: ['记牢“左孩子是第一个孩子，右孩子是下一个兄弟”；森林只是把各棵树的根也串成右链。还原时先还原孩子链，再断开根层右链，节点数始终不变。', 'Remember “left child = first child, right child = next sibling”; a forest simply strings the tree roots into a right chain. When restoring, rebuild child chains first and then cut the root-level right chain; the node count never changes.'],
+  },
+  {
+    id: 'threaded-binary-tree',
+    topicId: 'threaded-tree',
+    title: ['线索二叉树：把空指针变成遍历线索', 'Threaded binary tree: turning null pointers into traversal threads'],
+    chapter: ['第 6 章 · 树', 'Chapter 6 · Trees'],
+    summary: [
+      '普通二叉链表有大量空指针。中序线索化把空的左、右指针分别改为指向中序前驱和中序后继，并用 ltag/rtag 区分“孩子”与“线索”。这样不靠递归或辅助栈也能沿中序次序走完整棵树。',
+      'An ordinary binary linked list wastes many null pointers. Inorder threading replaces empty left/right pointers with inorder predecessors/successors and uses ltag/rtag to distinguish a child link from a thread. The tree can then be walked in inorder without recursion or an auxiliary stack.',
+    ],
+    diagram: 'threaded-binary-tree',
+    definitions: [
+      {
+        term: ['线索', 'Thread'],
+        text: ['指向某种遍历次序下的前驱或后继的指针；它不是孩子链接。', 'A pointer to a predecessor or successor in a chosen traversal order; it is not a child link.'],
+      },
+      {
+        term: ['线索化', 'Threading'],
+        text: ['按指定遍历次序，把节点原有的空左、右指针改为指向前驱、后继，并设置相应标志。', 'Following a chosen traversal order, replace a node’s originally null left/right pointers with predecessor/successor links and set the corresponding tags.'],
+      },
+      {
+        term: ['线索二叉树', 'Threaded binary tree'],
+        text: ['带 ltag/rtag 的二叉链表；标志为 0 时指针仍指孩子，为 1 时指针是线索。', 'A binary linked list with ltag/rtag: tag 0 keeps the pointer on a child, tag 1 makes it a thread.'],
+      },
+      {
+        term: ['中序前驱 / 后继', 'Inorder predecessor / successor'],
+        text: ['在中序遍历序列中紧挨在当前节点之前、之后的节点；首节点的前驱与末节点的后继为空。', 'The nodes immediately before and after the current node in the inorder sequence; the first node has no predecessor and the last has no successor.'],
+      },
+      {
+        term: ['孩子指针', 'Child pointer'],
+        text: ['ltag=0 时的左指针、rtag=0 时的右指针，指向真实的左、右孩子。', 'A left pointer with ltag=0 or a right pointer with rtag=0; it points to a real left or right child.'],
+      },
+    ],
+    sections: [
+      {
+        title: ['为什么需要线索二叉树', 'Why threads are needed'],
+        body: [
+          'n 个节点的二叉链表有 2n 个指针域，真实孩子链接只有 n−1 条，所以有 n+1 个指针为空。普通中序遍历必须递归或借助栈保存“回来的路”；访问完一个节点后，想找它的中序后继，往往还要从根重新搜索。线索化把这些空指针利用起来，让“下一个是谁”直接写在节点里。',
+          'A binary linked list with n nodes has 2n pointer fields. Only n−1 are real child links, so n+1 are null. Ordinary inorder traversal needs recursion or a stack to remember the way back, and finding a node’s inorder successor may require searching from the root again. Threading uses those null fields to store “who is next” directly in the node.',
+        ],
+        points: [
+          ['空指针不是垃圾：它们正好能记录遍历次序中的前驱或后继。', 'Null pointers are not waste: they can record predecessors or successors in a traversal order.'],
+          ['线索化只改原本为空的指针，真实孩子链接必须保留。', 'Threading changes only originally null pointers; real child links must be preserved.'],
+          ['线索让指定次序下的下一步可以直接得到，不必每次从根重新查找。', 'Threads make the next step in the chosen order directly available instead of searching from the root every time.'],
+        ],
+        formula: 'n 个节点：2n 个指针域；n−1 条孩子链；n+1 个空指针',
+        formulaEn: 'n nodes: 2n pointer fields; n−1 child links; n+1 null pointers',
+      },
+      {
+        title: ['标志约定：先看 tag，再跟指针', 'Tag convention: read the tag before following a pointer'],
+        body: [
+          '同一个左指针字段可能指向左孩子，也可能指向前驱，单看指针值无法区分，所以每个节点增加 ltag 与 rtag。本页统一采用无头结点设计：第一个中序节点的前驱为空，最后一个中序节点的后继为空，不引入头结点，也不混用带头结点的约定。',
+          'The same left field may point to a left child or to a predecessor; the pointer value alone cannot tell them apart, so every node carries ltag and rtag. This page consistently uses the no-header design: the first inorder node has a null predecessor and the last has a null successor. No header node is introduced or mixed in.',
+        ],
+        points: [
+          ['ltag=0：left 指向左孩子；ltag=1：left 指向中序前驱。', 'ltag=0: left points to the left child; ltag=1: left points to the inorder predecessor.'],
+          ['rtag=0：right 指向右孩子；rtag=1：right 指向中序后继。', 'rtag=0: right points to the right child; rtag=1: right points to the inorder successor.'],
+          ['一个指针字段只有原本为空时才能改为线索；非空的孩子指针不能被线索覆盖。', 'A pointer field may become a thread only when it was originally null; a non-null child pointer must never be overwritten.'],
+          ['tag 是判断指针含义的唯一依据；不能凭“看起来像孩子”猜。', 'The tag is the only reliable way to interpret the pointer; never guess from appearance.'],
+        ],
+        formula: 'ltag=0 → 左孩子；ltag=1 → 中序前驱\nrtag=0 → 右孩子；rtag=1 → 中序后继',
+        formulaEn: 'ltag=0 → left child; ltag=1 → inorder predecessor\nrtag=0 → right child; rtag=1 → inorder successor',
+      },
+      {
+        title: ['中序线索化：用 pre 指针串起前驱与后继', 'Inorder threading: link predecessor and successor with pre'],
+        body: [
+          '示例树以 4 为根：4 的左孩子是 2、右孩子是 6；2 的左孩子是 1、右孩子是 3。它的中序序列是 1 → 2 → 3 → 4 → 6。按中序递归处理每个节点，同时维护“上一个访问过的节点” pre。',
+          'The example tree has root 4: 4’s left child is 2 and right child is 6; 2’s left child is 1 and right child is 3. Its inorder sequence is 1 → 2 → 3 → 4 → 6. Process each node in inorder recursion while keeping pre, the previously visited node.',
+        ],
+        points: [
+          ['先递归线索化左子树；进入当前节点时，pre 正好是它的中序前驱。', 'Thread the left subtree first; when the current node is processed, pre is exactly its inorder predecessor.'],
+          ['若当前节点的 left 为空：置 ltag=1，并令 left 指向 pre。', 'If the current node’s left is null, set ltag=1 and point left to pre.'],
+          ['若 pre 的 right 为空：置 rtag=1，并令 pre.right 指向当前节点。这一步补上 pre 的后继。', 'If pre’s right is null, set rtag=1 and point pre.right to the current node; this fills in pre’s successor.'],
+          ['处理完当前节点后令 pre=当前节点，再递归线索化右子树。', 'After processing the current node, set pre to it and thread the right subtree.'],
+        ],
+        formula: '中序：Thread(left) → 处理 node → Thread(right)；pre 始终保存上一访问节点',
+        formulaEn: 'Inorder: Thread(left) → process node → Thread(right); pre always stores the previous visited node',
+      },
+      {
+        title: ['沿线索中序遍历：不递归、不用栈', 'Walk inorder by threads: no recursion, no stack'],
+        body: [
+          '从根出发先走到最左节点，即中序第一个节点 1。访问 1 后，因 rtag=1，直接沿 right 到后继 2；2 的 rtag=0，说明右指针是真实孩子，于是进入 2 的右子树并走到该子树最左节点 3；访问 3 后沿线索到 4；4 的 rtag=0，进入右子树最左节点 6；访问 6 后 rtag=1 且其后继为空，遍历结束。得到 1 → 2 → 3 → 4 → 6。',
+          'Start at the leftmost node, the first inorder node 1. After visiting 1, rtag=1 sends us along right to successor 2. Node 2 has rtag=0, so its right pointer is a real child: enter its right subtree and go to its leftmost node 3. After 3, the thread leads to 4. Node 4 has rtag=0, so enter its right subtree and reach leftmost 6. After 6, rtag=1 and its successor is null, so the walk ends. The result is 1 → 2 → 3 → 4 → 6.',
+        ],
+        points: [
+          ['若 p.rtag=1：中序后继就是 p.right。', 'If p.rtag=1, the inorder successor is p.right.'],
+          ['若 p.rtag=0：后继是 p.right 子树中的最左节点，沿 left 一直走到底。', 'If p.rtag=0, the successor is the leftmost node in p.right’s subtree; keep following left.'],
+          ['整条遍历路径只访问每个节点一次，时间 O(n)，辅助空间 O(1)。', 'Each node is visited once: O(n) time and O(1) auxiliary space.'],
+          ['前序、后序线索化只是把“前驱/后继”换成对应次序；本轮只展开中序，不混用不同次序的线索。', 'Preorder and postorder threading merely change which order defines predecessor/successor; this page stays with inorder and never mixes thread orders.'],
+        ],
+        formula: 'p.rtag=1 → p = p.right；p.rtag=0 → p = p.right 子树的最左节点',
+        formulaEn: 'p.rtag=1 → p = p.right; p.rtag=0 → p = leftmost node in p.right subtree',
+      },
+    ],
+    comparison: {
+      title: ['示例树的中序线索表', 'Inorder threads in the example tree'],
+      columns: [
+        ['节点', 'Node'],
+        ['ltag / 左指针', 'ltag / left'],
+        ['rtag / 右指针', 'rtag / right'],
+        ['中序前驱 → 后继', 'Inorder pred → succ'],
+      ],
+      rows: [
+        [
+          ['1', '1'],
+          ['1 / 前驱为空', '1 / null predecessor'],
+          ['1 → 后继 2', '1 → successor 2'],
+          ['∅ → 2', '∅ → 2'],
+        ],
+        [
+          ['2', '2'],
+          ['0 → 左孩子 1', '0 → left child 1'],
+          ['0 → 右孩子 3', '0 → right child 3'],
+          ['1 → 3', '1 → 3'],
+        ],
+        [
+          ['3', '3'],
+          ['1 → 前驱 2', '1 → predecessor 2'],
+          ['1 → 后继 4', '1 → successor 4'],
+          ['2 → 4', '2 → 4'],
+        ],
+        [
+          ['4', '4'],
+          ['0 → 左孩子 2', '0 → left child 2'],
+          ['0 → 右孩子 6', '0 → right child 6'],
+          ['3 → 6', '3 → 6'],
+        ],
+        [
+          ['6', '6'],
+          ['1 → 前驱 4', '1 → predecessor 4'],
+          ['1 / 后继为空', '1 / null successor'],
+          ['4 → ∅', '4 → ∅'],
+        ],
+      ],
+    },
+    takeaway: ['记牢“空指针才线索化、tag 决定指针含义”。中序线索树中，rtag=1 直接取后继，rtag=0 进入右子树找最左节点；这样不用递归和栈也能完成中序遍历。', 'Remember: thread only null pointers, and let the tag decide what a pointer means. In an inorder threaded tree, rtag=1 gives the successor directly; rtag=0 means entering the right subtree and taking its leftmost node. That yields inorder without recursion or a stack.'],
   },
 ];
 

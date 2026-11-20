@@ -20,7 +20,7 @@ describe('Stage 7D Python binary-tree teaching source', () => {
     expect(TREE_PYTHON).not.toContain('id(node)');
   });
 
-  it('runs the three traversals through one recursively tracked function', () => {
+  it('runs the three recursive traversals through one tracked function', () => {
     expect(TREE_PYTHON).toContain('@tracked(enter_hook=tree_enter, return_hook=tree_return)');
     expect(TREE_PYTHON).toContain('def traverse(node):');
     expect(TREE_PYTHON).toContain('traverse(node.left)');
@@ -29,8 +29,20 @@ describe('Stage 7D Python binary-tree teaching source', () => {
     expect(TREE_PYTHON).toContain('if MODE == "inorder":');
     expect(TREE_PYTHON).toContain('if MODE == "postorder":');
     expect(TREE_PYTHON).toContain('structure=tree_payload(operation, node)');
-    expect(TREE_PYTHON).toContain('lesson_step="order"');
+    expect(TREE_PYTHON).toContain('lesson_step=order_step');
     expect(TREE_PYTHON).toContain('lesson_step="done"');
+  });
+
+  it('adds a real FIFO queue path for level order', () => {
+    expect(TREE_PYTHON).toContain('if MODE == "levelorder":');
+    expect(TREE_PYTHON).toContain('def level_order():');
+    expect(TREE_PYTHON).toContain('QUEUE.append(ROOT)');
+    expect(TREE_PYTHON).toContain('node = QUEUE.pop(0)');
+    expect(TREE_PYTHON).toContain('QUEUE.append(node.left)');
+    expect(TREE_PYTHON).toContain('QUEUE.append(node.right)');
+    expect(TREE_PYTHON).toContain('"queueIds": [node.node_id for node in QUEUE]');
+    expect(TREE_PYTHON).toContain('"level-init")');
+    expect(TREE_PYTHON).toContain('"level-process")');
   });
 
   it('keeps the recursion path and visit order from real Python execution', () => {
@@ -45,9 +57,11 @@ describe('Stage 7D Python binary-tree teaching source', () => {
     expect(treeModeFromInput(TREE_DEFAULT_INPUT)).toBe('inorder');
     expect(treeValuesFromInput(TREE_DEFAULT_INPUT)).toEqual(TREE_DEFAULT_TREE);
     expect(treeModeFromInput({ mode: 'preorder', tree: [4, 2, 6] })).toBe('preorder');
+    expect(treeModeFromInput({ mode: 'levelorder', tree: [4, 2, 6] })).toBe('levelorder');
     expect(treeModeFromInput({ mode: 'bad', tree: [4] })).toBe('inorder');
     expect(treeModeFromInput('nonsense')).toBe('inorder');
     expect(withTreeMode([4, 2, 6], 'postorder')).toEqual({ mode: 'postorder', tree: [4, 2, 6] });
+    expect(withTreeMode([4, 2, 6], 'levelorder')).toEqual({ mode: 'levelorder', tree: [4, 2, 6] });
     expect(withTreeMode({ mode: 'inorder', tree: [4, 2] }, 'preorder')).toEqual({
       mode: 'preorder',
       tree: [4, 2],

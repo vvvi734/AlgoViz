@@ -223,10 +223,16 @@ describe('AlgorithmSidebar — textbook chapters (UX-03)', () => {
     expect(unAuthored.querySelector('.textbook-category')).toBeNull();
     expect(within(unAuthored).queryByRole('button')).toBeNull();
 
-    const planned = screen.getByTestId('topic-threaded-tree');
-    expect(planned.getAttribute('data-category')).toBe('pending');
-    expect(planned.textContent).toContain('待完善');
-    expect(planned.querySelector('.textbook-category')).toBeNull();
+    const threaded = screen.getByTestId('topic-threaded-tree');
+    expect(threaded.tagName).toBe('BUTTON');
+    expect(threaded.getAttribute('data-kind')).toBe('concept');
+    expect(threaded.getAttribute('data-category')).toBe('theory');
+    expect(threaded.getAttribute('data-concept-id')).toBe('threaded-binary-tree');
+    expect(threaded.getAttribute('aria-disabled')).toBeNull();
+    expect(within(threaded).queryByText('理论')).toBeNull();
+    expect(threaded.querySelector('.textbook-category.is-theory')?.textContent).toBe('▤');
+    fireEvent.click(threaded);
+    expect(onSelectConcept).toHaveBeenCalledWith('threaded-binary-tree');
 
     const group = screen.getByTestId('topic-shortest-path');
     expect(group.getAttribute('data-category')).toBe('visual');
@@ -234,7 +240,7 @@ describe('AlgorithmSidebar — textbook chapters (UX-03)', () => {
     expect(group.querySelector('.textbook-category.is-visual')?.textContent).toBe('▶');
   });
 
-  it('marks the two new tree theory lessons without making static SVGs visual', () => {
+  it('marks the authored tree theory lessons without making static SVGs visual', () => {
     render(<Harness />);
     const storage = screen.getByTestId('topic-tree-basics');
     expect(storage.getAttribute('data-kind')).toBe('concept');

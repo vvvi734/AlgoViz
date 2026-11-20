@@ -23,7 +23,7 @@ if isinstance(raw_input, dict):
 else:
     requested_mode = "inorder"
     values = raw_input
-if requested_mode not in ("preorder", "inorder", "postorder"):
+if requested_mode not in ("preorder", "inorder", "postorder", "levelorder"):
     requested_mode = "inorder"
 MODE = requested_mode
 if not isinstance(values, list):
@@ -103,7 +103,7 @@ def tree_payload(operation, current=None):
         "nodes": nodes_now,
         "currentNodeId": current.node_id if current is not None else None,
         "visitedIds": [node.node_id for node in VISITED],
-        "pathIds": [node.node_id for node in PATH],
+        "pathIds": [node.node_id for node in PATH], "queueIds": [node.node_id for node in QUEUE],
     }
 
 def tree_variables(node=None):
@@ -115,6 +115,7 @@ def tree_variables(node=None):
         "path": [item.node_id for item in PATH],
         "visited": [item.value for item in VISITED],
         "depth": max(0, len(PATH) - 1),
+        "queue": [item.node_id for item in QUEUE],
     }
 
 def emit(operation, node, message, line, lesson_step):
@@ -144,32 +145,81 @@ def traverse(node):
     if node is None:
         return
     if MODE == "preorder":
-        visit_node(node, 130)
+        visit_node(node, 131)
     if node.left is not None:
-        emit("left", node, "进入左子树 / go left", 132, "left")
+        emit("left", node, "进入左子树 / go left", 133, "left")
         traverse(node.left)
     if MODE == "inorder":
-        visit_node(node, 135)
+        visit_node(node, 136)
     if node.right is not None:
-        emit("right", node, "进入右子树 / go right", 137, "right")
+        emit("right", node, "进入右子树 / go right", 138, "right")
         traverse(node.right)
     if MODE == "postorder":
-        visit_node(node, 140)
+        visit_node(node, 141)
 
-emit("init", None, "初始化二叉树 / init tree", 142, "init")
+QUEUE = []
+PARENT = {}
+
+def build_parent(node, parent=None):
+    if node is None:
+        return
+    PARENT[node] = parent
+    build_parent(node.left, node)
+    build_parent(node.right, node)
+
+def set_level_path(node):
+    PATH.clear()
+    chain = []
+    cursor = node
+    while cursor is not None:
+        chain.append(cursor)
+        cursor = PARENT.get(cursor)
+    for item in reversed(chain):
+        PATH.append(item)
+
+def level_order():
+    QUEUE.append(ROOT)
+    set_level_path(ROOT)
+    emit("enqueue", ROOT, "根节点入队 / enqueue root " + ROOT.node_id, 164, "level-init")
+    while QUEUE:
+        node = QUEUE.pop(0)
+        set_level_path(node)
+        emit("dequeue", node, "队首出队 / dequeue " + node.node_id, 168, "level-process")
+        VISITED.append(node)
+        emit("visit", node, "访问节点 / visit " + node.node_id + " = " + str(node.value), 171, "level-process")
+        if node.left is not None:
+            QUEUE.append(node.left)
+            set_level_path(node.left)
+            emit("enqueue", node.left, "左孩子入队 / enqueue left " + node.left.node_id, 174, "level-process")
+        if node.right is not None:
+            QUEUE.append(node.right)
+            set_level_path(node.right)
+            emit("enqueue", node.right, "右孩子入队 / enqueue right " + node.right.node_id, 178, "level-process")
+
+build_parent(ROOT)
+
+emit("init", None, "初始化二叉树 / init tree", 184, "init")
 if ROOT is not None:
-    traverse(ROOT)
+    if MODE == "levelorder":
+        level_order()
+    else:
+        traverse(ROOT)
 order = [node.value for node in VISITED]
-trace(tree_state(None, True), "访问顺序 / visit order: " + str(order), line=146, variables=tree_variables(None), lesson_step="order", structure=tree_payload("done", None))
-trace(tree_state(None, True), "遍历完成 / done", line=147, variables=tree_variables(None), lesson_step="done", structure=tree_payload("done", None))
+if MODE == "levelorder":
+    PATH.clear()
+order_step = "level-order" if MODE == "levelorder" else "order"
+trace(tree_state(None, True), "访问顺序 / visit order: " + str(order), line=194, variables=tree_variables(None), lesson_step=order_step, structure=tree_payload("done", None))
+trace(tree_state(None, True), "遍历完成 / done", line=195, variables=tree_variables(None), lesson_step="done", structure=tree_payload("done", None))
 `;
 
-export type TreeMode = 'preorder' | 'inorder' | 'postorder';
+export type TreeMode = 'preorder' | 'inorder' | 'postorder' | 'levelorder';
 
 export function treeModeFromInput(input: unknown): TreeMode {
   if (!input || typeof input !== 'object' || Array.isArray(input)) return 'inorder';
   const mode = (input as { mode?: unknown }).mode;
-  return mode === 'preorder' || mode === 'inorder' || mode === 'postorder' ? mode : 'inorder';
+  return mode === 'preorder' || mode === 'inorder' || mode === 'postorder' || mode === 'levelorder'
+    ? mode
+    : 'inorder';
 }
 
 export function treeValuesFromInput(input: unknown): unknown[] {

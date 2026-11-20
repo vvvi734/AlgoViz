@@ -40,7 +40,9 @@ export function ConceptView({ concept }: { concept: ConceptPage }) {
             <SearchConceptDiagram kind={concept.diagram} lang={lang} />
           ) : concept.diagram === 'circular-queue' || concept.diagram === 'stack-queue-storage' ? (
             <QueueConceptDiagram kind={concept.diagram} lang={lang} />
-          ) : concept.diagram === 'tree-storage' || concept.diagram === 'forest-conversion' ? (
+          ) : concept.diagram === 'tree-storage' ||
+            concept.diagram === 'forest-conversion' ||
+            concept.diagram === 'threaded-binary-tree' ? (
             <TreeConceptDiagram kind={concept.diagram} lang={lang} />
           ) : (
             <ConceptDiagram kind={concept.diagram} lang={lang} />
@@ -76,7 +78,7 @@ export function ConceptView({ concept }: { concept: ConceptPage }) {
             ) : null}
             {section.formula ? (
               <div className="concept-formula" aria-label={t('conceptFormula')}>
-                <code>{section.formula}</code>
+                <code>{lang === 'en' && section.formulaEn ? section.formulaEn : section.formula}</code>
               </div>
             ) : null}
           </section>

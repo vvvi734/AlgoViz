@@ -296,6 +296,25 @@ export const REFERENCE_CODE: Record<string, ReferenceEntry> = {
       cpp: { fileName: 'inorder.cpp' },
       python: { fileName: 'inorder.py' },
     },
+    convenience: {
+      c: { fileName: 'levelorder_queue.c' },
+      cpp: { fileName: 'levelorder_queue.cpp' },
+      python: { fileName: 'levelorder_queue.py' },
+    },
+    convenienceNote: {
+      c: {
+        zh: '队列版层序遍历，原创 MIT 代码；教材原理页仍保留第 6 章递归三序遍历原文。',
+        en: 'Queue-based level-order traversal, original MIT code; the principle tab keeps the textbook’s recursive three-traversal excerpt.',
+      },
+      cpp: {
+        zh: '使用 std::queue 的层序遍历；队首出队后访问，再按从左到右把孩子入队。',
+        en: 'Level order with std::queue: pop the front to visit it, then enqueue children left to right.',
+      },
+      python: {
+        zh: '使用 collections.deque 的层序遍历；popleft 取出队首，append 依次加入左、右孩子。',
+        en: 'Level order with collections.deque: popleft the front, then append the left and right children.',
+      },
+    },
   },
   bst: {
     files: {

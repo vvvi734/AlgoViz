@@ -31,10 +31,12 @@ export interface BinaryTreeVisualModel {
   operation: BinaryTreeOperation;
   rootId: string | null;
   currentNodeId: string | null;
-  /** Child that `left`/`right` is about to enter; null for other operations. */
+  /** Child that `left`/`right`/`enqueue` is about to handle; null otherwise. */
   nextChildId: string | null;
   visitedIds: string[];
   pathIds: string[];
+  /** FIFO queue, front first. Empty for recursive traversals. */
+  queueIds: string[];
   nodes: BinaryTreeVisualNode[];
   edges: BinaryTreeVisualEdge[];
   width: number;
@@ -62,6 +64,8 @@ export function buildBinaryTreeModel(
   if (valid.currentNodeId !== null && (valid.operation === 'left' || valid.operation === 'right')) {
     const current = valid.nodes.find((node) => node.id === valid.currentNodeId);
     nextChildId = current?.[valid.operation === 'left' ? 'leftId' : 'rightId'] ?? null;
+  } else if (valid.operation === 'enqueue') {
+    nextChildId = valid.currentNodeId;
   }
 
   const nodes: BinaryTreeVisualNode[] = layout.nodes.map((node) => ({
@@ -78,9 +82,14 @@ export function buildBinaryTreeModel(
     // real next node. For an `enter` frame, the last path edge is the real one
     // just descended; `pathIds` already covers it.
     active:
-      (valid.operation === 'left' || valid.operation === 'right') &&
-      edge.fromId === valid.currentNodeId &&
-      edge.toId === nextChildId,
+      ((valid.operation === 'left' || valid.operation === 'right') &&
+        edge.fromId === valid.currentNodeId &&
+        edge.toId === nextChildId) ||
+      // An enqueue frame highlights the real parent→child edge that supplied
+      // the newly enqueued node.
+      (valid.operation === 'enqueue' &&
+        edge.toId === valid.currentNodeId &&
+        pathSet.has(edge.fromId)),
   }));
 
   return {
@@ -92,6 +101,7 @@ export function buildBinaryTreeModel(
     nextChildId,
     visitedIds: valid.visitedIds,
     pathIds: valid.pathIds,
+    queueIds: valid.queueIds,
     nodes,
     edges,
     width: layout.width,

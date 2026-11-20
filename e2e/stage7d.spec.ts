@@ -20,15 +20,15 @@ async function setFrame(page: Page, frame: number, total = 30) {
   await expect(page.locator('[data-testid="progress"]')).toHaveText(`${frame + 1} / ${total}`);
 }
 
-async function selectMode(page: Page, mode: 'preorder' | 'inorder' | 'postorder') {
+async function selectMode(page: Page, mode: 'preorder' | 'inorder' | 'postorder' | 'levelorder') {
   await page.getByTestId(`tree-mode-${mode}`).click();
   await expect(page.locator('[data-testid="tree-mode-picker"]')).toHaveAttribute('data-selected', mode);
 }
 
-async function runCurrentMode(page: Page) {
+async function runCurrentMode(page: Page, total = 30) {
   await page.getByTestId('run-btn').click();
   await expect(page.locator('[data-testid="tree-mode-pending"]')).toHaveCount(0);
-  await expect(page.locator('[data-testid="progress"]')).toHaveText('1 / 30', { timeout: 60_000 });
+  await expect(page.locator('[data-testid="progress"]')).toHaveText(`1 / ${total}`, { timeout: 60_000 });
 }
 
 async function expectNoPageOverflow(page: Page) {
@@ -56,6 +56,11 @@ async function edgePairs(page: Page): Promise<Array<[string, string]>> {
 
 async function visitedIds(page: Page): Promise<string[]> {
   const value = await page.locator('[data-testid="tree-visited-sequence"]').getAttribute('data-visited-ids');
+  return value ? value.split(',').filter(Boolean) : [];
+}
+
+async function queueIds(page: Page): Promise<string[]> {
+  const value = await page.locator('[data-testid="tree-queue"]').getAttribute('data-queue-ids');
   return value ? value.split(',').filter(Boolean) : [];
 }
 
@@ -241,6 +246,48 @@ test.describe('Stage 7D — real binary-tree traversal and recursion stack', () 
     await expect(page.locator('[data-testid="tree-node"][data-node-id="n2"]')).toHaveAttribute('data-value', '7');
     await expect(page.locator('[data-testid="tree-node"][data-node-id="n3"]')).toHaveAttribute('data-value', '7');
     await expect(page.locator('[data-testid="tree-node"][data-node-id="n1"]')).toHaveAttribute('data-role', 'root');
+  });
+
+  test('level order runs a real FIFO queue and keeps queue state on scrub', async ({ page }) => {
+    await openApp(page);
+    await selectAlgo(page, 'inorder');
+    await expect(page.locator('[data-testid="tree-visual"]')).toBeVisible({ timeout: 60_000 });
+
+    await selectMode(page, 'levelorder');
+    await runCurrentMode(page, 24);
+    await expect(page.locator('[data-testid="tree-visual"]')).toHaveAttribute('data-traversal', 'levelorder');
+    await expect(page.locator('[data-testid="tree-queue"]')).toBeVisible();
+    await expect(page.locator('[data-testid="tree-queue-empty"]')).toBeVisible();
+    expect(await queueIds(page)).toEqual([]);
+
+    await setFrame(page, 1, 24);
+    await expect(page.locator('[data-testid="tree-visual"]')).toHaveAttribute('data-operation', 'enqueue');
+    expect(await queueIds(page)).toEqual(['n1']);
+    expect(await activeId(page)).toBe('n1');
+    expect(await visitedIds(page)).toEqual([]);
+    await expect(page.getByTestId('lesson-active-step')).toHaveAttribute('data-step-id', 'level-init');
+
+    await setFrame(page, 5, 24);
+    await expect(page.locator('[data-testid="tree-visual"]')).toHaveAttribute('data-operation', 'enqueue');
+    expect(await queueIds(page)).toEqual(['n2', 'n3']);
+    expect(await activeId(page)).toBe('n3');
+    expect(await visitedIds(page)).toEqual(['n1']);
+    await expect(page.getByTestId('lesson-active-step')).toHaveAttribute('data-step-id', 'level-process');
+
+    await setFrame(page, 9, 24);
+    expect(await queueIds(page)).toEqual(['n3', 'n4', 'n5']);
+    expect(await visitedIds(page)).toEqual(['n1', 'n2']);
+    await expect(page.locator('.tree-queue-front')).toContainText(/队首|front/i);
+
+    await setFrame(page, 22, 24);
+    expect(await queueIds(page)).toEqual([]);
+    expect(await visitedIds(page)).toEqual(['n1', 'n2', 'n3', 'n4', 'n5', 'n6', 'n7']);
+    await expect(page.getByTestId('lesson-active-step')).toHaveAttribute('data-step-id', 'level-order');
+
+    await setFrame(page, 5, 24);
+    expect(await queueIds(page)).toEqual(['n2', 'n3']);
+    expect(await visitedIds(page)).toEqual(['n1']);
+    await expect(page.getByTestId('lesson-active-step')).toHaveAttribute('data-step-id', 'level-process');
   });
 
   test('1024/390 keep the tree readable, reduced motion keeps state, stack regression is clean', async ({ page }) => {
