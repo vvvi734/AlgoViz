@@ -51,6 +51,8 @@ const COMPLEXITY_EN: Record<string, string> = {
     'Depends on the gap sequence (this course’s n//2 halving sequence: worst O(n²))',
   '原地排序 O(1)': 'In-place sort O(1)',
   'O(n) 辅助空间（数组实现）': 'O(n) auxiliary space (array implementation)',
+  'O(log_m n) 节点访问': 'O(log_m n) node visits',
+  'O(log n) 节点访问': 'O(log n) node visits',
   '递归栈平均 O(log n)；最坏 O(n)': 'Recursion stack average O(log n); worst O(n)',
 };
 

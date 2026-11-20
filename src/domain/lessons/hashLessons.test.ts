@@ -113,7 +113,7 @@ describe('F2 hash lessons', () => {
     expect(topic!.algorithms).toEqual([{ id: 'hash-chain' }, { id: 'hash-probe' }]);
     const duplicate = chapter!.topics.filter((entry) => entry.id === 'hash-search');
     expect(duplicate).toHaveLength(1);
-    expect(chapter!.topics.map((entry) => entry.id).slice(-2)).toEqual(['multiway-tree', 'hash-search']);
+    expect(chapter!.topics.map((entry) => entry.id).slice(-2)).toEqual(['btree-demo', 'hash-search']);
   });
 
   it('uses one unique-key policy in the courses and metadata', () => {
