@@ -11,7 +11,7 @@
   background: var(--panel-2);
   color: var(--txt);
   font: inherit;
-  font-size: 12.5px;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
 }
@@ -262,7 +262,7 @@
 .guide-section-title {
   margin: 0;
   color: var(--txt);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
   letter-spacing: 0.01em;
 }
@@ -403,7 +403,7 @@
 .guide-details-head h3 {
   margin: 0;
   color: var(--txt);
-  font-size: 13.5px;
+  font-size: 16px;
 }
 
 .guide-detail-section {
@@ -589,7 +589,7 @@
 .guide-empty p {
   margin: 0;
   color: var(--muted);
-  font-size: 12.5px;
+  font-size: 14px;
   line-height: 1.5;
 }
 

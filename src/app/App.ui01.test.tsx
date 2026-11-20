@@ -75,6 +75,20 @@ describe('UX-03 textbook directory does not touch learning state', () => {
     expect(screen.getByTestId('algo-insertion').getAttribute('aria-current')).toBe('true');
   });
 
+  it('opens a concept topic from the mobile directory selector', async () => {
+    renderApp();
+    await ready();
+
+    fireEvent.change(screen.getByTestId('mobile-algo-select'), { target: { value: 'concept:adt' } });
+    await waitFor(() => expect(screen.getByTestId('concept-page')).toBeTruthy());
+    expect(screen.getByTestId('concept-title').textContent).toContain('抽象数据类型');
+    expect((screen.getByTestId('mobile-algo-select') as HTMLSelectElement).value).toBe('concept:adt');
+
+    fireEvent.click(screen.getByTestId('concept-back'));
+    await waitFor(() => expect(screen.queryByTestId('concept-page')).toBeNull());
+    expect(screen.getByTestId('visual-stage')).toBeTruthy();
+  });
+
   it('restores the collapsed layout after a remount', async () => {
     const first = renderApp();
     await ready();

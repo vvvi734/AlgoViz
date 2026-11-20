@@ -4,9 +4,13 @@ export type Bilingual = readonly [string, string];
 export type ConceptDiagramKind =
   | 'classification'
   | 'complexity'
+  | 'cases'
+  | 'adt'
   | 'storage'
   | 'tree'
-  | 'graph';
+  | 'graph'
+  | 'graph-storage'
+  | 'sorting';
 
 export interface ConceptDefinition {
   term: Bilingual;

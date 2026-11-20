@@ -1,7 +1,7 @@
 /* S1 shared sorting array. The DOM is one array for selection/insertion/Shell. */
 .sorting-visual { width: 100%; max-width: 760px; display: flex; flex-direction: column; gap: 10px; z-index: 1; }
 .sorting-op-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
-.sorting-op { font-size: 13px; font-weight: 800; color: var(--txt); }
+.sorting-op { font-size: 14px; font-weight: 800; color: var(--txt); }
 .sorting-op-count { font-size: var(--font-ui); font-weight: 700; color: var(--accent); }
 .sorting-meta { display: flex; flex-wrap: wrap; gap: 6px; }
 .sorting-meta-chip {
@@ -33,7 +33,7 @@
   font-size: var(--font-ui);
   color: var(--muted);
 }
-.sorting-key-card b { color: var(--txt); font-size: 15px; }
+.sorting-key-card b { color: var(--txt); font-size: 16px; }
 .sorting-key-card-label { color: var(--red); font-weight: 800; }
 .sorting-array-wrap { width: 100%; overflow-x: auto; overflow-y: hidden; padding-bottom: 2px; }
 .sorting-bars { height: 172px; min-width: 0;}
@@ -198,7 +198,7 @@
 .sorting-buffer-slot.is-filled { border-style: solid; border-color: color-mix(in srgb, var(--sort-buffer) 50%, var(--edge)); color: var(--txt); }
 .sorting-buffer-slot.is-written { border-color: var(--sort-pivot); background: color-mix(in srgb, var(--sort-pivot) 12%, var(--panel-1)); box-shadow: 0 0 0 2px color-mix(in srgb, var(--sort-pivot) 24%, transparent); }
 .sorting-buffer-index { font-size: var(--font-ui); font-weight: 700; color: var(--muted); }
-.sorting-buffer-value { font-size: 13px; line-height: 1.1; }
+.sorting-buffer-value { font-size: 14px; line-height: 1.1; }
 .sorting-buffer-source { min-height: 10px; font-size: var(--font-ui); color: var(--sort-buffer); }
 
 .sorting-range-chips { display: flex; flex-wrap: wrap; gap: 4px; }

@@ -153,9 +153,11 @@ export function LearningRail({
           data-step-id={activeStep?.stepId}
         >
           <h2 className="rail-operation-title" data-testid="current-step-title">{action}</h2>
-          <p className="rail-operation-text" data-testid="current-step-message">
-            {detail}
-          </p>
+          {detail && detail !== action ? (
+            <p className="rail-operation-text" data-testid="current-step-message">
+              {detail}
+            </p>
+          ) : null}
         </div>
       </section>
     </section>

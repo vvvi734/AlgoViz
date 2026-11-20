@@ -213,7 +213,7 @@
   color: var(--txt);
   line-height: 1.05;
 }
-.hash-node-key { font-size: 13px; font-weight: 900; }
+.hash-node-key { font-size: 14px; font-weight: 900; }
 .hash-node-id { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: var(--font-ui); color: var(--muted); }
 .hash-node.is-current, .hash-node.is-inserted {
   border-color: var(--hash-amber);

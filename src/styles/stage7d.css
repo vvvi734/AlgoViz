@@ -218,7 +218,7 @@
 
 .tree-node-value {
   max-width: calc(100% - 12px);
-  font: 850 17px/1.15 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font: 850 var(--font-title)/1.15 ui-monospace, SFMono-Regular, Consolas, monospace;
   overflow-wrap: anywhere;
   text-align: center;
   margin-top: 3px;

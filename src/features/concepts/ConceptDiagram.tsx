@@ -3,7 +3,7 @@ import type { ConceptDiagramKind } from '../../domain/concepts/types';
 
 /**
  * Large, static SVG diagrams for concept lessons. They never animate and never
- * depend on trace data; every label stays at 13px or above.
+ * depend on trace data; every label stays at 14px or above.
  */
 export function ConceptDiagram({ kind, lang }: { kind: ConceptDiagramKind; lang: Lang }) {
   const L = (zh: string, en: string) => (lang === 'zh' ? zh : en);
@@ -68,6 +68,75 @@ export function ConceptDiagram({ kind, lang }: { kind: ConceptDiagramKind; lang:
     );
   }
 
+  if (kind === 'adt') {
+    const operations: Array<[string, number]> = [
+      [L('数据对象', 'Data object'), 135],
+      [L('数据关系', 'Relationships'), 320],
+      [L('操作集合', 'Operations'), 505],
+    ];
+    return (
+      <svg className="concept-svg" viewBox="0 0 760 360" role="img" aria-label={L('抽象数据类型的分层示意', 'Layers of an abstract data type')}>
+        <rect className="diagram-box diagram-accent" x="130" y="18" width="500" height="58" rx="12" />
+        <text className="diagram-label diagram-label-strong" x="380" y="45" textAnchor="middle">{L('抽象数据类型 ADT', 'Abstract data type')}</text>
+        <text className="diagram-note" x="380" y="66" textAnchor="middle">{L('先约定“是什么、能做什么”', 'Specify what it is and what it can do first')}</text>
+        {operations.map(([label, x]) => (
+          <g key={label}>
+            <line className="diagram-line" x1="380" y1="76" x2={x + 55} y2="104" />
+            <rect className="diagram-chip" x={x} y="104" width="110" height="40" rx="9" />
+            <text className="diagram-label" x={x + 55} y="129" textAnchor="middle">{label}</text>
+          </g>
+        ))}
+        <text className="diagram-note" x="380" y="176" textAnchor="middle">{L('抽象层只描述语义，不暴露数组下标或指针', 'The abstract layer describes semantics, not indices or pointers')}</text>
+        <line className="diagram-line" x1="380" y1="188" x2="250" y2="220" />
+        <line className="diagram-line" x1="380" y1="188" x2="510" y2="220" />
+        <rect className="diagram-box" x="110" y="220" width="280" height="74" rx="10" />
+        <text className="diagram-label diagram-label-strong" x="250" y="248" textAnchor="middle">{L('顺序实现', 'Sequential implementation')}</text>
+        <text className="diagram-note" x="250" y="274" textAnchor="middle">{L('数组 + 下标 / 连续空间', 'Array + index / contiguous space')}</text>
+        <rect className="diagram-box" x="370" y="220" width="280" height="74" rx="10" />
+        <text className="diagram-label diagram-label-strong" x="510" y="248" textAnchor="middle">{L('链式实现', 'Linked implementation')}</text>
+        <text className="diagram-note" x="510" y="274" textAnchor="middle">{L('结点 + 指针 / 分散空间', 'Nodes + pointers / scattered space')}</text>
+        <rect className="diagram-band" x="80" y="316" width="600" height="34" rx="8" />
+        <text className="diagram-label" x="380" y="338" textAnchor="middle">{L('同一 ADT 可有多种实现，操作契约保持不变', 'One ADT, several implementations; the contract stays the same')}</text>
+      </svg>
+    );
+  }
+
+  if (kind === 'cases') {
+    const panels: Array<[string, string, string, number]> = [
+      [L('最好情况', 'Best case'), L('目标在首位', 'Target first'), L('1 次比较', '1 comparison'), 0],
+      [L('平均情况', 'Average case'), L('等概率分布', 'Uniform distribution'), L('(n+1)/2 次', '(n+1)/2'), 2],
+      [L('最坏情况', 'Worst case'), L('目标不存在', 'Target absent'), L('n 次比较', 'n comparisons'), -1],
+    ];
+    return (
+      <svg className="concept-svg" viewBox="0 0 760 360" role="img" aria-label={L('顺序查找的三种情况', 'Three cases of linear search')}>
+        {panels.map(([title, condition, cost, target], panelIndex) => {
+          const x = 40 + panelIndex * 240;
+          return (
+            <g key={title}>
+              <rect className="diagram-box" x={x} y="38" width="220" height="220" rx="12" />
+              <text className="diagram-label diagram-label-strong" x={x + 110} y="70" textAnchor="middle">{title}</text>
+              <text className="diagram-note" x={x + 110} y="94" textAnchor="middle">{condition}</text>
+              {[0, 1, 2, 3, 4].map((cell) => (
+                <rect
+                  key={cell}
+                  className={cell === target ? 'diagram-cell diagram-accent' : 'diagram-cell'}
+                  x={x + 20 + cell * 37}
+                  y="118"
+                  width="34"
+                  height="42"
+                />
+              ))}
+              <text className="diagram-note" x={x + 110} y="186" textAnchor="middle">{L('输入规模都是 n', 'Input size is n')}</text>
+              <text className="diagram-label" x={x + 110} y="218" textAnchor="middle">{cost}</text>
+            </g>
+          );
+        })}
+        <rect className="diagram-band" x="70" y="292" width="620" height="44" rx="9" />
+        <text className="diagram-label" x="380" y="319" textAnchor="middle">{L('平均情况依赖输入分布，不等于 (最好 + 最坏) / 2', 'Average depends on the distribution, not (best + worst)/2')}</text>
+      </svg>
+    );
+  }
+
   if (kind === 'storage') {
     return (
       <svg className="concept-svg" viewBox="0 0 760 360" role="img" aria-label={L('顺序存储与链式存储示意', 'Sequential and linked storage')}>
@@ -102,8 +171,8 @@ export function ConceptDiagram({ kind, lang }: { kind: ConceptDiagramKind; lang:
             </g>
           );
         })}
-        <text className="diagram-note" x="446" y="194">{L('HEAD → 节点 1 → 节点 2 → NULL', 'HEAD → node 1 → node 2 → NULL')}</text>
-        <text className="diagram-note" x="446" y="224">{L('已知位置插入/删除：改指针 O(1)', 'Insert/delete at a known position: O(1)')}</text>
+        <text className="diagram-note" x="446" y="194">{L('HEAD → 节点 1 → 节点 2 → 节点 3 → NULL', 'HEAD → node 1 → node 2 → node 3 → NULL')}</text>
+        <text className="diagram-note" x="446" y="224">{L('已知前驱插入/删除：改指针 O(1)', 'Insert/delete with predecessor known: relink O(1)')}</text>
         <text className="diagram-note" x="446" y="248">{L('按下标访问：从头走 O(n)', 'Indexed access: walk from head, O(n)')}</text>
         <rect className="diagram-band" x="60" y="292" width="640" height="42" rx="9" />
         <text className="diagram-label" x="380" y="318" textAnchor="middle">{L('随机访问选顺序；频繁插删选链式', 'Random access → sequential; frequent insert/delete → linked')}</text>
@@ -145,6 +214,115 @@ export function ConceptDiagram({ kind, lang }: { kind: ConceptDiagramKind; lang:
         <text className="diagram-label" x="570" y="278" textAnchor="middle">{L('叶子 F', 'Leaf F')}</text>
         <text className="diagram-note" x="650" y="66" textAnchor="end">{L('A 的度 = 2', 'degree(A) = 2')}</text>
         <text className="diagram-note" x="650" y="90" textAnchor="end">{L('树的高度 = 3', 'height = 3')}</text>
+      </svg>
+    );
+  }
+
+  if (kind === 'graph-storage') {
+    const matrixRows = [
+      ['A', ['0', '1', '0', '1']],
+      ['B', ['1', '0', '1', '0']],
+      ['C', ['0', '1', '0', '1']],
+      ['D', ['1', '0', '1', '0']],
+    ] as const;
+    return (
+      <svg className="concept-svg" viewBox="0 0 760 400" role="img" aria-label={L('邻接矩阵与邻接表示意', 'Adjacency matrix and adjacency list')}>
+        <text className="diagram-label diagram-label-strong" x="40" y="34">{L('无向图', 'Undirected graph')}</text>
+        <circle className="diagram-node-round" cx="80" cy="95" r="24" />
+        <circle className="diagram-node-round" cx="180" cy="95" r="24" />
+        <circle className="diagram-node-round" cx="180" cy="185" r="24" />
+        <circle className="diagram-node-round" cx="80" cy="185" r="24" />
+        <line className="diagram-line" x1="104" y1="95" x2="156" y2="95" />
+        <line className="diagram-line" x1="80" y1="119" x2="80" y2="161" />
+        <line className="diagram-line" x1="180" y1="119" x2="180" y2="161" />
+        <text className="diagram-node-text" x="80" y="100" textAnchor="middle">A</text>
+        <text className="diagram-node-text" x="180" y="100" textAnchor="middle">B</text>
+        <text className="diagram-node-text" x="180" y="190" textAnchor="middle">C</text>
+        <text className="diagram-node-text" x="80" y="190" textAnchor="middle">D</text>
+        <text className="diagram-note" x="110" y="238" textAnchor="middle">{L('4 个顶点，4 条边', '4 vertices, 4 edges')}</text>
+
+        <text className="diagram-label diagram-label-strong" x="300" y="34">{L('邻接矩阵', 'Adjacency matrix')}</text>
+        {['A', 'B', 'C', 'D'].map((label, index) => (
+          <text className="diagram-note" key={`col-${label}`} x={344 + index * 32 + 15} y="72" textAnchor="middle">{label}</text>
+        ))}
+        {matrixRows.map(([rowLabel, values], rowIndex) => (
+          <g key={rowLabel}>
+            <text className="diagram-note" x="320" y={105 + rowIndex * 32 + 20} textAnchor="end">{rowLabel}</text>
+            {values.map((value, cellIndex) => (
+              <g key={`${rowLabel}-${cellIndex}`}>
+                <rect
+                  className={value === '1' ? 'diagram-cell diagram-accent' : 'diagram-cell'}
+                  x={344 + cellIndex * 32}
+                  y={88 + rowIndex * 32}
+                  width="30"
+                  height="30"
+                />
+                <text className="diagram-label" x={359 + cellIndex * 32} y={108 + rowIndex * 32} textAnchor="middle">{value}</text>
+              </g>
+            ))}
+          </g>
+        ))}
+        <text className="diagram-note" x="408" y="250" textAnchor="middle">{L('对称；查边 O(1)；空间 O(n²)', 'Symmetric; edge test O(1); space O(n²)')}</text>
+
+        <text className="diagram-label diagram-label-strong" x="540" y="34">{L('邻接表', 'Adjacency list')}</text>
+        {[
+          ['A', '→ B → D'],
+          ['B', '→ A → C'],
+          ['C', '→ B → D'],
+          ['D', '→ A → C'],
+        ].map(([vertex, edges], index) => (
+          <g key={vertex}>
+            <rect className="diagram-chip" x="540" y={64 + index * 38} width="34" height="28" rx="6" />
+            <text className="diagram-label" x="557" y={84 + index * 38} textAnchor="middle">{vertex}</text>
+            <text className="diagram-note" x="586" y={84 + index * 38}>{edges}</text>
+          </g>
+        ))}
+        <text className="diagram-note" x="620" y="238" textAnchor="middle">{L('稀疏图省空间；遍历邻居 O(deg)', 'Sparse-friendly; neighbours O(deg)')}</text>
+
+        <rect className="diagram-band" x="60" y="348" width="640" height="34" rx="8" />
+        <text className="diagram-label" x="380" y="370" textAnchor="middle">{L('稠密图选矩阵，稀疏图选邻接表', 'Dense → matrix, sparse → adjacency list')}</text>
+      </svg>
+    );
+  }
+
+  if (kind === 'sorting') {
+    const stableRows: Array<[string, string]> = [
+      [L('小林', 'Lin'), '90'],
+      [L('小周', 'Zhou'), '90'],
+    ];
+    return (
+      <svg className="concept-svg" viewBox="0 0 760 360" role="img" aria-label={L('稳定与不稳定排序示意', 'Stable and unstable sorting')}>
+        {[0, 1].map((panel) => {
+          const x = 40 + panel * 360;
+          const order = panel === 0 ? stableRows : [...stableRows].reverse();
+          const title = panel === 0 ? L('稳定排序', 'Stable sort') : L('不稳定排序', 'Unstable sort');
+          const note = panel === 0
+            ? L('相等键保持原次序', 'Equal keys keep their order')
+            : L('相等键的次序可能改变', 'Equal keys may reorder');
+          return (
+            <g key={title}>
+              <rect className="diagram-box" x={x} y="34" width="320" height="232" rx="12" />
+              <text className="diagram-label diagram-label-strong" x={x + 160} y="66" textAnchor="middle">{title}</text>
+              <text className="diagram-note" x={x + 30} y="98">{L('排序前', 'Before')}</text>
+              {stableRows.map(([name, score], index) => (
+                <g key={`before-${panel}-${name}`}>
+                  <rect className="diagram-cell" x={x + 96 + index * 96} y="110" width="82" height="40" />
+                  <text className="diagram-label" x={x + 137 + index * 96} y="136" textAnchor="middle">{`${name} ${score}`}</text>
+                </g>
+              ))}
+              <text className="diagram-note" x={x + 30} y="180">{L('排序后', 'After')}</text>
+              {order.map(([name, score], index) => (
+                <g key={`after-${panel}-${name}`}>
+                  <rect className={index === 0 ? 'diagram-cell diagram-accent' : 'diagram-cell'} x={x + 96 + index * 96} y="192" width="82" height="40" />
+                  <text className="diagram-label" x={x + 137 + index * 96} y="218" textAnchor="middle">{`${name} ${score}`}</text>
+                </g>
+              ))}
+              <text className="diagram-note" x={x + 160} y="254" textAnchor="middle">{note}</text>
+            </g>
+          );
+        })}
+        <rect className="diagram-band" x="60" y="300" width="640" height="42" rx="8" />
+        <text className="diagram-label" x="380" y="326" textAnchor="middle">{L('稳定性看相等键；原地性看额外空间（递归栈另计）', 'Stability is about equal keys; in-place is about extra space')}</text>
       </svg>
     );
   }

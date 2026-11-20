@@ -10,6 +10,7 @@ import '../../styles/concepts.css';
 export function ConceptView({ concept }: { concept: ConceptPage }) {
   const { t, lang } = useI18n();
   const tr = (value: Bilingual) => value[lang === 'zh' ? 0 : 1];
+  const comparison = concept.comparison;
 
   return (
     <article
@@ -21,13 +22,15 @@ export function ConceptView({ concept }: { concept: ConceptPage }) {
         <span className="concept-kicker">{tr(concept.chapter)}</span>
         <h1 data-testid="concept-title">{tr(concept.title)}</h1>
         <p className="concept-lede">{tr(concept.summary)}</p>
-        <span className="tag">{t('conceptKicker')}</span>
       </header>
 
       <section className="concept-visual" aria-labelledby="concept-diagram-title">
         <div className="concept-section-head">
           <h2 id="concept-diagram-title">{t('conceptDiagram')}</h2>
-          <span className="concept-section-note">{t('conceptDiagramNote')}</span>
+          <span className="concept-section-note">
+            {t('conceptDiagramNote')}
+            <span className="concept-swipe-hint"> · {t('conceptDiagramSwipe')}</span>
+          </span>
         </div>
         <div className="concept-diagram-frame" data-testid="concept-diagram">
           <ConceptDiagram kind={concept.diagram} lang={lang} />
@@ -69,29 +72,30 @@ export function ConceptView({ concept }: { concept: ConceptPage }) {
         ))}
       </div>
 
-      {concept.comparison ? (
+      {comparison ? (
         <section className="concept-comparison" aria-labelledby="concept-comparison-title" data-testid="concept-comparison">
           <div className="concept-section-head">
             <h2 id="concept-comparison-title">{t('conceptComparison')}</h2>
+            <span className="concept-section-note concept-table-swipe-hint">{t('conceptTableSwipe')}</span>
           </div>
           <div className="concept-table-wrap">
             <table>
-              <caption>{tr(concept.comparison.title)}</caption>
+              <caption>{tr(comparison.title)}</caption>
               <thead>
                 <tr>
-                  {concept.comparison.columns.map((column) => (
-                    <th key={tr(column)} scope="col">{tr(column)}</th>
+                  {comparison.columns.map((column, index) => (
+                    <th key={`column-${index}`} scope="col">{tr(column)}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
-                {concept.comparison.rows.map((row) => (
-                  <tr key={row.map(tr).join('|')}>
+                {comparison.rows.map((row, rowIndex) => (
+                  <tr key={`row-${rowIndex}`}>
                     {row.map((cell, index) =>
                       index === 0 ? (
-                        <th key={tr(cell)} scope="row">{tr(cell)}</th>
+                        <th key={`${rowIndex}-head`} scope="row">{tr(cell)}</th>
                       ) : (
-                        <td key={tr(cell)}>{tr(cell)}</td>
+                        <td key={`${rowIndex}-${index}`}>{tr(cell)}</td>
                       ),
                     )}
                   </tr>

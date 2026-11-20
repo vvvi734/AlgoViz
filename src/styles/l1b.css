@@ -86,7 +86,7 @@
 .seqlist-counter b { font-weight: 750; letter-spacing: .3px; }
 .seqlist-counter strong {
   color: var(--accent);
-  font-size: 15px;
+  font-size: 16px;
   line-height: 1;
 }
 .seqlist-counter-note {

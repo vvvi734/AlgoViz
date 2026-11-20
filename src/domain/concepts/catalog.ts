@@ -7,9 +7,10 @@ import type { ConceptPage } from './types';
  * sit beside the runnable courses so the textbook directory can explain
  * definitions before a learner opens an animation.
  *
- * The first batch covers the five representative topics requested for
- * CORE-REFINE-01. Other `concept: true` topics keep their pending row until a
- * page is authored; no placeholder page is generated.
+ * The original batch covered five representative topics. CONTENT-02 adds the
+ * ADT, case analysis, linear-list, graph-storage and sorting foundations. Other
+ * `concept: true` topics keep their pending row until a page is authored; no
+ * placeholder page is generated.
  */
 export const CONCEPT_PAGES: readonly ConceptPage[] = [
   {
@@ -490,6 +491,514 @@ export const CONCEPT_PAGES: readonly ConceptPage[] = [
       ],
     },
     takeaway: ['图看顶点和边，先分方向，再算度，最后谈连通。', 'Vertices and edges first; direction, degree, then connectivity.'],
+  },
+  {
+    id: 'adt',
+    topicId: 'intro-adt',
+    title: ['抽象数据类型（ADT）', 'Abstract data types (ADT)'],
+    chapter: ['第 1 章 · 数据结构绪论', 'Chapter 1 · Introduction'],
+    summary: [
+      '抽象数据类型先把“数据是什么、能做什么操作”定义清楚，再决定底层怎样存储。它让你在使用一个结构时，不必依赖它的内部实现。',
+      'An abstract data type specifies what data is stored and which operations it supports before deciding how it is represented. Its users need not depend on the internal implementation.',
+    ],
+    diagram: 'adt',
+    definitions: [
+      {
+        term: ['抽象数据类型', 'Abstract data type'],
+        text: ['由数据对象、数据关系和一组合法操作组成的数学模型，不规定具体存储方式。', 'A mathematical model consisting of a data object, its relationships and a set of legal operations, without prescribing a representation.'],
+      },
+      {
+        term: ['数据对象', 'Data object'],
+        text: ['同一类数据元素的集合，例如所有整数或所有学生记录。', 'A set of data elements of one kind, such as all integers or all student records.'],
+      },
+      {
+        term: ['操作契约', 'Operation contract'],
+        text: ['操作的名字、参数、前提条件和结果语义；调用者只需遵守契约。', 'An operation’s name, parameters, preconditions and result semantics; callers only need to honour the contract.'],
+      },
+      {
+        term: ['封装', 'Encapsulation'],
+        text: ['对外暴露操作，隐藏内部表示，使实现可以替换而接口保持稳定。', 'Expose operations while hiding the representation, so implementations can change without changing the interface.'],
+      },
+    ],
+    sections: [
+      {
+        title: ['ADT 不等于某种存储结构', 'An ADT is not a storage layout'],
+        body: [
+          '“栈”是 ADT：它规定后进先出以及 push、pop 等操作；用数组或链表都能实现。存储结构是实现层，ADT 是抽象层。',
+          'A stack is an ADT: it specifies last-in-first-out behaviour and operations such as push and pop. An array or a linked list can implement it. Storage belongs to the implementation layer.',
+        ],
+        points: [
+          ['同一 ADT 可以有多种实现，操作代价可能不同。', 'One ADT can have several implementations with different operation costs.'],
+          ['抽象层不暴露数组下标、指针或哈希桶。', 'The abstract layer exposes no array indices, pointers or hash buckets.'],
+          ['更换实现时，只要操作语义不变，调用者无需改写。', 'If the operation semantics stay the same, callers need not change when the implementation changes.'],
+        ],
+        formula: 'ADT = (数据对象, 数据关系, 操作集合)',
+      },
+      {
+        title: ['用栈看清“抽象”', 'See abstraction through a stack'],
+        body: [
+          '栈的操作契约可以写成：push(x) 把 x 放到栈顶；pop() 删除并返回栈顶；top() 只读栈顶；isEmpty() 判断是否为空。契约没有规定栈顶在数组的哪一端。',
+          'A stack contract might say: push(x) places x on top; pop() removes and returns the top; top() reads it; isEmpty() tests emptiness. The contract never says which array end holds the top.',
+        ],
+        points: [
+          ['顺序栈用一段连续空间加一个栈顶指针。', 'An array stack uses contiguous space and a top index.'],
+          ['链栈用节点和头指针，push/pop 都在表头完成。', 'A linked stack uses nodes and a head pointer; push and pop happen at the head.'],
+          ['两种实现的 push、pop 都可以是 O(1)。', 'Both implementations can perform push and pop in O(1).'],
+        ],
+      },
+      {
+        title: ['为什么工程和考试都先讲 ADT', 'Why ADT comes first'],
+        body: [
+          '先定义操作，才能独立分析正确性和复杂度；先封装表示，才能安全地替换实现。考试中看到“设计一个结构并支持某组操作”，第一步就是写清数据对象和操作契约。',
+          'Defining operations first makes correctness and complexity analysis independent of representation. Encapsulation then allows safe replacement. When an exam asks you to design a structure supporting a set of operations, start by stating the data object and operation contracts.',
+        ],
+      },
+    ],
+    comparison: {
+      title: ['抽象层与实现层', 'Abstract layer vs implementation layer'],
+      columns: [
+        ['比较项', 'Aspect'],
+        ['抽象层（ADT）', 'Abstract layer (ADT)'],
+        ['实现层', 'Implementation layer'],
+      ],
+      rows: [
+        [
+          ['关心什么', 'Focus'],
+          ['数据对象、关系和操作语义', 'Data object, relationships and operation semantics'],
+          ['内存布局、指针和具体算法', 'Memory layout, pointers and concrete algorithms'],
+        ],
+        [
+          ['典型描述', 'Typical description'],
+          ['栈、队列、集合', 'Stack, queue, set'],
+          ['数组栈、链栈、循环队列', 'Array stack, linked stack, circular queue'],
+        ],
+        [
+          ['能否直接访问内部', 'Direct internal access'],
+          ['不能，只能通过操作', 'No; operations only'],
+          ['可以，由实现者控制', 'Yes, controlled by the implementer'],
+        ],
+      ],
+    },
+    takeaway: ['先约定能做什么，再决定怎么存。', 'Agree on what it does before deciding how it is stored.'],
+  },
+  {
+    id: 'algorithm-cases',
+    topicId: 'algorithm-cases',
+    title: ['最好、平均与最坏情况', 'Best, average and worst cases'],
+    chapter: ['第 2 章 · 算法', 'Chapter 2 · Algorithms'],
+    summary: [
+      '同一个算法、同样的输入规模，不同输入仍可能让执行次数相差很大。最好、平均和最坏情况分别描述这三种可能，而不是三个不同算法。',
+      'The same algorithm and input size can still take very different numbers of steps on different inputs. Best, average and worst cases describe these possibilities, not three different algorithms.',
+    ],
+    diagram: 'cases',
+    definitions: [
+      {
+        term: ['输入规模', 'Input size'],
+        text: ['决定问题规模的非负整数 n，例如数组长度或图中顶点数。', 'A non-negative integer n describing problem size, such as array length or vertex count.'],
+      },
+      {
+        term: ['最好情况', 'Best case'],
+        text: ['在所有规模为 n 的合法输入中，执行基本操作次数最少的情况。', 'Among all legal inputs of size n, the one requiring the fewest basic operations.'],
+      },
+      {
+        term: ['最坏情况', 'Worst case'],
+        text: ['在所有规模为 n 的合法输入中，执行基本操作次数最多的情况。', 'Among all legal inputs of size n, the one requiring the most basic operations.'],
+      },
+      {
+        term: ['平均情况', 'Average case'],
+        text: ['在给定输入分布下，执行次数的期望值；必须先说明分布假设。', 'The expected operation count under a stated input distribution; the distribution must be specified.'],
+      },
+    ],
+    sections: [
+      {
+        title: ['同一规模，输入不同', 'Same size, different inputs'],
+        body: [
+          '以顺序查找为例：在长度为 n 的数组中找目标，目标在第一个位置只需 1 次比较；在最后一个位置或不存在时需要 n 次比较。输入规模都是 n，代价却从 1 变到 n。',
+          'Consider linear search in an array of length n. If the target is first, one comparison suffices; if it is last or absent, n comparisons are needed. The input size is n in both cases, but the cost ranges from 1 to n.',
+        ],
+        points: [
+          ['最好情况给出下界：至少要做多少工作。', 'Best case gives a lower bound: the least work required.'],
+          ['最坏情况给出上界：最多要做多少工作。', 'Worst case gives an upper bound: the most work required.'],
+          ['只写 O(n) 而不说明是哪种情况，信息是不完整的。', 'Writing O(n) without naming the case leaves the statement incomplete.'],
+        ],
+        formula: '顺序查找：最好 1 次，最坏 n 次（目标不存在也算最坏）',
+      },
+      {
+        title: ['平均情况不是两头的平均数', 'Average is not the midpoint of best and worst'],
+        body: [
+          '平均复杂度依赖输入分布。若目标等概率出现在 n 个位置，平均比较次数是 (n+1)/2；若目标经常排在前面，平均值会更小；若大多数查询根本不存在，平均值会接近 n。',
+          'Average complexity depends on the input distribution. If the target is equally likely at any of n positions, the average is (n+1)/2 comparisons. If targets tend to be early, the average is lower; if most searches fail, it approaches n.',
+        ],
+        points: [
+          ['先声明分布，再计算期望。', 'State the distribution before computing an expectation.'],
+          ['不能把 (最好 + 最坏)/2 直接当作平均情况。', 'Do not treat (best + worst)/2 as the average case.'],
+          ['实际数据分布未知时，最坏情况通常是更稳妥的保证。', 'When the real distribution is unknown, the worst case is usually the safer guarantee.'],
+        ],
+      },
+      {
+        title: ['写复杂度时怎样标注', 'How to state the case'],
+        body: [
+          '没有特别说明时，教材和面试常把 O(f(n)) 视为最坏情况的上界；但涉及快速排序、顺序查找等输入敏感的算法，必须明确写“最坏 O(n²)、平均 O(n log n)”。',
+          'Unless stated otherwise, textbooks and interviews often treat O(f(n)) as a worst-case upper bound. For input-sensitive algorithms such as quicksort or linear search, state both cases explicitly, for example “worst O(n²), average O(n log n)”.',
+        ],
+        points: [
+          ['最好情况常用于判断算法是否存在更优路径，不代表日常性能。', 'Best case shows a favourable path, not everyday performance.'],
+          ['最坏情况用于可靠性保证和实时系统预算。', 'Worst case supports reliability guarantees and real-time budgets.'],
+          ['平均情况用于长期吞吐量估算，但必须有数据分布依据。', 'Average case estimates long-run throughput, but only with evidence about the distribution.'],
+        ],
+      },
+    ],
+    comparison: {
+      title: ['三种情况的分工', 'What each case answers'],
+      columns: [
+        ['情况', 'Case'],
+        ['回答的问题', 'Question answered'],
+        ['典型用途', 'Typical use'],
+      ],
+      rows: [
+        [
+          ['最好情况', 'Best'],
+          ['最少需要多少操作？', 'What is the minimum work?'],
+          ['下界、乐观路径', 'Lower bound, optimistic path'],
+        ],
+        [
+          ['最坏情况', 'Worst'],
+          ['最多需要多少操作？', 'What is the maximum work?'],
+          ['上界、可靠性保证', 'Upper bound, reliability'],
+        ],
+        [
+          ['平均情况', 'Average'],
+          ['按某种分布平均要多少操作？', 'Expected work under a distribution?'],
+          ['长期性能、吞吐量估算', 'Long-run performance'],
+        ],
+      ],
+    },
+    takeaway: ['先问“哪种输入”，再谈复杂度；平均情况必须带分布假设。', 'Name the input case first; average always needs a distribution.'],
+  },
+  {
+    id: 'linear-list',
+    topicId: 'linear-basics',
+    title: ['线性表的定义与基本操作', 'Linear lists: definition and operations'],
+    chapter: ['第 3 章 · 线性表', 'Chapter 3 · Linear lists'],
+    summary: [
+      '线性表是由有限个同类型元素组成的有序序列。它描述的是元素之间的前驱、后继关系，具体用数组还是链表存放则是另一层问题。',
+      'A linear list is a finite ordered sequence of elements of the same type. It describes predecessor and successor relationships; whether an array or a linked list stores it is a separate question.',
+    ],
+    diagram: 'storage',
+    definitions: [
+      {
+        term: ['线性表', 'Linear list'],
+        text: ['n 个同类型数据元素的有限序列，记作 (a1, a2, …, an)，n 可以等于 0。', 'A finite sequence of n elements of the same type, written (a1, a2, …, an); n may be zero.'],
+      },
+      {
+        term: ['表长', 'Length'],
+        text: ['线性表中元素的个数 n；n = 0 时称为空表。', 'The number of elements n; n = 0 gives an empty list.'],
+      },
+      {
+        term: ['前驱与后继', 'Predecessor and successor'],
+        text: ['除首元素外，每个元素恰有一个直接前驱；除尾元素外，每个元素恰有一个直接后继。', 'Every element except the first has one immediate predecessor; every element except the last has one immediate successor.'],
+      },
+      {
+        term: ['基本操作', 'Basic operations'],
+        text: ['初始化、求长度、按位置读取、按值查找、插入、删除和遍历。', 'Initialise, get length, read by position, locate by value, insert, delete and traverse.'],
+      },
+    ],
+    sections: [
+      {
+        title: ['逻辑特征：一条有序链', 'Logical shape: one ordered chain'],
+        body: [
+          '线性表的元素有先后次序：a1 是首元素，an 是尾元素；对 1 < i < n，ai 的前驱是 a(i−1)，后继是 a(i+1)。这里的“线性”指逻辑关系，不指内存地址连续。',
+          'The elements are ordered: a1 is first and an is last. For 1 < i < n, ai has predecessor a(i−1) and successor a(i+1). “Linear” describes logical order, not contiguous memory.',
+        ],
+        points: [
+          ['同一元素可以在不同线性表中出现，但同一表内位置唯一。', 'An element may appear in different lists, but has one position within a given list.'],
+          ['除首尾外，每个元素的前驱和后继都唯一。', 'Except at the ends, every element has a unique predecessor and successor.'],
+          ['线性表不要求元素按值有序，只要求位置有先后。', 'The values need not be sorted; only positions are ordered.'],
+        ],
+        formula: 'a(i−1) → ai → a(i+1)，其中 1 < i < n',
+      },
+      {
+        title: ['操作要写清位置是否合法', 'Operations have position preconditions'],
+        body: [
+          '按教材习惯，位置从 1 开始。插入时合法位置是 1 到 n+1，因为可以插在表尾之后；删除和读取的合法位置是 1 到 n。代码若用 0 开始的下标，要相应换算。',
+          'Following the textbook convention, positions start at 1. Insertion is legal at positions 1 through n+1 because appending is allowed; deletion and reading require 1 through n. Code using zero-based indices must translate accordingly.',
+        ],
+        points: [
+          ['GetElem(L, i) 返回第 i 个元素，前提是 1 ≤ i ≤ n。', 'GetElem(L, i) returns element i when 1 ≤ i ≤ n.'],
+          ['Insert(L, i, x) 把 x 放进位置 i，原第 i 个及之后的元素后移。', 'Insert(L, i, x) places x at i and shifts the old element i and later ones right.'],
+          ['Delete(L, i) 删除位置 i 的元素，并返回被删元素。', 'Delete(L, i) removes and returns the element at i.'],
+          ['LocateElem(L, x) 通常返回第一个等于 x 的位置，找不到返回 0 或空。', 'LocateElem(L, x) usually returns the first position equal to x, or 0/null if absent.'],
+        ],
+      },
+      {
+        title: ['存储方式决定操作代价', 'Storage decides operation costs'],
+        body: [
+          '顺序表把元素放在连续空间里，按下标读取 O(1)，但在中间插入删除要搬移元素；链表用指针连接节点，若已经持有前驱节点，插入和删除只需改指针，O(1)，但按下标访问仍要逐个走。选择时要看访问与修改的比例。',
+          'A sequential list stores elements contiguously: indexed access is O(1), but middle insertion/deletion shifts elements. A linked list connects nodes with pointers: given the predecessor node, insertion and deletion relink in O(1), but indexed access still walks the list. Choose by the read/write mix.',
+        ],
+        points: [
+          ['读多写少、规模稳定：优先顺序表。', 'Many reads, few writes, stable size: prefer a sequential list.'],
+          ['频繁在中间插删且已定位前驱、规模变化大：优先链表。', 'Frequent middle insert/delete with the predecessor at hand, changing size: prefer a linked list.'],
+          ['链表每个节点还要付出指针空间和分配开销。', 'Linked nodes pay extra pointer space and allocation overhead.'],
+        ],
+      },
+    ],
+    comparison: {
+      title: ['顺序表与链表', 'Sequential vs linked list'],
+      columns: [
+        ['操作', 'Operation'],
+        ['顺序表', 'Sequential list'],
+        ['链表', 'Linked list'],
+      ],
+      rows: [
+        [
+          ['按位置读取', 'Read by position'],
+          ['O(1)', 'O(1)'],
+          ['O(n)', 'O(n)'],
+        ],
+        [
+          ['已知前驱的插入/删除', 'Insert/delete with predecessor known'],
+          ['O(n)，需要搬移', 'O(n), shifting'],
+          ['O(1)，修改指针', 'O(1), relink'],
+        ],
+        [
+          ['查找值为 x 的元素', 'Locate value x'],
+          ['O(n)', 'O(n)'],
+          ['O(n)', 'O(n)'],
+        ],
+        [
+          ['额外空间', 'Extra space'],
+          ['可能预留容量', 'May reserve capacity'],
+          ['每个节点存指针', 'A pointer per node'],
+        ],
+      ],
+    },
+    takeaway: ['线性表先看逻辑顺序，再看存储代价；位置合法性是操作的第一道检查。', 'Start with logical order, then storage cost; validate positions before every operation.'],
+  },
+  {
+    id: 'graph-storage',
+    topicId: 'graph-storage',
+    title: ['图的存储：邻接矩阵与邻接表', 'Graph storage: matrix and adjacency list'],
+    chapter: ['第 7 章 · 图', 'Chapter 7 · Graphs'],
+    summary: [
+      '同一个图可以用邻接矩阵或邻接表存储。矩阵用空间换 O(1) 的边查询，邻接表按实际边数分配空间，更适合稀疏图。',
+      'A graph can be stored as an adjacency matrix or an adjacency list. The matrix trades space for O(1) edge lookup; the list allocates by actual edges and suits sparse graphs.',
+    ],
+    diagram: 'graph-storage',
+    definitions: [
+      {
+        term: ['邻接矩阵', 'Adjacency matrix'],
+        text: ['用 n×n 矩阵 A 表示顶点之间的边；A[i][j] 记录 i 到 j 是否有边或边权。', 'An n×n matrix A records whether there is an edge from i to j, or its weight.'],
+      },
+      {
+        term: ['邻接表', 'Adjacency list'],
+        text: ['为每个顶点维护一个边表，表中每个结点记录一个相邻顶点及其边权。', 'Each vertex owns an edge list; every entry records an adjacent vertex and its weight.'],
+      },
+      {
+        term: ['边结点', 'Edge node'],
+        text: ['邻接表中的一个表项，通常保存邻接点编号、权值和下一个边结点的指针。', 'An entry in an adjacency list, usually storing the neighbour id, weight and a pointer to the next entry.'],
+      },
+      {
+        term: ['稀疏图与稠密图', 'Sparse and dense graphs'],
+        text: ['边数远小于 n² 为稀疏图；边数接近 n² 为稠密图。', 'A graph with far fewer than n² edges is sparse; one close to n² is dense.'],
+      },
+    ],
+    sections: [
+      {
+        title: ['邻接矩阵：二维表格', 'Adjacency matrix: a two-dimensional table'],
+        body: [
+          '无向图的邻接矩阵关于主对角线对称，因为 (u, v) 和 (v, u) 是同一条边；有向图通常不对称。带权图把 1 换成权值，并用 0 或 ∞ 表示没有边（具体取值取决于算法）。',
+          'An undirected graph has a symmetric adjacency matrix because (u, v) and (v, u) are the same edge; a directed graph need not be symmetric. A weighted graph stores weights instead of 1 and uses 0 or ∞ for “no edge”, depending on the algorithm.',
+        ],
+        points: [
+          ['空间固定为 O(n²)，与边数无关。', 'Space is O(n²), independent of the edge count.'],
+          ['判断 (i, j) 是否有边只需一次矩阵访问，O(1)。', 'Testing edge (i, j) takes one matrix access, O(1).'],
+          ['枚举 i 的所有邻接点要扫描整行，O(n)。', 'Listing all neighbours of i scans a full row, O(n).'],
+          ['适合稠密图和需要频繁判断两点是否相邻的场景。', 'Suits dense graphs and frequent adjacency tests.'],
+        ],
+        formula: 'A[i][j] = 1（或权值）表示 <i, j> ∈ E；否则为 0 或 ∞',
+      },
+      {
+        title: ['邻接表：按边分配', 'Adjacency list: allocate by edges'],
+        body: [
+          '邻接表有 n 个顶点表项，每个表项指向一条边链表。有向图通常只存出边；无向图的一条边会在两个端点的链表中各出现一次，所以边结点数是 2|E|。',
+          'An adjacency list has n vertex entries, each pointing to an edge list. A directed graph usually stores outgoing arcs only; an undirected edge appears in both endpoint lists, so there are 2|E| edge nodes.',
+        ],
+        points: [
+          ['空间为 O(n + e)，e 是边或弧的数目；无向图常写作 O(n + 2e)。', 'Space is O(n + e), where e counts edges or arcs; for undirected graphs it is often written O(n + 2e).'],
+          ['判断 (u, v) 是否有边要遍历 u 的边表，最坏 O(deg(u))。', 'Testing edge (u, v) scans u’s list, worst case O(deg(u)).'],
+          ['枚举 u 的邻接点只需走它的边表，代价与度数成正比。', 'Listing u’s neighbours walks its edge list, proportional to its degree.'],
+          ['适合稀疏图以及 BFS、DFS 等需要反复枚举邻接点的算法。', 'Suits sparse graphs and BFS/DFS, which repeatedly enumerate neighbours.'],
+        ],
+      },
+      {
+        title: ['怎样选择', 'How to choose'],
+        body: [
+          '先估计 n 和 e 的量级：若 e 接近 n²，矩阵的固定空间可以接受，且边查询更快；若 e 远小于 n²，邻接表避免大量空单元。实际还要看是否需要频繁判断任意两点相邻，以及是否要按顶点编号稳定输出。',
+          'Estimate n and e first. If e is close to n², the matrix’s fixed space is acceptable and edge lookup is faster. If e is far below n², an adjacency list avoids many empty cells. Also consider whether arbitrary adjacency tests dominate and whether stable vertex-order output matters.',
+        ],
+        points: [
+          ['稠密图、频繁查边：邻接矩阵。', 'Dense graph, frequent edge tests: adjacency matrix.'],
+          ['稀疏图、频繁遍历邻接点：邻接表。', 'Sparse graph, frequent neighbour scans: adjacency list.'],
+          ['两种表示都能支持 BFS/DFS，但枚举邻接点的代价不同。', 'Both support BFS/DFS, but neighbour enumeration costs differ.'],
+        ],
+      },
+    ],
+    comparison: {
+      title: ['邻接矩阵与邻接表', 'Adjacency matrix vs adjacency list'],
+      columns: [
+        ['比较项', 'Aspect'],
+        ['邻接矩阵', 'Adjacency matrix'],
+        ['邻接表', 'Adjacency list'],
+      ],
+      rows: [
+        [
+          ['空间', 'Space'],
+          ['O(n²)', 'O(n²)'],
+          ['O(n + e)', 'O(n + e)'],
+        ],
+        [
+          ['判断边 (u, v)', 'Test edge (u, v)'],
+          ['O(1)', 'O(1)'],
+          ['O(deg(u))', 'O(deg(u))'],
+        ],
+        [
+          ['枚举 u 的邻接点', 'List neighbours of u'],
+          ['O(n)', 'O(n)'],
+          ['O(deg(u))', 'O(deg(u))'],
+        ],
+        [
+          ['适用场景', 'Best for'],
+          ['稠密图、频繁查边', 'Dense graphs, frequent edge tests'],
+          ['稀疏图、频繁遍历', 'Sparse graphs, frequent scans'],
+        ],
+      ],
+    },
+    takeaway: ['矩阵看两点，邻接表看邻居；稠密选矩阵，稀疏选表。', 'A matrix asks “are these two adjacent?”; a list asks “who are the neighbours?”.'],
+  },
+  {
+    id: 'sorting-basics',
+    topicId: 'sort-basics',
+    title: ['排序基础：稳定性、原地与复杂度', 'Sorting basics: stability, in-place and complexity'],
+    chapter: ['第 9 章 · 排序', 'Chapter 9 · Sorting'],
+    summary: [
+      '评价排序算法不只看平均时间复杂度，还要看最坏情况、额外空间、稳定性和数据特点。稳定性在按多个关键字排序时尤其重要。',
+      'Evaluating a sorting algorithm is not only about average time. Worst case, extra space, stability and input characteristics all matter; stability is especially important for multi-key sorting.',
+    ],
+    diagram: 'sorting',
+    definitions: [
+      {
+        term: ['稳定排序', 'Stable sort'],
+        text: ['排序后，关键字相等的元素仍保持原来的相对次序。', 'After sorting, elements with equal keys keep their original relative order.'],
+      },
+      {
+        term: ['原地排序', 'In-place sort'],
+        text: ['除输入数据外只使用常数级辅助空间；递归调用栈要单独计入。', 'Uses only constant extra space beyond the input; recursion stack must be counted separately.'],
+      },
+      {
+        term: ['比较排序', 'Comparison sort'],
+        text: ['只通过比较元素关键字的大小决定次序的排序。', 'A sort that decides order only by comparing keys.'],
+      },
+      {
+        term: ['稳定性意义', 'Why stability matters'],
+        text: ['先按次要关键字排，再按主要关键字排时，稳定排序能保留前一次的次序。', 'When sorting by a secondary key and then a primary key, a stable sort preserves the earlier order.'],
+      },
+    ],
+    sections: [
+      {
+        title: ['稳定性：相等元素也有先后', 'Stability: equal keys still have an order'],
+        body: [
+          '设两条记录 (90, “小林”) 和 (90, “小周”) 原本小林在前。按分数排序后，稳定算法仍让小林在前；不稳定算法可能交换两者。关键字相等不代表记录完全相同。',
+          'Suppose records (90, “Lin”) and (90, “Zhou”) have Lin first originally. After sorting by score, a stable algorithm keeps Lin first; an unstable one may swap them. Equal keys do not make the records identical.',
+        ],
+        points: [
+          ['稳定排序适合“先按 A 排，再按 B 排”的多关键字流程。', 'Stable sorts support “sort by A, then by B” multi-key workflows.'],
+          ['冒泡、插入、归并通常稳定；选择、快速、堆排序通常不稳定。', 'Bubble, insertion and merge sorts are usually stable; selection, quicksort and heap sort usually are not.'],
+          ['稳定性是算法性质，不是比较函数本身决定的。', 'Stability is a property of the algorithm, not of the comparator alone.'],
+        ],
+      },
+      {
+        title: ['原地不等于不占空间', 'In-place does not mean zero space'],
+        body: [
+          '原地排序通常指额外空间为 O(1)，例如冒泡、插入、选择、堆排序。快速排序只额外使用递归栈，平均 O(log n)，一般不称作严格 O(1) 原地；归并排序需要 O(n) 的辅助数组。',
+          'In-place usually means O(1) extra space, as in bubble, insertion, selection and heap sort. Quicksort uses a recursion stack, O(log n) on average, so it is not strictly O(1) in-place; merge sort needs an O(n) auxiliary array.',
+        ],
+        points: [
+          ['辅助数组、递归栈和临时缓冲区都要计入空间复杂度。', 'Auxiliary arrays, recursion stacks and temporary buffers all count.'],
+          ['空间紧张时优先考虑 O(1) 或 O(log n) 的算法。', 'When memory is tight, prefer O(1) or O(log n) extra space.'],
+          ['原地算法可能破坏稳定性，例如原地选择排序。', 'An in-place algorithm may sacrifice stability, as in in-place selection sort.'],
+        ],
+      },
+      {
+        title: ['比较排序的下界与选择', 'Comparison lower bound and choosing'],
+        body: [
+          '只靠比较关键字的排序，其最坏情况至少需要 Ω(n log n) 次比较，这是由决策树模型得到的下界。归并和堆排序达到这个量级；快速排序平均很快，但最坏会退化到 O(n²)。若数据范围有限，计数排序、基数排序等非比较方法可以绕过这个下界。',
+          'A comparison sort needs at least Ω(n log n) comparisons in the worst case, a lower bound from the decision-tree model. Merge and heap sort reach this order; quicksort is fast on average but degrades to O(n²) in the worst case. When key ranges are limited, non-comparison methods such as counting or radix sort can avoid the bound.',
+        ],
+        points: [
+          ['先看 n 的量级和数据分布，再选算法。', 'Consider n and the data distribution before choosing.'],
+          ['几乎有序的小数组常用插入排序，常数小。', 'Insertion sort is often good for small or nearly sorted arrays.'],
+          ['需要稳定且能接受额外空间时，归并排序是稳妥选择。', 'Merge sort is a safe choice when stability is required and extra space is acceptable.'],
+          ['快速排序要关注最坏划分和递归深度。', 'For quicksort, watch worst-case partitions and recursion depth.'],
+        ],
+        formula: '比较排序最坏情况下界：Ω(n log n)',
+      },
+    ],
+    comparison: {
+      title: ['常见排序算法对比', 'Common sorting algorithms'],
+      columns: [
+        ['算法', 'Algorithm'],
+        ['平均时间', 'Average'],
+        ['最坏时间', 'Worst'],
+        ['额外空间', 'Extra space'],
+        ['稳定', 'Stable'],
+      ],
+      rows: [
+        [
+          ['冒泡排序', 'Bubble'],
+          ['O(n²)', 'O(n²)'],
+          ['O(n²)', 'O(n²)'],
+          ['O(1)', 'O(1)'],
+          ['是', 'Yes'],
+        ],
+        [
+          ['简单选择排序', 'Selection'],
+          ['O(n²)', 'O(n²)'],
+          ['O(n²)', 'O(n²)'],
+          ['O(1)', 'O(1)'],
+          ['否', 'No'],
+        ],
+        [
+          ['直接插入排序', 'Insertion'],
+          ['O(n²)', 'O(n²)'],
+          ['O(n²)', 'O(n²)'],
+          ['O(1)', 'O(1)'],
+          ['是', 'Yes'],
+        ],
+        [
+          ['归并排序', 'Merge'],
+          ['O(n log n)', 'O(n log n)'],
+          ['O(n log n)', 'O(n log n)'],
+          ['O(n)', 'O(n)'],
+          ['是', 'Yes'],
+        ],
+        [
+          ['快速排序', 'Quicksort'],
+          ['O(n log n)', 'O(n log n)'],
+          ['O(n²)', 'O(n²)'],
+          ['O(log n) 平均 / O(n) 最坏', 'O(log n) avg / O(n) worst'],
+          ['否', 'No'],
+        ],
+        [
+          ['堆排序', 'Heap'],
+          ['O(n log n)', 'O(n log n)'],
+          ['O(n log n)', 'O(n log n)'],
+          ['O(1)', 'O(1)'],
+          ['否', 'No'],
+        ],
+      ],
+    },
+    takeaway: ['排序没有全能冠军：先定稳定性、空间和最坏情况，再看平均速度。', 'No sorting algorithm wins on every axis: fix stability, space and worst case first, then compare average speed.'],
   },
 ];
 

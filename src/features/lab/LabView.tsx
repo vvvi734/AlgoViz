@@ -25,7 +25,7 @@ import {
   textbookTitle,
 } from '../../domain/algorithms/textbook';
 import { ConceptView } from '../concepts/ConceptView';
-import { conceptById } from '../../domain/concepts/catalog';
+import { CONCEPT_PAGES, conceptById } from '../../domain/concepts/catalog';
 import type { LabController } from './useLabController';
 import type { LessonCatalog } from '../../domain/lessons/catalog';
 import { stepIndexForEvent } from '../../domain/lessons/sync';
@@ -201,9 +201,7 @@ export function LabView({
                 {conceptTitle ?? (entry ? pick(entry.name) : lab.currentAlgo)}
               </h1>
             </div>
-            {concept ? (
-              <span className="tag tag-active">{t('conceptKicker')}</span>
-            ) : (
+            {concept ? null : (
               <span className="tag green">{(entry?.group ?? '').toUpperCase()}</span>
             )}
             {!concept ? (
@@ -225,7 +223,6 @@ export function LabView({
                 {t('conceptBackToLab')}
               </button>
             ) : (
-              <>
                 <button
                   type="button"
                   className="guide-toggle"
@@ -241,12 +238,20 @@ export function LabView({
                     {algorithmGuide.isOpen ? '▲' : '▼'}
                   </span>
                 </button>
+            )}
                 <select
                   className="mobile-algo-select"
                   aria-label={t('algorithmDirectory')}
-                  value={lab.currentAlgo}
+                  value={concept ? `concept:${concept.id}` : lab.currentAlgo}
                   data-testid="mobile-algo-select"
-                  onChange={(change) => selectAlgorithm(change.target.value)}
+                  onChange={(change) => {
+                    const value = change.target.value;
+                    if (value.startsWith('concept:')) {
+                      setConceptId(value.slice('concept:'.length));
+                      return;
+                    }
+                    selectAlgorithm(value);
+                  }}
                 >
                   {textbookNav.map((chapter) => (
                     <optgroup
@@ -265,9 +270,14 @@ export function LabView({
                       )}
                     </optgroup>
                   ))}
+                  <optgroup label={t('conceptKicker')}>
+                    {CONCEPT_PAGES.map((page) => (
+                      <option key={page.id} value={`concept:${page.id}`}>
+                        {page.title[lang === 'zh' ? 0 : 1]}
+                      </option>
+                    ))}
+                  </optgroup>
                 </select>
-              </>
-            )}
           </div>
         </header>
 

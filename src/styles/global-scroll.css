@@ -137,7 +137,7 @@
 }
 
 .code-dock.is-compact .code-dock-heading h2 {
-  font-size: 16px;
+  font-size: var(--font-title);
 }
 
 .code-dock.is-compact .code-dock-hint {
@@ -172,7 +172,7 @@
 .code-dock-input {
   min-width: 0;
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: 13px;
+  font-size: var(--font-code);
 }
 
 .code-dock-random {

@@ -185,7 +185,7 @@
 .guide-flow-index {
   flex: 0 0 auto;
   color: var(--accent);
-  font: 800 12px/1.5 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font: 800 14px/1.5 ui-monospace, SFMono-Regular, Consolas, monospace;
 }
 
 .guide-flow-main {
@@ -437,7 +437,7 @@
   border-radius: 5px;
   background: var(--panel-2);
   color: var(--muted);
-  font: 700 12px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font: 700 14px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
   cursor: pointer;
 }
 
@@ -649,7 +649,7 @@
   border-radius: 5px;
   background: var(--code-bg);
   color: var(--muted);
-  font: 12px/1.4 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font: 15px/1.4 ui-monospace, SFMono-Regular, Consolas, monospace;
   overflow-wrap: anywhere;
 }
 
@@ -684,7 +684,7 @@
   overflow-y: visible;
   background: var(--code-bg);
   color: var(--code-fg);
-  font: 14px/1.65 ui-monospace, SFMono-Regular, Consolas, "Courier New", monospace;
+  font: 15px/1.65 ui-monospace, SFMono-Regular, Consolas, "Courier New", monospace;
   tab-size: 4;
 }
 

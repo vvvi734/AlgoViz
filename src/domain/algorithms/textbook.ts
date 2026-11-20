@@ -93,6 +93,7 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
         title: { zh: '抽象数据类型', en: 'Abstract data types' },
         algorithms: [],
         concept: true,
+        conceptId: 'adt',
       },
     ],
   },
@@ -116,6 +117,13 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
         conceptId: 'complexity',
       },
       {
+        id: 'algorithm-cases',
+        title: { zh: '最好、平均与最坏', en: 'Best, average and worst' },
+        algorithms: [],
+        concept: true,
+        conceptId: 'algorithm-cases',
+      },
+      {
         id: 'recursion-extension',
         title: { zh: '递归算法', en: 'Recursive algorithms' },
         algorithms: [
@@ -134,9 +142,10 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
     topics: [
       {
         id: 'linear-basics',
-        title: { zh: '线性表的定义与抽象数据类型', en: 'Definition and ADT' },
+        title: { zh: '线性表：定义与操作', en: 'Definition and operations' },
         algorithms: [],
         concept: true,
+        conceptId: 'linear-list',
       },
       {
         id: 'sequential-list',
@@ -289,6 +298,7 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
         title: { zh: '图的存储结构', en: 'Graph storage structures' },
         algorithms: [],
         concept: true,
+        conceptId: 'graph-storage',
       },
       {
         id: 'graph-traversal',
@@ -380,9 +390,10 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
     topics: [
       {
         id: 'sort-basics',
-        title: { zh: '排序的基本概念与分类', en: 'Sorting concepts and classification' },
+        title: { zh: '排序基础与分类', en: 'Sorting basics and classification' },
         algorithms: [],
         concept: true,
+        conceptId: 'sorting-basics',
       },
       {
         id: 'bubble-sort',

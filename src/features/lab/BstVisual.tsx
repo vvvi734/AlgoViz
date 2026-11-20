@@ -297,8 +297,8 @@ export function BstVisual({ model }: { model: BstVisualModel }) {
                 width: `${model.width}px`,
                 height: `${model.height}px`,
                 transform: `scale(${scale})`,
-                '--tree-font-floor': `${12 / Math.max(scale, 0.01)}px`,
-                '--tree-title-floor': `${16 / Math.max(scale, 0.01)}px`,
+                '--tree-font-floor': `${14 / Math.max(scale, 0.01)}px`,
+                '--tree-title-floor': `${18 / Math.max(scale, 0.01)}px`,
               } as CSSProperties}
             >
               <svg
@@ -341,11 +341,7 @@ export function BstVisual({ model }: { model: BstVisualModel }) {
                   }}
                   aria-label={`Node ${node.id}, value ${displayValue(node.value)}, depth ${node.depth}`}
                 >
-                  <span className="tree-node-id">{node.id}</span>
                   <span className="tree-node-value">{displayValue(node.value)}</span>
-                  {node.role === 'root' && <span className="tree-node-role root">{t('treeRootLabel')}</span>}
-                  {node.role === 'leaf' && <span className="tree-node-role leaf">{t('treeLeafLabel')}</span>}
-                  {node.active && <span className="tree-node-current">{t('treeCurrentLabel')}</span>}
                   {node.target && <span className="bst-node-tag target">{t('bstTargetTag')}</span>}
                   {node.successor && <span className="bst-node-tag successor">{t('bstSuccessorTag')}</span>}
                   {node.inserted && <span className="bst-node-tag inserted">{t('bstInsertedTag')}</span>}

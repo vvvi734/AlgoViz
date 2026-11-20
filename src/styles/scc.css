@@ -183,7 +183,7 @@
   display: block;
   margin-top: 2px;
   color: var(--txt);
-  font: 850 13px/1.1 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font: 850 14px/1.1 ui-monospace, SFMono-Regular, Consolas, monospace;
 }
 
 .scc-key-order {

@@ -74,7 +74,7 @@
 }
 
 .lab-explanation .lesson-oneliner {
-  font-size: 13.5px;
+  font-size: 16px;
   line-height: 1.65;
   max-width: 70ch;
 }
@@ -116,14 +116,14 @@
 .lesson-focus-explanation {
   margin: 0;
   color: var(--txt);
-  font-size: 13.5px;
+  font-size: 16px;
   line-height: 1.75;
 }
 
 .lesson-focus-tip {
   margin: 7px 0 0;
   color: var(--muted);
-  font-size: 12.5px;
+  font-size: 14px;
   line-height: 1.6;
 }
 
@@ -144,7 +144,7 @@
 }
 
 .lab-explanation .lesson-toggle {
-  font-size: 12.5px;
+  font-size: 14px;
 }
 
 .lab-explanation .lesson-overview {
@@ -155,7 +155,7 @@
 }
 
 .lab-explanation .lesson-overview p {
-  font-size: 13px;
+  font-size: 14px;
 }
 
 /* A compact, scrollable course map is still the complete clickable sequence. */
@@ -174,7 +174,7 @@
 }
 
 .lab-explanation .lessonstep-title {
-  font-size: 12.5px;
+  font-size: 14px;
   line-height: 1.45;
 }
 
@@ -267,7 +267,7 @@
 
 .lessonpanel-compact .lesson-head-main h2 {
   margin: 1px 0 0;
-  font-size: 15px;
+  font-size: 16px;
   line-height: 1.35;
   letter-spacing: -.1px;
 }
@@ -349,7 +349,7 @@
 .lessonpanel-compact .lesson-focus-explanation {
   margin: 0;
   color: var(--txt);
-  font-size: 13px;
+  font-size: 14px;
   line-height: 1.65;
   overflow-wrap: anywhere;
 }
@@ -367,7 +367,7 @@
   min-width: 0;
   padding: 4px 0;
   border-bottom: 1px dotted var(--edge);
-  font-size: 12.5px;
+  font-size: 14px;
   line-height: 1.5;
 }
 
@@ -526,7 +526,7 @@
 
 .lesson-detail-panel p {
   margin: 0;
-  font-size: 12.5px;
+  font-size: 14px;
   line-height: 1.65;
 }
 
@@ -552,7 +552,7 @@
 }
 
 .lesson-meta-compact .stat b {
-  font-size: 13px;
+  font-size: 14px;
 }
 
 .lesson-meta-compact .stat span {
@@ -575,7 +575,7 @@
 
 .lesson-detail-panel .lesson-mistakes {
   margin-top: 2px;
-  font-size: 12.5px;
+  font-size: 14px;
 }
 
 .lesson-tech {

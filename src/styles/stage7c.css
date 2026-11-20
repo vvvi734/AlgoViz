@@ -283,7 +283,7 @@
   .linked-toolbar { align-items: flex-start; }
   .linked-legend { gap: 6px; }
   .linked-detached-node { width: 148px; }
-  .linked-node-data { font-size: 15px; }
+  .linked-node-data { font-size: 16px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

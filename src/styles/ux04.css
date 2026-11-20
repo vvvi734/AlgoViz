@@ -30,7 +30,7 @@
 
 .workspace-tabs-kicker {
   color: var(--txt);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 800;
   letter-spacing: -0.01em;
 }
@@ -168,7 +168,7 @@
 
   .app[data-view='learn'] .tab {
     padding: 6px 13px;
-    font-size: 12.5px;
+    font-size: 14px;
   }
 
   /* A closed guide is the normal one-screen state. An open guide keeps the
@@ -932,7 +932,7 @@
 
   .app[data-view='learn'] .mst-head h2 {
     margin: 1px 0 2px;
-    font-size: 15px;
+    font-size: 16px;
   }
 
   .app[data-view='learn'] .mst-metric {
@@ -942,7 +942,7 @@
 
   .app[data-view='learn'] .mst-metric b {
     margin-top: 0;
-    font-size: 13px;
+    font-size: 14px;
   }
 
   .app[data-view='learn'] .g4-stage .mst-graph-svg {

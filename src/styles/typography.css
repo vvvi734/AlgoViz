@@ -2,9 +2,10 @@
  * UX-SIMPLIFY-02 typography floors.
  *
  * `tokens.css` owns the three legal sizes:
- *   --font-ui   12px  labels, legends, node annotations
- *   --font-body 14px  teaching prose, guide copy, current-operation text
- *   --font-title 16px operation names and important headings
+ *   --font-ui   14px  labels, legends, node annotations
+ *   --font-body 16px  teaching prose, guide copy, current-operation text
+ *   --font-title 18px operation names and important headings
+ *   --font-code 15px  read-only reference code
  *
  * Component CSS may still use intermediate values for dense chrome, but no
  * teaching copy or important operation name falls below these floors.
@@ -146,12 +147,17 @@
 
 /* ---------- SVG ----------
  * The runtime hook `useSvgTextFloor` measures the real screen CTM and lifts
- * each rendered text node to an actual 12/16px floor. Normal CSS font sizes are
- * in viewBox user units, so no static `font-size: 12px` here can promise a
+ * each rendered text node to an actual 14/18px floor. Normal CSS font sizes are
+ * in viewBox user units, so no static `font-size: 14px` here can promise a
  * screen-size floor.
  */
 
-/* ---------- Transform-scaled HTML tree nodes ---------- */
+/* ---------- Transform-scaled HTML tree nodes ----------
+ * Tree cards are positioned in unscaled layout units and then multiplied by a
+ * viewport scale. Each visual sets `--tree-title-floor`/`--tree-font-floor` so
+ * the value and secondary text still land at 18/14 screen pixels after that
+ * transform; nothing here can assume the raw CSS pixel is the final size.
+ */
 .tree-node-value {
   font-size: max(var(--font-title), var(--tree-title-floor, 0px));
 }

@@ -17,7 +17,7 @@
   border-left: 3px solid var(--accent);
   border-radius: 8px;
   background: var(--info-bg);
-  font-size: 12.5px;
+  font-size: 14px;
   line-height: 1.35;
 }
 .stage-step-peek-label {
@@ -87,7 +87,7 @@
 }
 .graph-mode-copy b {
   color: var(--txt);
-  font-size: 13px;
+  font-size: 14px;
   line-height: 1.25;
 }
 .graph-mode-copy small {
@@ -263,7 +263,7 @@
 }
 .graph-empty-glyph text {
   fill: var(--muted);
-  font: 750 13px/1.35 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font: 750 14px/1.35 ui-monospace, SFMono-Regular, Consolas, monospace;
 }
 .graph-empty-glyph text:first-of-type { fill: var(--txt); }
 
@@ -340,7 +340,7 @@
 }
 .graph-current-copy b {
   color: var(--accent);
-  font-size: 12.5px;
+  font-size: 14px;
   line-height: 1.35;
 }
 .graph-current-copy > span {
@@ -490,7 +490,7 @@
 }
 .queue-visual.is-compact .queue-rail b { font-size: var(--font-ui); }
 .queue-visual.is-compact .queue-rail small { font-size: var(--font-ui); }
-.queue-visual.is-compact .queue-rail span { font-size: 15px; }
+.queue-visual.is-compact .queue-rail span { font-size: 16px; }
 .queue-visual.is-compact .queue-lane {
   min-height: 64px;
   gap: 5px;

@@ -39,7 +39,7 @@
 }
 .graph-edge-weight text {
   fill: var(--txt);
-  font: 850 13px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font: 850 14px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
 }
 
 .graph-node-settled .graph-node-body {
@@ -84,6 +84,12 @@
 .graph-distance-tag {
   fill: var(--muted);
   font: 800 var(--font-ui)/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+  /* The distance sits below the node, where it can cross an edge. A small
+     canvas-coloured halo keeps the 14px label legible without a text box. */
+  paint-order: stroke;
+  stroke: var(--stat-bg);
+  stroke-width: 3px;
+  stroke-linejoin: round;
 }
 
 .graph-swatch-target {

@@ -4,11 +4,11 @@
    ========================================================================== */
 
 body {
-  font-size: 15px;
+  font-size: 16px;
   line-height: 1.62;
 }
 
-.smalltext { font-size: 13px; }
+.smalltext { font-size: 14px; }
 .eyebrow { font-size: var(--font-ui); letter-spacing: 1.6px; }
 .tag { font-size: var(--font-ui); padding: 3px 8px; }
 .sectionhead h2 { font-size: var(--font-title); }
@@ -51,14 +51,14 @@ body {
   padding-top: 7px;
   border-top: 1px solid var(--edge);
   color: var(--muted);
-  font-size: 12.5px;
+  font-size: 14px;
   line-height: 1.5;
 }
 
 /* Workspace shell: collapsible directory + one primary column. */
 .lab-shell {
   display: grid;
-  grid-template-columns: 220px minmax(0, 1fr);
+  grid-template-columns: 240px minmax(0, 1fr);
   gap: 16px;
   align-items: start;
   min-width: 0;
@@ -86,7 +86,7 @@ body {
   flex-wrap: wrap;
 }
 .lab-head-main { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; min-width: 0; }
-.lab-head h1 { margin: 1px 0 0; font-size: 21px; line-height: 1.25; letter-spacing: -.3px; }
+.lab-head h1 { margin: 1px 0 0; font-size: 23px; line-height: 1.25; letter-spacing: -.3px; }
 .lab-head-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .mobile-algo-select {
   display: none;
@@ -98,7 +98,7 @@ body {
   border-radius: 9px;
   padding: 9px 11px;
 }
-.sidebar-toggle { font-size: 13px; }
+.sidebar-toggle { font-size: 14px; }
 
 /* ==========================================================================
    UI-01 — collapsible grouped directory.
@@ -133,7 +133,7 @@ body {
   border-radius: 9px;
   background: var(--input-bg);
   color: var(--muted);
-  font-size: 15px;
+  font-size: 16px;
   line-height: 1;
   cursor: pointer;
   transition: color .15s ease, border-color .15s ease, background .15s ease;
@@ -165,7 +165,7 @@ body {
   border-radius: 9px;
   background: transparent;
   color: var(--muted);
-  font-size: 12.5px;
+  font-size: 14px;
   font-weight: 600;
   text-align: left;
   cursor: pointer;
@@ -176,7 +176,7 @@ body {
 .alg-group-chevron {
   width: 11px;
   flex: 0 0 auto;
-  font-size: 15px;
+  font-size: 16px;
   line-height: 1;
   transition: transform .18s ease;
   transform-origin: 50% 50%;
@@ -223,7 +223,7 @@ body {
   overflow: hidden;
   padding-left: 4px;
 }
-.alg-name { min-width: 0; font-size: 13px; line-height: 1.35; overflow-wrap: anywhere; }
+.alg-name { min-width: 0; font-size: 14px; line-height: 1.35; overflow-wrap: anywhere; }
 
 /* Compact rail: expand button, one shortcut per registry group, current algo. */
 .sidebar-rail {
@@ -251,7 +251,7 @@ body {
   border-radius: 10px;
   background: transparent;
   color: var(--muted);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   transition: background .15s ease, color .15s ease, border-color .15s ease;
@@ -331,9 +331,9 @@ body {
 }
 .current-step-main { display: flex; align-items: flex-start; gap: 10px; min-width: 0; flex: 1 1 420px; }
 .current-step-copy { display: grid; gap: 2px; min-width: 0; }
-.current-step-copy strong { font-size: 15.5px; line-height: 1.35; }
+.current-step-copy strong { font-size: var(--font-title); line-height: 1.35; }
 .current-step-message { color: var(--txt); overflow-wrap: anywhere; }
-.current-step-tip { color: var(--muted); font-size: 13px; overflow-wrap: anywhere; }
+.current-step-tip { color: var(--muted); font-size: 14px; overflow-wrap: anywhere; }
 .current-vars { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; max-width: 52%; }
 .current-var {
   display: inline-flex;
@@ -343,7 +343,7 @@ body {
   background: var(--stat-bg);
   border-radius: 8px;
   padding: 3px 7px;
-  font-size: 12.5px;
+  font-size: 14px;
   min-width: 0;
 }
 .current-var b { color: var(--accent); }
@@ -389,29 +389,29 @@ body {
   padding: 7px 9px;
 }
 .lessonpanel.is-compact .lessonstep-body { white-space: normal; }
-.lessonpanel.is-compact .lessonstep-title { font-size: 13px; }
+.lessonpanel.is-compact .lessonstep-title { font-size: var(--font-body); }
 .lessonpanel.is-compact .lesson-current { margin-top: 8px; }
 .lessonpanel.is-compact .lesson-overview {
   max-height: 34vh;
   overflow: auto;
   overscroll-behavior: contain;
 }
-.lesson-overview p, .lessonstep-text, .lesson-mistakes ul { font-size: 13.5px; line-height: 1.65; }
+.lesson-overview p, .lessonstep-text, .lesson-mistakes ul { font-size: 16px; line-height: 1.65; }
 .lessonstep-title { font-size: var(--font-body); }
 .lesson-current { font-size: var(--font-body); }
-.lesson-vars .chip { font-size: 12.5px; }
+.lesson-vars .chip { font-size: 14px; }
 
 /* Secondary panel typography and tables. */
-.vartable { font-size: 13px; }
+.vartable { font-size: 14px; }
 .vartable th { font-size: var(--font-ui); }
-.codeview { font-size: 13px; }
+.codeview { font-size: 15px; }
 .sync-col h3, .sync-explanation h3, .lesson-subhead, .sidebar h3 { font-size: var(--font-ui); }
 .sync-snapshot { display: flex; flex-direction: column; align-items: flex-start; gap: 7px; }
 .sync-snapshot .btn { align-self: flex-start; }
 
 /* Reading improves without shrinking or nesting every card. */
 .info p, .note { line-height: 1.6; }
-.btn.small { font-size: 13px; }
+.btn.small { font-size: 14px; }
 .pill, .btn, .tab, .select { border-radius: 9px; }
 
 /* Tablet and compact desktop: directory narrows; code stacks below animation. */
@@ -437,7 +437,7 @@ body {
   .sidebar-toggle { display: none; }
   .mobile-algo-select { display: block; }
   .lab-head { padding: 11px 13px; }
-  .lab-head h1 { font-size: 19px; }
+  .lab-head h1 { font-size: 21px; }
   .current-step { position: static; }
 }
 
@@ -445,7 +445,7 @@ body {
   .app { padding: 12px; }
   .topbar { padding-bottom: 14px; }
   .nav { gap: 5px; margin-bottom: 12px; }
-  .tab { padding: 9px 12px; font-size: 13.5px; }
+  .tab { padding: 9px 12px; font-size: 16px; }
   .navmore-menu { left: auto; right: 0; min-width: min(280px, calc(100vw - 24px)); }
   .lab-main { gap: 10px; }
   .lab-primary { gap: 10px; }
@@ -456,14 +456,13 @@ body {
   .code-panel .monaco-wrap { min-height: 280px; height: 38vh; }
   .current-step { padding: 10px 12px; gap: 8px; }
   .current-step-main { flex: 1 1 100%; }
-  .current-step-copy strong { font-size: 15px; }
+  .current-step-copy strong { font-size: 16px; }
   .workspace-tabpanel { padding: 2px 10px 10px; }
   .lessonpanel.is-compact .lessonsteps {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
-    max-height: 245px;
-    overflow-y: auto;
-    overflow-x: hidden;
+    max-height: none;
+    overflow: visible;
   }
   .lessonpanel.is-compact .lessonstep { width: 100%; max-width: none; }
   .lessonpanel.is-compact .lesson-overview { max-height: none; }
@@ -480,9 +479,9 @@ body {
   .logo { width: 34px; height: 34px; }
   .theme-select { min-width: 0; }
   .lab-head-main { gap: 5px; }
-  .lab-head h1 { font-size: 18px; }
+  .lab-head h1 { font-size: 20px; }
   .lab-head-actions, .mobile-algo-select { width: 100%; }
-  .current-step-copy strong { font-size: 14.5px; }
+  .current-step-copy strong { font-size: 16px; }
   .workspace-tabpanel { padding-left: 8px; padding-right: 8px; }
 }
 

@@ -40,11 +40,16 @@ describe('textbook directory (UX-03)', () => {
       CONCEPT_PAGES.map((page) => page.id).sort(),
     );
     expect(conceptTopics.map((topic) => topic.id).sort()).toEqual([
+      'algorithm-cases',
       'algorithm-efficiency',
       'binary-tree',
       'graph-basics',
+      'graph-storage',
+      'intro-adt',
       'intro-concepts',
       'intro-logical-physical',
+      'linear-basics',
+      'sort-basics',
     ]);
     for (const topic of conceptTopics) {
       expect(conceptById(topic.conceptId!)).toBeTruthy();

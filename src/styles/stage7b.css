@@ -30,7 +30,7 @@
 
 .structure-op {
   color: var(--accent);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 850;
   letter-spacing: .8px;
   text-transform: uppercase;
@@ -38,7 +38,7 @@
 
 .structure-hint {
   color: var(--muted);
-  font-size: 12.5px;
+  font-size: 14px;
   line-height: 1.45;
   text-align: right;
   flex: 1 1 180px;
@@ -168,7 +168,7 @@
   border: 1px dashed var(--edge);
   border-radius: 10px;
   color: var(--muted);
-  font-size: 13px;
+  font-size: 14px;
   text-align: center;
 }
 

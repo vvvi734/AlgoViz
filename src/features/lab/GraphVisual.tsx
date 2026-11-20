@@ -31,6 +31,10 @@ export function GraphVisual({
   const { t, lang } = useI18n();
   const currentNode = model.nodes.find((node) => node.id === model.currentNodeId);
   const weighted = model.weighted === true;
+  // Dijkstra prints a second line under every node. The domain viewBox only
+  // reserves the node circle, so weighted graphs get extra bottom room instead
+  // of letting the distance labels fall outside the SVG viewport.
+  const viewBoxHeight = model.viewBox.height + (weighted ? 24 : 0);
   const frontierLabel =
     model.frontierKind === 'queue'
       ? t('graphQueue')
@@ -121,17 +125,17 @@ export function GraphVisual({
       >
         <svg
           className="graph-svg"
-          viewBox={`${model.viewBox.x} ${model.viewBox.y} ${model.viewBox.width} ${model.viewBox.height}`}
+          viewBox={`${model.viewBox.x} ${model.viewBox.y} ${model.viewBox.width} ${viewBoxHeight}`}
           preserveAspectRatio="xMidYMid meet"
           width={model.viewBox.width}
-          height={model.viewBox.height}
+          height={viewBoxHeight}
           role="img"
           aria-label={`${model.algorithm.toUpperCase()} ${t('graphCanvasLabel')}`}
           data-testid="graph-svg"
           data-node-count={model.nodes.length}
           data-edge-count={model.edges.length}
           data-viewbox-width={model.viewBox.width}
-          data-viewbox-height={model.viewBox.height}
+          data-viewbox-height={viewBoxHeight}
         >
           {model.directed && (
             <defs>
@@ -436,11 +440,16 @@ function NodeGlyph({
       {node.isolated && <circle className="graph-isolated-ring" r={radius + 3} fill="none" />}
       {target && <circle className="graph-target-ring" r={radius + 3} fill="none" />}
       <circle className="graph-node-body" r={radius} />
-      <text className="graph-node-label" y={weighted ? -2 : 4} textAnchor="middle">
+      <text className="graph-node-label" y={4} textAnchor="middle">
         {node.label}
       </text>
       {weighted && (
-        <text className="graph-distance-tag" y={11} textAnchor="middle" data-testid="graph-node-distance">
+        <text
+          className="graph-distance-tag"
+          y={radius + 16}
+          textAnchor="middle"
+          data-testid="graph-node-distance"
+        >
           d={distanceLabel}
         </text>
       )}

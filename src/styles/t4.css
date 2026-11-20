@@ -296,7 +296,7 @@
 
 .huffman-node.is-internal .huffman-node-symbol {
   fill: var(--muted);
-  font-size: 15px;
+  font-size: 16px;
 }
 
 .huffman-node.is-picked .huffman-node-box {

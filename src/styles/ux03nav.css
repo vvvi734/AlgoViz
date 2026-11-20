@@ -237,6 +237,9 @@
   color: var(--accent);
   opacity: .62;
 }
+/* The chevron already says "open"; "阅读" only steals width from the name and
+   forces short concept titles into orphan lines at the enlarged font. */
+.textbook-topic.is-concept .textbook-kind-status { display: none; }
 .textbook-topic.is-planned .textbook-kind-icon {
   opacity: .78;
 }
@@ -468,7 +471,7 @@
   outline-offset: 2px;
 }
 .rail-current {
-  font-size: 15px;
+  font-size: 16px;
 }
 .rail-current:focus-visible {
   outline: 2px solid var(--accent);

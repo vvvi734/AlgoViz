@@ -6,7 +6,7 @@ type SvgText = SVGTextElement & { dataset: DOMStringMap };
  * UX-SIMPLIFY-02: a `font-size` in SVG user units is not a screen size.
  *
  * Every algorithm SVG scales its `viewBox` to the card width. This hook reads
- * the actual screen CTM and lifts each text node to 12px (labels) or 16px
+ * the actual screen CTM and lifts each text node to 14px (labels) or 18px
  * (node values/weights) after scaling, while preserving any larger authored
  * size. It is intentionally DOM-level so it covers all current and future SVGs
  * without every visual component computing its own magic number.
@@ -25,7 +25,7 @@ export function useSvgTextFloor(rootRef: RefObject<HTMLElement | null>) {
       const svgs = root.querySelectorAll<SVGSVGElement>('svg');
       for (const svg of svgs) {
         resizeObserver?.observe(svg);
-        const ctm = svg.getScreenCTM();
+        const ctm = typeof svg.getScreenCTM === 'function' ? svg.getScreenCTM() : null;
         if (!ctm) continue;
         const scale = Math.min(Math.abs(ctm.a), Math.abs(ctm.d));
         if (!Number.isFinite(scale) || scale <= 0) continue;
@@ -34,7 +34,9 @@ export function useSvgTextFloor(rootRef: RefObject<HTMLElement | null>) {
         for (const text of texts) {
           // Read the text's own screen matrix, not only the root SVG: tree and
           // node groups may add another `scale(...)` of their own.
-          const textCtm = text.getScreenCTM() ?? ctm;
+          const textCtm = typeof text.getScreenCTM === 'function'
+            ? (text.getScreenCTM() ?? ctm)
+            : ctm;
           const textScale = Math.min(Math.abs(textCtm.a), Math.abs(textCtm.d));
           if (!Number.isFinite(textScale) || textScale <= 0) continue;
 
@@ -51,7 +53,7 @@ export function useSvgTextFloor(rootRef: RefObject<HTMLElement | null>) {
           const valueTier = /(?:^|\s)(?:[a-z0-9-]*-value|[a-z0-9-]*-weight|[a-z0-9-]*-symbol)(?:\s|$)/.test(
             className,
           );
-          const floor = (valueTier ? 16 : 12) / textScale;
+          const floor = (valueTier ? 18 : 14) / textScale;
           const target = Math.max(base, floor);
           const current = Number.parseFloat(text.style.fontSize || '0');
           if (!Number.isFinite(current) || Math.abs(current - target) > 0.05) {

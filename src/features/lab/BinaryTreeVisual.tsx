@@ -190,8 +190,8 @@ export function BinaryTreeVisual({ model }: { model: BinaryTreeVisualModel }) {
                 width: `${model.width}px`,
                 height: `${model.height}px`,
                 transform: `scale(${scale})`,
-                '--tree-font-floor': `${12 / Math.max(scale, 0.01)}px`,
-                '--tree-title-floor': `${16 / Math.max(scale, 0.01)}px`,
+                '--tree-font-floor': `${14 / Math.max(scale, 0.01)}px`,
+                '--tree-title-floor': `${18 / Math.max(scale, 0.01)}px`,
               } as CSSProperties}
             >
               <svg
@@ -239,16 +239,12 @@ export function BinaryTreeVisual({ model }: { model: BinaryTreeVisualModel }) {
                   }}
                   aria-label={`Node ${node.id}, value ${displayValue(node.value)}, depth ${node.depth}`}
                 >
-                  <span className="tree-node-id">{node.id}</span>
                   <span className="tree-node-value">{displayValue(node.value)}</span>
                   {node.visitOrder !== null && (
                     <span className="tree-node-order" data-testid="tree-node-order">
                       {node.visitOrder}
                     </span>
                   )}
-                  {node.role === 'root' && <span className="tree-node-role root">{t('treeRootLabel')}</span>}
-                  {node.role === 'leaf' && <span className="tree-node-role leaf">{t('treeLeafLabel')}</span>}
-                  {node.active && <span className="tree-node-current">{t('treeCurrentLabel')}</span>}
                 </div>
               ))}
             </div>

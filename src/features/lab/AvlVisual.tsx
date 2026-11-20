@@ -371,8 +371,8 @@ export function AvlVisual({ model }: { model: AvlVisualModel }) {
                 width: `${model.width}px`,
                 height: `${model.height}px`,
                 transform: `scale(${scale})`,
-                '--tree-font-floor': `${12 / Math.max(scale, 0.01)}px`,
-                '--tree-title-floor': `${16 / Math.max(scale, 0.01)}px`,
+                '--tree-font-floor': `${14 / Math.max(scale, 0.01)}px`,
+                '--tree-title-floor': `${18 / Math.max(scale, 0.01)}px`,
               } as CSSProperties}
             >
               <svg
@@ -420,14 +420,10 @@ export function AvlVisual({ model }: { model: AvlVisualModel }) {
                   }}
                   aria-label={`AVL node ${node.id}, value ${displayValue(node.value)}, height ${node.height}, balance ${node.balance}`}
                 >
-                  <span className="tree-node-id">{node.id}</span>
                   <span className="tree-node-value">{displayValue(node.value)}</span>
                   <span className="avl-node-badge" data-testid="avl-node-badge">
                     h{node.height} · {node.balance >= 0 ? `+${node.balance}` : node.balance}
                   </span>
-                  {node.role === 'root' && <span className="tree-node-role root">{t('treeRootLabel')}</span>}
-                  {node.role === 'leaf' && <span className="tree-node-role leaf">{t('treeLeafLabel')}</span>}
-                  {node.active && <span className="tree-node-current">{t('treeCurrentLabel')}</span>}
                   {node.target && <span className="bst-node-tag target">{t('avlTargetTag')}</span>}
                   {node.successor && <span className="bst-node-tag successor">{t('avlSuccessorTag')}</span>}
                   {node.inserted && <span className="bst-node-tag inserted">{t('avlInsertedTag')}</span>}
