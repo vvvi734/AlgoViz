@@ -689,6 +689,35 @@ export const ALGORITHM_CATALOG: AlgorithmCatalog = {
     },
     "code": "trace({type:'array',values:['AVL: use the Python preset'],done:true},'请在 Python 模式运行 / Run the Python preset');"
   },
+  "btree": {
+    "group": "tree",
+    "icon": "▤",
+    "name": [
+      "B 树 · 查找 / 插入 / 分裂",
+      "B-tree · search / insert / split"
+    ],
+    "desc": [
+      "以 4 阶 B 树演示节点内多关键字比较、按区间选择子树、下降前分裂满节点、中间关键字上升与新根生成；重复键明确拒绝，所有快照来自真实 Python 树。",
+      "Run an order-4 B-tree: compare several keys inside one node, choose a child by key range, split a full child before descending, promote the median and grow a new root. Duplicate keys are explicitly rejected; every snapshot comes from the real Python tree."
+    ],
+    "time": "O(log n) 节点访问",
+    "space": "O(n)",
+    "input": {
+      "preset": "find-hit",
+      "operation": "find",
+      "tree": [
+        10,
+        20,
+        30,
+        40,
+        50,
+        60,
+        70
+      ],
+      "target": 30
+    },
+    "code": "trace({type:'array',values:['B-tree: use the Python preset'],done:true},'请在 Python 模式运行 / Run the Python preset');"
+  },
   "huffman": {
     "group": "tree",
     "icon": "⌁",

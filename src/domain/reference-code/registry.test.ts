@@ -12,13 +12,14 @@ import {
 } from './registry';
 
 describe('three-language reference registry', () => {
-  it('registers all 35 formal courses with three principle implementations', () => {
+  it('registers all 36 formal courses with three principle implementations', () => {
     expect(REFERENCE_CODE_ALGORITHMS.sort()).toEqual([
       'avl',
       'bellman-ford',
       'bfs',
       'binary',
       'bst',
+      'btree',
       'bubble',
       'circular',
       'components',
@@ -91,7 +92,7 @@ describe('three-language reference registry', () => {
 
   it('has no remaining formal course outside the registry', () => {
     expect(REFERENCE_CODE_BACKLOG).toHaveLength(0);
-    expect(REFERENCE_CODE_ALGORITHMS.length + REFERENCE_CODE_BACKLOG.length).toBe(35);
+    expect(REFERENCE_CODE_ALGORITHMS.length + REFERENCE_CODE_BACKLOG.length).toBe(36);
     expect(referenceLanguages('shell')).toEqual(REFERENCE_LANGUAGES);
     expect(referenceFileMeta('shell', 'c')).not.toBeNull();
   });
@@ -163,6 +164,19 @@ describe('three-language reference registry', () => {
 
     const kmpFindPython = await loadReferenceCode('kmp', 'python', 'convenience');
     expect(kmpFindPython).toContain('text.find(pattern)');
+
+    const btreeC = await loadReferenceCode('btree', 'c');
+    expect(btreeC).toContain('btree_split_child');
+    expect(btreeC).toContain('btree_insert');
+    expect(btreeC).toContain('MIT License');
+
+    const btreeCpp = await loadReferenceCode('btree', 'cpp');
+    expect(btreeCpp).toContain('split_child');
+    expect(btreeCpp).not.toContain('std::map<');
+
+    const btreePython = await loadReferenceCode('btree', 'python');
+    expect(btreePython).toContain('def btree_insert');
+    expect(btreePython).not.toContain('trace(');
   });
 
   it('returns null for unregistered or unavailable implementation combinations', async () => {

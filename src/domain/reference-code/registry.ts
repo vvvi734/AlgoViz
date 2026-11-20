@@ -262,6 +262,13 @@ export const REFERENCE_CODE: Record<string, ReferenceEntry> = {
       python: { fileName: 'avl_tree.py' },
     },
   },
+  btree: {
+    files: {
+      c: { fileName: 'btree.c' },
+      cpp: { fileName: 'btree.cpp' },
+      python: { fileName: 'btree.py' },
+    },
+  },
   heap: {
     files: {
       c: { fileName: 'max_heap.c' },

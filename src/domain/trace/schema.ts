@@ -1543,6 +1543,352 @@ export const bstSnapshotSchema = z
 export type BstSnapshot = z.infer<typeof bstSnapshotSchema>;
 
 /**
+ * SEARCH-04: order-4 B-tree search and insertion.
+ *
+ * Every snapshot is the real attached tree after the named frame operation.
+ * Insertion uses one fixed policy: split a full child BEFORE descending into it;
+ * a full root is split first and grows a new root. Duplicate keys are rejected
+ * before any structural change. A split is emitted as a before/after pair so the
+ * full original node, the promoted median and the two resulting nodes are all
+ * part of the recorded semantics rather than a visual-only effect.
+ */
+export const BTREE_ORDER = 4 as const;
+export const BTREE_MAX_KEYS = BTREE_ORDER - 1;
+
+export const BTREE_COMMANDS = ['find', 'insert'] as const;
+export type BtreeCommand = (typeof BTREE_COMMANDS)[number];
+
+export const BTREE_OPERATIONS = [
+  'init', 'inspect', 'descend', 'found', 'not-found', 'duplicate',
+  'split', 'insert', 'done',
+] as const;
+export type BtreeOperation = (typeof BTREE_OPERATIONS)[number];
+
+export const BTREE_RESULTS = ['found', 'not-found', 'inserted', 'duplicate'] as const;
+export type BtreeResult = (typeof BTREE_RESULTS)[number];
+
+export const BTREE_SPLIT_PHASES = ['before', 'after'] as const;
+export type BtreeSplitPhase = (typeof BTREE_SPLIT_PHASES)[number];
+
+const BTREE_ID = z.string().min(1).max(LIMITS.MAX_NAME_CHARS);
+
+export const btreeNodeSchema = z.object({
+  id: BTREE_ID,
+  /** A non-empty node holds 1..3 sorted keys for order 4. */
+  keys: z.array(z.number().finite()).min(1).max(BTREE_MAX_KEYS),
+  /** Leaves have no children; an internal node has exactly keys.length + 1. */
+  children: z.array(BTREE_ID).max(BTREE_ORDER),
+  leaf: z.boolean(),
+});
+export type BtreeNode = z.infer<typeof btreeNodeSchema>;
+
+export const btreeSplitSchema = z.object({
+  nodeId: BTREE_ID,
+  phase: z.enum(BTREE_SPLIT_PHASES),
+  leftId: BTREE_ID.nullable(),
+  rightId: BTREE_ID.nullable(),
+  promotedKey: z.number().finite().nullable(),
+  parentId: BTREE_ID.nullable(),
+  rootChanged: z.boolean(),
+});
+export type BtreeSplit = z.infer<typeof btreeSplitSchema>;
+
+export const btreeSnapshotSchema = z
+  .object({
+    kind: z.literal('btree'),
+    order: z.literal(BTREE_ORDER),
+    preset: z.string().max(LIMITS.MAX_NAME_CHARS).nullable(),
+    command: z.enum(BTREE_COMMANDS),
+    operation: z.enum(BTREE_OPERATIONS),
+    targetValue: z.number().finite(),
+    rootId: BTREE_ID.nullable(),
+    nodes: z.array(btreeNodeSchema).max(64),
+    currentNodeId: BTREE_ID.nullable(),
+    pathIds: z.array(BTREE_ID).max(20),
+    compareIndex: z.number().int().min(0).max(BTREE_MAX_KEYS - 1).nullable(),
+    compareKey: z.number().finite().nullable(),
+    childSlot: z.number().int().min(0).max(BTREE_ORDER - 1).nullable(),
+    childId: BTREE_ID.nullable(),
+    split: btreeSplitSchema.nullable(),
+    insertedKey: z.number().finite().nullable(),
+    result: z.enum(BTREE_RESULTS).nullable(),
+  })
+  .superRefine((snapshot, ctx) => {
+    const add = (path: (string | number)[], message: string) =>
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path, message });
+    const byId = new Map<string, BtreeNode>();
+    snapshot.nodes.forEach((node, index) => {
+      if (byId.has(node.id)) add(['nodes', index, 'id'], `duplicate B-tree node id "${node.id}"`);
+      byId.set(node.id, node);
+    });
+
+    if (snapshot.nodes.length === 0) {
+      if (snapshot.rootId !== null) add(['rootId'], 'an empty B-tree must have rootId = null');
+    } else if (snapshot.rootId === null || !byId.has(snapshot.rootId)) {
+      add(['rootId'], 'rootId must refer to a real node in a non-empty B-tree');
+    }
+
+    const parentCount = new Map<string, number>();
+    snapshot.nodes.forEach((node, index) => {
+      for (const ref of node.children) {
+        if (!byId.has(ref)) add(['nodes', index, 'children'], `child "${ref}" does not refer to a node`);
+        parentCount.set(ref, (parentCount.get(ref) ?? 0) + 1);
+      }
+      if (node.leaf) {
+        if (node.children.length !== 0) add(['nodes', index, 'children'], 'a B-tree leaf must have no children');
+        return;
+      }
+      if (node.children.length !== node.keys.length + 1) {
+        add(['nodes', index, 'children'], 'an internal node needs exactly keys.length + 1 children');
+      }
+      if (node.keys.length < 1) add(['nodes', index, 'keys'], 'an internal node needs at least one separator key');
+    });
+    for (const [id, count] of parentCount) {
+      if (count > 1) add(['nodes'], `node "${id}" has multiple parents`);
+    }
+    if (snapshot.rootId !== null && (parentCount.get(snapshot.rootId) ?? 0) > 0) {
+      add(['rootId'], 'the root must not have a parent');
+    }
+
+    if (snapshot.nodes.length > 0 && snapshot.rootId !== null) {
+      const root = byId.get(snapshot.rootId);
+      if (root && !root.leaf && root.children.length < 2) {
+        add(['rootId'], 'a non-leaf root must have at least two children');
+      }
+      const seen = new Set<string>();
+      const stack = [snapshot.rootId];
+      let cycle = false;
+      while (stack.length) {
+        const id = stack.pop() as string;
+        if (seen.has(id)) {
+          cycle = true;
+          break;
+        }
+        seen.add(id);
+        const node = byId.get(id);
+        if (!node) break;
+        for (const child of node.children) stack.push(child);
+      }
+      if (cycle) add(['nodes'], 'cyclic B-tree child reference detected');
+      for (const node of snapshot.nodes) {
+        if (!seen.has(node.id)) add(['nodes'], `B-tree node "${node.id}" is not reachable from the root`);
+      }
+    }
+
+    // Strictly increasing keys inside every node, globally unique keys, and no
+    // key outside the interval owned by the child slot.
+    const allKeys = new Set<number>();
+    const leafDepths = new Set<number>();
+    let guard = 0;
+    const walk = (
+      id: string,
+      lower: number,
+      upper: number,
+      depth: number,
+    ): void => {
+      guard += 1;
+      if (guard > snapshot.nodes.length + 1) return;
+      const node = byId.get(id);
+      if (!node) return;
+      for (let index = 0; index < node.keys.length; index += 1) {
+        const key = node.keys[index];
+        if (index > 0 && node.keys[index - 1] >= key) {
+          add(['nodes', node.id, 'keys', index], 'keys inside a B-tree node must be strictly increasing');
+        }
+        if (key <= lower || key >= upper) {
+          add(['nodes', node.id, 'keys', index], 'key is outside the range owned by this subtree');
+        }
+        if (allKeys.has(key)) add(['nodes', node.id, 'keys', index], 'duplicate key in the B-tree');
+        allKeys.add(key);
+      }
+      if (node.leaf) {
+        if (node.children.length !== 0) add(['nodes', node.id, 'children'], 'a leaf cannot own child pointers');
+        leafDepths.add(depth);
+        return;
+      }
+      if (node.children.length !== node.keys.length + 1) return;
+      for (let slot = 0; slot < node.children.length; slot += 1) {
+        const childLower = slot === 0 ? lower : node.keys[slot - 1];
+        const childUpper = slot === node.keys.length ? upper : node.keys[slot];
+        walk(node.children[slot], childLower, childUpper, depth + 1);
+      }
+    };
+    if (snapshot.rootId !== null && byId.has(snapshot.rootId)) {
+      walk(snapshot.rootId, Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY, 0);
+    }
+    if (leafDepths.size > 1) {
+      add(['nodes'], 'all B-tree leaves must be at the same depth');
+    }
+
+    if (snapshot.currentNodeId === null) {
+      if (snapshot.pathIds.length > 0) add(['pathIds'], 'a frame without a current node must have an empty path');
+    } else {
+      if (!byId.has(snapshot.currentNodeId)) add(['currentNodeId'], `currentNodeId "${snapshot.currentNodeId}" is not attached`);
+      const last = snapshot.pathIds[snapshot.pathIds.length - 1];
+      if (last !== snapshot.currentNodeId) add(['pathIds'], 'the path must end at currentNodeId');
+    }
+    snapshot.pathIds.forEach((id, index) => {
+      if (!byId.has(id)) add(['pathIds', index], `path id "${id}" is not attached`);
+      if (index === 0 && id !== snapshot.rootId) add(['pathIds', 0], 'pathIds must start at rootId');
+      if (index > 0) {
+        const parent = byId.get(snapshot.pathIds[index - 1]);
+        if (!parent || !parent.children.includes(id)) {
+          add(['pathIds', index], 'pathIds must follow real child references');
+        }
+      }
+    });
+
+    if (snapshot.compareIndex !== null || snapshot.compareKey !== null) {
+      if (snapshot.compareIndex === null || snapshot.compareKey === null) {
+        add(['compareIndex'], 'compareIndex and compareKey must be present together');
+      } else if (snapshot.currentNodeId !== null) {
+        const current = byId.get(snapshot.currentNodeId);
+        if (!current || current.keys[snapshot.compareIndex] !== snapshot.compareKey) {
+          add(['compareKey'], 'compareKey must equal the current node key at compareIndex');
+        }
+      }
+    }
+    if (snapshot.childSlot !== null || snapshot.childId !== null) {
+      if (snapshot.childSlot === null || snapshot.childId === null) {
+        add(['childSlot'], 'childSlot and childId must be present together');
+      } else if (snapshot.currentNodeId !== null) {
+        const current = byId.get(snapshot.currentNodeId);
+        if (!current || current.children[snapshot.childSlot] !== snapshot.childId) {
+          add(['childId'], 'childId must be the real child at childSlot');
+        }
+      }
+    }
+
+    const allowed: Record<BtreeCommand, BtreeOperation[]> = {
+      find: ['init', 'inspect', 'descend', 'found', 'not-found', 'done'],
+      insert: ['init', 'inspect', 'descend', 'duplicate', 'split', 'insert', 'done'],
+    };
+    if (!allowed[snapshot.command].includes(snapshot.operation)) {
+      add(['operation'], `${snapshot.operation} is not a ${snapshot.command} operation`);
+    }
+
+    if (snapshot.operation === 'init') {
+      if (snapshot.result !== null) add(['result'], 'init has no result');
+      if (snapshot.compareIndex !== null || snapshot.compareKey !== null) add(['compareIndex'], 'init has no comparison');
+      if (snapshot.childSlot !== null || snapshot.childId !== null) add(['childSlot'], 'init has no selected child');
+      if (snapshot.split !== null) add(['split'], 'init has no split');
+      if (snapshot.insertedKey !== null) add(['insertedKey'], 'init has no inserted key');
+    }
+    if (snapshot.operation === 'inspect') {
+      if (snapshot.currentNodeId === null) add(['currentNodeId'], 'inspect needs a current node');
+      if (snapshot.compareIndex === null || snapshot.compareKey === null) {
+        add(['compareIndex'], 'inspect must record the compared key');
+      }
+      if (snapshot.result !== null) add(['result'], 'inspect has no final result yet');
+      if (snapshot.split !== null || snapshot.insertedKey !== null) add(['split'], 'inspect has no split or inserted key');
+    }
+    if (snapshot.operation === 'descend') {
+      if (snapshot.currentNodeId === null) add(['currentNodeId'], 'descend needs a current node');
+      if (snapshot.childSlot === null || snapshot.childId === null) {
+        add(['childSlot'], 'descend must record the selected child');
+      }
+      if (snapshot.compareIndex !== null || snapshot.compareKey !== null) add(['compareIndex'], 'descend has no key comparison');
+      if (snapshot.result !== null) add(['result'], 'descend has no final result yet');
+      if (snapshot.split !== null || snapshot.insertedKey !== null) add(['split'], 'descend has no split or inserted key');
+    }
+    if (snapshot.operation === 'found') {
+      if (snapshot.currentNodeId === null) add(['currentNodeId'], 'found needs a current node');
+      if (snapshot.compareKey !== snapshot.targetValue) add(['compareKey'], 'found must compare the target key');
+      if (snapshot.result !== 'found') add(['result'], 'found must record success');
+      if (snapshot.split !== null || snapshot.insertedKey !== null) add(['split'], 'found changes no structure');
+    }
+    if (snapshot.operation === 'not-found') {
+      if (snapshot.currentNodeId === null) add(['currentNodeId'], 'not-found must name the final leaf');
+      else if (!byId.get(snapshot.currentNodeId)?.leaf) add(['currentNodeId'], 'not-found must end at a leaf');
+      if (snapshot.result !== 'not-found') add(['result'], 'not-found must record failure');
+      if (snapshot.compareIndex !== null || snapshot.compareKey !== null) add(['compareIndex'], 'not-found has no key comparison');
+      if (snapshot.split !== null || snapshot.insertedKey !== null) add(['split'], 'not-found changes no structure');
+    }
+    if (snapshot.operation === 'duplicate') {
+      if (snapshot.currentNodeId === null) add(['currentNodeId'], 'duplicate needs the node that owns the key');
+      const current = snapshot.currentNodeId === null ? undefined : byId.get(snapshot.currentNodeId);
+      if (!current || !current.keys.includes(snapshot.targetValue)) {
+        add(['targetValue'], 'duplicate requires the target key to exist in the current node');
+      }
+      if (snapshot.compareKey !== snapshot.targetValue) add(['compareKey'], 'duplicate must compare the target key');
+      if (snapshot.result !== 'duplicate') add(['result'], 'duplicate must record rejection');
+      if (snapshot.split !== null || snapshot.insertedKey !== null) add(['split'], 'duplicate changes no structure');
+    }
+    if (snapshot.operation === 'insert') {
+      if (snapshot.currentNodeId === null) add(['currentNodeId'], 'insert needs the target leaf');
+      else if (!byId.get(snapshot.currentNodeId)?.leaf) add(['currentNodeId'], 'insert must end at a leaf');
+      const current = snapshot.currentNodeId === null ? undefined : byId.get(snapshot.currentNodeId);
+      if (!current || !current.keys.includes(snapshot.targetValue)) {
+        add(['targetValue'], 'insert requires the target key in the leaf after insertion');
+      }
+      if (snapshot.insertedKey !== snapshot.targetValue) add(['insertedKey'], 'insertedKey must equal targetValue');
+      if (snapshot.result !== 'inserted') add(['result'], 'insert must record insertion');
+      if (snapshot.split !== null) add(['split'], 'insert is not itself a split frame');
+    }
+    if (snapshot.operation === 'split') {
+      if (snapshot.split === null) add(['split'], 'split must carry split details');
+      if (snapshot.compareIndex !== null || snapshot.compareKey !== null) add(['compareIndex'], 'split has no key comparison');
+      if (snapshot.childSlot !== null || snapshot.childId !== null) add(['childSlot'], 'split has no selected child');
+      if (snapshot.result !== null) add(['result'], 'split has no final result yet');
+      if (snapshot.insertedKey !== null) add(['insertedKey'], 'split frame has no inserted key yet');
+    }
+    if (snapshot.operation === 'done') {
+      if (snapshot.currentNodeId !== null || snapshot.pathIds.length > 0) {
+        add(['currentNodeId'], 'done must release the current node and path');
+      }
+      if (snapshot.compareIndex !== null || snapshot.compareKey !== null) add(['compareIndex'], 'done has no comparison');
+      if (snapshot.childSlot !== null || snapshot.childId !== null) add(['childSlot'], 'done has no selected child');
+      if (snapshot.split !== null || snapshot.insertedKey !== null) add(['split'], 'done has no split or inserted key');
+      if (snapshot.result === null) add(['result'], 'done must record the final result');
+      const allowedResults: BtreeResult[] = snapshot.command === 'find'
+        ? ['found', 'not-found']
+        : ['inserted', 'duplicate'];
+      if (snapshot.result !== null && !allowedResults.includes(snapshot.result)) {
+        add(['result'], `${snapshot.result} cannot finish a ${snapshot.command} run`);
+      }
+    }
+
+    const split = snapshot.split;
+    if (split !== null) {
+      if (snapshot.operation !== 'split') add(['split'], 'split details are only allowed on split frames');
+      if (!byId.has(split.nodeId)) add(['split', 'nodeId'], 'split nodeId must be attached');
+      if (split.phase === 'before') {
+        if (split.leftId !== null || split.rightId !== null || split.parentId !== null || split.promotedKey !== null) {
+          add(['split'], 'a before frame cannot name the resulting nodes or promoted key');
+        }
+        if (split.rootChanged) add(['split', 'rootChanged'], 'a before frame cannot claim the root changed');
+        if ((byId.get(split.nodeId)?.keys.length ?? 0) !== BTREE_MAX_KEYS) {
+          add(['split', 'nodeId'], 'a split-before node must be full');
+        }
+      } else {
+        if (split.leftId === null || split.rightId === null || split.parentId === null || split.promotedKey === null) {
+          add(['split'], 'a split-after frame must name both results, the parent and the promoted key');
+        } else {
+          if (split.nodeId !== split.leftId) add(['split', 'nodeId'], 'the original node id survives as the left result');
+          if (!byId.has(split.rightId)) add(['split', 'rightId'], 'split rightId must be attached');
+          if (!byId.has(split.parentId)) add(['split', 'parentId'], 'split parentId must be attached');
+          const left = byId.get(split.leftId);
+          const right = byId.get(split.rightId);
+          const parent = byId.get(split.parentId);
+          if (!left || left.keys.length !== 1) add(['split', 'leftId'], 'a split of a full order-4 node leaves one key on the left');
+          if (!right || right.keys.length !== 1) add(['split', 'rightId'], 'a split of a full order-4 node leaves one key on the right');
+          if (parent) {
+            const index = parent.keys.indexOf(split.promotedKey);
+            if (index < 0) add(['split', 'promotedKey'], 'the promoted key must be present in the parent');
+            else if (parent.children[index] !== split.leftId || parent.children[index + 1] !== split.rightId) {
+              add(['split'], 'parent child slots must place the split results around the promoted key');
+            }
+          }
+          if (split.rootChanged && split.parentId !== snapshot.rootId) {
+            add(['split', 'rootChanged'], 'rootChanged requires the parent to be the new root');
+          }
+        }
+      }
+    }
+  });
+export type BtreeSnapshot = z.infer<typeof btreeSnapshotSchema>;
+
+/**
  * T2: AVL tree insert/delete. The snapshot is the REAL attached AVL tree after
  * the frame operation. Nodes carry their real subtree height and balance
  * factor; rotations are recorded as before/after frames around genuine pointer
@@ -7097,6 +7443,7 @@ export const structureSchema = z.union([
   binaryTreeSnapshotSchema,
   bstSnapshotSchema,
   avlSnapshotSchema,
+  btreeSnapshotSchema,
   graphSnapshotSchema,
   weightedGraphSnapshotSchema,
   floydWarshallSnapshotSchema,

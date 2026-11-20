@@ -14,11 +14,11 @@ function visualFrames(code: string, input: unknown): TraceFrame[] {
   return result.frames;
 }
 
-describe('algorithm catalogue (34 legacy presets plus STR-01 KMP and MATRIX-01 sparse transpose)', () => {
+describe('algorithm catalogue (35 legacy presets plus STR-01 KMP and MATRIX-01 sparse transpose)', () => {
   it('keeps all legacy presets and adds the two real-trace additions', () => {
-    expect(algorithmIds()).toHaveLength(36);
-    expect(legacyIds).toHaveLength(34);
-    expect(Object.keys(expected)).toHaveLength(34);
+    expect(algorithmIds()).toHaveLength(37);
+    expect(legacyIds).toHaveLength(35);
+    expect(Object.keys(expected)).toHaveLength(35);
     expect(catalog.kmp.time).toBe('O(n + m)');
     expect(catalog.kmp.space).toBe('O(m)');
     expect(catalog['sparse-transpose'].time).toBe('O(t + c)');

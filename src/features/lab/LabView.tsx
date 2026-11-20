@@ -4,6 +4,7 @@ import { VisualStage } from './VisualStage';
 import { TreeTraversalPicker } from './TreeTraversalPicker';
 import { BstPicker } from './BstPicker';
 import { AvlPicker } from './AvlPicker';
+import { BTreePicker } from './BTreePicker';
 import { HeapPicker } from './HeapPicker';
 import { HuffmanPicker } from './HuffmanPicker';
 import { SequentialListPicker } from './SequentialListPicker';
@@ -31,6 +32,7 @@ import type { LessonCatalog } from '../../domain/lessons/catalog';
 import { stepIndexForEvent } from '../../domain/lessons/sync';
 import { bstPresetFromInput } from '../../domain/algorithms/bstExamples';
 import { avlPresetFromInput } from '../../domain/algorithms/avlExamples';
+import { btreePresetFromInput } from '../../domain/algorithms/btreeExamples';
 import { heapPresetFromInput } from '../../domain/algorithms/heapExamples';
 import { huffmanPresetFromInput } from '../../domain/algorithms/huffmanExamples';
 import { useI18n } from '../../i18n/I18nProvider';
@@ -67,6 +69,7 @@ export function LabView({
   const showTreePicker = lab.currentAlgo === 'inorder' && lab.codeLang === 'python';
   const showBstPicker = lab.currentAlgo === 'bst' && lab.codeLang === 'python';
   const showAvlPicker = lab.currentAlgo === 'avl' && lab.codeLang === 'python';
+  const showBTreePicker = lab.currentAlgo === 'btree' && lab.codeLang === 'python';
   const showHeapPicker = lab.currentAlgo === 'heap' && lab.codeLang === 'python';
   const showHuffmanPicker = lab.currentAlgo === 'huffman' && lab.codeLang === 'python';
   const showSequentialListPicker = lab.currentAlgo === 'seqlist' && lab.codeLang === 'python';
@@ -77,6 +80,10 @@ export function LabView({
   const actualAvlPreset =
     currentEvent?.structure?.kind === 'avl'
       ? avlPresetFromInput({ preset: currentEvent.structure.preset })
+      : null;
+  const actualBTreePreset =
+    currentEvent?.structure?.kind === 'btree'
+      ? btreePresetFromInput({ preset: currentEvent.structure.preset })
       : null;
   const actualHeapPreset =
     currentEvent?.structure?.kind === 'max-heap'
@@ -346,6 +353,13 @@ export function LabView({
                 inputJson={lab.inputJson}
                 actualPreset={actualAvlPreset}
                 onSelect={lab.selectAvlPreset}
+              />
+            ) : null}
+            {showBTreePicker ? (
+              <BTreePicker
+                inputJson={lab.inputJson}
+                actualPreset={actualBTreePreset}
+                onSelect={lab.selectBTreePreset}
               />
             ) : null}
             {showHeapPicker ? (

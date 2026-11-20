@@ -14,7 +14,9 @@ export type ConceptDiagramKind =
   | 'string'
   | 'array'
   | 'matrix-compression'
-  | 'sparse-matrix';
+  | 'sparse-matrix'
+  | 'b-tree'
+  | 'b-plus-tree';
 
 export interface ConceptDefinition {
   term: Bilingual;

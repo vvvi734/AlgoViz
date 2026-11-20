@@ -1,0 +1,239 @@
+/* ==========================================================================
+   SEARCH-04 — order-4 B-tree canvas.
+   Keys stay at 18px; wide trees scroll horizontally instead of shrinking.
+   ========================================================================== */
+
+.btree-visual {
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 1;
+}
+
+.btree-op-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 0 2px;
+}
+
+.btree-op {
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 850;
+  letter-spacing: .7px;
+}
+
+.btree-order {
+  color: var(--muted);
+  font: 750 14px/1.35 ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+
+.btree-canvas-scroll {
+  width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 2px 0 6px;
+}
+
+.btree-svg {
+  display: block;
+  flex: 0 0 auto;
+  margin-inline: auto;
+}
+
+.btree-empty {
+  min-height: 130px;
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  font-size: 16px;
+}
+
+.btree-node-box {
+  fill: var(--node-bg);
+  stroke: var(--node-edge);
+  stroke-width: 1.4;
+}
+
+.btree-node.is-on-path .btree-node-box {
+  stroke: var(--accent-2);
+  stroke-width: 1.8;
+}
+
+.btree-node.is-current .btree-node-box {
+  stroke: var(--accent);
+  stroke-width: 2.6;
+  filter: drop-shadow(0 0 8px var(--bar-focus-glow));
+}
+
+.btree-node.is-subtree .btree-node-box,
+.btree-node.is-selected .btree-node-box {
+  fill: var(--node-focus-bg);
+  stroke: var(--accent-2);
+  stroke-width: 2;
+}
+
+.btree-node.is-split-before .btree-node-box {
+  fill: var(--node-focus-bg);
+  stroke: var(--warn, #b26a00);
+  stroke-width: 2.8;
+}
+
+.btree-node.is-split-left .btree-node-box,
+.btree-node.is-split-right .btree-node-box {
+  fill: var(--node-focus-bg);
+  stroke: var(--accent-2);
+  stroke-width: 2.6;
+}
+
+.btree-node.is-new-root .btree-node-box {
+  stroke: var(--accent);
+  stroke-width: 3;
+}
+
+.btree-key-separator {
+  stroke: var(--node-edge);
+  stroke-width: 1;
+  opacity: .75;
+}
+
+.btree-key-text {
+  fill: var(--txt);
+  font: 850 18px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+
+.btree-key-compare {
+  fill: var(--accent-2);
+  opacity: .18;
+}
+
+.btree-key-inserted {
+  fill: var(--ok, #2e7d32);
+  opacity: .22;
+}
+
+.btree-key-promoted {
+  fill: var(--accent);
+  opacity: .26;
+}
+
+.btree-edge {
+  stroke: var(--node-edge);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+}
+
+.btree-edge.is-in-subtree {
+  stroke: var(--accent-2);
+  opacity: .55;
+}
+
+.btree-edge.is-on-path {
+  stroke: var(--accent-2);
+  stroke-width: 2.2;
+  opacity: 1;
+}
+
+.btree-edge.is-selected {
+  stroke: var(--accent);
+  stroke-width: 3.2;
+  opacity: 1;
+}
+
+.btree-slot {
+  fill: var(--panel);
+  stroke: var(--node-edge);
+  stroke-width: 1.2;
+}
+
+.btree-slot.is-selected {
+  fill: var(--accent);
+  stroke: var(--accent);
+}
+
+.btree-node-tag rect,
+.btree-promoted rect {
+  stroke-width: 1.2;
+}
+
+.btree-node-tag text,
+.btree-promoted text {
+  font: 800 14px/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+
+.btree-node-tag.is-before rect {
+  fill: var(--panel);
+  stroke: var(--warn, #b26a00);
+}
+
+.btree-node-tag.is-before text {
+  fill: var(--warn, #b26a00);
+}
+
+.btree-node-tag.is-original rect {
+  fill: var(--panel);
+  stroke: var(--accent-2);
+}
+
+.btree-node-tag.is-original text {
+  fill: var(--accent-2);
+}
+
+.btree-node-tag.is-new rect {
+  fill: var(--panel);
+  stroke: var(--accent-2);
+}
+
+.btree-node-tag.is-new text {
+  fill: var(--accent-2);
+}
+
+.btree-node-tag.is-root rect {
+  fill: var(--panel);
+  stroke: var(--accent);
+}
+
+.btree-node-tag.is-root text {
+  fill: var(--accent);
+}
+
+.btree-promoted rect {
+  fill: var(--accent);
+  stroke: var(--accent);
+}
+
+.btree-promoted text {
+  fill: #fff;
+}
+
+.btree-promoted line {
+  stroke: var(--accent);
+  stroke-width: 1.4;
+  stroke-dasharray: 4 4;
+}
+
+.btree-split-note {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.4;
+  padding: 0 2px;
+}
+
+.btree-picker-rule {
+  grid-column: 1 / -1;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+@media (max-width: 720px) {
+  .btree-op {
+    font-size: 14px;
+  }
+}

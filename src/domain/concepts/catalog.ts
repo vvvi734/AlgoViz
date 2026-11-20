@@ -1492,6 +1492,239 @@ export const CONCEPT_PAGES: readonly ConceptPage[] = [
     },
     takeaway: ['稀疏存储用“额外索引”换掉“大量零”：t 远小于 m×n 时才划算；三元组胜在直观，CSR 胜在按行计算。', 'Sparse storage trades extra indexing for the omitted zeros: it pays only when t is far below m×n. Triplets are simple; CSR is stronger for row-wise computation.'],
   },
+  {
+    id: 'b-tree',
+    topicId: 'multiway-tree',
+    title: ['B 树（B-Tree）', 'B-tree'],
+    chapter: ['第 8 章 · 查找', 'Chapter 8 · Searching'],
+    summary: [
+      'B 树是一棵所有叶子等深的多路平衡查找树。一个节点存放多个有序关键字，并用 k 个关键字把关键字空间划分成 k+1 个区间，分别交给 k+1 棵子树。节点容量变大后，树高显著降低，磁盘上一次节点访问可以取回更多关键字。',
+      'A B-tree is a multiway balanced search tree whose leaves all lie at the same depth. One node stores several ordered keys and partitions the key space into k+1 intervals, one per child. Larger nodes reduce height, so one disk page read can bring back more keys.',
+    ],
+    diagram: 'b-tree',
+    definitions: [
+      {
+        term: ['阶（order m）', 'Order m'],
+        text: ['本课程固定采用 m = 4：每个节点最多 4 个孩子、最多 3 个关键字。阶描述的是孩子数上限，不是关键字数上限。', 'This course fixes m = 4: at most four children and three keys per node. Order bounds the number of children, not the number of keys.'],
+      },
+      {
+        term: ['关键字与孩子', 'Keys and children'],
+        text: ['含 k 个关键字的内节点恰有 k+1 个孩子；关键字严格递增，第 i 棵子树的关键字都落在第 i-1 与第 i 个关键字之间。', 'An internal node with k keys has exactly k+1 children; keys strictly increase, and the i-th subtree lies between keys i-1 and i.'],
+      },
+      {
+        term: ['非根节点的下限', 'Minimum for a non-root node'],
+        text: ['m = 4 时，非根节点至少 ceil(m/2)-1 = 1 个关键字，也就是至少 2 个孩子；根节点除外。', 'For m = 4, every non-root node has at least ceil(m/2)-1 = 1 key, hence at least two children; the root is exempt.'],
+      },
+      {
+        term: ['根节点的特殊规则', 'Special rule for the root'],
+        text: ['根可以是叶子，此时允许 1 到 3 个关键字；根不是叶子时至少要有 2 个孩子。空树是合法的初始状态。', 'The root may be a leaf with one to three keys; if it is internal it must have at least two children. An empty tree is a legal initial state.'],
+      },
+      {
+        term: ['平衡性质', 'Balance property'],
+        text: ['从根到每一片叶子的路径长度相同，所以“叶子在同一深度”不是额外修饰，而是 B 树定义的一部分。', 'Every root-to-leaf path has the same length, so “all leaves at one depth” is part of the definition, not a decoration.'],
+      },
+    ],
+    sections: [
+      {
+        title: ['为什么二叉搜索树不够', 'Why a binary search tree is not always enough'],
+        body: [
+          '二叉搜索树每个节点只存一个关键字，树高约为 log₂ n；节点数一多，查找路径就变长。数据库和文件系统按“页”读取数据，一次 I/O 的成本远高于一次内存比较，真正昂贵的是访问节点次数，而不是节点内部的比较次数。',
+          'A binary search tree stores one key per node and has height about log₂ n; the path grows with n. Databases and file systems read whole pages, and one I/O costs far more than an in-memory comparison. Node visits, not comparisons inside a node, dominate.',
+        ],
+        points: [
+          ['把多个关键字塞进一个节点，可以一次 I/O 读入一批关键字。', 'Packing several keys into one node brings a batch of keys in one I/O.'],
+          ['分支因子从 2 提高到 m，树高从 log₂ n 降到约 log_m n。', 'Raising the branching factor from 2 to m lowers height from about log₂ n to log_m n.'],
+          ['B 树仍然保持有序性，因此节点内部可以用二分或顺序比较。', 'Order is preserved, so keys inside a node can be compared sequentially or by binary search.'],
+        ],
+      },
+      {
+        title: ['一个节点怎样划分关键字空间', 'How one node partitions the key space'],
+        body: [
+          '若节点关键字为 k₁ < k₂ < … < kₜ，则孩子指针 c₀, c₁, …, cₜ 对应 t+1 个互不重叠的区间：c₀ 全部小于 k₁，cᵢ 位于 kᵢ 与 kᵢ₊₁ 之间，cₜ 全部大于 kₜ。这个“区间归属”是查找时选择孩子的唯一依据，也是插入后必须恢复的约束。',
+          'If a node has keys k₁ < k₂ < … < kₜ, its child pointers c₀, c₁, …, cₜ cover t+1 disjoint intervals: c₀ is below k₁, cᵢ lies between kᵢ and kᵢ₊₁, and cₜ is above kₜ. This interval ownership is the only rule for choosing a child during search, and it must be restored after insertion.',
+        ],
+        formula: 'k₁ < k₂ < … < kₜ；cᵢ 中的关键字 ∈ (kᵢ, kᵢ₊₁)，两端为 -∞ / +∞',
+      },
+      {
+        title: ['查找：节点内比较，再选一个孩子', 'Search: compare inside, then choose one child'],
+        body: [
+          '从根开始，在当前节点内依次比较关键字。若命中，查找成功；若目标小于某个关键字，就进入它左边的孩子；若大于最后一个关键字，就进入最右孩子。到达叶子仍未命中，说明关键字不存在。',
+          'Start at the root and compare keys inside the current node. A hit succeeds. If the target is smaller than a key, descend to its left child; if it is larger than the last key, descend to the rightmost child. Reaching a leaf without a hit means the key is absent.',
+        ],
+        points: [
+          ['每层只访问一个节点，层内最多比较 m-1 个关键字。', 'One node is visited per level, with at most m-1 key comparisons inside it.'],
+          ['树高为 h 时，最多访问 h+1 个节点。', 'For height h, at most h+1 nodes are visited.'],
+          ['节点内关键字有序，可用二分查找把比较次数降到 O(log m)。', 'Keys are ordered, so binary search inside a node costs O(log m) comparisons.'],
+        ],
+      },
+      {
+        title: ['插入：下降前分裂满节点', 'Insertion: split full nodes on the way down'],
+        body: [
+          '本课程统一采用“下降前分裂”策略：从根开始，凡是将要进入的满孩子（已有 3 个关键字）先分裂，再决定走哪一个孩子；根满时先分裂根并产生新根。这样真正插入时，目标叶子一定有空格，不需要在回溯阶段补分裂。',
+          'This course consistently splits full children before descending: whenever the next child is full (three keys), split it first, then choose the branch; if the root is full, split it and create a new root. The target leaf is therefore guaranteed to have room, so no backtracking split is needed.',
+        ],
+        points: [
+          ['满节点有 3 个关键字、4 个孩子；取中间关键字（下标 1）上升。', 'A full node has three keys and four children; the middle key (index 1) is promoted.'],
+          ['上升关键字插入父节点，原节点保留左半部分，新节点接收右半部分。', 'The promoted key enters the parent; the old node keeps the left half and a new node receives the right half.'],
+          ['根分裂时中间关键字成为新根，树高增加 1，这是 B 树长高的唯一方式。', 'When the root splits, the middle key becomes a new root and height grows by one — the only way a B-tree grows.'],
+          ['重复关键字在插入前先定位；一旦命中就拒绝插入，树保持不变。', 'A duplicate is located before insertion; on a hit the insertion is rejected and the tree is unchanged.'],
+        ],
+        formula: 'm = 4：满节点 3 键 → 左 1 键 + 上升 1 键 + 右 1 键',
+      },
+      {
+        title: ['树高与代价', 'Height and cost'],
+        body: [
+          '设关键字总数为 n、阶为 m、树高为 h。每个节点最多 m 个孩子，因此 h 层最多容纳约 mʰ 个叶子；反过来 h = O(log_m n)。节点容量越大，树越矮，但单节点内比较和页内数据也越多，实际容量要由页大小与关键字大小共同决定。',
+          'With n keys, order m and height h, each node has at most m children, so h levels hold about mʰ leaves; conversely h = O(log_m n). Larger nodes reduce height but increase in-node comparisons and page payload, so real capacity follows page and key sizes.',
+        ],
+        points: [
+          ['查找、插入的节点访问次数都是 O(log_m n)，层内比较另计。', 'Search and insertion visit O(log_m n) nodes; in-node comparisons are additional.'],
+          ['m 增大时树高下降；这正是磁盘索引偏好高扇出的原因。', 'A larger m lowers height; this is why disk indexes prefer high fanout.'],
+          ['B 树不保证每个节点都装满，只保证不超过上限、不低于下限。', 'A B-tree does not keep every node full; it only enforces upper and lower bounds.'],
+        ],
+      },
+    ],
+    comparison: {
+      title: ['阶 m 与最小度数 t 不要混用', 'Order m vs minimum degree t'],
+      columns: [
+        ['记法', 'Notation'],
+        ['含义', 'Meaning'],
+        ['m = 4 时的值', 'At m = 4'],
+      ],
+      rows: [
+        [
+          ['阶 m', 'Order m'],
+          ['孩子数上限', 'Maximum children'],
+          ['4', '4'],
+        ],
+        [
+          ['关键字上限', 'Maximum keys'],
+          ['m - 1', 'm - 1'],
+          ['3', '3'],
+        ],
+        [
+          ['最小度数 t', 'Minimum degree t'],
+          ['另一种教材记法，t 常取 ⌈m/2⌉', 'Alternative notation, often t = ⌈m/2⌉'],
+          ['t = 2：最多 2t 个孩子、2t-1 个关键字', 't = 2: at most 2t children and 2t-1 keys'],
+        ],
+        [
+          ['非根关键字下限', 'Minimum keys (non-root)'],
+          ['ceil(m/2) - 1', 'ceil(m/2) - 1'],
+          ['1', '1'],
+        ],
+      ],
+    },
+    takeaway: ['B 树用“节点内多关键字 + 所有叶子等深”换取更低树高；m = 4 时记住 4 个孩子、3 个关键字、非根至少 1 个关键字。', 'A B-tree trades multiple keys per node and equal leaf depth for a lower height. For m = 4: four children, three keys, at least one key in every non-root node.'],
+  },
+  {
+    id: 'b-plus-tree',
+    topicId: 'bplus-tree',
+    title: ['B+ 树（B+ Tree）', 'B+ tree'],
+    chapter: ['第 8 章 · 查找', 'Chapter 8 · Searching'],
+    summary: [
+      'B+ 树把内部节点和叶子节点分工：内部节点只保存用于路由的索引关键字，记录（或指向记录的指针）全部放在叶子层；叶子按关键字顺序串成链表。查找必须走到叶子，范围查询则可以先定位左端，再沿叶子链顺序扫描。',
+      'A B+ tree separates routing from storage: internal nodes hold only separator keys, while all records (or record pointers) live in the leaf level; leaves are linked in key order. A search always reaches a leaf, and a range query locates its left endpoint then scans the leaf chain.',
+    ],
+    diagram: 'b-plus-tree',
+    definitions: [
+      {
+        term: ['内部节点', 'Internal node'],
+        text: ['只承担索引作用，保存分隔关键字和孩子指针；同一个关键字可能在内部节点和叶子中各出现一次。', 'Internal nodes only route: they store separator keys and child pointers. A key may appear both internally and in a leaf.'],
+      },
+      {
+        term: ['叶子层', 'Leaf level'],
+        text: ['所有记录或记录指针都在叶子中，叶子之间用 next 指针按关键字顺序连接。', 'All records or record pointers sit in leaves, linked by next pointers in key order.'],
+      },
+      {
+        term: ['卫星记录', 'Satellite record'],
+        text: ['真正随关键字存放的数据行或指向数据行的指针；B+ 树把它集中在叶子层。', 'The actual row or pointer stored with a key; a B+ tree concentrates it at the leaf level.'],
+      },
+      {
+        term: ['范围查询', 'Range query'],
+        text: ['先找到区间左端所在叶子，再沿叶子链向右扫描，直到超过右端。', 'Locate the leaf containing the left endpoint, then follow the leaf chain rightward until the right endpoint is exceeded.'],
+      },
+    ],
+    sections: [
+      {
+        title: ['内部只做索引，记录都在叶子', 'Internal nodes route; leaves store'],
+        body: [
+          '在 B+ 树中，内部节点的关键字只是“路标”：它告诉查找应该往哪个孩子走，并不携带记录。真正的记录集中在叶子层，因此一次成功查找总是走到叶子，路径长度稳定。',
+          'In a B+ tree an internal key is only a signpost: it tells the search which child to follow and carries no record. Records live at the leaf level, so every successful search reaches a leaf and has a stable path length.',
+        ],
+        points: [
+          ['内部节点可以更矮更宽，扇出通常高于同阶 B 树。', 'Internal nodes can be shorter and wider, usually giving a higher fanout than a B-tree of the same order.'],
+          ['同一个关键字在内部与叶子重复出现是正常现象，不是错误。', 'A key appearing in both an internal node and a leaf is normal, not an error.'],
+          ['命中内部关键字也不能提前结束，必须继续到叶子取记录。', 'Even a hit on an internal key cannot stop early; the search must reach a leaf for the record.'],
+        ],
+      },
+      {
+        title: ['叶子链让范围查询变成顺序扫描', 'The leaf chain turns ranges into a scan'],
+        body: [
+          '叶子按关键字升序连接。查询 [L, R] 时，先按 L 定位到某片叶子，然后顺着 next 指针向右读；一旦当前叶子的最大关键字超过 R，扫描结束。这比在 B 树中反复回到上层再下降要自然得多。',
+          'Leaves are linked in ascending key order. For a range [L, R], locate the leaf for L and follow next pointers rightward; stop once the leaf’s largest key exceeds R. This is far more natural than repeatedly returning to upper levels as in a B-tree.',
+        ],
+        points: [
+          ['点查找仍然是从根到叶，代价 O(log_m n)。', 'A point lookup still runs root to leaf in O(log_m n).'],
+          ['范围查询的代价是“定位 + 输出 k 条记录”，即 O(log_m n + k)。', 'A range query costs “locate + output k records”, O(log_m n + k).'],
+          ['叶子链使顺序输出不需要中序遍历整棵树。', 'The leaf chain supports ordered output without an in-order traversal of the whole tree.'],
+        ],
+      },
+      {
+        title: ['数据库索引为什么常见 B+ 树', 'Why database indexes commonly use B+ trees'],
+        body: [
+          '数据库页容量固定，B+ 树把记录压在叶子层，内部节点只放分隔键，单页能容纳更多孩子，树高更低；叶子链又直接支持范围扫描、排序输出和前缀查询。代价是点查找必须走到叶子，且内部关键字有重复存储。',
+          'Database pages are fixed-size. A B+ tree concentrates records at the leaf level and keeps only separators internally, so a page holds more children and the tree is shorter; the leaf chain directly supports range scans, ordered output and prefix queries. The cost is that point lookups must reach a leaf and separators are duplicated.',
+        ],
+        points: [
+          ['聚簇索引的叶子可以直接存行；二级索引的叶子通常存主键或行指针。', 'A clustered index can store rows in its leaves; a secondary index usually stores primary keys or row pointers.'],
+          ['高扇出让大多数索引只有 3 到 4 层，根和上层常驻内存。', 'High fanout keeps most indexes three to four levels deep, with the root and upper levels cached in memory.'],
+          ['B 树也能做索引，但在范围扫描和叶子顺序访问上通常不如 B+ 树直接。', 'A B-tree can also serve as an index, but range scans and ordered leaf access are usually less direct than in a B+ tree.'],
+          ['选择取决于读写比例、范围查询比例和记录存放方式，不存在绝对“更好”。', 'The choice depends on read/write mix, range-query share and record placement; neither is universally better.'],
+        ],
+      },
+    ],
+    comparison: {
+      title: ['B 树与 B+ 树', 'B-tree vs B+ tree'],
+      columns: [
+        ['比较项', 'Aspect'],
+        ['B 树', 'B-tree'],
+        ['B+ 树', 'B+ tree'],
+      ],
+      rows: [
+        [
+          ['记录位置', 'Where records live'],
+          ['每个节点都可能带记录', 'Records may sit in any node'],
+          ['只在叶子层', 'Leaf level only'],
+        ],
+        [
+          ['内部关键字', 'Internal keys'],
+          ['就是记录关键字，命中即可返回', 'Record keys; a hit can return'],
+          ['只是路由分隔键，命中仍要到叶子', 'Routing separators only; a hit still descends'],
+        ],
+        [
+          ['叶子链接', 'Leaf links'],
+          ['通常没有叶子链', 'Usually no leaf chain'],
+          ['有 next 链，支持顺序扫描', 'next chain for ordered scans'],
+        ],
+        [
+          ['点查找', 'Point search'],
+          ['可能在内部节点提前命中', 'May stop at an internal node'],
+          ['固定走到叶子', 'Always reaches a leaf'],
+        ],
+        [
+          ['范围查询', 'Range query'],
+          ['需要树内回溯或中序遍历', 'Needs backtracking or in-order traversal'],
+          ['定位左端后沿叶子链扫描', 'Locate left end, then scan leaves'],
+        ],
+        [
+          ['典型用途', 'Typical use'],
+          ['内存索引、文件系统、部分数据库', 'In-memory indexes, file systems, some databases'],
+          ['数据库 B+ 树索引、范围扫描', 'Database B+ tree indexes, range scans'],
+        ],
+      ],
+    },
+    takeaway: ['B 树把记录分散在所有节点；B+ 树把记录集中到叶子，并用叶子链服务范围查询。数据库索引常用 B+ 树，是因为高扇出、稳定到叶和顺序扫描三件事同时成立。', 'A B-tree scatters records across nodes; a B+ tree concentrates them in leaves and uses the leaf chain for ranges. Database indexes favour B+ trees because high fanout, stable leaf paths and ordered scans hold at once.'],
+  },
 ];
 
 const BY_ID = new Map(CONCEPT_PAGES.map((page) => [page.id, page]));

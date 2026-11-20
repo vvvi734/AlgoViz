@@ -4259,6 +4259,18 @@
       "message": "请在 Python 模式运行 / Run the Python preset"
     }
   ],
+  "btree": [
+    {
+      "state": {
+        "type": "array",
+        "values": [
+          "B-tree: use the Python preset"
+        ],
+        "done": true
+      },
+      "message": "请在 Python 模式运行 / Run the Python preset"
+    }
+  ],
   "huffman": [
     {
       "state": {

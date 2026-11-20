@@ -3,6 +3,7 @@ import type { AnyStructureSnapshot, StructureOperation, StructureSnapshot } from
 import { buildBinaryTreeModel, type BinaryTreeVisualModel } from './binaryTreeModel';
 import { buildBstModel, type BstVisualModel } from './bstModel';
 import { buildAvlModel, type AvlVisualModel } from './avlModel';
+import { buildBTreeModel, type BTreeVisualModel } from './btreeModel';
 import { buildLinkedListModel, type LinkedListVisualModel } from './linkedListModel';
 import {
   buildAdvancedLinkedListModel,
@@ -91,6 +92,7 @@ export type VisualModel =
   | BinaryTreeVisualModel
   | BstVisualModel
   | AvlVisualModel
+  | BTreeVisualModel
   | HeapVisualModel
   | HuffmanVisualModel
   | SortingVisualModel
@@ -310,6 +312,11 @@ export function buildVisualModel(
     const model = buildHeapModel(structure, labels.emptyHeap ?? labels.emptyStructure);
     if (!model) return { kind: 'raw', text: labels.invalid };
     return model;
+  }
+
+  if (structure !== undefined && structure.kind === 'btree') {
+    if (kind !== 'array') return { kind: 'raw', text: labels.invalid };
+    return buildBTreeModel(structure);
   }
 
   if (structure !== undefined && structure.kind === 'avl') {

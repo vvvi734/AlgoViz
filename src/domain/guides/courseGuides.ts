@@ -387,6 +387,33 @@ export const COURSE_GUIDES: Record<string, CourseGuide> = {
     ),
   },
 
+  btree: {
+    intro: text(
+      '二叉搜索树每个节点只存一个关键字，树高约为 log₂ n；数据库按页读取，真正昂贵的是访问节点次数。B 树让一个节点存放多个有序关键字，用 k 个关键字分出 k+1 个子树，把分支因子提高到 m，树高降到约 log_m n。所有叶子等深保证查找路径长度稳定；插入通过“下降前分裂满节点”维持这一平衡。代价是节点内比较、分裂搬移和未装满的空间。',
+      'A binary search tree stores one key per node and has height about log₂ n; databases read whole pages, so node visits dominate. A B-tree stores several ordered keys per node and uses k keys to separate k+1 subtrees, raising the branching factor to m and lowering height to about log_m n. Equal leaf depth keeps every search path stable; insertion preserves balance by splitting full nodes before descending. The costs are in-node comparisons, split movement and partially filled nodes.',
+    ),
+    definition: text(
+      'm 阶 B 树是一棵多路平衡查找树：每个节点最多 m 个孩子、m−1 个关键字；含 k 个关键字的内节点恰有 k+1 个孩子，关键字严格递增且孩子按区间归属；除根外每个节点至少 ceil(m/2)−1 个关键字；所有叶子在同一深度。',
+      'An order-m B-tree is a multiway balanced search tree: each node has at most m children and m−1 keys; an internal node with k keys has exactly k+1 children, keys strictly increase and children own disjoint intervals; every non-root node has at least ceil(m/2)−1 keys; all leaves share one depth.',
+    ),
+    ...operations(
+      step('查找：进入当前节点', 'Search: enter the current node'),
+      step('比较节点内关键字', 'Compare keys inside the node'),
+      step('命中则结束；否则按区间选孩子', 'Hit ends; otherwise choose a child by interval', '命中直接返回；未命中时目标只属于一个区间，选择唯一孩子。', 'A hit returns immediately; otherwise the target belongs to exactly one interval, so exactly one child is chosen.'),
+      step('进入下一层，回到比较', 'Descend and compare again', '沿真实孩子引用下降一层，在新节点内重新比较，直到命中或到达叶子；这一阶段会回到“比较节点内关键字”。', 'Follow a real child reference down one level and compare again inside the new node, until a hit or a leaf; this stage loops back to “compare keys inside the node”.'),
+      step('插入：只读定位并拒绝重复', 'Insert: locate read-only and reject duplicates', '先确认关键字不存在；重复键明确拒绝，树保持不变。', 'Confirm absence first; a duplicate is explicitly rejected with the tree unchanged.'),
+      step('检查将进入的满节点', 'Check the full node before entering', '根满先分裂；此后每个满孩子都在下降前分裂。', 'A full root splits first; every full child splits before descending.'),
+      step('分裂：中间关键字上升', 'Split: the median rises', '满节点 3 键分成左 1 键、上升 1 键、右 1 键，孩子随关键字一起分配。', 'A full three-key node becomes one key on the left, one promoted key and one on the right; children move with their keys.'),
+      step('选择子树继续下降', 'Choose the subtree and continue'),
+      step('到达叶子插入', 'Insert at the leaf', '目标叶子在下降前已确保有空格，写入后关键字仍有序。', 'The target leaf is guaranteed to have room before descent; after writing, keys stay ordered.'),
+      step('结束：恢复全部约束', 'Finish: restore every invariant', '检查关键字有序、区间对应、非根下限和叶子同深。', 'Check ordered keys, matching intervals, the non-root minimum and equal leaf depth.'),
+    ),
+    conditions: list(
+      ['本课固定 m=4：最多 4 个孩子、3 个关键字；非根至少 1 个关键字，根非叶时至少 2 个孩子。', '树高 h=O(log_m n)；查找与插入都只访问 O(log_m n) 个节点，层内比较另计。', '节点容量越大树越矮，但单页比较与数据量增加；真实 m 由页大小和关键字大小决定。'],
+      ['This course fixes m=4: at most four children and three keys; every non-root node keeps at least one key, and a non-leaf root has at least two children.', 'Height is h=O(log_m n); search and insertion visit O(log_m n) nodes, with in-node comparisons counted separately.', 'Larger node capacity lowers height but increases per-page comparisons and payload; real m follows page and key sizes.'],
+    ),
+  },
+
   heap: {
     intro: text(
       '需要反复取最大值时，普通数组每次扫描要 O(n)，维护完全有序数组又要为插入和删除搬移大量元素。最大堆用完全二叉树形状把最大值放在根，插入/删除堆顶只沿一条根叶路径走 O(log n)，建堆可在线性时间完成。代价是堆只保证父子偏序，不保证整体有序，也不能高效查找任意元素。',

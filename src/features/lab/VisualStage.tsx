@@ -28,6 +28,7 @@ import { CriticalPathVisual, TopologicalSortVisual } from './DAGVisuals';
 import { ConnectedComponentsVisual, KosarajuVisual } from './ComponentVisuals';
 import { BstVisual } from './BstVisual';
 import { AvlVisual } from './AvlVisual';
+import { BTreeVisual } from './BTreeVisual';
 import { HeapVisual } from './HeapVisual';
 import { HuffmanVisual } from './HuffmanVisual';
 import { SortingVisual } from './SortingVisual';
@@ -44,6 +45,7 @@ import type { CriticalVisualModel, TopologicalVisualModel } from '../../domain/v
 import type { ConnectedComponentsVisualModel, SccVisualModel } from '../../domain/visualization/componentsModel';
 import type { BstVisualModel } from '../../domain/visualization/bstModel';
 import type { AvlVisualModel } from '../../domain/visualization/avlModel';
+import type { BTreeVisualModel } from '../../domain/visualization/btreeModel';
 
 const GRAPH_OPERATION_KEYS: Record<GraphOperation, string> = {
   init: 'graphOpInit',
@@ -384,6 +386,9 @@ export function VisualStage({ event }: { event: TraceEvent | undefined }) {
     case 'avl':
       content = <AvlVisual model={model as AvlVisualModel} />;
       break;
+    case 'btree':
+      content = <BTreeVisual model={model as BTreeVisualModel} />;
+      break;
     case 'max-heap':
       content = <HeapVisual model={model} />;
       break;
@@ -591,6 +596,7 @@ export function VisualStage({ event }: { event: TraceEvent | undefined }) {
     model.kind === 'binary-tree' ||
     model.kind === 'bst' ||
     model.kind === 'avl' ||
+    model.kind === 'btree' ||
     model.kind === 'max-heap' ||
     model.kind === 'huffman' ||
     model.kind === 'sorting' ||

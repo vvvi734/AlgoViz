@@ -21,6 +21,7 @@ import { doublyLinkedListLesson } from './doublyLinkedList';
 import { circularLinkedListLesson } from './circularLinkedList';
 import { binaryTreeLesson } from './binaryTree';
 import { bstLesson } from './bstLesson';
+import { btreeLesson } from './btreeLesson';
 import { avlLesson } from './avlLesson';
 import { heapLesson } from './heapLesson';
 import { huffmanLesson } from './huffmanLesson';
@@ -88,6 +89,7 @@ const BUNDLED: unknown[] = [
   circularLinkedListLesson,
   binaryTreeLesson,
   bstLesson,
+  btreeLesson,
   avlLesson,
   heapLesson,
   huffmanLesson,

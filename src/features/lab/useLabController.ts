@@ -24,6 +24,10 @@ import {
   type AvlPresetId,
 } from '../../domain/algorithms/avlExamples';
 import {
+  btreePresetInput,
+  type BtreePresetId,
+} from '../../domain/algorithms/btreeExamples';
+import {
   heapPresetInput,
   type HeapPresetId,
 } from '../../domain/algorithms/heapExamples';
@@ -88,6 +92,11 @@ export interface LabController {
    * changes the input; the real trace still requires the user to press Run.
    */
   selectAvlPreset: (preset: AvlPresetId) => void;
+  /**
+   * SEARCH-04: select one official order-4 B-tree example by rewriting the
+   * `{preset, operation, tree, target}` input. It never runs code.
+   */
+  selectBTreePreset: (preset: BtreePresetId) => void;
   /**
    * T3: select one official max-heap example (build / push / extract / sort)
    * by rewriting the object input. It never runs code.
@@ -189,7 +198,7 @@ export function useLabController(): LabController {
     // real Python presets. Default those courses to Python; the legacy JS
     // examples remain available for the simpler array courses.
     const preferredLang: CodeLanguage =
-      id === 'stack' || id === 'queue' || id === 'linked' || id === 'doubly' || id === 'circular' || id === 'seqlist' || id === 'inorder' || id === 'bst' || id === 'avl' || id === 'heap' || id === 'huffman' || id === 'selection' || id === 'insertion' || id === 'shell' || id === 'quick' || id === 'merge' || id === 'linear' || id === 'binary' || id === 'hash-chain' || id === 'hash-probe' || id === 'kmp' || id === 'sparse-transpose' || id === 'factorial' || id === 'fib' || isGraphAlgorithm(id) ? 'python' : codeLang;
+      id === 'stack' || id === 'queue' || id === 'linked' || id === 'doubly' || id === 'circular' || id === 'seqlist' || id === 'inorder' || id === 'bst' || id === 'avl' || id === 'btree' || id === 'heap' || id === 'huffman' || id === 'selection' || id === 'insertion' || id === 'shell' || id === 'quick' || id === 'merge' || id === 'linear' || id === 'binary' || id === 'hash-chain' || id === 'hash-probe' || id === 'kmp' || id === 'sparse-transpose' || id === 'factorial' || id === 'fib' || isGraphAlgorithm(id) ? 'python' : codeLang;
     if (preferredLang !== codeLang) {
       setCodeLangState(preferredLang);
       safeSet(CODE_LANG_KEY, preferredLang);
@@ -225,6 +234,12 @@ export function useLabController(): LabController {
   const selectAvlPreset = useCallback((preset: AvlPresetId) => {
     playback.stop();
     setInputJson(JSON.stringify(avlPresetInput(preset)));
+    setStatus({ text: '', error: false });
+  }, [playback]);
+
+  const selectBTreePreset = useCallback((preset: BtreePresetId) => {
+    playback.stop();
+    setInputJson(JSON.stringify(btreePresetInput(preset)));
     setStatus({ text: '', error: false });
   }, [playback]);
 
@@ -350,6 +365,7 @@ export function useLabController(): LabController {
     selectTreeMode,
     selectBstPreset,
     selectAvlPreset,
+    selectBTreePreset,
     selectHeapPreset,
     selectHuffmanPreset,
     selectSequentialListPreset,

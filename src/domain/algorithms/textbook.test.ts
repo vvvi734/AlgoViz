@@ -48,12 +48,14 @@ describe('textbook directory (UX-03)', () => {
       'algorithm-efficiency',
       'array-basics',
       'binary-tree',
+      'bplus-tree',
       'graph-basics',
       'graph-storage',
       'intro-adt',
       'intro-concepts',
       'intro-logical-physical',
       'linear-basics',
+      'multiway-tree',
       'sort-basics',
       'sparse-matrix',
       'special-matrices',
@@ -69,7 +71,7 @@ describe('textbook directory (UX-03)', () => {
     expect(ids).toHaveLength(Object.keys(catalog).length);
     expect(new Set(ids).size).toBe(ids.length);
     expect(new Set(ids)).toEqual(new Set(Object.keys(catalog)));
-    expect(ids).toHaveLength(36);
+    expect(ids).toHaveLength(37);
   });
 
   it('wires the authored string concept and runnable KMP into chapter 5', () => {
@@ -165,6 +167,21 @@ describe('textbook directory (UX-03)', () => {
     expect(search.topics.find((topic) => topic.id === 'ordered-search')?.algorithms[0].id).toBe('binary');
   });
 
+  it('wires the B-tree and B+ tree concept pages plus the B-tree demo into chapter 8', () => {
+    const search = nav.find((chapter) => chapter.id === 'ch8-search')!;
+    const btreeConcept = search.topics.find((topic) => topic.id === 'multiway-tree')!;
+    const bplusConcept = search.topics.find((topic) => topic.id === 'bplus-tree')!;
+    const demo = search.topics.find((topic) => topic.id === 'btree-demo')!;
+    expect(btreeConcept.kind).toBe('concept');
+    expect(btreeConcept.conceptId).toBe('b-tree');
+    expect(btreeConcept.planned).toBeUndefined();
+    expect(bplusConcept.kind).toBe('concept');
+    expect(bplusConcept.conceptId).toBe('b-plus-tree');
+    expect(demo.kind).toBe('algorithm');
+    expect(demo.algorithms.map((algorithm) => algorithm.id)).toEqual(['btree']);
+    expect(textbookPathFor(catalog, 'btree')).toEqual({ chapterId: 'ch8-search', topicId: 'btree-demo' });
+  });
+
   it('follows the textbook sorting order and keeps shell, heap, merge and quick authored', () => {
     const sort = nav.find((chapter) => chapter.id === 'ch9-sort')!;
     expect(sort.topics.map((topic) => topic.id)).toEqual([
@@ -231,6 +248,7 @@ describe('textbook directory (UX-03)', () => {
       'ordered-search',
       'bst',
       'avl',
+      'btree-demo',
       'bubble-sort',
       'selection-sort',
       'insertion-sort',

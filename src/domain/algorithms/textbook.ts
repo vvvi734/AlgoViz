@@ -406,9 +406,22 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
       },
       {
         id: 'multiway-tree',
-        title: { zh: '多路查找树', en: 'Multiway search tree' },
+        title: { zh: 'B 树（B-Tree）', en: 'B-tree' },
         algorithms: [],
-        planned: true,
+        concept: true,
+        conceptId: 'b-tree',
+      },
+      {
+        id: 'bplus-tree',
+        title: { zh: 'B+ 树（B+ Tree）', en: 'B+ tree' },
+        algorithms: [],
+        concept: true,
+        conceptId: 'b-plus-tree',
+      },
+      {
+        id: 'btree-demo',
+        title: { zh: 'B 树查找与插入', en: 'B-tree search and insertion' },
+        algorithms: [{ id: 'btree' }],
       },
       {
         id: 'hash-search',

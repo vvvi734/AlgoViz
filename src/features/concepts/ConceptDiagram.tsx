@@ -833,6 +833,114 @@ export function ConceptDiagram({ kind, lang }: { kind: ConceptDiagramKind; lang:
     );
   }
 
+  if (kind === 'b-tree') {
+    const drawNode = (x: number, y: number, keys: readonly number[], width: number) => (
+      <g key={`${x}-${y}`}>
+        <rect className="diagram-box" x={x} y={y} width={width} height="44" rx="7" />
+        {keys.map((key, index) => (
+          <g key={key}>
+            <rect className="diagram-cell" x={x + 8 + index * 44} y={y + 8} width="44" height="28" rx="3" />
+            <text className="diagram-node-text" x={x + 30 + index * 44} y={y + 29} textAnchor="middle">{key}</text>
+          </g>
+        ))}
+      </g>
+    );
+    return (
+      <svg className="concept-svg" viewBox="0 0 760 380" role="img" aria-label={L('4 阶 B 树结构示意', 'A 4-order B-tree')}>
+        <text className="diagram-label diagram-label-strong" x="60" y="30">{L('4 阶 B 树：一个节点存放多个关键字', '4-order B-tree: several keys per node')}</text>
+        <text className="diagram-note" x="700" y="30" textAnchor="end">{L('m = 4', 'm = 4')}</text>
+
+        <line className="diagram-line" x1="336" y1="116" x2="108" y2="202" />
+        <line className="diagram-line" x1="380" y1="116" x2="340" y2="202" />
+        <line className="diagram-line" x1="424" y1="116" x2="572" y2="202" />
+        <circle className="diagram-node-round" cx="336" cy="116" r="3" />
+        <circle className="diagram-node-round" cx="380" cy="116" r="3" />
+        <circle className="diagram-node-round" cx="424" cy="116" r="3" />
+
+        {drawNode(328, 72, [20, 40], 104)}
+        {drawNode(78, 202, [10], 60)}
+        {drawNode(310, 202, [30], 60)}
+        {drawNode(498, 202, [50, 60, 70], 148)}
+
+        <text className="diagram-label" x="380" y="58" textAnchor="middle">{L('根：2 个关键字、3 个孩子', 'Root: 2 keys, 3 children')}</text>
+        <text className="diagram-note" x="108" y="272" textAnchor="middle">{L('区间 < 20', 'interval < 20')}</text>
+        <text className="diagram-note" x="340" y="272" textAnchor="middle">{L('20 < k < 40', '20 < k < 40')}</text>
+        <text className="diagram-note" x="572" y="272" textAnchor="middle">{L('区间 > 40', 'interval > 40')}</text>
+        <text className="diagram-note" x="78" y="298" textAnchor="start">{L('叶子 · 1 键', 'leaf · 1 key')}</text>
+        <text className="diagram-note" x="310" y="298" textAnchor="start">{L('叶子 · 1 键', 'leaf · 1 key')}</text>
+        <text className="diagram-note" x="498" y="298" textAnchor="start">{L('叶子 · 3 键', 'leaf · 3 keys')}</text>
+
+        <rect className="diagram-band" x="60" y="318" width="640" height="46" rx="9" />
+        <text className="diagram-label" x="380" y="346" textAnchor="middle">
+          {L('最多 4 个孩子、3 个关键字；非根至少 1 个关键字，所有叶子同层', 'At most 4 children and 3 keys; non-root nodes keep at least 1 key; all leaves share one depth')}
+        </text>
+      </svg>
+    );
+  }
+
+  if (kind === 'b-plus-tree') {
+    const keyWidth = 36;
+    const drawNode = (
+      x: number,
+      y: number,
+      keys: readonly number[],
+      tone: 'index' | 'record',
+    ) => {
+      const width = keys.length * keyWidth + 16;
+      return (
+        <g key={`${tone}-${x}-${y}`}>
+          <rect className={tone === 'index' ? 'diagram-box' : 'diagram-chip'} x={x} y={y} width={width} height="44" rx="7" />
+          {keys.map((key, index) => (
+            <g key={key}>
+              <rect className="diagram-cell" x={x + 8 + index * keyWidth} y={y + 8} width={keyWidth} height="28" rx="3" />
+              <text className="diagram-node-text" x={x + 26 + index * keyWidth} y={y + 29} textAnchor="middle">{key}</text>
+            </g>
+          ))}
+        </g>
+      );
+    };
+    return (
+      <svg className="concept-svg" viewBox="0 0 760 450" role="img" aria-label={L('B 树与 B+ 树并排结构对比', 'B-tree and B+ tree side by side')}>
+        <text className="diagram-label diagram-label-strong" x="60" y="28">{L('同一组关键字，两种组织方式', 'The same keys, two organisations')}</text>
+
+        <rect className="diagram-box" x="30" y="44" width="330" height="330" rx="10" />
+        <rect className="diagram-box" x="400" y="44" width="330" height="330" rx="10" />
+        <text className="diagram-label diagram-label-strong" x="195" y="74" textAnchor="middle">{L('B 树', 'B-tree')}</text>
+        <text className="diagram-label diagram-label-strong" x="578" y="74" textAnchor="middle">{L('B+ 树', 'B+ tree')}</text>
+        <text className="diagram-note" x="195" y="94" textAnchor="middle">{L('记录可出现在任意节点', 'records may sit in any node')}</text>
+        <text className="diagram-note" x="578" y="94" textAnchor="middle">{L('内部节点只做索引', 'internal nodes only route')}</text>
+
+        <line className="diagram-line" x1="151" y1="152" x2="80" y2="212" />
+        <line className="diagram-line" x1="195" y1="152" x2="180" y2="212" />
+        <line className="diagram-line" x1="239" y1="152" x2="280" y2="212" />
+        {drawNode(143, 108, [20, 40], 'index')}
+        {drawNode(50, 212, [10], 'record')}
+        {drawNode(150, 212, [30], 'record')}
+        {drawNode(228, 212, [60, 70], 'record')}
+        <text className="diagram-note" x="195" y="286" textAnchor="middle">{L('命中内部关键字即可结束', 'a hit at an internal node can stop')}</text>
+
+        <line className="diagram-line" x1="542" y1="152" x2="478" y2="212" />
+        <line className="diagram-line" x1="578" y1="152" x2="578" y2="212" />
+        <line className="diagram-line" x1="614" y1="152" x2="678" y2="212" />
+        {drawNode(534, 108, [20, 40], 'index')}
+        {drawNode(434, 212, [5, 10], 'record')}
+        {drawNode(534, 212, [25, 30], 'record')}
+        {drawNode(634, 212, [45, 60], 'record')}
+        <line className="diagram-guide" x1="522" y1="284" x2="534" y2="284" />
+        <line className="diagram-guide" x1="622" y1="284" x2="634" y2="284" />
+        <polygon className="diagram-arrow" points="534,284 526,279 526,289" />
+        <polygon className="diagram-arrow" points="634,284 626,279 626,289" />
+        <text className="diagram-note" x="578" y="306" textAnchor="middle">{L('叶子 next 链：顺序扫描', 'leaf next chain: ordered scan')}</text>
+        <text className="diagram-note" x="578" y="330" textAnchor="middle">{L('查找必须走到叶子取记录', 'search must reach a leaf for the record')}</text>
+
+        <rect className="diagram-band" x="60" y="394" width="640" height="42" rx="9" />
+        <text className="diagram-label" x="380" y="420" textAnchor="middle">
+          {L('B 树：记录分散、可提前命中 · B+ 树：记录集中、叶子链服务范围查询', 'B-tree: records everywhere, early hits · B+ tree: records in leaves, chain serves ranges')}
+        </text>
+      </svg>
+    );
+  }
+
   const graphNodes: Array<[string, number, number]> = [
     ['A', 170, 120], ['B', 330, 90], ['C', 500, 140],
     ['D', 240, 240], ['E', 430, 250], ['F', 620, 220],
