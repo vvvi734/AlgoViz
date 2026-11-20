@@ -1,7 +1,23 @@
 /*
+ * 教材素材说明
+ * 用户提供的《数据结构与算法（Windows版）》未包含本算法的对应实现。
+ * 本文件保留 AlgoViz 原创 C 实现与现有注释，未冒充教材原文。
+ */
+
+/*
  * AlgoViz reference implementation: hash table with chained buckets.
  * Original code written for this repository under the MIT License.
  * Each bucket is a singly linked list; collisions append to the same chain.
+ *
+ * Reading guide:
+ * 1. Map a key to bucket key % table_size.
+ * 2. Each bucket is a chain of nodes holding colliding keys.
+ * 3. Insert rejects duplicates; search scans only the target bucket's chain.
+ *
+ * Complexity: Expected time: O(1 + alpha) per operation, O(n) worst; extra space O(n
+ *   + table_size).
+ * Convention: Non-negative integer keys; table size is fixed at compile/construction
+ *   time.
  */
 
 #include <stdbool.h>
@@ -30,6 +46,7 @@ int hash_index(int key) {
     return index < 0 ? index + TABLE_SIZE : index;
 }
 
+// Search the target bucket before appending; the chain holds only colliding keys.
 bool table_insert(HashTable *table, int key) {
     int index = hash_index(key);
     for (Node *node = table->buckets[index]; node != NULL; node = node->next) {

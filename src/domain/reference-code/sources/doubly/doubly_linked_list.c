@@ -1,8 +1,25 @@
 /*
+ * 教材素材说明
+ * 用户提供的《数据结构与算法（Windows版）》未包含本算法的对应实现。
+ * 本文件保留 AlgoViz 原创 C 实现与现有注释，未冒充教材原文。
+ */
+
+/*
  * AlgoViz reference implementation: doubly linked list.
  * Original code written for this repository under the MIT License.
  * Each node stores prev/next pointers; append and remove are O(1)
  * once the target node is known.
+ *
+ * Reading guide:
+ * 1. Each node stores prev and next; the list keeps head and tail.
+ * 2. Appending links the new node after tail and updates tail.
+ * 3. Removing a known node patches its two neighbours; head/tail are fixed when
+ *    necessary.
+ * 4. Forward traversal follows next; backward traversal follows prev.
+ *
+ * Complexity: O(1) splice at a known node, O(n) search; extra space O(n).
+ * Convention: NULL/None marks both ends; prev and next must stay mutually
+ *   consistent.
  */
 
 #include <stdio.h>
@@ -24,6 +41,7 @@ void list_init(DoublyList *list) {
     list->tail = NULL;
 }
 
+// Append wires prev and next first; only then does tail move to the new node.
 Node *list_append(DoublyList *list, int value) {
     Node *node = (Node *)malloc(sizeof(Node));
     if (node == NULL) {

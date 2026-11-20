@@ -1,7 +1,23 @@
 /*
+ * 教材素材说明
+ * 用户提供的《数据结构与算法（Windows版）》未包含本算法的对应实现。
+ * 本文件保留 AlgoViz 原创 C 实现与现有注释，未冒充教材原文。
+ */
+
+/*
  * AlgoViz reference implementation: connected components.
  * Original code written for this repository under the MIT License.
  * Runs DFS from every unvisited vertex; one DFS tree is one component.
+ *
+ * Reading guide:
+ * 1. Scan every vertex from 0 to V - 1.
+ * 2. Each unvisited vertex starts a new component and receives a fresh component id.
+ * 3. DFS marks all vertices reachable from that start; disconnected vertices form
+ *    further components.
+ *
+ * Complexity: O(V + E) for adjacency lists, O(V^2) for an adjacency matrix; extra
+ *   space O(V).
+ * Convention: Components are numbered in ascending order of their smallest vertex.
  */
 
 #include <stdbool.h>
@@ -24,6 +40,7 @@ void visit(const int graph[VERTEX_COUNT][VERTEX_COUNT], int vertex, bool visited
     }
 }
 
+// Every unvisited start opens a new component; one DFS marks all vertices reachable from it.
 int count_components(const int graph[VERTEX_COUNT][VERTEX_COUNT]) {
     bool visited[VERTEX_COUNT] = {false};
     int components = 0;

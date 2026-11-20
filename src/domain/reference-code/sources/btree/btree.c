@@ -1,240 +1,193 @@
 /*
- * AlgoViz reference implementation: order-4 B-tree (search and insertion).
- * Original code written for this repository under the MIT License.
- *
- * Reading guide:
- * 1. One node holds at most 3 sorted keys and 4 child pointers.
- * 2. A node with k keys has exactly k + 1 children; child i owns the interval
- *    between key i - 1 and key i.
- * 3. Search compares keys inside one node, then follows exactly one child.
- * 4. Insertion rejects duplicates, splits a full root first, then splits every
- *    full child before descending into it.
- *
- * Complexity: height h = O(log_4 n); search and insertion visit O(h) nodes.
- * Space: O(n) nodes. Deletion is intentionally out of scope.
- * Convention: integer keys are unique; the demo prints the final tree level by
- * level.
+ * AlgoViz 教材参考 C 实现
+ * 来源：用户提供的《数据结构与算法（Windows版）》第8章查找/04B树_BTree.c
+ * 算法代码与教材注释逐字转录；本文件仅补充来源说明并按 UTF-8 保存。
+ * 原始版权归原教材作者/出版方所有，仅用于本地学习与代码阅读。
  */
 
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include "stdio.h"    
+#include "stdlib.h"   
 
-#define ORDER 4
-#define MAX_KEYS (ORDER - 1)
-#define MAX_CHILDREN ORDER
+#include "math.h"  
+#include "time.h"
 
-typedef struct BTreeNode {
-    int keys[MAX_KEYS];
-    int key_count;
-    struct BTreeNode *children[MAX_CHILDREN];
-    int child_count;
-    bool leaf;
-} BTreeNode;
+#define OK 1
+#define ERROR 0
+#define TRUE 1
+#define FALSE 0
 
-static BTreeNode *btree_new_node(bool leaf) {
-    BTreeNode *node = (BTreeNode *)calloc(1, sizeof(BTreeNode));
-    if (node != NULL) {
-        node->leaf = leaf;
-    }
-    return node;
+#define MAXSIZE 100 /* 存储空间初始分配量 */
+
+#define m 3 /*  B树的阶，暂设为3 */ 
+#define N 17 /*  数据元素个数 */ 
+#define MAX 5 /*  字符串最大长度+1  */
+
+typedef int Status;	/* Status是函数的类型,其值是函数结果状态代码，如OK等 */ 
+
+typedef struct BTNode
+{
+	int keynum; /*  结点中关键字个数，即结点的大小 */ 
+	struct BTNode *parent; /*  指向双亲结点 */ 
+	struct Node /*  结点向量类型 */ 
+	{
+		 int key; /*  关键字向量 */ 
+		 struct BTNode *ptr; /*  子树指针向量 */ 
+		 int recptr; /*  记录指针向量 */ 
+	}node[m+1]; /*  key,recptr的0号单元未用 */ 
+}BTNode,*BTree; /*  B树结点和B树的类型 */ 
+
+typedef struct
+{
+	BTNode *pt; /*  指向找到的结点 */ 
+	int i; /*  1..m，在结点中的关键字序号 */ 
+	int tag; /*  1:查找成功，O:查找失败 */ 
+}Result; /*  B树的查找结果类型 */ 
+
+/*  在p->node[1..keynum].key中查找i,使得p->node[i].key≤K＜p->node[i+1].key */ 
+int Search(BTree p, int K)
+{ 
+	int i=0,j;
+	for(j=1;j<=p->keynum;j++)
+	 if(p->node[j].key<=K)
+	   i=j;
+	return i;
 }
 
-/* Read-only search. Returns true on a hit; comparisons may be NULL. */
-bool btree_search(const BTreeNode *node, int target, int *comparisons) {
-    while (node != NULL) {
-        int index = 0;
-        while (index < node->key_count) {
-            if (comparisons != NULL) {
-                (*comparisons)++;
-            }
-            if (target == node->keys[index]) {
-                return true;
-            }
-            if (target < node->keys[index]) {
-                break;
-            }
-            index++;
-        }
-        if (node->leaf) {
-            return false;
-        }
-        node = node->children[index];
-    }
-    return false;
+/*  在m阶B树T上查找关键字K，返回结果(pt,i,tag)。若查找成功，则特征值 */ 
+/*  tag=1，指针pt所指结点中第i个关键字等于K；否则特征值tag=0，等于K的  */
+/*  关键字应插入在指针Pt所指结点中第i和第i+1个关键字之间。 */
+Result SearchBTree(BTree T, int K)
+{ 
+	BTree p=T,q=NULL; /*  初始化，p指向待查结点，q指向p的双亲  */
+	Status found=FALSE;
+	int i=0;
+	Result r;
+	while(p&&!found)
+	{
+	 i=Search(p,K); /*  p->node[i].key≤K<p->node[i+1].key  */
+	 if(i>0&&p->node[i].key==K) /*  找到待查关键字 */ 
+	   found=TRUE;
+	 else
+	 {
+	   q=p;
+	   p=p->node[i].ptr;
+	 }
+	}
+	r.i=i;
+	if(found) /*  查找成功  */
+	{
+	 r.pt=p;
+	 r.tag=1;
+	}
+	else /*   查找不成功，返回K的插入位置信息 */ 
+	{
+	 r.pt=q;
+	 r.tag=0;
+	}
+	return r;
 }
 
-/* Split a full child into a left node (old object) and a right node.
- * The median key rises into parent at child_index. The parent must have room.
- */
-static BTreeNode *btree_split_child(BTreeNode *parent, int child_index) {
-    BTreeNode *left = parent->children[child_index];
-    int promoted = left->keys[1];
-
-    BTreeNode *right = btree_new_node(left->leaf);
-    if (right == NULL) {
-        return NULL;
-    }
-    right->keys[0] = left->keys[2];
-    right->key_count = 1;
-
-    if (!left->leaf) {
-        right->children[0] = left->children[2];
-        right->children[1] = left->children[3];
-        right->child_count = 2;
-        left->child_count = 2;
-    }
-    left->keys[1] = 0;
-    left->keys[2] = 0;
-    left->key_count = 1;
-
-    for (int i = parent->key_count; i > child_index; i--) {
-        parent->keys[i] = parent->keys[i - 1];
-    }
-    parent->keys[child_index] = promoted;
-    parent->key_count++;
-
-    for (int i = parent->child_count; i > child_index + 1; i--) {
-        parent->children[i] = parent->children[i - 1];
-    }
-    parent->children[child_index + 1] = right;
-    parent->child_count++;
-    return right;
+/* 将r->key、r和ap分别插入到q->key[i+1]、q->recptr[i+1]和q->ptr[i+1]中 */ 
+void Insert(BTree *q,int i,int key,BTree ap)
+{ 
+	int j;
+	for(j=(*q)->keynum;j>i;j--) /*  空出(*q)->node[i+1]  */
+		(*q)->node[j+1]=(*q)->node[j];
+	(*q)->node[i+1].key=key;
+	(*q)->node[i+1].ptr=ap;
+	(*q)->node[i+1].recptr=key;
+	(*q)->keynum++;
 }
 
-/* Insert one unique key. Returns the (possibly new) root, or NULL only on
- * allocation failure. A duplicate leaves the tree unchanged. */
-BTreeNode *btree_insert(BTreeNode *root, int value) {
-    if (root == NULL) {
-        root = btree_new_node(true);
-        if (root == NULL) {
-            return NULL;
-        }
-        root->keys[0] = value;
-        root->key_count = 1;
-        return root;
-    }
-
-    /* Locate before mutating, so a rejected duplicate cannot alter the tree. */
-    if (btree_search(root, value, NULL)) {
-        return root;
-    }
-
-    if (root->key_count == MAX_KEYS) {
-        BTreeNode *new_root = btree_new_node(false);
-        if (new_root == NULL) {
-            return root;
-        }
-        new_root->children[0] = root;
-        new_root->child_count = 1;
-        BTreeNode *right = btree_split_child(new_root, 0);
-        if (right == NULL) {
-            free(new_root);
-            return root;
-        }
-        root = new_root;
-    }
-
-    BTreeNode *node = root;
-    while (!node->leaf) {
-        int index = 0;
-        while (index < node->key_count && value > node->keys[index]) {
-            index++;
-        }
-        BTreeNode *child = node->children[index];
-        if (child->key_count == MAX_KEYS) {
-            int promoted = child->keys[1];
-            BTreeNode *right = btree_split_child(node, index);
-            if (right == NULL) {
-                return root;
-            }
-            /* The median has moved up; choose the side that owns value. */
-            if (value > promoted) {
-                child = right;
-            }
-        }
-        node = child;
-    }
-
-    int position = node->key_count;
-    while (position > 0 && node->keys[position - 1] > value) {
-        node->keys[position] = node->keys[position - 1];
-        position--;
-    }
-    node->keys[position] = value;
-    node->key_count++;
-    return root;
+/* 将结点q分裂成两个结点，前一半保留，后一半移入新生结点ap */ 
+void split(BTree *q,BTree *ap)
+{ 
+	int i,s=(m+1)/2;
+	*ap=(BTree)malloc(sizeof(BTNode)); /*  生成新结点ap */ 
+	(*ap)->node[0].ptr=(*q)->node[s].ptr; /*  后一半移入ap */ 
+	for(i=s+1;i<=m;i++)
+	{
+		 (*ap)->node[i-s]=(*q)->node[i];
+		 if((*ap)->node[i-s].ptr)
+			(*ap)->node[i-s].ptr->parent=*ap;
+	}
+	(*ap)->keynum=m-s;
+	(*ap)->parent=(*q)->parent;
+	(*q)->keynum=s-1; /*  q的前一半保留，修改keynum */ 
 }
 
-static void btree_print_level(const BTreeNode *node) {
-    if (node == NULL) {
-        return;
-    }
-    printf("[");
-    for (int i = 0; i < node->key_count; i++) {
-        printf("%s%d", i == 0 ? "" : ",", node->keys[i]);
-    }
-    printf("]");
+/* 生成含信息(T,r,ap)的新的根结点&T，原T和ap为子树指针 */ 
+void NewRoot(BTree *T,int key,BTree ap)
+{ 
+	BTree p;
+	p=(BTree)malloc(sizeof(BTNode));
+	p->node[0].ptr=*T;
+	*T=p;
+	if((*T)->node[0].ptr)
+		(*T)->node[0].ptr->parent=*T;
+	(*T)->parent=NULL;
+	(*T)->keynum=1;
+	(*T)->node[1].key=key;
+	(*T)->node[1].recptr=key;
+	(*T)->node[1].ptr=ap;
+	if((*T)->node[1].ptr)
+		(*T)->node[1].ptr->parent=*T;
 }
 
-static void btree_print_tree(const BTreeNode *root) {
-    const BTreeNode *queue[64];
-    int front = 0;
-    int rear = 0;
-    if (root != NULL) {
-        queue[rear++] = root;
-    }
-    while (front < rear) {
-        int level_size = rear - front;
-        for (int i = 0; i < level_size; i++) {
-            const BTreeNode *node = queue[front++];
-            btree_print_level(node);
-            if (!node->leaf) {
-                for (int j = 0; j < node->child_count && rear < 64; j++) {
-                    queue[rear++] = node->children[j];
-                }
-            }
-        }
-        printf("\n");
-    }
+/*  在m阶B树T上结点*q的key[i]与key[i+1]之间插入关键字K的指针r。若引起 */ 
+/*  结点过大,则沿双亲链进行必要的结点分裂调整,使T仍是m阶B树。 */
+void InsertBTree(BTree *T,int key,BTree q,int i)
+{ 
+	BTree ap=NULL;
+	Status finished=FALSE;
+	int s;
+	int rx;
+	rx=key;
+	while(q&&!finished)
+	{
+		Insert(&q,i,rx,ap); /*  将r->key、r和ap分别插入到q->key[i+1]、q->recptr[i+1]和q->ptr[i+1]中  */
+		if(q->keynum<m)
+			finished=TRUE; /*  插入完成 */ 
+		else
+		{ /*  分裂结点*q */ 
+			s=(m+1)/2;
+			rx=q->node[s].recptr;
+			split(&q,&ap); /*  将q->key[s+1..m],q->ptr[s..m]和q->recptr[s+1..m]移入新结点*ap  */
+			q=q->parent;
+			if(q)
+				i=Search(q,key); /*  在双亲结点*q中查找rx->key的插入位置  */
+		}
+	}
+	if(!finished) /*  T是空树(参数q初值为NULL)或根结点已分裂为结点*q和*ap */ 
+		NewRoot(T,rx,ap); /*  生成含信息(T,rx,ap)的新的根结点*T，原T和ap为子树指针 */ 
 }
 
-static void btree_free(BTreeNode *node) {
-    if (node == NULL) {
-        return;
-    }
-    if (!node->leaf) {
-        for (int i = 0; i < node->child_count; i++) {
-            btree_free(node->children[i]);
-        }
-    }
-    free(node);
+
+void print(BTNode c,int i) /*  TraverseDSTable()调用的函数  */
+{
+	printf("(%d)",c.node[i].key);
 }
 
-int main(void) {
-    BTreeNode *root = NULL;
-    int values[] = {10, 20, 30, 40, 50, 60, 70, 45};
-    for (int i = 0; i < (int)(sizeof(values) / sizeof(values[0])); i++) {
-        root = btree_insert(root, values[i]);
-    }
+int main()
+{
+	int r[N]={22,16,41,58,8,11,12,16,17,22,23,31,41,52,58,59,61};
+	BTree T=NULL;
+	Result s;
+	int i;
+	for(i=0;i<N;i++)
+	{
+		s=SearchBTree(T,r[i]);
+		if(!s.tag)
+			InsertBTree(&T,r[i],s.pt,s.i);
+	}
+	printf("\n请输入待查找记录的关键字: ");
+	scanf("%d",&i);
+	s=SearchBTree(T,i);
+	if(s.tag)
+		print(*(s.pt),s.i);
+	else
+		printf("没找到");
+	printf("\n");
 
-    printf("B-tree after insertion:\n");
-    btree_print_tree(root);
-
-    int comparisons = 0;
-    bool found_30 = btree_search(root, 30, &comparisons);
-    printf("search 30: %s (%d comparisons)\n",
-           found_30 ? "found" : "missing", comparisons);
-    comparisons = 0;
-    bool found_35 = btree_search(root, 35, &comparisons);
-    printf("search 35: %s (%d comparisons)\n",
-           found_35 ? "found" : "missing", comparisons);
-
-    /* A duplicate is rejected: the same pointer comes back, tree unchanged. */
-    root = btree_insert(root, 45);
-    printf("duplicate 45 rejected; search says %s\n",
-           btree_search(root, 45, NULL) ? "still one key" : "impossible");
-
-    btree_free(root);
-    return 0;
+	return 0;
 }

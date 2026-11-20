@@ -38,7 +38,7 @@ describe('ReferenceCodePanel', () => {
     expect(screen.getByTestId('reference-file-name').textContent).toBe('binary_search.c');
     await waitForCode();
     expect(screen.getByTestId('reference-code-viewer').getAttribute('data-readonly')).toBe('true');
-    expect(screen.getByTestId('reference-code-fallback').textContent).toContain('int binary_search');
+    expect(screen.getByTestId('reference-code-fallback').textContent).toContain('int Binary_Search');
     expect(screen.getByTestId('reference-code-fallback').textContent).toContain('01');
     expect(screen.queryByRole('textbox')).toBeNull();
     expect(screen.queryByTestId('run-btn')).toBeNull();
@@ -70,7 +70,7 @@ describe('ReferenceCodePanel', () => {
     const writeText = navigator.clipboard.writeText as unknown as ReturnType<typeof vi.fn>;
     expect(writeText).toHaveBeenCalledTimes(1);
     const copied = String(writeText.mock.calls[0][0]);
-    expect(copied).toContain('int binary_search');
+    expect(copied).toContain('int Binary_Search');
     expect(copied).toContain('int main(void)');
   });
 
@@ -114,7 +114,7 @@ describe('ReferenceCodePanel', () => {
 
     rerender(panel('merge', '归并排序'));
     await waitFor(() =>
-      expect(screen.getByTestId('reference-code-fallback').textContent).toContain('void merge_sort'),
+      expect(screen.getByTestId('reference-code-fallback').textContent).toContain('void MergeSort'),
     );
     expect(screen.getByTestId('reference-file-name').textContent).toBe('merge_sort.c');
     expect(screen.queryByTestId('reference-implementation-tabs')).toBeNull();

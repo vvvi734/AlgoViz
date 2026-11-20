@@ -1,8 +1,25 @@
 /*
+ * 教材素材说明
+ * 用户提供的《数据结构与算法（Windows版）》未包含本算法的对应实现。
+ * 本文件保留 AlgoViz 原创 C 实现与现有注释，未冒充教材原文。
+ */
+
+/*
  * AlgoViz reference implementation: Bellman-Ford.
  * Original code written for this repository under the MIT License.
  * Relaxes every edge V - 1 times; an extra successful relaxation means a
  * reachable negative cycle. Supports negative edges.
+ *
+ * Reading guide:
+ * 1. Initialise all distances to infinity and the source to 0.
+ * 2. Relax every directed edge V - 1 times; each pass extends paths by at most one
+ *    edge.
+ * 3. Stop early when a full pass makes no change.
+ * 4. One extra pass that still relaxes an edge proves a reachable negative cycle.
+ *
+ * Complexity: O(V * E); extra space O(V) for distances and predecessors.
+ * Convention: Edges are (u, v, weight) with 0-based endpoints; returns None/null on
+ *   a negative cycle.
  */
 
 #include <stdbool.h>
@@ -18,6 +35,7 @@ typedef struct {
     int weight;
 } Edge;
 
+// V - 1 passes suffice because a shortest simple path uses at most V - 1 edges.
 bool bellman_ford(int vertex_count, const Edge edges[], int edge_count, int source, int dist[]) {
     for (int i = 0; i < vertex_count; ++i) {
         dist[i] = INF;

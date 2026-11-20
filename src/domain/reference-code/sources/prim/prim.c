@@ -1,61 +1,125 @@
 /*
- * AlgoViz reference implementation: Prim's minimum spanning tree.
- * Original code written for this repository under the MIT License.
- * Grows one tree from vertex 0 by repeatedly taking the lightest edge that
- * connects a tree vertex to a non-tree vertex.
+ * AlgoViz 教材参考 C 实现
+ * 来源：用户提供的《数据结构与算法（Windows版）》第7章图/05最小生成树_Prim.c
+ * 算法代码与教材注释逐字转录；本文件仅补充来源说明并按 UTF-8 保存。
+ * 原始版权归原教材作者/出版方所有，仅用于本地学习与代码阅读。
  */
 
-#include <stdbool.h>
-#include <stdio.h>
+#include "stdio.h"    
+#include "stdlib.h"   
 
-#define VERTEX_COUNT 5
-#define INF 1000000
+#include "math.h"  
+#include "time.h"
 
-void add_edge(int graph[VERTEX_COUNT][VERTEX_COUNT], int a, int b, int weight) {
-    graph[a][b] = weight;
-    graph[b][a] = weight;
+#define OK 1
+#define ERROR 0
+#define TRUE 1
+#define FALSE 0
+
+#define MAXEDGE 20
+#define MAXVEX 20
+#define GRAPH_INFINITY 65535
+
+typedef int Status;	/* Status是函数的类型,其值是函数结果状态代码，如OK等 */
+
+typedef struct
+{
+	int arc[MAXVEX][MAXVEX];
+	int numVertexes, numEdges;
+}MGraph;
+
+void CreateMGraph(MGraph *G)/* 构件图 */
+{
+	int i, j;
+
+	/* printf("请输入边数和顶点数:"); */
+	G->numEdges=15;
+	G->numVertexes=9;
+
+	for (i = 0; i < G->numVertexes; i++)/* 初始化图 */
+	{
+		for ( j = 0; j < G->numVertexes; j++)
+		{
+			if (i==j)
+				G->arc[i][j]=0;
+			else
+				G->arc[i][j] = G->arc[j][i] = GRAPH_INFINITY;
+		}
+	}
+
+	G->arc[0][1]=10;
+	G->arc[0][5]=11; 
+	G->arc[1][2]=18; 
+	G->arc[1][8]=12; 
+	G->arc[1][6]=16; 
+	G->arc[2][8]=8; 
+	G->arc[2][3]=22; 
+	G->arc[3][8]=21; 
+	G->arc[3][6]=24; 
+	G->arc[3][7]=16;
+	G->arc[3][4]=20;
+	G->arc[4][7]=7; 
+	G->arc[4][5]=26; 
+	G->arc[5][6]=17; 
+	G->arc[6][7]=19; 
+
+	for(i = 0; i < G->numVertexes; i++)
+	{
+		for(j = i; j < G->numVertexes; j++)
+		{
+			G->arc[j][i] =G->arc[i][j];
+		}
+	}
+
 }
 
-int main(void) {
-    int graph[VERTEX_COUNT][VERTEX_COUNT] = {{0}};
-    add_edge(graph, 0, 1, 2);
-    add_edge(graph, 0, 3, 6);
-    add_edge(graph, 1, 2, 3);
-    add_edge(graph, 1, 3, 8);
-    add_edge(graph, 1, 4, 5);
-    add_edge(graph, 2, 4, 7);
-    add_edge(graph, 3, 4, 9);
+/* Prim算法生成最小生成树  */
+void MiniSpanTree_Prim(MGraph G)
+{
+	int min, i, j, k;
+	int adjvex[MAXVEX];		/* 保存相关顶点下标 */
+	int lowcost[MAXVEX];	/* 保存相关顶点间边的权值 */
+	lowcost[0] = 0;/* 初始化第一个权值为0，即v0加入生成树 */
+			/* lowcost的值为0，在这里就是此下标的顶点已经加入生成树 */
+	adjvex[0] = 0;			/* 初始化第一个顶点下标为0 */
+	for(i = 1; i < G.numVertexes; i++)	/* 循环除下标为0外的全部顶点 */
+	{
+		lowcost[i] = G.arc[0][i];	/* 将v0顶点与之有边的权值存入数组 */
+		adjvex[i] = 0;					/* 初始化都为v0的下标 */
+	}
+	for(i = 1; i < G.numVertexes; i++)
+	{
+		min = GRAPH_INFINITY;	/* 初始化最小权值为∞， */
+						/* 通常设置为不可能的大数字如32767、65535等 */
+		j = 1;k = 0;
+		while(j < G.numVertexes)	/* 循环全部顶点 */
+		{
+			if(lowcost[j]!=0 && lowcost[j] < min)/* 如果权值不为0且权值小于min */
+			{	
+				min = lowcost[j];	/* 则让当前权值成为最小值 */
+				k = j;			/* 将当前最小值的下标存入k */
+			}
+			j++;
+		}
+		printf("(%d, %d)\n", adjvex[k], k);/* 打印当前顶点边中权值最小的边 */
+		lowcost[k] = 0;/* 将当前顶点的权值设置为0,表示此顶点已经完成任务 */
+		for(j = 1; j < G.numVertexes; j++)	/* 循环所有顶点 */
+		{
+			if(lowcost[j]!=0 && G.arc[k][j] < lowcost[j]) 
+			{/* 如果下标为k顶点各边权值小于此前这些顶点未被加入生成树权值 */
+				lowcost[j] = G.arc[k][j];/* 将较小的权值存入lowcost相应位置 */
+				adjvex[j] = k;				/* 将下标为k的顶点存入adjvex */
+			}
+		}
+	}
+}
 
-    int key[VERTEX_COUNT];
-    int parent[VERTEX_COUNT];
-    bool selected[VERTEX_COUNT] = {false};
-    for (int i = 0; i < VERTEX_COUNT; ++i) {
-        key[i] = INF;
-        parent[i] = -1;
-    }
-    key[0] = 0;
-
-    int total = 0;
-    printf("mst edges:\n");
-    for (int step = 0; step < VERTEX_COUNT; ++step) {
-        int best = -1;
-        for (int vertex = 0; vertex < VERTEX_COUNT; ++vertex) {
-            if (!selected[vertex] && (best == -1 || key[vertex] < key[best])) {
-                best = vertex;
-            }
-        }
-        selected[best] = true;
-        if (parent[best] != -1) {
-            printf("%d - %d : %d\n", parent[best], best, key[best]);
-            total += key[best];
-        }
-        for (int next = 0; next < VERTEX_COUNT; ++next) {
-            if (graph[best][next] > 0 && !selected[next] && graph[best][next] < key[next]) {
-                key[next] = graph[best][next];
-                parent[next] = best;
-            }
-        }
-    }
-    printf("total: %d\n", total);
-    return 0;
+int main(void)
+{
+	MGraph G;
+	CreateMGraph(&G);
+	MiniSpanTree_Prim(G);
+  
+	return 0;
+ 
 }

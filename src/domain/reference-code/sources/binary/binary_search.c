@@ -1,55 +1,54 @@
 /*
- * AlgoViz reference implementation: binary search.
- * Original code written for this repository under the MIT License.
- * Precondition and interval conventions follow the classic textbook
- * treatment of ordered-list search, without copying textbook code.
+ * AlgoViz 教材参考 C 实现
+ * 来源：用户提供的《数据结构与算法（Windows版）》第8章查找/01静态查找_Search.c
+ * 节选折半查找函数与教材注释；演示 main 为阅读入口。
+ * 原始版权归原教材作者/出版方所有，仅用于本地学习与代码阅读。
  */
 
-#include <stdio.h>
-#include <stddef.h>
+#include "stdio.h"    
+#include "stdlib.h"   
 
-int is_non_decreasing(const int *values, size_t length) {
-    for (size_t i = 1; i < length; ++i) {
-        if (values[i - 1] > values[i]) {
-            return 0;
-        }
-    }
-    return 1;
+#include "math.h"  
+#include "time.h"
+
+#define OK 1
+#define ERROR 0
+#define TRUE 1
+#define FALSE 0
+#define MAXSIZE 100 /* 存储空间初始分配量 */
+
+typedef int Status;	/* Status是函数的类型,其值是函数结果状态代码，如OK等 */ 
+
+int F[100]; /* 斐波那契数列 */
+
+/* 折半查找 */
+int Binary_Search(int *a,int n,int key)
+{
+	int low,high,mid;
+	low=1;	/* 定义最低下标为记录首位 */
+	high=n;	/* 定义最高下标为记录末位 */
+	while(low<=high)
+	{
+		mid=(low+high)/2;	/* 折半 */
+		if (key<a[mid])		/* 若查找值比中值小 */
+			high=mid-1;		/* 最高下标调整到中位下标小一位 */
+		else if (key>a[mid])/* 若查找值比中值大 */
+			low=mid+1;		/* 最低下标调整到中位下标大一位 */
+		else
+		{
+			return mid;		/* 若相等则说明mid即为查找到的位置 */
+		}
+		
+	}
+	return 0;
 }
 
-/* Closed interval [left, right]. Returns an index, or -1 when absent. */
-int binary_search(const int *values, size_t length, int target) {
-    if (length == 0) {
-        return -1;
-    }
-    int left = 0;
-    int right = (int)length - 1;
-    while (left <= right) {
-        int mid = left + (right - left) / 2;
-        if (values[mid] == target) {
-            return mid;
-        }
-        if (values[mid] < target) {
-            left = mid + 1;
-        } else {
-            right = mid - 1;
-        }
-    }
-    return -1;
-}
-
-int main(void) {
-    int sorted[] = {1, 3, 5, 7, 9, 11, 13};
-    size_t length = sizeof(sorted) / sizeof(sorted[0]);
-
-    if (!is_non_decreasing(sorted, length)) {
-        printf("input must be sorted in non-decreasing order\n");
-        return 1;
-    }
-
-    int target = 9;
-    int index = binary_search(sorted, length, target);
-    printf("target=%d index=%d\n", target, index);
-    printf("missing=%d index=%d\n", 8, binary_search(sorted, length, 8));
+int main(void)
+{
+    int data[11] = {0, 7, 11, 19, 25, 33, 47, 58, 66, 79, 88};
+    int index = Binary_Search(data, 10, 47);
+    printf("Binary_Search: index=%d\n", index);
+    index = Binary_Search(data, 10, 50);
+    printf("Binary_Search missing: index=%d\n", index);
     return 0;
 }

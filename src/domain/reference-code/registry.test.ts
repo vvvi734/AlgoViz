@@ -9,6 +9,7 @@ import {
   referenceFileMeta,
   referenceImplementations,
   referenceLanguages,
+  referenceLicenseLabel,
 } from './registry';
 
 describe('three-language reference registry', () => {
@@ -108,12 +109,12 @@ describe('three-language reference registry', () => {
   it('loads principle and shared convenience sources on demand', async () => {
     const linkedC = await loadReferenceCode('linked', 'c');
     expect(linkedC).toContain('struct Node');
-    expect(linkedC).toContain('list_insert_after');
-    expect(linkedC).toContain('MIT License');
+    expect(linkedC).toContain('ListInsert');
+    expect(linkedC).toContain('教材参考 C 实现');
 
     const bubbleC = await loadReferenceCode('bubble', 'c');
-    expect(bubbleC).toContain('void bubble_sort');
-    expect(bubbleC).toContain('MIT License');
+    expect(bubbleC).toContain('void BubbleSort');
+    expect(bubbleC).toContain('教材参考 C 实现');
 
     const sharedC = await loadReferenceCode('bubble', 'c', 'convenience');
     expect(sharedC).toContain('qsort(');
@@ -138,7 +139,7 @@ describe('three-language reference registry', () => {
     expect(dijkstraPy).not.toContain('trace(');
 
     const shellC = await loadReferenceCode('shell', 'c');
-    expect(shellC).toContain('void shell_sort');
+    expect(shellC).toContain('void ShellSort');
 
     const binaryConvenience = await loadReferenceCode('binary', 'c', 'convenience');
     expect(binaryConvenience).toContain('bsearch(');
@@ -147,9 +148,9 @@ describe('three-language reference registry', () => {
     expect(stackConvenience).toContain('std::stack');
 
     const kmpC = await loadReferenceCode('kmp', 'c');
-    expect(kmpC).toContain('build_lps');
-    expect(kmpC).toContain('j = lps[j - 1]');
-    expect(kmpC).toContain('MIT');
+    expect(kmpC).toContain('void get_next');
+    expect(kmpC).toContain('j = next[j]');
+    expect(kmpC).toContain('教材参考 C 实现');
 
     const kmpCpp = await loadReferenceCode('kmp', 'cpp');
     expect(kmpCpp).toContain('kmp_find_all');
@@ -166,9 +167,9 @@ describe('three-language reference registry', () => {
     expect(kmpFindPython).toContain('text.find(pattern)');
 
     const btreeC = await loadReferenceCode('btree', 'c');
-    expect(btreeC).toContain('btree_split_child');
-    expect(btreeC).toContain('btree_insert');
-    expect(btreeC).toContain('MIT License');
+    expect(btreeC).toContain('void split');
+    expect(btreeC).toContain('void InsertBTree');
+    expect(btreeC).toContain('教材参考 C 实现');
 
     const btreeCpp = await loadReferenceCode('btree', 'cpp');
     expect(btreeCpp).toContain('split_child');
@@ -187,6 +188,15 @@ describe('three-language reference registry', () => {
 
   it('documents license and language-specific provenance', () => {
     expect(REFERENCE_LICENSE).toBe('MIT');
+    expect(referenceLicenseLabel('linked', 'c', 'principle')).toEqual({
+      zh: '教材代码 · 仅学习',
+      en: 'Textbook code · study only',
+    });
+    expect(referenceLicenseLabel('bubble', 'c', 'convenience').zh).toBe('MIT');
+    expect(referenceLicenseLabel('bellman-ford', 'c', 'principle').zh).toBe('MIT');
+    expect(referenceLicenseLabel('linked', 'cpp', 'principle').zh).toBe('MIT');
+    expect(REFERENCE_SOURCE_NOTES.c.zh).toContain('教材');
+    expect(REFERENCE_SOURCE_NOTES.c.zh).toContain('MIT');
     for (const language of REFERENCE_LANGUAGES) {
       expect(REFERENCE_SOURCE_NOTES[language].zh.length).toBeGreaterThan(20);
       expect(REFERENCE_SOURCE_NOTES[language].en.length).toBeGreaterThan(20);

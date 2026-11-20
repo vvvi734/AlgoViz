@@ -19,14 +19,67 @@ export const REFERENCE_LANGUAGE_LABELS: Record<ReferenceLanguage, string> = {
 
 export const REFERENCE_LICENSE = 'MIT';
 
+/** Formal C principle files whose body is a verbatim textbook excerpt. */
+const TEXTBOOK_C_PRINCIPLE_ALGORITHMS = new Set([
+  'avl',
+  'bfs',
+  'binary',
+  'bst',
+  'btree',
+  'bubble',
+  'critical-path',
+  'dfs',
+  'dijkstra',
+  'floyd-warshall',
+  'hash-probe',
+  'inorder',
+  'insertion',
+  'kmp',
+  'kruskal',
+  'linear',
+  'linked',
+  'merge',
+  'prim',
+  'queue',
+  'quick',
+  'selection',
+  'seqlist',
+  'shell',
+  'stack',
+  'topological',
+]);
+
+/**
+ * C principle files are textbook excerpts, so they must not be presented as
+ * MIT-licensed AlgoViz originals. Unmatched C algorithms and C convenience
+ * files remain original MIT code.
+ */
+export function referenceLicenseLabel(
+  algorithmId: string,
+  language: ReferenceLanguage,
+  implementation: ReferenceImplementation = 'principle',
+): LocalizedText {
+  if (
+    language === 'c' &&
+    implementation === 'principle' &&
+    TEXTBOOK_C_PRINCIPLE_ALGORITHMS.has(algorithmId)
+  ) {
+    return {
+      zh: '教材代码 · 仅学习',
+      en: 'Textbook code · study only',
+    };
+  }
+  return { zh: REFERENCE_LICENSE, en: REFERENCE_LICENSE };
+}
+
 /**
  * Source notes are shared by language, not repeated per algorithm. Every file
  * also carries the same note in its header.
  */
 export const REFERENCE_SOURCE_NOTES: Record<ReferenceLanguage, LocalizedText> = {
   c: {
-    zh: '原创 C 实现：按严蔚敏《数据结构（C语言版）》的算法思想自行编写，未逐字复制教材代码。',
-    en: 'Original C implementation written from the algorithmic ideas in Yan Weimin’s Data Structures (C Language Edition); no textbook code was copied verbatim.',
+    zh: '教材参考实现：教材有对应实现的 26 个文件逐字转录，保留原教材注释；教材未覆盖的 12 个算法保留原创实现，并在文件头注明。教材代码版权归原作者/出版方，仅用于本地学习，不适用 MIT 许可。',
+    en: 'Textbook reference implementation: 26 files with a textbook counterpart are transcribed verbatim, preserving the original comments; the 12 algorithms not covered by the textbook keep their original implementations and are marked in their headers. Textbook copyright remains with the original author/publisher; for local study only and not MIT-licensed.',
   },
   cpp: {
     zh: '原创 C++17 实现：核心算法显式编写；标准库仅用于容器、输入输出和优先队列等基础设施。',

@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import {
   REFERENCE_LANGUAGE_LABELS,
   REFERENCE_LANGUAGES,
-  REFERENCE_LICENSE,
+  referenceLicenseLabel,
   loadReferenceCode,
   referenceFileMeta,
   referenceImplementations,
@@ -59,6 +59,7 @@ export function ReferenceCodePanel({
   const activeImplementation: ReferenceImplementation = implementations.includes(implementation)
     ? implementation
     : (implementations[0] ?? 'principle');
+  const licenseLabel = referenceLicenseLabel(algorithmId, language, activeImplementation)[lang];
   const [source, setSource] = useState<string | null>(null);
   const [loading, setLoading] = useState(available.length > 0);
   const [failed, setFailed] = useState(false);
@@ -207,7 +208,7 @@ export function ReferenceCodePanel({
                   {meta.fileName}
                 </code>
               ) : null}
-              <span className="reference-license">{REFERENCE_LICENSE}</span>
+              <span className="reference-license">{licenseLabel}</span>
               <button
                 type="button"
                 className="btn small reference-copy"
@@ -251,7 +252,7 @@ export function ReferenceCodePanel({
           <footer className="reference-source" data-testid="reference-source">
             <b>{t('referenceSourceLabel')}</b>
             <span>{referenceSourceNote(algorithmId, language, activeImplementation)[lang]}</span>
-            <span className="reference-license">MIT License · AlgoViz contributors</span>
+            <span className="reference-license">{licenseLabel}</span>
           </footer>
         </>
       )}

@@ -1,8 +1,24 @@
 /*
+ * 教材素材说明
+ * 用户提供的《数据结构与算法（Windows版）》未包含本算法的对应实现。
+ * 本文件保留 AlgoViz 原创 C 实现与现有注释，未冒充教材原文。
+ */
+
+/*
  * AlgoViz reference implementation: Huffman coding.
  * Original code written for this repository under the MIT License.
  * Builds a min-heap of nodes, repeatedly merges the two lightest nodes,
  * then emits prefix-free codes by walking the tree.
+ *
+ * Reading guide:
+ * 1. Count the frequency of every symbol.
+ * 2. Put all leaf nodes in a min-heap ordered by frequency.
+ * 3. Repeatedly merge the two least frequent nodes until one root remains.
+ * 4. Left edges mean 0 and right edges mean 1, producing prefix-free codes.
+ *
+ * Complexity: O(n log n) with a heap; extra space O(n) for tree and codes.
+ * Convention: Symbols are unique; ties are broken by insertion order where the heap
+ *   supports it.
  */
 
 #include <stdio.h>
@@ -33,6 +49,7 @@ void heap_init(MinHeap *heap) {
     heap->size = 0;
 }
 
+// Min-heap ordering is (frequency, insertion order), keeping ties deterministic.
 void heap_push(MinHeap *heap, HNode *node) {
     int index = heap->size++;
     heap->items[index] = node;

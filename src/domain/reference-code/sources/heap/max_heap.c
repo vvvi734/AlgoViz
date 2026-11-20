@@ -1,7 +1,22 @@
 /*
+ * 教材素材说明
+ * 用户提供的《数据结构与算法（Windows版）》未包含本算法的对应实现。
+ * 本文件保留 AlgoViz 原创 C 实现与现有注释，未冒充教材原文。
+ */
+
+/*
  * AlgoViz reference implementation: max heap.
  * Original code written for this repository under the MIT License.
  * Array-backed binary heap with sift-up on insert and sift-down on pop.
+ *
+ * Reading guide:
+ * 1. Store the complete binary tree in an array without holes.
+ * 2. For index i, the parent is (i - 1) / 2 and the children are 2i + 1, 2i + 2.
+ * 3. Push appends and sifts up; pop moves the last value to the root and sifts down.
+ *
+ * Complexity: O(log n) push/pop, O(1) top; extra space O(n).
+ * Convention: Max-heap property: every parent is >= its children; 0-based array
+ *   indices.
  */
 
 #include <stdbool.h>
@@ -24,6 +39,7 @@ void swap_int(int *a, int *b) {
     *b = temp;
 }
 
+// Sift up while the parent is smaller; stop when the heap property holds or root is reached.
 void sift_up(MaxHeap *heap, int index) {
     while (index > 0) {
         int parent = (index - 1) / 2;

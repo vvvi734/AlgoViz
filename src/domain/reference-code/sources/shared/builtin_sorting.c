@@ -1,4 +1,10 @@
 /*
+ * 教材素材说明
+ * 用户提供的《数据结构与算法（Windows版）》未包含本算法的对应实现。
+ * 本文件保留 AlgoViz 原创 C 实现与现有注释，未冒充教材原文。
+ */
+
+/*
  * AlgoViz shared convenience reference: C standard-library qsort.
  * Original example written for this repository under the MIT License.
  *
@@ -7,6 +13,15 @@
  * insertion sort. It is not guaranteed to be stable.
  *
  * Reference: C standard library qsort documentation.
+ *
+ * Reading guide:
+ * 1. This is the C standard-library sorting shortcut, not a hand-written sort.
+ * 2. qsort receives the array, element count, element size and a comparator.
+ * 3. The comparator returns negative/zero/positive for less/equal/greater.
+ *
+ * Complexity: O(n log n) comparisons on average; extra space is
+ *   implementation-defined.
+ * Convention: 0-based array; qsort is not guaranteed stable.
  */
 
 #include <stddef.h>

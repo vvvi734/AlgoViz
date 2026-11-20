@@ -1,8 +1,23 @@
 /*
+ * 教材素材说明
+ * 用户提供的《数据结构与算法（Windows版）》未包含本算法的对应实现。
+ * 本文件保留 AlgoViz 原创 C 实现与现有注释，未冒充教材原文。
+ */
+
+/*
  * AlgoViz shared convenience implementation: binary search with bsearch().
  * Original code written for this repository under the MIT License.
  * The array must be sorted before calling bsearch(); this returns the first
  * matching index found by the C standard library.
+ *
+ * Reading guide:
+ * 1. This is the C standard-library binary-search shortcut, not a hand-written
+ *    search.
+ * 2. bsearch requires a sorted array and a comparator over element pointers.
+ * 3. It returns a pointer to one matching element, or NULL when absent.
+ *
+ * Complexity: O(log n); extra space O(1).
+ * Convention: 0-based array; duplicates may return any matching element.
  */
 
 #include <stddef.h>

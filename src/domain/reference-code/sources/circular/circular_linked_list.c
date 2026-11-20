@@ -1,7 +1,23 @@
 /*
+ * 教材素材说明
+ * 用户提供的《数据结构与算法（Windows版）》未包含本算法的对应实现。
+ * 本文件保留 AlgoViz 原创 C 实现与现有注释，未冒充教材原文。
+ */
+
+/*
  * AlgoViz reference implementation: circular singly linked list.
  * Original code written for this repository under the MIT License.
  * The tail node links back to the head, so traversal stops when it returns.
+ *
+ * Reading guide:
+ * 1. The list keeps a tail pointer and tail->next points back to the head.
+ * 2. Appending inserts after tail and moves tail to the new node.
+ * 3. Traversal starts at head and stops when it returns to head; an empty list has
+ *    tail == NULL.
+ *
+ * Complexity: O(1) append, O(n) traversal; extra space O(n).
+ * Convention: There is no NULL terminator inside a non-empty list; emptiness is tail
+ *   == NULL.
  */
 
 #include <stdbool.h>
@@ -23,6 +39,7 @@ void list_init(CircularList *list) {
     list->tail = NULL;
 }
 
+// New node points at head; the old tail points at the new node, preserving the ring.
 bool list_append(CircularList *list, int value) {
     Node *node = (Node *)malloc(sizeof(Node));
     if (node == NULL) {
