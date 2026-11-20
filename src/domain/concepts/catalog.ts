@@ -913,7 +913,7 @@ export const CONCEPT_PAGES: readonly ConceptPage[] = [
         ],
         points: [
           ['稳定排序适合“先按 A 排，再按 B 排”的多关键字流程。', 'Stable sorts support “sort by A, then by B” multi-key workflows.'],
-          ['冒泡、插入、归并通常稳定；选择、快速、堆排序通常不稳定。', 'Bubble, insertion and merge sorts are usually stable; selection, quicksort and heap sort usually are not.'],
+          ['冒泡、插入、归并通常稳定；选择、希尔、快速、堆排序通常不稳定。', 'Bubble, insertion and merge sorts are usually stable; selection, Shell, quicksort and heap sort usually are not.'],
           ['稳定性是算法性质，不是比较函数本身决定的。', 'Stability is a property of the algorithm, not of the comparator alone.'],
         ],
       },
@@ -938,6 +938,7 @@ export const CONCEPT_PAGES: readonly ConceptPage[] = [
         points: [
           ['先看 n 的量级和数据分布，再选算法。', 'Consider n and the data distribution before choosing.'],
           ['几乎有序的小数组常用插入排序，常数小。', 'Insertion sort is often good for small or nearly sorted arrays.'],
+          ['希尔排序的复杂度取决于增量序列；表中的 O(n^1.3) 是常见平均估计，最坏仍可能到 O(n²)。', 'Shell sort depends on its gap sequence; the table’s O(n^1.3) is a common average estimate, and the worst case can still reach O(n²).'],
           ['需要稳定且能接受额外空间时，归并排序是稳妥选择。', 'Merge sort is a safe choice when stability is required and extra space is acceptable.'],
           ['快速排序要关注最坏划分和递归深度。', 'For quicksort, watch worst-case partitions and recursion depth.'],
         ],
@@ -974,6 +975,13 @@ export const CONCEPT_PAGES: readonly ConceptPage[] = [
           ['O(n²)', 'O(n²)'],
           ['O(1)', 'O(1)'],
           ['是', 'Yes'],
+        ],
+        [
+          ['希尔排序', 'Shell'],
+          ['O(n^1.3)（依赖增量）', 'O(n^1.3) (gap-dependent)'],
+          ['O(n²)', 'O(n²)'],
+          ['O(1)', 'O(1)'],
+          ['否', 'No'],
         ],
         [
           ['归并排序', 'Merge'],
