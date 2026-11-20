@@ -2,6 +2,15 @@
 
 Original code written for this repository under the MIT License.
 heapq is a min-heap, so values are negated to simulate a max-heap.
+
+Reading guide:
+1. This convenience file uses heapq, which is a min-heap by contract.
+2. Negating values turns the smallest negated key into the largest original value.
+3. heappush/heappop maintain the heap; no manual sift code is present.
+
+Complexity: O(1) peek via heap[0], O(log n) push/pop; extra space O(n).
+Convention: Values are stored negated; remember to negate again when reading the
+  maximum.
 """
 
 from __future__ import annotations

@@ -2,6 +2,16 @@
 
 Original code written for this repository under the MIT License.
 The tail node links back to the head, so traversal stops when it returns.
+
+Reading guide:
+1. The list keeps a tail pointer and tail->next points back to the head.
+2. Appending inserts after tail and moves tail to the new node.
+3. Traversal starts at head and stops when it returns to head; an empty list has tail ==
+   NULL.
+
+Complexity: O(1) append, O(n) traversal; extra space O(n).
+Convention: There is no NULL terminator inside a non-empty list; emptiness is tail ==
+  NULL.
 """
 
 from __future__ import annotations
@@ -20,6 +30,7 @@ class CircularList:
         self.head: Node | None = None
         self.tail: Node | None = None
 
+    # New node points at head; the old tail points at the new node, preserving the ring.
     def append(self, value: int) -> None:
         node = Node(value)
         if self.tail is None:

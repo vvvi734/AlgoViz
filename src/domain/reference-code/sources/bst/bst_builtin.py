@@ -3,6 +3,15 @@
 Original code written for this repository under the MIT License.
 bisect.insort keeps the list sorted after each insertion; membership
 uses bisect_left. This is O(n) per insertion because list shifts.
+
+Reading guide:
+1. This convenience file keeps a sorted list and uses bisect for lookup/insertion.
+2. bisect_left finds the insertion point in O(log n) comparisons.
+3. insort shifts the tail of the list, so insertion is O(n) even though search is
+   logarithmic.
+
+Complexity: O(log n) search, O(n) insertion due to shifting; extra space O(n).
+Convention: Unique keys in ascending order; duplicates are ignored before insertion.
 """
 
 from __future__ import annotations

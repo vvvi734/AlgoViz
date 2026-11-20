@@ -1,6 +1,15 @@
 // AlgoViz reference implementation: circular queue (C++17).
 // Original code written for this repository under the MIT License.
 // A fixed-capacity ring buffer using head, tail and count.
+//
+// Reading guide:
+// 1. Store items in a circular array with head, tail and count.
+// 2. Enqueue writes at tail, advances tail modulo capacity, then increments count.
+// 3. Dequeue reads at head, advances head modulo capacity, and decrements count.
+//
+// Complexity: O(1) per operation; extra space O(capacity).
+// Convention: count distinguishes empty from full; all slot arithmetic is modulo
+//   capacity.
 
 #include <array>
 #include <iostream>
@@ -8,6 +17,7 @@
 
 class Queue {
  public:
+    // Enqueue writes at tail, advances tail modulo capacity, then increments count.
     bool enqueue(int value) {
         if (count_ == items_.size()) {
             return false;

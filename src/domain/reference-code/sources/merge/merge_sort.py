@@ -3,6 +3,15 @@
 Based on this project's tested Python teaching implementation, with
 teaching-only tracing calls removed. Released under the MIT License.
 The implementation is intentionally explicit; sorted()/list.sort() are not used.
+
+Reading guide:
+1. Split the half-open range [left, right) at its midpoint.
+2. Recursively sort both halves, then merge them into a temporary buffer.
+3. Merge by repeatedly taking the smaller front element; copy the merged run back.
+
+Complexity: O(n log n); extra space O(n) for the merge buffer.
+Convention: Ranges are half-open [left, right); 0-based indices; taking the left element
+  on ties keeps the sort stable.
 """
 
 from __future__ import annotations
@@ -43,6 +52,7 @@ def merge_sort_range(values: list[int], buffer: list[int], left: int, right: int
     merge_range(values, buffer, left, middle, right)
 
 
+# Recursive divide-and-conquer; the merge step takes the smaller front element to stay stable.
 def merge_sort(values: list[int]) -> None:
     if len(values) < 2:
         return

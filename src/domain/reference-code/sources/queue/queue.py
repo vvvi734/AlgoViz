@@ -2,6 +2,14 @@
 
 Original code written for this repository under the MIT License.
 A fixed-capacity ring buffer using head, tail and count.
+
+Reading guide:
+1. Store items in a circular array with head, tail and count.
+2. Enqueue writes at tail, advances tail modulo capacity, then increments count.
+3. Dequeue reads at head, advances head modulo capacity, and decrements count.
+
+Complexity: O(1) per operation; extra space O(capacity).
+Convention: count distinguishes empty from full; all slot arithmetic is modulo capacity.
 """
 
 from __future__ import annotations
@@ -16,6 +24,7 @@ class Queue:
         self._tail = 0
         self._count = 0
 
+    # Enqueue writes at tail, advances tail modulo capacity, then increments count.
     def enqueue(self, value: int) -> bool:
         if self._count == len(self._items):
             return False

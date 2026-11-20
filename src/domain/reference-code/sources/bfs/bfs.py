@@ -2,6 +2,16 @@
 
 Original code written for this repository under the MIT License.
 Uses an adjacency list and collections.deque; visits vertices level by level.
+
+Reading guide:
+1. Mark the start vertex when it is enqueued, not when it is dequeued.
+2. Pop the FIFO front and inspect every possible neighbour (matrix row or adjacency
+   list).
+3. Enqueue only unvisited neighbours; BFS order is nondecreasing in edge count.
+
+Complexity: O(V + E) for adjacency lists, O(V^2) when scanning an adjacency matrix;
+  extra space O(V).
+Convention: Vertices are 0-based; each undirected edge is stored in both directions.
 """
 
 from __future__ import annotations
@@ -9,6 +19,7 @@ from __future__ import annotations
 from collections import deque
 
 
+# Mark a neighbour before enqueueing it; the FIFO frontier then visits level by level.
 def bfs(graph: list[list[int]], start: int) -> list[int]:
     visited = [False] * len(graph)
     visited[start] = True

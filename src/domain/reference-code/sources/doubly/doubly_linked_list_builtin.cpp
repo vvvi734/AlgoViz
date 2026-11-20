@@ -1,6 +1,17 @@
 // AlgoViz convenience implementation: doubly linked list with std::list.
 // Original code written for this repository under the MIT License.
 // std::list is a doubly linked list with O(1) insert/erase at a known position.
+//
+// Reading guide:
+// 1. This convenience file uses std::list, a doubly linked list from the standard
+//    library.
+// 2. Splicing a known node is O(1); search and traversal are O(n).
+// 3. There is no random access; iterators are the stable way to name positions.
+//
+// Complexity: O(1) splice at a known iterator, O(n) search; extra space O(n).
+// Convention: Iterators remain valid across unrelated splices; end() is one past the
+//   last node.
+
 
 #include <iostream>
 #include <iterator>

@@ -3,6 +3,15 @@
 Original code written for this repository under the MIT License.
 bisect_left finds the first position that is not less than the target.
 The input list must already be sorted.
+
+Reading guide:
+1. This is the Python standard-library binary-search shortcut, not a hand-written
+   search.
+2. bisect_left finds the first position whose value is >= the target.
+3. The list must already be sorted in ascending order.
+
+Complexity: O(log n); extra space O(1).
+Convention: 0-based list indices; the insertion point may equal len(values).
 """
 
 from __future__ import annotations

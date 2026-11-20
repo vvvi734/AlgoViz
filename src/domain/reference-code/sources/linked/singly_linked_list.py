@@ -4,6 +4,17 @@ Based on this project's tested Python teaching implementation, with
 teaching-only tracing calls removed. Released under the MIT License.
 Algorithmic structure follows the classic textbook treatment in
 Yan Weimin, Data Structures (C Language Edition), without copying text.
+
+Reading guide:
+1. A node stores one value and one next pointer; the list owns a head pointer and a
+   length.
+2. Head insertion links the new node before the old head, then updates head and length.
+3. Insertion/removal after a known node rewires next pointers; search first finds that
+   predecessor.
+4. Traversal follows next until NULL; clear frees every node and resets the list.
+
+Complexity: O(1) head insertion, O(n) search/delete; extra space O(n).
+Convention: NULL terminates the list; node positions are 0-based when printed.
 """
 
 from __future__ import annotations

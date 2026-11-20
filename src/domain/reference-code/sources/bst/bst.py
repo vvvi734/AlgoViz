@@ -2,6 +2,16 @@
 
 Original code written for this repository under the MIT License.
 Insert, search, remove and inorder traversal for unique integer keys.
+
+Reading guide:
+1. Invariant: every left key is smaller and every right key is larger than the node.
+2. Insert/search descend exactly one branch per level.
+3. Removal has three cases: leaf, one child, or two children replaced by the inorder
+   successor.
+
+Complexity: O(h) per operation, O(log n) average and O(n) worst; extra space O(h)
+  recursion.
+Convention: Keys are unique integers; the inorder traversal is the sorted key sequence.
 """
 
 from __future__ import annotations
@@ -16,6 +26,7 @@ class Node:
     right: "Node | None" = None
 
 
+# Descend one branch by key comparison; duplicates are ignored by the insert contract.
 def insert(root: Node | None, value: int) -> Node:
     if root is None:
         return Node(value)

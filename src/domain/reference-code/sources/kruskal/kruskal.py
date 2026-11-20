@@ -3,6 +3,17 @@
 Original code written for this repository under the MIT License.
 Sorts all edges by weight and adds an edge only when its endpoints are
 in different disjoint-set components.
+
+Reading guide:
+1. Sort all undirected edges by nondecreasing weight.
+2. A disjoint-set structure tracks which vertices are already connected.
+3. Accept an edge only when its endpoints are in different sets; union them afterwards.
+4. Stop after V - 1 edges; a shorter result means the graph is disconnected.
+
+Complexity: O(E log E) for sorting plus near-linear DSU work; extra space O(V +
+  E).
+Convention: Edges are (u, v, weight); 0-based vertices; equal weights may yield
+  different valid MSTs.
 """
 
 from __future__ import annotations
@@ -19,6 +30,7 @@ class DisjointSet:
             vertex = self.parent[vertex]
         return vertex
 
+    # Union by rank keeps DSU trees shallow; a rejected edge would close a cycle.
     def unite(self, a: int, b: int) -> bool:
         root_a = self.find(a)
         root_b = self.find(b)

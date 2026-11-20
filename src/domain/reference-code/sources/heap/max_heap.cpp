@@ -1,6 +1,15 @@
 // AlgoViz reference implementation: max heap (C++17).
 // Original code written for this repository under the MIT License.
 // Array-backed binary heap with sift-up on insert and sift-down on pop.
+//
+// Reading guide:
+// 1. Store the complete binary tree in an array without holes.
+// 2. For index i, the parent is (i - 1) / 2 and the children are 2i + 1, 2i + 2.
+// 3. Push appends and sifts up; pop moves the last value to the root and sifts down.
+//
+// Complexity: O(log n) push/pop, O(1) top; extra space O(n).
+// Convention: Max-heap property: every parent is >= its children; 0-based array
+//   indices.
 
 #include <iostream>
 #include <optional>
@@ -35,6 +44,7 @@ class MaxHeap {
     }
 
  private:
+    // Sift up while the parent is smaller; stop when the heap property holds or root is reached.
     void sift_up(std::size_t index) {
         while (index > 0) {
             std::size_t parent = (index - 1) / 2;

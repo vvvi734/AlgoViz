@@ -2,6 +2,15 @@
 // Original code written for this repository under the MIT License.
 // lower_bound finds the first position that is not less than the target.
 // The input range must already be sorted.
+//
+// Reading guide:
+// 1. This is the C++ standard-library binary-search shortcut, not a hand-written
+//    search.
+// 2. std::lower_bound finds the first element not less than the target.
+// 3. The range must be partitioned with respect to the comparator.
+//
+// Complexity: O(log n) comparisons; extra space O(1).
+// Convention: Half-open iterator range; the returned iterator may equal end().
 
 #include <algorithm>
 #include <iostream>

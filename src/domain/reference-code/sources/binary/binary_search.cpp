@@ -1,6 +1,16 @@
 // AlgoViz reference implementation: binary search (C++17).
 // Original code written for this repository under the MIT License.
 // The algorithm is implemented explicitly; std::binary_search is not used.
+//
+// Reading guide:
+// 1. The input must be non-decreasing; the function checks this before searching.
+// 2. Keep an inclusive search window [low, high].
+// 3. Compare the middle element and discard the half that cannot contain the target.
+// 4. Return the found index, or -1 when the window becomes empty.
+//
+// Complexity: O(log n); extra space O(1).
+// Convention: 0-based indices; low and high are inclusive; duplicate targets may
+//   return any matching index.
 
 #include <cstddef>
 #include <iostream>

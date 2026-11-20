@@ -1,6 +1,17 @@
 // AlgoViz reference implementation: doubly linked list (C++17).
 // Original code written for this repository under the MIT License.
 // Nodes own their successors through unique_ptr and keep raw prev pointers.
+//
+// Reading guide:
+// 1. Each node stores prev and next; the list keeps head and tail.
+// 2. Appending links the new node after tail and updates tail.
+// 3. Removing a known node patches its two neighbours; head/tail are fixed when
+//    necessary.
+// 4. Forward traversal follows next; backward traversal follows prev.
+//
+// Complexity: O(1) splice at a known node, O(n) search; extra space O(n).
+// Convention: NULL/None marks both ends; prev and next must stay mutually
+//   consistent.
 
 #include <iostream>
 #include <memory>
@@ -19,6 +30,7 @@ class DoublyList {
         }
     }
 
+    // Append wires prev and next first; only then does tail move to the new node.
     Node* append(int value) {
         auto node = std::make_unique<Node>();
         node->value = value;

@@ -2,11 +2,23 @@
 
 Original code written for this repository under the MIT License.
 Gap insertion sort, halving the gap until the final gap-1 pass.
+
+Reading guide:
+1. Choose a decreasing gap sequence; each pass insertion-sorts the subsequences with
+   that gap.
+2. Elements far apart move early, reducing the work left for smaller gaps.
+3. The final gap of 1 is ordinary insertion sort over the whole array.
+
+Complexity: Time depends on the gap sequence; O(n^2) worst case, often subquadratic;
+  extra space O(1).
+Convention: Ascending order; gaps are positive; the implementation uses n/2, n/4, ... ,
+  1.
 """
 
 from __future__ import annotations
 
 
+# Each gap pass insertion-sorts independent subsequences; gap 1 finishes the array.
 def shell_sort(values: list[int]) -> None:
     gap = len(values) // 2
     while gap > 0:

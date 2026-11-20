@@ -2,6 +2,17 @@
 
 Original code written for this repository under the MIT License.
 This delegates the whole computation to the CPython standard library.
+
+Reading guide:
+1. This convenience file delegates to math.factorial instead of writing the recursion.
+2. The C implementation multiplies the factors internally and returns an
+   arbitrary-precision int.
+3. No Python recursion limit is involved.
+
+Complexity: O(n) multiplications; extra space depends on the big-integer result,
+  not Python stack depth.
+Convention: Input must be a non-negative integer; math.factorial raises ValueError
+  otherwise.
 """
 
 from __future__ import annotations

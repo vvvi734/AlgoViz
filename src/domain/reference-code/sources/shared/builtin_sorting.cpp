@@ -6,6 +6,15 @@
 // std::sort is not guaranteed stable; std::stable_sort preserves equal-key order.
 //
 // Reference: C++ standard library <algorithm> documentation.
+//
+// Reading guide:
+// 1. This is the C++ standard-library sorting shortcut, not a hand-written sort.
+// 2. std::sort sorts in place; std::stable_sort preserves equal-key order.
+// 3. Comparators must define a strict weak ordering.
+//
+// Complexity: O(n log n) comparisons; std::sort uses O(log n) stack,
+//   stable_sort may allocate O(n).
+// Convention: 0-based iterators over half-open ranges; std::sort is not stable.
 
 #include <algorithm>
 #include <iostream>

@@ -1,12 +1,24 @@
 // AlgoViz reference implementation: bubble sort (C++17).
 // Original code written for this repository under the MIT License.
 // This is the manual exchange-sort version; std::sort is intentionally not used.
+//
+// Reading guide:
+// 1. Each pass compares adjacent pairs from the left and swaps inverted pairs.
+// 2. After pass k, the largest k values are fixed at the right end.
+// 3. A pass with no swap proves the remaining prefix is already sorted, so stop
+//    early.
+//
+// Complexity: O(n^2) average/worst, O(n) best with early exit; extra space
+//   O(1).
+// Convention: Ascending order; 0-based array access; equal values are never swapped,
+//   so the sort is stable.
 
 #include <cstddef>
 #include <iostream>
 #include <utility>
 #include <vector>
 
+// Invariant: after each pass, the largest remaining values are fixed at the right end.
 void bubble_sort(std::vector<int>& values) {
     if (values.size() < 2) {
         return;

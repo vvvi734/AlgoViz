@@ -1,6 +1,15 @@
 // AlgoViz reference implementation: sequential list (C++17).
 // Original code written for this repository under the MIT License.
 // Fixed-capacity array with manual shifting in insert and erase.
+//
+// Reading guide:
+// 1. Values occupy a contiguous array; length is the number of valid slots.
+// 2. Insertion shifts [index, length) one slot right, then writes the new value.
+// 3. Erasure shifts (index, length) one slot left and decreases length.
+//
+// Complexity: O(n) insert/erase, O(1) indexed access; extra space O(capacity).
+// Convention: Valid element indices are 0..length-1; insertion also accepts
+//   index == length; erasure returns the removed value.
 
 #include <array>
 #include <iostream>
@@ -9,6 +18,7 @@
 template <typename T, std::size_t Capacity>
 class SeqList {
  public:
+    // Insert shifts [index, length) one slot right, then writes the new value.
     bool insert(std::size_t index, const T& value) {
         if (size_ >= Capacity || index > size_) {
             return false;

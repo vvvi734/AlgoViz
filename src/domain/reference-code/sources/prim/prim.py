@@ -2,6 +2,18 @@
 
 Original code written for this repository under the MIT License.
 Grows one tree from vertex 0 using a heap of candidate edges.
+
+Reading guide:
+1. Start from one vertex and keep a visited/cut set.
+2. Repeatedly choose the cheapest edge with exactly one endpoint inside the cut.
+3. Add the outside endpoint, then update the candidate edges from the new vertex.
+4. After V - 1 accepted edges a spanning tree is complete; fewer means the graph is
+   disconnected.
+
+Complexity: O(V^2) with dense scanning, O(E log V) with a heap; extra space O(V^2) for a
+  matrix or O(V + E) for lists.
+Convention: Undirected weighted graph; 0-based vertices; equal weights may produce
+  different but valid MSTs.
 """
 
 from __future__ import annotations

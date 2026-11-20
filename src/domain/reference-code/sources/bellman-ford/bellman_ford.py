@@ -3,6 +3,16 @@
 Original code written for this repository under the MIT License.
 Relaxes every edge V - 1 times; an extra successful relaxation means a
 reachable negative cycle. Supports negative edges.
+
+Reading guide:
+1. Initialise all distances to infinity and the source to 0.
+2. Relax every directed edge V - 1 times; each pass extends paths by at most one edge.
+3. Stop early when a full pass makes no change.
+4. One extra pass that still relaxes an edge proves a reachable negative cycle.
+
+Complexity: O(V * E); extra space O(V) for distances and predecessors.
+Convention: Edges are (u, v, weight) with 0-based endpoints; returns None/null on a
+  negative cycle.
 """
 
 from __future__ import annotations
@@ -10,6 +20,7 @@ from __future__ import annotations
 INF = float("inf")
 
 
+# V - 1 passes suffice because a shortest simple path uses at most V - 1 edges.
 def bellman_ford(vertex_count: int, edges: list[tuple[int, int, int]], source: int) -> list[float] | None:
     dist: list[float] = [INF] * vertex_count
     dist[source] = 0

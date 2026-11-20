@@ -2,6 +2,15 @@
 
 Original code written for this repository under the MIT License.
 heapq is a min-heap; tuples (frequency, order, node) break ties deterministically.
+
+Reading guide:
+1. This convenience file keeps the Huffman merge logic but uses heapq.
+2. Heap entries carry a tie-breaking sequence number so nodes remain comparable.
+3. Two minima are merged until one root remains; codes are collected recursively.
+
+Complexity: O(n log n); extra space O(n).
+Convention: Left edges are 0 and right edges are 1; the sequence field breaks frequency
+  ties.
 """
 
 from __future__ import annotations

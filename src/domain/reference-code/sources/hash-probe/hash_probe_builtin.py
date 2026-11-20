@@ -2,6 +2,14 @@
 
 Original code written for this repository under the MIT License.
 dict chooses its own collision strategy; no probing loop is visible.
+
+Reading guide:
+1. This convenience file uses a Python dict, not a hand-written linear-probe table.
+2. The dict owns hashing and collision resolution; probe sequences are not exposed.
+3. Use this file to compare the interface, not to inspect slot-by-slot probing.
+
+Complexity: Expected time: O(1) per operation, O(n) worst; extra space O(n).
+Convention: Unique integer keys; the internal table layout is unspecified.
 """
 
 from __future__ import annotations

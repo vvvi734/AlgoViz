@@ -2,6 +2,16 @@
 
 Original code written for this repository under the MIT License.
 Repeatedly removes a vertex with in-degree zero; a remaining vertex means a cycle.
+
+Reading guide:
+1. Compute indegree for every vertex.
+2. Enqueue all vertices with indegree zero.
+3. Pop one vertex, append it to the order, and decrement each neighbour's indegree.
+4. If fewer than V vertices are emitted, the graph contains a directed cycle.
+
+Complexity: O(V + E) for adjacency lists, O(V^2) for an adjacency matrix; extra space
+  O(V).
+Convention: Kahn's algorithm; 0-based vertices; zero-indegree ties follow queue order.
 """
 
 from __future__ import annotations
@@ -19,6 +29,7 @@ def main() -> None:
 
     ready = deque(vertex for vertex in range(6) if indegree[vertex] == 0)
     order: list[int] = []
+    # Pop a zero-indegree vertex, append it, then decrement each neighbour's indegree.
     while ready:
         vertex = ready.popleft()
         order.append(vertex)

@@ -2,6 +2,15 @@
 
 Original code written for this repository under the MIT License.
 Each bucket is a list of keys; collisions append to the same chain.
+
+Reading guide:
+1. Map a key to bucket key % table_size.
+2. Each bucket is a chain of nodes holding colliding keys.
+3. Insert rejects duplicates; search scans only the target bucket's chain.
+
+Complexity: Expected time: O(1 + alpha) per operation, O(n) worst; extra space O(n +
+  table_size).
+Convention: Non-negative integer keys; table size is fixed at compile/construction time.
 """
 
 from __future__ import annotations
@@ -16,6 +25,7 @@ class HashTable:
     def _index(self, key: int) -> int:
         return key % len(self._buckets)
 
+    # Search the target bucket before appending; the chain holds only colliding keys.
     def insert(self, key: int) -> bool:
         bucket = self._buckets[self._index(key)]
         if key in bucket:

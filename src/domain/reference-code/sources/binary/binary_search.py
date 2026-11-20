@@ -3,6 +3,16 @@
 Based on this project's tested Python teaching implementation, with
 teaching-only tracing calls removed. Released under the MIT License.
 The algorithm is implemented explicitly; bisect is not used.
+
+Reading guide:
+1. The input must be non-decreasing; the function checks this before searching.
+2. Keep an inclusive search window [low, high].
+3. Compare the middle element and discard the half that cannot contain the target.
+4. Return the found index, or -1 when the window becomes empty.
+
+Complexity: O(log n); extra space O(1).
+Convention: 0-based indices; low and high are inclusive; duplicate targets may return
+  any matching index.
 """
 
 from __future__ import annotations
@@ -12,6 +22,7 @@ def is_non_decreasing(values: list[int]) -> bool:
     return all(values[i - 1] <= values[i] for i in range(1, len(values)))
 
 
+# Invariant: the answer, if present, stays inside the inclusive [low, high] window.
 def binary_search(values: list[int], target: int) -> int:
     """Return the index of target in a non-decreasing list, or -1."""
     if not values:

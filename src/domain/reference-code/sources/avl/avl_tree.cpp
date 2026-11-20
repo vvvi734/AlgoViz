@@ -1,6 +1,16 @@
 // AlgoViz reference implementation: AVL tree (C++17).
 // Original code written for this repository under the MIT License.
 // Height-balanced BST with LL, RR, LR and RL rotations on insert.
+//
+// Reading guide:
+// 1. Each node stores its height; the balance factor is height(left) -
+//    height(right).
+// 2. Insert like a BST, then recompute heights while recursion unwinds.
+// 3. If the balance factor leaves {-1, 0, 1}, apply LL, RR, LR or RL rotations.
+//
+// Complexity: O(log n) for insert/search; extra space O(h) = O(log n)
+//   recursion.
+// Convention: Height of an empty subtree is 0; duplicate keys are ignored.
 
 #include <algorithm>
 #include <iostream>
@@ -60,6 +70,7 @@ class AVLTree {
         return y;
     }
 
+    // Recompute height after insertion, then apply LL/RR/LR/RL if balance leaves {-1, 0, 1}.
     static std::unique_ptr<Node> balance(std::unique_ptr<Node> node) {
         update_height(node.get());
         int factor = balance_factor(node.get());

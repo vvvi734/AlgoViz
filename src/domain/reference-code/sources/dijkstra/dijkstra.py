@@ -3,6 +3,17 @@
 Based on this project's tested Python teaching implementation, with
 teaching-only tracing calls removed. Released under the MIT License.
 Algorithm semantics and boundary behaviour are preserved.
+
+Reading guide:
+1. Initialise distances to infinity and the source to 0.
+2. Repeatedly settle the unsettled vertex with the smallest tentative distance.
+3. Relax its outgoing edges; a smaller candidate updates distance and predecessor.
+4. Stop when the frontier is empty; previous pointers reconstruct the path.
+
+Complexity: O(V^2) with a matrix, O((V + E) log V) with a binary heap; extra space
+  O(V^2) for a matrix or O(V + E) for lists.
+Convention: Non-negative weights only; 0-based vertices; unreachable distances stay
+  infinity.
 """
 
 from __future__ import annotations
@@ -10,6 +21,7 @@ from __future__ import annotations
 import heapq
 
 
+# Settle the nearest unsettled vertex, then relax its outgoing non-negative edges.
 def dijkstra(
     graph: dict[str, list[tuple[str, int]]],
     source: str,

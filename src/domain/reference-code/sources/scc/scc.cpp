@@ -2,6 +2,18 @@
 // Original code written for this repository under the MIT License.
 // First pass records finish order on the original graph; second pass walks
 // the reversed graph in reverse finish order. Each tree is one SCC.
+//
+// Reading guide:
+// 1. First DFS on the original graph records vertices in finish order.
+// 2. Build the reverse graph by flipping every directed edge.
+// 3. Process vertices in reverse finish order; each DFS tree in the reverse graph is
+//    one SCC.
+//
+// Complexity: O(V + E) for adjacency lists, O(V^2) for adjacency matrices; extra
+//   space O(V + E) for lists, O(V^2) for a matrix, plus O(V) recursion.
+// Convention: Directed graph with 0-based vertices; components are emitted in
+//   Kosaraju order.
+
 
 #include <algorithm>
 #include <iostream>

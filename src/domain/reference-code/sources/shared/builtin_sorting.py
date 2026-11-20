@@ -7,6 +7,15 @@ hand-written bubble/selection/insertion sort. Both are stable.
 sorted() returns a new list; list.sort() mutates the list and returns None.
 
 Reference: Python standard library sorting documentation.
+
+Reading guide:
+1. This is the Python standard-library sorting shortcut, not a hand-written sort.
+2. sorted() returns a new list; list.sort() mutates the list in place.
+3. Both use Timsort and preserve the relative order of equal keys.
+
+Complexity: O(n log n) worst, O(n) best for nearly sorted input; extra space O(n)
+  worst.
+Convention: 0-based list indices; both routes are stable.
 """
 
 from __future__ import annotations

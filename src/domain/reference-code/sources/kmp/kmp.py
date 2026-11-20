@@ -3,9 +3,21 @@
 LPS convention: 0-based, lps[k] is the length of the longest proper prefix of
 pattern[0..k] that is also a suffix. On a mismatch, j moves to lps[j - 1]; the
 text pointer i never moves backwards.
+
+Reading guide:
+1. Build lps[i], the length of the longest proper prefix that is also a suffix of
+   pattern[0..i].
+2. Build it with two indices: extend on a match, otherwise fall back to lps[j - 1].
+3. Scan the text with the same fallback rule; every full pattern match is reported.
+4. After a match, fall back to lps[m - 1] so overlapping occurrences are found.
+
+Complexity: O(n + m); extra space O(m) for the lps table.
+Convention: 0-based string indices; lps values are lengths, not positions; empty
+  patterns return no matches.
 """
 
 
+# lps[i] is a length, not a position: on mismatch fall back to lps[j - 1].
 def build_lps(pattern: str) -> list[int]:
     m = len(pattern)
     if m == 0:

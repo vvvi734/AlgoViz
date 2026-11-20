@@ -2,6 +2,16 @@
 
 Original code written for this repository under the MIT License.
 Runs DFS from every unvisited vertex; one DFS tree is one component.
+
+Reading guide:
+1. Scan every vertex from 0 to V - 1.
+2. Each unvisited vertex starts a new component and receives a fresh component id.
+3. DFS marks all vertices reachable from that start; disconnected vertices form further
+   components.
+
+Complexity: O(V + E) for adjacency lists, O(V^2) for an adjacency matrix; extra space
+  O(V).
+Convention: Components are numbered in ascending order of their smallest vertex.
 """
 
 from __future__ import annotations
@@ -15,6 +25,7 @@ def visit(graph: list[list[int]], vertex: int, visited: list[bool], component: l
             visit(graph, neighbor, visited, component)
 
 
+# Every unvisited start opens a new component; one DFS marks all vertices reachable from it.
 def count_components(graph: list[list[int]]) -> list[list[int]]:
     visited = [False] * len(graph)
     components: list[list[int]] = []

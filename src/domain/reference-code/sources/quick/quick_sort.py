@@ -2,11 +2,22 @@
 
 Original code written for this repository under the MIT License.
 Lomuto partition: <= pivot goes left, > pivot goes right.
+
+Reading guide:
+1. Partition the range around the last element as pivot.
+2. Move values smaller than the pivot left and values greater than it right.
+3. Place the pivot in its final slot and recurse on the two sides.
+
+Complexity: O(n log n) average, O(n^2) worst; extra space O(log n) average recursion,
+  O(n) worst.
+Convention: Ranges are inclusive [low, high]; 0-based indices; the partition scheme is
+  not stable.
 """
 
 from __future__ import annotations
 
 
+# Lomuto partition: <= pivot goes left, > pivot goes right, pivot returns at boundary + 1.
 def partition(values: list[int], low: int, high: int) -> int:
     pivot = values[high]
     boundary = low - 1

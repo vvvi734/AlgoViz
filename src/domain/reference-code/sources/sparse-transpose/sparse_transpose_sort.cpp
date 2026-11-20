@@ -1,10 +1,20 @@
 /*
  * Sparse transpose — C++17 convenience example, MIT.
  *
- * This is the common “swap then sort” approach: it produces the same
+ * This is the common "swap then sort" approach: it produces the same
  * row-major transposed triplet list, but costs O(t log t), not O(t + c).
  * It does not use num/cpot and is not the fast transpose taught in the course.
+ *
+ * Reading guide:
+ * 1. This convenience file swaps row/col in every triplet, then sorts by (row, col).
+ * 2. Sorting restores row-major order, producing the same transpose table as the
+ *    fast algorithm.
+ * 3. It does not compute num/cpot and runs in O(t log t), not O(t + c).
+ *
+ * Complexity: O(t log t) time; extra space O(t) for the copied result.
+ * Convention: 0-based coordinates; input must still be a valid sparse triplet table.
  */
+
 #include <algorithm>
 #include <iostream>
 #include <vector>

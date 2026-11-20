@@ -2,6 +2,14 @@
 
 Original code written for this repository under the MIT License.
 append() adds at the end; pop() removes and returns the last item.
+
+Reading guide:
+1. This convenience file uses a Python list as a LIFO stack.
+2. append adds to the end; pop() removes the last element.
+3. The adapter does not implement a fixed capacity or manual top index.
+
+Complexity: O(1) amortized push/pop; extra space O(n).
+Convention: The end of the list is the top; pop from an empty list raises IndexError.
 """
 
 from __future__ import annotations

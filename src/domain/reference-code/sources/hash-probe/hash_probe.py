@@ -2,6 +2,17 @@
 
 Original code written for this repository under the MIT License.
 None marks an empty slot; insert and search probe forward with wraparound.
+
+Reading guide:
+1. Map a key to its home slot with key % table_size.
+2. Linear probing scans forward modulo capacity until it finds the key or an empty slot.
+3. Insert uses the first empty slot; search stops at an empty slot, which proves
+   absence.
+
+Complexity: Expected time: O(1 + 1/(1-alpha)) per operation, O(n) worst; extra space
+  O(table_size).
+Convention: Fixed-capacity open addressing; this teaching version has no deletion
+  tombstones.
 """
 
 from __future__ import annotations
@@ -16,6 +27,7 @@ class HashTable:
     def _index(self, key: int) -> int:
         return key % len(self._slots)
 
+    # Probe forward modulo capacity; an empty slot both accepts an insert and proves absence.
     def insert(self, key: int) -> bool:
         start = self._index(key)
         for step in range(len(self._slots)):

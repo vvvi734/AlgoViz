@@ -2,6 +2,17 @@
 // Original code written for this repository under the MIT License.
 // A forward topological pass computes earliest start times; a reverse pass
 // computes latest times. An activity is critical when its slack is zero.
+//
+// Reading guide:
+// 1. Treat the AOE network as a DAG of events and weighted activities.
+// 2. Compute earliest event times in topological order.
+// 3. Compute latest event times in reverse topological order.
+// 4. An activity is critical when latest(head) - earliest(tail) - weight == 0.
+//
+// Complexity: O(V + E) for adjacency-list processing, O(V^2) when scanning a matrix;
+//   extra space O(V + E) for times, degrees and the queue.
+// Convention: Vertices are 0-based events; the project starts at event 0 and ends at
+//   the last event.
 
 #include <algorithm>
 #include <iostream>
@@ -50,6 +61,7 @@ int main() {
     }
 
     std::vector<int> latest(6, earliest[5]);
+    // Reverse pass: latest[v] = min(latest[next] - weight).
     for (auto it = order.rbegin(); it != order.rend(); ++it) {
         int vertex = *it;
         for (int index : graph[vertex]) {

@@ -1,6 +1,15 @@
 // AlgoViz reference implementation: merge sort (C++17).
 // Original code written for this repository under the MIT License.
 // std::sort / std::stable_sort are deliberately not used.
+//
+// Reading guide:
+// 1. Split the half-open range [left, right) at its midpoint.
+// 2. Recursively sort both halves, then merge them into a temporary buffer.
+// 3. Merge by repeatedly taking the smaller front element; copy the merged run back.
+//
+// Complexity: O(n log n); extra space O(n) for the merge buffer.
+// Convention: Ranges are half-open [left, right); 0-based indices; taking the left
+//   element on ties keeps the sort stable.
 
 #include <iostream>
 #include <vector>
@@ -46,6 +55,7 @@ void merge_sort_range(std::vector<int>& values,
     merge_range(values, buffer, left, middle, right);
 }
 
+// Recursive divide-and-conquer; the merge step takes the smaller front element to stay stable.
 void merge_sort(std::vector<int>& values) {
     if (values.size() < 2) {
         return;

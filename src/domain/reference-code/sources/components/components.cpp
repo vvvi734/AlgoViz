@@ -1,6 +1,17 @@
 // AlgoViz reference implementation: connected components (C++17).
 // Original code written for this repository under the MIT License.
 // Runs DFS from every unvisited vertex; one DFS tree is one component.
+//
+// Reading guide:
+// 1. Scan every vertex from 0 to V - 1.
+// 2. Each unvisited vertex starts a new component and receives a fresh component id.
+// 3. DFS marks all vertices reachable from that start; disconnected vertices form
+//    further components.
+//
+// Complexity: O(V + E) for adjacency lists, O(V^2) for an adjacency matrix; extra
+//   space O(V).
+// Convention: Components are numbered in ascending order of their smallest vertex.
+
 
 #include <iostream>
 #include <vector>
@@ -15,6 +26,7 @@ void visit(const std::vector<std::vector<int>>& graph, int vertex, std::vector<b
     }
 }
 
+// Every unvisited start opens a new component; one DFS marks all vertices reachable from it.
 int count_components(const std::vector<std::vector<int>>& graph) {
     std::vector<bool> visited(graph.size(), false);
     int components = 0;

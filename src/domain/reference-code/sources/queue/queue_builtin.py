@@ -2,6 +2,14 @@
 
 Original code written for this repository under the MIT License.
 append() adds at the right; popleft() removes from the left in O(1).
+
+Reading guide:
+1. This convenience file uses collections.deque instead of a hand-written ring buffer.
+2. append adds at the right; popleft removes the oldest element in O(1).
+3. A list would make popleft O(n), which is why deque is the appropriate container.
+
+Complexity: O(1) per append/popleft; extra space O(n).
+Convention: The left end is the front; popleft on an empty deque raises IndexError.
 """
 
 from __future__ import annotations

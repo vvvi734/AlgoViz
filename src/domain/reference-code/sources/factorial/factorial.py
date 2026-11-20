@@ -2,11 +2,21 @@
 
 Original code written for this repository under the MIT License.
 Recursive definition: n! = n * (n - 1)!, with 0! = 1.
+
+Reading guide:
+1. Base cases: 0! = 1 and 1! = 1.
+2. Recurrence: n! = n * (n - 1)!.
+3. The recursion unwinds multiplying the pending factors from 1 up to n.
+
+Complexity: O(n) multiplications; extra space O(n) recursion depth.
+Convention: Input is a non-negative integer; the result uses the language's integer
+  type.
 """
 
 from __future__ import annotations
 
 
+# Base cases collapse to 1; the unwind multiplies n by the already-computed (n-1)!.
 def factorial(number: int) -> int:
     """Return number! for a non-negative integer."""
     if number < 0:

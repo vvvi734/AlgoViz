@@ -3,6 +3,15 @@
 Original code written for this repository under the MIT License.
 Each node stores prev/next references; append and remove are O(1)
 once the target node is known.
+
+Reading guide:
+1. Each node stores prev and next; the list keeps head and tail.
+2. Appending links the new node after tail and updates tail.
+3. Removing a known node patches its two neighbours; head/tail are fixed when necessary.
+4. Forward traversal follows next; backward traversal follows prev.
+
+Complexity: O(1) splice at a known node, O(n) search; extra space O(n).
+Convention: NULL/None marks both ends; prev and next must stay mutually consistent.
 """
 
 from __future__ import annotations
@@ -22,6 +31,7 @@ class DoublyList:
         self.head: Node | None = None
         self.tail: Node | None = None
 
+    # Append wires prev and next first; only then does tail move to the new node.
     def append(self, value: int) -> Node:
         node = Node(value, prev=self.tail)
         if self.tail is None:

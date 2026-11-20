@@ -1,6 +1,19 @@
 // AlgoViz convenience implementation: Huffman tree with std::priority_queue.
 // Original code written for this repository under the MIT License.
 // priority_queue is a max-heap by default, so the comparator reverses order.
+//
+// Reading guide:
+// 1. This convenience file keeps the Huffman merge logic but uses
+//    std::priority_queue.
+// 2. The queue orders nodes by frequency; two minima are merged until one root
+//    remains.
+// 3. The library supplies heap maintenance; the tree and code construction stay
+//    explicit.
+//
+// Complexity: O(n log n); extra space O(n).
+// Convention: Left edges are 0 and right edges are 1; ties are resolved by the
+//   comparator.
+
 
 #include <iostream>
 #include <memory>
@@ -62,6 +75,7 @@ int main() {
         heap.pop();
         Node* second = heap.top();
         heap.pop();
+        // Min-heap ordering is (frequency, insertion order), keeping ties deterministic.
         heap.push(new Node{
             first->frequency + second->frequency, '\0', order++, first, second});
     }

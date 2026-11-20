@@ -1,11 +1,23 @@
 /*
  * Sparse matrix fast transpose — original C++17 implementation, MIT.
  *
- * Convention: 0-based matrix coordinates, triplet positions and cpot slots.
- * Input triplets are row-major with unique (row, col).
+ * Convention: 0-based matrix coordinates, triplet positions and cpot slots; input
+ * triplets are row-major with unique (row, col).
  *
- * Time O(t + c), extra working space O(c). The returned list itself is O(t).
+ * Reading guide:
+ * 1. num[c] counts the non-zero entries in original column c, using one pass over
+ *    the triplets.
+ * 2. cpot[c] is the first result slot for column c: cpot[0] = 0 and cpot[c] =
+ *    cpot[c-1] + num[c-1].
+ * 3. Scan the source triplets again in row-major order; q = cpot[col] is the
+ *    destination slot.
+ * 4. Write (col, row, value), then increment cpot[col] so the next entry of that
+ *    column follows.
+ *
+ * Complexity: O(t + c) time; extra space O(c) for num/cpot, plus O(t) for the result
+ *   table.
  */
+
 #include <iostream>
 #include <vector>
 

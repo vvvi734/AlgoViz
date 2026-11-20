@@ -3,6 +3,17 @@
 This is the standard-library shortcut for the same lookup task. It is not
 guaranteed to use the KMP algorithm internally; see kmp.py for the explicit
 KMP implementation.
+
+Reading guide:
+1. This convenience file calls str.find repeatedly instead of building an LPS table.
+2. The next search starts at the previous match + 1, so overlapping occurrences are
+   found.
+3. CPython uses an optimized substring search, but this file does not demonstrate KMP's
+   fallback rule.
+
+Complexity: implementation-dependent; not the explicit O(n + m) KMP bound.
+Convention: 0-based positions; an empty pattern is handled separately to avoid an
+  infinite loop.
 """
 
 

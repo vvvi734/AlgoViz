@@ -1,6 +1,17 @@
 // AlgoViz convenience implementation: ordered set with std::set (C++17).
 // Original code written for this repository under the MIT License.
 // std::set is a balanced binary search tree; iteration is ascending.
+//
+// Reading guide:
+// 1. This convenience file uses std::set instead of writing BST node rotations or
+//    links.
+// 2. insert/erase/count each take logarithmic time on a balanced red-black tree.
+// 3. Iterating the set yields the keys in ascending order; duplicates are discarded.
+//
+// Complexity: O(log n) per insert/erase/search; extra space O(n).
+// Convention: Unique integer keys; ordering is ascending; no manual tree structure
+//   is exposed.
+
 
 #include <iostream>
 #include <set>

@@ -3,6 +3,16 @@
 Original code written for this repository under the MIT License.
 Builds a min-heap of nodes, repeatedly merges the two lightest nodes,
 then emits prefix-free codes by walking the tree.
+
+Reading guide:
+1. Count the frequency of every symbol.
+2. Put all leaf nodes in a min-heap ordered by frequency.
+3. Repeatedly merge the two least frequent nodes until one root remains.
+4. Left edges mean 0 and right edges mean 1, producing prefix-free codes.
+
+Complexity: O(n log n) with a heap; extra space O(n) for tree and codes.
+Convention: Symbols are unique; ties are broken by insertion order where the heap
+  supports it.
 """
 
 from __future__ import annotations
@@ -30,6 +40,7 @@ class MinHeap:
     def __len__(self) -> int:
         return len(self._items)
 
+    # Min-heap ordering is (frequency, insertion order), keeping ties deterministic.
     def push(self, node: Node) -> None:
         self._items.append(node)
         index = len(self._items) - 1

@@ -1,6 +1,18 @@
 // AlgoViz reference implementation: binary search tree (C++17).
 // Original code written for this repository under the MIT License.
 // Insert, search, remove and inorder traversal for unique integer keys.
+//
+// Reading guide:
+// 1. Invariant: every left key is smaller and every right key is larger than the
+//    node.
+// 2. Insert/search descend exactly one branch per level.
+// 3. Removal has three cases: leaf, one child, or two children replaced by the
+//    inorder successor.
+//
+// Complexity: O(h) per operation, O(log n) average and O(n) worst; extra space
+//   O(h) recursion.
+// Convention: Keys are unique integers; the inorder traversal is the sorted key
+//   sequence.
 
 #include <iostream>
 #include <memory>
@@ -14,6 +26,7 @@ class BST {
         std::unique_ptr<Node> right;
     };
 
+    // Descend one branch by key comparison; duplicates are ignored by the insert contract.
     void insert(int value) {
         root_ = insert(std::move(root_), value);
     }

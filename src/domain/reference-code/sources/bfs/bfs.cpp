@@ -1,11 +1,24 @@
 // AlgoViz reference implementation: breadth-first search (C++17).
 // Original code written for this repository under the MIT License.
 // Uses an adjacency list and std::queue; visits vertices level by level.
+//
+// Reading guide:
+// 1. Mark the start vertex when it is enqueued, not when it is dequeued.
+// 2. Pop the FIFO front and inspect every possible neighbour (matrix row or
+//    adjacency list).
+// 3. Enqueue only unvisited neighbours; BFS order is nondecreasing in edge count.
+//
+// Complexity: O(V + E) for adjacency lists, O(V^2) when scanning an adjacency
+//   matrix; extra space O(V).
+// Convention: Vertices are 0-based; each undirected edge is stored in both
+//   directions.
+
 
 #include <iostream>
 #include <queue>
 #include <vector>
 
+// Mark a neighbour before enqueueing it; the FIFO frontier then visits level by level.
 void bfs(const std::vector<std::vector<int>>& graph, int start) {
     std::vector<bool> visited(graph.size(), false);
     std::queue<int> pending;

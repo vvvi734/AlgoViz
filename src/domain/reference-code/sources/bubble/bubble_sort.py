@@ -2,11 +2,21 @@
 
 Explicit teaching implementation; sorted()/list.sort() are intentionally not used.
 Released under the MIT License.
+
+Reading guide:
+1. Each pass compares adjacent pairs from the left and swaps inverted pairs.
+2. After pass k, the largest k values are fixed at the right end.
+3. A pass with no swap proves the remaining prefix is already sorted, so stop early.
+
+Complexity: O(n^2) average/worst, O(n) best with early exit; extra space O(1).
+Convention: Ascending order; 0-based array access; equal values are never swapped, so
+  the sort is stable.
 """
 
 from __future__ import annotations
 
 
+# Invariant: after each pass, the largest remaining values are fixed at the right end.
 def bubble_sort(values: list[int]) -> None:
     end = len(values) - 1
     while end > 0:

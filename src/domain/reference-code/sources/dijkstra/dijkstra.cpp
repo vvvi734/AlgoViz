@@ -1,6 +1,18 @@
 // AlgoViz reference implementation: Dijkstra (adjacency list + min-heap).
 // Original code written for this repository under the MIT License.
 // The shortest-path algorithm is explicit; no graph library is used.
+//
+// Reading guide:
+// 1. Initialise distances to infinity and the source to 0.
+// 2. Repeatedly settle the unsettled vertex with the smallest tentative distance.
+// 3. Relax its outgoing edges; a smaller candidate updates distance and predecessor.
+// 4. Stop when the frontier is empty; previous pointers reconstruct the path.
+//
+// Complexity: O(V^2) with a matrix, O((V + E) log V) with a binary heap; extra space
+//   O(V^2) for a matrix or O(V + E) for lists.
+// Convention: Non-negative weights only; 0-based vertices; unreachable distances
+//   stay infinity.
+
 
 #include <functional>
 #include <iostream>
