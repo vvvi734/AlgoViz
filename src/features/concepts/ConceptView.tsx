@@ -2,6 +2,7 @@ import { useI18n } from '../../i18n/I18nProvider';
 import type { Bilingual, ConceptPage } from '../../domain/concepts/types';
 import { ConceptDiagram } from './ConceptDiagram';
 import { SearchConceptDiagram } from './SearchConceptDiagrams';
+import { QueueConceptDiagram } from './QueueConceptDiagrams';
 import '../../styles/concepts.css';
 
 /**
@@ -36,6 +37,8 @@ export function ConceptView({ concept }: { concept: ConceptPage }) {
         <div className="concept-diagram-frame" data-testid="concept-diagram">
           {concept.diagram === 'asl-decision-tree' || concept.diagram === 'block-search' ? (
             <SearchConceptDiagram kind={concept.diagram} lang={lang} />
+          ) : concept.diagram === 'circular-queue' || concept.diagram === 'stack-queue-storage' ? (
+            <QueueConceptDiagram kind={concept.diagram} lang={lang} />
           ) : (
             <ConceptDiagram kind={concept.diagram} lang={lang} />
           )}

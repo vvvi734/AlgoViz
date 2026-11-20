@@ -83,6 +83,16 @@
   height: auto;
 }
 
+.concept-svg-wide {
+  min-width: 900px;
+}
+
+.diagram-stack {
+  display: grid;
+  gap: 14px;
+  min-width: 900px;
+}
+
 .diagram-box {
   fill: var(--panel-2);
   stroke: var(--edge-hover);
@@ -127,6 +137,61 @@
 .diagram-cell.diagram-cell-current {
   fill: var(--note-bg);
   stroke: var(--warn);
+}
+
+.diagram-cell.diagram-cell-front {
+  fill: color-mix(in srgb, var(--warn) 14%, var(--node-bg));
+  stroke: var(--warn);
+  stroke-width: 2;
+}
+
+.diagram-cell.diagram-cell-rear {
+  fill: var(--tab-active-bg);
+  stroke: var(--accent-2);
+  stroke-width: 2;
+}
+
+.diagram-cell.diagram-cell-free {
+  fill: transparent;
+  stroke: var(--edge);
+  stroke-dasharray: 4 4;
+}
+
+.diagram-pointer-front {
+  fill: var(--warn);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.diagram-pointer-rear {
+  fill: var(--accent-2);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.diagram-state-empty {
+  fill: var(--muted);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.diagram-state-full {
+  fill: var(--red);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.diagram-state-wrap {
+  fill: var(--accent-2);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.diagram-ring {
+  fill: none;
+  stroke: var(--edge);
+  stroke-dasharray: 5 5;
+  opacity: 0.6;
 }
 
 .diagram-node {
@@ -396,5 +461,9 @@
 
   .concept-svg {
     min-width: 760px;
+  }
+
+  .concept-svg-wide {
+    min-width: 900px;
   }
 }

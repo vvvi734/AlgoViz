@@ -198,10 +198,18 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
         algorithms: [{ id: 'queue' }],
       },
       {
+        id: 'stack-queue-storage',
+        title: { zh: '栈与队列的存储结构', en: 'Storage structures for stacks and queues' },
+        algorithms: [],
+        concept: true,
+        conceptId: 'stack-queue-storage',
+      },
+      {
         id: 'circular-queue',
         title: { zh: '循环队列', en: 'Circular queue' },
         algorithms: [],
         concept: true,
+        conceptId: 'circular-queue',
       },
     ],
   },

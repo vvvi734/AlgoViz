@@ -49,6 +49,7 @@ describe('textbook directory (UX-03)', () => {
       'array-basics',
       'binary-tree',
       'bplus-tree',
+      'circular-queue',
       'graph-basics',
       'graph-storage',
       'indexed-search',
@@ -61,6 +62,7 @@ describe('textbook directory (UX-03)', () => {
       'sort-basics',
       'sparse-matrix',
       'special-matrices',
+      'stack-queue-storage',
       'string-basics',
     ]);
     for (const topic of conceptTopics) {

@@ -2012,6 +2012,330 @@ export const CONCEPT_PAGES: readonly ConceptPage[] = [
     },
     takeaway: ['分块查找的关键不是“分成块”，而是“块间能排除、块内能顺序扫”。顺序索引下块大小接近 √n 时平均成本约 √n；索引或块内改用二分后，假设与公式都必须重算。', 'The point of block search is not merely splitting data, but excluding blocks by bounds and scanning within one. With a sequential index, blocks near √n give about √n comparisons; changing either stage to binary search changes both assumptions and formulas.'],
   },
+  {
+    id: 'circular-queue',
+    topicId: 'circular-queue',
+    title: ['循环队列', 'Circular queue'],
+    chapter: ['第 4 章 · 栈与队列', 'Chapter 4 · Stacks and queues'],
+    summary: [
+      '循环队列把顺序队列的数组看成首尾相接的环：front 和 rear 到达数组末端后回到 0。它复用出队留下的空位，解决普通顺序队列“前面空着、后面却进不来”的假溢出。',
+      'A circular queue treats the array as a ring: front and rear wrap from the last index back to 0. It reuses slots freed by dequeues and removes the false overflow of an ordinary array queue.',
+    ],
+    diagram: 'circular-queue',
+    definitions: [
+      {
+        term: ['循环队列', 'Circular queue'],
+        text: ['用连续数组存储队列，并让 front、rear 按 capacity 取模回绕的顺序队列。逻辑上是环，物理上仍是一段下标为 0..capacity-1 的数组。', 'An array queue whose front and rear wrap modulo capacity. It is logically a ring but physically a contiguous array indexed 0..capacity-1.'],
+      },
+      {
+        term: ['队首指针 front', 'Front pointer'],
+        text: ['指向当前队首元素的下标。出队时先取走该元素，再执行 front = (front + 1) % capacity。', 'The index of the current head element. Dequeue removes it and then performs front = (front + 1) % capacity.'],
+      },
+      {
+        term: ['队尾指针 rear', 'Rear pointer'],
+        text: ['指向下一次入队位置的下标，不是当前最后一个元素。入队时先写入 rear 所指位置，再让 rear 后移取模。', 'The index of the next insertion slot, not the current last element. Enqueue writes at rear and then advances it modulo capacity.'],
+      },
+      {
+        term: ['假溢出', 'False overflow'],
+        text: ['rear 已到达数组末端，前面虽然还有出队留下的空位，普通顺序队列却无法继续入队。它不是数组真的没有空间，而是 rear 不能回头。', 'Rear has reached the array end while earlier dequeues left free slots; an ordinary array queue still cannot enqueue. The array is not truly full; rear simply cannot rewind.'],
+      },
+      {
+        term: ['牺牲一个存储单元', 'Sacrifice one slot'],
+        text: ['本页统一采用的实现约定：保留一个空位来区分队空与队满，因此 capacity 个数组格最多存放 capacity-1 个元素。', 'The convention used throughout this page: reserve one empty slot to distinguish empty from full, so capacity cells hold at most capacity-1 elements.'],
+      },
+    ],
+    sections: [
+      {
+        title: ['普通顺序队列为什么会出现假溢出', 'Why an ordinary array queue has false overflow'],
+        body: [
+          '普通顺序队列用一段连续数组和 front、rear 两个下标维护有效区间。入队把元素写到 rear，再让 rear 后移；出队只把 front 后移，通常不搬移剩余元素。于是数组前部会逐渐积累出队留下的空位。',
+          'An ordinary array queue keeps a live interval with two indices. Enqueue writes at rear and advances it; dequeue advances front and usually does not shift the remaining elements. Free slots therefore accumulate at the front of the array.',
+        ],
+        points: [
+          ['连续入队：rear 不断向右移动，直到数组末端。', 'Repeated enqueues move rear right until it reaches the end.'],
+          ['连续出队：front 向右移动，前面的格子空出来，但 rear 不会回头。', 'Repeated dequeues move front right; earlier cells become free, but rear never rewinds.'],
+          ['rear 到达末端后，即使 front > 0，普通队列也会拒绝入队，这就是假溢出。', 'Once rear reaches the end, an ordinary queue rejects enqueue even when front > 0: false overflow.'],
+          ['只靠搬移全部元素可以腾出尾部空间，但每次出队都可能要 O(n) 搬移，代价高。', 'Shifting all elements can free tail space, but every dequeue could cost O(n) moves.'],
+          ['如果还没看过普通顺序队列的 front/rear 分工，先读「栈与队列的存储结构」的顺序队列部分；本页在此基础上解决回绕、判空判满与计数。', 'If front/rear in an ordinary array queue is unfamiliar, read the array-queue part of “Storage structures for stacks and queues” first; this page then covers wrapping, empty/full tests and counts.'],
+        ],
+      },
+      {
+        title: ['循环队列：让下标从末尾回到开头', 'Circular queue: wrap the indices'],
+        body: [
+          '循环队列不搬元素，而是把数组下标按 capacity 取模。rear 在最后一个位置再后移时回到 0；front 出队到最后一个位置再后移时也回到 0。逻辑上 0 号格接在 capacity-1 后面，形成一个环。',
+          'A circular queue moves no elements; it reduces indices modulo capacity. Advancing rear past the last slot returns to 0, and advancing front past the last slot also returns to 0. Logically, slot 0 follows slot capacity-1, forming a ring.',
+        ],
+        points: [
+          ['入队：先写 Q[rear] = x，再执行 rear = (rear + 1) % capacity。', 'Enqueue: write Q[rear] = x, then rear = (rear + 1) % capacity.'],
+          ['出队：先取 x = Q[front]，再执行 front = (front + 1) % capacity。', 'Dequeue: read x = Q[front], then front = (front + 1) % capacity.'],
+          ['取模把“越界”变成“回到 0”，所以数组空间可以反复复用。', 'Modulo turns “past the end” into “back to 0”, so the array is reused indefinitely.'],
+          ['front 和 rear 都只增不减（在模意义下），移动方向相同。', 'Both front and rear only advance, in the modular sense, and move in the same direction.'],
+        ],
+        formula: 'rear = (rear + 1) % capacity\nfront = (front + 1) % capacity',
+      },
+      {
+        title: ['队空、队满与元素个数', 'Empty, full and element count'],
+        body: [
+          '如果只用 front 和 rear，循环队列会遇到“front == rear 既可能是空，也可能是满”的歧义。本页统一采用牺牲一个存储单元的约定：rear 所指位置永远空着，用来区分这两种状态。',
+          'With only front and rear, front == rear could mean empty or full. This page consistently sacrifices one slot: the slot at rear stays empty, which disambiguates the two states.',
+        ],
+        points: [
+          ['队空：front == rear，此时有效元素个数为 0。', 'Empty: front == rear, with zero live elements.'],
+          ['队满：(rear + 1) % capacity == front，此时还有一个格子空着。', 'Full: (rear + 1) % capacity == front; one cell remains unused.'],
+          ['元素个数：count = (rear - front + capacity) % capacity。', 'Element count: count = (rear - front + capacity) % capacity.'],
+          ['这里的 count 是由 front、rear 算出的元素个数，不是额外保存的计数器字段；额外 count 字段的实现见下一节。', 'Here count is derived from front and rear; it is not an extra counter field. The separate count-field implementation is described in the next section.'],
+          ['实际可存元素上限是 capacity - 1，不是 capacity。', 'The usable capacity is capacity - 1, not capacity.'],
+          ['出队后 front 后移，空位出现在 front 原来所在的位置，而不是 rear 的位置。', 'After dequeue, front advances and the freed slot is where front used to be, not where rear is.'],
+        ],
+        formula: 'front == rear\n(rear + 1) % capacity == front\ncount = (rear - front + capacity) % capacity',
+      },
+      {
+        title: ['容量 6 的连续状态推演', 'A capacity-6 walkthrough'],
+        body: [
+          '取 capacity = 6，数组下标 0..5，最多存 5 个元素。下面的四张状态图与右侧公式一一对应；每一步都同时检查 front、rear、有效元素和空位，避免“指针位置与数量公式打架”。',
+          'Take capacity = 6 with indices 0..5 and at most five elements. The four state cards match the formulas exactly; every step checks front, rear, live elements and free slots together.',
+        ],
+        points: [
+          ['① 初始化：front = rear = 0，count = 0，队列为空。', '1. Initialise: front = rear = 0, count = 0, empty.'],
+          ['② 入队 A、B、C、D、E：占用 0..4，rear = 5，count = 5，队满。', '2. Enqueue A–E: slots 0..4 used, rear = 5, count = 5, full.'],
+          ['③ 出队 A：front = 1，0 号格空出，rear 仍为 5，count = 4。', '3. Dequeue A: front = 1, slot 0 becomes free, rear stays 5, count = 4.'],
+          ['④ 入队 F：写到 5 号格，rear = (5 + 1) % 6 = 0，队列再次满；再出队 B：front = 2，count = 4。', '4. Enqueue F into slot 5, rear = (5 + 1) % 6 = 0, full again; dequeue B sets front = 2 and count = 4.'],
+          ['④ 的最终状态：C、D、E、F 在 2..5，0、1 空闲，rear 指向下一次可写的 0 号格。', 'Final state of 4: C, D, E and F occupy 2..5; 0 and 1 are free; rear points at the next writable slot 0.'],
+        ],
+        formula: 'capacity = 6\nusable = capacity - 1 = 5\n② count = (5 - 0 + 6) % 6 = 5\n③ count = (5 - 1 + 6) % 6 = 4\n④ count = (0 - 2 + 6) % 6 = 4',
+      },
+      {
+        title: ['另一种实现：用 count 计数器', 'Another implementation: a count field'],
+        body: [
+          '另一种常见实现不牺牲空位，而是额外保存元素个数 count。此时 count == 0 表示空，count == capacity 表示满；入队和出队都要同步维护 count。它可以使用全部 capacity 个格子，但每个状态多一个计数器字段。',
+          'Another common implementation sacrifices no slot and stores count instead. Then count == 0 means empty and count == capacity means full; enqueue and dequeue update count. It uses all capacity cells but carries one extra counter.',
+        ],
+        points: [
+          ['两种约定都能正确工作，但不能把“牺牲一个单元”的判满公式套到 count 实现上。', 'Both conventions work, but never apply the sacrifice-one-slot full test to a count-based queue.'],
+          ['本页所有图示、公式和示例都使用“牺牲一个单元”的约定。', 'Every diagram, formula and example on this page uses the sacrifice-one-slot convention.'],
+          ['若题目给出 count，先看它是否还同时用 rear 空位判满；两套规则混用最容易出现差一错误。', 'If count is given, check whether a reserved rear slot is also used; mixing both rules is the usual source of off-by-one errors.'],
+        ],
+      },
+    ],
+    comparison: {
+      title: ['普通顺序队列与循环队列', 'Ordinary array queue vs circular queue'],
+      columns: [
+        ['比较项', 'Aspect'],
+        ['普通顺序队列', 'Ordinary array queue'],
+        ['循环队列（牺牲 1 格）', 'Circular queue (one slot reserved)'],
+      ],
+      rows: [
+        [
+          ['rear 的移动', 'Rear movement'],
+          ['rear = rear + 1，到数组末端停止', 'rear = rear + 1; stops at the array end'],
+          ['rear = (rear + 1) % capacity', 'rear = (rear + 1) % capacity'],
+        ],
+        [
+          ['空间复用', 'Space reuse'],
+          ['前面空位不能直接再用', 'Earlier free slots cannot be reused directly'],
+          ['整个数组循环复用', 'The whole array is reused cyclically'],
+        ],
+        [
+          ['队空', 'Empty'],
+          ['front == rear', 'front == rear'],
+          ['front == rear', 'front == rear'],
+        ],
+        [
+          ['队满/不可入队', 'Full / cannot enqueue'],
+          ['rear 到达末端（或额外 count）', 'rear reaches the end (or an extra count is used)'],
+          ['(rear + 1) % capacity == front', '(rear + 1) % capacity == front'],
+        ],
+        [
+          ['元素个数', 'Element count'],
+          ['rear - front（未回绕时）', 'rear - front (before any wrap)'],
+          ['(rear - front + capacity) % capacity', '(rear - front + capacity) % capacity'],
+        ],
+        [
+          ['容量上限', 'Capacity limit'],
+          ['capacity', 'capacity'],
+          ['capacity - 1', 'capacity - 1'],
+        ],
+      ],
+    },
+    takeaway: ['循环队列用取模让 rear 和 front 回绕，用“牺牲一个空位”区分队空与队满。先确认 front 指队首、rear 指下一次入队，再使用同一套公式；不要把 count 实现和牺牲单元实现混在一起。', 'A circular queue wraps front and rear modulo capacity and reserves one slot to distinguish empty from full. Confirm that front is the head and rear is the next insertion slot, then use one consistent formula set; never mix count-based and reserved-slot conventions.'],
+  },
+  {
+    id: 'stack-queue-storage',
+    topicId: 'stack-queue-storage',
+    title: ['栈与队列的存储结构', 'Storage structures for stacks and queues'],
+    chapter: ['第 4 章 · 栈与队列', 'Chapter 4 · Stacks and queues'],
+    summary: [
+      '栈和队列的逻辑结构分别是后进先出与先进先出；物理上都可以用连续数组或链表实现。顺序栈靠 top 标记栈顶，链栈在表头插入删除；顺序队列靠 front、rear 标记有效区间，链式队列靠头尾指针维护链表。',
+      'Stacks are LIFO and queues are FIFO at the logical level; either can be stored in a contiguous array or a linked list. An array stack uses top, a linked stack inserts and removes at the head; an array queue uses front and rear, while a linked queue maintains head and tail pointers.',
+    ],
+    diagram: 'stack-queue-storage',
+    definitions: [
+      {
+        term: ['顺序栈', 'Array stack'],
+        text: ['用连续数组存放栈元素，并用一个整数 top 记录栈顶下标的栈。top = -1 表示空栈。', 'A stack stored in a contiguous array with an integer top. top = -1 means empty.'],
+      },
+      {
+        term: ['栈顶指针 top', 'Top index'],
+        text: ['在顺序栈中指向当前栈顶元素；入栈先 ++top 再写入，出栈先读取再 top--。它不指向“下一个空位”。', 'In an array stack, top indexes the current top element. Push increments top before writing; pop reads before decrementing. It does not point at the next free slot.'],
+      },
+      {
+        term: ['链栈', 'Linked stack'],
+        text: ['用节点和 next 指针存储栈元素，top 指向首节点；入栈在表头插入，出栈删除首节点。', 'A stack of nodes linked by next. top points at the first node; push inserts at the head and pop removes the head.'],
+      },
+      {
+        term: ['顺序队列', 'Array queue'],
+        text: ['用连续数组存放队列，front 指向队首元素，rear 指向下一次入队位置。普通数组队列的 rear 不回绕，因此会出现假溢出。', 'A queue stored in a contiguous array, with front at the head and rear at the next insertion slot. In an ordinary array queue rear never wraps, so false overflow can occur.'],
+      },
+      {
+        term: ['链式队列', 'Linked queue'],
+        text: ['用节点和 next 指针存储队列。本页统一采用带头结点的约定：front 指向头结点，rear 指向最后一个数据结点。', 'A queue stored as linked nodes. This page consistently uses a headed queue: front points at the head node and rear at the last data node.'],
+      },
+      {
+        term: ['头结点', 'Head node'],
+        text: ['链式队列中不保存有效数据的哨兵节点。它让空队列与非空队列的入队、出队代码更统一。', 'A sentinel node in a linked queue that stores no payload. It keeps enqueue and dequeue code uniform for empty and non-empty queues.'],
+      },
+    ],
+    sections: [
+      {
+        title: ['先分清逻辑结构与存储结构', 'Separate the logical structure from the layout'],
+        body: [
+          '栈和队列首先是操作受限的线性表：栈只允许在栈顶插入和删除，队列只允许在队尾插入、队首删除。这个 LIFO / FIFO 契约不依赖数组或链表。数组和链表只是两种物理实现，决定容量、指针和空满判断怎么写。',
+          'Stacks and queues are linear lists with restricted operations: a stack inserts and removes only at its top, while a queue inserts at the rear and removes at the front. This LIFO/FIFO contract does not depend on arrays or links. Arrays and linked nodes are physical implementations that determine capacity, pointers and empty/full tests.',
+        ],
+        points: [
+          ['先看「栈的定义与实现」「队列的定义与实现」中的 push/pop、入队/出队，再看本页的物理存储与指针。', 'Start with push/pop and enqueue/dequeue in “Stack definition and implementation” and “Queue definition and implementation”, then return to this page for physical storage and pointers.'],
+          ['顺序存储：元素在连续内存中，靠下标访问；容量通常固定。', 'Sequential storage: contiguous memory and index access; capacity is usually fixed.'],
+          ['链式存储：节点可以分散，靠 next 指针连接；容量受内存限制。', 'Linked storage: nodes may be scattered and connected by next; capacity is memory-bound.'],
+          ['同一组栈操作可以有顺序栈和链栈两种实现，复杂度都可以是 O(1)。', 'The same stack operations can be implemented by an array or a linked list, both O(1).'],
+          ['同一组队列操作可以用普通数组、循环数组或链表实现，差别在回绕与指针维护。', 'Queue operations can use an ordinary array, a circular array or a linked list; they differ in wrapping and pointer maintenance.'],
+        ],
+      },
+      {
+        title: ['顺序栈：top 指向栈顶元素', 'Array stack: top indexes the top element'],
+        body: [
+          '顺序栈用一段连续数组 S[0..MAXSIZE-1] 和一个整数 top。约定 top = -1 表示空栈；每入栈一个元素，先执行 ++top，再把新元素写入 S[top]；出栈先取 S[top]，再执行 top--。因此 top 永远指向当前栈顶元素，而不是下一个空位。',
+          'An array stack uses S[0..MAXSIZE-1] and an integer top. top = -1 means empty. Push increments top and then writes S[top]; pop reads S[top] and then decrements top. Therefore top always indexes the current top element, not the next free slot.',
+        ],
+        points: [
+          ['空栈：top == -1；此时不能出栈。', 'Empty: top == -1; pop is invalid.'],
+          ['满栈：top == MAXSIZE - 1；此时不能入栈，除非扩容或拒绝。', 'Full: top == MAXSIZE - 1; push is invalid unless the array grows or the operation is rejected.'],
+          ['入栈：if (top < MAXSIZE - 1) S[++top] = x;', 'Push: if (top < MAXSIZE - 1) S[++top] = x;'],
+          ['出栈：if (top >= 0) x = S[top--];', 'Pop: if (top >= 0) x = S[top--];'],
+          ['只维护一个整数，空间开销小；但容量固定，扩容要重新分配并搬移元素。', 'Only one integer is maintained, so overhead is small; capacity is fixed, and growth requires reallocation and copying.'],
+        ],
+        formula: 'top == -1（空）\ntop == MAXSIZE - 1（满）\n入栈 ++top; 出栈 top--',
+      },
+      {
+        title: ['链栈：在表头完成 push 与 pop', 'Linked stack: push and pop at the head'],
+        body: [
+          '链栈把栈元素放在节点里，每个节点保存 data 和 next，top 指向首节点。入栈新建节点，让新节点的 next 指向原 top，再让 top 指向新节点；出栈保存首节点，让 top 指向 next，再释放原首节点。所有操作只改表头附近的常数个指针。',
+          'A linked stack stores each element in a node with data and next; top points at the first node. Push creates a node, links its next to the old top, and makes top point at it. Pop saves the first node, moves top to next, and frees the old head. Only a constant number of head pointers change.',
+        ],
+        points: [
+          ['空栈：top == NULL。', 'Empty: top == NULL.'],
+          ['入栈：new→next = top; top = new。', 'Push: new→next = top; top = new.'],
+          ['出栈：p = top; top = top→next; free(p)。', 'Pop: p = top; top = top→next; free(p).'],
+          ['节点不要求连续存储，容量不受预先分配限制；每个节点多一个 next 指针。', 'Nodes need not be contiguous, and capacity is not fixed in advance; each node carries one extra next pointer.'],
+          ['push/pop 都是 O(1)，但频繁 malloc/free 的常数成本通常高于顺序栈。', 'Push and pop are O(1), but frequent malloc/free usually has a higher constant cost than an array stack.'],
+        ],
+      },
+      {
+        title: ['顺序队列与假溢出', 'Array queue and false overflow'],
+        body: [
+          '顺序队列用 front 指向队首元素、rear 指向下一次入队位置。入队写 Q[rear] 后让 rear 后移，出队取 Q[front] 后让 front 后移。普通数组队列的 rear 不会回到 0，所以出队留下的前部空位无法直接复用。',
+          'An array queue uses front at the head and rear at the next insertion slot. Enqueue writes Q[rear] and advances rear; dequeue reads Q[front] and advances front. In an ordinary array queue rear never returns to 0, so earlier slots freed by dequeues cannot be reused directly.',
+        ],
+        points: [
+          ['空队列：front == rear（在未回绕的普通队列中）。', 'Empty: front == rear in an ordinary, non-wrapping queue.'],
+          ['入队：Q[rear] = x; rear++；出队：x = Q[front]; front++。', 'Enqueue: Q[rear] = x; rear++. Dequeue: x = Q[front]; front++.'],
+          ['rear 到达数组末端后，即使 front > 0，也不能再入队：假溢出。', 'Once rear reaches the end, enqueue is rejected even when front > 0: false overflow.'],
+          ['把数组首尾相接、让 front 和 rear 取模回绕，就是循环队列；判空判满与元素个数见「循环队列」专题。', 'Connecting the ends and wrapping front and rear modulo capacity gives a circular queue; see the circular-queue page for empty/full tests and counts.'],
+        ],
+      },
+      {
+        title: ['链式队列：带头结点，front 与 rear 分工', 'Linked queue: headed, with front and rear roles'],
+        body: [
+          '链式队列用节点保存元素。本页统一采用带头结点的约定：front 指向不保存数据的头结点，rear 指向最后一个数据结点。空队列时 front == rear == 头结点，且头结点的 next == NULL。入队在 rear 之后接新节点并让 rear 指向它；出队删除头结点的下一个节点；如果删除的是最后一个数据结点，还要让 rear 回到头结点。',
+          'A linked queue stores elements in nodes. This page consistently uses a headed queue: front points at a head node that stores no payload, and rear points at the last data node. When empty, front == rear == head and head.next == NULL. Enqueue links a new node after rear and advances rear; dequeue removes head.next; if that was the last data node, rear must return to the head.',
+        ],
+        points: [
+          ['空队列：front == rear == 头结点，头结点 next == NULL。', 'Empty: front == rear == head, and head.next == NULL.'],
+          ['入队：rear→next = new; rear = new; new→next = NULL。', 'Enqueue: rear→next = new; rear = new; new→next = NULL.'],
+          ['出队：p = front→next; front→next = p→next; 若 p == rear，则 rear = front。', 'Dequeue: p = front→next; front→next = p→next; if p == rear, set rear = front.'],
+          ['删除最后一个数据结点后，队列为空，rear 必须指回头结点，不能悬空。', 'After removing the last data node, the queue is empty and rear must point back at the head rather than dangle.'],
+          ['若采用不带头结点的约定，空队列和删除唯一元素要单独处理 front 与 rear；本页不混用两套约定。', 'Without a head node, empty queues and deleting the only element need separate front/rear handling; this page does not mix conventions.'],
+        ],
+      },
+      {
+        title: ['四种结构怎么选', 'Choosing among the four'],
+        body: [
+          '选择存储结构时看三件事：容量是否固定、是否频繁扩容、是否需要随机访问。顺序栈和循环队列的常数成本低、缓存友好，适合容量可预估的场景；链栈和链式队列按需分配节点，适合容量变化大或需要稳定地址的场景，但每个节点多一个指针，且分配释放有额外开销。',
+          'Choose by three questions: is capacity fixed, will it grow often, and is random access needed? Array stacks and circular queues have low constant costs and good locality, fitting predictable capacities. Linked stacks and queues allocate on demand, fitting highly variable sizes or stable node addresses, at the cost of one pointer per node and allocation overhead.',
+        ],
+        points: [
+          ['栈：容量固定、追求常数成本选顺序栈；容量变化大选链栈。', 'Stack: choose an array stack for fixed capacity and low constants; choose a linked stack for large capacity variation.'],
+          ['队列：需要复用数组空间选循环队列；需要动态增长选链式队列。', 'Queue: choose a circular queue to reuse array space; choose a linked queue for dynamic growth.'],
+          ['链式结构删除节点要防止悬空指针；顺序结构入栈/入队要防止越界。', 'Linked structures must avoid dangling pointers on deletion; array structures must avoid out-of-bounds writes.'],
+          ['复杂度都是 O(1) 不等于实际速度相同：缓存、分配器和指针跳转都会影响常数。', 'O(1) complexity does not imply equal speed: cache behaviour, allocators and pointer chasing affect constants.'],
+        ],
+      },
+    ],
+    comparison: {
+      title: ['四种物理存储结构', 'Four physical storage layouts'],
+      columns: [
+        ['比较项', 'Aspect'],
+        ['顺序栈', 'Array stack'],
+        ['链栈', 'Linked stack'],
+        ['顺序队列', 'Array queue'],
+        ['链式队列', 'Linked queue'],
+      ],
+      rows: [
+        [
+          ['存储', 'Storage'],
+          ['连续数组', 'Contiguous array'],
+          ['离散节点 + next', 'Scattered nodes + next'],
+          ['连续数组', 'Contiguous array'],
+          ['离散节点 + next', 'Scattered nodes + next'],
+        ],
+        [
+          ['关键指针', 'Key pointers'],
+          ['top 指栈顶元素', 'top at the top element'],
+          ['top 指首节点', 'top at the first node'],
+          ['front 队首，rear 下一次入队', 'front at head, rear next slot'],
+          ['front 头结点，rear 最后数据结点', 'front at head, rear at last data node'],
+        ],
+        [
+          ['入操作', 'Insert'],
+          ['++top 后写入', 'increment top, then write'],
+          ['表头插入', 'insert at the head'],
+          ['写 rear 后取模前进', 'write at rear, advance modulo'],
+          ['rear 后接新节点', 'link a new node after rear'],
+        ],
+        [
+          ['出操作', 'Remove'],
+          ['读取后 top--', 'read, then decrement top'],
+          ['删除首节点', 'remove the first node'],
+          ['取 front 后取模前进', 'read front, advance modulo'],
+          ['删除头结点的下一个节点', 'remove head.next'],
+        ],
+        [
+          ['空条件', 'Empty test'],
+          ['top == -1', 'top == -1'],
+          ['top == NULL', 'top == NULL'],
+          ['front == rear', 'front == rear'],
+          ['front == rear == 头结点', 'front == rear == head'],
+        ],
+        [
+          ['满/容量', 'Full / capacity'],
+          ['top == MAXSIZE - 1', 'top == MAXSIZE - 1'],
+          ['无固定上限，受内存限制', 'no fixed limit; memory-bound'],
+          ['牺牲 1 格：(rear+1)%capacity == front', 'one slot reserved: (rear+1)%capacity == front'],
+          ['无固定上限，受内存限制', 'no fixed limit; memory-bound'],
+        ],
+      ],
+    },
+    takeaway: ['先记逻辑契约，再记物理指针：顺序栈 top 指栈顶元素且空为 -1；链栈 top 指首节点；顺序队列 front 指队首、rear 指下一次入队；带头结点链式队列空时 front == rear == 头结点，删掉最后一个数据结点后 rear 要回到头结点。', 'Learn the contract first, then the physical pointers: an array stack has top at the top element and -1 for empty; a linked stack has top at the first node; an array queue has front at the head and rear at the next slot; a headed linked queue is empty when front == rear == head, and rear must return to the head after the last data node is removed.'],
+  },
 ];
 
 const BY_ID = new Map(CONCEPT_PAGES.map((page) => [page.id, page]));

@@ -18,7 +18,9 @@ export type ConceptDiagramKind =
   | 'b-tree'
   | 'b-plus-tree'
   | 'asl-decision-tree'
-  | 'block-search';
+  | 'block-search'
+  | 'circular-queue'
+  | 'stack-queue-storage';
 
 export interface ConceptDefinition {
   term: Bilingual;

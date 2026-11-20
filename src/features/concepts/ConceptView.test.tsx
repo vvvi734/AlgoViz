@@ -59,6 +59,26 @@ describe('ConceptView (CORE-REFINE-01)', () => {
     expect(screen.getByTestId('concept-diagram').querySelector('svg')).not.toBeNull();
   });
 
+  it('keeps the circular queue states and four storage layouts visible in the SVG', () => {
+    renderConcept('circular-queue');
+    const circularText = screen.getByTestId('concept-diagram').textContent ?? '';
+    expect(circularText).toContain('front = 2');
+    expect(circularText).toContain('rear = 0');
+    expect(circularText).toContain('(5 + 1) % 6 = 0 = front');
+    expect(circularText).toContain('capacity - 1');
+    expect(circularText).toContain('rear + 1 = 6');
+    expect(circularText).toContain('假溢出');
+    cleanup();
+
+    renderConcept('stack-queue-storage');
+    const storageText = screen.getByTestId('concept-diagram').textContent ?? '';
+    expect(storageText).toContain('top = 2');
+    expect(storageText).toContain('front = 2');
+    expect(storageText).toContain('rear = 5');
+    expect(storageText).toContain('rear = front');
+    expect(screen.getByTestId('concept-definition').textContent).toContain('头结点');
+  });
+
   it('has a diagram for each concept kind', () => {
     for (const concept of CONCEPT_PAGES) {
       renderConcept(concept.id);
