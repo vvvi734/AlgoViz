@@ -246,6 +246,11 @@
   font-weight: 800;
 }
 
+.diagram-property-title {
+  font-size: 18px;
+  font-weight: 800;
+}
+
 .diagram-note {
   fill: var(--muted);
   font-size: 14px;

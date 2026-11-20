@@ -45,6 +45,7 @@ describe('textbook directory (UX-03)', () => {
     );
     expect(conceptTopics.map((topic) => topic.id).sort()).toEqual([
       'algorithm-cases',
+      'algorithm-definition',
       'algorithm-efficiency',
       'array-basics',
       'binary-tree',
@@ -59,6 +60,7 @@ describe('textbook directory (UX-03)', () => {
       'intro-logical-physical',
       'linear-basics',
       'multiway-tree',
+      'naive-match',
       'search-asl',
       'sort-basics',
       'sparse-matrix',
@@ -93,6 +95,12 @@ describe('textbook directory (UX-03)', () => {
     expect(basics.kind).toBe('concept');
     expect(basics.conceptId).toBe('string-basics');
     expect(basics.title.zh).toContain('模式匹配');
+
+    const naive = strings.topics.find((topic) => topic.id === 'naive-match')!;
+    expect(naive.kind).toBe('concept');
+    expect(naive.conceptId).toBe('naive-matching');
+    expect(naive.category).toBe('theory');
+    expect(naive.planned).toBeUndefined();
 
     const kmp = strings.topics.find((topic) => topic.id === 'kmp')!;
     expect(kmp.planned).toBeUndefined();

@@ -105,6 +105,67 @@ export const CONCEPT_PAGES: readonly ConceptPage[] = [
     takeaway: ['先看关系，再看存储，最后看运算。', 'Relationships first, storage second, operations third.'],
   },
   {
+    id: 'algorithm-definition',
+    topicId: 'algorithm-definition',
+    title: ['算法的定义与特性', 'Algorithm definition and properties'],
+    chapter: ['第 2 章 · 算法', 'Chapter 2 · Algorithms'],
+    summary: [
+      '算法描述“怎样从一个合法输入得到答案”，它必须是一个有限、确定、可执行的步骤序列。理解五大特性，才能区分算法、程序与单纯的设想。',
+      'An algorithm describes how to obtain an answer from a valid input. It must be a finite, deterministic and executable sequence of steps; the five properties distinguish an algorithm from a program or a mere idea.',
+    ],
+    diagram: 'algorithm-properties',
+    definitions: [
+      {
+        term: ['算法', 'Algorithm'],
+        text: [
+          '算法是对特定问题求解步骤的描述，是由有限条指令组成的序列；每条指令表示一个或多个操作，对合法输入能在有限时间内产生确定结果。',
+          'An algorithm describes the steps that solve a specific problem: a finite sequence of instructions, each denoting one or more operations, which produces a definite result for valid input in finite time.',
+        ],
+      },
+      {
+        term: ['算法与程序', 'Algorithm versus program'],
+        text: [
+          '算法是求解方法与步骤，程序是算法在某种语言中的具体实现。同一算法可以写成不同语言的程序，也可以有不同效率的实现。',
+          'An algorithm is the method and its steps; a program is a concrete implementation in some language. One algorithm may become programs in different languages or implementations with different costs.',
+        ],
+      },
+    ],
+    sections: [
+      {
+        title: ['定义中的三个关键词', 'Three words in the definition'],
+        body: [
+          '“特定问题”限定算法不能含糊地什么都能做；“有限指令”要求步骤个数有限，而不是靠一个永远运行的循环碰运气；“合法输入”说明算法只对满足前置条件的数据负责。',
+          '“Specific problem” rules out a vague do-everything recipe; “finite instructions” requires a finite number of steps rather than a loop that might eventually work; “valid input” states the precondition the algorithm may assume.',
+        ],
+        points: [
+          ['算法不是程序：程序可以长期运行、等待输入或处理交互，算法本身必须能在有限步骤后结束。', 'An algorithm is not a program: a program may run indefinitely or wait for input, while the algorithm itself must finish in finite steps.'],
+          ['算法不是代码片段：没有说明输入、输出和终止条件的代码，不能单独构成一个完整算法。', 'An algorithm is not a code fragment: code without stated input, output and termination does not by itself define one.'],
+          ['同一个问题可以有多个正确算法，它们的正确性相同，但时间、空间和实现难度可能不同。', 'One problem may have several correct algorithms; they agree on the answer but may differ in time, space and implementation difficulty.'],
+        ],
+      },
+      {
+        title: ['五大特性：判断步骤序列是否合格', 'Five properties of a valid algorithm'],
+        body: [
+          '有穷性、确定性、可行性、输入和输出共同约束一个步骤序列。前三条保证“能算完、算得唯一、算得动”，后两条保证问题与答案说清楚。',
+          'Finiteness, determinism, feasibility, input and output constrain a step sequence together. The first three guarantee that it finishes, is unambiguous and can actually be carried out; the last two make the problem and answer explicit.',
+        ],
+        points: [
+          ['有穷性：算法在执行有限条指令后结束，而且每条指令都能在有限时间内完成。', 'Finiteness: the algorithm stops after finitely many instructions, and each instruction finishes in finite time.'],
+          ['确定性：对相同的合法输入和执行状态，算法只有一条执行路径，产生相同结果；不能有“可做可不做”的歧义步骤。', 'Determinism: for the same valid input and state there is one execution path and one result; no step may be optional or ambiguous.'],
+          ['可行性：每一步都能由已经具备的基本运算执行有限次来实现，不能假设一步完成无法实现的操作。', 'Feasibility: every step can be carried out by a finite number of available basic operations; it cannot assume an impossible primitive.'],
+          ['输入：有零个或多个输入，取自明确的合法范围；零输入表示算法使用内置数据或常量。', 'Input: zero or more inputs from a stated valid domain; zero input means the algorithm uses built-in data or constants.'],
+          ['输出：至少有一个输出，通常与输入存在确定关系；没有输出的步骤序列无法判断它解决了什么问题。', 'Output: at least one result, usually determined by the input; a sequence with no output cannot be judged as solving a problem.'],
+        ],
+        formula: '算法 = 有限步骤 + 确定规则 + 可执行操作 + 合法输入 + 明确输出',
+        formulaEn: 'algorithm = finite steps + deterministic rules + executable operations + valid input + definite output',
+      },
+    ],
+    takeaway: [
+      '先写清输入、输出和终止条件，再检查有穷性、确定性与可行性；这三条不过关，代码再漂亮也不是算法。',
+      'State input, output and termination first, then check finiteness, determinism and feasibility; without them, polished code is not yet an algorithm.',
+    ],
+  },
+  {
     id: 'complexity',
     topicId: 'algorithm-efficiency',
     title: ['时间复杂度与空间复杂度', 'Time and space complexity'],
@@ -954,10 +1015,11 @@ export const CONCEPT_PAGES: readonly ConceptPage[] = [
         ],
         points: [
           ['先看 n 的量级和数据分布，再选算法。', 'Consider n and the data distribution before choosing.'],
-          ['几乎有序的小数组常用插入排序，常数小。', 'Insertion sort is often good for small or nearly sorted arrays.'],
+          ['小规模或几乎有序、又要求稳定时，直接插入排序常数小且额外空间 O(1)。', 'For small or nearly sorted data that must remain stable, insertion sort has a low constant and O(1) extra space.'],
           ['希尔排序的复杂度取决于增量序列；表中的 O(n^1.3) 是常见平均估计，最坏仍可能到 O(n²)。', 'Shell sort depends on its gap sequence; the table’s O(n^1.3) is a common average estimate, and the worst case can still reach O(n²).'],
-          ['需要稳定且能接受额外空间时，归并排序是稳妥选择。', 'Merge sort is a safe choice when stability is required and extra space is acceptable.'],
-          ['快速排序要关注最坏划分和递归深度。', 'For quicksort, watch worst-case partitions and recursion depth.'],
+          ['必须稳定且能接受 O(n) 辅助空间时，归并排序是稳妥选择，并能保证最坏 O(n log n)。', 'When stability is required and O(n) auxiliary space is acceptable, merge sort is a safe choice with a guaranteed O(n log n) worst case.'],
+          ['快速排序平均 O(n log n)，但最坏会退化为 O(n²)，还要关注递归栈与枢轴选择。', 'Quicksort is O(n log n) on average but degrades to O(n²) in the worst case; watch the recursion stack and pivot choice.'],
+          ['堆排序最坏也是 O(n log n)，额外空间 O(1)，但通常不稳定、缓存局部性较差，适合内存紧且需要最坏保证的场景。', 'Heap sort also guarantees O(n log n) worst case with O(1) extra space, but it is usually unstable and has weaker cache locality; it suits tight-memory, worst-case-guarantee situations.'],
         ],
         formula: '比较排序最坏情况下界：Ω(n log n)',
       },
@@ -1089,17 +1151,17 @@ export const CONCEPT_PAGES: readonly ConceptPage[] = [
         formula: 'T = "ABABABCABABABC"，P = "ABABC" → 0 基匹配起点 2、9',
       },
       {
-        title: ['朴素匹配：失配后为什么会重复比较', 'Naive matching: why work is repeated after a mismatch'],
+        title: ['朴素匹配的完整入口', 'A dedicated naive-matching page'],
         body: [
-          '朴素算法枚举每个起点 s，令 j 从 0 开始逐个比较；一旦 T[s+j] 与 P[j] 不同，就把 s 加一、j 归零，从新模式串首字符重新开始。',
-          'Naive matching enumerates each start s and compares with j from 0. As soon as T[s+j] differs from P[j], it increments s, resets j to 0 and restarts from the pattern’s first character.',
+          '逐起点比较、具体失配示例和最坏复杂度已整理到独立概念页“朴素模式匹配：逐起点比较”。该页复用本页的匹配定义，不新建播放器，也不重复维护同一段讲解。',
+          'The start-by-start comparison, a concrete mismatch and the worst-case bound now live on the dedicated Naive pattern matching page. It reuses the matching definitions here, adds no new player and avoids maintaining the same explanation twice.',
         ],
         points: [
-          ['以 T = "ABABABC"、P = "ABABC" 为例：起点 0 先匹配 A、B、A、B，到第 5 个字符时 T[4] = A 与 P[4] = C 失配。', 'With T = "ABABABC" and P = "ABABC", start 0 matches A, B, A, B, then T[4] = A differs from P[4] = C.'],
-          ['朴素算法接着试起点 1，T[1] = B 与 P[0] = A 立刻失配；再试起点 2，又要从 P[0] 重新比较 T[2]、T[3]、T[4]。', 'Naive matching then tries start 1, where T[1] = B immediately differs from P[0] = A; start 2 then compares T[2], T[3] and T[4] again from P[0].'],
-          ['这些字符在上一次对齐中已经被确认过，重复比较正是最坏 O(nm) 的来源。', 'Those characters were already confirmed in the previous alignment; this repeated work is the source of the O(nm) worst case.'],
+          ['本页保留模式匹配的公共定义以及朴素/KMP 对照，便于先建立整体框架。', 'This page keeps the shared matching definitions and the naive/KMP comparison so learners can build the overall framework first.'],
+          ['朴素页是 KMP 的基线：先理解“失配后丢弃信息”的代价，再看前缀表如何避免重扫。', 'The naive page is the baseline for KMP: see the cost of discarding information after a mismatch before learning how the prefix table avoids rescanning.'],
         ],
-        formula: '失配 → s = s + 1，j = 0：主串起点回退，已匹配信息被丢弃',
+        formula: '朴素匹配的完整步骤与 O(nm) 分析见独立概念页',
+        formulaEn: 'Full naive-matching steps and the O(nm) analysis are on the dedicated concept page',
       },
       {
         title: ['KMP 要解决的核心问题', 'The core problem KMP solves'],
@@ -1118,15 +1180,18 @@ export const CONCEPT_PAGES: readonly ConceptPage[] = [
       {
         title: ['使用同一种下标约定', 'Use one indexing convention'],
         body: [
-          '不同教材可能使用 next、nextval 或整体移位的前缀表，数组含义与回退公式并不完全相同。本课程统一采用上文的 0 基 lps；阅读其他资料时，先确认它的首项含义，再对照回退公式。',
-          'Textbooks may use next, nextval or a shifted prefix table whose entries and fallback formula differ. This course consistently uses the 0-based lps above; when reading other sources, confirm what the first entry means before comparing fallback formulas.',
+          '不同教材可能使用 next、nextval 或整体移位的前缀表。它们与 lps 描述同一段“最长相等真前后缀”，但数组项可能是长度、也可能是下一次比较的位置；先统一下标基准，再比较数值。本课程统一采用 0 基 lps。',
+          'Textbooks may use next, nextval or a shifted prefix table. They describe the same longest equal proper prefix/suffix, but an entry may be a length or a next comparison position. Fix the indexing convention before comparing values; this course uses 0-based lps.',
         ],
         points: [
-          ['本课程：lps[0] = 0，lps[k] 对应长度 k+1 的前缀，失配回退到 lps[j−1]。', 'Here: lps[0] = 0, lps[k] covers a prefix of length k+1, and a mismatch falls back to lps[j−1].'],
-          ['若某教材的 next[1] 对应模式串第 1 个字符，它的下标整体比本课程大 1，不能直接把数值混用。', 'If a source’s next[1] refers to the pattern’s first character, its indices are shifted by one and its values must not be mixed with this table.'],
-          ['只比较算法思想时，抓住“最长相等真前后缀”即可；落地实现时必须固定一种约定。', 'When comparing ideas, the longest equal proper prefix/suffix is enough; an implementation must fix one convention.'],
+          ['本课程 lps（0 基）：lps[k] 是 P[0..k] 的最长相等真前后缀长度；失配时 j ← lps[j−1]，i 不动。', 'Here, lps is 0-based: lps[k] is the longest equal proper prefix/suffix length of P[0..k]; on a mismatch j ← lps[j−1] while i stays fixed.'],
+          ['P = "ABABC" 的 lps = [0, 0, 1, 2, 0]；lps[3] = 2 表示 "AB" 这段长度，不是下一次比较的下标。', 'For P = "ABABC", lps = [0, 0, 1, 2, 0]; lps[3] = 2 is a length, not the next comparison index.'],
+          ['经典教材的 1 基 next 常令 next[1] = 0；同一模式串 next = [0, 1, 1, 2, 3]，next[j] 是失配后下一次比较的模式位置。', 'Many textbooks use a 1-based next with next[1] = 0; the same pattern gives next = [0, 1, 1, 2, 3], where next[j] is the next pattern position to compare.'],
+          ['nextval 在此基础上跳过“回退后仍会失配”的位置：若 P[j] = P[next[j]]，则 nextval[j] = nextval[next[j]]；ABABC 得到 [0, 1, 0, 1, 3]。', 'nextval skips a fallback that would immediately mismatch again: if P[j] = P[next[j]], then nextval[j] = nextval[next[j]]; ABABC gives [0, 1, 0, 1, 3].'],
+          ['不要把 lps[3] = 2 与 next[3] = 1 直接比较：前者是 0 基长度，后者是 1 基位置，含义和基准都不同。', 'Do not compare lps[3] = 2 with next[3] = 1 directly: the first is a 0-based length, the second a 1-based position.'],
         ],
-        formula: '先确认下标基准，再写回退公式',
+        formula: 'P = "ABABC"\nlps（0 基） = [0, 0, 1, 2, 0]\nnext（1 基，next[1]=0） = [0, 1, 1, 2, 3]\nnextval（1 基） = [0, 1, 0, 1, 3]\nnext[j] = lps[j−2] + 1（j ≥ 2）',
+        formulaEn: 'P = "ABABC"\nlps (0-based) = [0, 0, 1, 2, 0]\nnext (1-based, next[1]=0) = [0, 1, 1, 2, 3]\nnextval (1-based) = [0, 1, 0, 1, 3]\nnext[j] = lps[j−2] + 1 (j ≥ 2)',
       },
     ],
     comparison: {
@@ -1170,6 +1235,84 @@ export const CONCEPT_PAGES: readonly ConceptPage[] = [
       ],
     },
     takeaway: ['朴素匹配丢弃已匹配信息；KMP 用 lps 把这段信息变成下一次对齐的起点，因此主串指针不必回头。', 'Naive matching discards confirmed information; KMP turns it into the next alignment through lps, so the text pointer never has to go back.'],
+  },
+  {
+    id: 'naive-matching',
+    topicId: 'naive-match',
+    title: ['朴素模式匹配：逐起点比较', 'Naive pattern matching: compare every start'],
+    chapter: ['第 5 章 · 串与模式匹配', 'Chapter 5 · Strings and pattern matching'],
+    summary: [
+      '朴素匹配把模式串依次对齐到主串的每个可能起点，失配就换下一个起点。它不需要预处理，最坏却会反复比较已经确认过的字符。',
+      'Naive matching aligns the pattern with every possible text start and moves to the next start after a mismatch. It needs no preprocessing, but in the worst case it rechecks characters already confirmed.',
+    ],
+    diagram: 'string',
+    definitions: [
+      {
+        term: ['一次对齐', 'One alignment'],
+        text: [
+          '把模式串 P 的首字符放在主串 T 的起点 s 上，再令 j 从 0 开始逐字符比较 T[s+j] 与 P[j]。',
+          'Place P[0] at text position s, then compare T[s+j] with P[j] for j = 0, 1, …',
+        ],
+      },
+      {
+        term: ['失配', 'Mismatch'],
+        text: [
+          '某个 j 上 T[s+j] 与 P[j] 不相等，当前起点 s 不可能匹配；朴素算法令 s 加一、j 归零。',
+          'At some j, T[s+j] differs from P[j], so start s cannot match; naive matching increments s and resets j to 0.',
+        ],
+      },
+      {
+        term: ['合法起点', 'Valid start'],
+        text: [
+          '起点 s 必须满足 0 ≤ s ≤ n−m，否则剩余主串长度不足 m，不可能放下整个模式串。',
+          'A start s must satisfy 0 ≤ s ≤ n−m; otherwise fewer than m characters remain for the whole pattern.',
+        ],
+      },
+    ],
+    sections: [
+      {
+        title: ['算法步骤：外层枚举起点，内层逐字符比较', 'Algorithm: enumerate starts outside, compare characters inside'],
+        body: [
+          '设主串长度为 n、模式串长度为 m。外层 s 枚举所有合法起点；内层 j 从 0 开始，只要字符相等就继续。若 j 走到 m，说明整段模式串匹配，记录起点 s；否则当前起点失败，进入下一个 s。',
+          'Let the text length be n and the pattern length be m. The outer loop enumerates valid starts s; the inner loop advances j while characters agree. If j reaches m, the whole pattern matched and s is recorded; otherwise the current start failed and the outer loop advances.',
+        ],
+        points: [
+          ['每个起点都从模式串第 0 个字符重新开始，不复用上一次对齐已经比较过的信息。', 'Every start restarts at pattern index 0 and does not reuse information from the previous alignment.'],
+          ['匹配可以重叠：找到一个起点后，朴素算法仍会继续枚举后面的起点。', 'Matches may overlap: after finding one start, naive matching still enumerates later starts.'],
+          ['主串指针不是独立前进的；它由 s+j 计算，s 变化时相当于回到更早的主串位置重扫。', 'There is no independent text pointer: it is s+j, so changing s can rescan earlier text positions.'],
+        ],
+        formula: 'for s = 0 … n−m:  j = 0; while j < m and T[s+j] = P[j]: j++;  if j = m: record s',
+      },
+      {
+        title: ['一个具体失配：为什么最坏是 O(nm)', 'A concrete mismatch: why the worst case is O(nm)'],
+        body: [
+          '取 T = "ABABABC"、P = "ABABC"。起点 0 先匹配 A、B、A、B，到 j=4 时 T[4]=A 与 P[4]=C 失配；起点 1 的第一个字符 B 就失败；起点 2 又要从 P[0] 重新比较 T[2]、T[3]、T[4]。这些字符在上一次对齐中已经被确认过。',
+          'Take T = "ABABABC" and P = "ABABC". Start 0 matches A, B, A, B, then T[4]=A differs from P[4]=C. Start 1 fails on its first B; start 2 compares T[2], T[3], T[4] again from P[0]. Those characters were already confirmed in the previous alignment.',
+        ],
+        points: [
+          ['最坏情况下，长度为 m 的模式串几乎在每个起点都比对到末尾，时间达到 O(nm)。', 'In the worst case, a length-m pattern is compared almost to its end at every start, giving O(nm) time.'],
+          ['最好情况下，每个起点第一个字符就失配，只需 O(n) 次字符比较。', 'In the best case, every start fails on its first character, requiring only O(n) comparisons.'],
+          ['除 s、j 等常数个变量外不需要额外空间，辅助空间为 O(1)。', 'Apart from constant variables such as s and j, no extra space is needed, so auxiliary space is O(1).'],
+        ],
+        formula: '最坏 O(nm)，最好 O(n)，额外空间 O(1)',
+        formulaEn: 'worst O(nm), best O(n), extra space O(1)',
+      },
+      {
+        title: ['它为什么仍然值得学', 'Why it is still worth learning'],
+        body: [
+          '朴素匹配是模式匹配的基线：实现短、无需预处理，适合短文本或一次性查找。只有当我们看清它“失配后丢弃已匹配信息”的代价，才能理解 KMP 为什么要构造前缀表，以及 O(n+m) 的优势来自哪里。',
+          'Naive matching is the baseline: short to implement, no preprocessing, and reasonable for short or one-off searches. Seeing the cost of discarding matched information after a mismatch is what makes KMP’s prefix table and O(n+m) advantage meaningful.',
+        ],
+        points: [
+          ['不要把“朴素”理解为错误；它在合法输入上仍然返回正确结果，只是最坏效率较低。', '“Naive” does not mean wrong: it still returns correct results on valid input, only with a weaker worst-case bound.'],
+          ['KMP 不改变匹配目标，只改变失配后的对齐方式；两者都可用于查找全部出现位置。', 'KMP changes only how the pattern realigns after a mismatch; both methods can report every occurrence.'],
+        ],
+      },
+    ],
+    takeaway: [
+      '朴素匹配用“换起点、归零、重扫”换来实现简单；理解这份重复，是进入 KMP 的起点。',
+      'Naive matching trades repeated rescans for a simple implementation; understanding that repetition is the doorway to KMP.',
+    ],
   },
   {
     id: 'array-basics',

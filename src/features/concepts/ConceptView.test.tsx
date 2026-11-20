@@ -39,6 +39,46 @@ describe('ConceptView (CORE-REFINE-01)', () => {
     expect(screen.getByTestId('concept-definition').textContent).toContain('时间复杂度');
   });
 
+  it('defines algorithms through the five required properties', () => {
+    renderConcept('algorithm-definition');
+    const page = screen.getByTestId('concept-page').textContent ?? '';
+    for (const property of ['有穷性', '确定性', '可行性', '输入', '输出']) {
+      expect(page).toContain(property);
+    }
+    expect(page).toContain('有限指令');
+    const diagram = screen.getByTestId('concept-diagram').textContent ?? '';
+    expect(diagram).toContain('每步有限时间');
+    expect(diagram).toContain('明确结果');
+    expect(document.querySelector('.concept-formula')?.textContent).toContain('合法输入');
+  });
+
+  it('turns naive matching into a reachable lesson and separates KMP notations', () => {
+    renderConcept('naive-matching');
+    expect(screen.getByTestId('concept-title').textContent).toContain('朴素模式匹配');
+    expect(screen.getByTestId('concept-page').textContent).toContain('最坏 O(nm)');
+    expect(screen.getByTestId('concept-diagram').querySelector('svg')).not.toBeNull();
+    cleanup();
+
+    renderConcept('string-basics');
+    const formulas = Array.from(document.querySelectorAll('.concept-formula'))
+      .map((node) => node.textContent ?? '')
+      .join('\n');
+    expect(formulas).toContain('[0, 0, 1, 2, 0]');
+    expect(formulas).toContain('[0, 1, 1, 2, 3]');
+    expect(formulas).toContain('[0, 1, 0, 1, 3]');
+    expect(screen.getByTestId('concept-page').textContent).toContain('nextval');
+  });
+
+  it('keeps the sorting selection guidance tied to stability and space', () => {
+    renderConcept('sorting-basics');
+    const page = screen.getByTestId('concept-page').textContent ?? '';
+    expect(page).toContain('直接插入排序常数小且额外空间 O(1)');
+    expect(page).toContain('归并排序是稳妥选择');
+    expect(page).toContain('快速排序平均 O(n log n)');
+    expect(page).toContain('堆排序最坏也是 O(n log n)，额外空间 O(1)');
+    expect(page).toContain('复杂度取决于增量序列');
+  });
+
   it('keeps the ASL and block-search calculations tied to their diagrams', () => {
     renderConcept('asl-decision-tree');
     const aslText = Array.from(document.querySelectorAll('.concept-formula'))

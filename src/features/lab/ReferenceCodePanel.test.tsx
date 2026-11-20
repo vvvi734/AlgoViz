@@ -1,14 +1,24 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { I18nProvider } from '../../i18n/I18nProvider';
+import { I18nProvider, useI18n } from '../../i18n/I18nProvider';
 import { ThemeProvider } from '../../theme/ThemeProvider';
 import { ReferenceCodePanel } from './ReferenceCodePanel';
+
+function LanguageToggle() {
+  const { toggleLang, lang } = useI18n();
+  return (
+    <button type="button" data-testid="test-toggle-language" onClick={toggleLang}>
+      {lang}
+    </button>
+  );
+}
 
 function panel(algorithmId: string, algorithmName: string) {
   return (
     <I18nProvider>
       <ThemeProvider>
         <ReferenceCodePanel algorithmId={algorithmId} algorithmName={algorithmName} />
+        <LanguageToggle />
       </ThemeProvider>
     </I18nProvider>
   );
@@ -134,6 +144,67 @@ describe('ReferenceCodePanel', () => {
       expect(screen.getByTestId('reference-code-fallback').textContent).toContain('class SinglyLinkedList'),
     );
     expect(screen.getByTestId('reference-lang-python').getAttribute('aria-selected')).toBe('true');
+  });
+
+  it('switches comments with the UI language without changing the algorithm or selection', async () => {
+    renderPanel('binary', '二分查找');
+    await waitForCode();
+    expect(screen.getByTestId('reference-lang-c').getAttribute('aria-selected')).toBe('true');
+    expect(screen.getByTestId('reference-code-fallback').textContent).toContain('教材参考 C 实现');
+    expect(screen.getByTestId('reference-code-fallback').textContent).toContain('int Binary_Search');
+
+    fireEvent.click(screen.getByTestId('reference-lang-cpp'));
+    await waitFor(() =>
+      expect(screen.getByTestId('reference-code-fallback').textContent).toContain('std::vector<int>'),
+    );
+    const zhCode = screen.getByTestId('reference-code-fallback').textContent ?? '';
+    expect(zhCode).toContain('思路：');
+    expect(zhCode).toContain('二分查找');
+
+    fireEvent.click(screen.getByTestId('test-toggle-language'));
+    await waitFor(() =>
+      expect(screen.getByTestId('reference-code-fallback').textContent).toContain('AlgoViz reference implementation'),
+    );
+    expect(screen.getByTestId('reference-code-fallback').textContent).toContain('binary_search_index');
+    expect(screen.getByTestId('reference-code-fallback').textContent).not.toContain('思路：');
+    expect(screen.getByTestId('reference-lang-cpp').getAttribute('aria-selected')).toBe('true');
+    expect(screen.getByTestId('reference-file-name').textContent).toBe('binary_search.cpp');
+  });
+
+  it('copies the complete source with comments in the current UI language', async () => {
+    renderPanel('binary', '二分查找');
+    await waitForCode();
+    fireEvent.click(screen.getByTestId('test-toggle-language'));
+    await waitFor(() =>
+      expect(screen.getByTestId('reference-code-fallback').textContent).toContain('AlgoViz reference code'),
+    );
+
+    fireEvent.click(screen.getByTestId('reference-copy'));
+    await waitFor(() => expect(screen.getByTestId('reference-copy').textContent).toContain('Copied'));
+    const writeText = navigator.clipboard.writeText as unknown as ReturnType<typeof vi.fn>;
+    const copied = String(writeText.mock.calls[0][0]);
+    expect(copied).toContain('AlgoViz reference code');
+    expect(copied).toContain('Textbook code');
+    expect(copied).not.toContain('教材参考 C 实现');
+    expect(copied).toContain('int Binary_Search');
+    expect(copied).toContain('int main(void)');
+  });
+
+  it('keeps the convenience implementation selected while comments change language', async () => {
+    renderPanel('bubble', '冒泡排序');
+    await waitForCode();
+    fireEvent.click(screen.getByTestId('reference-impl-convenience'));
+    await waitFor(() =>
+      expect(screen.getByTestId('reference-code-fallback').textContent).toContain('compare_int'),
+    );
+    expect(screen.getByTestId('reference-impl-convenience').getAttribute('aria-selected')).toBe('true');
+
+    fireEvent.click(screen.getByTestId('test-toggle-language'));
+    await waitFor(() =>
+      expect(screen.getByTestId('reference-code-fallback').textContent).toContain('qsort'),
+    );
+    expect(screen.getByTestId('reference-impl-convenience').getAttribute('aria-selected')).toBe('true');
+    expect(screen.getByTestId('reference-file-name').textContent).toBe('builtin_sorting.c');
   });
 
   it('shows an explicit unavailable state instead of borrowing another algorithm code', () => {

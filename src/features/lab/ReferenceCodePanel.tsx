@@ -13,6 +13,7 @@ import {
 } from '../../domain/reference-code/registry';
 import { useI18n } from '../../i18n/I18nProvider';
 import { useTheme } from '../../theme/ThemeProvider';
+import { localizeReferenceSource } from '../../domain/reference-code/localization';
 import { ReadOnlyCodeViewer } from './ReadOnlyCodeViewer';
 
 async function copyText(text: string): Promise<void> {
@@ -113,6 +114,19 @@ export function ReferenceCodePanel({
   }, [copyState]);
 
   const meta = referenceFileMeta(algorithmId, language, activeImplementation);
+  const displaySource = useMemo(
+    () =>
+      source
+        ? localizeReferenceSource(source, {
+            algorithmId,
+            algorithmName,
+            language,
+            implementation: activeImplementation,
+            lang,
+          })
+        : null,
+    [source, algorithmId, algorithmName, language, activeImplementation, lang],
+  );
   const hasAny = available.length > 0;
   const hasImplementationSwitch = implementations.length > 1;
   const implementationLabel =
@@ -129,6 +143,7 @@ export function ReferenceCodePanel({
       data-algorithm-id={algorithmId}
       data-language={language}
       data-implementation={activeImplementation}
+      data-comment-language={lang}
     >
       <header className="reference-code-head">
         <div>
@@ -213,10 +228,10 @@ export function ReferenceCodePanel({
                 type="button"
                 className="btn small reference-copy"
                 data-testid="reference-copy"
-                disabled={!source || loading}
+                disabled={!displaySource || loading}
                 onClick={() => {
-                  if (!source) return;
-                  copyText(source)
+                  if (!displaySource) return;
+                  copyText(displaySource)
                     .then(() => setCopyState('copied'))
                     .catch(() => setCopyState('failed'));
                 }}
@@ -243,8 +258,8 @@ export function ReferenceCodePanel({
             <p className="reference-code-error" data-testid="reference-code-error">
               {t('referenceLoadFailed')}
             </p>
-          ) : source ? (
-            <ReadOnlyCodeViewer code={source} language={language} theme={resolved} />
+          ) : displaySource ? (
+            <ReadOnlyCodeViewer code={displaySource} language={language} theme={resolved} />
           ) : (
             <p className="reference-code-empty">{t('referenceEmptyCode')}</p>
           )}

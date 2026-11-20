@@ -78,16 +78,16 @@ export function referenceLicenseLabel(
  */
 export const REFERENCE_SOURCE_NOTES: Record<ReferenceLanguage, LocalizedText> = {
   c: {
-    zh: '教材参考实现：教材有对应实现的 26 个文件逐字转录，保留原教材注释；教材未覆盖的 12 个算法保留原创实现，并在文件头注明。教材代码版权归原作者/出版方，仅用于本地学习，不适用 MIT 许可。',
-    en: 'Textbook reference implementation: 26 files with a textbook counterpart are transcribed verbatim, preserving the original comments; the 12 algorithms not covered by the textbook keep their original implementations and are marked in their headers. Textbook copyright remains with the original author/publisher; for local study only and not MIT-licensed.',
+    zh: '教材参考实现：教材有对应实现的 26 个文件逐字转录，保留原教材注释；教材未覆盖的 10 个算法保留原创实现，并在文件头注明。教材代码版权归原作者/出版方，仅用于本地学习，不适用 MIT 许可。',
+    en: 'Textbook reference implementation: 26 files with a textbook counterpart are transcribed verbatim, preserving the original comments; the 10 algorithms not covered by the textbook keep their original implementations and are marked in their headers. Textbook copyright remains with the original author/publisher; for local study only and not MIT-licensed.',
   },
   cpp: {
     zh: '原创 C++17 实现：核心算法显式编写；标准库仅用于容器、输入输出和优先队列等基础设施。',
     en: 'Original C++17 implementation: the core algorithm is written explicitly; the standard library is used only for containers, I/O and infrastructure such as the priority queue.',
   },
   python: {
-    zh: '原创 Python 教学实现：按经典算法步骤编写，移除 trace(...) 教学追踪调用，保留算法语义与边界行为。',
-    en: 'Original Python teaching implementation written from classic algorithm steps, with trace(...) calls omitted; semantics and boundary behaviour are preserved.',
+    zh: '原创 Python 教学实现：按经典算法步骤编写，移除仅供动画的内部追踪调用，保留算法语义与边界行为。',
+    en: 'Original Python teaching implementation written from classic algorithm steps, with animation-only tracing calls omitted; semantics and boundary behaviour are preserved.',
   },
 };
 
@@ -556,6 +556,25 @@ export function referenceSourceNote(
     return REFERENCE_CONVENIENCE_SOURCE_NOTES[language];
   }
   return REFERENCE_SOURCE_NOTES[language];
+}
+
+/**
+ * The language already used by the stored comments. Textbook C excerpts keep
+ * their original Chinese comments; all other reviewable files are English.
+ */
+export function referenceSourceLanguage(
+  algorithmId: string,
+  language: ReferenceLanguage,
+  implementation: ReferenceImplementation = 'principle',
+): 'zh' | 'en' {
+  if (
+    language === 'c' &&
+    implementation === 'principle' &&
+    TEXTBOOK_C_PRINCIPLE_ALGORITHMS.has(algorithmId)
+  ) {
+    return 'zh';
+  }
+  return 'en';
 }
 
 /** Implementations that actually have a source file for this language. */

@@ -2,6 +2,7 @@
 export type Bilingual = readonly [string, string];
 
 export type ConceptDiagramKind =
+  | 'algorithm-properties'
   | 'classification'
   | 'complexity'
   | 'cases'

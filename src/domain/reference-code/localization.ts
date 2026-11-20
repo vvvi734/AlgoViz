@@ -1,0 +1,370 @@
+import type { Lang } from '../../i18n/types';
+import type { LocalizedText } from '../lessons/types';
+import {
+  REFERENCE_CONVENIENCE_SOURCE_NOTES,
+  referenceLicenseLabel,
+  referenceSourceLanguage,
+  referenceSourceNote,
+  type ReferenceImplementation,
+  type ReferenceLanguage,
+} from './registry';
+
+/**
+ * Concise, reviewed teaching annotations for each registered algorithm.
+ * The raw source stays the single source of truth for the algorithm body;
+ * this note supplies the same learning intent in the other UI language.
+ */
+const REFERENCE_LEARNING_NOTES: Record<string, LocalizedText> = {
+  linked: {
+    zh: '用 next 串起节点；遍历沿链前进，插入和删除先改前驱的 next，再接入或释放节点。按位置访问是 O(n)。',
+    en: 'Nodes are linked by next; traversal follows the chain, and insertion or deletion rewires the predecessor before attaching or freeing a node. Access by position is O(n).',
+  },
+  binary: {
+    zh: '数组必须非降序。维持闭区间 [low, high]，比较中点后丢弃不可能的一半，返回下标或 -1；O(log n)，额外 O(1)。',
+    en: 'The array must be non-decreasing. Keep an inclusive [low, high] window, discard the impossible half after the middle comparison, and return an index or -1; O(log n) time, O(1) space.',
+  },
+  bubble: {
+    zh: '反复比较相邻元素并交换逆序对；提前结束标记在一趟无交换时停止。稳定，最坏 O(n²)，额外 O(1)。',
+    en: 'Compare adjacent elements and swap inversions; an early-stop flag ends the pass when nothing moved. Stable, worst O(n²) time, O(1) extra space.',
+  },
+  selection: {
+    zh: '每一轮在未排序后缀中选最小元素，放到当前前缀末尾；交换可能跨越相等元素，因此通常不稳定，O(n²)、O(1)。',
+    en: 'Each pass selects the minimum in the unsorted suffix and places it at the end of the sorted prefix; swaps may cross equal keys, so it is usually unstable, O(n²) time and O(1) space.',
+  },
+  insertion: {
+    zh: '维护有序前缀；取出 key，把严格大于它的元素右移一格，再把 key 写入空位。相等元素不移动，稳定，O(n²)、O(1)。',
+    en: 'Maintain a sorted prefix; lift key, shift strictly larger values right, and write key into the gap. Equal keys do not move, so it is stable, O(n²) time and O(1) space.',
+  },
+  shell: {
+    zh: '按逐渐缩小的 gap 分成子序列，各自做插入排序；gap=1 时收尾。复杂度取决于增量序列，n/2 折半序列最坏 O(n²)，通常不稳定。',
+    en: 'Sort each gap-spaced subsequence with insertion sort, then shrink the gap and finish with gap 1. Cost depends on the gap sequence; halving gaps is O(n²) worst case and usually unstable.',
+  },
+  quick: {
+    zh: '围绕 pivot 分区，把不大于 pivot 的元素放到左侧，再递归两侧。平均 O(n log n)，最坏可因极端划分退化为 O(n²)，递归栈平均 O(log n)。',
+    en: 'Partition around a pivot, place values not greater than the pivot on its left, then recurse. Average O(n log n), worst O(n²) with extreme partitions, and O(log n) average recursion stack.',
+  },
+  merge: {
+    zh: '二分到单元素，再合并两个有序半区；相等时优先取左侧以保持稳定。任何输入 O(n log n)，但数组版需要 O(n) 辅助空间。',
+    en: 'Split to single elements, then merge two sorted halves; take the left item on equality to stay stable. O(n log n) for every input, but the array version needs O(n) auxiliary space.',
+  },
+  factorial: {
+    zh: '递归把 n! 化为 n × (n−1)!，以 0! = 1! = 1 为终止条件；返回时逐层相乘。时间 O(n)，递归栈 O(n)。',
+    en: 'Recursively reduce n! to n × (n−1)!, with 0! = 1! = 1 as the base cases, then multiply while unwinding. O(n) time and O(n) recursion space.',
+  },
+  stack: {
+    zh: '用数组和栈顶下标实现后进先出；push 先检查容量再写入，pop 先检查空栈再减 top。单次操作 O(1)，额外空间 O(n)。',
+    en: 'A LIFO stack uses an array and a top index; push checks capacity before writing, and pop checks emptiness before decrementing top. O(1) per operation and O(n) space.',
+  },
+  queue: {
+    zh: '用循环数组保存先进先出序列，front 指向队首、rear 指向下一个空位；入队和出队都要对容量取模。单次 O(1)。',
+    en: 'A circular array stores the FIFO queue: front is the head and rear is the next free slot; enqueue and dequeue wrap modulo capacity. O(1) per operation.',
+  },
+  seqlist: {
+    zh: '用连续存储保存元素和长度 length；按下标访问 O(1)，插入或删除要移动后续元素，最坏 O(n)。',
+    en: 'Contiguous storage holds the elements and a length; access by index is O(1), while insertion or deletion shifts later elements and costs O(n) worst case.',
+  },
+  doubly: {
+    zh: '每个节点同时保存 prev 和 next；插入要接好四条链接，删除要同时修正前后节点的指针。按位置访问 O(n)。',
+    en: 'Each node stores prev and next; insertion repairs four links, and deletion fixes both neighbouring pointers. Access by position is O(n).',
+  },
+  circular: {
+    zh: '首尾相接的单链表，尾节点的 next 指回头节点；沿链遍历要记住起点，避免绕圈不停。插入删除仍是 O(1)（已定位时）。',
+    en: 'A singly linked ring whose tail points back to the head; traversal must remember the start to avoid looping forever. Insertion or deletion is O(1) once located.',
+  },
+  inorder: {
+    zh: '中序遍历按“左子树 → 根 → 右子树”访问；递归实现用调用栈保存返回位置，非递归版本则显式使用栈。时间 O(n)。',
+    en: 'Inorder traversal visits left subtree, root, then right subtree; recursion stores return positions on the call stack, while an iterative version uses an explicit stack. O(n) time.',
+  },
+  bst: {
+    zh: '左子树键小于根、右子树键大于根，中序遍历得到升序序列；查找沿一条根叶路径走，平均 O(log n)，退化时 O(n)。',
+    en: 'Keys in the left subtree are smaller and those in the right are larger, so inorder is sorted; search follows one root-to-leaf path, O(log n) average and O(n) when unbalanced.',
+  },
+  avl: {
+    zh: '在二叉搜索树上维护左右子树高度差不超过 1；插入或删除后沿路更新高度，必要时做单旋或双旋恢复平衡。高度 O(log n)。',
+    en: 'An AVL tree keeps left and right subtree heights within one; after insertion or deletion it updates heights on the path and applies a single or double rotation when needed. Height O(log n).',
+  },
+  btree: {
+    zh: '多路搜索树的每个节点保存多个有序关键字和多个孩子；插入溢出时分裂并把中间关键字上移，所有叶子保持同一深度。',
+    en: 'A multiway search tree stores several ordered keys and children per node; an overflowing node splits and promotes its middle key, keeping all leaves at the same depth.',
+  },
+  heap: {
+    zh: '用数组表示完全二叉树，父节点不小于孩子；插入上浮，删除堆顶下沉。建堆 O(n)，单次插删 O(log n)，堆排序 O(n log n)。',
+    en: 'A complete binary tree in an array keeps every parent at least as large as its children; insertion sifts up and removing the root sifts down. Build O(n), insert/extract O(log n), heap sort O(n log n).',
+  },
+  huffman: {
+    zh: '反复从最小堆取两个最小权值合并，新权值放回堆，直到只剩一棵树；得到的叶编码满足前缀性质，总代价最小。',
+    en: 'Repeatedly merge the two smallest weights from a min-heap and put the sum back until one tree remains; the leaf codes are prefix-free and minimise the weighted path length.',
+  },
+  bfs: {
+    zh: '用 FIFO 队列从起点逐层扩展：出队访问，再把未访问邻居入队。邻接表时间 O(V+E)，额外空间 O(V)。',
+    en: 'A FIFO queue expands from the source level by level: dequeue to visit, then enqueue unvisited neighbours. O(V+E) time for adjacency lists and O(V) extra space.',
+  },
+  dfs: {
+    zh: '沿一条路径尽可能深入，访问邻居前先递归；无路可走时回溯。邻接表时间 O(V+E)，递归栈最坏 O(V)。',
+    en: 'Go as deep as possible along one path, recursing before visiting the next neighbour, and backtrack at a dead end. O(V+E) time for adjacency lists and O(V) worst-case recursion space.',
+  },
+  dijkstra: {
+    zh: '只适用于非负权；每次从优先队列取当前距离最小的未定顶点，松弛其出边。邻接表加堆为 O((V+E) log V)，空间 O(V)。',
+    en: 'Requires non-negative weights; repeatedly extract the unsettled vertex with the smallest tentative distance and relax its outgoing edges. O((V+E) log V) with a heap and O(V) space.',
+  },
+  'floyd-warshall': {
+    zh: '动态规划求所有点对最短路：依次允许前 k 个顶点作为中转，更新 dist[i][j] = min(dist[i][j], dist[i][k]+dist[k][j])。O(V³)。',
+    en: 'All-pairs dynamic programming: allow the first k vertices as intermediates and update dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j]). O(V³) time.',
+  },
+  'bellman-ford': {
+    zh: '对所有边做 V−1 轮松弛，可处理负权；若第 V 轮仍能松弛，说明存在从源点可达的负环。时间 O(VE)，空间 O(V)。',
+    en: 'Relax every edge V−1 times, which tolerates negative weights; a further relaxation on pass V proves a negative cycle reachable from the source. O(VE) time and O(V) space.',
+  },
+  prim: {
+    zh: '从一个顶点开始扩展生成树，每步选择连接已选集合与未选集合的最小权边；配合优先队列为 O(E log V)。',
+    en: 'Grow a spanning tree from one vertex, adding the lightest edge that crosses from the chosen set to the unchosen set; O(E log V) with a priority queue.',
+  },
+  kruskal: {
+    zh: '按权值从小到大扫描边，用并查集判断两端是否已连通；不连通就加入生成树。排序边为 O(E log E)，并查集近似 O(E)。',
+    en: 'Scan edges by increasing weight and use disjoint-set union to test whether endpoints are already connected; add the edge when they are not. Sorting costs O(E log E), with near-O(E) union-find work.',
+  },
+  topological: {
+    zh: '统计每个顶点入度，把入度为 0 的顶点入队；出队输出并删除其出边、降低邻居入度。若输出少于 V 个，图中存在环。O(V+E)。',
+    en: 'Count each indegree, enqueue vertices with indegree zero, then output a vertex and remove its outgoing edges while decrementing neighbours. Fewer than V outputs means a cycle. O(V+E).',
+  },
+  'critical-path': {
+    zh: '在 AOE 网上正推最早开始时间 ve，逆推最晚开始时间 vl；活动时间余量 d(i,j)=vl(j)−ve(i)−w，余量为 0 的活动组成关键路径。',
+    en: 'On an AOE network, compute earliest event times ve forward and latest times vl backward; an activity is critical when vl(j) − ve(i) − w = 0, forming the critical path.',
+  },
+  components: {
+    zh: '对每个未访问顶点启动一次 DFS/BFS，一次遍历能到达的所有顶点属于同一连通分量；统计启动次数即可。O(V+E)。',
+    en: 'Start one DFS or BFS at every unvisited vertex; all vertices reached in that traversal form one connected component. Count the starts; O(V+E).',
+  },
+  scc: {
+    zh: 'Kosaraju 两遍 DFS：第一遍记录完成顺序，第二遍按逆完成顺序在反向图上遍历，每棵 DFS 树就是一个强连通分量。O(V+E)。',
+    en: 'Kosaraju uses two DFS passes: record finish order on the original graph, then traverse the reversed graph in reverse finish order; each DFS tree is one strongly connected component. O(V+E).',
+  },
+  linear: {
+    zh: '从数组一端开始逐个比较，命中就返回下标，扫描结束仍未命中返回 -1。最坏 O(n)，不需要有序，额外 O(1)。',
+    en: 'Compare from one end of the array and return the index on a hit, or -1 after the scan. O(n) worst case, no ordering requirement, O(1) extra space.',
+  },
+  'hash-chain': {
+    zh: '散列函数把关键字映射到桶，桶内用链表保存冲突项；查找先定位桶，再沿链比较。平均 O(1+α)，最坏 O(n)。',
+    en: 'A hash function maps keys to buckets and each bucket stores collisions in a linked list; search locates the bucket, then scans the chain. O(1+α) average and O(n) worst case.',
+  },
+  'hash-probe': {
+    zh: '开放定址的线性探测：冲突时向后找下一个空槽，查找遇到空槽即可判定不存在；本教学版没有删除墓碑。平均 O(1/(1−α))。',
+    en: 'Linear probing uses open addressing: on a collision it scans forward for the next empty slot, and search stops at an empty slot. This teaching version has no deletion tombstones; expected O(1/(1−α)).',
+  },
+  kmp: {
+    zh: '先构造模式串的 lps 前缀表，失配时只回退模式指针 j=lps[j−1]，主串指针不回退；构造 O(m)，匹配 O(n)，总 O(n+m)。',
+    en: 'Build the pattern lps table first; on a mismatch only the pattern pointer falls back to lps[j−1], while the text pointer never rewinds. Build O(m), match O(n), total O(n+m).',
+  },
+  'sparse-transpose': {
+    zh: '快速转置先统计原矩阵每列的非零个数 num，再求各列在结果中的起始槽 cpot；按行扫描三元组并写入 cpot 指向的位置。O(t+c)。',
+    en: 'Fast transpose counts nonzeros per original column, computes each column starting slot cpot, then scans triplets in row order and writes them at cpot positions. O(t+c).',
+  },
+};
+
+const LANGUAGE_NAME: Record<ReferenceLanguage, { zh: string; en: string }> = {
+  c: { zh: 'C11', en: 'C11' },
+  cpp: { zh: 'C++17', en: 'C++17' },
+  python: { zh: 'Python 3', en: 'Python 3' },
+};
+
+const IMPLEMENTATION_NAME: Record<ReferenceImplementation, { zh: string; en: string }> = {
+  principle: { zh: '原理实现', en: 'Principle implementation' },
+  convenience: { zh: '简洁实现', en: 'Convenience implementation' },
+};
+
+const CONVENIENCE_CAVEAT: LocalizedText = {
+  zh: '标准库快捷方法不一定采用本课演示的底层算法，不能与原理实现混为一谈。',
+  en: 'The standard-library shortcut may not use the algorithm demonstrated in the lesson; do not confuse it with the principle implementation.',
+};
+
+function noteFor(algorithmId: string, lang: Lang): string {
+  return REFERENCE_LEARNING_NOTES[algorithmId]?.[lang] ?? '';
+}
+
+function headerLines(
+  algorithmId: string,
+  algorithmName: string,
+  language: ReferenceLanguage,
+  implementation: ReferenceImplementation,
+  lang: Lang,
+): string[] {
+  const languageName = LANGUAGE_NAME[language][lang];
+  const implementationName = IMPLEMENTATION_NAME[implementation][lang];
+  const license = referenceLicenseLabel(algorithmId, language, implementation)[lang];
+  const source = referenceSourceNote(algorithmId, language, implementation)[lang];
+  const idea =
+    implementation === 'convenience'
+      ? `${CONVENIENCE_CAVEAT[lang]} ${REFERENCE_CONVENIENCE_SOURCE_NOTES[language][lang]}`
+      : noteFor(algorithmId, lang);
+  const title =
+    lang === 'zh'
+      ? `AlgoViz 参考代码 · ${algorithmName} · ${languageName}`
+      : `AlgoViz reference code · ${algorithmName} · ${languageName}`;
+  const labels =
+    lang === 'zh'
+      ? { idea: '思路', source: '来源', license: '许可' }
+      : { idea: 'Idea', source: 'Source', license: 'License' };
+  const separator = lang === 'zh' ? '：' : ': ';
+
+  return [
+    title,
+    `${implementationName} · ${labels.license}${separator}${license}`,
+    ...(idea ? [`${labels.idea}${separator}${idea}`] : []),
+    `${labels.source}${separator}${source}`,
+  ];
+}
+
+function wrapHeader(lines: string[], language: ReferenceLanguage): string {
+  if (language === 'python') {
+    return lines.map((line) => `# ${line}`).join('\n');
+  }
+  return ['/*', ...lines.map((line) => ` * ${line}`), ' */'].join('\n');
+}
+
+/**
+ * Remove C/C++ comments while preserving strings and line structure. This is a
+ * small lexical scan, not a translation pass: the code body is never rewritten.
+ */
+export function stripCComments(source: string): string {
+  const output = source.split('');
+  let index = 0;
+
+  while (index < source.length) {
+    const current = source[index];
+    const next = source[index + 1];
+
+    if (current === '"' || current === "'") {
+      const quote = current;
+      index += 1;
+      while (index < source.length && source[index] !== quote) {
+        if (source[index] === '\\') index += 1;
+        index += 1;
+      }
+      index += 1;
+      continue;
+    }
+
+    if (current === '/' && next === '/') {
+      output[index] = ' ';
+      output[index + 1] = ' ';
+      index += 2;
+      while (index < source.length && source[index] !== '\n') {
+        output[index] = ' ';
+        index += 1;
+      }
+      continue;
+    }
+
+    if (current === '/' && next === '*') {
+      output[index] = ' ';
+      output[index + 1] = ' ';
+      index += 2;
+      while (index < source.length && !(source[index] === '*' && source[index + 1] === '/')) {
+        if (source[index] !== '\n') output[index] = ' ';
+        index += 1;
+      }
+      if (index < source.length) {
+        output[index] = ' ';
+        output[index + 1] = ' ';
+        index += 2;
+      }
+      continue;
+    }
+
+    index += 1;
+  }
+
+  return output.join('');
+}
+
+/**
+ * Remove Python comments and documentation strings, preserving string literals
+ * used by the program and all newlines. The algorithm body remains untouched.
+ */
+export function stripPythonCommentsAndDocstrings(source: string): string {
+  const output = source.split('');
+  let index = 0;
+
+  while (index < source.length) {
+    const current = source[index];
+    if (current === '#') {
+      while (index < source.length && source[index] !== '\n') {
+        output[index] = ' ';
+        index += 1;
+      }
+      continue;
+    }
+
+    if (current === '"' || current === "'") {
+      const triple = source[index + 1] === current && source[index + 2] === current;
+      const quote = current;
+      if (triple) {
+        output[index] = ' ';
+        output[index + 1] = ' ';
+        output[index + 2] = ' ';
+        index += 3;
+        while (index < source.length) {
+          if (source[index] === quote && source[index + 1] === quote && source[index + 2] === quote) {
+            output[index] = ' ';
+            output[index + 1] = ' ';
+            output[index + 2] = ' ';
+            index += 3;
+            break;
+          }
+          if (source[index] !== '\n') output[index] = ' ';
+          index += 1;
+        }
+        continue;
+      }
+
+      index += 1;
+      while (index < source.length && source[index] !== quote) {
+        if (source[index] === '\\') index += 1;
+        index += 1;
+      }
+      index += 1;
+      continue;
+    }
+
+    index += 1;
+  }
+
+  return output.join('');
+}
+
+export function stripReferenceComments(source: string, language: ReferenceLanguage): string {
+  return language === 'python'
+    ? stripPythonCommentsAndDocstrings(source)
+    : stripCComments(source);
+}
+
+/**
+ * Keep one algorithm body and add a reviewed annotation layer for the opposite
+ * UI language. When the source already uses that language, its native comments
+ * remain visible unchanged.
+ */
+export function localizeReferenceSource(
+  source: string,
+  {
+    algorithmId,
+    algorithmName,
+    language,
+    implementation,
+    lang,
+  }: {
+    algorithmId: string;
+    algorithmName: string;
+    language: ReferenceLanguage;
+    implementation: ReferenceImplementation;
+    lang: Lang;
+  },
+): string {
+  const nativeLanguage = referenceSourceLanguage(algorithmId, language, implementation);
+  if (nativeLanguage === lang) return source;
+
+  const body = stripReferenceComments(source, language).replace(/^(?:[ \t]*\n)+/, '');
+  return `${wrapHeader(
+    headerLines(algorithmId, algorithmName, language, implementation, lang),
+    language,
+  )}\n\n${body}`;
+}

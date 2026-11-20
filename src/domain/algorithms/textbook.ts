@@ -108,6 +108,7 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
         title: { zh: '算法的定义与特性', en: 'Definition and properties' },
         algorithms: [],
         concept: true,
+        conceptId: 'algorithm-definition',
       },
       {
         id: 'algorithm-efficiency',
@@ -236,7 +237,8 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
         id: 'naive-match',
         title: { zh: '朴素的模式匹配算法', en: 'Naive pattern matching' },
         algorithms: [],
-        planned: true,
+        concept: true,
+        conceptId: 'naive-matching',
       },
       {
         id: 'kmp',

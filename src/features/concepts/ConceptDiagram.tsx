@@ -8,6 +8,75 @@ import type { ConceptDiagramKind } from '../../domain/concepts/types';
 export function ConceptDiagram({ kind, lang }: { kind: ConceptDiagramKind; lang: Lang }) {
   const L = (zh: string, en: string) => (lang === 'zh' ? zh : en);
 
+  if (kind === 'algorithm-properties') {
+    const properties = [
+      {
+        title: L('有穷性', 'Finiteness'),
+        lines: [L('步骤有限', 'Finite steps'), L('每步有限时间', 'each step finite')],
+      },
+      {
+        title: L('确定性', 'Determinism'),
+        lines: [L('同一输入与状态', 'Same input/state'), L('只有一条路径', 'one path/result')],
+      },
+      {
+        title: L('可行性', 'Feasibility'),
+        lines: [L('每步可化为', 'Each step uses'), L('基本运算有限次', 'finite basic ops')],
+      },
+      {
+        title: L('输入', 'Input'),
+        lines: [L('零个或多个', 'Zero or more'), L('合法输入', 'valid inputs')],
+      },
+      {
+        title: L('输出', 'Output'),
+        lines: [L('至少一个', 'At least one'), L('明确结果', 'definite result')],
+      },
+    ];
+    return (
+      <svg
+        className="concept-svg"
+        viewBox="0 0 760 360"
+        role="img"
+        aria-label={L('算法的定义与五大特性', 'Algorithm definition and five properties')}
+      >
+        <rect className="diagram-box diagram-accent" x="100" y="18" width="560" height="48" rx="10" />
+        <text className="diagram-label diagram-property-title" x="380" y="48" textAnchor="middle">
+          {L('算法：对特定问题的有限求解步骤', 'Algorithm: finite steps for a specific problem')}
+        </text>
+        <line className="diagram-line" x1="380" y1="66" x2="380" y2="88" />
+        {properties.map((item, index) => {
+          const x = 24 + index * 146;
+          return (
+            <g key={item.title}>
+              <rect className="diagram-box" x={x} y="94" width="132" height="196" rx="9" />
+              <text className="diagram-note" x={x + 118} y="122" textAnchor="end">
+                {String(index + 1).padStart(2, '0')}
+              </text>
+              <text className="diagram-label diagram-label-strong" x={x + 66} y="138" textAnchor="middle">
+                {item.title}
+              </text>
+              <line className="diagram-line" x1={x + 12} y1="152" x2={x + 120} y2="152" />
+              {item.lines.map((line, lineIndex) => (
+                <text
+                  key={line}
+                  className="diagram-note"
+                  x={x + 66}
+                  y={184 + lineIndex * 22}
+                  textAnchor="middle"
+                >
+                  {line}
+                </text>
+              ))}
+            </g>
+          );
+        })}
+        <rect className="diagram-band" x="24" y="314" width="712" height="34" rx="8" />
+        <text className="diagram-label" x="380" y="336" textAnchor="middle">
+          {L('合法输入 → 有限时间 → 确定结果', 'valid input → finite time → definite result')}
+        </text>
+      </svg>
+    );
+  }
+
   if (kind === 'classification') {
     const logical = [
       [109, L('集合', 'Set')],

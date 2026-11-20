@@ -1,7 +1,8 @@
 /*
- * 教材素材说明
- * 用户提供的《数据结构与算法（Windows版）》未包含本算法的对应实现。
- * 本文件保留 AlgoViz 原创 C 实现与现有注释，未冒充教材原文。
+ * Textbook material note
+ * The textbook provided by the user does not contain this algorithm.
+ * This file keeps AlgoViz's original C implementation and comments; it does
+ * not present itself as textbook text.
  */
 
 /*
