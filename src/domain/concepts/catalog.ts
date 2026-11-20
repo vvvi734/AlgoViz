@@ -1146,6 +1146,352 @@ export const CONCEPT_PAGES: readonly ConceptPage[] = [
     },
     takeaway: ['朴素匹配丢弃已匹配信息；KMP 用 lps 把这段信息变成下一次对齐的起点，因此主串指针不必回头。', 'Naive matching discards confirmed information; KMP turns it into the next alignment through lps, so the text pointer never has to go back.'],
   },
+  {
+    id: 'array-basics',
+    topicId: 'array-basics',
+    title: ['数组与多维数组', 'Arrays and multidimensional arrays'],
+    chapter: ['补充章节 · 数组与矩阵', 'Supplementary chapter · Arrays and matrices'],
+    summary: [
+      '数组把相同类型的元素排成一条序列，并用连续存储单元实现按下标随机访问。二维数组可以看成“元素是一维数组的一维数组”，行优先与列优先决定它怎样压进一维内存。',
+      'An array stores elements of the same type in a sequence and uses contiguous cells to support random access by index. A 2D array is an array of 1D arrays; row-major or column-major order decides how it is flattened into one-dimensional memory.',
+    ],
+    diagram: 'array',
+    definitions: [
+      {
+        term: ['数组', 'Array'],
+        text: ['由 n 个相同类型数据元素组成的有限序列，元素由连续下标标识。数组通常只支持取值和赋值，插入、删除要由上层结构完成。', 'A finite sequence of n elements of the same type, identified by consecutive indices. Arrays normally support get and set only; insertion and deletion belong to a higher-level structure.'],
+      },
+      {
+        term: ['一维数组', 'One-dimensional array'],
+        text: ['逻辑上是线性序列 a[0], a[1], …, a[n−1]，物理上通常放在一段连续存储单元中。', 'Logically a linear sequence a[0], a[1], …, a[n−1]; physically it usually occupies one contiguous block.'],
+      },
+      {
+        term: ['二维数组', 'Two-dimensional array'],
+        text: ['逻辑上按行、列两个方向组织，元素记作 A[i][j]；可以看成每个元素都是一维数组的一维数组。', 'Organized along rows and columns, with elements written A[i][j]; it can be viewed as a 1D array whose elements are 1D arrays.'],
+      },
+      {
+        term: ['下标与地址', 'Index and address'],
+        text: ['下标是逻辑位置，地址是存储单元编号。顺序存储让二者建立线性关系，因此可由下标直接算出地址。', 'An index is a logical position; an address is a memory-cell number. Sequential storage makes their relation linear, so an address can be computed from indices.'],
+      },
+    ],
+    sections: [
+      {
+        title: ['逻辑结构：一维是序列，二维是表格', 'Logical view: a sequence, then a table'],
+        body: [
+          '一维数组的元素只有“前一个、后一个”的线性关系。二维数组增加行、列两个方向：A[i][j] 的第 0 个下标选行，第 1 个下标选列。',
+          'A 1D array has only previous/next linear relations. A 2D array adds rows and columns: the first index of A[i][j] selects the row and the second selects the column.',
+        ],
+        points: [
+          ['本课程统一使用 0 基下标：A 的合法行列是 0..R−1 与 0..C−1。', 'This course uses 0-based indices: valid rows are 0..R−1 and columns 0..C−1.'],
+          ['二维数组的行 i 本身是一维数组，A[i] 取出整行；A[i][j] 再取该行第 j 个元素。', 'Row i is itself a 1D array: A[i] selects the whole row and A[i][j] selects its j-th element.'],
+          ['逻辑相邻不等于地址相邻：A[i][j] 与 A[i][j+1] 在行优先存储中才紧挨着。', 'Logical neighbours are not always physical neighbours: A[i][j] and A[i][j+1] are adjacent only under row-major storage.'],
+        ],
+        formula: 'A[i][j]：0 ≤ i < R，0 ≤ j < C（本课程 0 基）',
+      },
+      {
+        title: ['顺序存储：把二维压成一维', 'Sequential storage: flatten the second dimension'],
+        body: [
+          '计算机内存是一维的，所以二维数组必须约定一个展开顺序。行优先先存完第 0 行，再存第 1 行；列优先先存完第 0 列，再存第 1 列。',
+          'Memory is one-dimensional, so a 2D array needs a flattening order. Row-major stores row 0 completely, then row 1; column-major stores column 0 completely, then column 1.',
+        ],
+        points: [
+          ['行优先顺序：A[0][0], A[0][1], …, A[0][C−1], A[1][0], …。', 'Row-major order: A[0][0], A[0][1], …, A[0][C−1], A[1][0], … .'],
+          ['列优先顺序：A[0][0], A[1][0], …, A[R−1][0], A[0][1], …。', 'Column-major order: A[0][0], A[1][0], …, A[R−1][0], A[0][1], … .'],
+          ['同一个矩阵换一种存储顺序，元素值不变，但一维位置和地址公式全部改变。', 'Changing the storage order keeps the values but changes every flattened position and address formula.'],
+          ['C/C++ 的二维数组通常按行优先；Fortran、MATLAB 等常按列优先，读题时先看题目约定。', 'C/C++ 2D arrays are usually row-major; Fortran and MATLAB often use column-major. Check the stated convention first.'],
+        ],
+        formula: '行优先位置 = i*C + j；列优先位置 = j*R + i（0 基）',
+      },
+      {
+        title: ['地址计算：基准、宽度、顺序三件事', 'Address calculation: base, width and order'],
+        body: [
+          '设首元素地址为 base，每个元素占 w 个存储单元。先算出一维位置，再乘 w 加到 base 上，就得到元素地址。',
+          'Let base be the address of the first element and w the number of cells per element. Compute the flattened position, multiply by w and add it to base.',
+        ],
+        points: [
+          ['行优先：Loc(i,j) = base + (i*C + j)*w。', 'Row-major: Loc(i,j) = base + (i*C + j)*w.'],
+          ['列优先：Loc(i,j) = base + (j*R + i)*w。', 'Column-major: Loc(i,j) = base + (j*R + i)*w.'],
+          ['例：R=2、C=4、base=1000、w=4。A[1][2] 的行优先地址是 1000+(1*4+2)*4 = 1024；列优先地址是 1000+(2*2+1)*4 = 1020。', 'Example: R=2, C=4, base=1000, w=4. A[1][2] is at 1000+(1*4+2)*4 = 1024 in row-major and 1000+(2*2+1)*4 = 1020 in column-major.'],
+          ['若题目下标从 1 开始，先把 i、j 各减 1，再代入上面的 0 基公式；不要直接把 1 基下标塞进公式。', 'If the problem uses 1-based indices, subtract 1 from i and j before using the 0-based formulas; never substitute 1-based indices directly.'],
+        ],
+        formula: '行优先 Loc(i,j) = base + (i*C + j)*w',
+      },
+    ],
+    comparison: {
+      title: ['行优先与列优先', 'Row-major versus column-major'],
+      columns: [
+        ['维度', 'Aspect'],
+        ['行优先', 'Row-major'],
+        ['列优先', 'Column-major'],
+      ],
+      rows: [
+        [
+          ['展开顺序', 'Flatten order'],
+          ['逐行从左到右', 'Left to right, row by row'],
+          ['逐列从上到下', 'Top to bottom, column by column'],
+        ],
+        [
+          ['一维位置', 'Flattened position'],
+          ['i*C + j', 'i*C + j'],
+          ['j*R + i', 'j*R + i'],
+        ],
+        [
+          ['连续扫描', 'Contiguous scan'],
+          ['同一行相邻元素连续', 'Neighbours in a row are contiguous'],
+          ['同一列相邻元素连续', 'Neighbours in a column are contiguous'],
+        ],
+        [
+          ['常见环境', 'Typical setting'],
+          ['C / C++ 的二维数组', 'C / C++ 2D arrays'],
+          ['Fortran / MATLAB 等', 'Fortran / MATLAB and others'],
+        ],
+      ],
+    },
+    takeaway: ['先确认下标基准，再确认行优先还是列优先，最后才代地址公式；三者任一错，地址就会整体偏移。', 'Confirm the index base, then the storage order, and only then substitute the address formula; an error in any one shifts every address.'],
+  },
+  {
+    id: 'special-matrices',
+    topicId: 'special-matrices',
+    title: ['特殊矩阵的压缩存储', 'Compressed storage of special matrices'],
+    chapter: ['补充章节 · 数组与矩阵', 'Supplementary chapter · Arrays and matrices'],
+    summary: [
+      '对称矩阵、三角矩阵和带状矩阵都有大量重复或恒定元素。只要结构已知，就可以只存一部分元素，再用一个下标映射把 A[i][j] 定位到一维压缩数组。',
+      'Symmetric, triangular and band matrices contain many repeated or constant entries. When the structure is known, store only part of it and map A[i][j] to a 1D compressed array by an index formula.',
+    ],
+    diagram: 'matrix-compression',
+    definitions: [
+      {
+        term: ['对称矩阵', 'Symmetric matrix'],
+        text: ['满足 A[i][j] = A[j][i] 的方阵；关于主对角线对称，因此只需存下三角或上三角的一半。', 'A square matrix with A[i][j] = A[j][i]; it is symmetric about the main diagonal, so one triangle suffices.'],
+      },
+      {
+        term: ['上三角 / 下三角矩阵', 'Upper / lower triangular matrix'],
+        text: ['主对角线一侧的元素全为常量（通常为 0），另一侧才需要逐个存储。', 'One side of the main diagonal is a constant (usually 0); only the other side needs individual storage.'],
+      },
+      {
+        term: ['对角矩阵', 'Diagonal matrix'],
+        text: ['非零元素只出现在主对角线上；更一般地，非零元素集中在主对角线附近的若干条对角线上。', 'Non-zeros occur only on the main diagonal; more generally they lie on a few diagonals around the main diagonal.'],
+      },
+      {
+        term: ['带状矩阵', 'Banded matrix'],
+        text: ['满足 |i − j| ≤ b 的元素才可能非零，带宽为 2b+1；三对角矩阵是最常见的 b=1 情形。', 'Only entries with |i − j| ≤ b can be non-zero; the bandwidth is 2b+1. A tridiagonal matrix is the common b=1 case.'],
+      },
+      {
+        term: ['压缩存储', 'Compressed storage'],
+        text: ['不为重复值或常量单独分配位置，只存有用元素，并保存足以还原二维下标的映射规则。', 'Do not allocate separate slots for repeated or constant values; store useful entries plus a rule that recovers their 2D indices.'],
+      },
+    ],
+    sections: [
+      {
+        title: ['为什么可以少存', 'Why fewer slots are enough'],
+        body: [
+          '普通二维数组为每个位置都分配存储单元，不管它是否与另一个位置相同。特殊矩阵的重复关系由定义保证，所以重复部分不必真的存两份。',
+          'A dense 2D array allocates a slot for every position whether or not it duplicates another. A special matrix guarantees the duplication by definition, so the repeated part need not be stored twice.',
+        ],
+        points: [
+          ['对称矩阵只存一半：n×n 个位置压缩为 n(n+1)/2 个元素。', 'A symmetric matrix stores one triangle: n×n positions become n(n+1)/2 entries.'],
+          ['三角矩阵的常量侧不逐个存；若常量不是 0，可额外留一个单元保存它。', 'The constant side of a triangular matrix is not stored entry by entry; if the constant is not 0, keep one extra slot for it.'],
+          ['压缩后仍要能从 (i,j) 算出唯一的一维下标，否则无法随机访问。', 'After compression, (i,j) must still map to a unique 1D index; otherwise random access is impossible.'],
+        ],
+        formula: '对称矩阵元素数：n(n+1)/2（含主对角线）',
+      },
+      {
+        title: ['下三角映射：考试最常考的公式', 'Lower-triangle mapping: the exam formula'],
+        body: [
+          '把下三角按行优先排进一维数组：第 0 行 1 个，第 1 行 2 个，……，第 i 行前面共有 1+2+…+i = i(i+1)/2 个元素，行内偏移是 j。',
+          'Store the lower triangle row by row: row 0 has 1 entry, row 1 has 2, …, so before row i there are 1+2+…+i = i(i+1)/2 entries, and the within-row offset is j.',
+        ],
+        points: [
+          ['0 基且 i ≥ j：k = i(i+1)/2 + j。', '0-based with i ≥ j: k = i(i+1)/2 + j.'],
+          ['若 i < j，元素在上三角；先用对称性交换 i、j，再代入同一条公式。', 'If i < j the entry is in the upper triangle; swap i and j by symmetry and use the same formula.'],
+          ['1 基教材的常见写法是 k = i(i−1)/2 + j（i ≥ j，i、j 从 1 起）。两种写法只是基准不同，不能混用。', 'A common 1-based form is k = i(i−1)/2 + j (i ≥ j, indices from 1). The two differ only in the base and must not be mixed.'],
+          ['上三角若单独按行存储，可用 k = i*n − i(i+1)/2 + j（0 基，i ≤ j）；更稳妥的做法仍是转成下三角。', 'If the upper triangle is stored directly by rows, k = i*n − i(i+1)/2 + j (0-based, i ≤ j); converting to the lower triangle is usually safer.'],
+        ],
+        formula: '0 基下三角：k = i(i+1)/2 + j（i ≥ j）',
+      },
+      {
+        title: ['对角与带状：只存一条带子', 'Diagonal and banded: keep only a strip'],
+        body: [
+          '对角矩阵只存主对角线，k = i。三对角矩阵只存 |i−j| ≤ 1 的三条对角线；更宽的带状矩阵同理，只是带子更宽。',
+          'A diagonal matrix stores only its main diagonal with k = i. A tridiagonal matrix stores the three diagonals |i−j| ≤ 1; wider bands work the same way with a wider strip.',
+        ],
+        points: [
+          ['对角矩阵：n×n 压缩为 n 个元素，A[i][i] 存在 sa[i]。', 'Diagonal: n×n becomes n entries; A[i][i] lives in sa[i].'],
+          ['三对角按行优先紧凑存储，0 基映射为 k = 2i + j，要求 |i−j| ≤ 1。', 'For a compact row-major tridiagonal layout, the 0-based map is k = 2i + j with |i−j| ≤ 1.'],
+          ['带状矩阵的压缩量取决于带宽；带宽接近 n 时，压缩带来的收益迅速消失。', 'The saving depends on the bandwidth; as it approaches n, compression stops paying off.'],
+        ],
+        formula: '三对角（0 基）：k = 2i + j，|i−j| ≤ 1',
+      },
+      {
+        title: ['公式之外的两个检查', 'Two checks beyond the formula'],
+        body: [
+          '压缩公式不是背下来就能用：先确认题目存的是上三角还是下三角、下标从 0 还是 1 开始、常量是否额外占一个单元。',
+          'A compression formula is not enough by itself: confirm which triangle is stored, whether indices start at 0 or 1, and whether a constant occupies an extra slot.',
+        ],
+        points: [
+          ['检查边界：k=0 应对应第一个被存元素，k=最大下标应对应最后一个。', 'Check the boundary: k=0 must be the first stored entry and the largest k the last.'],
+          ['检查对称位置：A[i][j] 与 A[j][i] 必须得到同一个 k（或按约定分别落在两个等价位置）。', 'Check symmetric positions: A[i][j] and A[j][i] must yield the same k under the stated convention.'],
+          ['压缩数组长度要与元素个数一致；多留常量槽时要在答案里说明。', 'The compressed length must match the entry count; if a constant slot is added, state it explicitly.'],
+        ],
+        formula: '先定三角、再定基准、最后代公式',
+      },
+    ],
+    comparison: {
+      title: ['三种特殊矩阵的压缩', 'Compression of three special matrices'],
+      columns: [
+        ['类型', 'Type'],
+        ['可压缩部分', 'Compressible part'],
+        ['元素数（0 基公式）', 'Entry count (0-based formula)'],
+      ],
+      rows: [
+        [
+          ['对称矩阵', 'Symmetric'],
+          ['下三角（含对角线）', 'Lower triangle incl. diagonal'],
+          ['n(n+1)/2；k = i(i+1)/2 + j', 'n(n+1)/2; k = i(i+1)/2 + j'],
+        ],
+        [
+          ['三角矩阵', 'Triangular'],
+          ['非常量的一侧', 'The non-constant side'],
+          ['n(n+1)/2（常量另存 1 个）', 'n(n+1)/2 (plus one constant slot)'],
+        ],
+        [
+          ['对角矩阵', 'Diagonal'],
+          ['主对角线', 'Main diagonal'],
+          ['n；k = i', 'n; k = i'],
+        ],
+        [
+          ['三对角矩阵', 'Tridiagonal'],
+          ['三条对角线', 'Three diagonals'],
+          ['约 3n−2；k = 2i + j', 'About 3n−2; k = 2i + j'],
+        ],
+      ],
+    },
+    takeaway: ['压缩存储的关键不是“少存”，而是“少存之后还能 O(1) 算回位置”；公式必须和三角、下标基准同时成立。', 'Compression is not just storing less: the position must still be computable in O(1). The formula must agree with the triangle and index base.'],
+  },
+  {
+    id: 'sparse-matrix',
+    topicId: 'sparse-matrix',
+    title: ['稀疏矩阵与三元组表示', 'Sparse matrices and triplet representation'],
+    chapter: ['补充章节 · 数组与矩阵', 'Supplementary chapter · Arrays and matrices'],
+    summary: [
+      '稀疏矩阵的非零元素远少于总位置。普通二维数组仍为每个零分配空间；三元组表只记录 (row, col, value)，CSR 则进一步把行号压进 row_ptr。',
+      'A sparse matrix has far fewer non-zeros than total positions. A dense 2D array still allocates a slot for every zero; a triplet list stores only (row, col, value), while CSR folds row numbers into row_ptr.',
+    ],
+    diagram: 'sparse-matrix',
+    definitions: [
+      {
+        term: ['稀疏矩阵', 'Sparse matrix'],
+        text: ['非零元素个数 t 远小于矩阵元素总数 m×n 的矩阵；稀疏是相对概念，没有统一的绝对阈值。', 'A matrix whose non-zero count t is far below the total m×n; sparsity is relative and has no universal hard threshold.'],
+      },
+      {
+        term: ['稀疏因子', 'Sparsity factor'],
+        text: ['δ = t / (m×n)，表示非零元素占全部位置的比例；δ 越小，压缩存储越有收益。', 'δ = t / (m×n), the fraction of non-zero positions; smaller δ means more benefit from compression.'],
+      },
+      {
+        term: ['三元组', 'Triplet'],
+        text: ['一条记录 (row, col, value)，表示 A[row][col] = value；只记录非零元素，零不进入三元组表。', 'A record (row, col, value) meaning A[row][col] = value; only non-zeros enter the triplet list.'],
+      },
+      {
+        term: ['三元组表', 'Triplet list'],
+        text: ['按行优先（或列优先）排列的三元组序列，常额外保存行数、列数和非零元素个数。', 'A sequence of triplets in row-major (or column-major) order, usually with row count, column count and non-zero count.'],
+      },
+      {
+        term: ['CSR', 'Compressed sparse row'],
+        text: ['用 row_ptr、col_idx、values 三个数组按行压缩：第 r 行的非零元素位于 col_idx[row_ptr[r] .. row_ptr[r+1])。', 'Three arrays — row_ptr, col_idx and values — compress by row: row r owns col_idx[row_ptr[r] .. row_ptr[r+1]).'],
+      },
+    ],
+    sections: [
+      {
+        title: ['普通二维数组浪费在哪里', 'Where the dense array wastes space'],
+        body: [
+          '二维数组为每个位置留一个单元，零也照常占位。4×5 的矩阵若有 6 个非零元素，仍有 20 个元素槽，其中 14 个存的是零。',
+          'A dense array reserves one slot per position, zeros included. A 4×5 matrix with 6 non-zeros still has 20 element slots, 14 of which hold zero.',
+        ],
+        points: [
+          ['空间与 m×n 成正比，而不与非零个数 t 成正比。', 'Space grows with m×n rather than with the non-zero count t.'],
+          ['大量零参与扫描、转置和加法，时间也会被浪费。', 'Zeros still take part in scans, transposes and additions, wasting time too.'],
+          ['稀疏程度不高时，三元组的额外字段反而可能更占空间。', 'When the matrix is not very sparse, the extra triplet fields can cost more space.'],
+        ],
+        formula: '非零比例 δ = t / (m×n)',
+      },
+      {
+        title: ['三元组表：只记录非零元素', 'Triplet list: record only non-zeros'],
+        body: [
+          '三元组表把每个非零元素写成 (row, col, value)，并按行优先排序。恢复时逐条读取，把 value 写回 B[row][col]，其余位置保持 0。',
+          'A triplet list writes each non-zero as (row, col, value) in row-major order. To restore, read each record and write value back to B[row][col], leaving all other positions zero.',
+        ],
+        points: [
+          ['三元组表长度等于 t，每条 3 个字段，数值总量为 3t。', 'The list length is t; each record has three fields, so 3t numbers are stored.'],
+          ['行优先排列让同一行的三元组连续，按行恢复和按行转置都更方便。', 'Row-major order keeps one row’s triplets contiguous, which helps row-wise restore and transpose.'],
+          ['恢复算法需要先建立 m×n 的全零矩阵；稀疏存储并没有消除输出矩阵本身的空间。', 'Restore first creates an m×n zero matrix; the sparse format does not remove the output matrix’s own space.'],
+        ],
+        formula: '(row, col, value) 表；t 条记录占 3t 个数值',
+      },
+      {
+        title: ['CSR：把行号压进 row_ptr', 'CSR: fold row numbers into row_ptr'],
+        body: [
+          '三元组表每条都重复存行号。CSR 按行分组：row_ptr[r] 指向第 r 行在 col_idx/values 中的起点，row_ptr[r+1] 指向终点，行号不再逐条出现。',
+          'Every triplet repeats its row number. CSR groups by row: row_ptr[r] points to the start of row r in col_idx/values, row_ptr[r+1] to its end, so row numbers are no longer repeated per entry.',
+        ],
+        points: [
+          ['row_ptr 长度为 m+1；col_idx 与 values 长度都是 t。', 'row_ptr has length m+1; col_idx and values both have length t.'],
+          ['第 r 行的第 k 个非零元素：列号 col_idx[row_ptr[r]+k]，值 values[row_ptr[r]+k]。', 'The k-th non-zero in row r: column col_idx[row_ptr[r]+k], value values[row_ptr[r]+k].'],
+          ['CSR 很适合按行扫描、矩阵向量乘法；按列访问和随机 A[i][j] 仍需额外查找。', 'CSR suits row scans and sparse matrix–vector products; column access and random A[i][j] still need a lookup.'],
+        ],
+        formula: 'CSR 数值量：row_ptr(m+1) + col_idx(t) + values(t)',
+      },
+      {
+        title: ['三元组转置为什么要用 cpot', 'Why triplet transpose needs cpot'],
+        body: [
+          '直接逐条交换 row 与 col 会打乱结果的行优先顺序。快速转置先统计每一列的非零个数 num，再由 num 递推出每一列在结果表中的起始槽 cpot，最后把每个元素一次放到正确位置。',
+          'Swapping row and col entry by entry breaks the result’s row-major order. Fast transpose first counts each column’s non-zeros in num, derives each column’s starting slot cpot, then places every entry directly in its final slot.',
+        ],
+        points: [
+          ['num[c] 等于原矩阵第 c 列的非零个数，也就是转置矩阵第 c 行的长度。', 'num[c] is the non-zero count of column c, i.e. the length of row c in the transpose.'],
+          ['cpot[0] = 0；cpot[c] = cpot[c−1] + num[c−1]，它是第 c 列的第一个空槽。', 'cpot[0] = 0; cpot[c] = cpot[c−1] + num[c−1], the first free slot for column c.'],
+          ['每写入一个元素就把 cpot[col] 加一，保证同一列的下一个元素落到下一个槽。', 'After writing an entry, increment cpot[col] so the next entry of that column lands in the next slot.'],
+          ['时间 O(t + c)，额外辅助空间 O(c)，结果表本身占 O(t)；不是 O(t²)。', 'Time O(t + c), extra working space O(c), and the result table itself is O(t); not O(t²).'],
+        ],
+        formula: 'cpot[c] = cpot[c−1] + num[c−1]（0 基）',
+      },
+    ],
+    comparison: {
+      title: ['三种稀疏存储方式', 'Three sparse layouts'],
+      columns: [
+        ['维度', 'Aspect'],
+        ['普通二维数组', 'Dense 2D'],
+        ['三元组表', 'Triplet list'],
+        ['CSR', 'CSR'],
+      ],
+      rows: [
+        [
+          ['空间量', 'Space'],
+          ['m×n 个元素', 'm×n entries'],
+          ['3t 个数值', '3t numbers'],
+          ['m+1+2t 个数值', 'm+1+2t numbers'],
+        ],
+        [
+          ['随机 A[i][j]', 'Random A[i][j]'],
+          ['O(1)', 'O(1)'],
+          ['通常需查找 O(t)', 'Usually a search, O(t)'],
+          ['行内查找', 'Search within a row'],
+        ],
+        [
+          ['按行扫描', 'Row scan'],
+          ['含大量零', 'Many zeros'],
+          ['方便', 'Convenient'],
+          ['最方便', 'Most convenient'],
+        ],
+        [
+          ['适用场景', 'Best for'],
+          ['稠密矩阵', 'Dense matrices'],
+          ['通用稀疏记录、转置教学', 'General sparse records and transpose teaching'],
+          ['按行计算、矩阵向量乘法', 'Row-wise kernels and SpMV'],
+        ],
+      ],
+    },
+    takeaway: ['稀疏存储用“额外索引”换掉“大量零”：t 远小于 m×n 时才划算；三元组胜在直观，CSR 胜在按行计算。', 'Sparse storage trades extra indexing for the omitted zeros: it pays only when t is far below m×n. Triplets are simple; CSR is stronger for row-wise computation.'],
+  },
 ];
 
 const BY_ID = new Map(CONCEPT_PAGES.map((page) => [page.id, page]));

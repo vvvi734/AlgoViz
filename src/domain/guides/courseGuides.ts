@@ -832,6 +832,79 @@ export const COURSE_GUIDES: Record<string, CourseGuide> = {
       ],
     ),
   },
+
+  'sparse-transpose': {
+    intro: text(
+      '稀疏矩阵的三元组表只记录非零元素。若直接把每条 (row, col, value) 改成 (col, row, value)，结果不再按转置矩阵的行优先顺序排列；若再排序，就会多出 O(t log t) 的代价。快速转置先统计原矩阵每一列的非零个数 num，再由 num 递推每一列在结果表中的起始槽 cpot，最后按源表行优先顺序把每个元素一次写入最终位置。它把“排序”换成“预先算好每列的落点”，时间 O(t+c)，额外辅助空间 O(c)。',
+      'A sparse triplet list stores only non-zeros. Rewriting each (row, col, value) as (col, row, value) immediately breaks the row-major order of the transpose; sorting afterwards adds O(t log t). Fast transpose counts non-zeros per original column into num, derives each column’s starting slot cpot from num, then places every source triplet directly into its final slot in one pass. It replaces sorting with precomputed column offsets: O(t+c) time and O(c) extra working space.',
+    ),
+    definition: text(
+      '稀疏矩阵快速转置是一种基于三元组表的线性转置算法：num[c] 统计原矩阵第 c 列的非零元素个数；cpot[0]=0，cpot[c]=cpot[c−1]+num[c−1] 给出第 c 列在结果表中的起始槽；随后按源三元组行优先顺序，把 (row, col, value) 写成 (col, row, value) 放入 result[cpot[col]]，并将 cpot[col] 加一。',
+      'Fast sparse transpose is a linear-time transpose over a triplet list. num[c] counts non-zeros in original column c; cpot[0]=0 and cpot[c]=cpot[c−1]+num[c−1] give column c’s starting slot in the result. Then, in source row-major order, each (row, col, value) becomes (col, row, value) and is written to result[cpot[col]], after which cpot[col] is incremented.',
+    ),
+    ...algorithm(
+      step(
+        '读入并为 num 清零',
+        'Read the input and clear num',
+        '读取行数、列数与非零三元组；num 的长度是原矩阵的列数 c。每条三元组必须非零、坐标唯一且严格行优先。',
+        'Read row count, column count and non-zero triplets; num has length c, the original column count. Every triplet must be non-zero, with unique coordinates and strict row-major order.',
+      ),
+      step(
+        '第一遍循环：统计各列',
+        'First loop: count each column',
+        '遍历全部 t 条三元组，只读列号 col，执行 num[col] += 1。循环结束后 sum(num) 必须等于 t。',
+        'Visit all t triplets, read only their column col and perform num[col] += 1. After the loop, sum(num) must equal t.',
+      ),
+      step(
+        '递推 cpot：列块起点',
+        'Recurrence for cpot: block starts',
+        'cpot[0]=0；对 c=1..c−1 执行 cpot[c]=cpot[c−1]+num[c−1]。每一步依赖前一列的起点和长度，不能并行猜测。',
+        'Set cpot[0]=0; for c=1..c−1 compute cpot[c]=cpot[c−1]+num[c−1]. Each step depends on the previous block’s start and length and cannot be guessed independently.',
+      ),
+      step(
+        '第二遍循环：读取源三元组',
+        'Second loop: read a source triplet',
+        '重新按行优先顺序遍历源表，取出 row、col、value，并令 q=cpot[col]。q 是该元素在结果表中的最终槽。',
+        'Walk the source list again in row-major order, read row, col and value, and set q=cpot[col]. q is the entry’s final slot in the result.',
+      ),
+      step(
+        '写入：交换坐标，值不变',
+        'Write: swap coordinates, keep the value',
+        '把 (col, row, value) 写入 result[q]。不移动其他元素，也不重新排序；列块布局已保证 q 不会越界或冲突。',
+        'Write (col, row, value) to result[q]. No other entry moves and no sorting occurs; the column-block layout guarantees q is in bounds and unoccupied.',
+      ),
+      step(
+        '更新 cpot：该列指针前移',
+        'Update cpot: advance that column',
+        '刚写过的槽已被占用，执行 cpot[col]=q+1。只推进当前列；其他列的 cpot 保持不变。',
+        'The written slot is occupied, so set cpot[col]=q+1. Only the current column advances; other columns stay unchanged.',
+      ),
+      step(
+        '完成：结果已是行优先',
+        'Done: the result is row-major',
+        '全部源三元组处理完后，结果表每个槽恰好写一次。列块按列号升序，块内按源行优先，因此结果正是转置矩阵的行优先三元组表。',
+        'After every source triplet is processed, each result slot was written exactly once. Blocks follow ascending column numbers and preserve source row order within a block, so the result is the transpose’s row-major triplet list.',
+      ),
+    ),
+    conditions: list(
+      [
+        '本课统一使用 0 基：矩阵行列、三元组坐标、cpot 槽号都从 0 开始。',
+        '输入三元组必须严格行优先且 (row, col) 唯一；零元素不进入三元组表。',
+        'num 统计的是原矩阵的“列”，不是行；转置后它对应结果表每一块的长度。',
+        'cpot 在放置阶段必须可变；写入后不更新会导致同列元素互相覆盖。',
+        '时间 O(t+c)：两次扫描三元组加一次 cpot 递推；额外辅助空间 O(c)，结果表 O(t)。',
+        '空矩阵、空列、单行/单列和矩形矩阵都必须返回正确结果。',
+      ],
+      [
+        'This course is 0-based throughout: matrix coordinates, triplet positions and cpot slots all start at 0.',
+        'Input triplets must be strictly row-major with unique (row, col); zeros never enter the triplet list.',
+        'num counts original columns, not rows; after transposing, each entry is the length of one result block.',
+        'cpot must be mutable during placement; failing to advance it makes entries in the same column overwrite each other.',
+        'Time O(t+c): two triplet scans plus one cpot recurrence; extra working space O(c), result storage O(t).',
+        'Empty matrices, empty column sets, single-row/column and rectangular shapes must all return correct results.',
+      ],
+    ),
+  },
 };
 
 export type CourseGuideId = keyof typeof COURSE_GUIDES;

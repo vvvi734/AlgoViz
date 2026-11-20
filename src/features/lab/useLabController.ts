@@ -189,7 +189,7 @@ export function useLabController(): LabController {
     // real Python presets. Default those courses to Python; the legacy JS
     // examples remain available for the simpler array courses.
     const preferredLang: CodeLanguage =
-      id === 'stack' || id === 'queue' || id === 'linked' || id === 'doubly' || id === 'circular' || id === 'seqlist' || id === 'inorder' || id === 'bst' || id === 'avl' || id === 'heap' || id === 'huffman' || id === 'selection' || id === 'insertion' || id === 'shell' || id === 'quick' || id === 'merge' || id === 'linear' || id === 'binary' || id === 'hash-chain' || id === 'hash-probe' || id === 'kmp' || id === 'factorial' || id === 'fib' || isGraphAlgorithm(id) ? 'python' : codeLang;
+      id === 'stack' || id === 'queue' || id === 'linked' || id === 'doubly' || id === 'circular' || id === 'seqlist' || id === 'inorder' || id === 'bst' || id === 'avl' || id === 'heap' || id === 'huffman' || id === 'selection' || id === 'insertion' || id === 'shell' || id === 'quick' || id === 'merge' || id === 'linear' || id === 'binary' || id === 'hash-chain' || id === 'hash-probe' || id === 'kmp' || id === 'sparse-transpose' || id === 'factorial' || id === 'fib' || isGraphAlgorithm(id) ? 'python' : codeLang;
     if (preferredLang !== codeLang) {
       setCodeLangState(preferredLang);
       safeSet(CODE_LANG_KEY, preferredLang);
@@ -304,6 +304,22 @@ export function useLabController(): LabController {
       const text = Array.from({ length: 14 }, () => (Math.random() < 0.5 ? 'A' : 'B')).join('');
       const start = Math.floor(Math.random() * 10);
       next = { text, pattern: text.slice(start, start + 4) };
+    } else if (currentAlgo === 'sparse-transpose') {
+      const rows = 4 + Math.floor(Math.random() * 3);
+      const cols = 4 + Math.floor(Math.random() * 3);
+      const target = 4 + Math.floor(Math.random() * 4);
+      const used = new Set<string>();
+      const triples: Array<{ row: number; col: number; value: number }> = [];
+      while (triples.length < target) {
+        const row = Math.floor(Math.random() * rows);
+        const col = Math.floor(Math.random() * cols);
+        const key = `${row}:${col}`;
+        if (used.has(key)) continue;
+        used.add(key);
+        triples.push({ row, col, value: 1 + Math.floor(Math.random() * 9) });
+      }
+      triples.sort((a, b) => a.row - b.row || a.col - b.col);
+      next = { rows, cols, triples };
     } else if (entry.group === 'sort') {
       next = Array.from({ length: 7 }, () => 1 + Math.floor(Math.random() * 15));
     } else if (entry.group === 'search') {

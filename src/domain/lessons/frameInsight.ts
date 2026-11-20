@@ -24,6 +24,7 @@ import type {
   SortingSnapshot,
   HashSnapshot,
   KmpSnapshot,
+  SparseTransposeSnapshot,
   TopologicalSortSnapshot,
   TraceEvent,
   WeightedGraphSnapshot,
@@ -2717,6 +2718,183 @@ function kmpInsight(
   };
 }
 
+function sparsePhaseText(snapshot: SparseTransposeSnapshot, lang: LessonLang): string {
+  switch (snapshot.phase) {
+    case 'count':
+      return tx(lang, '统计各列 num', 'count columns into num');
+    case 'cpot':
+      return tx(lang, '计算起始槽 cpot', 'compute start slots in cpot');
+    case 'place':
+      return tx(lang, '放置转置元素', 'place transposed entries');
+    case 'done':
+      return tx(lang, '完成', 'done');
+    default:
+      return snapshot.phase;
+  }
+}
+
+function formatSparseAux(snapshot: SparseTransposeSnapshot): string {
+  if (snapshot.cols === 0) return '—';
+  const ready = Math.max(0, Math.min(snapshot.cpotReady, snapshot.cols));
+  if (ready === 0) return '—';
+  const shown = snapshot.cpot.slice(0, ready).join(', ');
+  return ready < snapshot.cols ? `${shown}, …` : shown;
+}
+
+function sparseInsight(
+  snapshot: SparseTransposeSnapshot,
+  lang: LessonLang,
+  lesson: Lesson | undefined,
+  event: TraceEvent,
+  previousEvent: TraceEvent | undefined,
+): FrameInsight {
+  const activeStep = resolveStep(lesson, event.lessonStepId);
+  const previous =
+    previousEvent?.structure?.kind === 'sparse-transpose' ? previousEvent.structure : null;
+  const source = snapshot.sourceIndex === null ? '—' : String(snapshot.sourceIndex);
+  const target = snapshot.targetIndex === null ? '—' : String(snapshot.targetIndex);
+  const activeSource =
+    snapshot.sourceIndex === null ? null : snapshot.triples[snapshot.sourceIndex] ?? null;
+  const written = snapshot.result.filter((item) => item !== null).length;
+  const numText = snapshot.num.join(', ') || '—';
+  const cpotText = formatSparseAux(snapshot);
+
+  let action = event.message;
+  let why = event.message;
+  switch (snapshot.operation) {
+    case 'init':
+      action = tx(
+        lang,
+        `${snapshot.rows}×${snapshot.cols} 稀疏矩阵，${snapshot.triples.length} 条非零三元组`,
+        `${snapshot.rows}×${snapshot.cols} sparse matrix with ${snapshot.triples.length} non-zero triplet(s)`,
+      );
+      why = tx(lang, '输入三元组严格行优先、坐标唯一；算法只在这张表上工作，稠密视图只用于展示。', 'The input triplets are strict row-major with unique coordinates; the algorithm works on this list, while the dense view is display only.');
+      break;
+    case 'count-start':
+      action = tx(lang, `num 清零，长度 ${snapshot.cols}（按列计数）`, `Clear num of length ${snapshot.cols} (one per column)`);
+      why = tx(lang, '原矩阵第 c 列转置后成为第 c 行，因此要先统计每一列有多少个非零元素。', 'Original column c becomes transpose row c, so first count how many non-zeros each column contains.');
+      break;
+    case 'count-scan':
+      action = tx(
+        lang,
+        `扫描源 #${source}：num[${activeSource?.col ?? '—'}] ← ${activeSource?.col !== undefined ? snapshot.num[activeSource.col] : '—'}`,
+        `Scan source #${source}: num[${activeSource?.col ?? '—'}] ← ${activeSource?.col !== undefined ? snapshot.num[activeSource.col] : '—'}`,
+      );
+      why = tx(lang, '只读列号并让对应计数加一；每条三元组恰好访问一次，这一段是 O(t)。', 'Read only the column and increment its counter; every triplet is visited once, so this stage is O(t).');
+      break;
+    case 'count-complete':
+      action = tx(lang, `num 完成：[${numText}]`, `num complete: [${numText}]`);
+      why = tx(lang, 'num[c] 就是结果表第 c 个列块的长度；所有 num 之和必须等于非零元素总数。', 'num[c] is the length of result block c; the sum of num must equal the total non-zero count.');
+      break;
+    case 'cpot-start':
+      action = tx(lang, 'cpot[0] = 0；第 0 列从结果槽 0 开始', 'cpot[0] = 0; the first column starts at result slot 0');
+      why = tx(lang, '第 0 列之前没有任何列块；若没有列，则不存在 cpot[0]，直接返回空结果。', 'Nothing precedes column 0; with no columns there is no cpot[0] and the result is empty.');
+      break;
+    case 'cpot-compute':
+      action = tx(
+        lang,
+        `cpot[${snapshot.columnIndex ?? '—'}] = ${snapshot.columnIndex !== null ? snapshot.cpot[snapshot.columnIndex] : '—'}`,
+        `cpot[${snapshot.columnIndex ?? '—'}] = ${snapshot.columnIndex !== null ? snapshot.cpot[snapshot.columnIndex] : '—'}`,
+      );
+      why = tx(lang, '当前列起点 = 前一列起点 + 前一列长度；这个递推必须按列号顺序执行。', 'Current start = previous start + previous length; the recurrence must run in column order.');
+      break;
+    case 'cpot-complete':
+      action = tx(lang, `cpot 完成：[${cpotText}]`, `cpot complete: [${cpotText}]`);
+      why = tx(lang, '每个列块的起点都已确定，最后一列起点加长度应恰好等于 t。', 'Every block start is fixed; the last start plus its length must equal t.');
+      break;
+    case 'place-start':
+      action = tx(lang, '重新扫描源表，cpot 改为可移动的写入指针', 'Rescan the source; cpot becomes a moving write pointer');
+      why = tx(lang, '结果表先分配 t 个空槽；源表仍按行优先读取，保证同一列内元素的相对顺序。', 'The result allocates t empty slots; the source is still read row-major, preserving relative order within each column.');
+      break;
+    case 'place-read':
+      action = tx(
+        lang,
+        `读源 #${source} (${activeSource?.row ?? '—'}, ${activeSource?.col ?? '—'}, ${activeSource?.value ?? '—'})，q = ${target}`,
+        `Read source #${source} (${activeSource?.row ?? '—'}, ${activeSource?.col ?? '—'}, ${activeSource?.value ?? '—'}), q = ${target}`,
+      );
+      why = tx(lang, 'q=cpot[col] 是该元素在结果表中的最终槽；本步只读，不改结果与 cpot。', 'q=cpot[col] is the entry’s final result slot; this step only reads and changes neither the result nor cpot.');
+      break;
+    case 'place-write':
+      action = tx(
+        lang,
+        `写 result[${target}] = (${activeSource?.col ?? '—'}, ${activeSource?.row ?? '—'}, ${activeSource?.value ?? '—'})`,
+        `Write result[${target}] = (${activeSource?.col ?? '—'}, ${activeSource?.row ?? '—'}, ${activeSource?.value ?? '—'})`,
+      );
+      why = tx(lang, '交换 row 与 col，值不变；不移动其他元素，也不重新排序。', 'Swap row and col while keeping the value; no other entry moves and no sorting is needed.');
+      break;
+    case 'place-update':
+      action = tx(
+        lang,
+        `cpot[${activeSource?.col ?? '—'}] ← ${target === '—' ? '—' : String(snapshot.cpot[activeSource?.col ?? 0])}`,
+        `cpot[${activeSource?.col ?? '—'}] ← ${target === '—' ? '—' : String(snapshot.cpot[activeSource?.col ?? 0])}`,
+      );
+      why = tx(lang, '刚写过的槽已占用；只把当前列的指针前移一格，其他列不动。', 'The written slot is occupied; only the current column advances one slot, leaving other columns unchanged.');
+      break;
+    case 'done':
+      action = tx(lang, `转置完成：已写入 ${written}/${snapshot.triples.length} 条结果`, `Transpose complete: ${written}/${snapshot.triples.length} result entries written`);
+      why = tx(lang, '每个结果槽恰好写一次；列块升序且块内保持源顺序，因此结果已是转置矩阵的行优先三元组表。', 'Every result slot was written once; blocks are ordered by column and preserve source order, so the result is already the transpose’s row-major triplet list.');
+      break;
+    default:
+      break;
+  }
+
+  const numTone: FrameChangeTone = snapshot.operation === 'count-scan' ? 'update' : 'neutral';
+  const cpotTone: FrameChangeTone =
+    snapshot.operation === 'place-update'
+      ? 'success'
+      : snapshot.operation.startsWith('cpot')
+        ? 'update'
+        : 'neutral';
+  const changes: FrameChange[] = [
+    {
+      label: tx(lang, '阶段', 'phase'),
+      before: previous ? sparsePhaseText(previous, lang) : undefined,
+      after: sparsePhaseText(snapshot, lang),
+      tone: 'neutral',
+    },
+    {
+      label: tx(lang, '源三元组', 'source triplet'),
+      before: previous && previous.sourceIndex !== null ? `#${previous.sourceIndex}` : undefined,
+      after: snapshot.sourceIndex !== null ? `#${snapshot.sourceIndex}` : '—',
+      tone: snapshot.sourceIndex !== (previous?.sourceIndex ?? null) ? 'update' : 'neutral',
+    },
+    {
+      label: tx(lang, '结果槽', 'result slot'),
+      before: previous && previous.targetIndex !== null ? `#${previous.targetIndex}` : undefined,
+      after: snapshot.targetIndex !== null ? `#${snapshot.targetIndex}` : '—',
+      tone: snapshot.targetIndex !== (previous?.targetIndex ?? null) ? 'update' : 'neutral',
+    },
+    {
+      label: 'num',
+      before: previous ? `[${previous.num.join(', ') || '—'}]` : undefined,
+      after: `[${numText}]`,
+      tone: numTone,
+    },
+    {
+      label: 'cpot',
+      before: previous ? `[${formatSparseAux(previous)}]` : undefined,
+      after: `[${cpotText}]`,
+      tone: cpotTone,
+    },
+    {
+      label: tx(lang, '已写入', 'written'),
+      before: previous
+        ? `${previous.result.filter((item) => item !== null).length}/${previous.triples.length}`
+        : undefined,
+      after: `${written}/${snapshot.triples.length}`,
+      tone: written !== (previous ? previous.result.filter((item) => item !== null).length : 0) ? 'success' : 'neutral',
+    },
+  ];
+  const memory = activeStep?.tip ? firstSentence(activeStep.tip[lang], 140) : null;
+  return {
+    semantic: true,
+    action,
+    why: firstSentence(why),
+    changes,
+    memory,
+  };
+}
+
 /**
  * Build the compact, frame-synchronised insight for the right rail.
  *
@@ -2758,6 +2936,8 @@ export function buildFrameInsight(
         return hashInsight(structure, lang, lesson, currentEvent, previousEvent);
       case 'kmp':
         return kmpInsight(structure, lang, lesson, currentEvent, previousEvent);
+      case 'sparse-transpose':
+        return sparseInsight(structure, lang, lesson, currentEvent, previousEvent);
       case 'doubly-linked-list':
       case 'circular-linked-list':
         return advancedLinkedInsight(structure, lang, hasStep, lesson, currentEvent, previousEvent);

@@ -29,6 +29,10 @@ import { buildSortingModel, type SortingVisualModel } from './sortingModel';
 import { buildSearchModel, type SearchVisualModel } from './searchModel';
 import { buildHashModel, type HashVisualModel } from './hashModel';
 import { buildKmpModel, type KmpVisualModel } from './kmpModel';
+import {
+  buildSparseTransposeModel,
+  type SparseTransposeVisualModel,
+} from './sparseTransposeModel';
 import { buildSequentialListModel, type SequentialListVisualModel } from './sequentialListModel';
 
 /**
@@ -93,6 +97,7 @@ export type VisualModel =
   | SearchVisualModel
   | HashVisualModel
   | KmpVisualModel
+  | SparseTransposeVisualModel
   | GraphVisualModel
   | FloydVisualModel
   | BellmanVisualModel
@@ -272,6 +277,11 @@ export function buildVisualModel(
   if (structure !== undefined && structure.kind === 'kmp') {
     if (kind !== 'array') return { kind: 'raw', text: labels.invalid };
     return buildKmpModel(structure);
+  }
+
+  if (structure !== undefined && structure.kind === 'sparse-transpose') {
+    if (kind !== 'array') return { kind: 'raw', text: labels.invalid };
+    return buildSparseTransposeModel(structure);
   }
 
   if (structure !== undefined && structure.kind === 'hash') {

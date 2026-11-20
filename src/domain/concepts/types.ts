@@ -11,7 +11,10 @@ export type ConceptDiagramKind =
   | 'graph'
   | 'graph-storage'
   | 'sorting'
-  | 'string';
+  | 'string'
+  | 'array'
+  | 'matrix-compression'
+  | 'sparse-matrix';
 
 export interface ConceptDefinition {
   term: Bilingual;

@@ -238,6 +238,41 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
     ],
   },
   {
+    id: 'ch5-array',
+    number: 0,
+    title: { zh: '数组与矩阵', en: 'Arrays and matrices' },
+    shortTitle: { zh: '数组与矩阵', en: 'Arrays & matrices' },
+    extension: true,
+    topics: [
+      {
+        id: 'array-basics',
+        title: { zh: '数组与多维数组', en: 'Arrays and multidimensional arrays' },
+        algorithms: [],
+        concept: true,
+        conceptId: 'array-basics',
+      },
+      {
+        id: 'special-matrices',
+        title: { zh: '特殊矩阵的压缩存储', en: 'Compressed storage for special matrices' },
+        algorithms: [],
+        concept: true,
+        conceptId: 'special-matrices',
+      },
+      {
+        id: 'sparse-matrix',
+        title: { zh: '稀疏矩阵与三元组', en: 'Sparse matrices and triplets' },
+        algorithms: [],
+        concept: true,
+        conceptId: 'sparse-matrix',
+      },
+      {
+        id: 'sparse-transpose',
+        title: { zh: '稀疏矩阵快速转置', en: 'Fast transpose of a sparse matrix' },
+        algorithms: [{ id: 'sparse-transpose' }],
+      },
+    ],
+  },
+  {
     id: 'ch6-tree',
     number: 6,
     title: { zh: '树', en: 'Trees' },
@@ -524,7 +559,9 @@ export function buildTextbookNavigation(catalog: AlgorithmCatalog): TextbookChap
   if (unmapped.length > 0) {
     let extension = chapters.find((chapter) => chapter.id === 'ext');
     if (!extension) {
-      const extensionConfig = TEXTBOOK_CHAPTERS.find((chapter) => chapter.extension);
+      const extensionConfig =
+        TEXTBOOK_CHAPTERS.find((chapter) => chapter.id === 'ext') ??
+        TEXTBOOK_CHAPTERS.find((chapter) => chapter.extension);
       if (extensionConfig) {
         extension = { ...extensionConfig, topics: [], algorithmCount: 0 };
         chapters.push(extension);

@@ -2,10 +2,15 @@ import type { Lang } from '../../i18n/types';
 import { ALGORITHM_CATALOG, ALGORITHM_GROUPS } from './catalog.generated';
 import { LANGUAGE_EXAMPLES } from './languageExamples.generated';
 import { KMP_ENTRY } from './kmpExamples';
+import { SPARSE_TRANSPOSE_ENTRY } from './sparseTransposeExamples';
 import { structureDefaultInput, structurePythonExample } from './structureExamples';
 import type { AlgorithmCatalog, AlgorithmGroup, CodeLanguage } from './types';
 
-export const catalog: AlgorithmCatalog = { ...ALGORITHM_CATALOG, kmp: KMP_ENTRY };
+export const catalog: AlgorithmCatalog = {
+  ...ALGORITHM_CATALOG,
+  kmp: KMP_ENTRY,
+  'sparse-transpose': SPARSE_TRANSPOSE_ENTRY,
+};
 
 export const algorithmIds = (): string[] => Object.keys(catalog);
 

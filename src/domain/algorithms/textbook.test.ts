@@ -14,20 +14,24 @@ import {
 const nav = buildTextbookNavigation(catalog);
 
 describe('textbook directory (UX-03)', () => {
-  it('keeps the nine 《大话数据结构》 chapters in source order', () => {
-    expect(nav).toHaveLength(9);
-    expect(nav.map((chapter) => chapter.number)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+  it('keeps the nine book chapters in source order plus the array/matrix supplement', () => {
+    expect(nav).toHaveLength(10);
+    expect(nav.map((chapter) => chapter.number)).toEqual([1, 2, 3, 4, 5, 0, 6, 7, 8, 9]);
     expect(nav.map((chapter) => chapter.id)).toEqual([
       'ch1-intro',
       'ch2-algorithm',
       'ch3-linear',
       'ch4-stack-queue',
       'ch5-string',
+      'ch5-array',
       'ch6-tree',
       'ch7-graph',
       'ch8-search',
       'ch9-sort',
     ]);
+    const supplement = nav.find((chapter) => chapter.id === 'ch5-array')!;
+    expect(supplement.extension).toBe(true);
+    expect(supplement.number).toBe(0);
     expect(TEXTBOOK_REFERENCE.author).toBe('程杰');
     expect(TEXTBOOK_REFERENCE.edition.zh).toContain('2011');
   });
@@ -42,6 +46,7 @@ describe('textbook directory (UX-03)', () => {
     expect(conceptTopics.map((topic) => topic.id).sort()).toEqual([
       'algorithm-cases',
       'algorithm-efficiency',
+      'array-basics',
       'binary-tree',
       'graph-basics',
       'graph-storage',
@@ -50,6 +55,8 @@ describe('textbook directory (UX-03)', () => {
       'intro-logical-physical',
       'linear-basics',
       'sort-basics',
+      'sparse-matrix',
+      'special-matrices',
       'string-basics',
     ]);
     for (const topic of conceptTopics) {
@@ -62,7 +69,7 @@ describe('textbook directory (UX-03)', () => {
     expect(ids).toHaveLength(Object.keys(catalog).length);
     expect(new Set(ids).size).toBe(ids.length);
     expect(new Set(ids)).toEqual(new Set(Object.keys(catalog)));
-    expect(ids).toHaveLength(35);
+    expect(ids).toHaveLength(36);
   });
 
   it('wires the authored string concept and runnable KMP into chapter 5', () => {
@@ -82,6 +89,35 @@ describe('textbook directory (UX-03)', () => {
     expect(kmp.planned).toBeUndefined();
     expect(kmp.algorithms.map((algorithm) => algorithm.id)).toEqual(['kmp']);
     expect(textbookPathFor(catalog, 'kmp')).toEqual({ chapterId: 'ch5-string', topicId: 'kmp' });
+  });
+
+  it('wires the array/matrix supplement between strings and trees', () => {
+    const supplement = nav.find((chapter) => chapter.id === 'ch5-array')!;
+    expect(supplement.title.zh).toContain('数组');
+    expect(supplement.topics.map((topic) => topic.id)).toEqual([
+      'array-basics',
+      'special-matrices',
+      'sparse-matrix',
+      'sparse-transpose',
+    ]);
+    expect(supplement.topics.slice(0, 3).map((topic) => topic.kind)).toEqual([
+      'concept',
+      'concept',
+      'concept',
+    ]);
+    expect(supplement.topics.slice(0, 3).map((topic) => topic.conceptId)).toEqual([
+      'array-basics',
+      'special-matrices',
+      'sparse-matrix',
+    ]);
+    const transpose = supplement.topics.find((topic) => topic.id === 'sparse-transpose')!;
+    expect(transpose.algorithms.map((algorithm) => algorithm.id)).toEqual(['sparse-transpose']);
+    expect(textbookPathFor(catalog, 'sparse-transpose')).toEqual({
+      chapterId: 'ch5-array',
+      topicId: 'sparse-transpose',
+    });
+    const ids = nav.map((chapter) => chapter.id);
+    expect(ids.indexOf('ch5-array')).toBeLessThan(ids.indexOf('ch6-tree'));
   });
 
   it('places MST before shortest paths and marks Bellman-Ford / connectivity as extensions', () => {
@@ -186,6 +222,7 @@ describe('textbook directory (UX-03)', () => {
       'stack-basics',
       'queue-basics',
       'kmp',
+      'sparse-transpose',
       'binary-tree-traversal',
       'huffman',
       'topological',
@@ -260,7 +297,7 @@ describe('textbook directory (UX-03)', () => {
       },
     });
     const extension = futureNav.at(-1)!;
-    expect(futureNav).toHaveLength(10);
+    expect(futureNav).toHaveLength(11);
     expect(extension.id).toBe('ext');
     expect(extension.extension).toBe(true);
     expect(extension.topics.find((topic) => topic.id === 'unclassified')?.algorithms[0].id).toBe(

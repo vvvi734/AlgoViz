@@ -79,10 +79,10 @@ function Harness({
 const nav = buildTextbookNavigation(catalog);
 
 describe('AlgorithmSidebar — textbook chapters (UX-03)', () => {
-  it('renders all nine book chapters in source order plus every algorithm', () => {
+  it('renders every authored chapter in source order plus every algorithm', () => {
     render(<Harness />);
     const chapters = screen.getAllByTestId(/^chapter-/);
-    expect(chapters).toHaveLength(9);
+    expect(chapters).toHaveLength(nav.length);
     for (const chapter of nav) {
       expect(screen.getByTestId(`chapter-${chapter.id}`)).toBeTruthy();
       const count = chapter.algorithmCount;

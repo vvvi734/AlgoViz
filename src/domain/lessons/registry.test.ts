@@ -58,6 +58,7 @@ describe('Lesson registry (Stage 3B)', () => {
       'hash-chaining-basics',
       'hash-probing-basics',
       'kmp-pattern-matching',
+      'sparse-transpose-fast',
     ]);
   });
 
@@ -92,7 +93,7 @@ describe('Lesson registry (Stage 3B)', () => {
   it('leaves the other algorithms without a course, and that is legal', () => {
     const covered = lessonRegistry.lessons.map((lesson) => lesson.algorithmId);
     const uncovered = catalogIds.filter((id) => !covered.includes(id));
-    expect(catalogIds.length).toBe(35);
+    expect(catalogIds.length).toBe(36);
     expect(uncovered.length).toBe(1);
     expect(uncovered).toEqual(['fib']);
   });

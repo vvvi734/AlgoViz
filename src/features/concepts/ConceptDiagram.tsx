@@ -399,6 +399,398 @@ export function ConceptDiagram({ kind, lang }: { kind: ConceptDiagramKind; lang:
     );
   }
 
+  if (kind === 'array') {
+    const values = [
+      [1, 2, 3],
+      [4, 5, 6],
+    ];
+    const rowMajor = values.flat();
+    const columnMajor = [1, 4, 2, 5, 3, 6];
+    const cell = 52;
+    const gap = 5;
+    return (
+      <svg className="concept-svg" viewBox="0 0 760 390" role="img" aria-label={L('二维数组的行优先与列优先映射', 'Row-major and column-major mapping of a 2D array')}>
+        <text className="diagram-label diagram-label-strong" x="36" y="30">
+          {L('二维数组 A[2][3]（下标从 0 开始）', '2D array A[2][3] (0-based)')}
+        </text>
+        {[0, 1, 2].map((col) => (
+          <text className="diagram-note" key={`col-${col}`} x={78 + col * (cell + gap) + cell / 2} y="58" textAnchor="middle">
+            {col}
+          </text>
+        ))}
+        {values.map((rowValues, row) => (
+          <g key={`row-${row}`}>
+            <text className="diagram-note" x="62" y={82 + row * (cell + gap) + cell / 2 + 5} textAnchor="middle">
+              {row}
+            </text>
+            {rowValues.map((value, col) => (
+              <g key={`cell-${row}-${col}`}>
+                <rect
+                  className="diagram-cell diagram-accent"
+                  x={78 + col * (cell + gap)}
+                  y={82 + row * (cell + gap)}
+                  width={cell}
+                  height={cell}
+                  rx="7"
+                />
+                <text
+                  className="diagram-label diagram-label-strong"
+                  x={78 + col * (cell + gap) + cell / 2}
+                  y={82 + row * (cell + gap) + cell / 2 + 6}
+                  textAnchor="middle"
+                >
+                  {value}
+                </text>
+              </g>
+            ))}
+          </g>
+        ))}
+        <text className="diagram-note" x="78" y="222">
+          {L('逻辑上是 2 行 3 列', 'Logically 2 rows × 3 columns')}
+        </text>
+        <text className="diagram-note" x="78" y="246">
+          {L('物理上仍是一条连续序列', 'Physically one contiguous sequence')}
+        </text>
+
+        <line className="diagram-line" x1="244" y1="180" x2="292" y2="180" />
+        <polygon className="diagram-arrow" points="292,180 284,175 284,185" />
+
+        <text className="diagram-label diagram-label-strong" x="300" y="122">
+          {L('行优先：先走完一整行', 'Row-major: finish one row first')}
+        </text>
+        {rowMajor.map((value, index) => (
+          <g key={`row-major-${index}`}>
+            <rect className="diagram-cell" x={300 + index * 60} y="138" width="54" height="44" rx="6" />
+            <text className="diagram-label" x={327 + index * 60} y="166" textAnchor="middle">{value}</text>
+            <text className="diagram-note" x={327 + index * 60} y="198" textAnchor="middle">{index}</text>
+          </g>
+        ))}
+        <text className="diagram-note" x="300" y="220">
+          {L('a[0][0], a[0][1], a[0][2], a[1][0], …', 'a[0][0], a[0][1], a[0][2], a[1][0], …')}
+        </text>
+
+        <text className="diagram-label diagram-label-strong" x="300" y="254">
+          {L('列优先：先走完一整列', 'Column-major: finish one column first')}
+        </text>
+        {columnMajor.map((value, index) => (
+          <g key={`col-major-${index}`}>
+            <rect className="diagram-cell" x={300 + index * 60} y="270" width="54" height="40" rx="6" />
+            <text className="diagram-label" x={327 + index * 60} y="296" textAnchor="middle">{value}</text>
+            <text className="diagram-note" x={327 + index * 60} y="326" textAnchor="middle">{index}</text>
+          </g>
+        ))}
+
+        <rect className="diagram-band" x="30" y="344" width="700" height="34" rx="8" />
+        <text className="diagram-label" x="380" y="358" textAnchor="middle">
+          {L('行优先 Loc(i,j)=base+(i*C+j)*w；列优先 Loc(i,j)=base+(j*R+i)*w（0 基）', 'Row-major Loc(i,j)=base+(i*C+j)*w; column-major Loc(i,j)=base+(j*R+i)*w (0-based)')}
+        </text>
+        <text className="diagram-label" x="380" y="374" textAnchor="middle">
+          {L('若下标从 1 开始，先把 i、j 各减 1，再代入公式', 'If indices start at 1, subtract 1 from i and j before substituting')}
+        </text>
+      </svg>
+    );
+  }
+
+  if (kind === 'matrix-compression') {
+    const matrix = [
+      [9, 1, 2, 3],
+      [1, 8, 4, 5],
+      [2, 4, 7, 6],
+      [3, 5, 6, 10],
+    ];
+    const lower: Array<[number, number, number, number]> = [
+      [0, 0, 0, 9],
+      [1, 0, 1, 1],
+      [1, 1, 2, 8],
+      [2, 0, 3, 2],
+      [2, 1, 4, 4],
+      [2, 2, 5, 7],
+      [3, 0, 6, 3],
+      [3, 1, 7, 5],
+      [3, 2, 8, 6],
+      [3, 3, 9, 10],
+    ];
+    const cell = 46;
+    const gap = 5;
+    return (
+      <svg className="concept-svg" viewBox="0 0 760 480" role="img" aria-label={L('对称矩阵下三角压缩存储', 'Lower-triangle compression of a symmetric matrix')}>
+        <text className="diagram-label diagram-label-strong" x="30" y="30">
+          {L('对称矩阵 A[4][4]：只存下三角的 10 个元素', 'Symmetric A[4][4]: store only the 10 lower-triangle entries')}
+        </text>
+        {[0, 1, 2, 3].map((col) => (
+          <text className="diagram-note" key={`mcol-${col}`} x={78 + col * (cell + gap) + cell / 2} y="58" textAnchor="middle">
+            {col}
+          </text>
+        ))}
+        {matrix.map((rowValues, row) => (
+          <g key={`mrow-${row}`}>
+            <text className="diagram-note" x="62" y={76 + row * (cell + gap) + cell / 2 + 5} textAnchor="middle">
+              {row}
+            </text>
+            {rowValues.map((value, col) => {
+              const isLower = row >= col;
+              const k = lower.find(([i, j]) => i === row && j === col)?.[2];
+              return (
+                <g key={`mcell-${row}-${col}`}>
+                  <rect
+                    className={isLower ? 'diagram-cell diagram-accent' : 'diagram-cell'}
+                    x={78 + col * (cell + gap)}
+                    y={76 + row * (cell + gap)}
+                    width={cell}
+                    height={cell}
+                    rx="6"
+                  />
+                  <text
+                    className={isLower ? 'diagram-label diagram-label-strong' : 'diagram-label'}
+                    x={78 + col * (cell + gap) + cell / 2}
+                    y={76 + row * (cell + gap) + 27}
+                    textAnchor="middle"
+                  >
+                    {value}
+                  </text>
+                  {k !== undefined && (
+                    <text
+                      className="diagram-note"
+                      x={78 + col * (cell + gap) + cell / 2}
+                      y={76 + row * (cell + gap) + 42}
+                      textAnchor="middle"
+                    >
+                      k={k}
+                    </text>
+                  )}
+                </g>
+              );
+            })}
+          </g>
+        ))}
+        <line className="diagram-line" x1="281" y1="170" x2="298" y2="170" />
+        <polygon className="diagram-arrow" points="302,170 294,165 294,175" />
+
+        <text className="diagram-label diagram-label-strong" x="304" y="58">
+          {L('一维压缩数组 sa[10]', 'Compressed 1D array sa[10]')}
+        </text>
+        <text className="diagram-note" x="304" y="78">
+          {L('按行优先依次存：sa[k] = A[i][j]', 'Stored in row-major order: sa[k] = A[i][j]')}
+        </text>
+        {lower.map(([row, col, k, value]) => (
+          <g key={`slot-${k}`}>
+            <rect
+              className="diagram-cell diagram-accent"
+              x={304 + k * 42}
+              y="94"
+              width="38"
+              height="42"
+              rx="5"
+            />
+            <text className="diagram-label" x={323 + k * 42} y="121" textAnchor="middle">{value}</text>
+            <text className="diagram-note" x={323 + k * 42} y="152" textAnchor="middle">{k}</text>
+            <text className="diagram-note" x={323 + k * 42} y="172" textAnchor="middle">{`(${row},${col})`}</text>
+          </g>
+        ))}
+
+        <text className="diagram-label" x="304" y="212">
+          {L('0 基行优先：k = i(i+1)/2 + j（i ≥ j）', '0-based row-major: k = i(i+1)/2 + j (i ≥ j)')}
+        </text>
+        <text className="diagram-note" x="304" y="234">
+          {L('若 i < j，先用对称性交换 i、j；1 基教材对应 k = i(i−1)/2 + j。', 'If i < j, swap i and j by symmetry; a 1-based text uses k = i(i−1)/2 + j.')}
+        </text>
+
+        <text className="diagram-label diagram-label-strong" x="30" y="302">
+          {L('三类常见特殊矩阵', 'Three common special matrices')}
+        </text>
+        <g>
+          <text className="diagram-note" x="30" y="324">{L('对称矩阵', 'Symmetric')}</text>
+          {[0, 1, 2, 3].map((row) =>
+            [0, 1, 2, 3].map((col) => (
+              <rect
+                key={`sym-${row}-${col}`}
+                className={row >= col ? 'diagram-cell diagram-accent' : 'diagram-cell'}
+                x={30 + col * 20}
+                y={332 + row * 20}
+                width="18"
+                height="18"
+              />
+            )),
+          )}
+          <text className="diagram-note" x="30" y="432">{L('A[i][j] = A[j][i]', 'A[i][j] = A[j][i]')}</text>
+        </g>
+        <g>
+          <text className="diagram-note" x="170" y="324">{L('上/下三角矩阵', 'Triangular')}</text>
+          {[0, 1, 2, 3].map((row) =>
+            [0, 1, 2, 3].map((col) => (
+              <rect
+                key={`tri-${row}-${col}`}
+                className={row >= col ? 'diagram-cell diagram-accent' : 'diagram-cell'}
+                x={170 + col * 20}
+                y={332 + row * 20}
+                width="18"
+                height="18"
+              />
+            )),
+          )}
+          <text className="diagram-note" x="170" y="432">{L('另一半是常量 0 或 c', 'The other half is constant 0 or c')}</text>
+        </g>
+        <g>
+          <text className="diagram-note" x="310" y="324">{L('三对角带状矩阵', 'Tridiagonal band')}</text>
+          {[0, 1, 2, 3, 4].map((row) =>
+            [0, 1, 2, 3, 4].map((col) => (
+              <rect
+                key={`band-${row}-${col}`}
+                className={Math.abs(row - col) <= 1 ? 'diagram-cell diagram-accent' : 'diagram-cell'}
+                x={310 + col * 20}
+                y={332 + row * 20}
+                width="18"
+                height="18"
+              />
+            )),
+          )}
+          <text className="diagram-note" x="310" y="442">{L('只存 |i−j| ≤ 1', 'Store only |i−j| ≤ 1')}</text>
+          <text className="diagram-note" x="310" y="460">{L('k = 2i + j（0 基）', 'k = 2i + j (0-based)')}</text>
+        </g>
+        <rect className="diagram-band" x="470" y="330" width="260" height="128" rx="9" />
+        <text className="diagram-label" x="600" y="356" textAnchor="middle">{L('压缩的前提', 'When compression pays off')}</text>
+        <text className="diagram-note" x="600" y="382" textAnchor="middle">{L('结构已知，才能把二维下标', 'The structure must be known so a 2D index')}</text>
+        <text className="diagram-note" x="600" y="402" textAnchor="middle">{L('唯一映射到一维下标', 'maps uniquely to a 1D index')}</text>
+        <text className="diagram-note" x="600" y="422" textAnchor="middle">{L('否则仍应存完整二维表', 'otherwise keep the full 2D table')}</text>
+      </svg>
+    );
+  }
+
+  if (kind === 'sparse-matrix') {
+    const matrix = [
+      [3, 0, 7, 0, 0],
+      [0, 0, 5, 0, 0],
+      [0, 4, 0, 0, 0],
+      [6, 0, 8, 0, 0],
+    ];
+    const triples: Array<[number, number, number]> = [
+      [0, 0, 3],
+      [0, 2, 7],
+      [1, 2, 5],
+      [2, 1, 4],
+      [3, 0, 6],
+      [3, 2, 8],
+    ];
+    const cell = 40;
+    const gap = 4;
+    const x0 = 62;
+    return (
+      <svg className="concept-svg" viewBox="0 0 760 430" role="img" aria-label={L('稀疏矩阵的三元组表示', 'Triplet representation of a sparse matrix')}>
+        <text className="diagram-label diagram-label-strong" x="30" y="30">
+          {L('稀疏矩阵 A[4][5]：20 个位置只有 6 个非零元素', 'Sparse A[4][5]: only 6 non-zeros in 20 positions')}
+        </text>
+        {[0, 1, 2, 3, 4].map((col) => (
+          <text className="diagram-note" key={`scol-${col}`} x={x0 + col * (cell + gap) + cell / 2} y="58" textAnchor="middle">
+            {col}
+          </text>
+        ))}
+        {matrix.map((rowValues, row) => (
+          <g key={`srow-${row}`}>
+            <text className="diagram-note" x="44" y={78 + row * (cell + gap) + cell / 2 + 5} textAnchor="middle">
+              {row}
+            </text>
+            {rowValues.map((value, col) => (
+              <g key={`scell-${row}-${col}`}>
+                <rect
+                  className={value === 0 ? 'diagram-cell' : 'diagram-cell diagram-accent'}
+                  x={x0 + col * (cell + gap)}
+                  y={78 + row * (cell + gap)}
+                  width={cell}
+                  height={cell}
+                  rx="6"
+                />
+                <text
+                  className={value === 0 ? 'diagram-note' : 'diagram-label diagram-label-strong'}
+                  x={x0 + col * (cell + gap) + cell / 2}
+                  y={78 + row * (cell + gap) + cell / 2 + 5}
+                  textAnchor="middle"
+                >
+                  {value}
+                </text>
+              </g>
+            ))}
+          </g>
+        ))}
+        <text className="diagram-note" x="30" y="280">
+          {L('14 个零仍然占位置；稀疏时二维表浪费严重', 'The 14 zeros still occupy slots; a dense table wastes space')}
+        </text>
+
+        <line className="diagram-line" x1="286" y1="168" x2="302" y2="168" />
+        <polygon className="diagram-arrow" points="306,168 298,163 298,173" />
+        <text className="diagram-label diagram-label-strong" x="312" y="48">
+          {L('三元组表', 'Triplet list')}
+        </text>
+        <text className="diagram-note" x="312" y="68">
+          {L('每行 (row, col, value)，t = 6', '(row, col, value) per row, t = 6')}
+        </text>
+        <rect className="diagram-box" x="312" y="82" width="220" height="206" rx="9" />
+        {(['#', 'row', 'col', 'value'] as const).map((label, index) => (
+          <text
+            className="diagram-note"
+            key={label}
+            x={336 + index * 55}
+            y="106"
+            textAnchor="middle"
+          >
+            {label}
+          </text>
+        ))}
+        {triples.map(([row, col, value], index) => (
+          <g key={`triple-${index}`}>
+            <line className="diagram-guide" x1="322" y1={118 + index * 27} x2="522" y2={118 + index * 27} />
+            <text className="diagram-note" x="336" y={138 + index * 27} textAnchor="middle">{index}</text>
+            <text className="diagram-label" x="391" y={138 + index * 27} textAnchor="middle">{row}</text>
+            <text className="diagram-label" x="446" y={138 + index * 27} textAnchor="middle">{col}</text>
+            <text className="diagram-label diagram-label-strong" x="501" y={138 + index * 27} textAnchor="middle">{value}</text>
+          </g>
+        ))}
+
+        <text className="diagram-label diagram-label-strong" x="552" y="48">
+          {L('怎样比较存储量', 'Compare the storage cost')}
+        </text>
+        {[
+          [L('普通二维数组', 'Dense 2D array'), L('20 个槽', '20 slots'), 20],
+          [L('三元组表', 'Triplet list'), L('18 个数', '18 numbers'), 18],
+          [L('CSR', 'CSR'), L('17 个数', '17 numbers'), 17],
+        ].map(([name, detail, ratio], index) => {
+          const width = 160 * (Number(ratio) / 20);
+          return (
+            <g key={String(name)}>
+              <text className="diagram-note" x="552" y={78 + index * 52}>{name}</text>
+              <text className="diagram-note" x="744" y={78 + index * 52} textAnchor="end">{detail}</text>
+              <rect
+                className={index === 0 ? 'diagram-cell' : 'diagram-cell diagram-accent'}
+                x="552"
+                y={86 + index * 52}
+                width={width}
+                height="16"
+                rx="4"
+              />
+            </g>
+          );
+        })}
+        <text className="diagram-note" x="552" y="242">
+          {L('条越短，数值总量越少', 'Shorter bar, fewer stored numbers')}
+        </text>
+
+        <text className="diagram-note" x="30" y="306">
+          {L('恢复：逐条读 (r,c,v) 写回 B[r][c]；CSR 用 row_ptr 记录每一行的起点。', 'Restore: read (r,c,v) and write B[r][c]; CSR marks each row start in row_ptr.')}
+        </text>
+
+        <rect className="diagram-band" x="30" y="330" width="700" height="52" rx="8" />
+        <text className="diagram-label" x="380" y="352" textAnchor="middle">
+          {L('稀疏因子 δ = t / (m·n)；只有 t 远小于 m·n 时，三元组表才真正省空间', 'Sparsity δ = t / (m·n); a triplet list pays off only when t is far below m·n')}
+        </text>
+        <text className="diagram-label" x="380" y="374" textAnchor="middle">
+          {L('三元组表本身是 O(t)，但每个元素占 3 个字段；CSR 把行号压进 row_ptr', 'A triplet list is O(t) but uses three fields per entry; CSR folds row numbers into row_ptr')}
+        </text>
+        <text className="diagram-note" x="380" y="400" textAnchor="middle">
+          {L('稀疏矩阵适合按行/列扫描；随机访问 A[i][j] 仍要额外查找，通常不如二维数组直接。', 'Sparse layouts favour row/column scans; random A[i][j] needs a lookup and is usually slower than a dense array.')}
+        </text>
+      </svg>
+    );
+  }
+
   if (kind === 'sorting') {
     const stableRows: Array<[string, string]> = [
       [L('小林', 'Lin'), '90'],

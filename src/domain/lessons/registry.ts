@@ -39,6 +39,7 @@ import { binarySearchLesson } from './binarySearchLesson';
 import { hashChainingLesson } from './hashChainingLesson';
 import { hashProbingLesson } from './hashProbingLesson';
 import { kmpLesson } from './kmpLesson';
+import { sparseTransposeLesson } from './sparseTransposeLesson';
 import { validateLessonSet } from './schema';
 import type { Lesson, LessonValidationResult } from './types';
 
@@ -106,6 +107,7 @@ const BUNDLED: unknown[] = [
   hashChainingLesson,
   hashProbingLesson,
   kmpLesson,
+  sparseTransposeLesson,
 ];
 
 /** Courses shipped with the app itself (bubble, factorial, stack, queue, linked-list, binary-tree). */

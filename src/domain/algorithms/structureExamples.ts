@@ -80,6 +80,10 @@ import {
   sequentialListPythonExample,
 } from './sequentialListExamples';
 import { KMP_DEFAULT_INPUT, KMP_PYTHON } from './kmpExamples';
+import {
+  SPARSE_TRANSPOSE_DEFAULT_INPUT,
+  SPARSE_TRANSPOSE_PYTHON,
+} from './sparseTransposeExamples';
 
 export const STACK_DEFAULT_INPUT: unknown = [
   ['push', 3],
@@ -218,6 +222,7 @@ const STRUCTURE_PYTHON: Record<string, string> = {
   'hash-chain': CHAINING_PYTHON,
   'hash-probe': PROBING_PYTHON,
   kmp: KMP_PYTHON,
+  'sparse-transpose': SPARSE_TRANSPOSE_PYTHON,
 };
 
 const STRUCTURE_INPUT: Record<string, unknown> = {
@@ -252,6 +257,7 @@ const STRUCTURE_INPUT: Record<string, unknown> = {
   'hash-chain': HASH_CHAIN_INPUT,
   'hash-probe': HASH_PROBE_INPUT,
   kmp: KMP_DEFAULT_INPUT,
+  'sparse-transpose': SPARSE_TRANSPOSE_DEFAULT_INPUT,
 };
 
 export function structurePythonExample(algorithmId: string): string | undefined {

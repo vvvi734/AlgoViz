@@ -35,6 +35,8 @@ import type { SortingVisualModel } from '../../domain/visualization/sortingModel
 import { SearchVisual } from './SearchVisual';
 import type { SearchVisualModel } from '../../domain/visualization/searchModel';
 import { KmpVisual } from './KmpVisual';
+import { SparseTransposeVisual } from './SparseTransposeVisual';
+import type { SparseTransposeVisualModel } from '../../domain/visualization/sparseTransposeModel';
 import { HashVisual } from './HashVisual';
 import type { HashVisualModel } from '../../domain/visualization/hashModel';
 import type { KruskalVisualModel, PrimVisualModel } from '../../domain/visualization/mstModel';
@@ -397,6 +399,9 @@ export function VisualStage({ event }: { event: TraceEvent | undefined }) {
     case 'kmp':
       content = <KmpVisual model={model} />;
       break;
+    case 'sparse-transpose':
+      content = <SparseTransposeVisual model={model as SparseTransposeVisualModel} />;
+      break;
     case 'hash':
       content = <HashVisual model={model as HashVisualModel} />;
       break;
@@ -590,6 +595,7 @@ export function VisualStage({ event }: { event: TraceEvent | undefined }) {
     model.kind === 'huffman' ||
     model.kind === 'sorting' ||
     model.kind === 'search' ||
+    model.kind === 'sparse-transpose' ||
     model.kind === 'hash' ||
     model.kind === 'graph-traversal' ||
     model.kind === 'floyd-matrix' ||
