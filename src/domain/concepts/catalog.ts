@@ -1733,6 +1733,285 @@ export const CONCEPT_PAGES: readonly ConceptPage[] = [
     },
     takeaway: ['B 树把记录分散在所有节点；B+ 树把记录集中到叶子，并用叶子链服务范围查询。数据库索引常用 B+ 树，是因为高扇出、稳定到叶和顺序扫描三件事同时成立。', 'A B-tree scatters records across nodes; a B+ tree concentrates them in leaves and uses the leaf chain for ranges. Database indexes favour B+ trees because high fanout, stable leaf paths and ordered scans hold at once.'],
   },
+  {
+    id: 'asl-decision-tree',
+    topicId: 'search-asl',
+    title: ['平均查找长度（ASL）与判定树', 'Average search length (ASL) and decision trees'],
+    chapter: ['第 8 章 · 查找', 'Chapter 8 · Searching'],
+    summary: [
+      '平均查找长度（ASL）是在给定查找概率下，一次查找所进行比较次数的加权平均值。它必须把查找成功与查找失败分开统计；在等概率假设下，二分查找的 ASL 可以直接从其判定树的内部节点和外部区间读出。时间复杂度描述增长趋势，ASL 描述具体数据与概率下的实际比较成本，两者回答的不是同一个问题。',
+      'Average search length (ASL) is the probability-weighted mean number of key comparisons in one search. Successful and unsuccessful searches must be counted separately; under an equal-probability assumption, a binary-search ASL can be read directly from the internal nodes and external gaps of its decision tree. Time complexity describes growth, while ASL describes comparison cost under concrete data and probabilities.',
+    ],
+    diagram: 'asl-decision-tree',
+    definitions: [
+      {
+        term: ['平均查找长度 ASL', 'Average search length (ASL)'],
+        text: ['按每条查找路径的概率对其关键字比较次数加权求和所得的期望值。它不是某一次查找的次数，也不是算法的最坏情况。', 'The expected number of key comparisons, weighting each search path by its probability. It is neither one particular search nor the worst case.'],
+      },
+      {
+        term: ['查找成功的 ASL', 'Successful ASL'],
+        text: ['查询关键字存在于表中时的条件期望。p_i 是在“查找成功”条件下命中第 i 个关键字的概率，c_i 是命中它所需的比较次数。', 'The conditional expectation when the key exists. p_i is the probability of hitting key i given success, and c_i is its comparison count.'],
+      },
+      {
+        term: ['查找失败的 ASL', 'Unsuccessful ASL'],
+        text: ['查询关键字不存在时的条件期望。q_j 是在“查找失败”条件下落入第 j 个失败区间的概率，c_j 是该路径的比较次数。', 'The conditional expectation when the key is absent. q_j is the probability of falling into failure gap j, and c_j is that path’s comparison count.'],
+      },
+      {
+        term: ['比较次数 c', 'Comparison count c'],
+        text: ['一次查找实际执行的关键字比较次数。指针移动、数组下标计算、哈希函数计算和缓存缺失都不自动折算成一次关键字比较。', 'The number of key comparisons actually performed. Pointer moves, index arithmetic, hashing and cache misses are not automatically converted into one key comparison.'],
+      },
+      {
+        term: ['二分判定树', 'Binary-search decision tree'],
+        text: ['把每次比较所在的关键字作为内部节点，把空指针所对应的失败区间作为外部节点；从根到节点的路径就是一次查找的比较路径。', 'Internal nodes are the keys compared; external nodes are the failure gaps represented by null pointers. A root-to-node path is one search comparison path.'],
+      },
+    ],
+    sections: [
+      {
+        title: ['为什么时间复杂度不能代替 ASL', 'Why big-O cannot replace ASL'],
+        body: [
+          'O(n) 只描述 n 增大时的增长上界，不区分一次查找到底比了 1 次还是 n 次，也不区分成功与失败。例如无序表查首项和末项都属于 O(n)，实际比较次数却分别是 1 和 n；哈希表常被写成期望 O(1)，但装载因子升高、冲突聚集时实际比较会明显增加。ASL 用概率把这种差异量化。',
+          'O(n) only bounds growth as n increases; it does not distinguish one comparison from n, nor success from failure. Searching the first or last item of an unordered list is O(n) either way, but costs 1 versus n comparisons. A hash table is often called expected O(1), yet its real comparison count grows with load factor and clustering. ASL quantifies that difference with probabilities.',
+        ],
+        points: [
+          ['ASL 是给定数据、概率和计数口径下的平均值，不是算法的最坏情况。', 'ASL is an average under stated data, probabilities and counting conventions, not a worst case.'],
+          ['比较次数必须说明是否包含最后一次失配比较，以及是否使用哨兵。', 'State whether the final mismatch comparison is counted and whether a sentinel is used.'],
+          ['ASL 不会自动把指针访问、缓存缺失或哈希计算折算成关键字比较。', 'ASL does not automatically charge pointer access, cache misses or hashing as key comparisons.'],
+        ],
+      },
+      {
+        title: ['严谨定义：成功与失败分开', 'The formal definition: keep success and failure apart'],
+        body: [
+          '设成功查找时命中第 i 个关键字的概率为 p_i，所需比较次数为 c_i；失败查找落入第 j 个失败区间的概率为 q_j，所需比较次数为 c_j。两个条件分布各自归一，不能把两组概率混在一起直接相加。若还知道一次查询“存在”的先验概率 P_s，才把两部分合成总期望。',
+          'Let p_i be the probability of hitting key i given success, with c_i comparisons; let q_j be the probability of falling into failure gap j, with c_j comparisons. Each conditional distribution sums to one, so the two sets cannot be added blindly. Only when the prior probability P_s that a query exists is known do we combine them into total expected cost.',
+        ],
+        formula: 'ASL_succ = Σ p_i c_i,  Σ p_i = 1;\nASL_fail = Σ q_j c_j,  Σ q_j = 1;\nE[C] = P_s·ASL_succ + (1 − P_s)·ASL_fail',
+        points: [
+          ['等概率成功：p_i = 1/n，ASL_succ = (1/n) Σ c_i。', 'Equal success probabilities: p_i = 1/n, so ASL_succ = (1/n) Σ c_i.'],
+          ['n 个关键字的有序表有 n+1 个失败区间；若各区间等概率，常取 q_j = 1/(n+1)。', 'An ordered table with n keys has n+1 failure gaps; if they are equally likely, q_j = 1/(n+1).'],
+          ['有的教材只把成功部分称为 ASL；题目另问“失败 ASL”时必须单独计算。', 'Some textbooks call only the successful part ASL; when a question asks for unsuccessful ASL, compute it separately.'],
+        ],
+      },
+      {
+        title: ['等概率只是基准，不是现实规律', 'Equal probability is a baseline, not a law'],
+        body: [
+          '等概率假设是为了让不同算法可比较而设置的基准。真实查询往往偏斜：热词、常用账号、近期记录会反复出现。此时应该用查询频率估计 p_i，而不是直接套 1/n。概率一变，同一个查找结构的 ASL 就会变。',
+          'Equal probability is a benchmark that makes algorithms comparable. Real queries are often skewed: popular terms, active accounts and recent records recur. Estimate p_i from query frequencies instead of substituting 1/n. Change the probabilities and the same structure has a different ASL.',
+        ],
+        points: [
+          ['提高高频关键字的权重通常会降低成功 ASL；把高频元素前移或上移往往有效。', 'Giving frequent keys more weight usually lowers successful ASL; moving them earlier or higher often helps.'],
+          ['失败概率也可能偏斜：目标更常落入某个区间时，该区间的比较次数权重大。', 'Failure probabilities can be skewed too: a frequently visited gap carries more weight.'],
+          ['同一个算法换一组概率就可能得到不同的 ASL；变的是期望成本，不是代码。', 'The same algorithm can have a different ASL under another probability set; the expected cost changes, not the code.'],
+          ['报告 ASL 时应同时写明 n、概率假设、成功/失败条件和比较计数口径。', 'When reporting ASL, state n, probability assumptions, success/failure condition and comparison conventions.'],
+        ],
+      },
+      {
+        title: ['怎样读二分查找的判定树', 'How to read a binary-search decision tree'],
+        body: [
+          '对有序表做二分查找，把第一次比较的元素放在根，左、右子区间递归建树，就得到判定树。内部节点对应真实关键字，外部节点对应空指针，也就是失败区间。成功路径停在内部节点，失败路径停在外节点。',
+          'For binary search on a sorted table, put the first compared key at the root and recursively build the left and right subintervals. Internal nodes are real keys; external nodes are null pointers, i.e. failure gaps. A successful path ends internally; a failing path ends externally.',
+        ],
+        points: [
+          ['成功：比较次数等于内部节点的层号，根为第 1 层。', 'Success: comparisons equal the internal node’s level, with the root at level 1.'],
+          ['失败：比较次数等于外部节点父节点的层号；外部节点画在第 d+1 层时，实际只做了 d 次比较。', 'Failure: comparisons equal the level of the external node’s parent; if the external node is drawn at level d+1, only d comparisons were made.'],
+          ['不要把 0 基深度直接当比较次数：根深度为 0，但比较次数是 1，所以 c = d + 1。', 'Do not treat 0-based depth as comparisons: the root has depth 0 but costs 1, so c = d + 1.'],
+          ['判定树不唯一：mid 取上取整或下取整可能改变树形与 ASL，但仍保持 O(log n)。', 'The tree is not unique: choosing upper or lower mid may change its shape and ASL while preserving O(log n).'],
+        ],
+      },
+      {
+        title: ['7 个关键字的完整例题', 'A complete seven-key example'],
+        body: [
+          '对 a = [10, 20, 30, 40, 50, 60, 70] 使用 mid = floor((low + high) / 2)。根是 a[3] = 40；左、右子树分别以 20 和 60 为根，四个叶子是 10、30、50、70。这是一棵三层满判定树，所有失败路径都经过三个内部节点。',
+          'For a = [10, 20, 30, 40, 50, 60, 70], use mid = floor((low + high) / 2). The root is a[3] = 40; the left and right subtrees start at 20 and 60, with leaves 10, 30, 50 and 70. It is a full three-level decision tree, so every failure path passes through three internal nodes.',
+        ],
+        points: [
+          ['成功比较次数分布：1 次 1 个、2 次 2 个、3 次 4 个，故 ASL_succ = 17/7 ≈ 2.43。', 'Successful counts: one key at 1 comparison, two at 2 and four at 3, so ASL_succ = 17/7 ≈ 2.43.'],
+          ['8 个空指针形成 8 个失败区间；每个失败区间都比较 3 次，故 ASL_fail = 3。', 'Eight null pointers form eight failure gaps; each costs three comparisons, so ASL_fail = 3.'],
+          ['查找 35 走 40 → 20 → 30 → 空，恰好 3 次失败比较；查找 40 一次成功。', 'Searching 35 follows 40 → 20 → 30 → null for exactly three comparisons; searching 40 succeeds in one.'],
+          ['若表长或 mid 约定改变，树形可能改变；17/7 只对应本例的 floor 约定。', 'If the table length or mid convention changes, the shape may change; 17/7 applies only to this example’s floor convention.'],
+        ],
+        formula: 'ASL_succ = (1×1 + 2×2 + 4×3)/7 = 17/7 ≈ 2.43;\nASL_fail = (8×3)/8 = 3',
+      },
+      {
+        title: ['不同查找方法不能共用一个 ASL', 'Different searches cannot share one ASL'],
+        body: [
+          '顺序、二分、BST 和哈希的前置条件不同，ASL 的自变量也不同。顺序查找取决于元素位置和概率；二分取决于判定树与区间概率；BST 取决于插入形成的树形；哈希取决于装载因子、哈希均匀性和冲突处理。把它们都写成一个固定数字会丢失关键假设。',
+          'Sequential search, binary search, a BST and hashing have different preconditions and different ASL variables. Sequential cost depends on positions and probabilities; binary cost on the decision tree and gap probabilities; BST cost on the insertion shape; hashing on load factor, uniformity and collision handling. One fixed number would erase those assumptions.',
+        ],
+        points: [
+          ['顺序查找等概率成功通常为 (n+1)/2；失败还要看能否提前停止以及哨兵约定。', 'Equal-probability sequential success is usually (n+1)/2; failure depends on early stopping and sentinel conventions.'],
+          ['BST 的成功 ASL 是节点层号按概率加权；随机树平均 O(log n)，退化链最坏 O(n)。', 'A BST’s successful ASL weights node levels by probability; a random tree averages O(log n), while a degenerate chain is O(n).'],
+          ['哈希没有脱离装载因子和冲突策略的通用固定 ASL；链地址与开放定址的聚集行为不同。', 'Hashing has no universal fixed ASL independent of load factor and collision policy; chaining and open addressing cluster differently.'],
+          ['比较两个 ASL 前必须先固定 n、概率和比较口径，否则数字不可比。', 'Before comparing two ASLs, fix n, probabilities and comparison conventions; otherwise the numbers are not comparable.'],
+        ],
+      },
+    ],
+    comparison: {
+      title: ['四种查找方法：成功与失败分开看', 'Four search methods: success and failure separately'],
+      columns: [
+        ['方法', 'Method'],
+        ['成功 ASL（等概率基准）', 'Successful ASL (equal-probability baseline)'],
+        ['失败 ASL', 'Unsuccessful ASL'],
+        ['关键影响因素', 'Main factors'],
+      ],
+      rows: [
+        [
+          ['顺序查找', 'Sequential search'],
+          ['(n+1)/2（从首项逐项扫描）', '(n+1)/2 when scanning from the first item'],
+          ['无序且无哨兵通常为 n 次；有序可提前停止时随区间变化', 'Usually n without a sentinel in an unordered table; varies by gap when an ordered scan stops early'],
+          ['元素位置、查找概率、能否提前停止', 'Positions, query probabilities, early stopping'],
+        ],
+        [
+          ['二分查找', 'Binary search'],
+          ['由判定树内部节点决定；本例 17/7 ≈ 2.43', 'Fixed by internal decision-tree nodes; 17/7 ≈ 2.43 here'],
+          ['由外部节点决定；本例 3', 'Fixed by external nodes; 3 here'],
+          ['判定树形状、mid 约定、区间概率', 'Decision-tree shape, mid convention, gap probabilities'],
+        ],
+        [
+          ['二叉搜索树', 'Binary search tree'],
+          ['节点层号按概率加权；平均 O(log n)，最坏 O(n)', 'Probability-weighted node levels; O(log n) average, O(n) worst'],
+          ['外部节点加权；随树形显著变化', 'Weighted external nodes; varies strongly with shape'],
+          ['插入顺序、树高、查找概率', 'Insertion order, height, query probabilities'],
+        ],
+        [
+          ['哈希查找', 'Hashing'],
+          ['期望接近常数；随 α 与冲突策略变化', 'Expected near constant; varies with α and collision policy'],
+          ['同样随 α、冲突策略变化', 'Also varies with α and collision policy'],
+          ['α = n/m、哈希均匀性、链地址/开放定址', 'α = n/m, hash uniformity, chaining/open addressing'],
+        ],
+      ],
+    },
+    takeaway: ['ASL 是把比较次数按概率加权的期望；二分判定树的内部节点层号给出成功比较次数，外部区间给出失败比较次数。不要用“O(n)”或一个固定数字概括所有查找方法。', 'ASL is a probability-weighted expectation of comparison counts. In a binary decision tree, internal-node levels give successful comparison counts and external gaps give failing ones. Do not replace every method with O(n) or one fixed number.'],
+  },
+  {
+    id: 'indexed-search',
+    topicId: 'indexed-search',
+    title: ['分块查找（索引顺序查找）', 'Block search (indexed sequential search)'],
+    chapter: ['第 8 章 · 查找', 'Chapter 8 · Searching'],
+    summary: [
+      '分块查找把记录分成若干块，并为每块建立索引：块间按最大关键字有序，块内元素不要求有序。查找时先查索引确定目标可能所在的块，再在块内顺序扫描。它用少量索引换掉“全表有序”的维护成本，在顺序查找与二分查找之间取得折中。',
+      'Block search divides records into blocks and indexes each block: blocks are ordered by their maximum key, while keys inside a block need not be ordered. A search first consults the index to choose a block, then scans that block sequentially. It trades a small index for avoiding globally sorted data, sitting between sequential and binary search.',
+    ],
+    diagram: 'block-search',
+    definitions: [
+      {
+        term: ['分块查找（索引顺序查找）', 'Block search (indexed sequential search)'],
+        text: ['先通过索引表把目标限制在一个块内，再在块内顺序查找的两阶段查找方法。', 'A two-stage method: use an index to restrict the target to one block, then search that block sequentially.'],
+      },
+      {
+        term: ['索引表', 'Index table'],
+        text: ['每个索引项描述一个块。至少需要该块的最大关键字、起始位置和块长；只存最大关键字无法直接进入数据块。', 'Each index entry describes one block, minimally its maximum key, start position and length; a maximum key alone cannot locate the block.'],
+      },
+      {
+        term: ['块间有序', 'Blocks are ordered'],
+        text: ['索引表中的最大关键字递增；在后一块关键字都大于前一块最大值的无重复设定下，可由 max 排除整块。', 'Maximum keys increase in the index. With distinct keys, every key in a later block exceeds the previous maximum, so one max can exclude a whole block.'],
+      },
+      {
+        term: ['块内无序', 'Blocks need not be ordered'],
+        text: ['同一块内的关键字可以任意排列。因此块内通常只能顺序查找；若要二分，必须另有块内有序这一前提。', 'Keys inside a block may appear in any order, so the block is normally scanned sequentially; binary search would require the extra precondition that the block itself is sorted.'],
+      },
+      {
+        term: ['块大小 s 与块数 b', 'Block size s and block count b'],
+        text: ['若共有 n 个记录、分成 b 块、每块约 s 个，则 n = bs。块大小决定索引长度与块内扫描长度的平衡。', 'For n records in b blocks of about s records, n = bs. Block size balances index length against in-block scan length.'],
+      },
+    ],
+    sections: [
+      {
+        title: ['解决什么问题', 'What problem it solves'],
+        body: [
+          '顺序查找实现简单、更新便宜，但平均要扫半张表；二分查找只需 O(log n) 次比较，却要求全局有序，插入和删除往往要搬移大量记录。分块查找把“全局有序”降为“块间有序”：索引负责缩小范围，块内保留插入删除的局部灵活性。',
+          'Sequential search is simple and cheap to update but scans about half the table on average. Binary search needs only O(log n) comparisons but requires global order, so insertions and deletions can move many records. Block search relaxes global order to block-level order: the index narrows the range while each block keeps local update flexibility.',
+        ],
+        points: [
+          ['适合查询多、更新局部化，且愿意维护一张小索引的场景。', 'Useful when queries dominate, updates are local and a small index can be maintained.'],
+          ['它不要求整张表有序，只要求能依据索引边界排除整块。', 'It does not require a globally sorted table, only index bounds that can exclude whole blocks.'],
+          ['本质是“索引定位 + 块内顺序查找”的组合，不是平衡树或哈希表。', 'It combines index lookup with a sequential block scan; it is not a balanced tree or hash table.'],
+        ],
+      },
+      {
+        title: ['核心结构：块间有序，块内可乱序', 'Core structure: ordered blocks, unordered contents'],
+        body: [
+          '把 n 个记录分成 b 块，每块约 s 个；索引表保存每块的 max、start 和 length。块间约束是：索引中的 max 递增，后一块的所有关键字大于前一块的 max，当前块的所有关键字不超过本块的 max。块内不排序，所以同一块里可以出现 48、31、27、45、39 这样的顺序。',
+          'Split n records into b blocks of about s records; the index stores each block’s max, start and length. Between blocks, max values increase, every key in a later block exceeds the previous max, and every key in the current block is at most its own max. Inside a block no order is required, so a block may read 48, 31, 27, 45, 39.',
+        ],
+        points: [
+          ['块间必须能按 max 排除整块；块内不要求有序。', 'Block maxima must exclude whole blocks; block contents need not be ordered.'],
+          ['索引项至少要能回答“这个块在哪里、有多长”，不能只存一个 max。', 'An index entry must say where the block starts and how long it is, not merely its max.'],
+          ['块大小可以不等，但索引边界必须一致；分析时通常假设各块大小相近。', 'Blocks may be uneven, but bounds must stay consistent; analysis usually assumes similar sizes.'],
+          ['若允许重复关键字，要额外约定等值记录归前块还是后块，否则 ≤ max 的边界有歧义。', 'If duplicates are allowed, define whether equal keys belong to the earlier or later block; otherwise the ≤ max boundary is ambiguous.'],
+        ],
+      },
+      {
+        title: ['查找过程：先用索引，再扫块内', 'Search: index first, then scan the block'],
+        body: [
+          '以 15 个记录、b = 3、s = 5 为例，三个索引 max 为 22、48、78。查找 45：索引顺序比较 45 > 22，跳过块 1；再比较 45 ≤ 48，锁定块 2。随后在块 2 中顺序比较 48、31、27、45，第 4 次命中。总比较次数为 2 + 4 = 6。',
+          'Take 15 records with b = 3 and s = 5; index maxima are 22, 48 and 78. To find 45, compare the index sequentially: 45 > 22 skips block 1, then 45 ≤ 48 selects block 2. Scan block 2 through 48, 31, 27 and 45, hitting on the fourth comparison. The total is 2 + 4 = 6 comparisons.',
+        ],
+        points: [
+          ['先索引、后块内，两步都不能省；索引只负责选块，不负责确认命中。', 'Index first, block second; neither stage confirms the key alone.'],
+          ['索引表本身若用顺序查找，选块成本随块号增加；若用二分，则按索引的判定树计算。', 'With a sequential index, block-selection cost grows with block number; with binary search, use the index decision tree.'],
+          ['块内通常必须顺序查找；块内无序时不能直接二分。', 'The block is normally scanned sequentially; binary search is invalid when its contents are unordered.'],
+          ['查找 46 时同样锁定块 2，但扫完 5 个仍未命中，成本为 2 + 5 = 7。', 'Searching 46 also selects block 2, scans all five without a hit and costs 2 + 5 = 7.'],
+        ],
+      },
+      {
+        title: ['效率与块大小', 'Cost and block size'],
+        body: [
+          '在“索引顺序查找、块内顺序查找、各块和各位置等概率”的假设下，索引平均比较 (b+1)/2 次，块内成功平均 (s+1)/2 次，总成功 ASL ≈ (b+s)/2 + 1。由 n = bs，当 b ≈ s ≈ √n 时该式最小，约为 √n + 1 次。',
+          'Assume a sequential index, a sequential block scan, and equal probabilities for blocks and positions. The index averages (b+1)/2 comparisons and a successful block scan averages (s+1)/2, giving successful ASL ≈ (b+s)/2 + 1. With n = bs, this is minimized near b ≈ s ≈ √n, about √n + 1 comparisons.',
+        ],
+        formula: 'ASL_succ ≈ (b+1)/2 + (s+1)/2 = (b+s)/2 + 1;\nb ≈ s ≈ √n ⇒ ASL_succ ≈ √n + 1',
+        points: [
+          ['这是特定假设下的平均成功成本，不是最坏情况；失败还要加边界判断，并取决于目标落在哪一块。', 'This is average successful cost under stated assumptions, not a worst case; failure adds boundary checks and depends on the selected block.'],
+          ['索引改用二分：选块降为 O(log b)，总成本约为 O(log b + s)，最优块大小不再简单等于 √n。', 'With a binary index, block selection is O(log b) and total cost is about O(log b + s); the optimal block size is no longer simply √n.'],
+          ['块太大，块内扫描长；块太小，索引长且维护项更多。块大小是两边成本的平衡点。', 'Large blocks lengthen scans; small blocks lengthen and complicate the index. Block size balances the two.'],
+          ['若把块内也排序并二分，前提和成本已经变成另一种结构，不能继续套用分块查找公式。', 'If blocks are also sorted and binary-searched, the preconditions and costs describe another structure; do not reuse the block-search formula.'],
+        ],
+      },
+      {
+        title: ['适用场景与易错点', 'Use cases and pitfalls'],
+        body: [
+          '分块查找适合“块间能排序、块内可乱序”的折中。它的优势是更新通常只影响一个数据块和一条索引项；代价是插入、删除后要维护 max、start 和 length，块溢出时要分裂，块过空时要合并或重建索引。它不是“免维护的二分查找”。',
+          'Block search fits the compromise “blocks ordered, contents unordered”. An update usually touches one block and one index entry; the price is maintaining max, start and length, splitting an overfull block, and merging or rebuilding when a block becomes too empty. It is not maintenance-free binary search.',
+        ],
+        points: [
+          ['块间有序不等于块内有序：前者用于选块，后者才决定块内能否二分。', 'Ordered blocks do not imply ordered contents: the former selects a block, the latter enables binary search inside it.'],
+          ['顺序索引要找到第一个 max ≥ target 的块，不能只看第一个索引项就下结论。', 'A sequential index must find the first max ≥ target; never decide from the first entry alone.'],
+          ['索引 max 必须随块内最大关键字更新，否则会选错块。', 'The index max must follow the block’s actual maximum; otherwise the wrong block is selected.'],
+          ['高频更新场景要评估索引维护成本；分块查找用维护换查询，不是无条件优于二分。', 'Under frequent updates, account for index maintenance; block search trades maintenance for queries and is not unconditionally better than binary search.'],
+        ],
+      },
+    ],
+    comparison: {
+      title: ['分块查找与顺序、二分的关系', 'Block search beside sequential and binary search'],
+      columns: [
+        ['方法', 'Method'],
+        ['前置条件', 'Precondition'],
+        ['典型成功代价', 'Typical successful cost'],
+        ['更新代价', 'Update cost'],
+      ],
+      rows: [
+        [
+          ['顺序查找', 'Sequential search'],
+          ['无', 'None'],
+          ['O(n)；等概率约 (n+1)/2', 'O(n); about (n+1)/2 with equal probabilities'],
+          ['尾部插入/删除简单', 'Cheap append/delete at the end'],
+        ],
+        [
+          ['二分查找', 'Binary search'],
+          ['全局有序', 'Globally sorted'],
+          ['O(log n)', 'O(log n)'],
+          ['维持全局有序，常需搬移或重构', 'Maintain global order, often shifting or rebuilding'],
+        ],
+        [
+          ['分块查找', 'Block search'],
+          ['块间按 max 有序，块内可无序', 'Block maxima ordered; contents may be unordered'],
+          ['顺序索引约 O(√n)；二分索引 O(log b + s)', 'About O(√n) with a sequential index; O(log b + s) with a binary index'],
+          ['只改目标块与索引，可能分裂/合并', 'Touch the target block and index; may split or merge'],
+        ],
+      ],
+    },
+    takeaway: ['分块查找的关键不是“分成块”，而是“块间能排除、块内能顺序扫”。顺序索引下块大小接近 √n 时平均成本约 √n；索引或块内改用二分后，假设与公式都必须重算。', 'The point of block search is not merely splitting data, but excluding blocks by bounds and scanning within one. With a sequential index, blocks near √n give about √n comparisons; changing either stage to binary search changes both assumptions and formulas.'],
+  },
 ];
 
 const BY_ID = new Map(CONCEPT_PAGES.map((page) => [page.id, page]));

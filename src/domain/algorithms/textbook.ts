@@ -389,10 +389,18 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
         algorithms: [{ id: 'binary' }],
       },
       {
-        id: 'indexed-search',
-        title: { zh: '线性索引查找', en: 'Linear index search' },
+        id: 'search-asl',
+        title: { zh: '平均查找长度与判定树', en: 'Average search length and decision trees' },
         algorithms: [],
-        planned: true,
+        concept: true,
+        conceptId: 'asl-decision-tree',
+      },
+      {
+        id: 'indexed-search',
+        title: { zh: '分块查找（索引顺序查找）', en: 'Block search (indexed sequential search)' },
+        algorithms: [],
+        concept: true,
+        conceptId: 'indexed-search',
       },
       {
         id: 'bst',

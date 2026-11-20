@@ -1,6 +1,7 @@
 import { useI18n } from '../../i18n/I18nProvider';
 import type { Bilingual, ConceptPage } from '../../domain/concepts/types';
 import { ConceptDiagram } from './ConceptDiagram';
+import { SearchConceptDiagram } from './SearchConceptDiagrams';
 import '../../styles/concepts.css';
 
 /**
@@ -33,7 +34,11 @@ export function ConceptView({ concept }: { concept: ConceptPage }) {
           </span>
         </div>
         <div className="concept-diagram-frame" data-testid="concept-diagram">
-          <ConceptDiagram kind={concept.diagram} lang={lang} />
+          {concept.diagram === 'asl-decision-tree' || concept.diagram === 'block-search' ? (
+            <SearchConceptDiagram kind={concept.diagram} lang={lang} />
+          ) : (
+            <ConceptDiagram kind={concept.diagram} lang={lang} />
+          )}
         </div>
       </section>
 

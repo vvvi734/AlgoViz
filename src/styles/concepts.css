@@ -290,7 +290,8 @@
 .concept-formula code {
   color: var(--code-fg);
   font: 15px/1.6 ui-monospace, SFMono-Regular, Consolas, "Courier New", monospace;
-  white-space: nowrap;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
 .concept-table-wrap {

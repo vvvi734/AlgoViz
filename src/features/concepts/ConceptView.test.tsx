@@ -39,6 +39,26 @@ describe('ConceptView (CORE-REFINE-01)', () => {
     expect(screen.getByTestId('concept-definition').textContent).toContain('时间复杂度');
   });
 
+  it('keeps the ASL and block-search calculations tied to their diagrams', () => {
+    renderConcept('asl-decision-tree');
+    const aslText = Array.from(document.querySelectorAll('.concept-formula'))
+      .map((node) => node.textContent ?? '')
+      .join('\n');
+    expect(aslText).toContain('17/7');
+    expect(aslText).toContain('ASL_fail');
+    expect(screen.getByTestId('concept-diagram').querySelector('svg')).not.toBeNull();
+    expect(screen.getByTestId('concept-comparison').textContent).toContain('哈希查找');
+    cleanup();
+
+    renderConcept('indexed-search');
+    const blockText = Array.from(document.querySelectorAll('.concept-formula'))
+      .map((node) => node.textContent ?? '')
+      .join('\n');
+    expect(blockText).toContain('√n');
+    expect(screen.getByTestId('concept-comparison').textContent).toContain('块间');
+    expect(screen.getByTestId('concept-diagram').querySelector('svg')).not.toBeNull();
+  });
+
   it('has a diagram for each concept kind', () => {
     for (const concept of CONCEPT_PAGES) {
       renderConcept(concept.id);

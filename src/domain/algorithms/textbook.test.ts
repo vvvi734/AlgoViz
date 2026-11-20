@@ -51,11 +51,13 @@ describe('textbook directory (UX-03)', () => {
       'bplus-tree',
       'graph-basics',
       'graph-storage',
+      'indexed-search',
       'intro-adt',
       'intro-concepts',
       'intro-logical-physical',
       'linear-basics',
       'multiway-tree',
+      'search-asl',
       'sort-basics',
       'sparse-matrix',
       'special-matrices',
@@ -180,6 +182,22 @@ describe('textbook directory (UX-03)', () => {
     expect(demo.kind).toBe('algorithm');
     expect(demo.algorithms.map((algorithm) => algorithm.id)).toEqual(['btree']);
     expect(textbookPathFor(catalog, 'btree')).toEqual({ chapterId: 'ch8-search', topicId: 'btree-demo' });
+  });
+
+  it('links ASL and block search as static concepts without duplicating indexed-search', () => {
+    const search = nav.find((chapter) => chapter.id === 'ch8-search')!;
+    const asl = search.topics.find((topic) => topic.id === 'search-asl')!;
+    const indexed = search.topics.find((topic) => topic.id === 'indexed-search')!;
+    expect(asl.kind).toBe('concept');
+    expect(asl.conceptId).toBe('asl-decision-tree');
+    expect(asl.algorithms).toHaveLength(0);
+    expect(indexed.kind).toBe('concept');
+    expect(indexed.conceptId).toBe('indexed-search');
+    expect(indexed.planned).toBeUndefined();
+    expect(indexed.algorithms).toHaveLength(0);
+    expect(indexed.title.zh).toContain('分块');
+    expect(search.topics.filter((topic) => topic.id === 'indexed-search')).toHaveLength(1);
+    expect(search.topics.indexOf(asl)).toBeLessThan(search.topics.indexOf(indexed));
   });
 
   it('follows the textbook sorting order and keeps shell, heap, merge and quick authored', () => {
