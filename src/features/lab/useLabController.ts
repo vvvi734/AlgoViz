@@ -2,7 +2,6 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   catalog as baseCatalog,
   defaultInputFor,
-  engineNote,
   exampleFor,
   groups,
 } from '../../domain/algorithms/examples';
@@ -15,12 +14,7 @@ import type { VisualRunResult } from '../../domain/trace/types';
 import { ExecutionError, formatDiagnostic, type ExecutionDiagnostic } from '../../domain/trace/diagnostic';
 import { runForLanguage, isVisualResult } from '../../runtime/execute';
 import { safeGet, safeSet } from '../../runtime/storage';
-import { loadDraft, saveDraft } from '../../runtime/drafts';
-import {
-  treeValuesFromInput,
-  withTreeMode,
-  type TreeMode,
-} from '../../domain/algorithms/treeTraversalExamples';
+import { withTreeMode, type TreeMode } from '../../domain/algorithms/treeTraversalExamples';
 import {
   bstPresetInput,
   type BstPresetId,
@@ -45,42 +39,15 @@ import { useI18n } from '../../i18n/I18nProvider';
 import { usePlayback, type Playback } from './usePlayback';
 
 const CODE_LANG_KEY = 'algolens-code-language';
-const DRAFT_DEBOUNCE_MS = 600;
 
 function isGraphAlgorithm(id: string): boolean {
   return id === 'bfs' || id === 'dfs' || id === 'dijkstra' || id === 'floyd-warshall' || id === 'bellman-ford' || id === 'prim' || id === 'kruskal' || id === 'topological' || id === 'critical-path' || id === 'components' || id === 'scc';
-}
-
-function graphStartOf(value: unknown): string {
-  if (!value || typeof value !== 'object' || Array.isArray(value)) return 'A';
-  const start = (value as { start?: unknown }).start;
-  return typeof start === 'string' ? start : 'A';
-}
-
-/** Stage 7E: Python uses the rich {start, nodes, edges} contract, while the
- * legacy JS demo keeps reading only {start}. Switching language converts the
- * INPUT visibly; nothing is executed until the user presses Run. */
-function graphInputForLanguage(value: unknown, language: CodeLanguage, fallback: unknown): unknown {
-  const start = graphStartOf(value);
-  if (language === 'js') return { start };
-  const parsed = value && typeof value === 'object' && !Array.isArray(value)
-    ? value as { nodes?: unknown }
-    : null;
-  if (parsed && Array.isArray(parsed.nodes)) return value;
-  if (!fallback || typeof fallback !== 'object' || Array.isArray(fallback)) return value;
-  const graph = JSON.parse(JSON.stringify(fallback)) as { start?: string; nodes?: unknown };
-  if (Array.isArray(graph.nodes) && graph.nodes.includes(start)) {
-    graph.start = start;
-  }
-  return graph;
 }
 
 export interface StatusMessage {
   text: string;
   error: boolean;
 }
-
-export type DraftStatus = 'idle' | 'dirty' | 'saving' | 'saved' | 'error';
 
 function storedLanguage(): CodeLanguage {
   const value = safeGet(CODE_LANG_KEY);
@@ -102,15 +69,9 @@ export interface LabController {
   traceStale: boolean;
   /** Structured Python diagnostics for the most recent run (empty on success). */
   diagnostics: ExecutionDiagnostic[];
-  /** Autosave state shown next to the editor. */
-  draftStatus: DraftStatus;
   playback: Playback;
   status: StatusMessage;
-  engineText: string;
   selectAlgo: (id: string) => void;
-  setCodeLang: (lang: CodeLanguage) => void;
-  /** User edit: sets the code and schedules a debounced autosave. */
-  editCode: (code: string) => void;
   setInputJson: (input: string) => void;
   /**
    * Stage 7D: select a traversal mode by rewriting the input object
@@ -148,84 +109,21 @@ export interface LabController {
 }
 
 export function useLabController(): LabController {
-  const { t, b, lang } = useI18n();
+  const { t, b } = useI18n();
   const catalog: AlgorithmCatalog = baseCatalog;
   const [currentAlgo, setCurrentAlgo] = useState('bubble');
   const [codeLang, setCodeLangState] = useState<CodeLanguage>(storedLanguage);
   const [editorCode, setEditorCodeState] = useState(() => {
     const initialLang = storedLanguage();
-    return loadDraft('bubble', initialLang) ?? exampleFor('bubble', initialLang);
+    return exampleFor('bubble', initialLang);
   });
   const [inputJson, setInputJson] = useState(() => JSON.stringify(baseCatalog.bubble.input));
   const [events, setEvents] = useState<TraceEvent[]>([]);
   const [source, setSource] = useState('');
   const [diagnostics, setDiagnostics] = useState<ExecutionDiagnostic[]>([]);
-  const [draftStatus, setDraftStatus] = useState<DraftStatus>('saved');
   const [status, setStatus] = useState<StatusMessage>({ text: '', error: false });
   const playback = usePlayback(events);
   const runId = useRef(0);
-
-  // Latest-value refs so async / debounced callbacks always write the right key.
-  const location = useRef<{ algo: string; lang: CodeLanguage }>({ algo: 'bubble', lang: storedLanguage() });
-  const codeRef = useRef(editorCode);
-  useEffect(() => {
-    codeRef.current = editorCode;
-  }, [editorCode]);
-
-  const saveTimer = useRef<number | null>(null);
-  const clearSaveTimer = useCallback(() => {
-    if (saveTimer.current != null) {
-      window.clearTimeout(saveTimer.current);
-      saveTimer.current = null;
-    }
-  }, []);
-
-  const writeDraft = useCallback((algo: string, langId: CodeLanguage, code: string) => {
-    setDraftStatus('saving');
-    const ok = saveDraft(algo, langId, code);
-    setDraftStatus(ok ? 'saved' : 'error');
-    return ok;
-  }, []);
-
-  // Programmatic change (load / restore / language swap): flush any pending save
-  // and swap the value WITHOUT triggering an autosave.
-  const applyCode = useCallback((code: string) => {
-    clearSaveTimer();
-    setEditorCodeState(code);
-    setDraftStatus('saved');
-  }, [clearSaveTimer]);
-
-  // User edit: update immediately, autosave after a short debounce.
-  const editCode = useCallback((code: string) => {
-    setEditorCodeState(code);
-    setDraftStatus('dirty');
-    clearSaveTimer();
-    const loc = location.current;
-    saveTimer.current = window.setTimeout(() => {
-      saveTimer.current = null;
-      writeDraft(loc.algo, loc.lang, code);
-    }, DRAFT_DEBOUNCE_MS);
-  }, [clearSaveTimer, writeDraft]);
-
-  // Persist the in-flight draft of the current location before moving on.
-  const flushCurrent = useCallback(() => {
-    clearSaveTimer();
-    writeDraft(location.current.algo, location.current.lang, codeRef.current);
-  }, [clearSaveTimer, writeDraft]);
-
-  // Flush the pending debounced save when the page unloads so a refresh keeps
-  // the most recent keystrokes.
-  useEffect(() => {
-    const flush = () => {
-      if (saveTimer.current != null) {
-        window.clearTimeout(saveTimer.current);
-        saveTimer.current = null;
-        saveDraft(location.current.algo, location.current.lang, codeRef.current);
-      }
-    };
-    window.addEventListener('beforeunload', flush);
-    return () => window.removeEventListener('beforeunload', flush);
-  }, []);
 
   const runVisualizationWith = useCallback(async (code: string, rawInput: string, language: CodeLanguage = codeLang) => {
     let input: unknown;
@@ -287,58 +185,24 @@ export function useLabController(): LabController {
     const entry = catalog[id];
     if (!entry) return;
     playback.stop();
-    flushCurrent();
     // Stack/queue/linked-list/binary-tree only emit structured frames from the
-    // real Python presets. Default those courses to Python; the user can still
-    // switch to JS (legacy frames remain available).
+    // real Python presets. Default those courses to Python; the legacy JS
+    // examples remain available for the simpler array courses.
     const preferredLang: CodeLanguage =
-      id === 'stack' || id === 'queue' || id === 'linked' || id === 'doubly' || id === 'circular' || id === 'seqlist' || id === 'inorder' || id === 'bst' || id === 'avl' || id === 'heap' || id === 'huffman' || id === 'selection' || id === 'insertion' || id === 'shell' || id === 'quick' || id === 'merge' || id === 'linear' || id === 'binary' || id === 'hash-chain' || id === 'hash-probe' || isGraphAlgorithm(id) ? 'python' : codeLang;
+      id === 'stack' || id === 'queue' || id === 'linked' || id === 'doubly' || id === 'circular' || id === 'seqlist' || id === 'inorder' || id === 'bst' || id === 'avl' || id === 'heap' || id === 'huffman' || id === 'selection' || id === 'insertion' || id === 'shell' || id === 'quick' || id === 'merge' || id === 'linear' || id === 'binary' || id === 'hash-chain' || id === 'hash-probe' || id === 'factorial' || id === 'fib' || isGraphAlgorithm(id) ? 'python' : codeLang;
     if (preferredLang !== codeLang) {
       setCodeLangState(preferredLang);
       safeSet(CODE_LANG_KEY, preferredLang);
     }
-    const code = loadDraft(id, preferredLang) ?? exampleFor(id, preferredLang);
-    location.current = { algo: id, lang: preferredLang };
+    const code = exampleFor(id, preferredLang);
     const rawInput = JSON.stringify(defaultInputFor(id));
     setCurrentAlgo(id);
-    applyCode(code);
+    setEditorCodeState(code);
     setInputJson(rawInput);
     setDiagnostics([]);
     setStatus({ text: '', error: false });
     void runVisualizationWith(code, rawInput, preferredLang);
-  }, [catalog, codeLang, playback, flushCurrent, applyCode, runVisualizationWith]);
-
-  const setCodeLang = useCallback((next: CodeLanguage) => {
-    if (next === codeLang) return;
-    flushCurrent();
-    setCodeLangState(next);
-    safeSet(CODE_LANG_KEY, next);
-    const code = loadDraft(currentAlgo, next) ?? exampleFor(currentAlgo, next);
-    location.current = { algo: currentAlgo, lang: next };
-    applyCode(code);
-    // The legacy JS inorder preset reads a level-order array. If the learner
-    // selected a tree mode, switch back to that array shape so switching
-    // languages never feeds JS an object it cannot read.
-    if (currentAlgo === 'inorder' && next === 'js') {
-      let parsed: unknown;
-      try {
-        parsed = JSON.parse(inputJson);
-      } catch {
-        parsed = null;
-      }
-      setInputJson(JSON.stringify(treeValuesFromInput(parsed)));
-    }
-    if (isGraphAlgorithm(currentAlgo)) {
-      let parsed: unknown;
-      try {
-        parsed = JSON.parse(inputJson);
-      } catch {
-        parsed = null;
-      }
-      setInputJson(JSON.stringify(graphInputForLanguage(parsed, next, defaultInputFor(currentAlgo))));
-    }
-    setDiagnostics([]);
-  }, [codeLang, currentAlgo, flushCurrent, applyCode, inputJson]);
+  }, [catalog, codeLang, playback, runVisualizationWith]);
 
   const selectTreeMode = useCallback((mode: TreeMode) => {
     let parsed: unknown;
@@ -393,12 +257,11 @@ export function useLabController(): LabController {
         ? entry.input
         : defaultInputFor(currentAlgo),
     );
-    applyCode(code);
-    writeDraft(currentAlgo, codeLang, code);
+    setEditorCodeState(code);
     setInputJson(rawInput);
     setDiagnostics([]);
     void runVisualizationWith(code, rawInput);
-  }, [catalog, currentAlgo, codeLang, applyCode, writeDraft, runVisualizationWith]);
+  }, [catalog, currentAlgo, codeLang, runVisualizationWith]);
 
   const randomizeInput = useCallback(() => {
     const entry = catalog[currentAlgo];
@@ -460,13 +323,9 @@ export function useLabController(): LabController {
     source,
     traceStale,
     diagnostics,
-    draftStatus,
     playback,
     status,
-    engineText: engineNote(codeLang, lang),
     selectAlgo,
-    setCodeLang,
-    editCode,
     setInputJson,
     selectTreeMode,
     selectBstPreset,

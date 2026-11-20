@@ -1,9 +1,9 @@
 import { expect, openCodePanel, selectAlgorithm as chooseAlgorithm, test, type Page } from './fixtures';
 
 /**
- * UI-03 — the Monaco editor is a full-width, collapsed-by-default code dock
- * below the two-column lab. These tests use the real Dijkstra trace and verify
- * that presentation changes never own a second playhead.
+ * UI-03 — the compact run bar is always open below the two-column lab.
+ * It carries the default example, JSON input, random data and Run; it never
+ * owns a second playhead and never renders an editable source panel.
  */
 
 async function openApp(page: Page) {
@@ -44,10 +44,11 @@ async function expectNoPageOverflow(page: Page) {
   expect(sizes.scrollWidth).toBeLessThanOrEqual(sizes.clientWidth + 1);
 }
 
-test.describe('UI-03 — bottom code dock', () => {
-  test('A. 1440 defaults to a collapsed, full-width dock below both columns', async ({ page }) => {
+test.describe('UI-03 — compact run bar', () => {
+  test('A. 1440 keeps one full-width run bar below both columns', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await openDijkstra(page);
+    await openCodePanel(page);
 
     const primary = await page.locator('.lab-primary').boundingBox();
     const dock = await page.locator('[data-testid="code-dock"]').boundingBox();
@@ -58,47 +59,19 @@ test.describe('UI-03 — bottom code dock', () => {
 
     expect(dock.y).toBeGreaterThan(primary.y + primary.height - 12);
     expect(dock.width).toBeGreaterThanOrEqual(primary.width - 2);
-    expect(dock.height).toBeLessThan(160);
-    await expect(page.locator('[data-testid="code-dock"]')).toHaveAttribute('data-expanded', 'false');
-    await expect(page.locator('[data-testid="code-dock-toggle"]')).toHaveAttribute('aria-expanded', 'false');
-    await expect(page.locator('[data-testid="code-dock-body"]')).toHaveAttribute('aria-hidden', 'true');
-    await expect(page.locator('.monaco-editor')).toBeHidden();
+    expect(dock.height).toBeLessThan(200);
+    await expect(page.locator('[data-testid="code-dock"]')).toHaveAttribute('data-expanded', 'true');
+    await expect(page.locator('[data-testid="code-dock-toggle"]')).toHaveCount(0);
+    await expect(page.locator('[data-testid="code-editor"]')).toHaveCount(0);
+    await expect(page.locator('.monaco-editor')).toHaveCount(0);
     await expect(page.locator('[data-testid="run-btn"]')).toBeVisible();
-    await expect(page.locator('#code-lang')).toBeVisible();
-    await expect(page.locator('#code-lang')).toHaveValue('python');
-    await expect(page.locator('[data-testid="code-dock-title"]')).toContainText('Python');
+    await expect(page.locator('#run-input')).toBeVisible();
+    await expect(page.locator('[data-testid="random-btn"]')).toBeVisible();
+    await expect(page.locator('[data-testid="code-dock-title"]')).toContainText('默认示例');
     await expectNoPageOverflow(page);
   });
 
-  test('B. expanding and collapsing keeps the Monaco draft and never resets the trace', async ({ page }) => {
-    await page.setViewportSize({ width: 1440, height: 900 });
-    await openApp(page);
-    await expect(page.locator('[data-testid="progress"]')).toHaveText('1 / 25', { timeout: 60_000 });
-    const progressBefore = await page.locator('[data-testid="progress"]').textContent();
-
-    await openCodePanel(page);
-    await expect(page.locator('[data-testid="code-dock"]')).toHaveAttribute('data-expanded', 'true');
-    await expect(page.locator('[data-testid="code-dock-body"]')).toHaveAttribute('aria-hidden', 'false');
-    const editorBox = await page.locator('.monaco-editor').first().boundingBox();
-    expect(editorBox?.height ?? 0).toBeGreaterThan(240);
-
-    const marker = 'const UI03_KEEP_DRAFT = 303;';
-    await page.locator('.monaco-editor').first().click();
-    await page.keyboard.press('Control+a');
-    await page.keyboard.insertText(marker);
-    await expect(page.locator('.monaco-editor')).toContainText('UI03_KEEP_DRAFT');
-
-    await page.getByTestId('code-dock-toggle').click();
-    await expect(page.locator('[data-testid="code-dock"]')).toHaveAttribute('data-expanded', 'false');
-    await expect(page.locator('[data-testid="progress"]')).toHaveText(progressBefore ?? '');
-
-    await openCodePanel(page);
-    await expect(page.locator('[data-testid="code-dock"]')).toHaveAttribute('data-expanded', 'true');
-    await expect(page.locator('.monaco-editor')).toContainText('UI03_KEEP_DRAFT');
-    await expect(page.locator('[data-testid="progress"]')).toHaveText(progressBefore ?? '');
-  });
-
-  test('C. Dijkstra relax state survives dock and sidebar toggles', async ({ page }) => {
+  test('B. Dijkstra relax state survives sidebar toggles and a run', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await openDijkstra(page);
     await setFrame(page, 27);
@@ -106,71 +79,40 @@ test.describe('UI-03 — bottom code dock', () => {
     await expect(page.locator('[data-testid="dijkstra-distance-row"][data-node-id="F"]')).toHaveAttribute('data-distance', '4');
     await expect(page.locator('[data-testid="graph-pq-entry"]')).toHaveCount(3);
 
-    await openCodePanel(page);
-    await expect(page.locator('.monaco-editor')).toBeVisible();
-    await page.getByTestId('code-dock-toggle').click();
-    await expect(page.locator('[data-testid="progress"]')).toHaveText('28 / 46');
-    await expect(page.locator('[data-testid="lesson-active-step"]')).toHaveAttribute('data-step-id', 'relax');
-    await expect(page.locator('[data-testid="dijkstra-distance-row"][data-node-id="F"]')).toHaveAttribute('data-distance', '4');
-
-    // The two collapses are independent: neither one owns the playhead.
+    // The run bar is presentation only; collapsing the directory never resets.
     await page.getByTestId('sidebar-collapse').click();
     await expect(page.locator('[data-testid="learn-view"]')).toHaveClass(/nav-collapsed/);
     await expect(page.locator('[data-testid="progress"]')).toHaveText('28 / 46');
-    await openCodePanel(page);
-    await expect(page.locator('[data-testid="progress"]')).toHaveText('28 / 46');
     await expect(page.locator('[data-testid="dijkstra-distance-row"][data-node-id="F"]')).toHaveAttribute('data-distance', '4');
-    await expect(page.locator('[data-testid="graph-priority-queue-panel"]')).toBeVisible();
     await page.getByTestId('sidebar-expand').click();
-    await expect(page.locator('[data-testid="code-dock"]')).toHaveAttribute('data-expanded', 'true');
     await expect(page.locator('[data-testid="progress"]')).toHaveText('28 / 46');
     await expectNoPageOverflow(page);
   });
 
-  test('D. the run action works from the collapsed header', async ({ page }) => {
+  test('C. run from the bar restarts the same trace', async ({ page }) => {
     await page.setViewportSize({ width: 1366, height: 768 });
     await openApp(page);
-    await expect(page.locator('[data-testid="code-dock"]')).toHaveAttribute('data-expanded', 'false');
-    await expect(page.locator('[data-testid="run-btn"]')).toBeVisible();
-    // Run from a later frame so the header action visibly restarts the same trace.
+    await expect(page.locator('[data-testid="code-dock"]')).toHaveAttribute('data-expanded', 'true');
     await page.getByTestId('next-btn').click();
     await page.getByTestId('next-btn').click();
     await expect(page.locator('[data-testid="progress"]')).toHaveText('3 / 25');
     await page.getByTestId('run-btn').click();
     await expect(page.locator('[data-testid="progress"]')).toHaveText('1 / 25', { timeout: 60_000 });
-    await expect(page.locator('[data-testid="code-dock"]')).toHaveAttribute('data-expanded', 'false');
-    await expect(page.locator('[data-testid="code-dock-status"]')).not.toHaveText('');
+    await expect(page.locator('[data-testid="run-feedback"]')).not.toHaveText('');
     await expectNoPageOverflow(page);
   });
 
-  test('E. 390px opens with the keyboard, edits, and collapses with Escape', async ({ page }) => {
+  test('D. 390px keeps the run bar reachable without horizontal overflow', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await openDijkstra(page);
-
-    const toggle = page.getByTestId('code-dock-toggle');
-    await toggle.focus();
-    await page.keyboard.press('Enter');
-    await expect(toggle).toHaveAttribute('aria-expanded', 'true');
-    await expect(page.locator('.monaco-editor')).toBeVisible({ timeout: 45_000 });
-    const editor = await page.locator('.monaco-editor').first().boundingBox();
-    expect(editor?.width ?? 0).toBeLessThanOrEqual(390);
-    expect(editor?.height ?? 0).toBeGreaterThan(200);
-
-    await page.locator('.monaco-editor').first().click();
-    await page.keyboard.press('Control+a');
-    await page.keyboard.insertText('const UI03_MOBILE = 390;');
-    await expect(page.locator('.monaco-editor')).toContainText('UI03_MOBILE');
-
-    const input = page.locator('#run-input');
-    await input.focus();
-    await page.keyboard.press('Escape');
-    await expect(toggle).toHaveAttribute('aria-expanded', 'false');
-    await expect(page.locator('[data-testid="code-dock"]')).toHaveAttribute('data-expanded', 'false');
-    await expect(toggle).toBeFocused();
+    await openCodePanel(page);
+    await expect(page.locator('[data-testid="run-btn"]')).toBeVisible();
+    const input = await page.locator('#run-input').boundingBox();
+    expect(input?.width ?? 0).toBeLessThanOrEqual(390);
     await expectNoPageOverflow(page);
   });
 
-  test('F. 1366 keeps the two columns and expanded dock inside the viewport', async ({ page }) => {
+  test('E. 1366 keeps the two columns and the run bar inside the viewport', async ({ page }) => {
     await page.setViewportSize({ width: 1366, height: 768 });
     await openDijkstra(page);
     await openCodePanel(page);
@@ -181,18 +123,5 @@ test.describe('UI-03 — bottom code dock', () => {
     const rail = await page.locator('[data-testid="explanation-rail"]').boundingBox();
     expect(stage && rail).toBeTruthy();
     if (stage && rail) expect(rail.x).toBeGreaterThan(stage.x + stage.width - 10);
-  });
-
-  test('G. switching algorithms while Monaco initializes never leaves stale source', async ({ page }) => {
-    await page.setViewportSize({ width: 1366, height: 768 });
-    await page.goto('/');
-    await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
-    await chooseAlgorithm(page, 'dijkstra');
-    await openCodePanel(page);
-    await expect(page.locator('#code-lang')).toHaveValue('python');
-    await expect(page.locator('.monaco-editor')).toContainText('def dijkstra', { timeout: 45_000 });
-    await expect(page.locator('[data-testid="graph-visual"]')).toHaveAttribute('data-algorithm', 'dijkstra', {
-      timeout: 60_000,
-    });
   });
 });

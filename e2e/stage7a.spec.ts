@@ -32,29 +32,24 @@ test.describe('Stage 7A — workspace UX (UI-03 layout)', () => {
     // The current frame is at the top of the rail and fully on the first screen.
     expect(current.y).toBeGreaterThanOrEqual(rail.y);
     expect(current.y + current.height).toBeLessThanOrEqual(900);
-    // UI-03: the editor is no longer inside the rail; the dock spans below both.
+    // UI-03: the editor is no longer inside the rail; the run bar spans below both.
     await expect(page.locator('[data-testid="explanation-rail"] .monaco-editor')).toHaveCount(0);
     expect(dock.y).toBeGreaterThan(primary.y + primary.height - 12);
     expect(dock.width).toBeGreaterThan(stage.width + rail.width - 10);
-    await expect(page.locator('[data-testid="code-dock"]')).toHaveAttribute('data-expanded', 'false');
-    await expect(page.locator('[data-testid="code-dock-toggle"]')).toHaveAttribute('aria-expanded', 'false');
-    await expect(page.locator('.monaco-editor')).toBeHidden();
+    await expect(page.locator('[data-testid="code-dock"]')).toHaveAttribute('data-expanded', 'true');
+    await expect(page.locator('[data-testid="code-dock-toggle"]')).toHaveCount(0);
+    await expect(page.locator('.monaco-editor')).toHaveCount(0);
     await expect(page.locator('[data-testid="run-btn"]')).toBeVisible();
+    await expect(page.locator('#run-input')).toBeVisible();
 
     await expect(page.locator('[data-testid="lesson-title"]')).toContainText('冒泡排序');
     await expect(page.locator('[data-testid="current-step-title"]')).toBeVisible();
     await expect(page.locator('[data-testid="workspace-tabs"]')).toHaveAttribute('data-expanded', 'false');
   });
 
-  test('B. opening the reference panel keeps the Monaco draft and never runs or resets the trace', async ({ page }) => {
+  test('B. opening the reference panel keeps the run bar and never runs or resets the trace', async ({ page }) => {
     await openApp(page);
     await openCodePanel(page);
-    const draft = 'const STAGE7_DRAFT = 707;';
-    await page.locator('[data-testid="code-dock"] .monaco-editor').click();
-    await page.keyboard.press('Control+a');
-    await page.keyboard.insertText(draft);
-    await expect(page.locator('[data-testid="code-dock"] .monaco-editor')).toContainText('STAGE7_DRAFT');
-
     const progress = await page.locator('[data-testid="progress"]').textContent();
     const feedback = await page.locator('[data-testid="run-feedback"]').textContent();
     await openAdvancedPanels(page);
@@ -63,11 +58,11 @@ test.describe('Stage 7A — workspace UX (UI-03 layout)', () => {
     await expect(page.locator('[data-testid="workspace-tab-mentor"]')).toHaveCount(0);
     await expect(page.locator('[data-testid="workspace-tab-tools"]')).toHaveCount(0);
 
-    await expect(page.locator('[data-testid="code-dock"] .monaco-editor')).toContainText('STAGE7_DRAFT');
+    await expect(page.locator('[data-testid="run-btn"]')).toBeVisible();
+    await expect(page.locator('[data-testid="run-feedback"]')).toBeVisible();
     await expect(page.locator('[data-testid="progress"]')).toHaveText(progress ?? '');
-    // No execution feedback changed, and Monaco kept its draft: no run happened.
     await expect(page.locator('[data-testid="run-feedback"]')).toHaveText(feedback ?? '');
-    await expect(page.locator('.algolens-active-line')).toHaveCount(0);
+    await expect(page.locator('[data-testid="code-editor"]')).toHaveCount(0);
   });
 
   test('H. 1024 stacks animation, then the explanation rail, then the collapsed code dock without page overflow', async ({ page }) => {
@@ -82,7 +77,7 @@ test.describe('Stage 7A — workspace UX (UI-03 layout)', () => {
     expect(current.y).toBeGreaterThan(stage.y + stage.height - 10);
     expect(current.y).toBeLessThan(dock.y);
     expect(dock.width).toBeGreaterThan(600);
-    await expect(page.locator('[data-testid="code-dock"]')).toHaveAttribute('data-expanded', 'false');
+    await expect(page.locator('[data-testid="code-dock"]')).toHaveAttribute('data-expanded', 'true');
 
     const layout = await page.evaluate(() => ({
       scrollWidth: document.documentElement.scrollWidth,
@@ -163,7 +158,7 @@ test.describe('Stage 7A — workspace UX (UI-03 layout)', () => {
     // Python dock remains a separate surface.
     await selectAlgorithm(page, 'dijkstra');
     await expect(page.locator('[data-testid="reference-file-name"]')).toHaveText('dijkstra.py');
-    await expect(page.locator('[data-testid="code-dock"]')).toHaveAttribute('data-expanded', 'false');
+    await expect(page.locator('[data-testid="code-dock"]')).toHaveAttribute('data-expanded', 'true');
 
     // CODE-02: a sort page can switch from the hand-written version to the
     // shared language-native convenience resource without leaving the viewer.

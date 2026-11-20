@@ -75,9 +75,9 @@ export function ReadOnlyCodeViewer({
           ariaLabel: t('referenceTitle'),
         });
 
-        // The reference panel must grow with the source. Monaco needs an explicit
-        // pixel height, so derive it from the model's content height instead of
-        // trapping the code in a fixed, scrollable box.
+        // The reference sheet grows with the source, exactly like the teaching
+        // guide. Monaco needs an explicit pixel height derived from the model
+        // instead of becoming a nested scroll box.
         let lastHeight = 0;
         const syncHeight = () => {
           if (!hostRef.current) return;
@@ -123,6 +123,26 @@ export function ReadOnlyCodeViewer({
       window.requestAnimationFrame(() => resizeRef.current());
     }
   }, [language, ready]);
+
+  // The reference sheet is part of the page document, not a scroll box. Monaco
+  // would otherwise swallow wheel gestures while its content is fully expanded;
+  // forward them to the window so scrolling over code behaves like scrolling
+  // over the teaching guide.
+  useEffect(() => {
+    const host = hostRef.current;
+    if (!host || !isMonacoEnabled()) return;
+    const onWheel = (event: WheelEvent) => {
+      if (event.ctrlKey || event.metaKey) return;
+      const unit = event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? window.innerHeight : 1;
+      const delta = event.deltaY * unit;
+      if (delta === 0) return;
+      event.preventDefault();
+      event.stopPropagation();
+      window.scrollBy({ top: delta, behavior: 'auto' });
+    };
+    host.addEventListener('wheel', onWheel, { capture: true, passive: false });
+    return () => host.removeEventListener('wheel', onWheel, { capture: true });
+  }, []);
 
   useEffect(() => {
     const model = modelRef.current;

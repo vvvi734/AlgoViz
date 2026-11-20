@@ -103,9 +103,12 @@ test.describe('UX-03 — textbook navigation', () => {
     const shortestBox = await page.getByTestId('topic-shortest-path').boundingBox();
     expect(mstBox!.y).toBeLessThan(shortestBox!.y);
 
-    // A topic with no shipped implementation is a static, non-clickable row.
-    await expect(page.getByTestId('topic-graph-basics')).toHaveAttribute('aria-disabled', 'true');
-    await expect(page.getByTestId('topic-graph-basics').getByRole('button')).toHaveCount(0);
+    // Authored concept topics open the read-only concept lesson; they never
+    // masquerade as an algorithm target.
+    await expect(page.getByTestId('topic-graph-basics')).toHaveAttribute('data-kind', 'concept');
+    await expect(page.getByTestId('topic-graph-basics')).toHaveAttribute('data-concept-id', 'graph-basics');
+    await expect(page.getByTestId('topic-graph-basics')).toContainText(/阅读|Read/i);
+    await expect(page.getByTestId('topic-graph-basics').locator('[data-testid^="algo-"]')).toHaveCount(0);
 
     // BST/AVL belong to 查找, while Huffman is now an authored 树 algorithm.
     await openTextbookChapter(page, 'ch6-tree');
@@ -177,7 +180,7 @@ test.describe('UX-03 — textbook navigation', () => {
     await expect(page.getByTestId('sidebar')).toContainText('Textbook directory');
     await expect(page.getByTestId('chapter-ch7-graph')).toContainText('Graphs');
     await expect(page.getByTestId('chapter-ch9-sort')).toContainText('Sorting');
-    await expect(page.getByTestId('topic-graph-basics')).toContainText('Concept');
+    await expect(page.getByTestId('topic-graph-basics')).toContainText(/阅读|Read|Concept/i);
     await expect(page.getByTestId('topic-merge-sort')).toContainText('Merge sort');
     await expect(page.getByTestId('topic-graph-connectivity')).toContainText('Extension');
     await expect(page.locator('.textbook-source')).toContainText('Da Hua Data Structures');

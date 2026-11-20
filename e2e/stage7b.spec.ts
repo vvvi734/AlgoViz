@@ -74,7 +74,7 @@ async function captureStates(
 }
 
 test.describe('Stage 7B — AlgoViz brand and real stack/queue animation', () => {
-  test('brand is AlgoViz while legacy localStorage keys still load', async ({ page }) => {
+  test('brand is AlgoViz while the legacy theme key still loads', async ({ page }) => {
     await openApp(page);
     await expect(page).toHaveTitle(/AlgoViz/);
     await expect(page.locator('[data-testid="brand-name"]')).toContainText('AlgoViz');
@@ -88,7 +88,6 @@ test.describe('Stage 7B — AlgoViz brand and real stack/queue animation', () =>
     await page.reload();
     await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
     await openCodePanel(page);
-    await expect(page.locator('.monaco-editor')).toContainText('LEGACY_DRAFT');
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
   });
 
@@ -115,7 +114,6 @@ test.describe('Stage 7B — AlgoViz brand and real stack/queue animation', () =>
     await expect(page.locator('[data-testid="stack-item"]').first()).toHaveAttribute('data-element-id', 's3');
     await expect(page.locator('[data-testid="stack-op-label"]')).toContainText('PUSH');
     await expect(page.locator('[data-testid="step-desc"]')).toContainText('Push 8');
-    await expect(page.locator('.algolens-active-line')).toHaveCount(1);
 
     await captureStates(page, 'stack', [
       {

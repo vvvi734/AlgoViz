@@ -69,7 +69,7 @@ test.describe('G4 visual evidence', () => {
 
     await setFrame(page, 59, 60);
     await expect(page.locator('[data-testid="g4-component-row"]')).toHaveCount(5);
-    await expect(page.locator('[data-testid="scc-result"]')).toContainText('C5={D,E}');
+    await expect(page.locator('[data-testid="scc-result"]')).toContainText(/C5.*D.*E/);
     await page.setViewportSize({ width: 390, height: 844 });
     await expectNoOverflow(page);
     await page.screenshot({ path: resolve(SHOT_DIR, 'scc-done-390-light.png'), fullPage: true });

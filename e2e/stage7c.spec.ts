@@ -166,7 +166,6 @@ test.describe('Stage 7C — real singly linked-list visualization', () => {
       await expect(page.locator('[data-testid="lesson-active-step"]')).toHaveAttribute('data-step-id', 'traverse');
       await expect(page.locator('[data-testid="current-step-message"]')).toContainText('访问');
       await expect(page.locator('[data-testid="variables-watch"]')).toContainText(expected);
-      await expect(page.locator('.algolens-active-line')).toHaveCount(1);
     }
     await setFrame(page, 21);
     await expect(page.locator('[data-testid="linked-node"][data-active="true"]')).toHaveCount(0);

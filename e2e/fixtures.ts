@@ -17,17 +17,12 @@ export { expect };
 export type { Page };
 
 /**
- * UI-03: the code dock is collapsed by default. Tests that need to read or
- * type into Monaco must explicitly open it first; playback must not change.
+ * The run bar is always open now. Tests that need the JSON input simply wait
+ * for the dock and its visible input; there is no editor to expand.
  */
 export async function openCodePanel(page: Page) {
-  const toggle = page.getByTestId('code-dock-toggle');
-  await expect(toggle).toBeVisible({ timeout: 45_000 });
-  if ((await toggle.getAttribute('aria-expanded')) !== 'true') {
-    await toggle.click();
-  }
-  await expect(toggle).toHaveAttribute('aria-expanded', 'true');
-  await expect(page.locator('.monaco-editor')).toBeVisible({ timeout: 45_000 });
+  await expect(page.getByTestId('code-dock')).toBeVisible({ timeout: 45_000 });
+  await expect(page.locator('#run-input')).toBeVisible({ timeout: 45_000 });
 }
 
 /**

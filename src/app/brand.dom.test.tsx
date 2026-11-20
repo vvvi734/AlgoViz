@@ -33,12 +33,12 @@ describe('AlgoViz brand migration and storage compatibility', () => {
     expect(document.body.textContent).not.toContain('AlgoLens');
   });
 
-  it('still reads a draft stored under the legacy algolens key', async () => {
+  it('ignores legacy drafts and runs the built-in example', async () => {
     window.localStorage.setItem('algolens.code.bubble.js', 'const LEGACY_DRAFT = 1;');
     renderApp();
-    await waitFor(() =>
-      expect((screen.getByTestId('code-editor') as HTMLTextAreaElement).value).toBe('const LEGACY_DRAFT = 1;'),
-    );
+    await waitFor(() => expect(screen.getByTestId('progress')).toBeTruthy());
+    expect(screen.queryByTestId('code-editor')).toBeNull();
+    expect(screen.getByTestId('run-input')).toBeTruthy();
   });
 
   it('still stores the theme under the legacy key', async () => {

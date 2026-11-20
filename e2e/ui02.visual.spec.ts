@@ -101,7 +101,8 @@ test.describe('UI-02 visual evidence', () => {
     await chooseAlgorithm(page, 'fib');
     await expect(page.locator('[data-testid="lab-title"]')).toContainText('斐波那契');
     await expect(page.locator('[data-testid="lesson-no-lesson"]')).toBeVisible();
-    await expect(page.locator('[data-testid="current-step"]')).toHaveCount(0);
+    await expect(page.locator('[data-testid="lesson-unlinked"]')).toBeVisible();
+    await expect(page.locator('[data-testid="current-step"]')).toBeVisible();
     await expect(page.locator('[data-testid="graph-visual"]')).toHaveCount(0, { timeout: 30_000 });
     await expect(page.locator('[data-testid="visual-stage"]')).toBeVisible();
     await shot(page, 'no-course-rail-1440-light-firstscreen', false);

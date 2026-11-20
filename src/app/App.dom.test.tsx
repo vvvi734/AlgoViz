@@ -50,7 +50,9 @@ describe('App UI regression (Phase 1)', () => {
     expect(screen.getByTestId('algo-components')).toBeTruthy();
     expect(screen.getByTestId('algo-scc')).toBeTruthy();
     expect(screen.getByTestId('progress').textContent).toBe('1 / 3');
-    expect((screen.getByTestId('code-editor') as HTMLTextAreaElement).value).toContain('const arr');
+    expect(screen.getByTestId('code-dock')).toBeTruthy();
+    expect(screen.getByTestId('run-input')).toBeTruthy();
+    expect(screen.queryByTestId('code-editor')).toBeNull();
     expect(document.querySelectorAll('.bar')).toHaveLength(3);
   });
 

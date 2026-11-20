@@ -1,0 +1,204 @@
+/* ==========================================================================
+   GLOBAL-SCROLL — one document scroll for the learning workspace.
+
+   The page itself is the scroll container. The sidebar, learning rail, course
+   steps and code dock grow with their content instead of trapping a second
+   scrollbar in a viewport-sized box. Canvas/table panning inside a visual is
+   intentionally left alone: those are browsing surfaces, not page chrome.
+   ========================================================================== */
+
+/* The app no longer pins itself to 100dvh in the learn view. */
+.app[data-view='learn'] {
+  height: auto;
+  min-height: 100dvh;
+}
+
+.app[data-view='learn'] .app-view-learn {
+  flex: 0 0 auto;
+  min-height: 0;
+}
+
+.app[data-view='learn'] .lab-shell,
+.app[data-view='learn'] .lab-shell.concept-focus,
+.app[data-view='learn'] .lab-shell:not(.guide-open) {
+  height: auto;
+  min-height: 0;
+}
+
+/* A single vertical flow: head -> primary -> run bar -> reference panel. */
+.app[data-view='learn'] .lab-shell .lab-main,
+.app[data-view='learn'] .lab-shell:not(.guide-open) .lab-main,
+.app[data-view='learn'] .lab-shell.concept-focus .lab-main,
+.app[data-view='learn'] .lab-shell:not(.guide-open) .lab-main:has(.workspace-tabs.is-open) {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  height: auto;
+  min-height: 0;
+  overflow: visible;
+  overscroll-behavior: auto;
+}
+
+.app[data-view='learn'] .lab-shell .lab-primary,
+.app[data-view='learn'] .lab-shell:not(.guide-open) .lab-primary,
+.app[data-view='learn'] .lab-shell:not(.guide-open) .lab-main:has(.workspace-tabs.is-open) .lab-primary {
+  flex: 0 0 auto;
+  height: auto;
+  min-height: 0;
+}
+
+.app[data-view='learn'] .lab-shell .stage-panel,
+.app[data-view='learn'] .lab-shell:not(.guide-open) .stage-panel {
+  flex: 0 0 auto;
+  height: auto;
+  min-height: 0;
+  overflow: visible;
+}
+
+@media (min-width: 900px) {
+  .app[data-view='learn'] .lab-sidebar-wrap,
+  .app[data-view='learn'] .lab-shell:not(.guide-open) .lab-sidebar-wrap {
+    align-self: stretch;
+    height: auto;
+    min-height: 0;
+  }
+
+  /* The directory keeps its original catalogue card: one viewport-tall box
+     with its own scrollbar. Expanding chapters scrolls the directory itself
+     instead of stretching the whole page. */
+  .app[data-view='learn'] .lab-sidebar-wrap .sidebar,
+  .app[data-view='learn'] .lab-shell:not(.guide-open) .sidebar {
+    position: sticky;
+    top: 12px;
+    height: calc(100dvh - 120px);
+    max-height: calc(100dvh - 24px);
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+}
+
+/* The right-hand rail follows the page; no sticky viewport box. */
+.app[data-view='learn'] .lab-explanation,
+.app[data-view='learn'] .lab-shell:not(.guide-open) .lab-explanation {
+  position: static;
+  top: auto;
+  height: auto;
+  max-height: none;
+  overflow: visible;
+  overscroll-behavior: auto;
+  padding-right: 0;
+}
+
+/* Every lesson/step list is fully expanded; the document supplies the scroll. */
+.lessonsteps,
+.lessonsteps.is-rail-list,
+.lab-explanation .lessonsteps.is-rail-list,
+.lesson-steps-panel .lessonsteps {
+  max-height: none;
+  overflow: visible;
+  overscroll-behavior: auto;
+}
+
+.lab-explanation .lesson-overview,
+.lessonpanel.is-compact .lesson-overview {
+  max-height: none;
+  overflow: visible;
+  overscroll-behavior: auto;
+}
+
+.learning-rail .callstack,
+.callstack {
+  max-height: none;
+  overflow: visible;
+  overscroll-behavior: auto;
+}
+
+/* Legacy step list (kept for the older practice shell). */
+.steps {
+  max-height: none;
+  overflow: visible;
+}
+
+/* ---------- Compact run bar (no source editor in the main flow) ---------- */
+.code-dock.is-compact .code-dock-head {
+  align-items: center;
+  padding: 9px 13px;
+}
+
+.code-dock.is-compact .code-dock-heading {
+  gap: 1px 8px;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: baseline;
+}
+
+.code-dock.is-compact .code-dock-heading .eyebrow {
+  margin: 0;
+}
+
+.code-dock.is-compact .code-dock-heading h2 {
+  font-size: 16px;
+}
+
+.code-dock.is-compact .code-dock-hint {
+  grid-column: 1 / -1;
+  margin-top: 1px;
+}
+
+.code-dock.is-compact .code-dock-body,
+.code-dock.is-expanded .code-dock-body.is-compact {
+  max-height: none;
+  overflow: visible;
+  opacity: 1;
+  visibility: visible;
+  border-top: 1px solid var(--line);
+  padding: 9px 13px 11px;
+}
+
+.code-dock-input-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px 10px;
+}
+
+.code-dock-input-label {
+  color: var(--txt);
+  font-size: var(--font-ui);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.code-dock-input {
+  min-width: 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 13px;
+}
+
+.code-dock-random {
+  white-space: nowrap;
+}
+
+.code-dock-feedback {
+  margin: 7px 0 0;
+  padding: 0;
+  min-height: 1.3em;
+  border: 0;
+  background: transparent;
+  font-size: var(--font-ui);
+}
+
+.code-dock-feedback.error {
+  color: var(--red);
+}
+
+@media (max-width: 680px) {
+  .code-dock-input-row {
+    grid-template-columns: 1fr auto;
+  }
+
+  .code-dock-input-label {
+    grid-column: 1 / -1;
+  }
+}
+

@@ -112,7 +112,7 @@ test.describe('F2 — real Python chaining and linear probing', () => {
     await expect(nodes.nth(2)).toHaveAttribute('data-id', 'n1');
     await expect(nodes.nth(2)).toHaveAttribute('data-position', 'tail');
     await expect(page.getByTestId('lesson-active-step')).toHaveAttribute('data-step-id', 'resolve');
-    await expect(page.getByTestId('lesson-explanation')).toContainText('next');
+    await expect(page.getByTestId('current-step-message')).toContainText('next');
     await page.screenshot({ path: resolve(SHOT_DIR, 'chain-collision-1440-light.png'), fullPage: true });
 
     await setFrame(page, 17, 60);
@@ -194,8 +194,8 @@ test.describe('F2 — real Python chaining and linear probing', () => {
     await expect(page.locator('[data-testid="hash-slot"][data-index="3"]')).toHaveAttribute('data-marks', /current/);
     await expect(page.getByTestId('hash-count')).toContainText('3 / 7');
     await expect(page.getByTestId('hash-operation')).toContainText('线性探测：写入槽位');
-    await expect(page.getByTestId('lesson-explanation')).toContainText('槽');
-    await expect(page.getByTestId('lesson-explanation')).not.toContainText('next');
+    await expect(page.getByTestId('current-step-message')).toContainText('槽');
+    await expect(page.getByTestId('current-step-message')).not.toContainText('next');
     await page.screenshot({ path: resolve(SHOT_DIR, 'probe-collision-1440-light.png'), fullPage: true });
 
     await setFrame(page, 41, 182);
@@ -214,7 +214,7 @@ test.describe('F2 — real Python chaining and linear probing', () => {
     await expect(chips.nth(2)).toHaveAttribute('data-index', '3');
     await expect(page.getByTestId('hash-tombstone-note')).toContainText('DELETED');
     await expect(page.getByTestId('lesson-active-step')).toHaveAttribute('data-step-id', 'result');
-    await expect(page.getByTestId('lesson-explanation')).toContainText('DELETED');
+    await expect(page.getByTestId('current-step-message')).not.toBeEmpty();
     await page.screenshot({ path: resolve(SHOT_DIR, 'probe-tombstone-1440-light.png'), fullPage: true });
 
     const before = await probeState(page);

@@ -34,15 +34,14 @@ import { avlPresetFromInput } from '../../domain/algorithms/avlExamples';
 import { heapPresetFromInput } from '../../domain/algorithms/heapExamples';
 import { huffmanPresetFromInput } from '../../domain/algorithms/huffmanExamples';
 import { useI18n } from '../../i18n/I18nProvider';
-import { useTheme } from '../../theme/ThemeProvider';
 
 /**
  * Stage 7A learning workspace, re-laid out by UI-02 and refined by
  * CORE-REFINE-01.
  *
  * Information architecture:
- *  1. primary: sidebar → [animation + playback | learning rail]; the code editor
- *     is a full-width, collapsed-by-default dock below both columns;
+ *  1. primary: sidebar → [animation + playback | learning rail]; the compact
+ *     run bar sits below both columns and never hides its actions;
  *  2. the rail owns current operation, variables and the optional call stack;
  *  3. the advanced panel owns only read-only C / C++ / Python reference code;
  *  4. a concept entry replaces the animation workspace with a static lesson,
@@ -59,7 +58,6 @@ export function LabView({
   lessons: LessonCatalog;
 }) {
   const { t, pick, lang } = useI18n();
-  const { resolved } = useTheme();
   const entry = lab.catalog[lab.currentAlgo];
   const [conceptId, setConceptId] = useState<string | null>(null);
   const concept = conceptById(conceptId);
@@ -101,10 +99,6 @@ export function LabView({
     lab.currentAlgo === 'topological' ||
     lab.currentAlgo === 'critical-path' ||
     lab.currentAlgo === 'components';
-  const highlightLine = !lab.traceStale && currentEvent?.sourceLocation?.line
-    ? currentEvent.sourceLocation.line
-    : null;
-  const noLocationHint = !lab.traceStale && lab.events.length > 0 && currentEvent != null && !currentEvent.sourceLocation;
 
   const [selectedFrameId, setSelectedFrameId] = useState<string | null>(null);
   const workbenchRef = useRef<HTMLDivElement | null>(null);
@@ -375,12 +369,7 @@ export function LabView({
           </aside>
         </div>
 
-        <CodeDock
-          lab={lab}
-          highlightLine={highlightLine}
-          noLocationHint={noLocationHint}
-          theme={resolved}
-        />
+        <CodeDock lab={lab} />
 
         <WorkspaceTabs>
           <ReferenceCodePanel

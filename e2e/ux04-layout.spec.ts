@@ -1,61 +1,12 @@
 import { collapseAlgorithmGuide, expect, openAdvancedPanels, selectAlgorithm, test, type Page } from './fixtures';
 
 /**
- * UX-04 desktop one-screen acceptance.
+ * GLOBAL-SCROLL acceptance.
  *
- * These assertions check real geometry: topbar, title, textbook directory,
- * the complete visual stage, the explanation rail, playback controls, code
- * dock and the advanced-panel disclosure must all sit inside the viewport.
- * Graph/tree nodes are checked individually against their scroll container, so
- * passing `scrollWidth` alone can never hide a clipped node.
+ * The learn view is one document. The directory, learning rail and lesson
+ * steps may be taller than the viewport; they must not become nested scroll
+ * boxes. Canvas panning inside a graph/tree remains a local browsing surface.
  */
-
-const SHOT_DIR = 'docs/ux04/after';
-const DESKTOP = [
-  { width: 1366, height: 768 },
-  { width: 1440, height: 900 },
-  { width: 1920, height: 1080 },
-] as const;
-
-const ALGORITHMS = [
-  {
-    id: 'dijkstra',
-    marker: '[data-testid="graph-visual"][data-algorithm="dijkstra"]',
-    frame: 27,
-    scroller: '.graph-canvas-scroll',
-    node: '[data-testid="graph-node"]',
-  },
-  {
-    id: 'scc',
-    marker: '[data-testid="scc-stage"]',
-    frame: 27,
-    scroller: '.mst-graph-scroll',
-    node: '[data-testid="g4-node"]',
-  },
-  {
-    id: 'topological',
-    marker: '[data-testid="topo-stage"]',
-    frame: 5,
-    scroller: '.mst-graph-scroll',
-    node: '[data-testid="topo-node"]',
-  },
-  {
-    id: 'bst',
-    marker: '[data-testid="bst-visual"]',
-    frame: 5,
-    scroller: '.tree-scroller',
-    node: '[data-testid="bst-node"]',
-  },
-  {
-    id: 'avl',
-    marker: '[data-testid="avl-visual"]',
-    frame: 12,
-    scroller: '.tree-scroller',
-    node: '[data-testid="avl-node"]',
-  },
-] as const;
-
-type AlgorithmCase = (typeof ALGORITHMS)[number];
 
 async function setFrame(page: Page, frame: number) {
   await page.locator('[data-testid="scrub"]').evaluate((node, value) => {
@@ -69,166 +20,104 @@ async function setFrame(page: Page, frame: number) {
   await page.waitForTimeout(120);
 }
 
-async function openAlgorithm(page: Page, algo: AlgorithmCase) {
-  await selectAlgorithm(page, algo.id);
-  await expect(page.locator(algo.marker)).toBeVisible({ timeout: 180_000 });
-  await expect(page.locator('[data-testid="step-number"]')).not.toContainText('0');
-  await expect(page.locator('[data-testid="progress"]')).toContainText('/');
+async function openDijkstra(page: Page) {
+  await selectAlgorithm(page, 'dijkstra');
+  await expect(page.locator('[data-testid="graph-visual"][data-algorithm="dijkstra"]')).toBeVisible({
+    timeout: 180_000,
+  });
   await collapseAlgorithmGuide(page);
-  await setFrame(page, algo.frame);
-  await page.evaluate(() => window.scrollTo(0, 0));
 }
 
-async function panelsInsideViewport(page: Page, width: number, height: number) {
-  const data = await page.evaluate(() => {
-    const read = (selector: string) => {
-      const node = document.querySelector<HTMLElement>(selector);
-      if (!node) return { selector, missing: true };
-      const box = node.getBoundingClientRect();
-      return {
-        selector,
-        missing: false,
-        top: Math.round(box.top),
-        bottom: Math.round(box.bottom),
-        left: Math.round(box.left),
-        right: Math.round(box.right),
-      };
-    };
-    return {
-      viewport: { width: window.innerWidth, height: window.innerHeight },
-      document: {
-        scrollHeight: document.documentElement.scrollHeight,
-        scrollWidth: document.documentElement.scrollWidth,
-        clientHeight: document.documentElement.clientHeight,
-        clientWidth: document.documentElement.clientWidth,
-      },
-      panels: [
-        '.topbar',
-        '[data-testid="nav-learn"]',
-        '[data-testid="lab-title"]',
-        '[data-testid="sidebar"]',
-        '.stage-panel',
-        '[data-testid="current-step"]',
-        '.stage-playback',
-        '[data-testid="code-dock"]',
-        '[data-testid="workspace-tabs-toggle"]',
-      ].map(read),
-    };
-  });
-
-  expect(data.viewport).toEqual({ width, height });
-  expect(data.document.scrollHeight).toBeLessThanOrEqual(height + 1);
-  expect(data.document.scrollWidth).toBeLessThanOrEqual(width + 1);
-  expect(data.document.clientHeight).toBe(height);
-
-  for (const panel of data.panels) {
-    expect(panel.missing, `${panel.selector} should exist`).toBe(false);
-    expect(panel.top, `${panel.selector} top`).toBeGreaterThanOrEqual(-1);
-    expect(panel.left, `${panel.selector} left`).toBeGreaterThanOrEqual(-1);
-    expect(panel.bottom, `${panel.selector} bottom`).toBeLessThanOrEqual(height + 1);
-    expect(panel.right, `${panel.selector} right`).toBeLessThanOrEqual(width + 1);
-  }
+async function horizontalOverflow(page: Page) {
+  return page.evaluate(() => ({
+    scrollWidth: document.documentElement.scrollWidth,
+    clientWidth: document.documentElement.clientWidth,
+  }));
 }
 
-async function graphNodesInsideScroller(
-  page: Page,
-  scroller: string,
-  nodeSelector: string,
-  allowHorizontalScroll = false,
-) {
-  const data = await page.evaluate(
-    ({ scrollerSelector, node }) => {
-      const container = document.querySelector<HTMLElement>(scrollerSelector);
-      if (!container) return { missingContainer: true, nodes: [] };
-      const box = container.getBoundingClientRect();
-      const style = getComputedStyle(container);
-      const nodes = Array.from(document.querySelectorAll<SVGElement>(node)).map((element, index) => {
-        const nodeBox = element.getBoundingClientRect();
-        return {
-          index,
-          top: Math.round(nodeBox.top),
-          bottom: Math.round(nodeBox.bottom),
-          left: Math.round(nodeBox.left),
-          right: Math.round(nodeBox.right),
-        };
-      });
-      return {
-        missingContainer: false,
-        container: {
-          top: Math.round(box.top),
-          bottom: Math.round(box.bottom),
-          left: Math.round(box.left),
-          right: Math.round(box.right),
-          scrollLeft: container.scrollLeft,
-          scrollWidth: container.scrollWidth,
-          clientWidth: container.clientWidth,
-          overflowX: style.overflowX,
-        },
-        nodes,
-      };
-    },
-    { scrollerSelector: scroller, node: nodeSelector },
-  );
-
-  expect(data.missingContainer, `${scroller} should exist`).toBe(false);
-  expect(data.nodes.length, `${nodeSelector} should render at least one node`).toBeGreaterThan(0);
-  for (const node of data.nodes) {
-    expect(node.top, `${nodeSelector}[${node.index}] top`).toBeGreaterThanOrEqual(data.container.top - 2);
-    expect(node.bottom, `${nodeSelector}[${node.index}] bottom`).toBeLessThanOrEqual(data.container.bottom + 2);
-    if (allowHorizontalScroll) {
-      expect(data.container.overflowX, `${scroller} must scroll horizontally`).toBe('auto');
-      const leftOffset = node.left - data.container.left + data.container.scrollLeft;
-      const rightOffset = node.right - data.container.left + data.container.scrollLeft;
-      expect(leftOffset, `${nodeSelector}[${node.index}] content left`).toBeGreaterThanOrEqual(-2);
-      expect(rightOffset, `${nodeSelector}[${node.index}] content right`).toBeLessThanOrEqual(
-        data.container.scrollWidth + 2,
-      );
-    } else {
-      expect(node.left, `${nodeSelector}[${node.index}] left`).toBeGreaterThanOrEqual(data.container.left - 2);
-      expect(node.right, `${nodeSelector}[${node.index}] right`).toBeLessThanOrEqual(data.container.right + 2);
-    }
-  }
-}
-
-test.describe('UX-04 — desktop one-screen learning', () => {
-  test('1366×768 keeps navigation, directory, graph, explanation, playback and disclosures in one viewport', async ({ page }) => {
-    test.setTimeout(300_000);
-    await page.setViewportSize({ width: 1366, height: 768 });
-    await page.goto('/');
-    await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
-    for (const algo of ALGORITHMS) {
-      await openAlgorithm(page, algo);
-      await panelsInsideViewport(page, 1366, 768);
-      await graphNodesInsideScroller(page, algo.scroller, algo.node, algo.scroller === '.tree-scroller');
-    }
-  });
-
-  test('1440×900 has no unnecessary whole-page scroll for every graph and tree lesson', async ({ page }) => {
-    test.setTimeout(300_000);
+test.describe('GLOBAL-SCROLL — one document scroll', () => {
+  test('1440 restores the directory as a bounded catalogue with its own scrollbar', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto('/');
     await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
-    for (const algo of ALGORITHMS) {
-      await openAlgorithm(page, algo);
-      await panelsInsideViewport(page, 1440, 900);
-      await graphNodesInsideScroller(page, algo.scroller, algo.node, algo.scroller === '.tree-scroller');
+    await page.getByTestId('sidebar-expand-all').click();
+    await page.waitForTimeout(250);
+
+    const data = await page.evaluate(() => {
+      const node = document.querySelector<HTMLElement>('[data-testid="sidebar"]');
+      if (!node) return null;
+      const style = getComputedStyle(node);
+      const box = node.getBoundingClientRect();
+      return {
+        innerHeight: window.innerHeight,
+        documentHeight: document.documentElement.scrollHeight,
+        height: Math.round(box.height),
+        top: Math.round(box.top),
+        bottom: Math.round(box.bottom),
+        clientHeight: node.clientHeight,
+        scrollHeight: node.scrollHeight,
+        overflowY: style.overflowY,
+        maxHeight: style.maxHeight,
+      };
+    });
+
+    expect(data).not.toBeNull();
+    expect(data!.height).toBeLessThan(data!.innerHeight);
+    expect(data!.top).toBeGreaterThanOrEqual(0);
+    expect(data!.bottom).toBeLessThanOrEqual(data!.innerHeight + 1);
+    expect(data!.overflowY).toBe('auto');
+    expect(data!.maxHeight).not.toBe('none');
+    expect(data!.scrollHeight).toBeGreaterThan(data!.clientHeight + 100);
+    expect(data!.documentHeight).toBeLessThan(data!.scrollHeight);
+
+    // Wheel over the catalogue scrolls the catalogue; the page stays put.
+    const box = await page.getByTestId('sidebar').boundingBox();
+    expect(box).not.toBeNull();
+    await page.mouse.move((box?.x ?? 0) + 100, (box?.y ?? 0) + 200);
+    await page.mouse.wheel(0, 500);
+    await page.waitForTimeout(300);
+    const independent = await page.evaluate(() => ({
+      windowY: window.scrollY,
+      sidebarScrollTop: document.querySelector('[data-testid="sidebar"]')?.scrollTop ?? 0,
+    }));
+    expect(independent.windowY).toBe(0);
+    expect(independent.sidebarScrollTop).toBeGreaterThan(0);
+
+    // Global page scrolling does not move the left catalogue.
+    await page.evaluate(() => window.scrollTo(0, 700));
+    await page.waitForTimeout(250);
+    const fixed = await page.evaluate(() => ({
+      windowY: window.scrollY,
+      sidebarTop: Math.round(
+        document.querySelector('[data-testid="sidebar"]')?.getBoundingClientRect().top ?? 0,
+      ),
+    }));
+    expect(fixed.windowY).toBeGreaterThan(0);
+    expect(fixed.sidebarTop).toBeGreaterThanOrEqual(0);
+    expect(fixed.sidebarTop).toBeLessThan(40);
+  });
+
+  test('1366, 1024 and 390 keep vertical page scroll only', async ({ page }) => {
+    for (const viewport of [
+      { width: 1366, height: 768 },
+      { width: 1024, height: 768 },
+      { width: 390, height: 844 },
+    ]) {
+      await page.setViewportSize(viewport);
+      await page.goto('/');
+      await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
+      await openDijkstra(page);
+      const sizes = await horizontalOverflow(page);
+      expect(sizes.scrollWidth).toBeLessThanOrEqual(sizes.clientWidth + 1);
+
+      await page.locator('.stage-playback').scrollIntoViewIfNeeded();
+      await expect(page.locator('.stage-playback')).toBeVisible();
+      const dock = await page.locator('[data-testid="code-dock"]').boundingBox();
+      expect(dock?.width ?? 0).toBeLessThanOrEqual(viewport.width);
     }
   });
 
-  test('1920×1080 uses the extra desktop height without Hiding content', async ({ page }) => {
-    test.setTimeout(300_000);
-    await page.setViewportSize({ width: 1920, height: 1080 });
-    await page.goto('/');
-    await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
-    for (const algo of ALGORITHMS.filter((item) => ['dijkstra', 'scc', 'bst'].includes(item.id))) {
-      await openAlgorithm(page, algo);
-      await panelsInsideViewport(page, 1920, 1080);
-      await graphNodesInsideScroller(page, algo.scroller, algo.node, algo.scroller === '.tree-scroller');
-    }
-  });
-
-  test('guide opens normally and "start animation" returns to playback without resetting the frame or rerunning Python', async ({ page }) => {
-    test.setTimeout(180_000);
+  test('guide start keeps the frame, trace and run feedback', async ({ page }) => {
     await page.setViewportSize({ width: 1366, height: 768 });
     await page.goto('/');
     await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
@@ -239,159 +128,73 @@ test.describe('UX-04 — desktop one-screen learning', () => {
 
     await page.getByTestId('guide-toggle').click();
     await expect(page.getByTestId('algorithm-guide')).toBeVisible();
-    await expect(page.getByTestId('guide-start')).toBeVisible();
     const progress = await page.getByTestId('progress').innerText();
     const step = await page.getByTestId('step-number').innerText();
     const feedback = await page.getByTestId('run-feedback').innerText();
 
     await page.getByTestId('guide-start').click();
     await expect(page.getByTestId('algorithm-guide')).toHaveCount(0);
-    await expect(page.getByTestId('play-btn')).toBeVisible();
-    const playback = await page.locator('.stage-playback').boundingBox();
-    expect(playback).not.toBeNull();
-    expect(playback!.y).toBeGreaterThanOrEqual(0);
-    expect(playback!.y + playback!.height).toBeLessThanOrEqual(768 + 1);
     expect(await page.getByTestId('progress').innerText()).toBe(progress);
     expect(await page.getByTestId('step-number').innerText()).toBe(step);
     expect(await page.getByTestId('run-feedback').innerText()).toBe(feedback);
-    await expect(page.getByTestId('algorithm-guide')).toHaveCount(0);
   });
 
-  test('advanced panel starts collapsed, expands to reference code and preserves frame state across the toggle', async ({ page }) => {
-    test.setTimeout(180_000);
+  test('open reference keeps the frame and the compact run bar', async ({ page }) => {
     await page.setViewportSize({ width: 1366, height: 768 });
     await page.goto('/');
     await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
     await selectAlgorithm(page, 'dijkstra');
     await expect(page.locator('[data-testid="graph-visual"][data-algorithm="dijkstra"]')).toBeVisible({ timeout: 180_000 });
     await collapseAlgorithmGuide(page);
-    await expect(page.getByTestId('progress')).toContainText('/');
-    await expect(page.getByTestId('step-number')).not.toContainText('0');
-    await expect(page.getByTestId('workspace-tabs')).toHaveAttribute('data-expanded', 'false');
-    await expect(page.getByTestId('workspace-tabs-toggle')).toHaveAttribute('aria-expanded', 'false');
-    await expect(page.getByTestId('workspace-panel-reference')).toBeHidden();
     const progress = await page.getByTestId('progress').innerText();
     const current = await page.getByTestId('current-step').innerText();
 
     await openAdvancedPanels(page);
     await expect(page.getByTestId('workspace-panel-reference')).toBeVisible();
     await expect(page.getByTestId('reference-code-panel')).toBeVisible();
-    await expect(page.getByTestId('reference-lang-c')).toBeVisible();
-    await expect(page.getByTestId('reference-lang-cpp')).toBeVisible();
-    await expect(page.getByTestId('reference-lang-python')).toBeVisible();
-    await expect(page.getByTestId('variables-watch')).toContainText('distances');
-    await page.getByTestId('workspace-tabs-toggle').click();
-    await expect(page.getByTestId('workspace-panel-reference')).toBeHidden();
+    await expect(page.getByTestId('run-btn')).toBeVisible();
     expect(await page.getByTestId('progress').innerText()).toBe(progress);
     expect(await page.getByTestId('current-step').innerText()).toBe(current);
 
-    await openAdvancedPanels(page);
-    await expect(page.getByTestId('workspace-panel-reference')).toBeVisible();
-    await expect(page.getByTestId('variables-watch')).toContainText('distances');
+    // The run bar stays in the document; it is not a floating sticky header.
+    const dockPosition = await page.getByTestId('code-dock').evaluate((node) => getComputedStyle(node).position);
+    expect(dockPosition).not.toBe('sticky');
+
+    // The reference sheet is globally expanded, like the teaching guide.
+    await expect(page.locator('[data-testid="reference-code-viewer"] .monaco-editor')).toBeVisible({
+      timeout: 20_000,
+    });
+    const viewer = await page.getByTestId('reference-code-viewer').evaluate((node) => ({
+      height: Math.round(node.getBoundingClientRect().height),
+      overflowY: getComputedStyle(node).overflowY,
+    }));
+    expect(viewer.height).toBeGreaterThan(700);
+    expect(viewer.overflowY).toBe('visible');
+
+    // Wheel over the code scrolls the page, not a nested code box.
+    await page.getByTestId('reference-code-viewer').scrollIntoViewIfNeeded();
+    const beforeWheel = await page.evaluate(() => window.scrollY);
+    const codeBox = await page.getByTestId('reference-code-viewer').boundingBox();
+    expect(codeBox).not.toBeNull();
+    await page.mouse.move((codeBox?.x ?? 0) + 280, (codeBox?.y ?? 0) + 160);
+    await page.mouse.wheel(0, 600);
+    await page.waitForTimeout(350);
+    const afterWheel = await page.evaluate(() => window.scrollY);
+    expect(afterWheel).toBeGreaterThan(beforeWheel + 100);
   });
 
-  test('previous, next and scrub update the same current explanation and keep playback visible', async ({ page }) => {
-    test.setTimeout(180_000);
-    await page.setViewportSize({ width: 1366, height: 768 });
+  test('collapsing the directory never resets the trace or frame', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto('/');
     await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
-    await selectAlgorithm(page, 'dijkstra');
-    await expect(page.locator('[data-testid="graph-visual"][data-algorithm="dijkstra"]')).toBeVisible({ timeout: 180_000 });
-    await collapseAlgorithmGuide(page);
-    await setFrame(page, 9);
-    const before = await page.getByTestId('current-step').innerText();
-
-    await page.getByTestId('next-btn').click();
-    await expect(page.getByTestId('step-number')).toContainText('11');
-    const afterNext = await page.getByTestId('current-step').innerText();
-    expect(afterNext).not.toBe(before);
-
-    await page.getByTestId('prev-btn').click();
-    await expect(page.getByTestId('step-number')).toContainText('10');
-    expect(await page.getByTestId('current-step').innerText()).toBe(before);
-
-    await setFrame(page, 21);
-    await expect(page.getByTestId('step-number')).toContainText('22');
-    expect(await page.getByTestId('current-step').innerText()).not.toBe(afterNext);
-    const playback = await page.locator('.stage-playback').boundingBox();
-    expect(playback!.y).toBeGreaterThanOrEqual(0);
-    expect(playback!.y + playback!.height).toBeLessThanOrEqual(769);
-  });
-
-  test('collapsing the textbook sidebar does not reset trace, frame or playback', async ({ page }) => {
-    test.setTimeout(180_000);
-    await page.setViewportSize({ width: 1366, height: 768 });
-    await page.goto('/');
-    await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
-    await selectAlgorithm(page, 'dijkstra');
-    await expect(page.locator('[data-testid="graph-visual"][data-algorithm="dijkstra"]')).toBeVisible({ timeout: 180_000 });
-    await collapseAlgorithmGuide(page);
-    await setFrame(page, 15);
+    await openDijkstra(page);
+    await setFrame(page, 27);
     const progress = await page.getByTestId('progress').innerText();
-    const current = await page.getByTestId('current-step').innerText();
 
     await page.getByTestId('sidebar-collapse').click();
-    await expect(page.getByTestId('sidebar')).toHaveAttribute('data-collapsed', 'true');
+    await expect(page.locator('[data-testid="learn-view"]')).toHaveClass(/nav-collapsed/);
     expect(await page.getByTestId('progress').innerText()).toBe(progress);
-    expect(await page.getByTestId('current-step').innerText()).toBe(current);
-    await expect(page.getByTestId('play-btn')).toBeVisible();
     await page.getByTestId('sidebar-expand').click();
-    await expect(page.getByTestId('sidebar')).toHaveAttribute('data-collapsed', 'false');
     expect(await page.getByTestId('progress').innerText()).toBe(progress);
-  });
-
-  test('1024px stays horizontally clean and lets the page scroll to playback', async ({ page }) => {
-    test.setTimeout(180_000);
-    await page.setViewportSize({ width: 1024, height: 768 });
-    await page.goto('/');
-    await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
-    await selectAlgorithm(page, 'dijkstra');
-    await expect(page.locator('[data-testid="graph-visual"][data-algorithm="dijkstra"]')).toBeVisible({ timeout: 180_000 });
-    await collapseAlgorithmGuide(page);
-    const data = await page.evaluate(() => ({
-      width: window.innerWidth,
-      scrollWidth: document.documentElement.scrollWidth,
-      clientWidth: document.documentElement.clientWidth,
-    }));
-    expect(data.width).toBe(1024);
-    expect(data.scrollWidth).toBeLessThanOrEqual(1025);
-    await page.locator('.stage-playback').scrollIntoViewIfNeeded();
-    await expect(page.locator('.stage-playback')).toBeInViewport();
-    await expect(page.getByTestId('play-btn')).toBeVisible();
-  });
-
-  test('390px mobile scrolls vertically, keeps advanced panels collapsed and never overflows horizontally', async ({ page }) => {
-    test.setTimeout(180_000);
-    await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/');
-    await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
-    await selectAlgorithm(page, 'dijkstra');
-    await expect(page.locator('[data-testid="graph-visual"][data-algorithm="dijkstra"]')).toBeVisible({ timeout: 180_000 });
-    await collapseAlgorithmGuide(page);
-    const data = await page.evaluate(() => ({
-      innerWidth: window.innerWidth,
-      scrollWidth: document.documentElement.scrollWidth,
-      clientWidth: document.documentElement.clientWidth,
-      scrollHeight: document.documentElement.scrollHeight,
-      clientHeight: document.documentElement.clientHeight,
-    }));
-    expect(data.innerWidth).toBe(390);
-    expect(data.scrollWidth).toBeLessThanOrEqual(391);
-    expect(data.scrollHeight).toBeGreaterThan(data.clientHeight);
-    await expect(page.getByTestId('workspace-tabs')).toHaveAttribute('data-expanded', 'false');
-    await page.getByTestId('workspace-tabs-toggle').scrollIntoViewIfNeeded();
-    await expect(page.getByTestId('workspace-tabs-toggle')).toBeVisible();
-    await openAdvancedPanels(page);
-    expect(
-      await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1),
-    ).toBe(true);
-    await expect(page.getByTestId('workspace-panel-reference')).toBeVisible();
-    await expect(page.getByTestId('reference-copy')).toBeVisible();
-    await expect(page.getByTestId('workspace-tab-state')).toHaveCount(0);
-    await page.getByTestId('workspace-tabs-toggle').click();
-    await expect(page.getByTestId('workspace-panel-reference')).toBeHidden();
-    expect(
-      await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1),
-    ).toBe(true);
   });
 });

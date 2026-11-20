@@ -65,16 +65,16 @@ test.describe('UI-02 — left animation, right synchronized explanation', () => 
     expect(lesson.width).toBeGreaterThanOrEqual(380);
     expect(current.y).toBeLessThan(rail.y + 330);
     expect(current.y + current.height).toBeLessThanOrEqual(900);
-    // UI-03: the code editor left the rail and now sits in a collapsed dock below both columns.
+    // UI-03: the source editor left the rail; the compact run bar sits below both columns.
     await expect(page.locator('[data-testid="explanation-rail"] .monaco-editor')).toHaveCount(0);
     expect(dock.y).toBeGreaterThan(primary.y + primary.height - 12);
     expect(dock.width).toBeGreaterThan(stage.width + rail.width - 10);
-    await expect(page.locator('[data-testid="code-dock"]')).toHaveAttribute('data-expanded', 'false');
+    await expect(page.locator('[data-testid="code-dock"]')).toHaveAttribute('data-expanded', 'true');
 
     await expect(page.locator('[data-testid="lesson-title"]')).toContainText(/Dijkstra|最短路径/i);
     await expect(page.locator('[data-testid="current-step-title"]')).toContainText(/带权图|Weighted graph/i);
     await expect(page.locator('[data-testid="lesson-frame"]')).toContainText('1/46');
-    await expect(page.locator('[data-testid="lesson-explanation"]')).toContainText('∞');
+    await expect(page.locator('[data-testid="current-step-message"]')).toContainText('∞');
     await expect(page.locator('[data-testid="stage-step-peek"]')).toBeVisible();
     await expect(page.locator('[data-testid="dijkstra-distance-table"]')).toBeVisible();
     await expect(page.locator('[data-testid="graph-priority-queue-panel"]')).toBeVisible();
@@ -188,7 +188,7 @@ test.describe('UI-02 — left animation, right synchronized explanation', () => 
     await expect(page.locator('[data-testid="lab-title"]')).toContainText('斐波那契');
     await expect(page.locator('[data-testid="visual-stage"]')).toBeVisible();
     await expect(page.locator('[data-testid="lesson-no-lesson"]')).toBeVisible();
-    await expect(page.locator('[data-testid="current-step"]')).toHaveCount(0);
+    await expect(page.locator('[data-testid="lesson-unlinked"]')).toBeVisible();
     await expect(page.locator('[data-testid="lesson-steps"]')).toHaveCount(0);
   });
 

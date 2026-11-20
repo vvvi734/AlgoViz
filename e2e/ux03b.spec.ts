@@ -78,13 +78,13 @@ test.describe('UX-03B — compact textbook navigation', () => {
     await expect(page.getByTestId('lab-title')).toContainText('二叉搜索树');
     await expect(page.getByTestId('algo-bst')).toHaveAttribute('aria-current', 'true');
 
-    // Concept and planned rows are distinct, static, and never fake algorithms.
+    // Concept rows open the authored read-only lesson; they are still distinct
+    // from algorithm rows and never fake an algorithm target.
     await openTextbookChapter(page, 'ch1-intro');
     const concept = page.getByTestId('topic-intro-concepts');
     await expect(concept).toHaveAttribute('data-kind', 'concept');
-    await expect(concept).toHaveAttribute('aria-disabled', 'true');
-    await expect(concept).toContainText('知识讲解');
-    await expect(concept.locator('button')).toHaveCount(0);
+    await expect(concept).toHaveAttribute('data-concept-id', 'data-structure-basics');
+    await expect(concept).toContainText(/阅读|Read/i);
     await expect(concept.locator('[data-testid^="algo-"]')).toHaveCount(0);
 
     await openTextbookChapter(page, 'ch9-sort');
@@ -172,10 +172,10 @@ test.describe('UX-03B — compact textbook navigation', () => {
     await page.getByRole('button', { name: 'Switch language' }).click();
     await expect(page.getByTestId('sidebar')).toContainText('Textbook directory');
     await expect(page.getByTestId('topic-shortest-path')).toContainText('Shortest paths');
-    await expect(page.getByTestId('topic-graph-basics')).toContainText('Concept');
+    await expect(page.getByTestId('topic-graph-basics')).toContainText(/Read|Concept/i);
     await expect(page.getByTestId('topic-shortest-path')).toHaveAttribute('aria-expanded', 'true');
     await page.getByRole('button', { name: 'Switch language' }).click();
-    await expect(page.getByTestId('topic-graph-basics')).toContainText('知识讲解');
+    await expect(page.getByTestId('topic-graph-basics')).toContainText(/阅读|知识讲解/);
 
     await page.setViewportSize({ width: 390, height: 844 });
     await page.waitForTimeout(250);

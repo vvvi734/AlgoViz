@@ -142,7 +142,6 @@ test.describe('Stage 7D — real binary-tree traversal and recursion stack', () 
     expect(await activeId(page)).toBe('n1');
     await expect(page.getByTestId('lesson-active-step')).toHaveAttribute('data-step-id', 'visit');
     await expect(page.locator('[data-testid="current-step-message"]')).toContainText(/访问节点 n1|visit n1/);
-    await expect(page.locator('.algolens-active-line')).toHaveCount(1);
 
     await setFrame(page, 8);
     expect(await activeId(page)).toBe('n4');

@@ -120,7 +120,6 @@ test.describe('Stage 7D visual evidence', () => {
     ] as const) {
       await openCodePanel(page);
       await page.fill('#run-input', input);
-      await page.getByTestId('code-dock-toggle').click();
       await page.getByTestId('run-btn').click();
       await expect(page.locator('[data-testid="progress"]')).toHaveText(`1 / ${total}`, { timeout: 60_000 });
       await expect(page.locator('[data-testid="tree-node"]')).toHaveCount(name === 'empty' ? 0 : name === 'single' ? 1 : 3);
@@ -131,7 +130,6 @@ test.describe('Stage 7D visual evidence', () => {
     // must be in the same captured run, not two unrelated screenshots.
     await openCodePanel(page);
     await page.fill('#run-input', '[4, 2, 6, 1, 3, 5, 7]');
-    await page.getByTestId('code-dock-toggle').click();
     await page.getByTestId('run-btn').click();
     await expect(page.locator('[data-testid="progress"]')).toHaveText('1 / 30', { timeout: 60_000 });
     await setFrame(page, 5, 30);

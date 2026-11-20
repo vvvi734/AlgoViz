@@ -1,7 +1,9 @@
 /* ==========================================================================
-   UI-03 — the Monaco editor is a full-width dock below the two-column lab.
-   Presentation only: the dock never owns a trace, a second playhead or a
-   second editor. Collapsing only clips the already-mounted editor surface.
+   UI-03 — compact run bar.
+
+   The source editor is intentionally gone from the main flow. This strip owns
+   the built-in example, JSON input, random data and the single Run action; the
+   page itself scrolls and the bar stays in reach while reference code is open.
    ========================================================================== */
 
 .code-dock {
@@ -39,15 +41,6 @@
   margin: 0;
 }
 
-.code-dock-lang {
-  width: auto;
-  min-width: 94px;
-  min-height: 30px;
-  padding-top: 3px;
-  padding-bottom: 3px;
-  font-size: var(--font-ui);
-}
-
 .code-dock-heading .eyebrow {
   margin: 0;
   line-height: 1.2;
@@ -75,117 +68,17 @@
   margin-left: auto;
 }
 
-.code-dock-status {
-  max-width: min(34ch, 32vw);
-  overflow: hidden;
-  text-overflow: ellipsis;
+.code-dock-run {
   white-space: nowrap;
-  color: var(--muted);
-  font-size: var(--font-ui);
-  line-height: 1.4;
-}
-
-.code-dock-status.is-error {
-  color: var(--red);
-}
-
-.code-dock-run,
-.code-dock-toggle {
-  white-space: nowrap;
-}
-
-.code-dock-toggle {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-
-.code-dock-toggle:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-}
-
-.code-dock-chevron {
-  display: inline-block;
-  font-size: var(--font-ui);
-  line-height: 1;
-  transition: transform 180ms ease;
-}
-
-.code-dock.is-expanded .code-dock-chevron {
-  transform: translateY(-1px);
 }
 
 .code-dock-body {
-  max-height: 0;
-  overflow: hidden;
-  opacity: 0;
-  visibility: hidden;
-  border-top: 1px solid transparent;
-  transition: max-height 300ms ease, opacity 200ms ease, visibility 0s linear 300ms;
+  border-top: 1px solid var(--line);
 }
 
-.code-dock.is-expanded .code-dock-body {
-  max-height: 1600px;
-  opacity: 1;
-  visibility: visible;
-  border-top-color: var(--line);
-  transition: max-height 340ms ease, opacity 220ms ease, visibility 0s;
-}
-
-.code-editor-embedded {
-  min-width: 0;
-  padding: 12px 16px 16px;
-}
-
-.code-editor-toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px 12px;
-  flex-wrap: wrap;
-  margin-bottom: 8px;
-}
-
-.code-editor-toolbar-main {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  min-width: 0;
-}
-
-.code-editor-toolbar-main label {
-  color: var(--muted);
-  font-size: var(--font-ui);
-}
-
-.code-editor-embedded .monaco-wrap {
-  height: clamp(300px, 34vh, 400px);
-  min-height: 300px;
-  max-height: 440px;
-  resize: vertical;
-}
-
-.code-editor-embedded .engine-note,
-.code-editor-embedded .inputline,
-.code-editor-embedded .note {
-  margin-top: 9px;
-}
-
-/* At 1366 the dock spans the single-column learning area, below the rail. */
 @media (max-width: 1279px) {
   .code-dock-head {
     align-items: flex-start;
-  }
-
-  .code-dock-status {
-    max-width: 46ch;
-  }
-
-  .code-editor-embedded .monaco-wrap {
-    min-height: 310px;
-    height: 36vh;
   }
 }
 
@@ -199,32 +92,8 @@
     justify-content: stretch;
   }
 
-  .code-dock-status {
-    flex: 1 1 100%;
-    max-width: none;
-    white-space: normal;
-  }
-
-  .code-dock-run,
-  .code-dock-toggle {
+  .code-dock-run {
     flex: 1 1 0;
     min-height: 42px;
-  }
-
-  .code-editor-embedded {
-    padding: 10px 10px 12px;
-  }
-
-  .code-editor-embedded .monaco-wrap {
-    height: 280px;
-    min-height: 260px;
-    max-height: 52vh;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .code-dock-body,
-  .code-dock-chevron {
-    transition: none;
   }
 }

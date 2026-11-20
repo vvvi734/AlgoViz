@@ -46,18 +46,6 @@ describe('Stage 2 — source consistency, diagnostics and drafts', () => {
     }));
   });
 
-  it('marks the trace stale after editing and clears it after re-run', async () => {
-    renderApp();
-    await waitForReady();
-    expect(screen.queryByTestId('sync-stale')).toBeNull();
-
-    fireEvent.change(screen.getByTestId('code-editor'), { target: { value: 'const arr = [9, 8, 7];' } });
-    await waitFor(() => expect(screen.getByTestId('sync-stale')).toBeTruthy());
-
-    fireEvent.click(screen.getByTestId('run-btn'));
-    await waitFor(() => expect(screen.queryByTestId('sync-stale')).toBeNull());
-  });
-
   it('shows a structured Python diagnostic after a failed run', async () => {
     renderApp();
     await waitForReady();
@@ -74,25 +62,13 @@ describe('Stage 2 — source consistency, diagnostics and drafts', () => {
     await waitFor(() => expect(screen.getByTestId('run-feedback').textContent).toContain('NameError'));
   });
 
-  it('autosaves edits and restores them on remount', async () => {
-    const { unmount } = renderApp();
-    await waitForReady();
-
-    fireEvent.change(screen.getByTestId('code-editor'), { target: { value: 'const CUSTOM = 1;' } });
-    await waitFor(() => expect(window.localStorage.getItem('algolens.code.bubble.js')).toBe('const CUSTOM = 1;'));
-
-    unmount();
-    renderApp();
-    await waitFor(() => {
-      expect((screen.getByTestId('code-editor') as HTMLTextAreaElement).value).toBe('const CUSTOM = 1;');
-    });
-  });
-
-  it('shows a no-location hint for events without source metadata', async () => {
+  it('keeps the compact runner free of a source editor', async () => {
     renderApp();
     await waitForReady();
-    // The mocked frames carry no `line`, so the editor must not fabricate a
-    // location and should surface the explicit hint instead.
-    expect(screen.getByTestId('editor-no-location')).toBeTruthy();
+
+    expect(screen.getByTestId('code-dock')).toBeTruthy();
+    expect(screen.getByTestId('run-input')).toBeTruthy();
+    expect(screen.queryByTestId('code-editor')).toBeNull();
+    expect(screen.queryByTestId('editor-no-location')).toBeNull();
   });
 });

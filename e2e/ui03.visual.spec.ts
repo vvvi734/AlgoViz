@@ -13,41 +13,35 @@ async function openDijkstra(page: Page) {
     timeout: 60_000,
   });
   await expect(page.locator('[data-testid="progress"]')).toHaveText('1 / 46', { timeout: 60_000 });
-  await expect(page.locator('#code-lang')).toHaveValue('python');
 }
 
 test.describe('UI-03 visual evidence', () => {
-  test('captures desktop collapsed, desktop expanded and mobile expanded', async ({ page }) => {
+  test('captures the compact run bar and the open reference sheet', async ({ page }) => {
     test.setTimeout(300_000);
     await page.setViewportSize({ width: 1440, height: 900 });
     await openDijkstra(page);
     await page.selectOption('[data-testid="theme-select"]', 'light');
-
-    await expect(page.locator('[data-testid="code-dock"]')).toHaveAttribute('data-expanded', 'false');
+    await expect(page.locator('[data-testid="code-dock"]')).toHaveAttribute('data-expanded', 'true');
     await page.evaluate(() => window.scrollTo(0, 0));
     await page.screenshot({
-      path: resolve(SHOT_DIR, 'code-dock-collapsed-1440-light.png'),
+      path: resolve(SHOT_DIR, 'runbar-1440-light.png'),
       fullPage: true,
     });
 
     await openCodePanel(page);
-    await expect(page.locator('.monaco-editor')).toBeVisible({ timeout: 45_000 });
-    await expect(page.locator('.monaco-editor')).toContainText('def dijkstra');
-    await page.waitForTimeout(650);
+    await page.getByTestId('workspace-tabs-toggle').click();
+    await expect(page.locator('[data-testid="workspace-panel-reference"]')).toBeVisible();
     await page.evaluate(() => window.scrollTo(0, 0));
     await page.screenshot({
-      path: resolve(SHOT_DIR, 'code-dock-expanded-1440-light.png'),
+      path: resolve(SHOT_DIR, 'runbar-reference-1440-light.png'),
       fullPage: true,
     });
 
     await page.setViewportSize({ width: 390, height: 844 });
-    await expect(page.locator('[data-testid="code-dock"]')).toHaveAttribute('data-expanded', 'true');
-    await page.waitForTimeout(350);
     await page.evaluate(() => window.scrollTo(0, 0));
     await page.screenshot({
-      path: resolve(SHOT_DIR, 'code-dock-expanded-390-light.png'),
+      path: resolve(SHOT_DIR, 'runbar-390-light.png'),
       fullPage: true,
     });
-    await expect(page.locator('[data-testid="mobile-algo-select"]')).toBeVisible();
   });
 });
