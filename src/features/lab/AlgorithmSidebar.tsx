@@ -436,14 +436,17 @@ function TextbookTopicRow({
               <button
                 key={algorithm.id}
                 type="button"
-                className={`alg-item ${active ? 'active' : ''}`}
+                className={`alg-item textbook-algorithm-item ${active ? 'active' : ''}`}
                 onClick={() => onSelect(algorithm.id)}
                 data-testid={`algo-${algorithm.id}`}
                 data-chapter={chapterId}
                 data-topic={topic.id}
                 data-kind="algorithm"
+                data-category="visual"
                 aria-current={active ? 'true' : undefined}
+                aria-label={`${pick(entry.name)} · ${t('textbookVisualLong')}`}
               >
+                <TextbookCategoryMark category="visual" />
                 <span className="alg-name">{pick(entry.name)}</span>
                 {algorithm.extension && (
                   <span className="textbook-extension" aria-hidden="true">{t('textbookExtension')}</span>

@@ -138,7 +138,14 @@ describe('AlgorithmSidebar — textbook chapters (UX-03)', () => {
     expect(shortest.getAttribute('aria-expanded')).toBe('false');
     fireEvent.click(shortest);
     expect(shortest.getAttribute('aria-expanded')).toBe('true');
-    expect(within(screen.getByTestId('topic-shortest-path').closest('section')!).getAllByTestId(/^algo-/)).toHaveLength(3);
+    const children = within(screen.getByTestId('topic-shortest-path').closest('section')!).getAllByTestId(/^algo-/);
+    expect(children).toHaveLength(3);
+    for (const child of children) {
+      expect(child.getAttribute('data-kind')).toBe('algorithm');
+      expect(child.getAttribute('data-category')).toBe('visual');
+      expect(child.querySelector('.textbook-category.is-visual')?.textContent).toBe('▶');
+      expect(child.textContent?.startsWith('▶')).toBe(true);
+    }
     fireEvent.click(shortest);
     expect(shortest.getAttribute('aria-expanded')).toBe('false');
   });
