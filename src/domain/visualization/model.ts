@@ -28,6 +28,7 @@ import { buildHuffmanModel, type HuffmanVisualModel } from './huffmanModel';
 import { buildSortingModel, type SortingVisualModel } from './sortingModel';
 import { buildSearchModel, type SearchVisualModel } from './searchModel';
 import { buildHashModel, type HashVisualModel } from './hashModel';
+import { buildKmpModel, type KmpVisualModel } from './kmpModel';
 import { buildSequentialListModel, type SequentialListVisualModel } from './sequentialListModel';
 
 /**
@@ -91,6 +92,7 @@ export type VisualModel =
   | SortingVisualModel
   | SearchVisualModel
   | HashVisualModel
+  | KmpVisualModel
   | GraphVisualModel
   | FloydVisualModel
   | BellmanVisualModel
@@ -265,6 +267,11 @@ export function buildVisualModel(
     const model = buildSearchModel(structure, s);
     if (!model) return { kind: 'raw', text: labels.invalid };
     return model;
+  }
+
+  if (structure !== undefined && structure.kind === 'kmp') {
+    if (kind !== 'array') return { kind: 'raw', text: labels.invalid };
+    return buildKmpModel(structure);
   }
 
   if (structure !== undefined && structure.kind === 'hash') {

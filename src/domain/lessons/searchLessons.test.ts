@@ -1,8 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import defaultFrames from '../../test/fixtures/search-default-frames.json';
 import edgeFrames from '../../test/fixtures/search-edge-frames.json';
-import { ALGORITHM_CATALOG } from '../algorithms/catalog.generated';
-import { defaultInputFor, exampleFor } from '../algorithms/examples';
+import { catalog, defaultInputFor, exampleFor } from '../algorithms/examples';
 import { buildAlgorithmGuide } from '../guides/buildGuide';
 import { binarySearchLesson } from './binarySearchLesson';
 import { linearSearchLesson } from './linearSearchLesson';
@@ -38,7 +37,7 @@ describe('F1 search lessons', () => {
     expect(lessonRegistry.byAlgorithm('binary')).toBe(binarySearchLesson);
     expect(lessonRegistry.has('linear')).toBe(true);
     expect(lessonRegistry.has('binary')).toBe(true);
-    const validation = validateLessonsAgainstCatalog(lessonRegistry.lessons, Object.keys(ALGORITHM_CATALOG));
+    const validation = validateLessonsAgainstCatalog(lessonRegistry.lessons, Object.keys(catalog));
     expect(validation.ok, validation.errors.join('\n')).toBe(true);
   });
 
@@ -74,8 +73,8 @@ describe('F1 search lessons', () => {
   });
 
   it('builds an authored horizontal flow rather than a zero-stage fallback', () => {
-    const linearGuide = buildAlgorithmGuide('linear', linearSearchLesson, ALGORITHM_CATALOG.linear);
-    const binaryGuide = buildAlgorithmGuide('binary', binarySearchLesson, ALGORITHM_CATALOG.binary);
+    const linearGuide = buildAlgorithmGuide('linear', linearSearchLesson, catalog.linear);
+    const binaryGuide = buildAlgorithmGuide('binary', binarySearchLesson, catalog.binary);
     expect(linearGuide.source).toBe('curated');
     expect(binaryGuide.source).toBe('curated');
     expect(linearGuide.stages).toHaveLength(4);

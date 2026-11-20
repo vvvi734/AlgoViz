@@ -23,6 +23,7 @@ import type {
   SearchSnapshot,
   SortingSnapshot,
   HashSnapshot,
+  KmpSnapshot,
   TopologicalSortSnapshot,
   TraceEvent,
   WeightedGraphSnapshot,
@@ -2566,6 +2567,156 @@ function sequentialListInsight(
   };
 }
 
+function kmpInsight(
+  snapshot: KmpSnapshot,
+  lang: LessonLang,
+  lesson: Lesson | undefined,
+  event: TraceEvent,
+  previousEvent: TraceEvent | undefined,
+): FrameInsight {
+  const activeStep = resolveStep(lesson, event.lessonStepId);
+  const previous = previousEvent?.structure?.kind === 'kmp' ? previousEvent.structure : null;
+  const i = snapshot.i === null ? '—' : String(snapshot.i);
+  const j = snapshot.j === null ? '—' : String(snapshot.j);
+  const latest = snapshot.currentMatchStart;
+
+  let action = event.message;
+  let why = event.message;
+  switch (snapshot.operation) {
+    case 'init':
+      action = tx(lang, '初始化主串 T 与模式串 P', 'Initialize text T and pattern P');
+      why = tx(lang, '先固定输入与 lps 全零，真正的字符比较从下一帧开始。', 'The input and zeroed lps table are recorded first; real character comparisons begin on the next frame.');
+      break;
+    case 'build-start':
+      action = tx(lang, '固定 lps[0]=0，令 i=1, j=0', 'Fix lps[0]=0 and set i=1, j=0');
+      why = tx(lang, '单个字符没有真前后缀，所以 lps[0] 一定为 0；从 i=1 开始扩展前缀表。', 'A single character has no proper prefix/suffix, so lps[0] is always 0; the table grows from i=1.');
+      break;
+    case 'build-compare':
+      action = tx(
+        lang,
+        `比较 pattern[${i}]=${snapshot.pattern[snapshot.i ?? 0] ?? '—'} 与 pattern[${j}]=${snapshot.pattern[snapshot.j ?? 0] ?? '—'}：${snapshot.matched ? '相等' : '不等'}`,
+        `Compare pattern[${i}]=${snapshot.pattern[snapshot.i ?? 0] ?? '—'} with pattern[${j}]=${snapshot.pattern[snapshot.j ?? 0] ?? '—'}: ${snapshot.matched ? 'equal' : 'different'}`,
+      );
+      why = tx(lang, '相等就让 j 前进；不等时不能直接清零，若 j>0 还要沿 lps 回退继续尝试更短的前缀。', 'Equality advances j; on a mismatch j cannot simply reset: when j>0, lps gives a shorter prefix to try.');
+      break;
+    case 'build-fallback':
+      action = tx(
+        lang,
+        `失配：j = lps[${(snapshot.fallbackFrom ?? 1) - 1}]，从 ${snapshot.fallbackFrom ?? '—'} 回退到 ${snapshot.fallbackTo ?? '—'}`,
+        `Mismatch: j = lps[${(snapshot.fallbackFrom ?? 1) - 1}], falling from ${snapshot.fallbackFrom ?? '—'} to ${snapshot.fallbackTo ?? '—'}`,
+      );
+      why = tx(lang, '回退值就是 lps[j-1]；它保留当前位置之前最长的、同时可作为后缀的前缀，避免从头重扫。', 'The fallback value is lps[j-1], the longest prefix that is also a suffix before this position, avoiding a restart from zero.');
+      break;
+    case 'build-record':
+      action = tx(lang, `记录 lps[${i}] = ${snapshot.lps[snapshot.i ?? 0] ?? 0}`, `Record lps[${i}] = ${snapshot.lps[snapshot.i ?? 0] ?? 0}`);
+      why = tx(lang, '本帧把当前 i 的前缀长度真正写入表；下一个 i 才继续检查。', 'This frame writes the prefix length for the current i; the next i is examined only afterwards.');
+      break;
+    case 'build-complete':
+      action = tx(lang, `前缀表完成：[${snapshot.lps.join(', ')}]`, `Prefix table complete: [${snapshot.lps.join(', ')}]`);
+      why = tx(lang, '每个 lps[k] 都来自真实比较与回退，没有预先写死的数值。', 'Every lps[k] came from real comparisons and fallbacks, not a prewritten table.');
+      break;
+    case 'search-start':
+      action = tx(lang, '主串与模式串都从下标 0 开始', 'Start both the text and pattern at index 0');
+      why = tx(lang, 'i 指向主串当前字符，j 指向模式串当前字符；匹配阶段不会把 i 回退。', 'i points into the text and j into the pattern; the matching phase never moves i back.');
+      break;
+    case 'search-compare':
+      action = tx(
+        lang,
+        `比较 text[${i}]=${snapshot.text[snapshot.i ?? 0] ?? '—'} 与 pattern[${j}]=${snapshot.pattern[snapshot.j ?? 0] ?? '—'}：${snapshot.matched ? '相等' : '不等'}`,
+        `Compare text[${i}]=${snapshot.text[snapshot.i ?? 0] ?? '—'} with pattern[${j}]=${snapshot.pattern[snapshot.j ?? 0] ?? '—'}: ${snapshot.matched ? 'equal' : 'different'}`,
+      );
+      if (snapshot.matched) {
+        why = tx(lang, '相等时 i、j 同时前进；主串已经比较过的字符不会被重新检查。', 'On equality i and j advance together; already checked text characters are not inspected again.');
+      } else {
+        why = tx(lang, '失配只改变 j：j=0 时 i 前进一格，否则 j 沿 lps 回退，主串指针保持不变。', 'A mismatch changes only j: at j=0 move i once, otherwise j falls back through lps while i stays fixed.');
+      }
+      break;
+    case 'search-advance':
+      action = tx(lang, `字符相等，i=${i}, j=${j} 同时前进`, `Characters equal; advance together to i=${i}, j=${j}`);
+      why = tx(lang, '已匹配前缀长度增加一位，i 仍然只向前移动。', 'The matched prefix grows by one while i still moves only forward.');
+      break;
+    case 'search-fallback':
+      action = tx(
+        lang,
+        `失配：j = lps[${(snapshot.fallbackFrom ?? 1) - 1}]，从 ${snapshot.fallbackFrom ?? '—'} 回退到 ${snapshot.fallbackTo ?? '—'}，i=${i} 不动`,
+        `Mismatch: j = lps[${(snapshot.fallbackFrom ?? 1) - 1}], falling from ${snapshot.fallbackFrom ?? '—'} to ${snapshot.fallbackTo ?? '—'}, i=${i} stays put`,
+      );
+      why = tx(lang, '模式串已匹配的后缀同时是前缀，可以直接滑动到下一个可能对齐位置，因此主串 i 不需要回退。', 'The matched suffix is also a prefix, so the pattern slides to the next possible alignment without moving text pointer i back.');
+      break;
+    case 'search-miss':
+      action = tx(lang, `j=0 仍失配，i 前进到 ${i}`, `Mismatch at j=0; advance i to ${i}`);
+      why = tx(lang, '模式串首字符都不匹配，这个主串位置不可能成为起点，i 只能前进一格。', 'Even the first pattern character does not match, so this text position cannot be a start; i advances once.');
+      break;
+    case 'match-found':
+      action = tx(
+        lang,
+        `完整匹配，起始 s=${latest ?? '—'}；继续搜索`,
+        `Full match at start s=${latest ?? '—'}; continue searching`,
+      );
+      why = tx(lang, '找到完整匹配后令 j=lps[m-1] 再继续，因此可以找到重叠匹配，不只返回第一个。', 'After a full match j becomes lps[m-1], so overlapping occurrences can also be found rather than returning only the first.');
+      break;
+    case 'search-done':
+      action = tx(lang, `扫描结束，共 ${snapshot.matches.length} 个匹配位置`, `Scan complete; ${snapshot.matches.length} occurrence(s)`);
+      why = tx(lang, 'i 已到达主串末尾；结果列表来自真实匹配，不包含不存在的起点。', 'i reached the end of the text; every recorded start came from a real match.');
+      break;
+    default:
+      break;
+  }
+
+  const changes: FrameChange[] = [
+    {
+      label: tx(lang, '阶段', 'phase'),
+      after: snapshot.phase === 'build' ? tx(lang, '构建 lps', 'build lps') : tx(lang, '匹配主串', 'match text'),
+      tone: 'neutral',
+    },
+    {
+      label: 'i',
+      before: previous?.i === null || previous?.i === undefined ? undefined : String(previous.i),
+      after: i,
+      tone: 'update',
+    },
+    {
+      label: 'j',
+      before: previous?.j === null || previous?.j === undefined ? undefined : String(previous.j),
+      after: j,
+      tone: 'update',
+    },
+    {
+      label: tx(lang, 'lps 已计算', 'lps ready'),
+      before: previous ? `${previous.lpsReady}/${previous.pattern.length}` : undefined,
+      after: `${snapshot.lpsReady}/${snapshot.pattern.length}`,
+      tone: snapshot.lpsReady !== (previous?.lpsReady ?? 0) ? 'update' : 'neutral',
+    },
+  ];
+  if (snapshot.fallbackFrom !== null && snapshot.fallbackTo !== null) {
+    changes.push({
+      label: tx(lang, '回退', 'fallback'),
+      before: `j=${snapshot.fallbackFrom}`,
+      after: `j=${snapshot.fallbackTo} = lps[${snapshot.fallbackFrom - 1}]`,
+      tone: 'warning',
+    });
+  }
+  if (snapshot.matches.length > 0) {
+    changes.push({
+      label: tx(lang, '已找到匹配', 'matches found'),
+      before: previous ? String(previous.matches.length) : undefined,
+      after: `${snapshot.matches.length}${latest !== null ? ` · s=${latest}` : ''}`,
+      tone: 'success',
+    });
+  }
+
+  const memory = activeStep?.tip
+    ? firstSentence(activeStep.tip[lang], 140)
+    : null;
+  return {
+    semantic: true,
+    action,
+    why: firstSentence(why),
+    changes,
+    memory,
+  };
+}
+
 /**
  * Build the compact, frame-synchronised insight for the right rail.
  *
@@ -2605,6 +2756,8 @@ export function buildFrameInsight(
         return searchInsight(structure, lang, lesson, currentEvent, previousEvent);
       case 'hash':
         return hashInsight(structure, lang, lesson, currentEvent, previousEvent);
+      case 'kmp':
+        return kmpInsight(structure, lang, lesson, currentEvent, previousEvent);
       case 'doubly-linked-list':
       case 'circular-linked-list':
         return advancedLinkedInsight(structure, lang, hasStep, lesson, currentEvent, previousEvent);

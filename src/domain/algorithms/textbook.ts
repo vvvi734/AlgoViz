@@ -213,9 +213,10 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
     topics: [
       {
         id: 'string-basics',
-        title: { zh: '串的定义、比较与抽象数据类型', en: 'Definition, comparison and ADT' },
+        title: { zh: '串的定义与模式匹配基础', en: 'Strings and the foundations of pattern matching' },
         algorithms: [],
         concept: true,
+        conceptId: 'string-basics',
       },
       {
         id: 'string-storage',
@@ -232,8 +233,7 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
       {
         id: 'kmp',
         title: { zh: 'KMP 模式匹配算法', en: 'KMP pattern matching' },
-        algorithms: [],
-        planned: true,
+        algorithms: [{ id: 'kmp' }],
       },
     ],
   },

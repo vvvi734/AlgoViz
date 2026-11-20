@@ -50,6 +50,7 @@ describe('textbook directory (UX-03)', () => {
       'intro-logical-physical',
       'linear-basics',
       'sort-basics',
+      'string-basics',
     ]);
     for (const topic of conceptTopics) {
       expect(conceptById(topic.conceptId!)).toBeTruthy();
@@ -61,7 +62,26 @@ describe('textbook directory (UX-03)', () => {
     expect(ids).toHaveLength(Object.keys(catalog).length);
     expect(new Set(ids).size).toBe(ids.length);
     expect(new Set(ids)).toEqual(new Set(Object.keys(catalog)));
-    expect(ids).toHaveLength(34);
+    expect(ids).toHaveLength(35);
+  });
+
+  it('wires the authored string concept and runnable KMP into chapter 5', () => {
+    const strings = nav.find((chapter) => chapter.id === 'ch5-string')!;
+    expect(strings.topics.map((topic) => topic.id)).toEqual([
+      'string-basics',
+      'string-storage',
+      'naive-match',
+      'kmp',
+    ]);
+    const basics = strings.topics.find((topic) => topic.id === 'string-basics')!;
+    expect(basics.kind).toBe('concept');
+    expect(basics.conceptId).toBe('string-basics');
+    expect(basics.title.zh).toContain('模式匹配');
+
+    const kmp = strings.topics.find((topic) => topic.id === 'kmp')!;
+    expect(kmp.planned).toBeUndefined();
+    expect(kmp.algorithms.map((algorithm) => algorithm.id)).toEqual(['kmp']);
+    expect(textbookPathFor(catalog, 'kmp')).toEqual({ chapterId: 'ch5-string', topicId: 'kmp' });
   });
 
   it('places MST before shortest paths and marks Bellman-Ford / connectivity as extensions', () => {
@@ -165,6 +185,7 @@ describe('textbook directory (UX-03)', () => {
       'doubly-linked-list',
       'stack-basics',
       'queue-basics',
+      'kmp',
       'binary-tree-traversal',
       'huffman',
       'topological',

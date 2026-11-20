@@ -119,6 +119,16 @@
   stroke: var(--accent);
 }
 
+.diagram-cell.diagram-cell-mismatch {
+  fill: var(--note-bg);
+  stroke: var(--red);
+}
+
+.diagram-cell.diagram-cell-current {
+  fill: var(--note-bg);
+  stroke: var(--warn);
+}
+
 .diagram-node {
   fill: var(--node-bg);
   stroke: var(--node-edge);

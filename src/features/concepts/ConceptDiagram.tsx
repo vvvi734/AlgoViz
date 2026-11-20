@@ -285,6 +285,120 @@ export function ConceptDiagram({ kind, lang }: { kind: ConceptDiagramKind; lang:
     );
   }
 
+  if (kind === 'string') {
+    const textCells = 'ABABABC'.split('');
+    const patternCells = 'ABABC'.split('');
+    const lpsCells = [0, 0, 1, 2, 0];
+    const cell = 38;
+    const step = 44;
+    const x0 = 58;
+    const yText = 58;
+    const yPattern = 104;
+    const yTextKmp = 198;
+    const yPatternKmp = 248;
+    return (
+      <svg className="concept-svg" viewBox="0 0 760 430" role="img" aria-label={L('朴素匹配与 KMP 的静态对齐示意', 'Static alignment comparison of naive matching and KMP')}>
+        <text className="diagram-label diagram-label-strong" x={x0} y="32">
+          {L('同一段主串，两种失配后的处理', 'One text, two ways to handle a mismatch')}
+        </text>
+
+        <text className="diagram-label" x={x0} y="52">{L('朴素匹配：首次对齐从 s = 0 开始', 'Naive: the first alignment starts at s = 0')}</text>
+        <text className="diagram-note" x="20" y={yText + 25}>T</text>
+        <text className="diagram-note" x="20" y={yPattern + 25}>P</text>
+        {textCells.map((char, index) => {
+          const tone = index < 4 ? 'diagram-cell diagram-accent' : index === 4 ? 'diagram-cell diagram-cell-mismatch' : 'diagram-cell';
+          return (
+            <g key={`naive-text-${index}`}>
+              <rect className={tone} x={x0 + index * step} y={yText} width={cell} height="30" rx="5" />
+              <text className="diagram-label" x={x0 + index * step + cell / 2} y={yText + 21} textAnchor="middle">{char}</text>
+              <text className="diagram-note" x={x0 + index * step + cell / 2} y={yText + 44} textAnchor="middle">{index}</text>
+            </g>
+          );
+        })}
+        {patternCells.map((char, index) => {
+          const tone = index < 4 ? 'diagram-cell diagram-accent' : 'diagram-cell diagram-cell-mismatch';
+          return (
+            <g key={`naive-pattern-${index}`}>
+              <rect className={tone} x={x0 + index * step} y={yPattern} width={cell} height="30" rx="5" />
+              <text className="diagram-label" x={x0 + index * step + cell / 2} y={yPattern + 21} textAnchor="middle">{char}</text>
+            </g>
+          );
+        })}
+        <text className="diagram-note" x={x0 + 5 * step + 10} y={yPattern + 20}>
+          {L('j = 4 失配：A ≠ C', 'Mismatch at j = 4: A ≠ C')}
+        </text>
+        <line className="diagram-divider" x1="24" y1="168" x2="736" y2="168" />
+
+        <text className="diagram-label" x={x0} y="190">
+          {L('KMP：i 停在 4，j 回退到 lps[3] = 2', 'KMP: i stays at 4, j falls back to lps[3] = 2')}
+        </text>
+        <text className="diagram-note" x="20" y={yTextKmp + 20}>T</text>
+        {textCells.map((char, index) => {
+          const tone = index >= 2 && index < 4
+            ? 'diagram-cell diagram-accent'
+            : index === 4
+              ? 'diagram-cell diagram-cell-current'
+              : 'diagram-cell';
+          return (
+            <g key={`kmp-text-${index}`}>
+              <rect className={tone} x={x0 + index * step} y={yTextKmp} width={cell} height="30" rx="5" />
+              <text className="diagram-label" x={x0 + index * step + cell / 2} y={yTextKmp + 21} textAnchor="middle">{char}</text>
+            </g>
+          );
+        })}
+        <line className="diagram-guide" x1={x0 + 4 * step + cell / 2} y1={yTextKmp - 6} x2={x0 + 4 * step + cell / 2} y2={yTextKmp + 34} />
+        <text className="diagram-label" x={x0 + 4 * step + cell / 2} y={yTextKmp - 10} textAnchor="middle">i</text>
+
+        <text className="diagram-note" x="20" y={yPatternKmp + 20}>P</text>
+        {patternCells.map((char, index) => {
+          const x = x0 + (index + 2) * step;
+          const tone = index < 2
+            ? 'diagram-cell diagram-accent'
+            : index === 2
+              ? 'diagram-cell diagram-cell-current'
+              : 'diagram-cell';
+          return (
+            <g key={`kmp-pattern-${index}`}>
+              <rect className={tone} x={x} y={yPatternKmp} width={cell} height="30" rx="5" />
+              <text className="diagram-label" x={x + cell / 2} y={yPatternKmp + 21} textAnchor="middle">{char}</text>
+            </g>
+          );
+        })}
+        <line className="diagram-guide" x1={x0 + 4 * step + cell / 2} y1={yPatternKmp - 6} x2={x0 + 4 * step + cell / 2} y2={yPatternKmp + 40} />
+        <text className="diagram-label" x={x0 + 4 * step + cell / 2} y={yPatternKmp + 54} textAnchor="middle">j</text>
+
+        <text className="diagram-note" x={x0 + 7 * step + 14} y={yTextKmp + 20}>
+          {L('i 不回退', 'i never rewinds')}
+        </text>
+        <text className="diagram-note" x={x0 + 7 * step + 14} y={yTextKmp + 42}>
+          {L('前缀 AB 复用', 'prefix AB is reused')}
+        </text>
+        <text className="diagram-note" x={x0 + 7 * step + 14} y={yTextKmp + 64}>
+          {L('下一次对齐从 s = 2 继续', 'next alignment continues at s = 2')}
+        </text>
+
+        <line className="diagram-divider" x1="24" y1="326" x2="736" y2="326" />
+        <text className="diagram-label" x={x0} y="350">{L('lps 表（0 基）', 'lps table (0-based)')}</text>
+        <text className="diagram-note" x={x0} y="370">{L('P', 'P')}</text>
+        {patternCells.map((char, index) => {
+          const x = x0 + 36 + index * 56;
+          return (
+            <g key={`lps-${index}`}>
+              <rect className="diagram-cell" x={x} y="338" width="44" height="28" rx="5" />
+              <text className="diagram-label" x={x + 22} y="358" textAnchor="middle">{char}</text>
+              <rect className={index === 3 ? 'diagram-cell diagram-accent' : 'diagram-cell'} x={x} y="374" width="44" height="28" rx="5" />
+              <text className="diagram-label" x={x + 22} y="394" textAnchor="middle">{lpsCells[index]}</text>
+              <text className="diagram-note" x={x + 22} y="414" textAnchor="middle">{index}</text>
+            </g>
+          );
+        })}
+        <text className="diagram-note" x={x0 + 36 + 5 * 56 + 12} y="392">
+          {L('lps[3] = 2 → 回退后对齐到 s = 2', 'lps[3] = 2 → realign at s = 2')}
+        </text>
+      </svg>
+    );
+  }
+
   if (kind === 'sorting') {
     const stableRows: Array<[string, string]> = [
       [L('小林', 'Lin'), '90'],

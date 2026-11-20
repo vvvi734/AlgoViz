@@ -1,8 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import defaultFrames from '../../test/fixtures/hash-default-frames.json';
 import edgeFrames from '../../test/fixtures/hash-edge-frames.json';
-import { ALGORITHM_CATALOG } from '../algorithms/catalog.generated';
-import { defaultInputFor, exampleFor } from '../algorithms/examples';
+import { catalog, defaultInputFor, exampleFor } from '../algorithms/examples';
 import { TEXTBOOK_CHAPTERS } from '../algorithms/textbook';
 import { buildAlgorithmGuide } from '../guides/buildGuide';
 import { hashChainingLesson } from './hashChainingLesson';
@@ -37,7 +36,7 @@ describe('F2 hash lessons', () => {
     expect(lessonRegistry.byAlgorithm('hash-probe')).toBe(hashProbingLesson);
     expect(lessonRegistry.has('hash-chain')).toBe(true);
     expect(lessonRegistry.has('hash-probe')).toBe(true);
-    const validation = validateLessonsAgainstCatalog(lessonRegistry.lessons, Object.keys(ALGORITHM_CATALOG));
+    const validation = validateLessonsAgainstCatalog(lessonRegistry.lessons, Object.keys(catalog));
     expect(validation.ok, validation.errors.join('\n')).toBe(true);
   });
 
@@ -93,8 +92,8 @@ describe('F2 hash lessons', () => {
   });
 
   it('builds an authored horizontal flow rather than a metadata-only fallback', () => {
-    const chain = buildAlgorithmGuide('hash-chain', hashChainingLesson, ALGORITHM_CATALOG['hash-chain']);
-    const probe = buildAlgorithmGuide('hash-probe', hashProbingLesson, ALGORITHM_CATALOG['hash-probe']);
+    const chain = buildAlgorithmGuide('hash-chain', hashChainingLesson, catalog['hash-chain']);
+    const probe = buildAlgorithmGuide('hash-probe', hashProbingLesson, catalog['hash-probe']);
     expect(chain.source).toBe('curated');
     expect(probe.source).toBe('curated');
     expect(chain.stages).toHaveLength(4);
@@ -121,8 +120,8 @@ describe('F2 hash lessons', () => {
     expect(hashChainingLesson.steps[4]!.explanation.zh).toContain('duplicate');
     expect(hashChainingLesson.steps[4]!.explanation.zh).toContain('不覆盖');
     expect(hashProbingLesson.steps[4]!.explanation.zh).toContain('duplicate');
-    expect(ALGORITHM_CATALOG['hash-chain']!.desc[0]).toContain('重复');
-    expect(ALGORITHM_CATALOG['hash-probe']!.desc[0]).toContain('重复');
+    expect(catalog['hash-chain']!.desc[0]).toContain('重复');
+    expect(catalog['hash-probe']!.desc[0]).toContain('重复');
   });
 });
 

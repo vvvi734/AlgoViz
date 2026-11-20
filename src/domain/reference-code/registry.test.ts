@@ -12,7 +12,7 @@ import {
 } from './registry';
 
 describe('three-language reference registry', () => {
-  it('registers all 33 formal courses with three principle implementations', () => {
+  it('registers all 34 formal courses with three principle implementations', () => {
     expect(REFERENCE_CODE_ALGORITHMS.sort()).toEqual([
       'avl',
       'bellman-ford',
@@ -34,6 +34,7 @@ describe('three-language reference registry', () => {
       'huffman',
       'inorder',
       'insertion',
+      'kmp',
       'kruskal',
       'linear',
       'linked',
@@ -89,9 +90,17 @@ describe('three-language reference registry', () => {
 
   it('has no remaining formal course outside the registry', () => {
     expect(REFERENCE_CODE_BACKLOG).toHaveLength(0);
-    expect(REFERENCE_CODE_ALGORITHMS.length + REFERENCE_CODE_BACKLOG.length).toBe(33);
+    expect(REFERENCE_CODE_ALGORITHMS.length + REFERENCE_CODE_BACKLOG.length).toBe(34);
     expect(referenceLanguages('shell')).toEqual(REFERENCE_LANGUAGES);
     expect(referenceFileMeta('shell', 'c')).not.toBeNull();
+  });
+
+  it('adds explicit KMP code plus C++/Python lookup shortcuts', () => {
+    expect(referenceImplementations('kmp', 'c')).toEqual(['principle']);
+    expect(referenceImplementations('kmp', 'cpp')).toEqual(['principle', 'convenience']);
+    expect(referenceImplementations('kmp', 'python')).toEqual(['principle', 'convenience']);
+    expect(referenceFileMeta('kmp', 'cpp', 'convenience')?.fileName).toBe('kmp_find_builtin.cpp');
+    expect(referenceFileMeta('kmp', 'python', 'convenience')?.fileName).toBe('kmp_find_builtin.py');
   });
 
   it('loads principle and shared convenience sources on demand', async () => {
@@ -134,6 +143,25 @@ describe('three-language reference registry', () => {
 
     const stackConvenience = await loadReferenceCode('stack', 'cpp', 'convenience');
     expect(stackConvenience).toContain('std::stack');
+
+    const kmpC = await loadReferenceCode('kmp', 'c');
+    expect(kmpC).toContain('build_lps');
+    expect(kmpC).toContain('j = lps[j - 1]');
+    expect(kmpC).toContain('MIT');
+
+    const kmpCpp = await loadReferenceCode('kmp', 'cpp');
+    expect(kmpCpp).toContain('kmp_find_all');
+    expect(kmpCpp).not.toContain('find(pattern)');
+
+    const kmpPython = await loadReferenceCode('kmp', 'python');
+    expect(kmpPython).toContain('def kmp_find_all');
+    expect(kmpPython).not.toContain('trace(');
+
+    const kmpFindCpp = await loadReferenceCode('kmp', 'cpp', 'convenience');
+    expect(kmpFindCpp).toContain('text.find(pattern)');
+
+    const kmpFindPython = await loadReferenceCode('kmp', 'python', 'convenience');
+    expect(kmpFindPython).toContain('text.find(pattern)');
   });
 
   it('returns null for unregistered or unavailable implementation combinations', async () => {

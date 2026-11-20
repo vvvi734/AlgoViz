@@ -1,0 +1,2990 @@
+[
+  {
+    "state": {
+      "type": "array",
+      "values": [
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C",
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C"
+      ],
+      "focus": []
+    },
+    "message": "读入主串与模式串 / Read text and pattern",
+    "variables": {
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "i": null,
+      "j": null,
+      "lps": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "matches": []
+    },
+    "lessonStepId": "init",
+    "structure": {
+      "kind": "kmp",
+      "phase": "build",
+      "operation": "init",
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "lps": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "lpsReady": 0,
+      "i": null,
+      "j": null,
+      "matched": null,
+      "fallbackFrom": null,
+      "fallbackTo": null,
+      "matches": [],
+      "currentMatchStart": null
+    }
+  },
+  {
+    "state": {
+      "type": "array",
+      "values": [
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C",
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C"
+      ],
+      "focus": [
+        1
+      ]
+    },
+    "message": "lps[0] 固定为 0，从 i=1 开始 / lps[0] is 0; start at i=1",
+    "variables": {
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "i": 1,
+      "j": 0,
+      "lps": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "matches": []
+    },
+    "lessonStepId": "build-start",
+    "structure": {
+      "kind": "kmp",
+      "phase": "build",
+      "operation": "build-start",
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "lps": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "lpsReady": 1,
+      "i": 1,
+      "j": 0,
+      "matched": null,
+      "fallbackFrom": null,
+      "fallbackTo": null,
+      "matches": [],
+      "currentMatchStart": null
+    }
+  },
+  {
+    "state": {
+      "type": "array",
+      "values": [
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C",
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C"
+      ],
+      "focus": [
+        1
+      ]
+    },
+    "message": "比较 pattern[i] 与 pattern[j] / Compare pattern[i] with pattern[j]",
+    "variables": {
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "i": 1,
+      "j": 0,
+      "lps": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "matches": []
+    },
+    "lessonStepId": "build-compare",
+    "structure": {
+      "kind": "kmp",
+      "phase": "build",
+      "operation": "build-compare",
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "lps": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "lpsReady": 1,
+      "i": 1,
+      "j": 0,
+      "matched": false,
+      "fallbackFrom": null,
+      "fallbackTo": null,
+      "matches": [],
+      "currentMatchStart": null
+    }
+  },
+  {
+    "state": {
+      "type": "array",
+      "values": [
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C",
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C"
+      ],
+      "focus": [
+        1
+      ]
+    },
+    "message": "失配且 j=0：记录 lps[i]=0 / Mismatch at j=0: record lps[i]=0",
+    "variables": {
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "i": 1,
+      "j": 0,
+      "lps": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "matches": []
+    },
+    "lessonStepId": "build-record",
+    "structure": {
+      "kind": "kmp",
+      "phase": "build",
+      "operation": "build-record",
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "lps": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "lpsReady": 2,
+      "i": 1,
+      "j": 0,
+      "matched": null,
+      "fallbackFrom": null,
+      "fallbackTo": null,
+      "matches": [],
+      "currentMatchStart": null
+    }
+  },
+  {
+    "state": {
+      "type": "array",
+      "values": [
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C",
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C"
+      ],
+      "focus": [
+        2
+      ]
+    },
+    "message": "比较 pattern[i] 与 pattern[j] / Compare pattern[i] with pattern[j]",
+    "variables": {
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "i": 2,
+      "j": 0,
+      "lps": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "matches": []
+    },
+    "lessonStepId": "build-compare",
+    "structure": {
+      "kind": "kmp",
+      "phase": "build",
+      "operation": "build-compare",
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "lps": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "lpsReady": 2,
+      "i": 2,
+      "j": 0,
+      "matched": true,
+      "fallbackFrom": null,
+      "fallbackTo": null,
+      "matches": [],
+      "currentMatchStart": null
+    }
+  },
+  {
+    "state": {
+      "type": "array",
+      "values": [
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C",
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C"
+      ],
+      "focus": [
+        2
+      ]
+    },
+    "message": "匹配：j 前进并记录 lps[i]=j / Match: advance j and record lps[i]=j",
+    "variables": {
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "i": 2,
+      "j": 1,
+      "lps": [
+        0,
+        0,
+        1,
+        0,
+        0
+      ],
+      "matches": []
+    },
+    "lessonStepId": "build-record",
+    "structure": {
+      "kind": "kmp",
+      "phase": "build",
+      "operation": "build-record",
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "lps": [
+        0,
+        0,
+        1,
+        0,
+        0
+      ],
+      "lpsReady": 3,
+      "i": 2,
+      "j": 1,
+      "matched": null,
+      "fallbackFrom": null,
+      "fallbackTo": null,
+      "matches": [],
+      "currentMatchStart": null
+    }
+  },
+  {
+    "state": {
+      "type": "array",
+      "values": [
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C",
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C"
+      ],
+      "focus": [
+        3
+      ]
+    },
+    "message": "比较 pattern[i] 与 pattern[j] / Compare pattern[i] with pattern[j]",
+    "variables": {
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "i": 3,
+      "j": 1,
+      "lps": [
+        0,
+        0,
+        1,
+        0,
+        0
+      ],
+      "matches": []
+    },
+    "lessonStepId": "build-compare",
+    "structure": {
+      "kind": "kmp",
+      "phase": "build",
+      "operation": "build-compare",
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "lps": [
+        0,
+        0,
+        1,
+        0,
+        0
+      ],
+      "lpsReady": 3,
+      "i": 3,
+      "j": 1,
+      "matched": true,
+      "fallbackFrom": null,
+      "fallbackTo": null,
+      "matches": [],
+      "currentMatchStart": null
+    }
+  },
+  {
+    "state": {
+      "type": "array",
+      "values": [
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C",
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C"
+      ],
+      "focus": [
+        3
+      ]
+    },
+    "message": "匹配：j 前进并记录 lps[i]=j / Match: advance j and record lps[i]=j",
+    "variables": {
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "i": 3,
+      "j": 2,
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "matches": []
+    },
+    "lessonStepId": "build-record",
+    "structure": {
+      "kind": "kmp",
+      "phase": "build",
+      "operation": "build-record",
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "lpsReady": 4,
+      "i": 3,
+      "j": 2,
+      "matched": null,
+      "fallbackFrom": null,
+      "fallbackTo": null,
+      "matches": [],
+      "currentMatchStart": null
+    }
+  },
+  {
+    "state": {
+      "type": "array",
+      "values": [
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C",
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C"
+      ],
+      "focus": [
+        4
+      ]
+    },
+    "message": "比较 pattern[i] 与 pattern[j] / Compare pattern[i] with pattern[j]",
+    "variables": {
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "i": 4,
+      "j": 2,
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "matches": []
+    },
+    "lessonStepId": "build-compare",
+    "structure": {
+      "kind": "kmp",
+      "phase": "build",
+      "operation": "build-compare",
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "lpsReady": 4,
+      "i": 4,
+      "j": 2,
+      "matched": false,
+      "fallbackFrom": null,
+      "fallbackTo": null,
+      "matches": [],
+      "currentMatchStart": null
+    }
+  },
+  {
+    "state": {
+      "type": "array",
+      "values": [
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C",
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C"
+      ],
+      "focus": [
+        4
+      ]
+    },
+    "message": "失配：j 回退到 lps[j-1] / Mismatch: j falls back to lps[j-1]",
+    "variables": {
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "i": 4,
+      "j": 0,
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "matches": []
+    },
+    "lessonStepId": "build-fallback",
+    "structure": {
+      "kind": "kmp",
+      "phase": "build",
+      "operation": "build-fallback",
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "lpsReady": 4,
+      "i": 4,
+      "j": 0,
+      "matched": false,
+      "fallbackFrom": 2,
+      "fallbackTo": 0,
+      "matches": [],
+      "currentMatchStart": null
+    }
+  },
+  {
+    "state": {
+      "type": "array",
+      "values": [
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C",
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C"
+      ],
+      "focus": [
+        4
+      ]
+    },
+    "message": "比较 pattern[i] 与 pattern[j] / Compare pattern[i] with pattern[j]",
+    "variables": {
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "i": 4,
+      "j": 0,
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "matches": []
+    },
+    "lessonStepId": "build-compare",
+    "structure": {
+      "kind": "kmp",
+      "phase": "build",
+      "operation": "build-compare",
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "lpsReady": 4,
+      "i": 4,
+      "j": 0,
+      "matched": false,
+      "fallbackFrom": null,
+      "fallbackTo": null,
+      "matches": [],
+      "currentMatchStart": null
+    }
+  },
+  {
+    "state": {
+      "type": "array",
+      "values": [
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C",
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C"
+      ],
+      "focus": [
+        4
+      ]
+    },
+    "message": "失配且 j=0：记录 lps[i]=0 / Mismatch at j=0: record lps[i]=0",
+    "variables": {
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "i": 4,
+      "j": 0,
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "matches": []
+    },
+    "lessonStepId": "build-record",
+    "structure": {
+      "kind": "kmp",
+      "phase": "build",
+      "operation": "build-record",
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "lpsReady": 5,
+      "i": 4,
+      "j": 0,
+      "matched": null,
+      "fallbackFrom": null,
+      "fallbackTo": null,
+      "matches": [],
+      "currentMatchStart": null
+    }
+  },
+  {
+    "state": {
+      "type": "array",
+      "values": [
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C",
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C"
+      ],
+      "focus": [
+        5
+      ]
+    },
+    "message": "前缀表构建完成 / Prefix table complete",
+    "variables": {
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "i": 5,
+      "j": 0,
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "matches": []
+    },
+    "lessonStepId": "build-complete",
+    "structure": {
+      "kind": "kmp",
+      "phase": "build",
+      "operation": "build-complete",
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "lpsReady": 5,
+      "i": 5,
+      "j": 0,
+      "matched": null,
+      "fallbackFrom": null,
+      "fallbackTo": null,
+      "matches": [],
+      "currentMatchStart": null
+    }
+  },
+  {
+    "state": {
+      "type": "array",
+      "values": [
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C",
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C"
+      ],
+      "focus": [
+        0
+      ]
+    },
+    "message": "从 i=0, j=0 开始匹配 / Start matching at i=0, j=0",
+    "variables": {
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "i": 0,
+      "j": 0,
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "matches": []
+    },
+    "lessonStepId": "search-start",
+    "structure": {
+      "kind": "kmp",
+      "phase": "search",
+      "operation": "search-start",
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "lpsReady": 5,
+      "i": 0,
+      "j": 0,
+      "matched": null,
+      "fallbackFrom": null,
+      "fallbackTo": null,
+      "matches": [],
+      "currentMatchStart": null
+    }
+  },
+  {
+    "state": {
+      "type": "array",
+      "values": [
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C",
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C"
+      ],
+      "focus": [
+        0
+      ]
+    },
+    "message": "比较 text[i] 与 pattern[j] / Compare text[i] with pattern[j]",
+    "variables": {
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "i": 0,
+      "j": 0,
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "matches": []
+    },
+    "lessonStepId": "search-compare",
+    "structure": {
+      "kind": "kmp",
+      "phase": "search",
+      "operation": "search-compare",
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "lpsReady": 5,
+      "i": 0,
+      "j": 0,
+      "matched": true,
+      "fallbackFrom": null,
+      "fallbackTo": null,
+      "matches": [],
+      "currentMatchStart": null
+    }
+  },
+  {
+    "state": {
+      "type": "array",
+      "values": [
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C",
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C"
+      ],
+      "focus": [
+        1
+      ]
+    },
+    "message": "匹配：i 与 j 同时前进 / Match: advance i and j together",
+    "variables": {
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "i": 1,
+      "j": 1,
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "matches": []
+    },
+    "lessonStepId": "search-advance",
+    "structure": {
+      "kind": "kmp",
+      "phase": "search",
+      "operation": "search-advance",
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "lpsReady": 5,
+      "i": 1,
+      "j": 1,
+      "matched": true,
+      "fallbackFrom": null,
+      "fallbackTo": null,
+      "matches": [],
+      "currentMatchStart": null
+    }
+  },
+  {
+    "state": {
+      "type": "array",
+      "values": [
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C",
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C"
+      ],
+      "focus": [
+        1
+      ]
+    },
+    "message": "比较 text[i] 与 pattern[j] / Compare text[i] with pattern[j]",
+    "variables": {
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "i": 1,
+      "j": 1,
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "matches": []
+    },
+    "lessonStepId": "search-compare",
+    "structure": {
+      "kind": "kmp",
+      "phase": "search",
+      "operation": "search-compare",
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "lpsReady": 5,
+      "i": 1,
+      "j": 1,
+      "matched": true,
+      "fallbackFrom": null,
+      "fallbackTo": null,
+      "matches": [],
+      "currentMatchStart": null
+    }
+  },
+  {
+    "state": {
+      "type": "array",
+      "values": [
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C",
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C"
+      ],
+      "focus": [
+        2
+      ]
+    },
+    "message": "匹配：i 与 j 同时前进 / Match: advance i and j together",
+    "variables": {
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "i": 2,
+      "j": 2,
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "matches": []
+    },
+    "lessonStepId": "search-advance",
+    "structure": {
+      "kind": "kmp",
+      "phase": "search",
+      "operation": "search-advance",
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "lpsReady": 5,
+      "i": 2,
+      "j": 2,
+      "matched": true,
+      "fallbackFrom": null,
+      "fallbackTo": null,
+      "matches": [],
+      "currentMatchStart": null
+    }
+  },
+  {
+    "state": {
+      "type": "array",
+      "values": [
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C",
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C"
+      ],
+      "focus": [
+        2
+      ]
+    },
+    "message": "比较 text[i] 与 pattern[j] / Compare text[i] with pattern[j]",
+    "variables": {
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "i": 2,
+      "j": 2,
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "matches": []
+    },
+    "lessonStepId": "search-compare",
+    "structure": {
+      "kind": "kmp",
+      "phase": "search",
+      "operation": "search-compare",
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "lpsReady": 5,
+      "i": 2,
+      "j": 2,
+      "matched": true,
+      "fallbackFrom": null,
+      "fallbackTo": null,
+      "matches": [],
+      "currentMatchStart": null
+    }
+  },
+  {
+    "state": {
+      "type": "array",
+      "values": [
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C",
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C"
+      ],
+      "focus": [
+        3
+      ]
+    },
+    "message": "匹配：i 与 j 同时前进 / Match: advance i and j together",
+    "variables": {
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "i": 3,
+      "j": 3,
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "matches": []
+    },
+    "lessonStepId": "search-advance",
+    "structure": {
+      "kind": "kmp",
+      "phase": "search",
+      "operation": "search-advance",
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "lpsReady": 5,
+      "i": 3,
+      "j": 3,
+      "matched": true,
+      "fallbackFrom": null,
+      "fallbackTo": null,
+      "matches": [],
+      "currentMatchStart": null
+    }
+  },
+  {
+    "state": {
+      "type": "array",
+      "values": [
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C",
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C"
+      ],
+      "focus": [
+        3
+      ]
+    },
+    "message": "比较 text[i] 与 pattern[j] / Compare text[i] with pattern[j]",
+    "variables": {
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "i": 3,
+      "j": 3,
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "matches": []
+    },
+    "lessonStepId": "search-compare",
+    "structure": {
+      "kind": "kmp",
+      "phase": "search",
+      "operation": "search-compare",
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "lpsReady": 5,
+      "i": 3,
+      "j": 3,
+      "matched": true,
+      "fallbackFrom": null,
+      "fallbackTo": null,
+      "matches": [],
+      "currentMatchStart": null
+    }
+  },
+  {
+    "state": {
+      "type": "array",
+      "values": [
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C",
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C"
+      ],
+      "focus": [
+        4
+      ]
+    },
+    "message": "匹配：i 与 j 同时前进 / Match: advance i and j together",
+    "variables": {
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "i": 4,
+      "j": 4,
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "matches": []
+    },
+    "lessonStepId": "search-advance",
+    "structure": {
+      "kind": "kmp",
+      "phase": "search",
+      "operation": "search-advance",
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "lpsReady": 5,
+      "i": 4,
+      "j": 4,
+      "matched": true,
+      "fallbackFrom": null,
+      "fallbackTo": null,
+      "matches": [],
+      "currentMatchStart": null
+    }
+  },
+  {
+    "state": {
+      "type": "array",
+      "values": [
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C",
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C"
+      ],
+      "focus": [
+        4
+      ]
+    },
+    "message": "比较 text[i] 与 pattern[j] / Compare text[i] with pattern[j]",
+    "variables": {
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "i": 4,
+      "j": 4,
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "matches": []
+    },
+    "lessonStepId": "search-compare",
+    "structure": {
+      "kind": "kmp",
+      "phase": "search",
+      "operation": "search-compare",
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "lpsReady": 5,
+      "i": 4,
+      "j": 4,
+      "matched": false,
+      "fallbackFrom": null,
+      "fallbackTo": null,
+      "matches": [],
+      "currentMatchStart": null
+    }
+  },
+  {
+    "state": {
+      "type": "array",
+      "values": [
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C",
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C"
+      ],
+      "focus": [
+        4
+      ]
+    },
+    "message": "失配：j 回退，i 保持不动 / Mismatch: j falls back, i stays put",
+    "variables": {
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "i": 4,
+      "j": 2,
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "matches": []
+    },
+    "lessonStepId": "search-fallback",
+    "structure": {
+      "kind": "kmp",
+      "phase": "search",
+      "operation": "search-fallback",
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "lpsReady": 5,
+      "i": 4,
+      "j": 2,
+      "matched": false,
+      "fallbackFrom": 4,
+      "fallbackTo": 2,
+      "matches": [],
+      "currentMatchStart": null
+    }
+  },
+  {
+    "state": {
+      "type": "array",
+      "values": [
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C",
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C"
+      ],
+      "focus": [
+        4
+      ]
+    },
+    "message": "比较 text[i] 与 pattern[j] / Compare text[i] with pattern[j]",
+    "variables": {
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "i": 4,
+      "j": 2,
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "matches": []
+    },
+    "lessonStepId": "search-compare",
+    "structure": {
+      "kind": "kmp",
+      "phase": "search",
+      "operation": "search-compare",
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "lpsReady": 5,
+      "i": 4,
+      "j": 2,
+      "matched": true,
+      "fallbackFrom": null,
+      "fallbackTo": null,
+      "matches": [],
+      "currentMatchStart": null
+    }
+  },
+  {
+    "state": {
+      "type": "array",
+      "values": [
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C",
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C"
+      ],
+      "focus": [
+        5
+      ]
+    },
+    "message": "匹配：i 与 j 同时前进 / Match: advance i and j together",
+    "variables": {
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "i": 5,
+      "j": 3,
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "matches": []
+    },
+    "lessonStepId": "search-advance",
+    "structure": {
+      "kind": "kmp",
+      "phase": "search",
+      "operation": "search-advance",
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "lpsReady": 5,
+      "i": 5,
+      "j": 3,
+      "matched": true,
+      "fallbackFrom": null,
+      "fallbackTo": null,
+      "matches": [],
+      "currentMatchStart": null
+    }
+  },
+  {
+    "state": {
+      "type": "array",
+      "values": [
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C",
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C"
+      ],
+      "focus": [
+        5
+      ]
+    },
+    "message": "比较 text[i] 与 pattern[j] / Compare text[i] with pattern[j]",
+    "variables": {
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "i": 5,
+      "j": 3,
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "matches": []
+    },
+    "lessonStepId": "search-compare",
+    "structure": {
+      "kind": "kmp",
+      "phase": "search",
+      "operation": "search-compare",
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "lpsReady": 5,
+      "i": 5,
+      "j": 3,
+      "matched": true,
+      "fallbackFrom": null,
+      "fallbackTo": null,
+      "matches": [],
+      "currentMatchStart": null
+    }
+  },
+  {
+    "state": {
+      "type": "array",
+      "values": [
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C",
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C"
+      ],
+      "focus": [
+        6
+      ]
+    },
+    "message": "匹配：i 与 j 同时前进 / Match: advance i and j together",
+    "variables": {
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "i": 6,
+      "j": 4,
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "matches": []
+    },
+    "lessonStepId": "search-advance",
+    "structure": {
+      "kind": "kmp",
+      "phase": "search",
+      "operation": "search-advance",
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "lpsReady": 5,
+      "i": 6,
+      "j": 4,
+      "matched": true,
+      "fallbackFrom": null,
+      "fallbackTo": null,
+      "matches": [],
+      "currentMatchStart": null
+    }
+  },
+  {
+    "state": {
+      "type": "array",
+      "values": [
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C",
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C"
+      ],
+      "focus": [
+        6
+      ]
+    },
+    "message": "比较 text[i] 与 pattern[j] / Compare text[i] with pattern[j]",
+    "variables": {
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "i": 6,
+      "j": 4,
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "matches": []
+    },
+    "lessonStepId": "search-compare",
+    "structure": {
+      "kind": "kmp",
+      "phase": "search",
+      "operation": "search-compare",
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "lpsReady": 5,
+      "i": 6,
+      "j": 4,
+      "matched": true,
+      "fallbackFrom": null,
+      "fallbackTo": null,
+      "matches": [],
+      "currentMatchStart": null
+    }
+  },
+  {
+    "state": {
+      "type": "array",
+      "values": [
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C",
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C"
+      ],
+      "focus": [
+        7
+      ]
+    },
+    "message": "找到完整匹配 / Full match found",
+    "variables": {
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "i": 7,
+      "j": 5,
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "matches": [
+        2
+      ]
+    },
+    "lessonStepId": "match-found",
+    "structure": {
+      "kind": "kmp",
+      "phase": "search",
+      "operation": "match-found",
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "lpsReady": 5,
+      "i": 7,
+      "j": 5,
+      "matched": true,
+      "fallbackFrom": null,
+      "fallbackTo": null,
+      "matches": [
+        2
+      ],
+      "currentMatchStart": 2
+    }
+  },
+  {
+    "state": {
+      "type": "array",
+      "values": [
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C",
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C"
+      ],
+      "focus": [
+        7
+      ]
+    },
+    "message": "比较 text[i] 与 pattern[j] / Compare text[i] with pattern[j]",
+    "variables": {
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "i": 7,
+      "j": 0,
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "matches": [
+        2
+      ]
+    },
+    "lessonStepId": "search-compare",
+    "structure": {
+      "kind": "kmp",
+      "phase": "search",
+      "operation": "search-compare",
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "lpsReady": 5,
+      "i": 7,
+      "j": 0,
+      "matched": true,
+      "fallbackFrom": null,
+      "fallbackTo": null,
+      "matches": [
+        2
+      ],
+      "currentMatchStart": 2
+    }
+  },
+  {
+    "state": {
+      "type": "array",
+      "values": [
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C",
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C"
+      ],
+      "focus": [
+        8
+      ]
+    },
+    "message": "匹配：i 与 j 同时前进 / Match: advance i and j together",
+    "variables": {
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "i": 8,
+      "j": 1,
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "matches": [
+        2
+      ]
+    },
+    "lessonStepId": "search-advance",
+    "structure": {
+      "kind": "kmp",
+      "phase": "search",
+      "operation": "search-advance",
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "lpsReady": 5,
+      "i": 8,
+      "j": 1,
+      "matched": true,
+      "fallbackFrom": null,
+      "fallbackTo": null,
+      "matches": [
+        2
+      ],
+      "currentMatchStart": 2
+    }
+  },
+  {
+    "state": {
+      "type": "array",
+      "values": [
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C",
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C"
+      ],
+      "focus": [
+        8
+      ]
+    },
+    "message": "比较 text[i] 与 pattern[j] / Compare text[i] with pattern[j]",
+    "variables": {
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "i": 8,
+      "j": 1,
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "matches": [
+        2
+      ]
+    },
+    "lessonStepId": "search-compare",
+    "structure": {
+      "kind": "kmp",
+      "phase": "search",
+      "operation": "search-compare",
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "lpsReady": 5,
+      "i": 8,
+      "j": 1,
+      "matched": true,
+      "fallbackFrom": null,
+      "fallbackTo": null,
+      "matches": [
+        2
+      ],
+      "currentMatchStart": 2
+    }
+  },
+  {
+    "state": {
+      "type": "array",
+      "values": [
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C",
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C"
+      ],
+      "focus": [
+        9
+      ]
+    },
+    "message": "匹配：i 与 j 同时前进 / Match: advance i and j together",
+    "variables": {
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "i": 9,
+      "j": 2,
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "matches": [
+        2
+      ]
+    },
+    "lessonStepId": "search-advance",
+    "structure": {
+      "kind": "kmp",
+      "phase": "search",
+      "operation": "search-advance",
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "lpsReady": 5,
+      "i": 9,
+      "j": 2,
+      "matched": true,
+      "fallbackFrom": null,
+      "fallbackTo": null,
+      "matches": [
+        2
+      ],
+      "currentMatchStart": 2
+    }
+  },
+  {
+    "state": {
+      "type": "array",
+      "values": [
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C",
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C"
+      ],
+      "focus": [
+        9
+      ]
+    },
+    "message": "比较 text[i] 与 pattern[j] / Compare text[i] with pattern[j]",
+    "variables": {
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "i": 9,
+      "j": 2,
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "matches": [
+        2
+      ]
+    },
+    "lessonStepId": "search-compare",
+    "structure": {
+      "kind": "kmp",
+      "phase": "search",
+      "operation": "search-compare",
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "lpsReady": 5,
+      "i": 9,
+      "j": 2,
+      "matched": true,
+      "fallbackFrom": null,
+      "fallbackTo": null,
+      "matches": [
+        2
+      ],
+      "currentMatchStart": 2
+    }
+  },
+  {
+    "state": {
+      "type": "array",
+      "values": [
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C",
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C"
+      ],
+      "focus": [
+        10
+      ]
+    },
+    "message": "匹配：i 与 j 同时前进 / Match: advance i and j together",
+    "variables": {
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "i": 10,
+      "j": 3,
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "matches": [
+        2
+      ]
+    },
+    "lessonStepId": "search-advance",
+    "structure": {
+      "kind": "kmp",
+      "phase": "search",
+      "operation": "search-advance",
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "lpsReady": 5,
+      "i": 10,
+      "j": 3,
+      "matched": true,
+      "fallbackFrom": null,
+      "fallbackTo": null,
+      "matches": [
+        2
+      ],
+      "currentMatchStart": 2
+    }
+  },
+  {
+    "state": {
+      "type": "array",
+      "values": [
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C",
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C"
+      ],
+      "focus": [
+        10
+      ]
+    },
+    "message": "比较 text[i] 与 pattern[j] / Compare text[i] with pattern[j]",
+    "variables": {
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "i": 10,
+      "j": 3,
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "matches": [
+        2
+      ]
+    },
+    "lessonStepId": "search-compare",
+    "structure": {
+      "kind": "kmp",
+      "phase": "search",
+      "operation": "search-compare",
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "lpsReady": 5,
+      "i": 10,
+      "j": 3,
+      "matched": true,
+      "fallbackFrom": null,
+      "fallbackTo": null,
+      "matches": [
+        2
+      ],
+      "currentMatchStart": 2
+    }
+  },
+  {
+    "state": {
+      "type": "array",
+      "values": [
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C",
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C"
+      ],
+      "focus": [
+        11
+      ]
+    },
+    "message": "匹配：i 与 j 同时前进 / Match: advance i and j together",
+    "variables": {
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "i": 11,
+      "j": 4,
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "matches": [
+        2
+      ]
+    },
+    "lessonStepId": "search-advance",
+    "structure": {
+      "kind": "kmp",
+      "phase": "search",
+      "operation": "search-advance",
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "lpsReady": 5,
+      "i": 11,
+      "j": 4,
+      "matched": true,
+      "fallbackFrom": null,
+      "fallbackTo": null,
+      "matches": [
+        2
+      ],
+      "currentMatchStart": 2
+    }
+  },
+  {
+    "state": {
+      "type": "array",
+      "values": [
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C",
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C"
+      ],
+      "focus": [
+        11
+      ]
+    },
+    "message": "比较 text[i] 与 pattern[j] / Compare text[i] with pattern[j]",
+    "variables": {
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "i": 11,
+      "j": 4,
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "matches": [
+        2
+      ]
+    },
+    "lessonStepId": "search-compare",
+    "structure": {
+      "kind": "kmp",
+      "phase": "search",
+      "operation": "search-compare",
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "lpsReady": 5,
+      "i": 11,
+      "j": 4,
+      "matched": false,
+      "fallbackFrom": null,
+      "fallbackTo": null,
+      "matches": [
+        2
+      ],
+      "currentMatchStart": 2
+    }
+  },
+  {
+    "state": {
+      "type": "array",
+      "values": [
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C",
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C"
+      ],
+      "focus": [
+        11
+      ]
+    },
+    "message": "失配：j 回退，i 保持不动 / Mismatch: j falls back, i stays put",
+    "variables": {
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "i": 11,
+      "j": 2,
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "matches": [
+        2
+      ]
+    },
+    "lessonStepId": "search-fallback",
+    "structure": {
+      "kind": "kmp",
+      "phase": "search",
+      "operation": "search-fallback",
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "lpsReady": 5,
+      "i": 11,
+      "j": 2,
+      "matched": false,
+      "fallbackFrom": 4,
+      "fallbackTo": 2,
+      "matches": [
+        2
+      ],
+      "currentMatchStart": 2
+    }
+  },
+  {
+    "state": {
+      "type": "array",
+      "values": [
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C",
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C"
+      ],
+      "focus": [
+        11
+      ]
+    },
+    "message": "比较 text[i] 与 pattern[j] / Compare text[i] with pattern[j]",
+    "variables": {
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "i": 11,
+      "j": 2,
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "matches": [
+        2
+      ]
+    },
+    "lessonStepId": "search-compare",
+    "structure": {
+      "kind": "kmp",
+      "phase": "search",
+      "operation": "search-compare",
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "lpsReady": 5,
+      "i": 11,
+      "j": 2,
+      "matched": true,
+      "fallbackFrom": null,
+      "fallbackTo": null,
+      "matches": [
+        2
+      ],
+      "currentMatchStart": 2
+    }
+  },
+  {
+    "state": {
+      "type": "array",
+      "values": [
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C",
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C"
+      ],
+      "focus": [
+        12
+      ]
+    },
+    "message": "匹配：i 与 j 同时前进 / Match: advance i and j together",
+    "variables": {
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "i": 12,
+      "j": 3,
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "matches": [
+        2
+      ]
+    },
+    "lessonStepId": "search-advance",
+    "structure": {
+      "kind": "kmp",
+      "phase": "search",
+      "operation": "search-advance",
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "lpsReady": 5,
+      "i": 12,
+      "j": 3,
+      "matched": true,
+      "fallbackFrom": null,
+      "fallbackTo": null,
+      "matches": [
+        2
+      ],
+      "currentMatchStart": 2
+    }
+  },
+  {
+    "state": {
+      "type": "array",
+      "values": [
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C",
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C"
+      ],
+      "focus": [
+        12
+      ]
+    },
+    "message": "比较 text[i] 与 pattern[j] / Compare text[i] with pattern[j]",
+    "variables": {
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "i": 12,
+      "j": 3,
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "matches": [
+        2
+      ]
+    },
+    "lessonStepId": "search-compare",
+    "structure": {
+      "kind": "kmp",
+      "phase": "search",
+      "operation": "search-compare",
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "lpsReady": 5,
+      "i": 12,
+      "j": 3,
+      "matched": true,
+      "fallbackFrom": null,
+      "fallbackTo": null,
+      "matches": [
+        2
+      ],
+      "currentMatchStart": 2
+    }
+  },
+  {
+    "state": {
+      "type": "array",
+      "values": [
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C",
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C"
+      ],
+      "focus": [
+        13
+      ]
+    },
+    "message": "匹配：i 与 j 同时前进 / Match: advance i and j together",
+    "variables": {
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "i": 13,
+      "j": 4,
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "matches": [
+        2
+      ]
+    },
+    "lessonStepId": "search-advance",
+    "structure": {
+      "kind": "kmp",
+      "phase": "search",
+      "operation": "search-advance",
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "lpsReady": 5,
+      "i": 13,
+      "j": 4,
+      "matched": true,
+      "fallbackFrom": null,
+      "fallbackTo": null,
+      "matches": [
+        2
+      ],
+      "currentMatchStart": 2
+    }
+  },
+  {
+    "state": {
+      "type": "array",
+      "values": [
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C",
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C"
+      ],
+      "focus": [
+        13
+      ]
+    },
+    "message": "比较 text[i] 与 pattern[j] / Compare text[i] with pattern[j]",
+    "variables": {
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "i": 13,
+      "j": 4,
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "matches": [
+        2
+      ]
+    },
+    "lessonStepId": "search-compare",
+    "structure": {
+      "kind": "kmp",
+      "phase": "search",
+      "operation": "search-compare",
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "lpsReady": 5,
+      "i": 13,
+      "j": 4,
+      "matched": true,
+      "fallbackFrom": null,
+      "fallbackTo": null,
+      "matches": [
+        2
+      ],
+      "currentMatchStart": 2
+    }
+  },
+  {
+    "state": {
+      "type": "array",
+      "values": [
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C",
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C"
+      ],
+      "focus": [
+        14
+      ]
+    },
+    "message": "找到完整匹配 / Full match found",
+    "variables": {
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "i": 14,
+      "j": 5,
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "matches": [
+        2,
+        9
+      ]
+    },
+    "lessonStepId": "match-found",
+    "structure": {
+      "kind": "kmp",
+      "phase": "search",
+      "operation": "match-found",
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "lpsReady": 5,
+      "i": 14,
+      "j": 5,
+      "matched": true,
+      "fallbackFrom": null,
+      "fallbackTo": null,
+      "matches": [
+        2,
+        9
+      ],
+      "currentMatchStart": 9
+    }
+  },
+  {
+    "state": {
+      "type": "array",
+      "values": [
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C",
+        "A",
+        "B",
+        "A",
+        "B",
+        "A",
+        "B",
+        "C"
+      ],
+      "focus": [
+        14
+      ]
+    },
+    "message": "匹配结束 / Search complete",
+    "variables": {
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "i": 14,
+      "j": 0,
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "matches": [
+        2,
+        9
+      ]
+    },
+    "lessonStepId": "search-done",
+    "structure": {
+      "kind": "kmp",
+      "phase": "search",
+      "operation": "search-done",
+      "text": "ABABABCABABABC",
+      "pattern": "ABABC",
+      "lps": [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      "lpsReady": 5,
+      "i": 14,
+      "j": 0,
+      "matched": null,
+      "fallbackFrom": null,
+      "fallbackTo": null,
+      "matches": [
+        2,
+        9
+      ],
+      "currentMatchStart": 9
+    }
+  }
+]

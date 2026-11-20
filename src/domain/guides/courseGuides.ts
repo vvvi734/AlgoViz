@@ -769,6 +769,69 @@ export const COURSE_GUIDES: Record<string, CourseGuide> = {
       ['Table length m is fixed; probing order must match between insertion and search.', 'Deletion must leave a DELETED tombstone; search may stop only at EMPTY.', 'Higher load factor worsens clustering; this course does not resize automatically.'],
     ),
   },
+
+  'kmp': {
+    intro: text(
+      '朴素模式匹配在每个起点重新开始：一旦失配，主串起点右移一格，刚刚已经确认相等的整段字符又会被重新比较，最坏 O(nm)。KMP 先对模式串求前缀表 lps，把“已匹配前缀的后缀同时也是模式串前缀”这一结构保存下来；失配时只把模式串指针 j 回退到 lps[j-1]，主串指针 i 持续前进，于是构造加扫描的总时间为 O(n+m)。',
+      'Naive matching restarts at each text position: after one mismatch the text start shifts by one and the whole segment just confirmed equal is compared again, costing O(nm) in the worst case. KMP first computes the pattern’s lps table, recording where a suffix of a matched prefix is also a pattern prefix. On a mismatch only pattern pointer j falls back to lps[j-1] while text pointer i keeps advancing, so construction plus scanning is O(n+m).',
+    ),
+    definition: text(
+      'KMP 是一种线性时间的字符串匹配算法：先计算模式串 P 的前缀表 lps，其中 lps[k] 是 P[0..k] 的最长相等真前后缀长度；再令主串指针 i 只前进，模式串指针 j 在失配时按 lps[j-1] 回退，从而在不回退主串的前提下找到所有匹配起点。',
+      'KMP is a linear-time string matching algorithm. It first computes the pattern’s lps table, where lps[k] is the longest proper prefix of P[0..k] that is also its suffix. Text pointer i then only advances, while pattern pointer j falls back to lps[j-1] on a mismatch, finding every match start without ever rewinding the text.',
+    ),
+    ...algorithm(
+      step(
+        '构造初始化',
+        'Initialize the table build',
+        'lps[0]=0、i=1、j=0；长度为 1 的串没有真前后缀，所以首项必为 0。',
+        'lps[0]=0, i=1, j=0: a one-character string has no proper prefix/suffix, so its first entry is always 0.',
+      ),
+      step(
+        '构造循环：比较与分支',
+        'Build loop: compare and branch',
+        '比较 P[i] 与 P[j]：相等则 j++ 并写 lps[i]；不等且 j>0 则 j=lps[j-1] 后继续同一轮比较；不等且 j=0 则写 lps[i]=0、i++。i 走完 m 项才退出循环。',
+        'Compare P[i] with P[j]: if equal, increment j and write lps[i]; if different and j>0, set j=lps[j-1] and retry the same comparison; if different and j=0, write lps[i]=0 and increment i. The loop exits only after i has covered all m entries.',
+      ),
+      step(
+        '进入匹配：i=0、j=0',
+        'Enter matching: i=0, j=0',
+        '前缀表构建完成后才开始扫描主串；匹配阶段 i 只增不减。',
+        'Text scanning starts only after the table is complete; during matching i never decreases.',
+      ),
+      step(
+        '匹配循环：相等则同步前进',
+        'Match loop: advance together on equality',
+        '若 T[i]=P[j]，则 i++、j++；当 j=m 时记录起点 s=i-m，再令 j=lps[m-1] 继续寻找，因此不会漏掉重叠匹配。',
+        'If T[i]=P[j], increment both i and j. When j=m, record s=i-m and set j=lps[m-1] before continuing, so overlapping occurrences are not missed.',
+      ),
+      step(
+        '匹配循环：失配只回退 j',
+        'Match loop: fall back j only',
+        '若 T[i]≠P[j] 且 j>0，则 j=lps[j-1]，i 不动并重新比较；若 j=0，则当前主串位置不可能成为起点，i++。i 到达 n 时循环结束。',
+        'If T[i]≠P[j] and j>0, set j=lps[j-1], keep i fixed and compare again; if j=0, this text position cannot start a match, so increment i. The loop ends when i reaches n.',
+      ),
+      step(
+        '输出全部匹配起点',
+        'Output every match start',
+        '扫描结束后 matches 保存所有真实起点；允许重叠，例如 AAAAA 中查找 AAA 得到 0、1、2。',
+        'When the scan ends, matches holds every real start. Overlaps are allowed: AAA in AAAAA yields 0, 1 and 2.',
+      ),
+    ),
+    conditions: list(
+      [
+        '本课统一使用 0 基 lps：lps[k] 对应 P[0..k]，失配回退到 lps[j-1]。',
+        '部分教材的 next / nextval 采用不同下标或整体移位定义，不能与本课的 lps 混用。',
+        '模式串长度 m 至少为 1；空模式串没有定义好的真前后缀，本课直接拒绝。',
+        '时间 O(n+m)：构造 O(m)、扫描 O(n)，i 不回退；辅助空间 O(m)。',
+      ],
+      [
+        'This course uses a 0-based lps: lps[k] covers P[0..k], and a mismatch falls back to lps[j-1].',
+        'Some textbooks define next/nextval with different indices or an off-by-one shift; those conventions must not be mixed with this lps.',
+        'The pattern length m is at least 1; an empty pattern has no well-defined proper prefix/suffix and is rejected here.',
+        'Time O(n+m): O(m) to build plus O(n) to scan because i never rewinds; O(m) extra space.',
+      ],
+    ),
+  },
 };
 
 export type CourseGuideId = keyof typeof COURSE_GUIDES;

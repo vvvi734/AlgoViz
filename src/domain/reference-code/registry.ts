@@ -390,6 +390,27 @@ export const REFERENCE_CODE: Record<string, ReferenceEntry> = {
       python: { fileName: 'hash_probe_builtin.py' },
     },
   },
+  kmp: {
+    files: {
+      c: { fileName: 'kmp.c' },
+      cpp: { fileName: 'kmp.cpp' },
+      python: { fileName: 'kmp.py' },
+    },
+    convenience: {
+      cpp: { fileName: 'kmp_find_builtin.cpp' },
+      python: { fileName: 'kmp_find_builtin.py' },
+    },
+    convenienceNote: {
+      cpp: {
+        zh: '便捷示例：std::string::find() 完成相同的“查找全部位置”任务；它只是标准库快捷用法，不保证内部采用 KMP。',
+        en: 'Convenience example: std::string::find() performs the same “find every occurrence” task; it is a standard-library shortcut and is not guaranteed to use KMP internally.',
+      },
+      python: {
+        zh: '便捷示例：str.find() 完成相同的“查找全部位置”任务；它只是标准库快捷用法，不保证内部采用 KMP。',
+        en: 'Convenience example: str.find() performs the same “find every occurrence” task; it is a standard-library shortcut and is not guaranteed to use KMP internally.',
+      },
+    },
+  },
 };
 
 /** All formal courses are covered by verified reference code. */

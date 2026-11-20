@@ -189,7 +189,7 @@ export function useLabController(): LabController {
     // real Python presets. Default those courses to Python; the legacy JS
     // examples remain available for the simpler array courses.
     const preferredLang: CodeLanguage =
-      id === 'stack' || id === 'queue' || id === 'linked' || id === 'doubly' || id === 'circular' || id === 'seqlist' || id === 'inorder' || id === 'bst' || id === 'avl' || id === 'heap' || id === 'huffman' || id === 'selection' || id === 'insertion' || id === 'shell' || id === 'quick' || id === 'merge' || id === 'linear' || id === 'binary' || id === 'hash-chain' || id === 'hash-probe' || id === 'factorial' || id === 'fib' || isGraphAlgorithm(id) ? 'python' : codeLang;
+      id === 'stack' || id === 'queue' || id === 'linked' || id === 'doubly' || id === 'circular' || id === 'seqlist' || id === 'inorder' || id === 'bst' || id === 'avl' || id === 'heap' || id === 'huffman' || id === 'selection' || id === 'insertion' || id === 'shell' || id === 'quick' || id === 'merge' || id === 'linear' || id === 'binary' || id === 'hash-chain' || id === 'hash-probe' || id === 'kmp' || id === 'factorial' || id === 'fib' || isGraphAlgorithm(id) ? 'python' : codeLang;
     if (preferredLang !== codeLang) {
       setCodeLangState(preferredLang);
       safeSet(CODE_LANG_KEY, preferredLang);
@@ -300,6 +300,10 @@ export function useLabController(): LabController {
         heap: values,
         value: operation === 'push' ? 1 + Math.floor(Math.random() * 15) : null,
       };
+    } else if (currentAlgo === 'kmp') {
+      const text = Array.from({ length: 14 }, () => (Math.random() < 0.5 ? 'A' : 'B')).join('');
+      const start = Math.floor(Math.random() * 10);
+      next = { text, pattern: text.slice(start, start + 4) };
     } else if (entry.group === 'sort') {
       next = Array.from({ length: 7 }, () => 1 + Math.floor(Math.random() * 15));
     } else if (entry.group === 'search') {

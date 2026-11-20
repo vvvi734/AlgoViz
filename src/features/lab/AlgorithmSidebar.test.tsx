@@ -197,12 +197,11 @@ describe('AlgorithmSidebar — textbook chapters (UX-03)', () => {
     fireEvent.click(graphBasics);
     expect(onSelectConcept).toHaveBeenCalledWith('graph-basics');
 
-    const sortBasics = screen.getByTestId('topic-sort-basics');
-    expect(sortBasics.tagName).toBe('DIV');
-    expect(sortBasics.getAttribute('aria-disabled')).toBe('true');
-    expect(sortBasics.textContent).toContain('知识讲解');
-    expect(within(sortBasics).queryByRole('button')).toBeNull();
-    expect(screen.getByTestId('chapter-ch5-string').textContent).toContain('待完善');
+    const unAuthored = screen.getByTestId('topic-string-storage');
+    expect(unAuthored.tagName).toBe('DIV');
+    expect(unAuthored.getAttribute('aria-disabled')).toBe('true');
+    expect(unAuthored.textContent).toContain('知识讲解');
+    expect(within(unAuthored).queryByRole('button')).toBeNull();
   });
 
   it('expands every chapter and group topic, then collapses to the first level', () => {

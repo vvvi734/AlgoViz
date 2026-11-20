@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { ALGORITHM_CATALOG } from '../algorithms/catalog.generated';
+import { catalog } from '../algorithms/examples';
 import { bubbleSortLesson } from './bubbleSort';
 import { factorialLesson } from './factorial';
 import { createLessonRegistry, lessonRegistry, validateLessonsAgainstCatalog } from './registry';
 
-const catalogIds = Object.keys(ALGORITHM_CATALOG);
+const catalogIds = Object.keys(catalog);
 
 describe('Lesson registry (Stage 3B)', () => {
   it('looks a course up by lesson id and by algorithm id', () => {
@@ -57,6 +57,7 @@ describe('Lesson registry (Stage 3B)', () => {
       'binary-search-basics',
       'hash-chaining-basics',
       'hash-probing-basics',
+      'kmp-pattern-matching',
     ]);
   });
 
@@ -91,7 +92,7 @@ describe('Lesson registry (Stage 3B)', () => {
   it('leaves the other algorithms without a course, and that is legal', () => {
     const covered = lessonRegistry.lessons.map((lesson) => lesson.algorithmId);
     const uncovered = catalogIds.filter((id) => !covered.includes(id));
-    expect(catalogIds.length).toBe(34);
+    expect(catalogIds.length).toBe(35);
     expect(uncovered.length).toBe(1);
     expect(uncovered).toEqual(['fib']);
   });

@@ -79,6 +79,7 @@ import {
   SEQUENTIAL_LIST_DEFAULT_INPUT,
   sequentialListPythonExample,
 } from './sequentialListExamples';
+import { KMP_DEFAULT_INPUT, KMP_PYTHON } from './kmpExamples';
 
 export const STACK_DEFAULT_INPUT: unknown = [
   ['push', 3],
@@ -216,6 +217,7 @@ const STRUCTURE_PYTHON: Record<string, string> = {
   binary: BINARY_PYTHON,
   'hash-chain': CHAINING_PYTHON,
   'hash-probe': PROBING_PYTHON,
+  kmp: KMP_PYTHON,
 };
 
 const STRUCTURE_INPUT: Record<string, unknown> = {
@@ -249,6 +251,7 @@ const STRUCTURE_INPUT: Record<string, unknown> = {
   binary: BINARY_DEFAULT_INPUT,
   'hash-chain': HASH_CHAIN_INPUT,
   'hash-probe': HASH_PROBE_INPUT,
+  kmp: KMP_DEFAULT_INPUT,
 };
 
 export function structurePythonExample(algorithmId: string): string | undefined {

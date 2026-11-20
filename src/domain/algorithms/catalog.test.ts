@@ -6,6 +6,7 @@ import { runJsProgram } from '../../runtime/js/program';
 import type { TraceFrame } from '../trace/types';
 
 const expected = baseline as Record<string, TraceFrame[]>;
+const legacyIds = Object.keys(catalog).filter((id) => id !== 'kmp');
 
 function visualFrames(code: string, input: unknown): TraceFrame[] {
   const result = runJsProgram({ mode: 'visual', code, input, tests: null });
@@ -13,13 +14,16 @@ function visualFrames(code: string, input: unknown): TraceFrame[] {
   return result.frames;
 }
 
-describe('legacy algorithm catalogue (34 presets)', () => {
-  it('ships the original presets plus S1 shell, S2 quick/merge, F2 hash, L1A linked lists and L1B sequential list', () => {
-    expect(algorithmIds()).toHaveLength(34);
+describe('algorithm catalogue (34 legacy presets plus STR-01 KMP)', () => {
+  it('keeps all legacy presets and adds KMP as the only new runnable entry', () => {
+    expect(algorithmIds()).toHaveLength(35);
+    expect(legacyIds).toHaveLength(34);
     expect(Object.keys(expected)).toHaveLength(34);
+    expect(catalog.kmp.time).toBe('O(n + m)');
+    expect(catalog.kmp.space).toBe('O(m)');
   });
 
-  it.each(Object.keys(catalog))('%s reproduces the pre-refactor frame stream byte-for-byte', (id) => {
+  it.each(legacyIds)('%s reproduces the pre-refactor frame stream byte-for-byte', (id) => {
     const entry = catalog[id];
     expect(visualFrames(entry.code, entry.input)).toEqual(expected[id]);
   });

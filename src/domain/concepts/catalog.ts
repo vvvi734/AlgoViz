@@ -1000,6 +1000,152 @@ export const CONCEPT_PAGES: readonly ConceptPage[] = [
     },
     takeaway: ['排序没有全能冠军：先定稳定性、空间和最坏情况，再看平均速度。', 'No sorting algorithm wins on every axis: fix stability, space and worst case first, then compare average speed.'],
   },
+  {
+    id: 'string-basics',
+    topicId: 'string-basics',
+    title: ['串的定义与模式匹配基础', 'Strings and the foundations of pattern matching'],
+    chapter: ['第 5 章 · 串与模式匹配', 'Chapter 5 · Strings and pattern matching'],
+    summary: [
+      '串是由字符组成的有限序列；模式匹配要在一段主串中找出模式串的全部出现位置。朴素方法在失配后反复回到起点，KMP 则用前缀表复用已经比较过的信息。',
+      'A string is a finite sequence of characters; pattern matching finds every occurrence of a pattern inside a text. Naive matching restarts after each mismatch, while KMP reuses already-compared information through a prefix table.',
+    ],
+    diagram: 'string',
+    definitions: [
+      {
+        term: ['串（字符串）', 'String'],
+        text: ['由零个或多个字符组成的有限序列，通常记作 S = "a₁a₂…aₙ"。', 'A finite sequence of zero or more characters, usually written S = "a₁a₂…aₙ".'],
+      },
+      {
+        term: ['空串', 'Empty string'],
+        text: ['长度为 0 的串，记作 "" 或 ∅。空串不是空格串：空格也是一个字符。', 'The string of length 0, written "" or ∅. It is not a blank string: a space is a character.'],
+      },
+      {
+        term: ['子串', 'Substring'],
+        text: ['主串中连续一段字符构成的串；空串也是任何串的子串，不等于原串的子串称为真子串。', 'A contiguous segment of a text; the empty string is a substring of every string, and a substring different from the whole string is a proper substring.'],
+      },
+      {
+        term: ['长度', 'Length'],
+        text: ['串中字符的个数。比较的是字符个数，不是字节数，也不是肉眼看到的显示宽度。', 'The number of characters in the string, not the number of bytes and not the rendered width.'],
+      },
+      {
+        term: ['位置', 'Position'],
+        text: ['字符或子串在串中的序号。教材常从 1 开始计数；本课程代码与动画从 0 开始，报告结果时会明确说明基准。', 'The ordinal of a character or substring. Textbooks often count from 1; this course’s code and animation count from 0 and always state the base explicitly.'],
+      },
+    ],
+    sections: [
+      {
+        title: ['串的基本操作', 'Basic string operations'],
+        body: [
+          '串是线性结构，但它的元素只能是字符，运算围绕整段序列展开。讨论复杂度时，要区分“读一个字符”和“复制一整段串”。',
+          'A string is linear, but its elements are characters and its operations act on whole sequences. When discussing cost, distinguish reading one character from copying an entire string.',
+        ],
+        points: [
+          ['赋值 StrAssign：用一段字符序列构造串。', 'Assign: build a string from a character sequence.'],
+          ['求长 StrLength：返回字符个数；空串长度为 0。', 'Length: return the character count; the empty string has length 0.'],
+          ['连接 Concat：把两个串首尾相接，结果长度是两个长度之和。', 'Concat: join two strings end to end; the result length is the sum.'],
+          ['求子串 SubString：按下标与长度取出连续一段。', 'SubString: extract a contiguous segment by position and length.'],
+          ['比较 StrCompare：按字典序逐字符比较，第一个不同字符决定大小。', 'Compare: compare lexicographically character by character; the first difference decides the order.'],
+          ['定位 Index：在主串中查找模式串，返回首个匹配位置或全部位置。', 'Index: search a pattern in a text and return the first or all match positions.'],
+        ],
+        formula: '串的操作对象是整段字符序列，不是单个孤立字符',
+      },
+      {
+        title: ['主串、模式串与匹配位置', 'Text, pattern and match positions'],
+        body: [
+          '被搜索的长串叫主串（文本）T，要查找的短串叫模式串 P。模式匹配要回答：P 在 T 中出现了哪些位置？这些位置能否重叠？',
+          'The longer string being searched is the text T; the shorter string to find is the pattern P. Pattern matching asks: where does P occur in T, and may those occurrences overlap?',
+        ],
+        points: [
+          ['一次对齐：把 P 的第 0 个字符放在 T 的某个起点 s 上，再逐字符比较。', 'One alignment places P[0] at some text start s and compares character by character.'],
+          ['匹配条件：P[j] = T[s+j] 对所有 j 都成立，起点就是 s。', 'A match requires P[j] = T[s+j] for every j, and then s is a match start.'],
+          ['多个匹配：同一模式串可能在主串中多次出现，结果是一个起点列表。', 'Multiple matches: the same pattern may occur many times, so the result is a list of starts.'],
+          ['重叠匹配：匹配完成后不把模式串直接清零，而是继续沿前缀表对齐，才能找出相邻或重叠的起点。', 'Overlapping matches: after a match the pattern is not reset to zero; realigning through the prefix table reveals adjacent or overlapping starts.'],
+        ],
+        formula: 'T = "ABABABCABABABC"，P = "ABABC" → 0 基匹配起点 2、9',
+      },
+      {
+        title: ['朴素匹配：失配后为什么会重复比较', 'Naive matching: why work is repeated after a mismatch'],
+        body: [
+          '朴素算法枚举每个起点 s，令 j 从 0 开始逐个比较；一旦 T[s+j] 与 P[j] 不同，就把 s 加一、j 归零，从新模式串首字符重新开始。',
+          'Naive matching enumerates each start s and compares with j from 0. As soon as T[s+j] differs from P[j], it increments s, resets j to 0 and restarts from the pattern’s first character.',
+        ],
+        points: [
+          ['以 T = "ABABABC"、P = "ABABC" 为例：起点 0 先匹配 A、B、A、B，到第 5 个字符时 T[4] = A 与 P[4] = C 失配。', 'With T = "ABABABC" and P = "ABABC", start 0 matches A, B, A, B, then T[4] = A differs from P[4] = C.'],
+          ['朴素算法接着试起点 1，T[1] = B 与 P[0] = A 立刻失配；再试起点 2，又要从 P[0] 重新比较 T[2]、T[3]、T[4]。', 'Naive matching then tries start 1, where T[1] = B immediately differs from P[0] = A; start 2 then compares T[2], T[3] and T[4] again from P[0].'],
+          ['这些字符在上一次对齐中已经被确认过，重复比较正是最坏 O(nm) 的来源。', 'Those characters were already confirmed in the previous alignment; this repeated work is the source of the O(nm) worst case.'],
+        ],
+        formula: '失配 → s = s + 1，j = 0：主串起点回退，已匹配信息被丢弃',
+      },
+      {
+        title: ['KMP 要解决的核心问题', 'The core problem KMP solves'],
+        body: [
+          'KMP 把模式串自身的结构预先算出来：已经匹配的那段前缀，如果它的某个后缀同时也是模式串的前缀，那么失配时就可以把模式串滑到那个更短的前缀上，而不必回到起点。',
+          'KMP precomputes the pattern’s own structure: if a suffix of the matched prefix is also a prefix of the pattern, a mismatch can slide the pattern to that shorter prefix instead of returning to the start.',
+        ],
+        points: [
+          ['前缀表 lps[k]：P[0..k] 的最长相等真前后缀长度，采用 0 基下标。', 'The lps table: lps[k] is the longest proper prefix of P[0..k] that is also a suffix, using 0-based indices.'],
+          ['"ABABC" 的 lps = [0, 0, 1, 2, 0]；在 j = 4 失配时回退到 lps[3] = 2。', '"ABABC" has lps = [0, 0, 1, 2, 0]; a mismatch at j = 4 falls back to lps[3] = 2.'],
+          ['回退后主串指针 i 停在原处，模式串前缀 "AB" 直接对齐已经确认的主串后缀，不再重扫。', 'After the fallback text pointer i stays put, the pattern prefix "AB" aligns with the confirmed text suffix, and no rescanning occurs.'],
+          ['构造 lps 为 O(m)，匹配为 O(n)，总时间 O(n+m)，额外空间 O(m)。', 'Building lps is O(m), matching is O(n), total O(n+m), with O(m) extra space.'],
+        ],
+        formula: '失配：j ← lps[j − 1]，i 不变',
+      },
+      {
+        title: ['使用同一种下标约定', 'Use one indexing convention'],
+        body: [
+          '不同教材可能使用 next、nextval 或整体移位的前缀表，数组含义与回退公式并不完全相同。本课程统一采用上文的 0 基 lps；阅读其他资料时，先确认它的首项含义，再对照回退公式。',
+          'Textbooks may use next, nextval or a shifted prefix table whose entries and fallback formula differ. This course consistently uses the 0-based lps above; when reading other sources, confirm what the first entry means before comparing fallback formulas.',
+        ],
+        points: [
+          ['本课程：lps[0] = 0，lps[k] 对应长度 k+1 的前缀，失配回退到 lps[j−1]。', 'Here: lps[0] = 0, lps[k] covers a prefix of length k+1, and a mismatch falls back to lps[j−1].'],
+          ['若某教材的 next[1] 对应模式串第 1 个字符，它的下标整体比本课程大 1，不能直接把数值混用。', 'If a source’s next[1] refers to the pattern’s first character, its indices are shifted by one and its values must not be mixed with this table.'],
+          ['只比较算法思想时，抓住“最长相等真前后缀”即可；落地实现时必须固定一种约定。', 'When comparing ideas, the longest equal proper prefix/suffix is enough; an implementation must fix one convention.'],
+        ],
+        formula: '先确认下标基准，再写回退公式',
+      },
+    ],
+    comparison: {
+      title: ['朴素匹配与 KMP', 'Naive matching versus KMP'],
+      columns: [
+        ['维度', 'Aspect'],
+        ['朴素匹配', 'Naive'],
+        ['KMP', 'KMP'],
+      ],
+      rows: [
+        [
+          ['预处理', 'Preprocessing'],
+          ['无', 'None'],
+          ['构造 lps，O(m)', 'Build lps, O(m)'],
+        ],
+        [
+          ['失配后的主串指针', 'Text pointer after mismatch'],
+          ['起点右移，已匹配段可能重扫', 'Start shifts; matched text may be rescanned'],
+          ['i 不回退', 'i never rewinds'],
+        ],
+        [
+          ['失配后的模式串指针', 'Pattern pointer after mismatch'],
+          ['j 归零', 'j resets to 0'],
+          ['j = lps[j−1]', 'j = lps[j−1]'],
+        ],
+        [
+          ['最坏时间', 'Worst-case time'],
+          ['O(nm)', 'O(nm)'],
+          ['O(n+m)', 'O(n+m)'],
+        ],
+        [
+          ['额外空间', 'Extra space'],
+          ['O(1)', 'O(1)'],
+          ['O(m)', 'O(m)'],
+        ],
+        [
+          ['多个/重叠匹配', 'Multiple/overlapping matches'],
+          ['逐起点枚举', 'Enumerate each start'],
+          ['匹配后 j = lps[m−1] 继续', 'After a match, j = lps[m−1]'],
+        ],
+      ],
+    },
+    takeaway: ['朴素匹配丢弃已匹配信息；KMP 用 lps 把这段信息变成下一次对齐的起点，因此主串指针不必回头。', 'Naive matching discards confirmed information; KMP turns it into the next alignment through lps, so the text pointer never has to go back.'],
+  },
 ];
 
 const BY_ID = new Map(CONCEPT_PAGES.map((page) => [page.id, page]));

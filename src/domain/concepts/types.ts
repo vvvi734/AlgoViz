@@ -10,7 +10,8 @@ export type ConceptDiagramKind =
   | 'tree'
   | 'graph'
   | 'graph-storage'
-  | 'sorting';
+  | 'sorting'
+  | 'string';
 
 export interface ConceptDefinition {
   term: Bilingual;

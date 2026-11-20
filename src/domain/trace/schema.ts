@@ -14,6 +14,9 @@
  *  - callStack is *specified* here but is not animated yet (future recursion work)
  */
 import { z } from 'zod';
+import { kmpSnapshotSchema } from './kmpSchema';
+export type { KmpSnapshot, KmpOperation, KmpPhase } from './kmpSchema';
+export { KMP_MAX_PATTERN, KMP_MAX_TEXT, computeKmpLps, kmpSnapshotSchema } from './kmpSchema';
 
 /** Protocol version. Bump this only with a deliberate breaking change. */
 export const TRACE_SCHEMA_VERSION = 1 as const;
@@ -7062,6 +7065,7 @@ export type SearchSnapshot = z.infer<typeof searchSnapshotSchema>;
 
 /** Stage 7B stack/queue + Stage 7C linked-list + L1A doubly/circular linked lists + L1B sequential list + Stage 7D binary-tree + T1 BST + T2 AVL + T3 max-heap + T4 Huffman + S1/S2 sorting + F1 search + F2 hash + Stage 7E/7F/G1/G2/G3/G4 graphs. */
 export const structureSchema = z.union([
+  kmpSnapshotSchema,
   sortingSnapshotSchema,
   searchSnapshotSchema,
   hashSnapshotSchema,
