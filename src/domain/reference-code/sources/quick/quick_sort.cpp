@@ -1,5 +1,4 @@
 // AlgoViz reference implementation: quicksort (C++17).
-// Original code written for this repository under the MIT License.
 // Lomuto partition: <= pivot goes left, > pivot goes right.
 //
 // Reading guide:

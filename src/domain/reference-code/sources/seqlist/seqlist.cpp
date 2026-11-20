@@ -1,5 +1,4 @@
 // AlgoViz reference implementation: sequential list (C++17).
-// Original code written for this repository under the MIT License.
 // Fixed-capacity array with manual shifting in insert and erase.
 //
 // Reading guide:

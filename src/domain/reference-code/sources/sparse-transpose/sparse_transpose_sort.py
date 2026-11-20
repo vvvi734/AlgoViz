@@ -1,4 +1,4 @@
-"""Sparse transpose — Python convenience example, MIT.
+"""Sparse transpose — Python convenience example.
 
 This is the common “swap then sort” approach: it produces the same row-major
 transposed triplet list, but costs O(t log t), not O(t + c). It does not use

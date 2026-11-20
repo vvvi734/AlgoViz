@@ -1,181 +1,92 @@
 /*
- * AlgoViz 教材参考 C 实现
- * 来源：用户提供的《数据结构与算法（Windows版）》第7章图/06最小生成树_Kruskal.c
- * 算法代码与教材注释逐字转录；本文件仅补充来源说明并按 UTF-8 保存。
- * 原始版权归原教材作者/出版方所有，仅用于本地学习与代码阅读。
+ * Kruskal minimum spanning tree in C11.
+ *
+ * Sort all edges by weight, then scan them in ascending order. An edge joins the
+ * tree only when its endpoints are in different components, tracked by a
+ * union-find structure with path compression and union by rank. Stop after
+ * V - 1 accepted edges. Sorting dominates: O(E log E).
  */
 
-#include "stdio.h"    
-#include "stdlib.h"   
+#include <stdio.h>
+#include <stdlib.h>
 
-#include "math.h"  
-#include "time.h"
+#define VERTEX_COUNT 5
+#define EDGE_COUNT 7
 
-#define OK 1
-#define ERROR 0
-#define TRUE 1
-#define FALSE 0
+typedef struct {
+    int from;
+    int to;
+    int weight;
+} Edge;
 
-typedef int Status;	/* Status是函数的类型,其值是函数结果状态代码，如OK等 */
-
-#define MAXEDGE 20
-#define MAXVEX 20
-#define GRAPH_INFINITY 65535
-
-typedef struct
+static int CompareEdges(const void *left, const void *right)
 {
-	int arc[MAXVEX][MAXVEX];
-	int numVertexes, numEdges;
-}MGraph;
-
-typedef struct
-{
-	int begin;
-	int end;
-	int weight;
-}Edge;   /* 对边集数组Edge结构的定义 */
-
-/* 构件图 */
-void CreateMGraph(MGraph *G)
-{
-	int i, j;
-
-	/* printf("请输入边数和顶点数:"); */
-	G->numEdges=15;
-	G->numVertexes=9;
-
-	for (i = 0; i < G->numVertexes; i++)/* 初始化图 */
-	{
-		for ( j = 0; j < G->numVertexes; j++)
-		{
-			if (i==j)
-				G->arc[i][j]=0;
-			else
-				G->arc[i][j] = G->arc[j][i] = GRAPH_INFINITY;
-		}
-	}
-
-	G->arc[0][1]=10;
-	G->arc[0][5]=11; 
-	G->arc[1][2]=18; 
-	G->arc[1][8]=12; 
-	G->arc[1][6]=16; 
-	G->arc[2][8]=8; 
-	G->arc[2][3]=22; 
-	G->arc[3][8]=21; 
-	G->arc[3][6]=24; 
-	G->arc[3][7]=16;
-	G->arc[3][4]=20;
-	G->arc[4][7]=7; 
-	G->arc[4][5]=26; 
-	G->arc[5][6]=17; 
-	G->arc[6][7]=19; 
-
-	for(i = 0; i < G->numVertexes; i++)
-	{
-		for(j = i; j < G->numVertexes; j++)
-		{
-			G->arc[j][i] =G->arc[i][j];
-		}
-	}
-
+    const Edge *a = (const Edge *)left;
+    const Edge *b = (const Edge *)right;
+    return a->weight - b->weight;
 }
 
-/* 交换权值 以及头和尾 */
-void Swapn(Edge *edges,int i, int j)
+static int FindRoot(int parent[], int vertex)
 {
-	int temp;
-	temp = edges[i].begin;
-	edges[i].begin = edges[j].begin;
-	edges[j].begin = temp;
-	temp = edges[i].end;
-	edges[i].end = edges[j].end;
-	edges[j].end = temp;
-	temp = edges[i].weight;
-	edges[i].weight = edges[j].weight;
-	edges[j].weight = temp;
+    if (parent[vertex] != vertex) {
+        parent[vertex] = FindRoot(parent, parent[vertex]);
+    }
+    return parent[vertex];
 }
 
-/* 对权值进行排序 */
-void sort(Edge edges[],MGraph *G)
+static int UnionRoots(int parent[], int rank[], int left, int right)
 {
-	int i, j;
-	for ( i = 0; i < G->numEdges; i++)
-	{
-		for ( j = i + 1; j < G->numEdges; j++)
-		{
-			if (edges[i].weight > edges[j].weight)
-			{
-				Swapn(edges, i, j);
-			}
-		}
-	}
-	printf("权排序之后的为:\n");
-	for (i = 0; i < G->numEdges; i++)
-	{
-		printf("(%d, %d) %d\n", edges[i].begin, edges[i].end, edges[i].weight);
-	}
-
+    int left_root = FindRoot(parent, left);
+    int right_root = FindRoot(parent, right);
+    if (left_root == right_root) {
+        return 0;
+    }
+    if (rank[left_root] < rank[right_root]) {
+        parent[left_root] = right_root;
+    } else if (rank[left_root] > rank[right_root]) {
+        parent[right_root] = left_root;
+    } else {
+        parent[right_root] = left_root;
+        ++rank[left_root];
+    }
+    return 1;
 }
 
-/* 查找连线顶点的尾部下标 */
-int Find(int *parent, int f)
+void Kruskal(Edge edges[], int edge_count)
 {
-	while ( parent[f] > 0)
-	{
-		f = parent[f];
-	}
-	return f;
-}
+    int parent[VERTEX_COUNT];
+    int rank[VERTEX_COUNT] = {0};
+    int total = 0;
+    int accepted = 0;
 
-/* 生成最小生成树 */
-void MiniSpanTree_Kruskal(MGraph G)
-{
-	int i, j, n, m;
-	int k = 0;
-	int parent[MAXVEX];/* 定义一数组用来判断边与边是否形成环路 */
-	
-	Edge edges[MAXEDGE];/* 定义边集数组,edge的结构为begin,end,weight,均为整型 */
+    for (int vertex = 0; vertex < VERTEX_COUNT; ++vertex) {
+        parent[vertex] = vertex;
+    }
+    qsort(edges, (size_t)edge_count, sizeof(Edge), CompareEdges);
 
-	/* 用来构建边集数组并排序********************* */
-	for ( i = 0; i < G.numVertexes-1; i++)
-	{
-		for (j = i + 1; j < G.numVertexes; j++)
-		{
-			if (G.arc[i][j]<GRAPH_INFINITY)
-			{
-				edges[k].begin = i;
-				edges[k].end = j;
-				edges[k].weight = G.arc[i][j];
-				k++;
-			}
-		}
-	}
-	sort(edges, &G);
-	/* ******************************************* */
-
-
-	for (i = 0; i < G.numVertexes; i++)
-		parent[i] = 0;	/* 初始化数组值为0 */
-
-	printf("打印最小生成树：\n");
-	for (i = 0; i < G.numEdges; i++)	/* 循环每一条边 */
-	{
-		n = Find(parent,edges[i].begin);
-		m = Find(parent,edges[i].end);
-		if (n != m) /* 假如n与m不等，说明此边没有与现有的生成树形成环路 */
-		{
-			parent[n] = m;	/* 将此边的结尾顶点放入下标为起点的parent中。 */
-							/* 表示此顶点已经在生成树集合中 */
-			printf("(%d, %d) %d\n", edges[i].begin, edges[i].end, edges[i].weight);
-		}
-	}
+    printf("mst edges:\n");
+    for (int index = 0; index < edge_count && accepted < VERTEX_COUNT - 1; ++index) {
+        if (UnionRoots(parent, rank, edges[index].from, edges[index].to)) {
+            printf("%d - %d: %d\n", edges[index].from, edges[index].to, edges[index].weight);
+            total += edges[index].weight;
+            ++accepted;
+        }
+    }
+    printf("total: %d\n", total);
 }
 
 int main(void)
 {
-	MGraph G;
-	CreateMGraph(&G);
-	MiniSpanTree_Kruskal(G);
-	return 0;
+    Edge edges[EDGE_COUNT] = {
+        {0, 1, 2},
+        {0, 3, 6},
+        {1, 2, 3},
+        {1, 3, 8},
+        {1, 4, 5},
+        {2, 4, 7},
+        {3, 4, 9},
+    };
+
+    Kruskal(edges, EDGE_COUNT);
+    return 0;
 }

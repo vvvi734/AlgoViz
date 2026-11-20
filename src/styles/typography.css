@@ -51,7 +51,6 @@
 
 .reference-code-panel .reference-code-hint,
 .reference-code-panel .reference-file-name,
-.reference-code-panel .reference-license,
 .reference-code-panel .reference-source,
 .reference-code-panel .reference-language-missing {
   font-size: var(--font-ui);

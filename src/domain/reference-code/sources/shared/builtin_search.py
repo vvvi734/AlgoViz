@@ -1,6 +1,5 @@
 """AlgoViz shared convenience implementation: binary search with bisect.
 
-Original code written for this repository under the MIT License.
 bisect_left finds the first position that is not less than the target.
 The input list must already be sorted.
 

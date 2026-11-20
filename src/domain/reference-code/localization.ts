@@ -1,10 +1,8 @@
 import type { Lang } from '../../i18n/types';
 import type { LocalizedText } from '../lessons/types';
 import {
-  REFERENCE_CONVENIENCE_SOURCE_NOTES,
-  referenceLicenseLabel,
-  referenceSourceLanguage,
-  referenceSourceNote,
+  REFERENCE_CONVENIENCE_NOTES,
+  referenceCommentLanguage,
   type ReferenceImplementation,
   type ReferenceLanguage,
 } from './registry';
@@ -190,27 +188,21 @@ function headerLines(
 ): string[] {
   const languageName = LANGUAGE_NAME[language][lang];
   const implementationName = IMPLEMENTATION_NAME[implementation][lang];
-  const license = referenceLicenseLabel(algorithmId, language, implementation)[lang];
-  const source = referenceSourceNote(algorithmId, language, implementation)[lang];
   const idea =
     implementation === 'convenience'
-      ? `${CONVENIENCE_CAVEAT[lang]} ${REFERENCE_CONVENIENCE_SOURCE_NOTES[language][lang]}`
+      ? `${CONVENIENCE_CAVEAT[lang]} ${REFERENCE_CONVENIENCE_NOTES[language][lang]}`
       : noteFor(algorithmId, lang);
   const title =
     lang === 'zh'
       ? `AlgoViz 参考代码 · ${algorithmName} · ${languageName}`
       : `AlgoViz reference code · ${algorithmName} · ${languageName}`;
-  const labels =
-    lang === 'zh'
-      ? { idea: '思路', source: '来源', license: '许可' }
-      : { idea: 'Idea', source: 'Source', license: 'License' };
+  const label = lang === 'zh' ? '思路' : 'Idea';
   const separator = lang === 'zh' ? '：' : ': ';
 
   return [
     title,
-    `${implementationName} · ${labels.license}${separator}${license}`,
-    ...(idea ? [`${labels.idea}${separator}${idea}`] : []),
-    `${labels.source}${separator}${source}`,
+    implementationName,
+    ...(idea ? [`${label}${separator}${idea}`] : []),
   ];
 }
 
@@ -359,7 +351,7 @@ export function localizeReferenceSource(
     lang: Lang;
   },
 ): string {
-  const nativeLanguage = referenceSourceLanguage(algorithmId, language, implementation);
+  const nativeLanguage = referenceCommentLanguage();
   if (nativeLanguage === lang) return source;
 
   const body = stripReferenceComments(source, language).replace(/^(?:[ \t]*\n)+/, '');

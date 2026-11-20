@@ -1,6 +1,5 @@
 """AlgoViz reference implementation: binary search tree.
 
-Original code written for this repository under the MIT License.
 Insert, search, remove and inorder traversal for unique integer keys.
 
 Reading guide:

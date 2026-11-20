@@ -1,5 +1,5 @@
 /*
- * Sparse transpose — C++17 convenience example, MIT.
+ * Sparse transpose — C++17 convenience example.
  *
  * This is the common "swap then sort" approach: it produces the same
  * row-major transposed triplet list, but costs O(t log t), not O(t + c).

@@ -1,5 +1,4 @@
 // AlgoViz reference implementation: max heap (C++17).
-// Original code written for this repository under the MIT License.
 // Array-backed binary heap with sift-up on insert and sift-down on pop.
 //
 // Reading guide:

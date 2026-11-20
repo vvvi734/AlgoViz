@@ -1,6 +1,5 @@
 """AlgoViz reference implementation: critical path on an AOE network.
 
-Original code written for this repository under the MIT License.
 A forward topological pass computes earliest start times; a reverse pass
 computes latest times. An activity is critical when its slack is zero.
 

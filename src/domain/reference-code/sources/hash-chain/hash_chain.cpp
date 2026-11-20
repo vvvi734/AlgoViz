@@ -1,5 +1,4 @@
 // AlgoViz reference implementation: hash table with chained buckets (C++17).
-// Original code written for this repository under the MIT License.
 // Each bucket is a singly linked list; collisions append to the same chain.
 //
 // Reading guide:

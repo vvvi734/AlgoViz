@@ -1,6 +1,5 @@
 """AlgoViz convenience implementation: sorted list with bisect.
 
-Original code written for this repository under the MIT License.
 bisect.insort keeps the list sorted after each insertion; membership
 uses bisect_left. This is O(n) per insertion because list shifts.
 

@@ -1,5 +1,4 @@
 // AlgoViz reference implementation: factorial (C++17).
-// Original code written for this repository under the MIT License.
 // Recursive definition: n! = n * (n - 1)!, with 0! = 1.
 //
 // Reading guide:

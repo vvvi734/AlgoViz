@@ -1,5 +1,4 @@
 // AlgoViz reference implementation: Floyd-Warshall (C++17).
-// Original code written for this repository under the MIT License.
 // Dynamic programming over allowed intermediate vertices; handles negative
 // edges but not negative cycles. dist[i][j] is the shortest i -> j distance.
 //

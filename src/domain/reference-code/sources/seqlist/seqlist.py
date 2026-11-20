@@ -1,6 +1,5 @@
 """AlgoViz reference implementation: sequential list.
 
-Original code written for this repository under the MIT License.
 A fixed-capacity list with manual shifting in insert and erase.
 
 Reading guide:

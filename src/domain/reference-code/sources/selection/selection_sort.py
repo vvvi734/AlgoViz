@@ -1,7 +1,6 @@
 """AlgoViz reference implementation: selection sort.
 
 Explicit teaching implementation; sorted()/list.sort() are intentionally not used.
-Released under the MIT License.
 
 Reading guide:
 1. The prefix [0, start) is already the sorted portion.

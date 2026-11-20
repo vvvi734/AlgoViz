@@ -1,13 +1,5 @@
 /*
- * Textbook material note
- * The textbook provided by the user does not contain this algorithm.
- * This file keeps AlgoViz's original C implementation and comments; it does
- * not present itself as textbook text.
- */
-
-/*
  * AlgoViz reference implementation: circular singly linked list.
- * Original code written for this repository under the MIT License.
  * The tail node links back to the head, so traversal stops when it returns.
  *
  * Reading guide:

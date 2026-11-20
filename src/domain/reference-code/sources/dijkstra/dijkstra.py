@@ -1,7 +1,5 @@
 """AlgoViz reference implementation: Dijkstra.
 
-Based on this project's tested Python teaching implementation, with
-teaching-only tracing calls removed. Released under the MIT License.
 Algorithm semantics and boundary behaviour are preserved.
 
 Reading guide:

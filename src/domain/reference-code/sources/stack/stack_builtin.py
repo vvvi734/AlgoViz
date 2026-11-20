@@ -1,6 +1,5 @@
 """AlgoViz convenience implementation: stack with a Python list.
 
-Original code written for this repository under the MIT License.
 append() adds at the end; pop() removes and returns the last item.
 
 Reading guide:

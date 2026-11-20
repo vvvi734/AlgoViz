@@ -1,104 +1,90 @@
 /*
- * AlgoViz 教材参考 C 实现
- * 来源：用户提供的《数据结构与算法（Windows版）》第8章查找/05散列表_HashTable.c
- * 算法代码与教材注释逐字转录；本文件仅补充来源说明并按 UTF-8 保存。
- * 原始版权归原教材作者/出版方所有，仅用于本地学习与代码阅读。
+ * Linear probing hash table in C11.
+ *
+ * -1 marks an empty slot. The home slot is key % capacity; on a collision,
+ * probe forward with wraparound until the key or an empty slot is found.
+ * Insert uses the first empty slot; search stops at an empty slot, which proves
+ * absence. Expected O(1 + 1/(1-alpha)) per operation, O(n) worst; no deletion
+ * tombstones in this teaching version.
  */
 
-#include "stdio.h"    
-#include "stdlib.h"   
+#include <stdbool.h>
+#include <stdio.h>
 
-#include "math.h"  
-#include "time.h"
+#define HASH_CAPACITY 11
+#define HASH_EMPTY (-1)
 
-#define OK 1
-#define ERROR 0
-#define TRUE 1
-#define FALSE 0
+typedef struct {
+    int slots[HASH_CAPACITY];
+} HashTable;
 
-#define MAXSIZE 100 /* 存储空间初始分配量 */
-
-#define SUCCESS 1
-#define UNSUCCESS 0
-#define HASHSIZE 12 /* 定义散列表长为数组的长度 */
-#define NULLKEY -32768 
-
-typedef int Status;	/* Status是函数的类型,其值是函数结果状态代码，如OK等 */ 
-
-typedef struct
+void InitHashTable(HashTable *table)
 {
-   int *elem; /* 数据元素存储基址，动态分配数组 */
-   int count; /*  当前数据元素个数 */
-}HashTable;
-
-int m=0; /* 散列表表长，全局变量 */
-
-/* 初始化散列表 */
-Status InitHashTable(HashTable *H)
-{
-	int i;
-	m=HASHSIZE;
-	H->count=m;
-	H->elem=(int *)malloc(m*sizeof(int));
-	for(i=0;i<m;i++)
-		H->elem[i]=NULLKEY; 
-	return OK;
+    for (int index = 0; index < HASH_CAPACITY; ++index) {
+        table->slots[index] = HASH_EMPTY;
+    }
 }
 
-/* 散列函数 */
-int Hash(int key)
+static int HomeSlot(int key)
 {
-	return key % m; /* 除留余数法 */
+    int slot = key % HASH_CAPACITY;
+    return slot < 0 ? slot + HASH_CAPACITY : slot;
 }
 
-/* 插入关键字进散列表 */
-void InsertHash(HashTable *H,int key)
+bool HashInsert(HashTable *table, int key)
 {
-	int addr = Hash(key); /* 求散列地址 */
-	while (H->elem[addr] != NULLKEY) /* 如果不为空，则冲突 */
-	{
-		addr = (addr+1) % m; /* 开放定址法的线性探测 */
-	}
-	H->elem[addr] = key; /* 直到有空位后插入关键字 */
+    int start = HomeSlot(key);
+    for (int step = 0; step < HASH_CAPACITY; ++step) {
+        int index = (start + step) % HASH_CAPACITY;
+        if (table->slots[index] == HASH_EMPTY) {
+            table->slots[index] = key;
+            return true;
+        }
+        if (table->slots[index] == key) {
+            return false;
+        }
+    }
+    return false;
 }
 
-/* 散列表查找关键字 */
-Status SearchHash(HashTable H,int key,int *addr)
+bool HashContains(const HashTable *table, int key)
 {
-	*addr = Hash(key);  /* 求散列地址 */
-	while(H.elem[*addr] != key) /* 如果不为空，则冲突 */
-	{
-		*addr = (*addr+1) % m; /* 开放定址法的线性探测 */
-		if (H.elem[*addr] == NULLKEY || *addr == Hash(key)) /* 如果循环回到原点 */
-			return UNSUCCESS;	/* 则说明关键字不存在 */
-	}
-	return SUCCESS;
+    int start = HomeSlot(key);
+    for (int step = 0; step < HASH_CAPACITY; ++step) {
+        int index = (start + step) % HASH_CAPACITY;
+        if (table->slots[index] == HASH_EMPTY) {
+            return false;
+        }
+        if (table->slots[index] == key) {
+            return true;
+        }
+    }
+    return false;
 }
 
-int main()
+void PrintHashTable(const HashTable *table)
 {
-	int arr[HASHSIZE]={12,67,56,16,25,37,22,29,15,47,48,34};
-	int i,p,key,result;
-	HashTable H;
+    for (int index = 0; index < HASH_CAPACITY; ++index) {
+        printf("[%d] ", index);
+        if (table->slots[index] == HASH_EMPTY) {
+            printf("_\n");
+        } else {
+            printf("%d\n", table->slots[index]);
+        }
+    }
+}
 
-	key=39;
+int main(void)
+{
+    HashTable table;
+    InitHashTable(&table);
+    int keys[] = {22, 11, 33, 44, 55};
+    for (int index = 0; index < (int)(sizeof(keys) / sizeof(keys[0])); ++index) {
+        HashInsert(&table, keys[index]);
+    }
 
-	InitHashTable(&H);
-	for(i=0;i<m;i++)
-		 InsertHash(&H,arr[i]);
-	
-	result=SearchHash(H,key,&p);
-	if (result)
-		printf("查找 %d 的地址为：%d \n",key,p);
-	else
-		printf("查找 %d 失败。\n",key);
-
-	for(i=0;i<m;i++)
-	{
-		key=arr[i];
-		SearchHash(H,key,&p);
-		printf("查找 %d 的地址为：%d \n",key,p);
-	}
-
-	return 0;
+    PrintHashTable(&table);
+    printf("contains 44: %s\n", HashContains(&table, 44) ? "yes" : "no");
+    printf("contains 7: %s\n", HashContains(&table, 7) ? "yes" : "no");
+    return 0;
 }

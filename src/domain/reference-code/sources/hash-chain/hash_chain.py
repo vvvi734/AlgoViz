@@ -1,6 +1,5 @@
 """AlgoViz reference implementation: hash table with chained buckets.
 
-Original code written for this repository under the MIT License.
 Each bucket is a list of keys; collisions append to the same chain.
 
 Reading guide:

@@ -1,6 +1,5 @@
 """AlgoViz reference implementation: quicksort.
 
-Original code written for this repository under the MIT License.
 Lomuto partition: <= pivot goes left, > pivot goes right.
 
 Reading guide:

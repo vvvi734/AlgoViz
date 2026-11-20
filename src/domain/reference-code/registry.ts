@@ -17,85 +17,11 @@ export const REFERENCE_LANGUAGE_LABELS: Record<ReferenceLanguage, string> = {
   python: 'Python',
 };
 
-export const REFERENCE_LICENSE = 'MIT';
-
-/** Formal C principle files whose body is a verbatim textbook excerpt. */
-const TEXTBOOK_C_PRINCIPLE_ALGORITHMS = new Set([
-  'avl',
-  'bfs',
-  'binary',
-  'bst',
-  'btree',
-  'bubble',
-  'critical-path',
-  'dfs',
-  'dijkstra',
-  'floyd-warshall',
-  'hash-probe',
-  'inorder',
-  'insertion',
-  'kmp',
-  'kruskal',
-  'linear',
-  'linked',
-  'merge',
-  'prim',
-  'queue',
-  'quick',
-  'selection',
-  'seqlist',
-  'shell',
-  'stack',
-  'topological',
-]);
-
-/**
- * C principle files are textbook excerpts, so they must not be presented as
- * MIT-licensed AlgoViz originals. Unmatched C algorithms and C convenience
- * files remain original MIT code.
- */
-export function referenceLicenseLabel(
-  algorithmId: string,
-  language: ReferenceLanguage,
-  implementation: ReferenceImplementation = 'principle',
-): LocalizedText {
-  if (
-    language === 'c' &&
-    implementation === 'principle' &&
-    TEXTBOOK_C_PRINCIPLE_ALGORITHMS.has(algorithmId)
-  ) {
-    return {
-      zh: '教材代码 · 仅学习',
-      en: 'Textbook code · study only',
-    };
-  }
-  return { zh: REFERENCE_LICENSE, en: REFERENCE_LICENSE };
-}
-
-/**
- * Source notes are shared by language, not repeated per algorithm. Every file
- * also carries the same note in its header.
- */
-export const REFERENCE_SOURCE_NOTES: Record<ReferenceLanguage, LocalizedText> = {
-  c: {
-    zh: '教材参考实现：教材有对应实现的 26 个文件逐字转录，保留原教材注释；教材未覆盖的 10 个算法保留原创实现，并在文件头注明。教材代码版权归原作者/出版方，仅用于本地学习，不适用 MIT 许可。',
-    en: 'Textbook reference implementation: 26 files with a textbook counterpart are transcribed verbatim, preserving the original comments; the 10 algorithms not covered by the textbook keep their original implementations and are marked in their headers. Textbook copyright remains with the original author/publisher; for local study only and not MIT-licensed.',
-  },
-  cpp: {
-    zh: '原创 C++17 实现：核心算法显式编写；标准库仅用于容器、输入输出和优先队列等基础设施。',
-    en: 'Original C++17 implementation: the core algorithm is written explicitly; the standard library is used only for containers, I/O and infrastructure such as the priority queue.',
-  },
-  python: {
-    zh: '原创 Python 教学实现：按经典算法步骤编写，移除仅供动画的内部追踪调用，保留算法语义与边界行为。',
-    en: 'Original Python teaching implementation written from classic algorithm steps, with animation-only tracing calls omitted; semantics and boundary behaviour are preserved.',
-  },
-};
-
 /**
  * Generic convenience note for non-sorting tasks. Sorting pages override it
  * with the stability-specific note below.
  */
-export const REFERENCE_CONVENIENCE_SOURCE_NOTES: Record<ReferenceLanguage, LocalizedText> = {
+export const REFERENCE_CONVENIENCE_NOTES: Record<ReferenceLanguage, LocalizedText> = {
   c: {
     zh: '共享便捷示例：使用 C 标准库中与该任务对应的成熟接口（qsort、bsearch）；调用方负责提供正确的数组、长度与比较函数。',
     en: 'Shared convenience example: mature C standard-library interfaces for the task (qsort, bsearch); the caller supplies the array, length and comparison function.',
@@ -303,8 +229,8 @@ export const REFERENCE_CODE: Record<string, ReferenceEntry> = {
     },
     convenienceNote: {
       c: {
-        zh: '队列版层序遍历，原创 MIT 代码；教材原理页仍保留第 6 章递归三序遍历原文。',
-        en: 'Queue-based level-order traversal, original MIT code; the principle tab keeps the textbook’s recursive three-traversal excerpt.',
+        zh: '队列版层序遍历：队首出队后访问，再按从左到右把孩子入队。',
+        en: 'Queue-based level order: dequeue and visit the front, then enqueue children left to right.',
       },
       cpp: {
         zh: '使用 std::queue 的层序遍历；队首出队后访问，再按从左到右把孩子入队。',
@@ -544,36 +470,26 @@ export function referenceFileMeta(
   return files?.[language] ?? null;
 }
 
-/** Footer note for the selected algorithm, language and implementation. */
-export function referenceSourceNote(
+/**
+ * Optional teaching note for the convenience implementation. It explains how
+ * the shortcut differs from the principle algorithm; no provenance or licence
+ * metadata is attached.
+ */
+export function referenceConvenienceNote(
   algorithmId: string,
   language: ReferenceLanguage,
-  implementation: ReferenceImplementation = 'principle',
-): LocalizedText {
-  if (implementation === 'convenience') {
-    const override = REFERENCE_CODE[algorithmId]?.convenienceNote?.[language];
-    if (override) return override;
-    return REFERENCE_CONVENIENCE_SOURCE_NOTES[language];
-  }
-  return REFERENCE_SOURCE_NOTES[language];
+): LocalizedText | null {
+  return (
+    REFERENCE_CODE[algorithmId]?.convenienceNote?.[language] ??
+    REFERENCE_CONVENIENCE_NOTES[language]
+  );
 }
 
 /**
- * The language already used by the stored comments. Textbook C excerpts keep
- * their original Chinese comments; all other reviewable files are English.
+ * Language of the comments stored in the source files. All reference code is
+ * authored in English, so Chinese pages add a generated teaching header.
  */
-export function referenceSourceLanguage(
-  algorithmId: string,
-  language: ReferenceLanguage,
-  implementation: ReferenceImplementation = 'principle',
-): 'zh' | 'en' {
-  if (
-    language === 'c' &&
-    implementation === 'principle' &&
-    TEXTBOOK_C_PRINCIPLE_ALGORITHMS.has(algorithmId)
-  ) {
-    return 'zh';
-  }
+export function referenceCommentLanguage(): 'en' {
   return 'en';
 }
 

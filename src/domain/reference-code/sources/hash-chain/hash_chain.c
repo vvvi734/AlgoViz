@@ -1,13 +1,5 @@
 /*
- * Textbook material note
- * The textbook provided by the user does not contain this algorithm.
- * This file keeps AlgoViz's original C implementation and comments; it does
- * not present itself as textbook text.
- */
-
-/*
  * AlgoViz reference implementation: hash table with chained buckets.
- * Original code written for this repository under the MIT License.
  * Each bucket is a singly linked list; collisions append to the same chain.
  *
  * Reading guide:

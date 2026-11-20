@@ -1,7 +1,4 @@
 // AlgoViz reference implementation: singly linked list (C++17).
-// Original code written for this repository under the MIT License.
-// Algorithmic structure follows the classic textbook treatment in
-// Yan Weimin, Data Structures (C Language Edition), without copying text.
 //
 // Reading guide:
 // 1. A node stores one value and one next pointer; the list owns a head pointer and

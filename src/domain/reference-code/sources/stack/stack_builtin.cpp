@@ -1,5 +1,4 @@
 // AlgoViz convenience implementation: stack with std::stack (C++17).
-// Original code written for this repository under the MIT License.
 // std::stack is an adapter; its default container is std::deque.
 //
 // Reading guide:

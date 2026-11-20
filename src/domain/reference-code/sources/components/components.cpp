@@ -1,5 +1,4 @@
 // AlgoViz reference implementation: connected components (C++17).
-// Original code written for this repository under the MIT License.
 // Runs DFS from every unvisited vertex; one DFS tree is one component.
 //
 // Reading guide:

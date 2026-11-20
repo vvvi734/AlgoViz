@@ -1,13 +1,5 @@
 /*
- * Textbook material note
- * The textbook provided by the user does not contain this algorithm.
- * This file keeps AlgoViz's original C implementation and comments; it does
- * not present itself as textbook text.
- */
-
-/*
  * AlgoViz reference implementation: connected components.
- * Original code written for this repository under the MIT License.
  * Runs DFS from every unvisited vertex; one DFS tree is one component.
  *
  * Reading guide:
@@ -31,7 +23,7 @@ void add_edge(int graph[VERTEX_COUNT][VERTEX_COUNT], int a, int b) {
     graph[b][a] = 1;
 }
 
-void visit(const int graph[VERTEX_COUNT][VERTEX_COUNT], int vertex, bool visited[VERTEX_COUNT]) {
+void visit(int graph[VERTEX_COUNT][VERTEX_COUNT], int vertex, bool visited[VERTEX_COUNT]) {
     visited[vertex] = true;
     printf(" %d", vertex);
     for (int next = 0; next < VERTEX_COUNT; ++next) {
@@ -42,7 +34,7 @@ void visit(const int graph[VERTEX_COUNT][VERTEX_COUNT], int vertex, bool visited
 }
 
 // Every unvisited start opens a new component; one DFS marks all vertices reachable from it.
-int count_components(const int graph[VERTEX_COUNT][VERTEX_COUNT]) {
+int count_components(int graph[VERTEX_COUNT][VERTEX_COUNT]) {
     bool visited[VERTEX_COUNT] = {false};
     int components = 0;
     for (int start = 0; start < VERTEX_COUNT; ++start) {

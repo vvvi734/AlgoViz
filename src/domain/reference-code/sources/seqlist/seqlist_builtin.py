@@ -1,6 +1,5 @@
 """AlgoViz convenience implementation: sequential list with a Python list.
 
-Original code written for this repository under the MIT License.
 list.insert and list.pop shift elements internally.
 
 Reading guide:

@@ -1,5 +1,4 @@
 // AlgoViz convenience implementation: doubly linked list with std::list.
-// Original code written for this repository under the MIT License.
 // std::list is a doubly linked list with O(1) insert/erase at a known position.
 //
 // Reading guide:

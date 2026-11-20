@@ -1,4 +1,4 @@
-"""KMP pattern matching — original Python reference, MIT.
+"""KMP pattern matching — original Python reference.
 
 LPS convention: 0-based, lps[k] is the length of the longest proper prefix of
 pattern[0..k] that is also a suffix. On a mismatch, j moves to lps[j - 1]; the

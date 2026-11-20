@@ -1,6 +1,5 @@
 /*
  * AlgoViz reference implementation: order-4 B-tree (search and insertion).
- * Original code written for this repository under the MIT License.
  *
  * Reading guide:
  * 1. Each node keeps a sorted std::vector<int> and at most four child pointers.

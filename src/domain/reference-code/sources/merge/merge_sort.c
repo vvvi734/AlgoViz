@@ -1,118 +1,72 @@
 /*
- * AlgoViz 教材参考 C 实现
- * 来源：用户提供的《数据结构与算法（Windows版）》第9章排序/01排序_Sort.c
- * 节选顺序表定义、swap/print 与本算法函数，教材注释逐字保留；演示 main 为阅读入口。
- * 原始版权归原教材作者/出版方所有，仅用于本地学习与代码阅读。
+ * Merge sort in C11.
+ *
+ * Split the range into two halves, sort each half recursively, then merge the
+ * two sorted halves into a temporary buffer. Taking the left item on equality
+ * keeps the sort stable. O(n log n) on every input; O(n) extra space.
  */
 
-#include <stdio.h>    
-#include <string.h>
-#include <ctype.h>      
-#include <stdlib.h>   
-#include <io.h>  
-#include <math.h>  
-#include <time.h>
+#include <stdio.h>
+#include <stdlib.h>
 
-#define OK 1
-#define ERROR 0
-#define TRUE 1
-#define FALSE 0
-
-#define MAX_LENGTH_INSERT_SORT 7 /* 用于快速排序时判断是否选用插入排序阙值 */
-
-typedef int Status; 
-
-
-#define MAXSIZE 10000  /* 用于要排序数组个数最大值，可根据需要修改 */
-typedef struct
+static void MergeRange(int *values, int low, int middle, int high, int *buffer)
 {
-	int r[MAXSIZE+1];	/* 用于存储要排序数组，r[0]用作哨兵或临时变量 */
-	int length;			/* 用于记录顺序表的长度 */
-}SqList;
+    int left = low;
+    int right = middle + 1;
+    int write = low;
 
-/* 交换L中数组r的下标为i和j的值 */
-void swap(SqList *L,int i,int j) 
-{ 
-	int temp=L->r[i]; 
-	L->r[i]=L->r[j]; 
-	L->r[j]=temp; 
+    while (left <= middle && right <= high) {
+        if (values[left] <= values[right]) {
+            buffer[write++] = values[left++];
+        } else {
+            buffer[write++] = values[right++];
+        }
+    }
+    while (left <= middle) {
+        buffer[write++] = values[left++];
+    }
+    while (right <= high) {
+        buffer[write++] = values[right++];
+    }
+    for (int index = low; index <= high; ++index) {
+        values[index] = buffer[index];
+    }
 }
 
-void print(SqList L)
+static void MergeSortRange(int *values, int low, int high, int *buffer)
 {
-	int i;
-	for(i=1;i<L.length;i++)
-		printf("%d,",L.r[i]);
-	printf("%d",L.r[i]);
-	printf("\n");
+    if (low >= high) {
+        return;
+    }
+    int middle = low + (high - low) / 2;
+    MergeSortRange(values, low, middle, buffer);
+    MergeSortRange(values, middle + 1, high, buffer);
+    MergeRange(values, low, middle, high, buffer);
 }
 
-/* **************************************** */
-
-
-/* 归并排序********************************** */
-
-/* 将有序的SR[i..m]和SR[m+1..n]归并为有序的TR[i..n] */
-void Merge(int SR[],int TR[],int i,int m,int n)
+void MergeSort(int *values, int count)
 {
-	int j,k,l;
-	for(j=m+1,k=i;i<=m && j<=n;k++)	/* 将SR中记录由小到大地并入TR */
-	{
-		if (SR[i]<SR[j])
-			TR[k]=SR[i++];
-		else
-			TR[k]=SR[j++];
-	}
-	if(i<=m)
-	{
-		for(l=0;l<=m-i;l++)
-			TR[k+l]=SR[i+l];		/* 将剩余的SR[i..m]复制到TR */
-	}
-	if(j<=n)
-	{
-		for(l=0;l<=n-j;l++)
-			TR[k+l]=SR[j+l];		/* 将剩余的SR[j..n]复制到TR */
-	}
+    if (count <= 1) {
+        return;
+    }
+    int *buffer = (int *)malloc((size_t)count * sizeof(int));
+    if (buffer == NULL) {
+        return;
+    }
+    MergeSortRange(values, 0, count - 1, buffer);
+    free(buffer);
 }
-
-/* 递归法 */
-/* 将SR[s..t]归并排序为TR1[s..t] */
-void MSort(int SR[],int TR1[],int s, int t)
-{
-	int m;
-	int TR2[MAXSIZE+1];
-	if(s==t)
-		TR1[s]=SR[s];
-	else
-	{
-		m=(s+t)/2;				/* 将SR[s..t]平分为SR[s..m]和SR[m+1..t] */
-		MSort(SR,TR2,s,m);		/* 递归地将SR[s..m]归并为有序的TR2[s..m] */
-		MSort(SR,TR2,m+1,t);	/* 递归地将SR[m+1..t]归并为有序的TR2[m+1..t] */
-		Merge(TR2,TR1,s,m,t);	/* 将TR2[s..m]和TR2[m+1..t]归并到TR1[s..t] */
-	}
-}
-
-/* 对顺序表L作归并排序 */
-void MergeSort(SqList *L)
-{ 
- 	MSort(L->r,L->r,1,L->length);
-}
-
-
 
 int main(void)
 {
-    int data[9] = {50, 10, 90, 30, 70, 40, 80, 60, 20};
-    int i;
-    SqList list;
-    list.length = 9;
-    for (i = 0; i < list.length; i++)
-        list.r[i + 1] = data[i];
+    int values[] = {5, 1, 4, 2, 8, 0, 3, 7, 6, 9};
+    int count = (int)(sizeof(values) / sizeof(values[0]));
 
-    printf("归并排序前: ");
-    print(list);
-    MergeSort(&list);
-    printf("归并排序后: ");
-    print(list);
+    MergeSort(values, count);
+    printf("sorted:");
+    for (int index = 0; index < count; ++index) {
+        printf(" %d", values[index]);
+    }
+    printf("\n");
     return 0;
 }

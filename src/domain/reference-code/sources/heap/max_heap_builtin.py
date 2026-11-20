@@ -1,6 +1,5 @@
 """AlgoViz convenience implementation: max heap with heapq.
 
-Original code written for this repository under the MIT License.
 heapq is a min-heap, so values are negated to simulate a max-heap.
 
 Reading guide:

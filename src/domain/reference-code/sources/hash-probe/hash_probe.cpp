@@ -1,5 +1,4 @@
 // AlgoViz reference implementation: linear probing hash table (C++17).
-// Original code written for this repository under the MIT License.
 // -1 marks an empty slot; insert and search probe forward with wraparound.
 //
 // Reading guide:

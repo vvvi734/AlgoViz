@@ -1,5 +1,4 @@
 // AlgoViz convenience implementation: Huffman tree with std::priority_queue.
-// Original code written for this repository under the MIT License.
 // priority_queue is a max-heap by default, so the comparator reverses order.
 //
 // Reading guide:

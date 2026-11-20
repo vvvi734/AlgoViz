@@ -1,6 +1,5 @@
 """AlgoViz reference implementation: linear probing hash table.
 
-Original code written for this repository under the MIT License.
 None marks an empty slot; insert and search probe forward with wraparound.
 
 Reading guide:

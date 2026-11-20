@@ -1,5 +1,4 @@
 // AlgoViz reference implementation: selection sort (C++17).
-// Original code written for this repository under the MIT License.
 // Each pass selects the smallest remaining element and places it at the front.
 //
 // Reading guide:

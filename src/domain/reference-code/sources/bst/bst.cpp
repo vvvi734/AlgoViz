@@ -1,5 +1,4 @@
 // AlgoViz reference implementation: binary search tree (C++17).
-// Original code written for this repository under the MIT License.
 // Insert, search, remove and inorder traversal for unique integer keys.
 //
 // Reading guide:

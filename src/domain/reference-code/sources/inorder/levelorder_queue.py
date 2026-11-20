@@ -1,6 +1,5 @@
 """AlgoViz reference implementation: level-order traversal with collections.deque.
 
-Original code written for this repository under the MIT License.
 This convenience file adds the queue-based fourth traversal alongside the
 recursive preorder/inorder/postorder reference implementation.
 

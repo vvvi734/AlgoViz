@@ -1,13 +1,5 @@
 /*
- * Textbook material note
- * The textbook provided by the user does not contain this algorithm.
- * This file keeps AlgoViz's original C implementation and comments; it does
- * not present itself as textbook text.
- */
-
-/*
  * AlgoViz shared convenience implementation: binary search with bsearch().
- * Original code written for this repository under the MIT License.
  * The array must be sorted before calling bsearch(); this returns the first
  * matching index found by the C standard library.
  *

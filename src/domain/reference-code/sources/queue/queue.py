@@ -1,6 +1,5 @@
 """AlgoViz reference implementation: circular queue.
 
-Original code written for this repository under the MIT License.
 A fixed-capacity ring buffer using head, tail and count.
 
 Reading guide:

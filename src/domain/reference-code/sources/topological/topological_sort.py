@@ -1,6 +1,5 @@
 """AlgoViz reference implementation: topological sort (Kahn).
 
-Original code written for this repository under the MIT License.
 Repeatedly removes a vertex with in-degree zero; a remaining vertex means a cycle.
 
 Reading guide:

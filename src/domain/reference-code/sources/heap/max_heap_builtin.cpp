@@ -1,5 +1,4 @@
 // AlgoViz convenience implementation: max heap with std::priority_queue.
-// Original code written for this repository under the MIT License.
 // std::priority_queue is a max-heap by default.
 //
 // Reading guide:

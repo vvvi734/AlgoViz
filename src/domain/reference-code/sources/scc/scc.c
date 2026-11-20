@@ -1,13 +1,5 @@
 /*
- * Textbook material note
- * The textbook provided by the user does not contain this algorithm.
- * This file keeps AlgoViz's original C implementation and comments; it does
- * not present itself as textbook text.
- */
-
-/*
  * AlgoViz reference implementation: strongly connected components (Kosaraju).
- * Original code written for this repository under the MIT License.
  * First pass records finish order on the original graph; second pass walks
  * the reversed graph in reverse finish order. Each tree is one SCC.
  *
@@ -29,7 +21,7 @@
 #define VERTEX_COUNT 6
 
 // First pass appends a vertex only after all its outgoing neighbours are finished.
-void first_pass(const int graph[VERTEX_COUNT][VERTEX_COUNT], int vertex, bool visited[VERTEX_COUNT], int order[VERTEX_COUNT], int *position) {
+void first_pass(int graph[VERTEX_COUNT][VERTEX_COUNT], int vertex, bool visited[VERTEX_COUNT], int order[VERTEX_COUNT], int *position) {
     visited[vertex] = true;
     for (int next = 0; next < VERTEX_COUNT; ++next) {
         if (graph[vertex][next] && !visited[next]) {
@@ -39,7 +31,7 @@ void first_pass(const int graph[VERTEX_COUNT][VERTEX_COUNT], int vertex, bool vi
     order[(*position)++] = vertex;
 }
 
-void collect(const int reverse_graph[VERTEX_COUNT][VERTEX_COUNT], int vertex, bool visited[VERTEX_COUNT]) {
+void collect(int reverse_graph[VERTEX_COUNT][VERTEX_COUNT], int vertex, bool visited[VERTEX_COUNT]) {
     visited[vertex] = true;
     printf(" %d", vertex);
     for (int next = 0; next < VERTEX_COUNT; ++next) {

@@ -653,10 +653,6 @@
   overflow-wrap: anywhere;
 }
 
-.reference-license {
-  color: var(--muted);
-}
-
 .reference-copy {
   margin-left: auto;
 }

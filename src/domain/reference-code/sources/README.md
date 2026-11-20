@@ -12,9 +12,8 @@
   - C：`cc file.c -std=c11 -Wall -Wextra -pedantic`
   - C++：`c++ file.cpp -std=c++17 -Wall -Wextra -pedantic`
   - Python：`python file.py`
-- **注释与网站语言**：源文件保留其原有语言的注释；网站切换到另一种界面语言时，使用同一份算法主体加上经审校的本地化注释头，函数签名和算法语句不变。复制按钮复制当前界面语言对应的完整源码。
-- **许可**：除标注为教材代码的文件外，本目录代码采用仓库根目录的 MIT License。26 个 C 原理文件是教材节选，版权归原作者/出版方所有，仅用于学习，不适用 MIT 许可；文件头保留来源和版权说明。
-- **第三方来源**：除上述教材节选外，没有复制第三方算法实现；标准库用法依据各语言官方文档，教材只作为知识体系与算法思想参考。
+- **注释与网站语言**：源文件使用英文教学注释；网站切换到中文界面时，使用同一份算法主体加上经审校的中文教学注释头，函数签名和算法语句不变。复制按钮复制当前界面语言对应的完整源码。
+- **原创性**：本目录的全部示例均为 AlgoViz 原创，没有复制第三方实现或外部注释；标准库用法依据各语言官方文档。
 
 ## English
 
@@ -28,8 +27,7 @@ This directory contains AlgoViz's read-only teaching reference code for universi
   - C: `cc file.c -std=c11 -Wall -Wextra -pedantic`
   - C++: `c++ file.cpp -std=c++17 -Wall -Wextra -pedantic`
   - Python: `python file.py`
-- **Comments and UI language**: source files retain their native comments. When the website switches to its other language, the same algorithm body is shown with a reviewed localized annotation header; function signatures and algorithm statements do not change. The copy button copies the complete source for the current UI language.
-- **Licensing**: except files marked as textbook excerpts, the code here is distributed under the repository's MIT License. Twenty-six C principle files are textbook excerpts whose copyright remains with the original authors/publisher; they are for study only and are not MIT-licensed. Their headers retain provenance and copyright notices.
-- **Third-party code**: apart from those textbook excerpts, no third-party algorithm implementation is copied. Standard-library examples follow the languages' official documentation; the textbook is used as a knowledge-system and algorithm-idea reference.
+- **Comments and UI language**: source files use English teaching comments. When the website switches to Chinese, the same algorithm body is shown with a reviewed Chinese annotation header; function signatures and algorithm statements do not change. The copy button copies the complete source for the current UI language.
+- **Originality**: every example in this directory is original AlgoViz work; no third-party implementation or external comment is copied. Standard-library examples follow the languages' official documentation.
 
-See the repository root `LICENSE` for the full MIT text.
+See the repository root `LICENSE` for the project license.

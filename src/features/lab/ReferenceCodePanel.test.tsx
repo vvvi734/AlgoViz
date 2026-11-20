@@ -98,7 +98,9 @@ describe('ReferenceCodePanel', () => {
       expect(screen.getByTestId('reference-code-fallback').textContent).toContain('compare_int'),
     );
     expect(screen.getByTestId('reference-purpose').textContent).toContain('简洁实现');
+    expect(screen.getByTestId('reference-source').textContent).toContain('实现说明');
     expect(screen.getByTestId('reference-source').textContent).toContain('共享便捷示例');
+    expect(screen.getByTestId('reference-source').textContent).not.toContain('许可');
 
     fireEvent.click(screen.getByTestId('reference-lang-cpp'));
     expect(screen.getByTestId('reference-file-name').textContent).toBe('builtin_sorting.cpp');
@@ -150,7 +152,7 @@ describe('ReferenceCodePanel', () => {
     renderPanel('binary', '二分查找');
     await waitForCode();
     expect(screen.getByTestId('reference-lang-c').getAttribute('aria-selected')).toBe('true');
-    expect(screen.getByTestId('reference-code-fallback').textContent).toContain('教材参考 C 实现');
+    expect(screen.getByTestId('reference-code-fallback').textContent).toContain('AlgoViz 参考代码');
     expect(screen.getByTestId('reference-code-fallback').textContent).toContain('int Binary_Search');
 
     fireEvent.click(screen.getByTestId('reference-lang-cpp'));
@@ -176,16 +178,15 @@ describe('ReferenceCodePanel', () => {
     await waitForCode();
     fireEvent.click(screen.getByTestId('test-toggle-language'));
     await waitFor(() =>
-      expect(screen.getByTestId('reference-code-fallback').textContent).toContain('AlgoViz reference code'),
+      expect(screen.getByTestId('reference-code-fallback').textContent).toContain('Binary search in C11'),
     );
 
     fireEvent.click(screen.getByTestId('reference-copy'));
     await waitFor(() => expect(screen.getByTestId('reference-copy').textContent).toContain('Copied'));
     const writeText = navigator.clipboard.writeText as unknown as ReturnType<typeof vi.fn>;
     const copied = String(writeText.mock.calls[0][0]);
-    expect(copied).toContain('AlgoViz reference code');
-    expect(copied).toContain('Textbook code');
-    expect(copied).not.toContain('教材参考 C 实现');
+    expect(copied).toContain('Binary search in C11');
+    expect(copied).not.toContain('教材');
     expect(copied).toContain('int Binary_Search');
     expect(copied).toContain('int main(void)');
   });

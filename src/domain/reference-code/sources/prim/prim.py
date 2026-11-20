@@ -1,6 +1,5 @@
 """AlgoViz reference implementation: Prim's minimum spanning tree.
 
-Original code written for this repository under the MIT License.
 Grows one tree from vertex 0 using a heap of candidate edges.
 
 Reading guide:

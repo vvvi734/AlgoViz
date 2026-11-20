@@ -1,6 +1,5 @@
 """AlgoViz convenience implementation: hash table with a Python dict.
 
-Original code written for this repository under the MIT License.
 dict chooses its own collision strategy; no probing loop is visible.
 
 Reading guide:

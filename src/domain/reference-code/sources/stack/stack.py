@@ -1,6 +1,5 @@
 """AlgoViz reference implementation: array stack.
 
-Original code written for this repository under the MIT License.
 A fixed-capacity stack with an explicit size and overflow checks.
 
 Reading guide:

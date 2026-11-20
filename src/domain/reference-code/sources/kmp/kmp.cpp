@@ -1,5 +1,5 @@
 /*
- * KMP pattern matching — original C++17 implementation, MIT.
+ * KMP pattern matching — original C++17 implementation.
  *
  * LPS convention used here: 0-based, lps[k] is the length of the longest
  * proper prefix of pattern[0..k] that is also a suffix. On a mismatch, j moves

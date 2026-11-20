@@ -1,13 +1,5 @@
 /*
- * Textbook material note
- * The textbook provided by the user does not contain this algorithm.
- * This file keeps AlgoViz's original C implementation and comments; it does
- * not present itself as textbook text.
- */
-
-/*
  * AlgoViz reference implementation: Huffman coding.
- * Original code written for this repository under the MIT License.
  * Builds a min-heap of nodes, repeatedly merges the two lightest nodes,
  * then emits prefix-free codes by walking the tree.
  *

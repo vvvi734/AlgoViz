@@ -1,10 +1,5 @@
 """AlgoViz reference implementation: singly linked list.
 
-Based on this project's tested Python teaching implementation, with
-teaching-only tracing calls removed. Released under the MIT License.
-Algorithmic structure follows the classic textbook treatment in
-Yan Weimin, Data Structures (C Language Edition), without copying text.
-
 Reading guide:
 1. A node stores one value and one next pointer; the list owns a head pointer and a
    length.

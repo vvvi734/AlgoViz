@@ -1,6 +1,5 @@
 """AlgoViz convenience implementation: Huffman tree with heapq.
 
-Original code written for this repository under the MIT License.
 heapq is a min-heap; tuples (frequency, order, node) break ties deterministically.
 
 Reading guide:

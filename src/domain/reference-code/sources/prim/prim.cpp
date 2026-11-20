@@ -1,5 +1,4 @@
 // AlgoViz reference implementation: Prim's minimum spanning tree (C++17).
-// Original code written for this repository under the MIT License.
 // Grows one tree from vertex 0 using a min-heap of candidate edges.
 //
 // Reading guide:

@@ -2,12 +2,11 @@ import { useEffect, useMemo, useState } from 'react';
 import {
   REFERENCE_LANGUAGE_LABELS,
   REFERENCE_LANGUAGES,
-  referenceLicenseLabel,
   loadReferenceCode,
+  referenceConvenienceNote,
   referenceFileMeta,
   referenceImplementations,
   referenceLanguages,
-  referenceSourceNote,
   type ReferenceImplementation,
   type ReferenceLanguage,
 } from '../../domain/reference-code/registry';
@@ -60,7 +59,6 @@ export function ReferenceCodePanel({
   const activeImplementation: ReferenceImplementation = implementations.includes(implementation)
     ? implementation
     : (implementations[0] ?? 'principle');
-  const licenseLabel = referenceLicenseLabel(algorithmId, language, activeImplementation)[lang];
   const [source, setSource] = useState<string | null>(null);
   const [loading, setLoading] = useState(available.length > 0);
   const [failed, setFailed] = useState(false);
@@ -129,6 +127,10 @@ export function ReferenceCodePanel({
   );
   const hasAny = available.length > 0;
   const hasImplementationSwitch = implementations.length > 1;
+  const teachingNote =
+    activeImplementation === 'convenience'
+      ? referenceConvenienceNote(algorithmId, language)?.[lang] ?? null
+      : null;
   const implementationLabel =
     activeImplementation === 'principle' ? t('referencePrinciple') : t('referenceConvenience');
   const implementationPurpose =
@@ -223,7 +225,6 @@ export function ReferenceCodePanel({
                   {meta.fileName}
                 </code>
               ) : null}
-              <span className="reference-license">{licenseLabel}</span>
               <button
                 type="button"
                 className="btn small reference-copy"
@@ -264,11 +265,12 @@ export function ReferenceCodePanel({
             <p className="reference-code-empty">{t('referenceEmptyCode')}</p>
           )}
 
-          <footer className="reference-source" data-testid="reference-source">
-            <b>{t('referenceSourceLabel')}</b>
-            <span>{referenceSourceNote(algorithmId, language, activeImplementation)[lang]}</span>
-            <span className="reference-license">{licenseLabel}</span>
-          </footer>
+          {teachingNote ? (
+            <footer className="reference-source" data-testid="reference-source">
+              <b>{t('referenceTeachingNoteLabel')}</b>
+              <span>{teachingNote}</span>
+            </footer>
+          ) : null}
         </>
       )}
     </section>

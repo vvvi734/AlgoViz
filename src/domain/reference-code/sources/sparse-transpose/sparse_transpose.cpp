@@ -1,5 +1,5 @@
 /*
- * Sparse matrix fast transpose — original C++17 implementation, MIT.
+ * Sparse matrix fast transpose — original C++17 implementation.
  *
  * Convention: 0-based matrix coordinates, triplet positions and cpot slots; input
  * triplets are row-major with unique (row, col).

@@ -1,7 +1,6 @@
 """AlgoViz reference implementation: bubble sort.
 
 Explicit teaching implementation; sorted()/list.sort() are intentionally not used.
-Released under the MIT License.
 
 Reading guide:
 1. Each pass compares adjacent pairs from the left and swaps inverted pairs.

@@ -1,5 +1,4 @@
 // AlgoViz shared convenience reference: C++ standard-library sorting.
-// Original example written for this repository under the MIT License.
 //
 // std::sort and std::stable_sort perform the same task (order an int vector
 // ascending), but they are not bubble/selection/insertion implementations.

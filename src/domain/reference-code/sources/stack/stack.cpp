@@ -1,5 +1,4 @@
 // AlgoViz reference implementation: array stack (C++17).
-// Original code written for this repository under the MIT License.
 // A fixed-capacity stack with manual top index and overflow checks.
 //
 // Reading guide:

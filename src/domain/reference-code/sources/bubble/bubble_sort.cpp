@@ -1,5 +1,4 @@
 // AlgoViz reference implementation: bubble sort (C++17).
-// Original code written for this repository under the MIT License.
 // This is the manual exchange-sort version; std::sort is intentionally not used.
 //
 // Reading guide:

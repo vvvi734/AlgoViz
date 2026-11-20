@@ -1,13 +1,5 @@
 /*
- * Textbook material note
- * The textbook provided by the user does not contain this algorithm.
- * This file keeps AlgoViz's original C implementation and comments; it does
- * not present itself as textbook text.
- */
-
-/*
  * AlgoViz reference implementation: doubly linked list.
- * Original code written for this repository under the MIT License.
  * Each node stores prev/next pointers; append and remove are O(1)
  * once the target node is known.
  *

@@ -1,6 +1,5 @@
 """AlgoViz shared convenience reference: Python built-in sorting.
 
-Original example written for this repository under the MIT License.
 
 sorted() and list.sort() perform the same task (order a list ascending), not a
 hand-written bubble/selection/insertion sort. Both are stable.

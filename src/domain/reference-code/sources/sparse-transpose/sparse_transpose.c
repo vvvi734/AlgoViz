@@ -1,12 +1,5 @@
 /*
- * Textbook material note
- * The textbook provided by the user does not contain this algorithm.
- * This file keeps AlgoViz's original C implementation and comments; it does
- * not present itself as textbook text.
- */
-
-/*
- * Sparse matrix fast transpose — original C implementation, MIT.
+ * Sparse matrix fast transpose — original C implementation.
  *
  * Convention: 0-based matrix coordinates, triplet positions and cpot slots; input
  * triplets are row-major with unique (row, col).

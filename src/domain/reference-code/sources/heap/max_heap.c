@@ -1,13 +1,5 @@
 /*
- * Textbook material note
- * The textbook provided by the user does not contain this algorithm.
- * This file keeps AlgoViz's original C implementation and comments; it does
- * not present itself as textbook text.
- */
-
-/*
  * AlgoViz reference implementation: max heap.
- * Original code written for this repository under the MIT License.
  * Array-backed binary heap with sift-up on insert and sift-down on pop.
  *
  * Reading guide:

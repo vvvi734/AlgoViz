@@ -1,7 +1,5 @@
 """AlgoViz reference implementation: binary search.
 
-Based on this project's tested Python teaching implementation, with
-teaching-only tracing calls removed. Released under the MIT License.
 The algorithm is implemented explicitly; bisect is not used.
 
 Reading guide:

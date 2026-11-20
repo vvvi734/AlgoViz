@@ -1,6 +1,5 @@
 """AlgoViz convenience implementation: factorial with math.factorial.
 
-Original code written for this repository under the MIT License.
 This delegates the whole computation to the CPython standard library.
 
 Reading guide:

@@ -1,5 +1,4 @@
 // AlgoViz convenience implementation: hash table with std::unordered_map.
-// Original code written for this repository under the MIT License.
 // unordered_map handles hashing, buckets and collision chains internally.
 //
 // Reading guide:

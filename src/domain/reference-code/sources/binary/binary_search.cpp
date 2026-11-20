@@ -1,5 +1,4 @@
 // AlgoViz reference implementation: binary search (C++17).
-// Original code written for this repository under the MIT License.
 // The algorithm is implemented explicitly; std::binary_search is not used.
 //
 // Reading guide:

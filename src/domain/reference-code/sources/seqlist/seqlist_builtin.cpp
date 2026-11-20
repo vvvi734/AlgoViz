@@ -1,5 +1,4 @@
 // AlgoViz convenience implementation: sequential list with std::vector.
-// Original code written for this repository under the MIT License.
 // vector::insert and vector::erase perform the same shifting internally.
 //
 // Reading guide:

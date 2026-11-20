@@ -1,5 +1,4 @@
 // AlgoViz reference implementation: inorder traversal (C++17).
-// Original code written for this repository under the MIT License.
 // Visits left subtree, root, then right subtree; the result is sorted
 // for a binary search tree.
 //

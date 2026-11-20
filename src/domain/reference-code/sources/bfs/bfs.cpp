@@ -1,5 +1,4 @@
 // AlgoViz reference implementation: breadth-first search (C++17).
-// Original code written for this repository under the MIT License.
 // Uses an adjacency list and std::queue; visits vertices level by level.
 //
 // Reading guide:

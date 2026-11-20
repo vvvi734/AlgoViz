@@ -1,5 +1,4 @@
 // AlgoViz reference implementation: merge sort (C++17).
-// Original code written for this repository under the MIT License.
 // std::sort / std::stable_sort are deliberately not used.
 //
 // Reading guide:

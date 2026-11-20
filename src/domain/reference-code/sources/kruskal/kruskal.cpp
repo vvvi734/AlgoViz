@@ -1,5 +1,4 @@
 // AlgoViz reference implementation: Kruskal's minimum spanning tree (C++17).
-// Original code written for this repository under the MIT License.
 // Sorts all edges by weight and adds an edge only when its endpoints are
 // in different disjoint-set components.
 //

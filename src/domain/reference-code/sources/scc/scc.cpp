@@ -1,5 +1,4 @@
 // AlgoViz reference implementation: strongly connected components (Kosaraju).
-// Original code written for this repository under the MIT License.
 // First pass records finish order on the original graph; second pass walks
 // the reversed graph in reverse finish order. Each tree is one SCC.
 //

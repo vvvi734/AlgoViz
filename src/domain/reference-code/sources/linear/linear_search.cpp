@@ -1,5 +1,4 @@
 // AlgoViz reference implementation: linear search (C++17).
-// Original code written for this repository under the MIT License.
 // Scans from left to right and returns the first matching index, or -1.
 //
 // Reading guide:

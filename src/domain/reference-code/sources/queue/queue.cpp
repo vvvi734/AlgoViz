@@ -1,5 +1,4 @@
 // AlgoViz reference implementation: circular queue (C++17).
-// Original code written for this repository under the MIT License.
 // A fixed-capacity ring buffer using head, tail and count.
 //
 // Reading guide:

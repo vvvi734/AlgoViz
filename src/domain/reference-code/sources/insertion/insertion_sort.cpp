@@ -1,5 +1,4 @@
 // AlgoViz reference implementation: insertion sort (C++17).
-// Original code written for this repository under the MIT License.
 // The sorted prefix grows one element at a time; larger elements shift right.
 //
 // Reading guide:

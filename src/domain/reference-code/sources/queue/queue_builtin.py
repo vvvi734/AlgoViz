@@ -1,6 +1,5 @@
 """AlgoViz convenience implementation: queue with collections.deque.
 
-Original code written for this repository under the MIT License.
 append() adds at the right; popleft() removes from the left in O(1).
 
 Reading guide:

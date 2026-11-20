@@ -1,7 +1,6 @@
 """AlgoViz reference implementation: insertion sort.
 
 Explicit teaching implementation; sorted()/list.sort() are intentionally not used.
-Released under the MIT License.
 
 Reading guide:
 1. Treat [0, i) as the sorted prefix and values[i] as the key to insert.

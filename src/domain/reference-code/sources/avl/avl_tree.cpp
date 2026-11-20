@@ -1,5 +1,4 @@
 // AlgoViz reference implementation: AVL tree (C++17).
-// Original code written for this repository under the MIT License.
 // Height-balanced BST with LL, RR, LR and RL rotations on insert.
 //
 // Reading guide:

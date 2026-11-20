@@ -1,6 +1,5 @@
 """AlgoViz reference implementation: breadth-first search.
 
-Original code written for this repository under the MIT License.
 Uses an adjacency list and collections.deque; visits vertices level by level.
 
 Reading guide:

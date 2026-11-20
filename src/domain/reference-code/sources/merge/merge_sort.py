@@ -1,7 +1,5 @@
 """AlgoViz reference implementation: merge sort.
 
-Based on this project's tested Python teaching implementation, with
-teaching-only tracing calls removed. Released under the MIT License.
 The implementation is intentionally explicit; sorted()/list.sort() are not used.
 
 Reading guide:

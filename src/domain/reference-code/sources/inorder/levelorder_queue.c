@@ -1,7 +1,5 @@
 // AlgoViz reference implementation: level-order traversal with a FIFO queue (C11).
-// Original code written for this repository under the MIT License.
-// The textbook C principle tab keeps the recursive three-traversal excerpt;
-// this convenience file adds the queue-based fourth traversal.
+// This file adds the queue-based fourth traversal.
 //
 // Reading guide:
 // 1. Enqueue the root.

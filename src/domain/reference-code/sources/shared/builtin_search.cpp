@@ -1,5 +1,4 @@
 // AlgoViz shared convenience implementation: binary search with lower_bound.
-// Original code written for this repository under the MIT License.
 // lower_bound finds the first position that is not less than the target.
 // The input range must already be sorted.
 //

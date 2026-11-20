@@ -1,5 +1,4 @@
 // AlgoViz reference implementation: depth-first search (C++17).
-// Original code written for this repository under the MIT License.
 // Recursively follows one branch as far as possible before backtracking.
 //
 // Reading guide:

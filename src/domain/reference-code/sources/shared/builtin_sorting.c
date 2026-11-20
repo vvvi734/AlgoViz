@@ -1,13 +1,5 @@
 /*
- * Textbook material note
- * The textbook provided by the user does not contain this algorithm.
- * This file keeps AlgoViz's original C implementation and comments; it does
- * not present itself as textbook text.
- */
-
-/*
  * AlgoViz shared convenience reference: C standard-library qsort.
- * Original example written for this repository under the MIT License.
  *
  * qsort performs the same task (order an int array ascending), but it is an
  * unspecified in-place sort rather than a hand-written bubble/selection/

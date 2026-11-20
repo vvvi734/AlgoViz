@@ -1,5 +1,4 @@
 // AlgoViz reference implementation: level-order traversal with std::queue (C++17).
-// Original code written for this repository under the MIT License.
 // This convenience file adds a fourth traversal alongside the recursive
 // preorder/inorder/postorder reference implementation.
 //

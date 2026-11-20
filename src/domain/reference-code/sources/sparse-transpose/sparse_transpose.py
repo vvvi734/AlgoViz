@@ -1,4 +1,4 @@
-"""Sparse matrix fast transpose — original Python teaching implementation, MIT.
+"""Sparse matrix fast transpose — original Python teaching implementation.
 
 Convention: 0-based matrix coordinates, triplet positions and cpot slots; input
 triplets are row-major with unique (row, col).

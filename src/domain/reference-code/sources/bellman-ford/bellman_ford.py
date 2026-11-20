@@ -1,6 +1,5 @@
 """AlgoViz reference implementation: Bellman-Ford.
 
-Original code written for this repository under the MIT License.
 Relaxes every edge V - 1 times; an extra successful relaxation means a
 reachable negative cycle. Supports negative edges.
 

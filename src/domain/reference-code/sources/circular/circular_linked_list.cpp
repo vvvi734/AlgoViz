@@ -1,5 +1,4 @@
 // AlgoViz reference implementation: circular singly linked list (C++17).
-// Original code written for this repository under the MIT License.
 // The tail node links back to the head, so traversal stops when it returns.
 //
 // Reading guide:

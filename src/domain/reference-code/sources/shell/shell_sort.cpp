@@ -1,5 +1,4 @@
 // AlgoViz reference implementation: Shell sort (C++17).
-// Original code written for this repository under the MIT License.
 // Gap insertion sort, halving the gap until the final gap-1 pass.
 //
 // Reading guide:

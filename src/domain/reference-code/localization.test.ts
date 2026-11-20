@@ -59,15 +59,14 @@ describe('reference code localization', () => {
     expect(codeOnly(translated, 'cpp')).toBe(codeOnly(source!, 'cpp'));
   });
 
-  it('adds English annotations to a Chinese textbook C source', async () => {
+  it('adds Chinese annotations to an English C source', async () => {
     const source = await loadReferenceCode('binary', 'c');
-    expect(source).toContain('教材参考 C 实现');
-    const translated = localized(source!, 'c', 'principle', 'en');
-    expect(translated).toContain('AlgoViz reference code');
-    expect(translated).toContain('Textbook code');
+    expect(source).toContain('Binary search in C11');
+    const translated = localized(source!, 'c', 'principle', 'zh');
+    expect(translated).toContain('AlgoViz 参考代码');
+    expect(translated).toContain('思路：');
     expect(translated).toContain('int Binary_Search');
-    expect(translated).not.toContain('教材参考 C 实现');
-    expect(translated).not.toMatch(/[\u4e00-\u9fff]/);
+    expect(translated).not.toMatch(/来源：|许可：/);
     expect(codeOnly(translated, 'c')).toBe(codeOnly(source!, 'c'));
   });
 
@@ -107,13 +106,14 @@ describe('reference code localization', () => {
         lang: 'zh',
       });
       expect(translated, algorithmId).toMatch(/思路：.+/);
-      expect(translated, algorithmId).toMatch(/来源：.+/);
+      expect(translated, algorithmId).not.toMatch(/来源：|许可：/);
     }
   });
 
   it('leaves native-language sources untouched', async () => {
     const source = await loadReferenceCode('binary', 'c');
-    expect(localized(source!, 'c', 'principle', 'zh')).toBe(source);
+    expect(localized(source!, 'c', 'principle', 'en')).toBe(source);
+    expect(localized(source!, 'c', 'principle', 'zh')).not.toBe(source);
     const cpp = await loadReferenceCode('binary', 'cpp');
     expect(localized(cpp!, 'cpp', 'principle', 'en')).toBe(cpp);
   });

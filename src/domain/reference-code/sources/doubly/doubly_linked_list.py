@@ -1,6 +1,5 @@
 """AlgoViz reference implementation: doubly linked list.
 
-Original code written for this repository under the MIT License.
 Each node stores prev/next references; append and remove are O(1)
 once the target node is known.
 

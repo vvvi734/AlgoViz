@@ -1,5 +1,4 @@
 // AlgoViz reference implementation: doubly linked list (C++17).
-// Original code written for this repository under the MIT License.
 // Nodes own their successors through unique_ptr and keep raw prev pointers.
 //
 // Reading guide:

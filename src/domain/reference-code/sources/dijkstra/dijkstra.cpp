@@ -1,5 +1,4 @@
 // AlgoViz reference implementation: Dijkstra (adjacency list + min-heap).
-// Original code written for this repository under the MIT License.
 // The shortest-path algorithm is explicit; no graph library is used.
 //
 // Reading guide:
