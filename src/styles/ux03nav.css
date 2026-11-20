@@ -43,7 +43,7 @@
   background: var(--panel-2);
   color: var(--muted);
   font-size: var(--font-ui);
-  font-weight: 650;
+  font-weight: 400;
   line-height: 1.25;
   text-align: center;
   cursor: pointer;
@@ -139,7 +139,7 @@
   background: var(--alg-hover);
   color: var(--muted);
   font-size: var(--font-ui);
-  font-weight: 700;
+  font-weight: 400;
   line-height: 1.4;
   text-align: center;
   font-variant-numeric: tabular-nums;
@@ -148,7 +148,7 @@
   flex: 0 0 auto;
   color: var(--muted);
   font-size: var(--font-ui);
-  font-weight: 500;
+  font-weight: 400;
   line-height: 1.4;
   white-space: nowrap;
   opacity: .78;
@@ -238,23 +238,14 @@
   font-size: var(--font-ui);
   line-height: 1;
 }
-.textbook-kind-icon {
+.textbook-kind-status {
   flex: 0 0 auto;
-  width: 9px;
   color: var(--muted);
   font-size: var(--font-ui);
-  line-height: 1;
-  text-align: center;
-}
-.textbook-topic.is-concept .textbook-kind-icon {
-  color: var(--accent);
-  opacity: .62;
-}
-/* The chevron already says "open"; "阅读" only steals width from the name and
-   forces short concept titles into orphan lines at the enlarged font. */
-.textbook-topic.is-concept.is-link .textbook-kind-status { display: none; }
-.textbook-topic.is-planned .textbook-kind-icon {
-  opacity: .78;
+  font-weight: 400;
+  line-height: 1.35;
+  white-space: nowrap;
+  opacity: .7;
 }
 .textbook-topic.is-concept .textbook-topic-name,
 .textbook-topic.is-planned .textbook-topic-name {
@@ -265,22 +256,15 @@
   overflow-wrap: anywhere;
   opacity: .82;
 }
-.textbook-kind-status {
-  flex: 0 0 auto;
-  color: var(--muted);
-  font-size: var(--font-ui);
-  font-weight: 500;
-  line-height: 1.35;
-  white-space: nowrap;
-  opacity: .7;
-}
-.textbook-topic.is-concept .textbook-kind-status {
-  color: var(--accent);
-  opacity: .58;
-}
 
-/* Directory category: low-saturation pill, icon plus text, never a card. It sits
-   inline after the title so long English titles keep the full row width. */
+/* Directory category: icon-only marker in a fixed leading slot, so every title
+   starts on the same vertical line. The long text remains in the row label. */
+.textbook-category-slot {
+  flex: 0 0 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+}
 .textbook-topic-copy {
   flex: 1 1 auto;
   min-width: 0;
@@ -293,32 +277,15 @@
 }
 .textbook-category {
   display: inline-flex;
-  vertical-align: middle;
   align-items: center;
-  gap: 3px;
-  margin-left: 4px;
-  padding: 1px 5px;
-  border: 1px solid var(--edge);
-  border-radius: 6px;
-  font-size: var(--font-ui);
-  font-weight: 600;
-  line-height: 1.2;
-  white-space: nowrap;
-}
-.textbook-category-icon {
-  flex: 0 0 auto;
   font-size: var(--font-ui);
   line-height: 1;
   opacity: .9;
 }
 .textbook-category.is-theory {
-  border-color: color-mix(in srgb, var(--accent) 35%, var(--edge));
-  background: color-mix(in srgb, var(--accent) 8%, transparent);
   color: var(--accent);
 }
 .textbook-category.is-visual {
-  border-color: color-mix(in srgb, var(--accent-2) 38%, var(--edge));
-  background: color-mix(in srgb, var(--accent-2) 10%, transparent);
   color: var(--accent-2);
 }
 
@@ -367,7 +334,7 @@
   overflow-wrap: anywhere;
 }
 .textbook-topic-head[data-has-current='true'] .textbook-topic-name {
-  font-weight: 650;
+  font-weight: 400;
 }
 
 /* UX-03B: a one-algorithm topic is a single clickable row. The topic label stays
@@ -378,8 +345,6 @@
 }
 .textbook-direct-item {
   align-items: center;
-  gap: 7px;
-  padding: 6px 7px;
   border-radius: 7px;
   color: var(--muted);
 }
@@ -387,40 +352,20 @@
   color: var(--txt);
 }
 .textbook-direct-copy {
-  display: flex;
+  display: block;
   flex: 1 1 auto;
-  flex-direction: column;
   min-width: 0;
-  gap: 1px;
 }
 .textbook-direct-title {
   display: inline;
   min-width: 0;
   font-size: var(--font-ui);
-  font-weight: 600;
+  font-weight: 400;
   line-height: 1.3;
   overflow-wrap: anywhere;
-}
-.textbook-direct-title-row {
-  display: block;
-  min-width: 0;
-  line-height: 1.3;
-}
-.textbook-direct-algorithm {
-  min-width: 0;
-  color: var(--muted);
-  font-size: var(--font-ui);
-  font-weight: 500;
-  line-height: 1.3;
-  overflow-wrap: anywhere;
-  opacity: .72;
 }
 .textbook-direct-item[aria-current='true'] .textbook-direct-title {
   color: var(--accent);
-}
-.textbook-direct-item[aria-current='true'] .textbook-direct-algorithm {
-  color: var(--accent);
-  opacity: .72;
 }
 .textbook-direct-item .textbook-current-dot {
   margin-left: 1px;
@@ -433,7 +378,7 @@
   border-radius: 5px;
   color: var(--muted);
   font-size: var(--font-ui);
-  font-weight: 600;
+  font-weight: 400;
   line-height: 1.35;
   white-space: nowrap;
 }
@@ -466,10 +411,9 @@
   border-radius: 7px;
   font-size: var(--font-ui);
 }
-.textbook-sidebar .alg-icon {
-  flex: 0 0 auto;
-  font-size: var(--font-ui);
-  line-height: 1;
+.textbook-sidebar .alg-item.textbook-direct-item {
+  gap: 6px;
+  padding: 6px 5px 6px 1px;
 }
 .textbook-sidebar .alg-name {
   flex: 1 1 auto;

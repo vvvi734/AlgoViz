@@ -97,6 +97,8 @@ describe('AlgorithmSidebar — textbook chapters (UX-03)', () => {
     }
     expect(screen.getAllByTestId(/^algo-/)).toHaveLength(Object.keys(catalog).length);
     expect(textbookAlgorithmIds(nav)).toHaveLength(Object.keys(catalog).length);
+    expect(screen.getByTestId('sidebar').querySelectorAll('.alg-icon')).toHaveLength(0);
+    expect(screen.getByTestId('sidebar').querySelector('.textbook-direct-algorithm')).toBeNull();
   });
 
   it('starts with only the current path open; other chapters stay folded', () => {
@@ -183,7 +185,8 @@ describe('AlgorithmSidebar — textbook chapters (UX-03)', () => {
     expect(mergeSort.getAttribute('data-kind')).toBe('algorithm');
     expect(mergeSort.getAttribute('data-category')).toBe('visual');
     expect(screen.getByTestId('algo-merge')).toBeTruthy();
-    expect(within(mergeSort).getByText('可视化')).toBeTruthy();
+    expect(within(mergeSort).queryByText('可视化')).toBeNull();
+    expect(mergeSort.querySelector('.textbook-category.is-visual')?.textContent).toBe('▶');
 
     const shellSort = screen.getByTestId('topic-shell-sort');
     expect(shellSort.getAttribute('data-kind')).toBe('algorithm');
@@ -199,8 +202,8 @@ describe('AlgorithmSidebar — textbook chapters (UX-03)', () => {
     expect(graphBasics.getAttribute('data-kind')).toBe('concept');
     expect(graphBasics.getAttribute('data-category')).toBe('theory');
     expect(graphBasics.getAttribute('aria-disabled')).toBeNull();
-    expect(within(graphBasics).getByText('理论')).toBeTruthy();
-    expect(graphBasics.querySelector('.textbook-category.is-theory')).toBeTruthy();
+    expect(within(graphBasics).queryByText('理论')).toBeNull();
+    expect(graphBasics.querySelector('.textbook-category.is-theory')?.textContent).toBe('▤');
     expect(graphBasics.getAttribute('data-concept-id')).toBe('graph-basics');
     fireEvent.click(graphBasics);
     expect(onSelectConcept).toHaveBeenCalledWith('graph-basics');
@@ -220,7 +223,8 @@ describe('AlgorithmSidebar — textbook chapters (UX-03)', () => {
 
     const group = screen.getByTestId('topic-shortest-path');
     expect(group.getAttribute('data-category')).toBe('visual');
-    expect(within(group).getByText('可视化')).toBeTruthy();
+    expect(within(group).queryByText('可视化')).toBeNull();
+    expect(group.querySelector('.textbook-category.is-visual')?.textContent).toBe('▶');
   });
 
   it('marks the two new tree theory lessons without making static SVGs visual', () => {
@@ -229,17 +233,24 @@ describe('AlgorithmSidebar — textbook chapters (UX-03)', () => {
     expect(storage.getAttribute('data-kind')).toBe('concept');
     expect(storage.getAttribute('data-category')).toBe('theory');
     expect(storage.getAttribute('data-concept-id')).toBe('tree-storage');
-    expect(within(storage).getByText('理论')).toBeTruthy();
+    expect(within(storage).queryByText('理论')).toBeNull();
+    expect(storage.querySelector('.textbook-category.is-theory')?.textContent).toBe('▤');
+    expect(storage.textContent?.startsWith('▤')).toBe(true);
 
     const conversion = screen.getByTestId('topic-forest-conversion');
     expect(conversion.getAttribute('data-kind')).toBe('concept');
     expect(conversion.getAttribute('data-category')).toBe('theory');
     expect(conversion.getAttribute('data-concept-id')).toBe('forest-conversion');
-    expect(within(conversion).getByText('理论')).toBeTruthy();
+    expect(within(conversion).queryByText('理论')).toBeNull();
+    expect(conversion.querySelector('.textbook-category.is-theory')?.textContent).toBe('▤');
 
     const traversal = screen.getByTestId('topic-binary-tree-traversal');
     expect(traversal.getAttribute('data-category')).toBe('visual');
-    expect(within(traversal).getByText('可视化')).toBeTruthy();
+    expect(within(traversal).queryByText('可视化')).toBeNull();
+    expect(traversal.querySelector('.textbook-category.is-visual')?.textContent).toBe('▶');
+    expect(traversal.textContent?.startsWith('▶')).toBe(true);
+    expect(traversal.querySelector('.textbook-direct-algorithm')).toBeNull();
+    expect(traversal.querySelector('.alg-icon')).toBeNull();
   });
 
   it('uses one toggle to collapse every open branch, then expand all', () => {
