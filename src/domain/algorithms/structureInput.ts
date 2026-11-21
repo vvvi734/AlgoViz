@@ -753,6 +753,9 @@ export function randomStructureDraft(
       pattern: '',
       operations: '',
       rows: sequentialRows(scenario, next, initial),
+      mode: 'inorder',
+      command: '',
+      symbols: '',
     };
   }
 
@@ -774,5 +777,8 @@ export function randomStructureDraft(
     pattern: '',
     operations: '',
     rows,
+    mode: 'inorder',
+    command: '',
+    symbols: '',
   };
 }

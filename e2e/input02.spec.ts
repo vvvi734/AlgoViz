@@ -196,6 +196,7 @@ test.describe('INPUT-02 — real sorting traces from custom and random arrays', 
   test('heap: in-place sort shrinks the heap range while the sorted suffix grows', async ({ page }) => {
     test.setTimeout(300_000);
     await openAlgorithm(page, 'heap');
+    await page.getByTestId('heap-operation').selectOption('sort');
     await runValues(page, CUSTOM);
     const visual = page.getByTestId('heap-visual');
     await expect(visual).toHaveAttribute('data-command', 'sort');
@@ -209,7 +210,7 @@ test.describe('INPUT-02 — real sorting traces from custom and random arrays', 
     await expectFinalSorted(page, 'heap', CUSTOM_SORTED);
 
     await page.getByTestId('guided-mode-random').click();
-    await page.getByTestId('guided-random-scenario').selectOption('reversed');
+    await page.getByTestId('guided-random-scenario').selectOption('sort');
     const random = (await page.locator('#run-input').inputValue()).split(/[,\s]+/).filter(Boolean).map(Number);
     await page.getByTestId('run-btn').click();
     await waitGenerated(page);

@@ -1,7 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import { useI18n } from '../../i18n/I18nProvider';
 import { defaultInputFor } from '../../domain/algorithms/examples';
+import { bstPresetFromInput } from '../../domain/algorithms/bstExamples';
+import { avlPresetFromInput } from '../../domain/algorithms/avlExamples';
+import { btreePresetFromInput } from '../../domain/algorithms/btreeExamples';
 import { heapPresetFromInput } from '../../domain/algorithms/heapExamples';
+import { huffmanPresetFromInput } from '../../domain/algorithms/huffmanExamples';
+import type { TreeGuidedInputAlgorithm } from '../../domain/algorithms/treeInput';
 import {
   buildGuidedInput,
   defaultGuidedScenario,
@@ -10,8 +15,11 @@ import {
   guidedRandomScenarios,
   isArrayGuidedInputAlgorithm,
   isHashGuidedInputAlgorithm,
+  isHeapGuidedInputAlgorithm,
+  isHuffmanGuidedInputAlgorithm,
   isNumsTargetGuidedInputAlgorithm,
   isStructureGuidedInputAlgorithm,
+  isTreeGuidedInputAlgorithm,
   randomGuidedDraft,
   type GuidedInputAlgorithm,
   type GuidedInputDraft,
@@ -24,6 +32,9 @@ import type {
   StructureOperationDraft,
 } from '../../domain/algorithms/structureInput';
 import { StructureOperationEditor } from './StructureOperationEditor';
+import { TreeInputEditor } from './TreeInputEditor';
+import { HeapInputEditor } from './HeapInputEditor';
+import { HuffmanInputEditor } from './HuffmanInputEditor';
 import type { LabController } from './useLabController';
 
 function parseInput(raw: string): unknown {
@@ -36,6 +47,36 @@ function parseInput(raw: string): unknown {
 
 function fieldDraft(id: GuidedInputAlgorithm, input: unknown): GuidedInputDraft {
   return guidedDraftFromInput(id, input);
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+const TREE_HINT_KEYS: Record<TreeGuidedInputAlgorithm, string> = {
+  inorder: 'treeHintTraversal',
+  bst: 'treeHintBst',
+  avl: 'treeHintAvl',
+  btree: 'treeHintBtree',
+};
+
+function hintKeyFor(id: GuidedInputAlgorithm): string {
+  if (isArrayGuidedInputAlgorithm(id)) return id === 'bubble' ? 'guidedBubbleHint' : 'guidedSortHint';
+  if (isNumsTargetGuidedInputAlgorithm(id)) {
+    return id === 'binary' ? 'guidedBinaryHint' : 'guidedLinearHint';
+  }
+  if (isHashGuidedInputAlgorithm(id)) {
+    return id === 'hash-chain' ? 'guidedChainHint' : 'guidedProbeHint';
+  }
+  if (isStructureGuidedInputAlgorithm(id)) {
+    return STRUCTURE_HINT_KEYS[id as StructureGuidedInputAlgorithm];
+  }
+  if (isTreeGuidedInputAlgorithm(id)) {
+    return TREE_HINT_KEYS[id as TreeGuidedInputAlgorithm];
+  }
+  if (isHeapGuidedInputAlgorithm(id)) return 'guidedHeapHint';
+  if (isHuffmanGuidedInputAlgorithm(id)) return 'guidedHuffmanHint';
+  return 'guidedKmpHint';
 }
 
 const STRUCTURE_HINT_KEYS: Record<StructureGuidedInputAlgorithm, string> = {
@@ -69,22 +110,42 @@ export function GuidedInputPanel({ lab }: { lab: LabController }) {
   useEffect(() => {
     if (previousAlgo.current === id && previousInput.current === lab.inputJson) return;
     const algorithmChanged = previousAlgo.current !== id;
-    // HeapPicker changes inputJson without going through this panel. A genuine
-    // official preset must put the panel back into Official mode; custom sort
-    // objects have preset=null and therefore never trigger this path.
-    const heapPresetSelected = id === 'heap' && heapPresetFromInput(parseInput(lab.inputJson)) !== null;
-    const seqlistPreset = id === 'seqlist' ? parseInput(lab.inputJson) : null;
+    const parsed = parseInput(lab.inputJson);
+    // Official pickers write their preset into inputJson without going
+    // through this panel. They still use the real Python program and must
+    // put the panel back into Official mode; custom inputs carry preset:null.
+    const presetSelected =
+      (id === 'heap' && heapPresetFromInput(parsed) !== null) ||
+      (id === 'bst' && bstPresetFromInput(parsed) !== null) ||
+      (id === 'avl' && avlPresetFromInput(parsed) !== null) ||
+      (id === 'btree' && btreePresetFromInput(parsed) !== null) ||
+      (id === 'huffman' && huffmanPresetFromInput(parsed) !== null);
+    const seqlistPreset = id === 'seqlist' ? parsed : null;
     const seqlistPresetSelected =
       id === 'seqlist' &&
       typeof seqlistPreset === 'object' &&
       seqlistPreset !== null &&
       typeof (seqlistPreset as { preset?: unknown }).preset === 'string';
+    // The traversal mode picker changes `{mode, tree}` in inputJson. When
+    // the user has already edited a custom tree, only adopt that mode and
+    // keep the draft tree, otherwise the picker would silently replace it.
+    const traversalModeChange =
+      id === 'inorder' &&
+      !algorithmChanged &&
+      isRecord(parsed) &&
+      typeof parsed.mode === 'string' &&
+      Array.isArray(parsed.tree);
+
     previousAlgo.current = id;
     previousInput.current = lab.inputJson;
-    setDraft(fieldDraft(id, parseInput(lab.inputJson)));
+    if (traversalModeChange) {
+      setDraft((current) => ({ ...current, mode: fieldDraft(id, parsed).mode }));
+    } else {
+      setDraft(fieldDraft(id, parsed));
+    }
     setIssue(null);
     setRandomFilled(false);
-    if (algorithmChanged || heapPresetSelected || seqlistPresetSelected) {
+    if (algorithmChanged || presetSelected || seqlistPresetSelected) {
       setMode('official');
       if (algorithmChanged) setScenario(defaultGuidedScenario(id));
     }
@@ -133,10 +194,10 @@ export function GuidedInputPanel({ lab }: { lab: LabController }) {
   const generate = () => {
     let input: unknown;
     if (mode === 'official') {
-      // Seqlist's official picker writes a selected preset into inputJson,
-      // exactly like the heap picker. Official mode must run that selection,
-      // while custom sequences never carry a preset id.
-      input = id === 'heap' || id === 'seqlist'
+      // Picker-backed official examples write their selection into inputJson.
+      // Official mode must run that selection, not a stale default.
+      input = id === 'heap' || id === 'seqlist' || id === 'inorder' || id === 'bst' || id === 'avl' ||
+        id === 'btree' || id === 'huffman'
         ? (parseInput(lab.inputJson) ?? defaultInputFor(id))
         : defaultInputFor(id);
     } else {
@@ -157,8 +218,15 @@ export function GuidedInputPanel({ lab }: { lab: LabController }) {
     lab.runInput(input, guidedExecutionLanguage(id, mode) ?? undefined);
   };
 
+  const randomDraft = (nextScenario: string, current: GuidedInputDraft): GuidedInputDraft => {
+    const generated = randomGuidedDraft(id, nextScenario);
+    // Traversal scenarios choose a tree shape, not a mode. Keep the mode the
+    // student picked in the stage control strip.
+    return id === 'inorder' ? { ...generated, mode: current.mode } : generated;
+  };
+
   const randomize = () => {
-    setDraft(randomGuidedDraft(id, scenario));
+    setDraft((current) => randomDraft(scenario, current));
     setMode('random');
     setIssue(null);
     setRandomFilled(true);
@@ -167,7 +235,7 @@ export function GuidedInputPanel({ lab }: { lab: LabController }) {
   const selectScenario = (next: string) => {
     setScenario(next);
     if (mode === 'random') {
-      setDraft(randomGuidedDraft(id, next));
+      setDraft((current) => randomDraft(next, current));
       setIssue(null);
       setRandomFilled(true);
     }
@@ -220,6 +288,22 @@ export function GuidedInputPanel({ lab }: { lab: LabController }) {
           onChangeRows={setStructureRows}
           onChangeInitialValues={(value) => setField('values', value)}
         />
+      ) : null}
+
+      {isTreeGuidedInputAlgorithm(id) ? (
+        <TreeInputEditor
+          algorithm={id as TreeGuidedInputAlgorithm}
+          draft={draft}
+          onChange={setField}
+        />
+      ) : null}
+
+      {isHeapGuidedInputAlgorithm(id) ? (
+        <HeapInputEditor draft={draft} onChange={setField} />
+      ) : null}
+
+      {isHuffmanGuidedInputAlgorithm(id) ? (
+        <HuffmanInputEditor draft={draft} onChange={setField} />
       ) : null}
 
       {isArrayGuidedInputAlgorithm(id) ? (
@@ -319,23 +403,7 @@ export function GuidedInputPanel({ lab }: { lab: LabController }) {
       ) : null}
 
       <p className="guided-hint note muted">
-        {isArrayGuidedInputAlgorithm(id)
-          ? id === 'bubble'
-            ? t('guidedBubbleHint')
-            : id === 'heap'
-              ? t('guidedHeapHint')
-              : t('guidedSortHint')
-          : isNumsTargetGuidedInputAlgorithm(id)
-            ? id === 'binary'
-              ? t('guidedBinaryHint')
-              : t('guidedLinearHint')
-            : isHashGuidedInputAlgorithm(id)
-              ? id === 'hash-chain'
-                ? t('guidedChainHint')
-                : t('guidedProbeHint')
-              : isStructureGuidedInputAlgorithm(id)
-                ? t(STRUCTURE_HINT_KEYS[id as StructureGuidedInputAlgorithm])
-                : t('guidedKmpHint')}
+        {t(hintKeyFor(id))}
         {mode === 'official' ? ` ${t('guidedOfficialHint')}` : mode === 'random' ? ` ${t('guidedRandomHint')}` : ''}
       </p>
 

@@ -17,9 +17,34 @@ import {
   structureDraftFromInput,
   type StructureOperationDraft,
 } from './structureInput';
+import {
+  TREE_GUIDED_INPUT_ALGORITHMS,
+  TREE_RANDOM_SCENARIOS,
+  buildTreeInput,
+  randomTreeDraft,
+  treeDraftFromInput,
+  type TreeGuidedInputAlgorithm,
+} from './treeInput';
+import {
+  HEAP_GUIDED_INPUT,
+  HEAP_RANDOM_SCENARIOS,
+  buildHeapInput,
+  heapDraftFromInput,
+  randomHeapDraft,
+} from './heapInput';
+import {
+  HUFFMAN_GUIDED_INPUT,
+  HUFFMAN_RANDOM_SCENARIOS,
+  buildHuffmanInput,
+  huffmanDraftFromInput,
+  randomHuffmanDraft,
+} from './huffmanInput';
 
 export { isStructureGuidedInputAlgorithm } from './structureInput';
 export type { StructureOperationDraft, StructureOperationSpec } from './structureInput';
+export type { TreeGuidedInputAlgorithm, TreeInputFields } from './treeInput';
+export type { HeapInputFields, HeapOperation } from './heapInput';
+export type { HuffmanInputFields } from './huffmanInput';
 
 export const GUIDED_INPUT_ALGORITHMS = [
   'bubble',
@@ -35,6 +60,8 @@ export const GUIDED_INPUT_ALGORITHMS = [
   'hash-chain',
   'hash-probe',
   ...STRUCTURE_GUIDED_INPUT_ALGORITHMS,
+  ...TREE_GUIDED_INPUT_ALGORITHMS,
+  HUFFMAN_GUIDED_INPUT,
 ] as const;
 export type GuidedInputAlgorithm = (typeof GUIDED_INPUT_ALGORITHMS)[number];
 
@@ -46,7 +73,6 @@ export const ARRAY_GUIDED_INPUT_ALGORITHMS = [
   'shell',
   'quick',
   'merge',
-  'heap',
 ] as const;
 export type ArrayGuidedInputAlgorithm = (typeof ARRAY_GUIDED_INPUT_ALGORITHMS)[number];
 
@@ -82,14 +108,19 @@ export const GUIDED_INPUT_LANGUAGE: Record<GuidedInputAlgorithm, CodeLanguage> =
   seqlist: 'python',
   stack: 'python',
   queue: 'python',
+  inorder: 'python',
+  bst: 'python',
+  avl: 'python',
+  btree: 'python',
+  huffman: 'python',
 };
 
 export interface GuidedInputDraft {
-  /** Integer array for bubble, selection, insertion, Shell, quick, merge and heap. */
+  /** Integer array for bubble, selection, insertion, Shell, quick and merge. */
   values: string;
   /** Search array, comma/space separated. */
   nums: string;
-  /** Integer search target. */
+  /** Integer search target, tree command target or heap push value. */
   target: string;
   /** KMP text. */
   text: string;
@@ -99,6 +130,11 @@ export interface GuidedInputDraft {
   operations: string;
   /** INPUT-04 structured rows for the linear-structure operation editor. */
   rows: StructureOperationDraft[];
+  /** INPUT-05 traversal mode; tree/AVL/B-tree commands and heap operation. */
+  mode: string;
+  command: string;
+  /** INPUT-05 Huffman symbol/weight lines. */
+  symbols: string;
 }
 
 export interface GuidedInputError {
@@ -141,6 +177,9 @@ const EMPTY_DRAFT: GuidedInputDraft = {
   pattern: '',
   operations: '',
   rows: [],
+  mode: 'inorder',
+  command: '',
+  symbols: '',
 };
 
 const SORTING_SCENARIOS: readonly GuidedRandomScenario[] = [
@@ -181,7 +220,7 @@ const RANDOM_SCENARIOS: Record<GuidedInputAlgorithm, readonly GuidedRandomScenar
   shell: SORTING_SCENARIOS,
   quick: SORTING_SCENARIOS,
   merge: SORTING_SCENARIOS,
-  heap: SORTING_SCENARIOS,
+  heap: HEAP_RANDOM_SCENARIOS,
   binary: [
     { id: 'found', label: ['一定能找到', 'Always found'] },
     { id: 'not-found', label: ['一定找不到', 'Never found'] },
@@ -197,6 +236,8 @@ const RANDOM_SCENARIOS: Record<GuidedInputAlgorithm, readonly GuidedRandomScenar
   'hash-chain': CHAIN_SCENARIOS,
   'hash-probe': PROBE_SCENARIOS,
   ...STRUCTURE_RANDOM_SCENARIOS,
+  ...TREE_RANDOM_SCENARIOS,
+  huffman: HUFFMAN_RANDOM_SCENARIOS,
 };
 
 export function isGuidedInputAlgorithm(id: string): id is GuidedInputAlgorithm {
@@ -213,6 +254,18 @@ export function isNumsTargetGuidedInputAlgorithm(id: string): id is NumsTargetGu
 
 export function isHashGuidedInputAlgorithm(id: string): id is HashGuidedInputAlgorithm {
   return (HASH_GUIDED_INPUT_ALGORITHMS as readonly string[]).includes(id);
+}
+
+export function isTreeGuidedInputAlgorithm(id: string): id is TreeGuidedInputAlgorithm {
+  return (TREE_GUIDED_INPUT_ALGORITHMS as readonly string[]).includes(id);
+}
+
+export function isHeapGuidedInputAlgorithm(id: string): boolean {
+  return id === HEAP_GUIDED_INPUT;
+}
+
+export function isHuffmanGuidedInputAlgorithm(id: string): boolean {
+  return id === HUFFMAN_GUIDED_INPUT;
 }
 
 export function guidedLanguageFor(id: string): CodeLanguage | null {
@@ -368,17 +421,21 @@ export function guidedDraftFromInput(id: GuidedInputAlgorithm, input: unknown): 
     const parts = structureDraftFromInput(id, input);
     return { ...EMPTY_DRAFT, values: parts.values, rows: parts.rows };
   }
+  if (isTreeGuidedInputAlgorithm(id)) {
+    return { ...EMPTY_DRAFT, ...treeDraftFromInput(id, input) };
+  }
+  if (isHeapGuidedInputAlgorithm(id)) {
+    return { ...EMPTY_DRAFT, ...heapDraftFromInput(input) };
+  }
+  if (isHuffmanGuidedInputAlgorithm(id)) {
+    return { ...EMPTY_DRAFT, ...huffmanDraftFromInput(input) };
+  }
   if (isArrayGuidedInputAlgorithm(id)) {
-    const values =
-      id === 'heap'
-        ? isRecord(input) && Array.isArray(input.heap)
-          ? input.heap
-          : []
-        : Array.isArray(input)
-          ? input
-          : isRecord(input) && Array.isArray(input.values)
-            ? input.values
-            : [];
+    const values = Array.isArray(input)
+      ? input
+      : isRecord(input) && Array.isArray(input.values)
+        ? input.values
+        : [];
     return { ...EMPTY_DRAFT, values: formatNumbers(values) };
   }
   if (isNumsTargetGuidedInputAlgorithm(id)) {
@@ -404,6 +461,24 @@ export function buildGuidedInput(id: GuidedInputAlgorithm, draft: GuidedInputDra
   if (isStructureGuidedInputAlgorithm(id)) {
     return buildStructureInput(id, draft);
   }
+  if (isTreeGuidedInputAlgorithm(id)) {
+    return buildTreeInput(id, {
+      values: draft.values,
+      target: draft.target,
+      command: draft.command,
+      mode: draft.mode,
+    });
+  }
+  if (isHeapGuidedInputAlgorithm(id)) {
+    return buildHeapInput({
+      values: draft.values,
+      target: draft.target,
+      command: draft.command,
+    });
+  }
+  if (isHuffmanGuidedInputAlgorithm(id)) {
+    return buildHuffmanInput({ symbols: draft.symbols });
+  }
   if (isArrayGuidedInputAlgorithm(id)) {
     const parsed = parseIntegerList(draft.values);
     if (!parsed.ok) return { ok: false, error: { key: 'guidedErrorIntegerList' } };
@@ -416,15 +491,6 @@ export function buildGuidedInput(id: GuidedInputAlgorithm, draft: GuidedInputDra
           key: id === 'bubble' ? 'guidedErrorBubbleLength' : 'guidedErrorSortLength',
           max,
         },
-      };
-    }
-    // Heap sorting consumes one object that names its operation explicitly.
-    // Custom and random drafts always run in-place heap sort, never a hidden
-    // build/push/extract preset.
-    if (id === 'heap') {
-      return {
-        ok: true,
-        input: { preset: null, operation: 'sort', heap: parsed.values, value: null },
       };
     }
     return { ok: true, input: parsed.values };
@@ -695,6 +761,15 @@ export function randomGuidedDraft(
 ): GuidedInputDraft {
   if (isStructureGuidedInputAlgorithm(id)) {
     return randomStructureDraft(id, scenario, random);
+  }
+  if (isTreeGuidedInputAlgorithm(id)) {
+    return { ...EMPTY_DRAFT, ...randomTreeDraft(id, scenario, random) };
+  }
+  if (isHeapGuidedInputAlgorithm(id)) {
+    return { ...EMPTY_DRAFT, ...randomHeapDraft(scenario, random) };
+  }
+  if (isHuffmanGuidedInputAlgorithm(id)) {
+    return { ...EMPTY_DRAFT, ...randomHuffmanDraft(scenario, random) };
   }
   if (isArrayGuidedInputAlgorithm(id)) {
     return { ...EMPTY_DRAFT, values: randomArrayValues(scenario, random).join(', ') };

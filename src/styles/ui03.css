@@ -177,6 +177,26 @@
   max-width: 46%;
 }
 
+/* INPUT-05: tree, heap and Huffman fields stay in the same compact dock. */
+.tree-input-editor,
+.heap-input-editor {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.tree-command-grid.is-single {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.tree-sequence-field {
+  min-width: 0;
+}
+
+.huffman-symbol-field textarea {
+  min-height: 96px;
+}
+
 .guided-hash-field {
   display: grid;
   gap: 3px;

@@ -39,6 +39,9 @@ function draft(
     pattern: '',
     operations: '',
     rows,
+    mode: 'inorder',
+    command: '',
+    symbols: '',
   };
 }
 

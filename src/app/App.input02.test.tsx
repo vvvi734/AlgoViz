@@ -47,7 +47,8 @@ function renderApp() {
 async function openAlgorithm(id: string, official: string) {
   fireEvent.change(screen.getByTestId('mobile-algo-select'), { target: { value: id } });
   await waitFor(() => expect(screen.getByTestId('guided-input').getAttribute('data-algorithm')).toBe(id));
-  await waitFor(() => expect((screen.getByTestId('run-input') as HTMLInputElement).value).toBe(official));
+  const fieldId = id === 'heap' ? 'heap-values' : 'run-input';
+  await waitFor(() => expect((screen.getByTestId(fieldId) as HTMLInputElement).value).toBe(official));
   await waitFor(() => expect(mockedRun.mock.calls.at(-1)?.[4]).toBe('python'));
 }
 
@@ -61,7 +62,7 @@ describe('INPUT-02 — six sorting algorithms execute generated data', () => {
     await waitFor(() => expect(screen.getByTestId('progress').textContent).toBe('1 / 2'));
     await openAlgorithm(id, official);
 
-    const input = screen.getByTestId('run-input') as HTMLInputElement;
+    const input = screen.getByTestId(id === 'heap' ? 'heap-values' : 'run-input') as HTMLInputElement;
     fireEvent.change(input, { target: { value: '9, -4, 0, 4, 4' } });
     expect(screen.getByTestId('guided-mode-custom').getAttribute('aria-pressed')).toBe('true');
     fireEvent.click(screen.getByTestId('run-btn'));
@@ -71,7 +72,7 @@ describe('INPUT-02 — six sorting algorithms execute generated data', () => {
     expect(custom?.[4]).toBe('python');
     expect(custom?.[2]).toEqual(
       id === 'heap'
-        ? { preset: null, operation: 'sort', heap: [9, -4, 0, 4, 4], value: null }
+        ? { preset: null, operation: 'build', heap: [9, -4, 0, 4, 4], value: null }
         : [9, -4, 0, 4, 4],
     );
     expect(screen.getByTestId('step-desc').textContent).toContain('FIRST 9,-4,0,4,4');

@@ -6,6 +6,9 @@ import {
   guidedExecutionLanguage,
   guidedRandomScenarios,
   guidedLanguageFor,
+  isHeapGuidedInputAlgorithm,
+  isHuffmanGuidedInputAlgorithm,
+  isTreeGuidedInputAlgorithm,
   randomGuidedDraft,
   type GuidedInputAlgorithm,
   type GuidedInputDraft,
@@ -20,6 +23,9 @@ function draft(overrides: Partial<GuidedInputDraft>): GuidedInputDraft {
     pattern: '',
     operations: '',
     rows: [],
+    mode: 'inorder',
+    command: '',
+    symbols: '',
     ...overrides,
   };
 }
@@ -70,11 +76,17 @@ describe('INPUT-01/02 guided input parsing', () => {
     }
   });
 
-  it('wraps heap arrays in a real in-place heap-sort command', () => {
+  it('wraps heap arrays in the real build command by default', () => {
     expect(buildOk('heap', draft({ values: '9, -4, 0, 9, 4' }))).toEqual({
       preset: null,
-      operation: 'sort',
+      operation: 'build',
       heap: [9, -4, 0, 9, 4],
+      value: null,
+    });
+    expect(buildOk('heap', draft({ values: '9, 5, 7, 3', command: 'sort' }))).toEqual({
+      preset: null,
+      operation: 'sort',
+      heap: [9, 5, 7, 3],
       value: null,
     });
   });
@@ -229,6 +241,81 @@ describe('INPUT-01/02 guided input parsing', () => {
     });
   });
 
+  it('registers the four tree courses, heap and Huffman through the same input pipeline', () => {
+    expect(isTreeGuidedInputAlgorithm('inorder')).toBe(true);
+    expect(isTreeGuidedInputAlgorithm('bst')).toBe(true);
+    expect(isTreeGuidedInputAlgorithm('avl')).toBe(true);
+    expect(isTreeGuidedInputAlgorithm('btree')).toBe(true);
+    expect(isTreeGuidedInputAlgorithm('heap')).toBe(false);
+    expect(isHeapGuidedInputAlgorithm('heap')).toBe(true);
+    expect(isHuffmanGuidedInputAlgorithm('huffman')).toBe(true);
+
+    for (const id of ['inorder', 'bst', 'avl', 'btree', 'heap', 'huffman'] as const) {
+      expect(guidedLanguageFor(id)).toBe('python');
+      expect(guidedExecutionLanguage(id, 'custom')).toBe('python');
+      expect(guidedRandomScenarios(id).length).toBeGreaterThan(0);
+    }
+  });
+
+  it('builds tree, heap and Huffman drafts through their dedicated field editors', () => {
+    expect(
+      guidedDraftFromInput('inorder', { mode: 'postorder', tree: [4, 2, 6, null, 3] }),
+    ).toMatchObject({
+      values: '4, 2, 6, null, 3',
+      mode: 'postorder',
+    });
+    expect(guidedDraftFromInput('bst', { operation: 'delete', tree: [50, 30, 70], target: 50 })).toMatchObject({
+      values: '50, 30, 70',
+      target: '50',
+      command: 'delete',
+    });
+    expect(guidedDraftFromInput('avl', { operation: 'insert', tree: [30, 20, 40], target: 10 })).toMatchObject({
+      values: '30, 20, 40',
+      target: '10',
+      command: 'insert',
+    });
+    expect(guidedDraftFromInput('btree', { operation: 'find', tree: [10, 20, 30], target: 20 })).toMatchObject({
+      values: '10, 20, 30',
+      target: '20',
+      command: 'find',
+    });
+    expect(guidedDraftFromInput('heap', { operation: 'push', heap: [9, 8, 6], value: 10 })).toMatchObject({
+      values: '9, 8, 6',
+      target: '10',
+      command: 'push',
+    });
+    expect(guidedDraftFromInput('huffman', { symbols: [['A', 5], ['B', 9]] })).toMatchObject({
+      symbols: 'A: 5\nB: 9',
+    });
+
+    expect(buildOk('inorder', draft({ values: '4, 2, 6, null, 3', mode: 'preorder' }))).toEqual({
+      mode: 'preorder',
+      tree: [4, 2, 6, null, 3],
+    });
+    expect(buildOk('heap', draft({ values: '5, 3, 4, 1, 2', command: 'push', target: '10' }))).toMatchObject({
+      operation: 'push',
+      value: 10,
+    });
+    expect(buildOk('huffman', draft({ symbols: 'A: 5\nB: 9' }))).toEqual({
+      preset: null,
+      symbols: [
+        ['A', 5],
+        ['B', 9],
+      ],
+    });
+  });
+
+  it('randomizes every new input family into a buildable draft without executing', () => {
+    for (const id of ['inorder', 'bst', 'avl', 'btree', 'heap', 'huffman'] as const) {
+      for (const scenario of guidedRandomScenarios(id)) {
+        for (let seed = 1; seed <= 4; seed += 1) {
+          const generated = randomGuidedDraft(id, scenario.id, seeded(seed));
+          expect(buildGuidedInput(id, generated).ok).toBe(true);
+        }
+      }
+    }
+  });
+
   it('uses JavaScript only for official bubble and Python for every generated trace', () => {
     expect(guidedLanguageFor('bubble')).toBe('js');
     expect(guidedLanguageFor('selection')).toBe('python');
@@ -274,8 +361,8 @@ describe('INPUT-01/02 random generation prerequisites', () => {
     expect(defaultGuidedScenario('bubble')).toBe('shuffled');
   });
 
-  it('generates four shared scenarios for all six remaining sorting algorithms', () => {
-    const sortingIds = ['selection', 'insertion', 'shell', 'quick', 'merge', 'heap'] as const;
+  it('generates four shared scenarios for the five remaining sorting algorithms', () => {
+    const sortingIds = ['selection', 'insertion', 'shell', 'quick', 'merge'] as const;
     for (const id of sortingIds) {
       expect(guidedRandomScenarios(id).map((scenario) => scenario.id)).toEqual([
         'shuffled',
@@ -287,8 +374,7 @@ describe('INPUT-01/02 random generation prerequisites', () => {
       for (const scenario of guidedRandomScenarios(id)) {
         for (let seed = 1; seed <= 8; seed += 1) {
           const generated = randomGuidedDraft(id, scenario.id, seeded(seed));
-          const built = buildOk(id, generated);
-          const values = id === 'heap' ? (built as { heap: number[] }).heap : (built as number[]);
+          const values = buildOk(id, generated) as number[];
           expect(values.length).toBeGreaterThanOrEqual(8);
           expect(values.length).toBeLessThanOrEqual(11);
           if (scenario.id === 'reversed') {
