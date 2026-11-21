@@ -76,6 +76,31 @@ describe('UX-03 textbook directory does not touch learning state', () => {
     expect(screen.getByTestId('algo-insertion').getAttribute('aria-current')).toBe('true');
   });
 
+  it('opens a chapter tree from the collapsed rail without changing the course', async () => {
+    renderApp(null);
+    await ready();
+
+    const beforeTitle = screen.getByTestId('lab-title').textContent;
+    const beforeProgress = screen.getByTestId('progress').textContent;
+    fireEvent.click(screen.getByTestId('sidebar-collapse'));
+    expect(screen.getByTestId('sidebar').getAttribute('data-collapsed')).toBe('true');
+
+    fireEvent.click(screen.getByTestId('rail-chapter-ch7-graph'));
+    expect(screen.getByTestId('sidebar').getAttribute('data-collapsed')).toBe('false');
+    expect(screen.getByTestId('chapter-ch7-graph').getAttribute('aria-expanded')).toBe('true');
+    for (const topic of [
+      'graph-traversal',
+      'graph-connectivity',
+      'mst',
+      'dag',
+      'shortest-path',
+    ]) {
+      expect(screen.getByTestId(`topic-${topic}`).getAttribute('aria-expanded')).toBe('true');
+    }
+    expect(screen.getByTestId('lab-title').textContent).toBe(beforeTitle);
+    expect(screen.getByTestId('progress').textContent).toBe(beforeProgress);
+  });
+
   it('opens a concept topic from the mobile directory selector', async () => {
     renderApp(null);
     await ready();

@@ -70,6 +70,8 @@ export interface SidebarPreferenceController {
   isChapterOpen: (chapterId: string) => boolean;
   toggleChapter: (chapterId: string) => void;
   openChapter: (chapterId: string) => void;
+  /** Open one chapter and every supplied second/third-level group beneath it. */
+  openChapterTree: (chapterId: string, topicIds: readonly string[]) => void;
   isTopicOpen: (topicId: string) => boolean;
   toggleTopic: (topicId: string) => void;
   openTopic: (topicId: string) => void;
@@ -145,6 +147,14 @@ export function useSidebarPreferences(currentPath?: TextbookPath | null): Sideba
   const openChapter = useCallback((id: string) => {
     setOpenChapters((current) => withId(current, id, true));
   }, []);
+  const openChapterTree = useCallback((chapterId: string, topicIds: readonly string[]) => {
+    setOpenChapters((current) => withId(current, chapterId, true));
+    setOpenTopics((current) => {
+      const next = new Set(current);
+      for (const id of topicIds) next.add(id);
+      return next;
+    });
+  }, []);
   const isTopicOpen = useCallback((id: string) => openTopics.has(id), [openTopics]);
   const toggleTopic = useCallback((id: string) => {
     setOpenTopics((current) => withId(current, id, !current.has(id)));
@@ -173,6 +183,7 @@ export function useSidebarPreferences(currentPath?: TextbookPath | null): Sideba
       isChapterOpen,
       toggleChapter,
       openChapter,
+      openChapterTree,
       isTopicOpen,
       toggleTopic,
       openTopic,
@@ -186,6 +197,7 @@ export function useSidebarPreferences(currentPath?: TextbookPath | null): Sideba
       isChapterOpen,
       toggleChapter,
       openChapter,
+      openChapterTree,
       isTopicOpen,
       toggleTopic,
       openTopic,

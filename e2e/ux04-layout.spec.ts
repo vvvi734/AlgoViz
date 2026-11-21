@@ -36,7 +36,7 @@ async function horizontalOverflow(page: Page) {
 }
 
 test.describe('GLOBAL-SCROLL — one document scroll', () => {
-  test('1440 restores the directory as a bounded catalogue with its own scrollbar', async ({ page }) => {
+  test('1440 keeps a bounded catalogue with a pinned header and scrolling chapter list', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto('/?view=lab');
     await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
@@ -50,19 +50,23 @@ test.describe('GLOBAL-SCROLL — one document scroll', () => {
 
     const data = await page.evaluate(() => {
       const node = document.querySelector<HTMLElement>('[data-testid="sidebar"]');
-      if (!node) return null;
+      const nav = document.querySelector<HTMLElement>('.textbook-nav');
+      const head = document.querySelector<HTMLElement>('.sidebar-head');
+      if (!node || !nav || !head) return null;
       const style = getComputedStyle(node);
+      const navStyle = getComputedStyle(nav);
       const box = node.getBoundingClientRect();
       return {
         innerHeight: window.innerHeight,
-        documentHeight: document.documentElement.scrollHeight,
         height: Math.round(box.height),
         top: Math.round(box.top),
         bottom: Math.round(box.bottom),
-        clientHeight: node.clientHeight,
-        scrollHeight: node.scrollHeight,
         overflowY: style.overflowY,
-        maxHeight: style.maxHeight,
+        navOverflowY: navStyle.overflowY,
+        navClientHeight: nav.clientHeight,
+        navScrollHeight: nav.scrollHeight,
+        headTop: Math.round(head.getBoundingClientRect().top),
+        headBorder: getComputedStyle(head).backgroundColor,
       };
     });
 
@@ -70,25 +74,29 @@ test.describe('GLOBAL-SCROLL — one document scroll', () => {
     expect(data!.height).toBeLessThan(data!.innerHeight);
     expect(data!.top).toBeGreaterThanOrEqual(0);
     expect(data!.bottom).toBeLessThanOrEqual(data!.innerHeight + 1);
-    expect(data!.overflowY).toBe('auto');
-    expect(data!.maxHeight).not.toBe('none');
-    expect(data!.scrollHeight).toBeGreaterThan(data!.clientHeight + 100);
-    expect(data!.documentHeight).toBeLessThan(data!.scrollHeight);
+    expect(data!.overflowY).toBe('hidden');
+    expect(data!.navOverflowY).toBe('auto');
+    expect(data!.navScrollHeight).toBeGreaterThan(data!.navClientHeight + 100);
+    expect(data!.headBorder).not.toBe('rgba(0, 0, 0, 0)');
 
-    // Wheel over the catalogue scrolls the catalogue; the page stays put.
+    // Wheel over the chapter list scrolls the list; the page and title stay put.
     const box = await page.getByTestId('sidebar').boundingBox();
     expect(box).not.toBeNull();
-    await page.mouse.move((box?.x ?? 0) + 100, (box?.y ?? 0) + 200);
+    await page.mouse.move((box?.x ?? 0) + 100, (box?.y ?? 0) + 220);
     await page.mouse.wheel(0, 500);
     await page.waitForTimeout(300);
     const independent = await page.evaluate(() => ({
       windowY: window.scrollY,
       sidebarScrollTop: document.querySelector('[data-testid="sidebar"]')?.scrollTop ?? 0,
+      navScrollTop: document.querySelector<HTMLElement>('.textbook-nav')?.scrollTop ?? 0,
+      headTop: Math.round(document.querySelector<HTMLElement>('.sidebar-head')?.getBoundingClientRect().top ?? -1),
     }));
     expect(independent.windowY).toBe(0);
-    expect(independent.sidebarScrollTop).toBeGreaterThan(0);
+    expect(independent.sidebarScrollTop).toBe(0);
+    expect(independent.navScrollTop).toBeGreaterThan(0);
+    expect(independent.headTop).toBe(data!.headTop);
 
-    // Global page scrolling does not move the left catalogue.
+    // Global page scrolling leaves the whole catalogue below the sticky top bar.
     await page.evaluate(() => window.scrollTo(0, 700));
     await page.waitForTimeout(250);
     const fixed = await page.evaluate(() => ({
@@ -96,10 +104,13 @@ test.describe('GLOBAL-SCROLL — one document scroll', () => {
       sidebarTop: Math.round(
         document.querySelector('[data-testid="sidebar"]')?.getBoundingClientRect().top ?? 0,
       ),
+      topbarHeight: Number.parseFloat(
+        getComputedStyle(document.documentElement).getPropertyValue('--topbar-height'),
+      ) || 0,
     }));
     expect(fixed.windowY).toBeGreaterThan(0);
-    expect(fixed.sidebarTop).toBeGreaterThanOrEqual(0);
-    expect(fixed.sidebarTop).toBeLessThan(40);
+    expect(fixed.sidebarTop).toBeGreaterThanOrEqual(Math.round(fixed.topbarHeight) + 8);
+    expect(fixed.sidebarTop).toBeLessThanOrEqual(Math.round(fixed.topbarHeight) + 18);
   });
 
   test('1366, 1024 and 390 keep vertical page scroll only', async ({ page }) => {

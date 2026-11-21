@@ -207,7 +207,7 @@ export function LabView({
           onToggleCollapsed={sidebar.toggleCollapsed}
           isChapterOpen={sidebar.isChapterOpen}
           onToggleChapter={sidebar.toggleChapter}
-          onOpenChapter={sidebar.openChapter}
+          onOpenChapterTree={sidebar.openChapterTree}
           isTopicOpen={sidebar.isTopicOpen}
           onToggleTopic={sidebar.toggleTopic}
           onExpandAll={sidebar.expandAll}

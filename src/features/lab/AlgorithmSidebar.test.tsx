@@ -47,14 +47,19 @@ function Harness({
             return next;
           })
         }
-        onOpenChapter={(id) =>
+        onOpenChapterTree={(id, topicIds) => {
           setOpenChapters((current) => {
             if (current.has(id)) return current;
             const next = new Set(current);
             next.add(id);
             return next;
-          })
-        }
+          });
+          setOpenTopics((current) => {
+            const next = new Set(current);
+            for (const topicId of topicIds) next.add(topicId);
+            return next;
+          });
+        }}
         isTopicOpen={(id) => openTopics.has(id)}
         onToggleTopic={(id) =>
           setOpenTopics((current) => {
@@ -379,5 +384,10 @@ describe('AlgorithmSidebar — textbook chapters (UX-03)', () => {
     fireEvent.click(screen.getByTestId('rail-chapter-ch7-graph'));
     expect(screen.getByTestId('sidebar').getAttribute('data-collapsed')).toBe('false');
     expect(screen.getByTestId('chapter-ch7-graph').getAttribute('aria-expanded')).toBe('true');
+    for (const topic of ['graph-traversal', 'graph-connectivity', 'mst', 'dag', 'shortest-path']) {
+      expect(screen.getByTestId(`topic-${topic}`).getAttribute('aria-expanded')).toBe('true');
+    }
+    expect(screen.getByTestId('algo-dijkstra')).toBeTruthy();
+    expect(screen.getByTestId('sidebar-toggle-all')).toBeTruthy();
   });
 });

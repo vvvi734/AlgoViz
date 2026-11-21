@@ -63,17 +63,15 @@
     min-height: 0;
   }
 
-  /* The directory keeps its original catalogue card: one viewport-tall box
-     with its own scrollbar. Expanding chapters scrolls the directory itself
-     instead of stretching the whole page. */
+  /* The directory and the rail keep a viewport-sized card below the sticky
+     top bar. Only their internal lists scroll; the title frame stays in place. */
   .app[data-view='learn'] .lab-sidebar-wrap .sidebar,
   .app[data-view='learn'] .lab-shell:not(.guide-open) .sidebar {
     position: sticky;
-    top: 12px;
-    height: calc(100dvh - 120px);
-    max-height: calc(100dvh - 24px);
-    overflow-x: hidden;
-    overflow-y: auto;
+    top: calc(var(--topbar-height, 72px) + 12px);
+    height: calc(100dvh - var(--topbar-height, 72px) - 24px);
+    max-height: calc(100dvh - var(--topbar-height, 72px) - 24px);
+    overflow: hidden;
     overscroll-behavior: contain;
   }
 }

@@ -79,6 +79,7 @@ describe('CORE-REFINE-01 shell integration', () => {
     const selected = screen.getByTestId('algo-bubble');
     expect(selected.getAttribute('aria-current')).toBe('true');
     const toggle = screen.getByTestId('sidebar-toggle-all');
+    expect(screen.getByTestId('sidebar').querySelector('.sidebar-head')?.contains(toggle)).toBe(true);
     expect(toggle.getAttribute('data-expanded')).toBe('true');
     expect(toggle.textContent).toContain('全部收起');
 

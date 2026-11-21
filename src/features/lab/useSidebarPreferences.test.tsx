@@ -76,6 +76,18 @@ describe('useSidebarPreferences', () => {
     expect(result.current.isTopicOpen('bubble-sort')).toBe(true);
   });
 
+  it('opens a whole chapter tree atomically while leaving siblings closed', () => {
+    window.localStorage.clear();
+    const { result } = renderHook(() => useSidebarPreferences());
+    act(() => result.current.openChapterTree('ch7-graph', ['graph-traversal', 'mst', 'shortest-path']));
+    expect(result.current.isChapterOpen('ch7-graph')).toBe(true);
+    expect(result.current.isTopicOpen('graph-traversal')).toBe(true);
+    expect(result.current.isTopicOpen('mst')).toBe(true);
+    expect(result.current.isTopicOpen('shortest-path')).toBe(true);
+    expect(result.current.isTopicOpen('hash-search')).toBe(false);
+    expect(result.current.isChapterOpen('ch9-search')).toBe(false);
+  });
+
   it('restores saved chapter/topic state on the next mount', () => {
     window.localStorage.setItem(
       'algolens-sidebar',

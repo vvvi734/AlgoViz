@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import { useI18n } from '../i18n/I18nProvider';
 import { useTheme } from '../theme/ThemeProvider';
 import { THEME_PREFERENCES, type ThemePreference } from '../theme/resolve';
@@ -5,13 +6,37 @@ import { THEME_PREFERENCES, type ThemePreference } from '../theme/resolve';
 export function TopBar() {
   const { preference, setPreference } = useTheme();
   const { t, lang, toggleLang } = useI18n();
+  const headerRef = useRef<HTMLElement | null>(null);
   const labels: Record<ThemePreference, string> = {
     light: t('themeLight'),
     dark: t('themeDark'),
     system: t('themeSystem'),
   };
+
+  // Publish the real sticky-bar height so the directory card can start below
+  // it instead of sliding underneath. ResizeObserver keeps this correct after
+  // a language switch, theme control change or narrow-screen wrap.
+  useEffect(() => {
+    const header = headerRef.current;
+    if (!header || typeof document === 'undefined') return;
+    const sync = () => {
+      const height = Math.ceil(header.getBoundingClientRect().height);
+      if (height > 0) {
+        document.documentElement.style.setProperty('--topbar-height', `${height}px`);
+      }
+    };
+    sync();
+    if (typeof ResizeObserver === 'undefined') {
+      window.addEventListener('resize', sync);
+      return () => window.removeEventListener('resize', sync);
+    }
+    const observer = new ResizeObserver(sync);
+    observer.observe(header);
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <header className="topbar">
+    <header className="topbar" ref={headerRef}>
       <div className="brand">
         <span className="logo" aria-hidden="true">
           <svg viewBox="0 0 32 32" width="24" height="24" focusable="false">

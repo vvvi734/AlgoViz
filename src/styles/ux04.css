@@ -139,7 +139,8 @@
   .app[data-view='learn'] .topbar {
     flex: 0 0 auto;
     gap: 10px;
-    padding: 0 0 6px;
+    margin: 0 -20px;
+    padding: 5px 20px 6px;
   }
 
   .app[data-view='learn'] .brand {
@@ -181,14 +182,6 @@
   .app[data-view='learn'] .lab-shell:not(.guide-open) .lab-sidebar-wrap {
     height: 100%;
     min-height: 0;
-  }
-
-  .app[data-view='learn'] .lab-shell:not(.guide-open) .sidebar {
-    position: relative;
-    top: 0;
-    height: 100%;
-    max-height: 100%;
-    overflow-y: auto;
   }
 
   .app[data-view='learn'] .lab-shell:not(.guide-open) .lab-main {
@@ -1263,7 +1256,8 @@
   }
 
   .app[data-view='learn'] .topbar {
-    padding-bottom: 10px;
+    margin: 0 -16px;
+    padding: 10px 16px;
   }
 
   .app[data-view='learn'] .nav {

@@ -416,7 +416,7 @@ body {
 
 @media (max-width: 760px) {
   .app { padding: 12px; }
-  .topbar { padding-bottom: 14px; }
+  .topbar { margin: 0 -12px; padding: 10px 12px 14px; }
   .nav { gap: 5px; margin-bottom: 12px; }
   .tab { padding: 9px 12px; font-size: 16px; }
   .navmore-menu { left: auto; right: 0; min-width: min(280px, calc(100vw - 24px)); }

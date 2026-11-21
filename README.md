@@ -32,7 +32,7 @@ AlgoViz 是一个浏览器端的数据结构与算法学习平台。Python 通�
 
 ## 现有能力
 
-- 左侧 12 章教材目录：章 → 二级专题/课程 → 三级课程折叠，可全部展开 / 收起，当前路径自动高亮；只有含三级叶子的分组显示展开箭头。
+- 左侧 12 章教材目录：章 → 二级专题/课程 → 三级课程折叠，可全部展开 / 收起，当前路径自动高亮；只有含三级叶子的分组显示展开箭头。标题框与全部展开 / 收起按钮固定在目录卡片顶部，仅章节列表滚动；收缩到章节快捷栏时，点击章节会在原位展开整棵章节树并把目录滚到该章，不改变当前课程或页面位置。顶部品牌与主题 / 语言切换栏始终吸顶。
 - 官方、自定义、随机输入；输入校验失败不会执行旧 Trace。
 - Python 真实执行、逐帧播放 / 暂停 / 回退 / 单步 / 拖动。
 - 变量观察、递归调用栈、真实结构快照。
@@ -106,7 +106,7 @@ npm run preview
 npm run test:e2e
 ```
 
-- `npm test`：Vitest 单测、真实 Python fixture 与 jsdom 回归；TEXTBOOK-06 当前为 **1107 项通过**。
+- `npm test`：Vitest 单测、真实 Python fixture 与 jsdom 回归；TEXTBOOK-06 当前为 **1109 项通过**。
 - `npm run test:e2e`：Playwright，默认使用本机 Microsoft Edge；全量 176 条，本阶段运行目录、播放器、输入与真实 Pyodide 的代表流程。
 - `npm run sync:legacy`：从迁移前定义重新生成 `*.generated.ts` 与帧基线。会改写生成文件，运行后必须 review 再提交。
 - 不要用 `file://` 直接打开构建产物；Worker 和模块加载需要 `npm run dev` 或 `npm run preview`。

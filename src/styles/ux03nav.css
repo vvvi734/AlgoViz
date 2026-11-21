@@ -6,12 +6,30 @@
    ========================================================================== */
 
 .textbook-sidebar {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
   padding: 10px 9px !important;
+  overflow: hidden !important;
 }
 
+/* The directory card owns the height; the title frame and the single
+   expand/collapse-all control stay fixed while only the chapter list scrolls. */
 .textbook-sidebar .sidebar-head {
-  margin-bottom: 5px;
-  padding: 1px 2px 7px;
+  flex: 0 0 auto;
+  margin: 0 0 7px;
+  padding: 7px 8px 6px;
+  border: 1px solid var(--edge);
+  border-radius: 10px;
+  background: var(--panel-2);
+}
+
+.sidebar-head-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
 }
 
 /* The directory starts with its short title; the textbook reference belongs in
@@ -22,8 +40,8 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  margin: 0 0 7px;
-  padding: 0 2px;
+  margin: 6px 0 0;
+  padding: 0;
 }
 
 .sidebar-action {
@@ -62,7 +80,14 @@
 }
 
 .textbook-nav {
+  flex: 1 1 auto;
+  min-height: 0;
   gap: 1px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-right: 2px;
+  scrollbar-gutter: stable;
 }
 
 .textbook-chapter {
@@ -269,9 +294,11 @@
   line-height: 1;
   opacity: .9;
 }
-.textbook-category.is-theory,
+.textbook-category.is-theory {
+  color: var(--accent);
+}
 .textbook-category.is-visual {
-  color: var(--muted);
+  color: var(--accent-2);
 }
 
 .textbook-topic-head {
@@ -470,13 +497,22 @@
 }
 
 /* Compact rail: one shortcut per chapter, then the current algorithm. */
+.sidebar-rail .rail-expand,
+.sidebar-rail .rail-current {
+  flex: 0 0 auto;
+}
 .rail-chapters {
   display: flex;
+  flex: 1 1 auto;
   flex-direction: column;
   align-items: center;
   gap: 3px;
   width: 100%;
+  min-height: 0;
   margin-top: 2px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 .rail-chapter {
   display: inline-flex;

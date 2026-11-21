@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import type { AlgorithmCatalog } from '../../domain/algorithms/types';
 import {
   buildTextbookNavigation,
@@ -34,7 +34,7 @@ export function AlgorithmSidebar({
   onToggleCollapsed,
   isChapterOpen,
   onToggleChapter,
-  onOpenChapter,
+  onOpenChapterTree,
   isTopicOpen,
   onToggleTopic,
   onExpandAll,
@@ -49,7 +49,7 @@ export function AlgorithmSidebar({
   onToggleCollapsed: () => void;
   isChapterOpen: (chapterId: string) => boolean;
   onToggleChapter: (chapterId: string) => void;
-  onOpenChapter: (chapterId: string) => void;
+  onOpenChapterTree: (chapterId: string, topicIds: readonly string[]) => void;
   isTopicOpen: (topicId: string) => boolean;
   onToggleTopic: (topicId: string) => void;
   onExpandAll: (chapterIds: readonly string[], topicIds: readonly string[]) => void;
@@ -66,6 +66,8 @@ export function AlgorithmSidebar({
   const currentEntry = catalog[currentAlgo];
   const currentTopicId = currentPath?.topicId ?? null;
   const directoryLabel = t('textbookDirectory');
+  const navRef = useRef<HTMLElement | null>(null);
+  const pendingRailChapter = useRef<string | null>(null);
   const expandableTopicIds = chapters.flatMap((chapter) =>
     chapter.topics.filter((topic) => topic.kind === 'group').map((topic) => topic.id),
   );
@@ -79,6 +81,37 @@ export function AlgorithmSidebar({
       : `${t('textbookChapterNumber').replace('{number}', String(chapter.number))} · ${textbookTitle(chapter.title, lang)}`;
 
   const anyChapterOpen = chapters.some((chapter) => isChapterOpen(chapter.id));
+
+  // Collapsed rail shortcut: re-expand the directory, then scroll only the
+  // directory list to the chosen chapter. The page itself and the selected
+  // course stay untouched.
+  useEffect(() => {
+    if (collapsed || !pendingRailChapter.current) return;
+    const nav = navRef.current;
+    const target = nav?.querySelector<HTMLElement>(
+      `[data-chapter="${pendingRailChapter.current}"]`,
+    );
+    if (!nav || !target) return;
+    const reduceMotion =
+      typeof window.matchMedia === 'function' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    // Chapter/topic bodies animate from 0fr to 1fr. Measure after that 200 ms
+    // transition, otherwise the browser clamps scrollTop to the pre-expansion
+    // content height and the chosen chapter stops halfway down the viewport.
+    const timer = window.setTimeout(() => {
+      pendingRailChapter.current = null;
+      const top = Math.max(
+        0,
+        target.getBoundingClientRect().top - nav.getBoundingClientRect().top + nav.scrollTop,
+      );
+      if (typeof nav.scrollTo === 'function') {
+        nav.scrollTo({ top, behavior: reduceMotion ? 'auto' : 'smooth' });
+      } else {
+        nav.scrollTop = top;
+      }
+    }, 240);
+    return () => window.clearTimeout(timer);
+  }, [collapsed, chapters]);
 
   if (collapsed) {
     return (
@@ -113,7 +146,11 @@ export function AlgorithmSidebar({
               aria-label={chapterAria(chapter)}
               title={chapterAria(chapter)}
               onClick={() => {
-                onOpenChapter(chapter.id);
+                const topicIds = chapter.topics
+                  .filter((topic) => topic.kind === 'group')
+                  .map((topic) => topic.id);
+                pendingRailChapter.current = chapter.id;
+                onOpenChapterTree(chapter.id, topicIds);
                 onToggleCollapsed();
               }}
             >
@@ -147,43 +184,45 @@ export function AlgorithmSidebar({
       data-collapsed="false"
     >
       <div className="sidebar-head">
-        <span className="sidebar-title">{directoryLabel}</span>
-        <button
-          type="button"
-          className="sidebar-collapse"
-          onClick={onToggleCollapsed}
-          aria-expanded
-          aria-controls="algorithm-directory"
-          aria-label={t('hideDirectory')}
-          title={t('hideDirectory')}
-          data-testid="sidebar-collapse"
-        >
-          <span aria-hidden="true">«</span>
-        </button>
+        <div className="sidebar-head-row">
+          <span className="sidebar-title">{directoryLabel}</span>
+          <button
+            type="button"
+            className="sidebar-collapse"
+            onClick={onToggleCollapsed}
+            aria-expanded
+            aria-controls="algorithm-directory"
+            aria-label={t('hideDirectory')}
+            title={t('hideDirectory')}
+            data-testid="sidebar-collapse"
+          >
+            <span aria-hidden="true">«</span>
+          </button>
+        </div>
+
+        <div className="sidebar-actions" role="group" aria-label={t('textbookExpandActions')}>
+          <button
+            type="button"
+            className="sidebar-action sidebar-action-toggle"
+            data-testid="sidebar-toggle-all"
+            data-expanded={anyChapterOpen ? 'true' : 'false'}
+            aria-label={anyChapterOpen ? t('textbookCollapseAll') : t('textbookExpandAll')}
+            title={anyChapterOpen ? t('textbookCollapseAll') : t('textbookExpandAll')}
+            onClick={() => {
+              if (anyChapterOpen) {
+                onCollapseAll();
+                return;
+              }
+              onExpandAll(chapters.map((chapter) => chapter.id), expandableTopicIds);
+            }}
+          >
+            <span className="sidebar-action-mark" aria-hidden="true">{anyChapterOpen ? '⌃' : '⌄'}</span>
+            {anyChapterOpen ? t('textbookCollapseAll') : t('textbookExpandAll')}
+          </button>
+        </div>
       </div>
 
-      <div className="sidebar-actions" role="group" aria-label={t('textbookExpandActions')}>
-        <button
-          type="button"
-          className="sidebar-action sidebar-action-toggle"
-          data-testid="sidebar-toggle-all"
-          data-expanded={anyChapterOpen ? 'true' : 'false'}
-          aria-label={anyChapterOpen ? t('textbookCollapseAll') : t('textbookExpandAll')}
-          title={anyChapterOpen ? t('textbookCollapseAll') : t('textbookExpandAll')}
-          onClick={() => {
-            if (anyChapterOpen) {
-              onCollapseAll();
-              return;
-            }
-            onExpandAll(chapters.map((chapter) => chapter.id), expandableTopicIds);
-          }}
-        >
-          <span className="sidebar-action-mark" aria-hidden="true">{anyChapterOpen ? '⌃' : '⌄'}</span>
-          {anyChapterOpen ? t('textbookCollapseAll') : t('textbookExpandAll')}
-        </button>
-      </div>
-
-      <nav className="sidebar-groups textbook-nav" aria-label={directoryLabel}>
+      <nav ref={navRef} className="sidebar-groups textbook-nav" aria-label={directoryLabel}>
         {chapters.map((chapter) => {
           const open = isChapterOpen(chapter.id);
           const holdsCurrent = chapter.id === currentPath?.chapterId;
