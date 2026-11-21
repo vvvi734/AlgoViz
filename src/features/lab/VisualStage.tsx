@@ -69,6 +69,16 @@ import type { KeyTreeVisualModel } from '../../domain/visualization/keyTreeModel
 import type { TournamentVisualModel } from '../../domain/visualization/tournamentModel';
 import type { RadixVisualModel } from '../../domain/visualization/radixModel';
 import { RadixVisual, TournamentVisual } from './Sorting10Visuals';
+import {
+  MultiwayVisual,
+  OptimalMergeTreeVisual,
+  ReplacementVisual,
+} from './ExternalSortVisuals';
+import type {
+  MultiwayVisualModel,
+  OptimalVisualModel,
+  ReplacementVisualModel,
+} from '../../domain/visualization/externalSortModel';
 import type { BuddyVisualModel } from '../../domain/visualization/buddyModel';
 import type { GcVisualModel } from '../../domain/visualization/gcModel';
 import type { FreeListVisualModel } from '../../domain/visualization/freeListModel';
@@ -582,6 +592,15 @@ export function VisualStage({
     case 'radix':
       content = <RadixVisual model={model as RadixVisualModel} />;
       break;
+    case 'multiway':
+      content = <MultiwayVisual model={model as MultiwayVisualModel} />;
+      break;
+    case 'replacement':
+      content = <ReplacementVisual model={model as ReplacementVisualModel} />;
+      break;
+    case 'merge-tree':
+      content = <OptimalMergeTreeVisual model={model as OptimalVisualModel} />;
+      break;
     case 'graph-traversal': {
       const operationText = graphOperationText(model, t);
       if (model.algorithm === 'dijkstra') {
@@ -729,6 +748,9 @@ export function VisualStage({
     model.kind === 'key-tree' ||
     model.kind === 'tournament' ||
     model.kind === 'radix' ||
+    model.kind === 'multiway' ||
+    model.kind === 'replacement' ||
+    model.kind === 'merge-tree' ||
     model.kind === 'garbage-collection';
   return (
     <div

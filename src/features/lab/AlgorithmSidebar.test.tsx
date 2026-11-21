@@ -227,7 +227,7 @@ describe('AlgorithmSidebar — textbook chapters (UX-03)', () => {
     fireEvent.click(graphBasics);
     expect(onSelectConcept).toHaveBeenCalledWith('graph-basics');
 
-    const unAuthored = screen.getByTestId('topic-external-storage');
+    const unAuthored = screen.getByTestId('topic-file-concepts');
     expect(unAuthored.tagName).toBe('DIV');
     expect(unAuthored.getAttribute('aria-disabled')).toBe('true');
     expect(unAuthored.getAttribute('data-category')).toBe('pending');

@@ -56,7 +56,7 @@ describe('textbook directory after TEXTBOOK-01', () => {
 
   it('preserves every existing algorithm exactly once in its new primary home', () => {
     const ids = textbookAlgorithmIds(nav);
-    expect(ids).toHaveLength(54);
+    expect(ids).toHaveLength(57);
     expect(new Set(ids).size).toBe(ids.length);
     expect(new Set(ids)).toEqual(new Set(Object.keys(catalog)));
   });
@@ -73,7 +73,7 @@ describe('textbook directory after TEXTBOOK-01', () => {
       ]),
     );
     const conceptRows = rows.filter(({ row }) => row.conceptId);
-    expect(CONCEPT_PAGES).toHaveLength(45);
+    expect(CONCEPT_PAGES).toHaveLength(48);
     expect(conceptRows.map(({ row }) => row.conceptId).sort()).toEqual(
       CONCEPT_PAGES.map((page) => page.id).sort(),
     );
@@ -216,14 +216,33 @@ describe('textbook directory after TEXTBOOK-01', () => {
     });
   });
 
-  it('keeps chapters 11 and 12 visible as planned knowledge without algorithms', () => {
-    for (const id of ['ch11-external-sort', 'ch12-files']) {
-      const chapter = nav.find((entry) => entry.id === id)!;
-      expect(chapter.algorithmCount).toBe(0);
-      expect(chapter.topics.length).toBeGreaterThan(0);
-      expect(chapter.topics.every((topic) => topic.category === 'pending')).toBe(true);
-      expect(chapter.topics.every((topic) => topic.algorithms.length === 0)).toBe(true);
+  it('authors chapter 11 while chapter 12 remains planned knowledge', () => {
+    const chapter11 = nav.find((entry) => entry.id === 'ch11-external-sort')!;
+    expect(chapter11.algorithmCount).toBe(3);
+    expect(chapter11.topics.map((topic) => topic.id)).toEqual([
+      'external-sort-basics',
+      'external-initial-merge',
+      'replacement-selection',
+      'optimal-merge-tree',
+      'external-sort-comparison',
+    ]);
+    for (const id of ['multiway', 'replacement', 'optimal-merge']) {
+      expect(textbookPathFor(catalog, id)?.chapterId).toBe('ch11-external-sort');
     }
+    expect(findConceptPath(nav, 'external-sort-basics')).toEqual({
+      chapterId: 'ch11-external-sort',
+      topicId: 'external-sort-basics',
+    });
+    expect(findConceptPath(nav, 'external-initial-runs')).toEqual({
+      chapterId: 'ch11-external-sort',
+      topicId: 'external-initial-merge',
+    });
+
+    const chapter12 = nav.find((entry) => entry.id === 'ch12-files')!;
+    expect(chapter12.algorithmCount).toBe(0);
+    expect(chapter12.topics.length).toBeGreaterThan(0);
+    expect(chapter12.topics.every((topic) => topic.category === 'pending')).toBe(true);
+    expect(chapter12.topics.every((topic) => topic.algorithms.length === 0)).toBe(true);
   });
 
   it('keeps graph order aligned with the book: connectivity, MST, DAG, shortest paths', () => {

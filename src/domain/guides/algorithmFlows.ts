@@ -6,6 +6,7 @@ import { GRAPH_FLOWS } from './flows/graphFlows';
 import { GENERALIZED_LIST_FLOWS } from './flows/generalizedListFlows';
 import { MEMORY_FLOWS } from './flows/memoryFlows';
 import { SEARCH09_FLOWS } from './flows/search09Flows';
+import { EXTERNAL_SORT_FLOWS } from './flows/externalSortFlows';
 
 const text = (zh: string, en: string) => ({ zh, en });
 
@@ -718,6 +719,7 @@ export const ALGORITHM_FLOWS: Record<string, AlgorithmFlow> = {
   ...GENERALIZED_LIST_FLOWS,
   ...MEMORY_FLOWS,
   ...SEARCH09_FLOWS,
+  ...EXTERNAL_SORT_FLOWS,
   bf: BF_FLOW,
   kruskal: KRUSKAL_FLOW,
   binary: BINARY_FLOW,

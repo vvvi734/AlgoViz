@@ -53,6 +53,7 @@ import { polynomialAddLesson } from './polynomialAdd';
 import { infixToPostfixLesson, postfixEvalLesson } from './expressionLessons';
 import { MEMORY_LESSONS } from './memoryLessons';
 import { SEARCH09_LESSONS } from './search09Lessons';
+import { EXTERNAL_SORT_LESSONS } from './externalSortLessons';
 import { validateLessonSet } from './schema';
 import type { Lesson, LessonValidationResult } from './types';
 
@@ -136,6 +137,7 @@ const BUNDLED: unknown[] = [
   postfixEvalLesson,
   ...MEMORY_LESSONS,
   ...SEARCH09_LESSONS,
+  ...EXTERNAL_SORT_LESSONS,
 ];
 
 /** Courses shipped with the app itself (bubble, factorial, stack, queue, linked-list, binary-tree). */

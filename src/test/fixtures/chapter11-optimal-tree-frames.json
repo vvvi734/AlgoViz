@@ -1,0 +1,3837 @@
+{
+  "two-way": {
+    "input": {
+      "preset": "two-way",
+      "segmentWeights": [
+        3,
+        5,
+        8,
+        11
+      ],
+      "k": 2
+    },
+    "frames": [
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            3,
+            5,
+            8,
+            11
+          ],
+          "done": false
+        },
+        "message": "以真实归并段长度为叶；不足满 k 叉时补零权重虚拟叶 / seed real run lengths and add zero-weight dummies for a full k-ary shape",
+        "line": 113,
+        "variables": {
+          "k": 2,
+          "realLeaves": 4,
+          "virtualLeaves": 0,
+          "forest": 4,
+          "combines": 0,
+          "costAdded": 0,
+          "totalCost": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "init",
+        "structure": {
+          "kind": "merge-tree",
+          "preset": "two-way",
+          "operation": "init",
+          "k": 2,
+          "segmentWeights": [
+            3,
+            5,
+            8,
+            11
+          ],
+          "nodes": [
+            {
+              "id": "S0",
+              "weight": 3,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 0,
+              "children": []
+            },
+            {
+              "id": "S1",
+              "weight": 5,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 1,
+              "children": []
+            },
+            {
+              "id": "S2",
+              "weight": 8,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 2,
+              "children": []
+            },
+            {
+              "id": "S3",
+              "weight": 11,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 3,
+              "children": []
+            }
+          ],
+          "forestIds": [
+            "S0",
+            "S1",
+            "S2",
+            "S3"
+          ],
+          "selectedIds": [],
+          "newNodeId": null,
+          "costAdded": 0,
+          "totalCost": 0,
+          "combines": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            3,
+            5,
+            8,
+            11,
+            8
+          ],
+          "done": false
+        },
+        "message": "选取当前最轻的 k 个根，合并成一个新节点并累加代价 / take the k lightest roots, create their parent and charge its weight",
+        "line": 148,
+        "variables": {
+          "k": 2,
+          "realLeaves": 4,
+          "virtualLeaves": 0,
+          "forest": 3,
+          "combines": 1,
+          "costAdded": 8,
+          "totalCost": 8,
+          "result": "pending"
+        },
+        "lessonStepId": "combine",
+        "structure": {
+          "kind": "merge-tree",
+          "preset": "two-way",
+          "operation": "combine",
+          "k": 2,
+          "segmentWeights": [
+            3,
+            5,
+            8,
+            11
+          ],
+          "nodes": [
+            {
+              "id": "S0",
+              "weight": 3,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 0,
+              "children": []
+            },
+            {
+              "id": "S1",
+              "weight": 5,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 1,
+              "children": []
+            },
+            {
+              "id": "S2",
+              "weight": 8,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 2,
+              "children": []
+            },
+            {
+              "id": "S3",
+              "weight": 11,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 3,
+              "children": []
+            },
+            {
+              "id": "T0",
+              "weight": 8,
+              "virtual": false,
+              "leaf": false,
+              "sourceIndex": null,
+              "children": [
+                "S0",
+                "S1"
+              ]
+            }
+          ],
+          "forestIds": [
+            "S2",
+            "S3",
+            "T0"
+          ],
+          "selectedIds": [
+            "S0",
+            "S1"
+          ],
+          "newNodeId": "T0",
+          "costAdded": 8,
+          "totalCost": 8,
+          "combines": 1,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            3,
+            5,
+            8,
+            11,
+            8,
+            16
+          ],
+          "done": false
+        },
+        "message": "选取当前最轻的 k 个根，合并成一个新节点并累加代价 / take the k lightest roots, create their parent and charge its weight",
+        "line": 148,
+        "variables": {
+          "k": 2,
+          "realLeaves": 4,
+          "virtualLeaves": 0,
+          "forest": 2,
+          "combines": 2,
+          "costAdded": 16,
+          "totalCost": 24,
+          "result": "pending"
+        },
+        "lessonStepId": "combine",
+        "structure": {
+          "kind": "merge-tree",
+          "preset": "two-way",
+          "operation": "combine",
+          "k": 2,
+          "segmentWeights": [
+            3,
+            5,
+            8,
+            11
+          ],
+          "nodes": [
+            {
+              "id": "S0",
+              "weight": 3,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 0,
+              "children": []
+            },
+            {
+              "id": "S1",
+              "weight": 5,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 1,
+              "children": []
+            },
+            {
+              "id": "S2",
+              "weight": 8,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 2,
+              "children": []
+            },
+            {
+              "id": "S3",
+              "weight": 11,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 3,
+              "children": []
+            },
+            {
+              "id": "T0",
+              "weight": 8,
+              "virtual": false,
+              "leaf": false,
+              "sourceIndex": null,
+              "children": [
+                "S0",
+                "S1"
+              ]
+            },
+            {
+              "id": "T1",
+              "weight": 16,
+              "virtual": false,
+              "leaf": false,
+              "sourceIndex": null,
+              "children": [
+                "S2",
+                "T0"
+              ]
+            }
+          ],
+          "forestIds": [
+            "S3",
+            "T1"
+          ],
+          "selectedIds": [
+            "S2",
+            "T0"
+          ],
+          "newNodeId": "T1",
+          "costAdded": 16,
+          "totalCost": 24,
+          "combines": 2,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            3,
+            5,
+            8,
+            11,
+            8,
+            16,
+            27
+          ],
+          "done": false
+        },
+        "message": "选取当前最轻的 k 个根，合并成一个新节点并累加代价 / take the k lightest roots, create their parent and charge its weight",
+        "line": 148,
+        "variables": {
+          "k": 2,
+          "realLeaves": 4,
+          "virtualLeaves": 0,
+          "forest": 1,
+          "combines": 3,
+          "costAdded": 27,
+          "totalCost": 51,
+          "result": "pending"
+        },
+        "lessonStepId": "combine",
+        "structure": {
+          "kind": "merge-tree",
+          "preset": "two-way",
+          "operation": "combine",
+          "k": 2,
+          "segmentWeights": [
+            3,
+            5,
+            8,
+            11
+          ],
+          "nodes": [
+            {
+              "id": "S0",
+              "weight": 3,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 0,
+              "children": []
+            },
+            {
+              "id": "S1",
+              "weight": 5,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 1,
+              "children": []
+            },
+            {
+              "id": "S2",
+              "weight": 8,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 2,
+              "children": []
+            },
+            {
+              "id": "S3",
+              "weight": 11,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 3,
+              "children": []
+            },
+            {
+              "id": "T0",
+              "weight": 8,
+              "virtual": false,
+              "leaf": false,
+              "sourceIndex": null,
+              "children": [
+                "S0",
+                "S1"
+              ]
+            },
+            {
+              "id": "T1",
+              "weight": 16,
+              "virtual": false,
+              "leaf": false,
+              "sourceIndex": null,
+              "children": [
+                "S2",
+                "T0"
+              ]
+            },
+            {
+              "id": "T2",
+              "weight": 27,
+              "virtual": false,
+              "leaf": false,
+              "sourceIndex": null,
+              "children": [
+                "S3",
+                "T1"
+              ]
+            }
+          ],
+          "forestIds": [
+            "T2"
+          ],
+          "selectedIds": [
+            "S3",
+            "T1"
+          ],
+          "newNodeId": "T2",
+          "costAdded": 27,
+          "totalCost": 51,
+          "combines": 3,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            3,
+            5,
+            8,
+            11,
+            8,
+            16,
+            27
+          ],
+          "done": true
+        },
+        "message": "森林只剩一个根，最佳归并树构造完成 / one root remains and the optimal merge tree is complete",
+        "line": 157,
+        "variables": {
+          "k": 2,
+          "realLeaves": 4,
+          "virtualLeaves": 0,
+          "forest": 1,
+          "combines": 3,
+          "costAdded": 0,
+          "totalCost": 51,
+          "result": "built"
+        },
+        "lessonStepId": "done",
+        "structure": {
+          "kind": "merge-tree",
+          "preset": "two-way",
+          "operation": "done",
+          "k": 2,
+          "segmentWeights": [
+            3,
+            5,
+            8,
+            11
+          ],
+          "nodes": [
+            {
+              "id": "S0",
+              "weight": 3,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 0,
+              "children": []
+            },
+            {
+              "id": "S1",
+              "weight": 5,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 1,
+              "children": []
+            },
+            {
+              "id": "S2",
+              "weight": 8,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 2,
+              "children": []
+            },
+            {
+              "id": "S3",
+              "weight": 11,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 3,
+              "children": []
+            },
+            {
+              "id": "T0",
+              "weight": 8,
+              "virtual": false,
+              "leaf": false,
+              "sourceIndex": null,
+              "children": [
+                "S0",
+                "S1"
+              ]
+            },
+            {
+              "id": "T1",
+              "weight": 16,
+              "virtual": false,
+              "leaf": false,
+              "sourceIndex": null,
+              "children": [
+                "S2",
+                "T0"
+              ]
+            },
+            {
+              "id": "T2",
+              "weight": 27,
+              "virtual": false,
+              "leaf": false,
+              "sourceIndex": null,
+              "children": [
+                "S3",
+                "T1"
+              ]
+            }
+          ],
+          "forestIds": [
+            "T2"
+          ],
+          "selectedIds": [],
+          "newNodeId": null,
+          "costAdded": 0,
+          "totalCost": 51,
+          "combines": 3,
+          "result": "built"
+        }
+      }
+    ]
+  },
+  "three-way": {
+    "input": {
+      "preset": "three-way",
+      "segmentWeights": [
+        4,
+        5,
+        6,
+        9,
+        11
+      ],
+      "k": 3
+    },
+    "frames": [
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            4,
+            5,
+            6,
+            9,
+            11
+          ],
+          "done": false
+        },
+        "message": "以真实归并段长度为叶；不足满 k 叉时补零权重虚拟叶 / seed real run lengths and add zero-weight dummies for a full k-ary shape",
+        "line": 113,
+        "variables": {
+          "k": 3,
+          "realLeaves": 5,
+          "virtualLeaves": 0,
+          "forest": 5,
+          "combines": 0,
+          "costAdded": 0,
+          "totalCost": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "init",
+        "structure": {
+          "kind": "merge-tree",
+          "preset": "three-way",
+          "operation": "init",
+          "k": 3,
+          "segmentWeights": [
+            4,
+            5,
+            6,
+            9,
+            11
+          ],
+          "nodes": [
+            {
+              "id": "S0",
+              "weight": 4,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 0,
+              "children": []
+            },
+            {
+              "id": "S1",
+              "weight": 5,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 1,
+              "children": []
+            },
+            {
+              "id": "S2",
+              "weight": 6,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 2,
+              "children": []
+            },
+            {
+              "id": "S3",
+              "weight": 9,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 3,
+              "children": []
+            },
+            {
+              "id": "S4",
+              "weight": 11,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 4,
+              "children": []
+            }
+          ],
+          "forestIds": [
+            "S0",
+            "S1",
+            "S2",
+            "S3",
+            "S4"
+          ],
+          "selectedIds": [],
+          "newNodeId": null,
+          "costAdded": 0,
+          "totalCost": 0,
+          "combines": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            4,
+            5,
+            6,
+            9,
+            11,
+            15
+          ],
+          "done": false
+        },
+        "message": "选取当前最轻的 k 个根，合并成一个新节点并累加代价 / take the k lightest roots, create their parent and charge its weight",
+        "line": 148,
+        "variables": {
+          "k": 3,
+          "realLeaves": 5,
+          "virtualLeaves": 0,
+          "forest": 3,
+          "combines": 1,
+          "costAdded": 15,
+          "totalCost": 15,
+          "result": "pending"
+        },
+        "lessonStepId": "combine",
+        "structure": {
+          "kind": "merge-tree",
+          "preset": "three-way",
+          "operation": "combine",
+          "k": 3,
+          "segmentWeights": [
+            4,
+            5,
+            6,
+            9,
+            11
+          ],
+          "nodes": [
+            {
+              "id": "S0",
+              "weight": 4,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 0,
+              "children": []
+            },
+            {
+              "id": "S1",
+              "weight": 5,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 1,
+              "children": []
+            },
+            {
+              "id": "S2",
+              "weight": 6,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 2,
+              "children": []
+            },
+            {
+              "id": "S3",
+              "weight": 9,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 3,
+              "children": []
+            },
+            {
+              "id": "S4",
+              "weight": 11,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 4,
+              "children": []
+            },
+            {
+              "id": "T0",
+              "weight": 15,
+              "virtual": false,
+              "leaf": false,
+              "sourceIndex": null,
+              "children": [
+                "S0",
+                "S1",
+                "S2"
+              ]
+            }
+          ],
+          "forestIds": [
+            "S3",
+            "S4",
+            "T0"
+          ],
+          "selectedIds": [
+            "S0",
+            "S1",
+            "S2"
+          ],
+          "newNodeId": "T0",
+          "costAdded": 15,
+          "totalCost": 15,
+          "combines": 1,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            4,
+            5,
+            6,
+            9,
+            11,
+            15,
+            35
+          ],
+          "done": false
+        },
+        "message": "选取当前最轻的 k 个根，合并成一个新节点并累加代价 / take the k lightest roots, create their parent and charge its weight",
+        "line": 148,
+        "variables": {
+          "k": 3,
+          "realLeaves": 5,
+          "virtualLeaves": 0,
+          "forest": 1,
+          "combines": 2,
+          "costAdded": 35,
+          "totalCost": 50,
+          "result": "pending"
+        },
+        "lessonStepId": "combine",
+        "structure": {
+          "kind": "merge-tree",
+          "preset": "three-way",
+          "operation": "combine",
+          "k": 3,
+          "segmentWeights": [
+            4,
+            5,
+            6,
+            9,
+            11
+          ],
+          "nodes": [
+            {
+              "id": "S0",
+              "weight": 4,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 0,
+              "children": []
+            },
+            {
+              "id": "S1",
+              "weight": 5,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 1,
+              "children": []
+            },
+            {
+              "id": "S2",
+              "weight": 6,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 2,
+              "children": []
+            },
+            {
+              "id": "S3",
+              "weight": 9,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 3,
+              "children": []
+            },
+            {
+              "id": "S4",
+              "weight": 11,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 4,
+              "children": []
+            },
+            {
+              "id": "T0",
+              "weight": 15,
+              "virtual": false,
+              "leaf": false,
+              "sourceIndex": null,
+              "children": [
+                "S0",
+                "S1",
+                "S2"
+              ]
+            },
+            {
+              "id": "T1",
+              "weight": 35,
+              "virtual": false,
+              "leaf": false,
+              "sourceIndex": null,
+              "children": [
+                "S3",
+                "S4",
+                "T0"
+              ]
+            }
+          ],
+          "forestIds": [
+            "T1"
+          ],
+          "selectedIds": [
+            "S3",
+            "S4",
+            "T0"
+          ],
+          "newNodeId": "T1",
+          "costAdded": 35,
+          "totalCost": 50,
+          "combines": 2,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            4,
+            5,
+            6,
+            9,
+            11,
+            15,
+            35
+          ],
+          "done": true
+        },
+        "message": "森林只剩一个根，最佳归并树构造完成 / one root remains and the optimal merge tree is complete",
+        "line": 157,
+        "variables": {
+          "k": 3,
+          "realLeaves": 5,
+          "virtualLeaves": 0,
+          "forest": 1,
+          "combines": 2,
+          "costAdded": 0,
+          "totalCost": 50,
+          "result": "built"
+        },
+        "lessonStepId": "done",
+        "structure": {
+          "kind": "merge-tree",
+          "preset": "three-way",
+          "operation": "done",
+          "k": 3,
+          "segmentWeights": [
+            4,
+            5,
+            6,
+            9,
+            11
+          ],
+          "nodes": [
+            {
+              "id": "S0",
+              "weight": 4,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 0,
+              "children": []
+            },
+            {
+              "id": "S1",
+              "weight": 5,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 1,
+              "children": []
+            },
+            {
+              "id": "S2",
+              "weight": 6,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 2,
+              "children": []
+            },
+            {
+              "id": "S3",
+              "weight": 9,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 3,
+              "children": []
+            },
+            {
+              "id": "S4",
+              "weight": 11,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 4,
+              "children": []
+            },
+            {
+              "id": "T0",
+              "weight": 15,
+              "virtual": false,
+              "leaf": false,
+              "sourceIndex": null,
+              "children": [
+                "S0",
+                "S1",
+                "S2"
+              ]
+            },
+            {
+              "id": "T1",
+              "weight": 35,
+              "virtual": false,
+              "leaf": false,
+              "sourceIndex": null,
+              "children": [
+                "S3",
+                "S4",
+                "T0"
+              ]
+            }
+          ],
+          "forestIds": [
+            "T1"
+          ],
+          "selectedIds": [],
+          "newNodeId": null,
+          "costAdded": 0,
+          "totalCost": 50,
+          "combines": 2,
+          "result": "built"
+        }
+      }
+    ]
+  },
+  "virtual-dummy": {
+    "input": {
+      "preset": "virtual-dummy",
+      "segmentWeights": [
+        4,
+        5,
+        9,
+        10,
+        12,
+        15
+      ],
+      "k": 3
+    },
+    "frames": [
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            4,
+            5,
+            9,
+            10,
+            12,
+            15,
+            0
+          ],
+          "done": false
+        },
+        "message": "以真实归并段长度为叶；不足满 k 叉时补零权重虚拟叶 / seed real run lengths and add zero-weight dummies for a full k-ary shape",
+        "line": 113,
+        "variables": {
+          "k": 3,
+          "realLeaves": 6,
+          "virtualLeaves": 1,
+          "forest": 7,
+          "combines": 0,
+          "costAdded": 0,
+          "totalCost": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "init",
+        "structure": {
+          "kind": "merge-tree",
+          "preset": "virtual-dummy",
+          "operation": "init",
+          "k": 3,
+          "segmentWeights": [
+            4,
+            5,
+            9,
+            10,
+            12,
+            15
+          ],
+          "nodes": [
+            {
+              "id": "S0",
+              "weight": 4,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 0,
+              "children": []
+            },
+            {
+              "id": "S1",
+              "weight": 5,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 1,
+              "children": []
+            },
+            {
+              "id": "S2",
+              "weight": 9,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 2,
+              "children": []
+            },
+            {
+              "id": "S3",
+              "weight": 10,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 3,
+              "children": []
+            },
+            {
+              "id": "S4",
+              "weight": 12,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 4,
+              "children": []
+            },
+            {
+              "id": "S5",
+              "weight": 15,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 5,
+              "children": []
+            },
+            {
+              "id": "V0",
+              "weight": 0,
+              "virtual": true,
+              "leaf": true,
+              "sourceIndex": null,
+              "children": []
+            }
+          ],
+          "forestIds": [
+            "S0",
+            "S1",
+            "S2",
+            "S3",
+            "S4",
+            "S5",
+            "V0"
+          ],
+          "selectedIds": [],
+          "newNodeId": null,
+          "costAdded": 0,
+          "totalCost": 0,
+          "combines": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            4,
+            5,
+            9,
+            10,
+            12,
+            15,
+            0,
+            9
+          ],
+          "done": false
+        },
+        "message": "选取当前最轻的 k 个根，合并成一个新节点并累加代价 / take the k lightest roots, create their parent and charge its weight",
+        "line": 148,
+        "variables": {
+          "k": 3,
+          "realLeaves": 6,
+          "virtualLeaves": 1,
+          "forest": 5,
+          "combines": 1,
+          "costAdded": 9,
+          "totalCost": 9,
+          "result": "pending"
+        },
+        "lessonStepId": "combine",
+        "structure": {
+          "kind": "merge-tree",
+          "preset": "virtual-dummy",
+          "operation": "combine",
+          "k": 3,
+          "segmentWeights": [
+            4,
+            5,
+            9,
+            10,
+            12,
+            15
+          ],
+          "nodes": [
+            {
+              "id": "S0",
+              "weight": 4,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 0,
+              "children": []
+            },
+            {
+              "id": "S1",
+              "weight": 5,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 1,
+              "children": []
+            },
+            {
+              "id": "S2",
+              "weight": 9,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 2,
+              "children": []
+            },
+            {
+              "id": "S3",
+              "weight": 10,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 3,
+              "children": []
+            },
+            {
+              "id": "S4",
+              "weight": 12,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 4,
+              "children": []
+            },
+            {
+              "id": "S5",
+              "weight": 15,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 5,
+              "children": []
+            },
+            {
+              "id": "V0",
+              "weight": 0,
+              "virtual": true,
+              "leaf": true,
+              "sourceIndex": null,
+              "children": []
+            },
+            {
+              "id": "T0",
+              "weight": 9,
+              "virtual": false,
+              "leaf": false,
+              "sourceIndex": null,
+              "children": [
+                "V0",
+                "S0",
+                "S1"
+              ]
+            }
+          ],
+          "forestIds": [
+            "S2",
+            "S3",
+            "S4",
+            "S5",
+            "T0"
+          ],
+          "selectedIds": [
+            "V0",
+            "S0",
+            "S1"
+          ],
+          "newNodeId": "T0",
+          "costAdded": 9,
+          "totalCost": 9,
+          "combines": 1,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            4,
+            5,
+            9,
+            10,
+            12,
+            15,
+            0,
+            9,
+            28
+          ],
+          "done": false
+        },
+        "message": "选取当前最轻的 k 个根，合并成一个新节点并累加代价 / take the k lightest roots, create their parent and charge its weight",
+        "line": 148,
+        "variables": {
+          "k": 3,
+          "realLeaves": 6,
+          "virtualLeaves": 1,
+          "forest": 3,
+          "combines": 2,
+          "costAdded": 28,
+          "totalCost": 37,
+          "result": "pending"
+        },
+        "lessonStepId": "combine",
+        "structure": {
+          "kind": "merge-tree",
+          "preset": "virtual-dummy",
+          "operation": "combine",
+          "k": 3,
+          "segmentWeights": [
+            4,
+            5,
+            9,
+            10,
+            12,
+            15
+          ],
+          "nodes": [
+            {
+              "id": "S0",
+              "weight": 4,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 0,
+              "children": []
+            },
+            {
+              "id": "S1",
+              "weight": 5,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 1,
+              "children": []
+            },
+            {
+              "id": "S2",
+              "weight": 9,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 2,
+              "children": []
+            },
+            {
+              "id": "S3",
+              "weight": 10,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 3,
+              "children": []
+            },
+            {
+              "id": "S4",
+              "weight": 12,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 4,
+              "children": []
+            },
+            {
+              "id": "S5",
+              "weight": 15,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 5,
+              "children": []
+            },
+            {
+              "id": "V0",
+              "weight": 0,
+              "virtual": true,
+              "leaf": true,
+              "sourceIndex": null,
+              "children": []
+            },
+            {
+              "id": "T0",
+              "weight": 9,
+              "virtual": false,
+              "leaf": false,
+              "sourceIndex": null,
+              "children": [
+                "V0",
+                "S0",
+                "S1"
+              ]
+            },
+            {
+              "id": "T1",
+              "weight": 28,
+              "virtual": false,
+              "leaf": false,
+              "sourceIndex": null,
+              "children": [
+                "S2",
+                "T0",
+                "S3"
+              ]
+            }
+          ],
+          "forestIds": [
+            "S4",
+            "S5",
+            "T1"
+          ],
+          "selectedIds": [
+            "S2",
+            "T0",
+            "S3"
+          ],
+          "newNodeId": "T1",
+          "costAdded": 28,
+          "totalCost": 37,
+          "combines": 2,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            4,
+            5,
+            9,
+            10,
+            12,
+            15,
+            0,
+            9,
+            28,
+            55
+          ],
+          "done": false
+        },
+        "message": "选取当前最轻的 k 个根，合并成一个新节点并累加代价 / take the k lightest roots, create their parent and charge its weight",
+        "line": 148,
+        "variables": {
+          "k": 3,
+          "realLeaves": 6,
+          "virtualLeaves": 1,
+          "forest": 1,
+          "combines": 3,
+          "costAdded": 55,
+          "totalCost": 92,
+          "result": "pending"
+        },
+        "lessonStepId": "combine",
+        "structure": {
+          "kind": "merge-tree",
+          "preset": "virtual-dummy",
+          "operation": "combine",
+          "k": 3,
+          "segmentWeights": [
+            4,
+            5,
+            9,
+            10,
+            12,
+            15
+          ],
+          "nodes": [
+            {
+              "id": "S0",
+              "weight": 4,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 0,
+              "children": []
+            },
+            {
+              "id": "S1",
+              "weight": 5,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 1,
+              "children": []
+            },
+            {
+              "id": "S2",
+              "weight": 9,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 2,
+              "children": []
+            },
+            {
+              "id": "S3",
+              "weight": 10,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 3,
+              "children": []
+            },
+            {
+              "id": "S4",
+              "weight": 12,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 4,
+              "children": []
+            },
+            {
+              "id": "S5",
+              "weight": 15,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 5,
+              "children": []
+            },
+            {
+              "id": "V0",
+              "weight": 0,
+              "virtual": true,
+              "leaf": true,
+              "sourceIndex": null,
+              "children": []
+            },
+            {
+              "id": "T0",
+              "weight": 9,
+              "virtual": false,
+              "leaf": false,
+              "sourceIndex": null,
+              "children": [
+                "V0",
+                "S0",
+                "S1"
+              ]
+            },
+            {
+              "id": "T1",
+              "weight": 28,
+              "virtual": false,
+              "leaf": false,
+              "sourceIndex": null,
+              "children": [
+                "S2",
+                "T0",
+                "S3"
+              ]
+            },
+            {
+              "id": "T2",
+              "weight": 55,
+              "virtual": false,
+              "leaf": false,
+              "sourceIndex": null,
+              "children": [
+                "S4",
+                "S5",
+                "T1"
+              ]
+            }
+          ],
+          "forestIds": [
+            "T2"
+          ],
+          "selectedIds": [
+            "S4",
+            "S5",
+            "T1"
+          ],
+          "newNodeId": "T2",
+          "costAdded": 55,
+          "totalCost": 92,
+          "combines": 3,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            4,
+            5,
+            9,
+            10,
+            12,
+            15,
+            0,
+            9,
+            28,
+            55
+          ],
+          "done": true
+        },
+        "message": "森林只剩一个根，最佳归并树构造完成 / one root remains and the optimal merge tree is complete",
+        "line": 157,
+        "variables": {
+          "k": 3,
+          "realLeaves": 6,
+          "virtualLeaves": 1,
+          "forest": 1,
+          "combines": 3,
+          "costAdded": 0,
+          "totalCost": 92,
+          "result": "built"
+        },
+        "lessonStepId": "done",
+        "structure": {
+          "kind": "merge-tree",
+          "preset": "virtual-dummy",
+          "operation": "done",
+          "k": 3,
+          "segmentWeights": [
+            4,
+            5,
+            9,
+            10,
+            12,
+            15
+          ],
+          "nodes": [
+            {
+              "id": "S0",
+              "weight": 4,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 0,
+              "children": []
+            },
+            {
+              "id": "S1",
+              "weight": 5,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 1,
+              "children": []
+            },
+            {
+              "id": "S2",
+              "weight": 9,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 2,
+              "children": []
+            },
+            {
+              "id": "S3",
+              "weight": 10,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 3,
+              "children": []
+            },
+            {
+              "id": "S4",
+              "weight": 12,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 4,
+              "children": []
+            },
+            {
+              "id": "S5",
+              "weight": 15,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 5,
+              "children": []
+            },
+            {
+              "id": "V0",
+              "weight": 0,
+              "virtual": true,
+              "leaf": true,
+              "sourceIndex": null,
+              "children": []
+            },
+            {
+              "id": "T0",
+              "weight": 9,
+              "virtual": false,
+              "leaf": false,
+              "sourceIndex": null,
+              "children": [
+                "V0",
+                "S0",
+                "S1"
+              ]
+            },
+            {
+              "id": "T1",
+              "weight": 28,
+              "virtual": false,
+              "leaf": false,
+              "sourceIndex": null,
+              "children": [
+                "S2",
+                "T0",
+                "S3"
+              ]
+            },
+            {
+              "id": "T2",
+              "weight": 55,
+              "virtual": false,
+              "leaf": false,
+              "sourceIndex": null,
+              "children": [
+                "S4",
+                "S5",
+                "T1"
+              ]
+            }
+          ],
+          "forestIds": [
+            "T2"
+          ],
+          "selectedIds": [],
+          "newNodeId": null,
+          "costAdded": 0,
+          "totalCost": 92,
+          "combines": 3,
+          "result": "built"
+        }
+      }
+    ]
+  },
+  "equal": {
+    "input": {
+      "preset": "equal",
+      "segmentWeights": [
+        5,
+        5,
+        5,
+        5,
+        5
+      ],
+      "k": 2
+    },
+    "frames": [
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            5,
+            5,
+            5,
+            5,
+            5
+          ],
+          "done": false
+        },
+        "message": "以真实归并段长度为叶；不足满 k 叉时补零权重虚拟叶 / seed real run lengths and add zero-weight dummies for a full k-ary shape",
+        "line": 113,
+        "variables": {
+          "k": 2,
+          "realLeaves": 5,
+          "virtualLeaves": 0,
+          "forest": 5,
+          "combines": 0,
+          "costAdded": 0,
+          "totalCost": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "init",
+        "structure": {
+          "kind": "merge-tree",
+          "preset": "equal",
+          "operation": "init",
+          "k": 2,
+          "segmentWeights": [
+            5,
+            5,
+            5,
+            5,
+            5
+          ],
+          "nodes": [
+            {
+              "id": "S0",
+              "weight": 5,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 0,
+              "children": []
+            },
+            {
+              "id": "S1",
+              "weight": 5,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 1,
+              "children": []
+            },
+            {
+              "id": "S2",
+              "weight": 5,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 2,
+              "children": []
+            },
+            {
+              "id": "S3",
+              "weight": 5,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 3,
+              "children": []
+            },
+            {
+              "id": "S4",
+              "weight": 5,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 4,
+              "children": []
+            }
+          ],
+          "forestIds": [
+            "S0",
+            "S1",
+            "S2",
+            "S3",
+            "S4"
+          ],
+          "selectedIds": [],
+          "newNodeId": null,
+          "costAdded": 0,
+          "totalCost": 0,
+          "combines": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            5,
+            5,
+            5,
+            5,
+            5,
+            10
+          ],
+          "done": false
+        },
+        "message": "选取当前最轻的 k 个根，合并成一个新节点并累加代价 / take the k lightest roots, create their parent and charge its weight",
+        "line": 148,
+        "variables": {
+          "k": 2,
+          "realLeaves": 5,
+          "virtualLeaves": 0,
+          "forest": 4,
+          "combines": 1,
+          "costAdded": 10,
+          "totalCost": 10,
+          "result": "pending"
+        },
+        "lessonStepId": "combine",
+        "structure": {
+          "kind": "merge-tree",
+          "preset": "equal",
+          "operation": "combine",
+          "k": 2,
+          "segmentWeights": [
+            5,
+            5,
+            5,
+            5,
+            5
+          ],
+          "nodes": [
+            {
+              "id": "S0",
+              "weight": 5,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 0,
+              "children": []
+            },
+            {
+              "id": "S1",
+              "weight": 5,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 1,
+              "children": []
+            },
+            {
+              "id": "S2",
+              "weight": 5,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 2,
+              "children": []
+            },
+            {
+              "id": "S3",
+              "weight": 5,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 3,
+              "children": []
+            },
+            {
+              "id": "S4",
+              "weight": 5,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 4,
+              "children": []
+            },
+            {
+              "id": "T0",
+              "weight": 10,
+              "virtual": false,
+              "leaf": false,
+              "sourceIndex": null,
+              "children": [
+                "S0",
+                "S1"
+              ]
+            }
+          ],
+          "forestIds": [
+            "S2",
+            "S3",
+            "S4",
+            "T0"
+          ],
+          "selectedIds": [
+            "S0",
+            "S1"
+          ],
+          "newNodeId": "T0",
+          "costAdded": 10,
+          "totalCost": 10,
+          "combines": 1,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            5,
+            5,
+            5,
+            5,
+            5,
+            10,
+            10
+          ],
+          "done": false
+        },
+        "message": "选取当前最轻的 k 个根，合并成一个新节点并累加代价 / take the k lightest roots, create their parent and charge its weight",
+        "line": 148,
+        "variables": {
+          "k": 2,
+          "realLeaves": 5,
+          "virtualLeaves": 0,
+          "forest": 3,
+          "combines": 2,
+          "costAdded": 10,
+          "totalCost": 20,
+          "result": "pending"
+        },
+        "lessonStepId": "combine",
+        "structure": {
+          "kind": "merge-tree",
+          "preset": "equal",
+          "operation": "combine",
+          "k": 2,
+          "segmentWeights": [
+            5,
+            5,
+            5,
+            5,
+            5
+          ],
+          "nodes": [
+            {
+              "id": "S0",
+              "weight": 5,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 0,
+              "children": []
+            },
+            {
+              "id": "S1",
+              "weight": 5,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 1,
+              "children": []
+            },
+            {
+              "id": "S2",
+              "weight": 5,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 2,
+              "children": []
+            },
+            {
+              "id": "S3",
+              "weight": 5,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 3,
+              "children": []
+            },
+            {
+              "id": "S4",
+              "weight": 5,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 4,
+              "children": []
+            },
+            {
+              "id": "T0",
+              "weight": 10,
+              "virtual": false,
+              "leaf": false,
+              "sourceIndex": null,
+              "children": [
+                "S0",
+                "S1"
+              ]
+            },
+            {
+              "id": "T1",
+              "weight": 10,
+              "virtual": false,
+              "leaf": false,
+              "sourceIndex": null,
+              "children": [
+                "S2",
+                "S3"
+              ]
+            }
+          ],
+          "forestIds": [
+            "S4",
+            "T0",
+            "T1"
+          ],
+          "selectedIds": [
+            "S2",
+            "S3"
+          ],
+          "newNodeId": "T1",
+          "costAdded": 10,
+          "totalCost": 20,
+          "combines": 2,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            5,
+            5,
+            5,
+            5,
+            5,
+            10,
+            10,
+            15
+          ],
+          "done": false
+        },
+        "message": "选取当前最轻的 k 个根，合并成一个新节点并累加代价 / take the k lightest roots, create their parent and charge its weight",
+        "line": 148,
+        "variables": {
+          "k": 2,
+          "realLeaves": 5,
+          "virtualLeaves": 0,
+          "forest": 2,
+          "combines": 3,
+          "costAdded": 15,
+          "totalCost": 35,
+          "result": "pending"
+        },
+        "lessonStepId": "combine",
+        "structure": {
+          "kind": "merge-tree",
+          "preset": "equal",
+          "operation": "combine",
+          "k": 2,
+          "segmentWeights": [
+            5,
+            5,
+            5,
+            5,
+            5
+          ],
+          "nodes": [
+            {
+              "id": "S0",
+              "weight": 5,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 0,
+              "children": []
+            },
+            {
+              "id": "S1",
+              "weight": 5,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 1,
+              "children": []
+            },
+            {
+              "id": "S2",
+              "weight": 5,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 2,
+              "children": []
+            },
+            {
+              "id": "S3",
+              "weight": 5,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 3,
+              "children": []
+            },
+            {
+              "id": "S4",
+              "weight": 5,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 4,
+              "children": []
+            },
+            {
+              "id": "T0",
+              "weight": 10,
+              "virtual": false,
+              "leaf": false,
+              "sourceIndex": null,
+              "children": [
+                "S0",
+                "S1"
+              ]
+            },
+            {
+              "id": "T1",
+              "weight": 10,
+              "virtual": false,
+              "leaf": false,
+              "sourceIndex": null,
+              "children": [
+                "S2",
+                "S3"
+              ]
+            },
+            {
+              "id": "T2",
+              "weight": 15,
+              "virtual": false,
+              "leaf": false,
+              "sourceIndex": null,
+              "children": [
+                "S4",
+                "T0"
+              ]
+            }
+          ],
+          "forestIds": [
+            "T1",
+            "T2"
+          ],
+          "selectedIds": [
+            "S4",
+            "T0"
+          ],
+          "newNodeId": "T2",
+          "costAdded": 15,
+          "totalCost": 35,
+          "combines": 3,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            5,
+            5,
+            5,
+            5,
+            5,
+            10,
+            10,
+            15,
+            25
+          ],
+          "done": false
+        },
+        "message": "选取当前最轻的 k 个根，合并成一个新节点并累加代价 / take the k lightest roots, create their parent and charge its weight",
+        "line": 148,
+        "variables": {
+          "k": 2,
+          "realLeaves": 5,
+          "virtualLeaves": 0,
+          "forest": 1,
+          "combines": 4,
+          "costAdded": 25,
+          "totalCost": 60,
+          "result": "pending"
+        },
+        "lessonStepId": "combine",
+        "structure": {
+          "kind": "merge-tree",
+          "preset": "equal",
+          "operation": "combine",
+          "k": 2,
+          "segmentWeights": [
+            5,
+            5,
+            5,
+            5,
+            5
+          ],
+          "nodes": [
+            {
+              "id": "S0",
+              "weight": 5,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 0,
+              "children": []
+            },
+            {
+              "id": "S1",
+              "weight": 5,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 1,
+              "children": []
+            },
+            {
+              "id": "S2",
+              "weight": 5,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 2,
+              "children": []
+            },
+            {
+              "id": "S3",
+              "weight": 5,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 3,
+              "children": []
+            },
+            {
+              "id": "S4",
+              "weight": 5,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 4,
+              "children": []
+            },
+            {
+              "id": "T0",
+              "weight": 10,
+              "virtual": false,
+              "leaf": false,
+              "sourceIndex": null,
+              "children": [
+                "S0",
+                "S1"
+              ]
+            },
+            {
+              "id": "T1",
+              "weight": 10,
+              "virtual": false,
+              "leaf": false,
+              "sourceIndex": null,
+              "children": [
+                "S2",
+                "S3"
+              ]
+            },
+            {
+              "id": "T2",
+              "weight": 15,
+              "virtual": false,
+              "leaf": false,
+              "sourceIndex": null,
+              "children": [
+                "S4",
+                "T0"
+              ]
+            },
+            {
+              "id": "T3",
+              "weight": 25,
+              "virtual": false,
+              "leaf": false,
+              "sourceIndex": null,
+              "children": [
+                "T1",
+                "T2"
+              ]
+            }
+          ],
+          "forestIds": [
+            "T3"
+          ],
+          "selectedIds": [
+            "T1",
+            "T2"
+          ],
+          "newNodeId": "T3",
+          "costAdded": 25,
+          "totalCost": 60,
+          "combines": 4,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            5,
+            5,
+            5,
+            5,
+            5,
+            10,
+            10,
+            15,
+            25
+          ],
+          "done": true
+        },
+        "message": "森林只剩一个根，最佳归并树构造完成 / one root remains and the optimal merge tree is complete",
+        "line": 157,
+        "variables": {
+          "k": 2,
+          "realLeaves": 5,
+          "virtualLeaves": 0,
+          "forest": 1,
+          "combines": 4,
+          "costAdded": 0,
+          "totalCost": 60,
+          "result": "built"
+        },
+        "lessonStepId": "done",
+        "structure": {
+          "kind": "merge-tree",
+          "preset": "equal",
+          "operation": "done",
+          "k": 2,
+          "segmentWeights": [
+            5,
+            5,
+            5,
+            5,
+            5
+          ],
+          "nodes": [
+            {
+              "id": "S0",
+              "weight": 5,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 0,
+              "children": []
+            },
+            {
+              "id": "S1",
+              "weight": 5,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 1,
+              "children": []
+            },
+            {
+              "id": "S2",
+              "weight": 5,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 2,
+              "children": []
+            },
+            {
+              "id": "S3",
+              "weight": 5,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 3,
+              "children": []
+            },
+            {
+              "id": "S4",
+              "weight": 5,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 4,
+              "children": []
+            },
+            {
+              "id": "T0",
+              "weight": 10,
+              "virtual": false,
+              "leaf": false,
+              "sourceIndex": null,
+              "children": [
+                "S0",
+                "S1"
+              ]
+            },
+            {
+              "id": "T1",
+              "weight": 10,
+              "virtual": false,
+              "leaf": false,
+              "sourceIndex": null,
+              "children": [
+                "S2",
+                "S3"
+              ]
+            },
+            {
+              "id": "T2",
+              "weight": 15,
+              "virtual": false,
+              "leaf": false,
+              "sourceIndex": null,
+              "children": [
+                "S4",
+                "T0"
+              ]
+            },
+            {
+              "id": "T3",
+              "weight": 25,
+              "virtual": false,
+              "leaf": false,
+              "sourceIndex": null,
+              "children": [
+                "T1",
+                "T2"
+              ]
+            }
+          ],
+          "forestIds": [
+            "T3"
+          ],
+          "selectedIds": [],
+          "newNodeId": null,
+          "costAdded": 0,
+          "totalCost": 60,
+          "combines": 4,
+          "result": "built"
+        }
+      }
+    ]
+  },
+  "uneven": {
+    "input": {
+      "preset": "uneven",
+      "segmentWeights": [
+        1,
+        2,
+        100,
+        101,
+        102
+      ],
+      "k": 2
+    },
+    "frames": [
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            1,
+            2,
+            100,
+            101,
+            102
+          ],
+          "done": false
+        },
+        "message": "以真实归并段长度为叶；不足满 k 叉时补零权重虚拟叶 / seed real run lengths and add zero-weight dummies for a full k-ary shape",
+        "line": 113,
+        "variables": {
+          "k": 2,
+          "realLeaves": 5,
+          "virtualLeaves": 0,
+          "forest": 5,
+          "combines": 0,
+          "costAdded": 0,
+          "totalCost": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "init",
+        "structure": {
+          "kind": "merge-tree",
+          "preset": "uneven",
+          "operation": "init",
+          "k": 2,
+          "segmentWeights": [
+            1,
+            2,
+            100,
+            101,
+            102
+          ],
+          "nodes": [
+            {
+              "id": "S0",
+              "weight": 1,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 0,
+              "children": []
+            },
+            {
+              "id": "S1",
+              "weight": 2,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 1,
+              "children": []
+            },
+            {
+              "id": "S2",
+              "weight": 100,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 2,
+              "children": []
+            },
+            {
+              "id": "S3",
+              "weight": 101,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 3,
+              "children": []
+            },
+            {
+              "id": "S4",
+              "weight": 102,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 4,
+              "children": []
+            }
+          ],
+          "forestIds": [
+            "S0",
+            "S1",
+            "S2",
+            "S3",
+            "S4"
+          ],
+          "selectedIds": [],
+          "newNodeId": null,
+          "costAdded": 0,
+          "totalCost": 0,
+          "combines": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            1,
+            2,
+            100,
+            101,
+            102,
+            3
+          ],
+          "done": false
+        },
+        "message": "选取当前最轻的 k 个根，合并成一个新节点并累加代价 / take the k lightest roots, create their parent and charge its weight",
+        "line": 148,
+        "variables": {
+          "k": 2,
+          "realLeaves": 5,
+          "virtualLeaves": 0,
+          "forest": 4,
+          "combines": 1,
+          "costAdded": 3,
+          "totalCost": 3,
+          "result": "pending"
+        },
+        "lessonStepId": "combine",
+        "structure": {
+          "kind": "merge-tree",
+          "preset": "uneven",
+          "operation": "combine",
+          "k": 2,
+          "segmentWeights": [
+            1,
+            2,
+            100,
+            101,
+            102
+          ],
+          "nodes": [
+            {
+              "id": "S0",
+              "weight": 1,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 0,
+              "children": []
+            },
+            {
+              "id": "S1",
+              "weight": 2,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 1,
+              "children": []
+            },
+            {
+              "id": "S2",
+              "weight": 100,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 2,
+              "children": []
+            },
+            {
+              "id": "S3",
+              "weight": 101,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 3,
+              "children": []
+            },
+            {
+              "id": "S4",
+              "weight": 102,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 4,
+              "children": []
+            },
+            {
+              "id": "T0",
+              "weight": 3,
+              "virtual": false,
+              "leaf": false,
+              "sourceIndex": null,
+              "children": [
+                "S0",
+                "S1"
+              ]
+            }
+          ],
+          "forestIds": [
+            "S2",
+            "S3",
+            "S4",
+            "T0"
+          ],
+          "selectedIds": [
+            "S0",
+            "S1"
+          ],
+          "newNodeId": "T0",
+          "costAdded": 3,
+          "totalCost": 3,
+          "combines": 1,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            1,
+            2,
+            100,
+            101,
+            102,
+            3,
+            103
+          ],
+          "done": false
+        },
+        "message": "选取当前最轻的 k 个根，合并成一个新节点并累加代价 / take the k lightest roots, create their parent and charge its weight",
+        "line": 148,
+        "variables": {
+          "k": 2,
+          "realLeaves": 5,
+          "virtualLeaves": 0,
+          "forest": 3,
+          "combines": 2,
+          "costAdded": 103,
+          "totalCost": 106,
+          "result": "pending"
+        },
+        "lessonStepId": "combine",
+        "structure": {
+          "kind": "merge-tree",
+          "preset": "uneven",
+          "operation": "combine",
+          "k": 2,
+          "segmentWeights": [
+            1,
+            2,
+            100,
+            101,
+            102
+          ],
+          "nodes": [
+            {
+              "id": "S0",
+              "weight": 1,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 0,
+              "children": []
+            },
+            {
+              "id": "S1",
+              "weight": 2,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 1,
+              "children": []
+            },
+            {
+              "id": "S2",
+              "weight": 100,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 2,
+              "children": []
+            },
+            {
+              "id": "S3",
+              "weight": 101,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 3,
+              "children": []
+            },
+            {
+              "id": "S4",
+              "weight": 102,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 4,
+              "children": []
+            },
+            {
+              "id": "T0",
+              "weight": 3,
+              "virtual": false,
+              "leaf": false,
+              "sourceIndex": null,
+              "children": [
+                "S0",
+                "S1"
+              ]
+            },
+            {
+              "id": "T1",
+              "weight": 103,
+              "virtual": false,
+              "leaf": false,
+              "sourceIndex": null,
+              "children": [
+                "T0",
+                "S2"
+              ]
+            }
+          ],
+          "forestIds": [
+            "S3",
+            "S4",
+            "T1"
+          ],
+          "selectedIds": [
+            "T0",
+            "S2"
+          ],
+          "newNodeId": "T1",
+          "costAdded": 103,
+          "totalCost": 106,
+          "combines": 2,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            1,
+            2,
+            100,
+            101,
+            102,
+            3,
+            103,
+            203
+          ],
+          "done": false
+        },
+        "message": "选取当前最轻的 k 个根，合并成一个新节点并累加代价 / take the k lightest roots, create their parent and charge its weight",
+        "line": 148,
+        "variables": {
+          "k": 2,
+          "realLeaves": 5,
+          "virtualLeaves": 0,
+          "forest": 2,
+          "combines": 3,
+          "costAdded": 203,
+          "totalCost": 309,
+          "result": "pending"
+        },
+        "lessonStepId": "combine",
+        "structure": {
+          "kind": "merge-tree",
+          "preset": "uneven",
+          "operation": "combine",
+          "k": 2,
+          "segmentWeights": [
+            1,
+            2,
+            100,
+            101,
+            102
+          ],
+          "nodes": [
+            {
+              "id": "S0",
+              "weight": 1,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 0,
+              "children": []
+            },
+            {
+              "id": "S1",
+              "weight": 2,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 1,
+              "children": []
+            },
+            {
+              "id": "S2",
+              "weight": 100,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 2,
+              "children": []
+            },
+            {
+              "id": "S3",
+              "weight": 101,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 3,
+              "children": []
+            },
+            {
+              "id": "S4",
+              "weight": 102,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 4,
+              "children": []
+            },
+            {
+              "id": "T0",
+              "weight": 3,
+              "virtual": false,
+              "leaf": false,
+              "sourceIndex": null,
+              "children": [
+                "S0",
+                "S1"
+              ]
+            },
+            {
+              "id": "T1",
+              "weight": 103,
+              "virtual": false,
+              "leaf": false,
+              "sourceIndex": null,
+              "children": [
+                "T0",
+                "S2"
+              ]
+            },
+            {
+              "id": "T2",
+              "weight": 203,
+              "virtual": false,
+              "leaf": false,
+              "sourceIndex": null,
+              "children": [
+                "S3",
+                "S4"
+              ]
+            }
+          ],
+          "forestIds": [
+            "T1",
+            "T2"
+          ],
+          "selectedIds": [
+            "S3",
+            "S4"
+          ],
+          "newNodeId": "T2",
+          "costAdded": 203,
+          "totalCost": 309,
+          "combines": 3,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            1,
+            2,
+            100,
+            101,
+            102,
+            3,
+            103,
+            203,
+            306
+          ],
+          "done": false
+        },
+        "message": "选取当前最轻的 k 个根，合并成一个新节点并累加代价 / take the k lightest roots, create their parent and charge its weight",
+        "line": 148,
+        "variables": {
+          "k": 2,
+          "realLeaves": 5,
+          "virtualLeaves": 0,
+          "forest": 1,
+          "combines": 4,
+          "costAdded": 306,
+          "totalCost": 615,
+          "result": "pending"
+        },
+        "lessonStepId": "combine",
+        "structure": {
+          "kind": "merge-tree",
+          "preset": "uneven",
+          "operation": "combine",
+          "k": 2,
+          "segmentWeights": [
+            1,
+            2,
+            100,
+            101,
+            102
+          ],
+          "nodes": [
+            {
+              "id": "S0",
+              "weight": 1,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 0,
+              "children": []
+            },
+            {
+              "id": "S1",
+              "weight": 2,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 1,
+              "children": []
+            },
+            {
+              "id": "S2",
+              "weight": 100,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 2,
+              "children": []
+            },
+            {
+              "id": "S3",
+              "weight": 101,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 3,
+              "children": []
+            },
+            {
+              "id": "S4",
+              "weight": 102,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 4,
+              "children": []
+            },
+            {
+              "id": "T0",
+              "weight": 3,
+              "virtual": false,
+              "leaf": false,
+              "sourceIndex": null,
+              "children": [
+                "S0",
+                "S1"
+              ]
+            },
+            {
+              "id": "T1",
+              "weight": 103,
+              "virtual": false,
+              "leaf": false,
+              "sourceIndex": null,
+              "children": [
+                "T0",
+                "S2"
+              ]
+            },
+            {
+              "id": "T2",
+              "weight": 203,
+              "virtual": false,
+              "leaf": false,
+              "sourceIndex": null,
+              "children": [
+                "S3",
+                "S4"
+              ]
+            },
+            {
+              "id": "T3",
+              "weight": 306,
+              "virtual": false,
+              "leaf": false,
+              "sourceIndex": null,
+              "children": [
+                "T1",
+                "T2"
+              ]
+            }
+          ],
+          "forestIds": [
+            "T3"
+          ],
+          "selectedIds": [
+            "T1",
+            "T2"
+          ],
+          "newNodeId": "T3",
+          "costAdded": 306,
+          "totalCost": 615,
+          "combines": 4,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            1,
+            2,
+            100,
+            101,
+            102,
+            3,
+            103,
+            203,
+            306
+          ],
+          "done": true
+        },
+        "message": "森林只剩一个根，最佳归并树构造完成 / one root remains and the optimal merge tree is complete",
+        "line": 157,
+        "variables": {
+          "k": 2,
+          "realLeaves": 5,
+          "virtualLeaves": 0,
+          "forest": 1,
+          "combines": 4,
+          "costAdded": 0,
+          "totalCost": 615,
+          "result": "built"
+        },
+        "lessonStepId": "done",
+        "structure": {
+          "kind": "merge-tree",
+          "preset": "uneven",
+          "operation": "done",
+          "k": 2,
+          "segmentWeights": [
+            1,
+            2,
+            100,
+            101,
+            102
+          ],
+          "nodes": [
+            {
+              "id": "S0",
+              "weight": 1,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 0,
+              "children": []
+            },
+            {
+              "id": "S1",
+              "weight": 2,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 1,
+              "children": []
+            },
+            {
+              "id": "S2",
+              "weight": 100,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 2,
+              "children": []
+            },
+            {
+              "id": "S3",
+              "weight": 101,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 3,
+              "children": []
+            },
+            {
+              "id": "S4",
+              "weight": 102,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 4,
+              "children": []
+            },
+            {
+              "id": "T0",
+              "weight": 3,
+              "virtual": false,
+              "leaf": false,
+              "sourceIndex": null,
+              "children": [
+                "S0",
+                "S1"
+              ]
+            },
+            {
+              "id": "T1",
+              "weight": 103,
+              "virtual": false,
+              "leaf": false,
+              "sourceIndex": null,
+              "children": [
+                "T0",
+                "S2"
+              ]
+            },
+            {
+              "id": "T2",
+              "weight": 203,
+              "virtual": false,
+              "leaf": false,
+              "sourceIndex": null,
+              "children": [
+                "S3",
+                "S4"
+              ]
+            },
+            {
+              "id": "T3",
+              "weight": 306,
+              "virtual": false,
+              "leaf": false,
+              "sourceIndex": null,
+              "children": [
+                "T1",
+                "T2"
+              ]
+            }
+          ],
+          "forestIds": [
+            "T3"
+          ],
+          "selectedIds": [],
+          "newNodeId": null,
+          "costAdded": 0,
+          "totalCost": 615,
+          "combines": 4,
+          "result": "built"
+        }
+      }
+    ]
+  },
+  "four-way": {
+    "input": {
+      "preset": "four-way",
+      "segmentWeights": [
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "k": 4
+    },
+    "frames": [
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            0
+          ],
+          "done": false
+        },
+        "message": "以真实归并段长度为叶；不足满 k 叉时补零权重虚拟叶 / seed real run lengths and add zero-weight dummies for a full k-ary shape",
+        "line": 113,
+        "variables": {
+          "k": 4,
+          "realLeaves": 6,
+          "virtualLeaves": 1,
+          "forest": 7,
+          "combines": 0,
+          "costAdded": 0,
+          "totalCost": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "init",
+        "structure": {
+          "kind": "merge-tree",
+          "preset": "four-way",
+          "operation": "init",
+          "k": 4,
+          "segmentWeights": [
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "nodes": [
+            {
+              "id": "S0",
+              "weight": 4,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 0,
+              "children": []
+            },
+            {
+              "id": "S1",
+              "weight": 5,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 1,
+              "children": []
+            },
+            {
+              "id": "S2",
+              "weight": 6,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 2,
+              "children": []
+            },
+            {
+              "id": "S3",
+              "weight": 7,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 3,
+              "children": []
+            },
+            {
+              "id": "S4",
+              "weight": 8,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 4,
+              "children": []
+            },
+            {
+              "id": "S5",
+              "weight": 9,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 5,
+              "children": []
+            },
+            {
+              "id": "V0",
+              "weight": 0,
+              "virtual": true,
+              "leaf": true,
+              "sourceIndex": null,
+              "children": []
+            }
+          ],
+          "forestIds": [
+            "S0",
+            "S1",
+            "S2",
+            "S3",
+            "S4",
+            "S5",
+            "V0"
+          ],
+          "selectedIds": [],
+          "newNodeId": null,
+          "costAdded": 0,
+          "totalCost": 0,
+          "combines": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            0,
+            15
+          ],
+          "done": false
+        },
+        "message": "选取当前最轻的 k 个根，合并成一个新节点并累加代价 / take the k lightest roots, create their parent and charge its weight",
+        "line": 148,
+        "variables": {
+          "k": 4,
+          "realLeaves": 6,
+          "virtualLeaves": 1,
+          "forest": 4,
+          "combines": 1,
+          "costAdded": 15,
+          "totalCost": 15,
+          "result": "pending"
+        },
+        "lessonStepId": "combine",
+        "structure": {
+          "kind": "merge-tree",
+          "preset": "four-way",
+          "operation": "combine",
+          "k": 4,
+          "segmentWeights": [
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "nodes": [
+            {
+              "id": "S0",
+              "weight": 4,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 0,
+              "children": []
+            },
+            {
+              "id": "S1",
+              "weight": 5,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 1,
+              "children": []
+            },
+            {
+              "id": "S2",
+              "weight": 6,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 2,
+              "children": []
+            },
+            {
+              "id": "S3",
+              "weight": 7,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 3,
+              "children": []
+            },
+            {
+              "id": "S4",
+              "weight": 8,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 4,
+              "children": []
+            },
+            {
+              "id": "S5",
+              "weight": 9,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 5,
+              "children": []
+            },
+            {
+              "id": "V0",
+              "weight": 0,
+              "virtual": true,
+              "leaf": true,
+              "sourceIndex": null,
+              "children": []
+            },
+            {
+              "id": "T0",
+              "weight": 15,
+              "virtual": false,
+              "leaf": false,
+              "sourceIndex": null,
+              "children": [
+                "V0",
+                "S0",
+                "S1",
+                "S2"
+              ]
+            }
+          ],
+          "forestIds": [
+            "S3",
+            "S4",
+            "S5",
+            "T0"
+          ],
+          "selectedIds": [
+            "V0",
+            "S0",
+            "S1",
+            "S2"
+          ],
+          "newNodeId": "T0",
+          "costAdded": 15,
+          "totalCost": 15,
+          "combines": 1,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            0,
+            15,
+            39
+          ],
+          "done": false
+        },
+        "message": "选取当前最轻的 k 个根，合并成一个新节点并累加代价 / take the k lightest roots, create their parent and charge its weight",
+        "line": 148,
+        "variables": {
+          "k": 4,
+          "realLeaves": 6,
+          "virtualLeaves": 1,
+          "forest": 1,
+          "combines": 2,
+          "costAdded": 39,
+          "totalCost": 54,
+          "result": "pending"
+        },
+        "lessonStepId": "combine",
+        "structure": {
+          "kind": "merge-tree",
+          "preset": "four-way",
+          "operation": "combine",
+          "k": 4,
+          "segmentWeights": [
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "nodes": [
+            {
+              "id": "S0",
+              "weight": 4,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 0,
+              "children": []
+            },
+            {
+              "id": "S1",
+              "weight": 5,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 1,
+              "children": []
+            },
+            {
+              "id": "S2",
+              "weight": 6,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 2,
+              "children": []
+            },
+            {
+              "id": "S3",
+              "weight": 7,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 3,
+              "children": []
+            },
+            {
+              "id": "S4",
+              "weight": 8,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 4,
+              "children": []
+            },
+            {
+              "id": "S5",
+              "weight": 9,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 5,
+              "children": []
+            },
+            {
+              "id": "V0",
+              "weight": 0,
+              "virtual": true,
+              "leaf": true,
+              "sourceIndex": null,
+              "children": []
+            },
+            {
+              "id": "T0",
+              "weight": 15,
+              "virtual": false,
+              "leaf": false,
+              "sourceIndex": null,
+              "children": [
+                "V0",
+                "S0",
+                "S1",
+                "S2"
+              ]
+            },
+            {
+              "id": "T1",
+              "weight": 39,
+              "virtual": false,
+              "leaf": false,
+              "sourceIndex": null,
+              "children": [
+                "S3",
+                "S4",
+                "S5",
+                "T0"
+              ]
+            }
+          ],
+          "forestIds": [
+            "T1"
+          ],
+          "selectedIds": [
+            "S3",
+            "S4",
+            "S5",
+            "T0"
+          ],
+          "newNodeId": "T1",
+          "costAdded": 39,
+          "totalCost": 54,
+          "combines": 2,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            0,
+            15,
+            39
+          ],
+          "done": true
+        },
+        "message": "森林只剩一个根，最佳归并树构造完成 / one root remains and the optimal merge tree is complete",
+        "line": 157,
+        "variables": {
+          "k": 4,
+          "realLeaves": 6,
+          "virtualLeaves": 1,
+          "forest": 1,
+          "combines": 2,
+          "costAdded": 0,
+          "totalCost": 54,
+          "result": "built"
+        },
+        "lessonStepId": "done",
+        "structure": {
+          "kind": "merge-tree",
+          "preset": "four-way",
+          "operation": "done",
+          "k": 4,
+          "segmentWeights": [
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "nodes": [
+            {
+              "id": "S0",
+              "weight": 4,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 0,
+              "children": []
+            },
+            {
+              "id": "S1",
+              "weight": 5,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 1,
+              "children": []
+            },
+            {
+              "id": "S2",
+              "weight": 6,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 2,
+              "children": []
+            },
+            {
+              "id": "S3",
+              "weight": 7,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 3,
+              "children": []
+            },
+            {
+              "id": "S4",
+              "weight": 8,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 4,
+              "children": []
+            },
+            {
+              "id": "S5",
+              "weight": 9,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 5,
+              "children": []
+            },
+            {
+              "id": "V0",
+              "weight": 0,
+              "virtual": true,
+              "leaf": true,
+              "sourceIndex": null,
+              "children": []
+            },
+            {
+              "id": "T0",
+              "weight": 15,
+              "virtual": false,
+              "leaf": false,
+              "sourceIndex": null,
+              "children": [
+                "V0",
+                "S0",
+                "S1",
+                "S2"
+              ]
+            },
+            {
+              "id": "T1",
+              "weight": 39,
+              "virtual": false,
+              "leaf": false,
+              "sourceIndex": null,
+              "children": [
+                "S3",
+                "S4",
+                "S5",
+                "T0"
+              ]
+            }
+          ],
+          "forestIds": [
+            "T1"
+          ],
+          "selectedIds": [],
+          "newNodeId": null,
+          "costAdded": 0,
+          "totalCost": 54,
+          "combines": 2,
+          "result": "built"
+        }
+      }
+    ]
+  },
+  "single": {
+    "input": {
+      "preset": "single",
+      "segmentWeights": [
+        8
+      ],
+      "k": 2
+    },
+    "frames": [
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            8
+          ],
+          "done": false
+        },
+        "message": "以真实归并段长度为叶；不足满 k 叉时补零权重虚拟叶 / seed real run lengths and add zero-weight dummies for a full k-ary shape",
+        "line": 113,
+        "variables": {
+          "k": 2,
+          "realLeaves": 1,
+          "virtualLeaves": 0,
+          "forest": 1,
+          "combines": 0,
+          "costAdded": 0,
+          "totalCost": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "init",
+        "structure": {
+          "kind": "merge-tree",
+          "preset": "single",
+          "operation": "init",
+          "k": 2,
+          "segmentWeights": [
+            8
+          ],
+          "nodes": [
+            {
+              "id": "S0",
+              "weight": 8,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 0,
+              "children": []
+            }
+          ],
+          "forestIds": [
+            "S0"
+          ],
+          "selectedIds": [],
+          "newNodeId": null,
+          "costAdded": 0,
+          "totalCost": 0,
+          "combines": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            8
+          ],
+          "done": true
+        },
+        "message": "森林只剩一个根，最佳归并树构造完成 / one root remains and the optimal merge tree is complete",
+        "line": 157,
+        "variables": {
+          "k": 2,
+          "realLeaves": 1,
+          "virtualLeaves": 0,
+          "forest": 1,
+          "combines": 0,
+          "costAdded": 0,
+          "totalCost": 0,
+          "result": "built"
+        },
+        "lessonStepId": "done",
+        "structure": {
+          "kind": "merge-tree",
+          "preset": "single",
+          "operation": "done",
+          "k": 2,
+          "segmentWeights": [
+            8
+          ],
+          "nodes": [
+            {
+              "id": "S0",
+              "weight": 8,
+              "virtual": false,
+              "leaf": true,
+              "sourceIndex": 0,
+              "children": []
+            }
+          ],
+          "forestIds": [
+            "S0"
+          ],
+          "selectedIds": [],
+          "newNodeId": null,
+          "costAdded": 0,
+          "totalCost": 0,
+          "combines": 0,
+          "result": "built"
+        }
+      }
+    ]
+  }
+}

@@ -1258,4 +1258,13 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
       zh: "作用：执行稳定的 LSD 各趟；最终结果只由分配和收集产生。",
     },
   ],
+  "multiway_merge.c": [],
+  "multiway_merge.cpp": [],
+  "multiway_merge.py": [],
+  "replacement_selection.c": [],
+  "replacement_selection.cpp": [],
+  "replacement_selection.py": [],
+  "optimal_merge_tree.c": [],
+  "optimal_merge_tree.cpp": [],
+  "optimal_merge_tree.py": [],
 };

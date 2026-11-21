@@ -51,6 +51,21 @@ import {
   RADIX_DEFAULT_INPUT,
   RADIX_PYTHON,
 } from './radixExamples';
+import {
+  MULTIWAY_ENTRY,
+  MULTIWAY_DEFAULT_INPUT,
+  MULTIWAY_PYTHON,
+} from './multiwayExamples';
+import {
+  REPLACEMENT_ENTRY,
+  REPLACEMENT_DEFAULT_INPUT,
+  REPLACEMENT_PYTHON,
+} from './replacementExamples';
+import {
+  OPTIMAL_MERGE_ENTRY,
+  OPTIMAL_MERGE_DEFAULT_INPUT,
+  OPTIMAL_MERGE_PYTHON,
+} from './optimalMergeExamples';
 import { structureDefaultInput, structurePythonExample } from './structureExamples';
 import {
   INFIX_TO_POSTFIX_ENTRY,
@@ -81,6 +96,9 @@ export const catalog: AlgorithmCatalog = {
   'key-tree': { ...KEY_TREE_ENTRY, input: KEY_TREE_DEFAULT_INPUT },
   tournament: { ...TOURNAMENT_ENTRY, input: TOURNAMENT_DEFAULT_INPUT },
   radix: { ...RADIX_ENTRY, input: RADIX_DEFAULT_INPUT },
+  multiway: { ...MULTIWAY_ENTRY, input: MULTIWAY_DEFAULT_INPUT },
+  replacement: { ...REPLACEMENT_ENTRY, input: REPLACEMENT_DEFAULT_INPUT },
+  'optimal-merge': { ...OPTIMAL_MERGE_ENTRY, input: OPTIMAL_MERGE_DEFAULT_INPUT },
 };
 
 export const algorithmIds = (): string[] => Object.keys(catalog);
@@ -134,6 +152,14 @@ export function sorting10PythonExample(algoId: string): string | null {
   return null;
 }
 
+/** Python presets authored for the three TEXTBOOK-11 external-sorting courses. */
+export function externalSortPythonExample(algoId: string): string | null {
+  if (algoId === 'multiway') return MULTIWAY_PYTHON;
+  if (algoId === 'replacement') return REPLACEMENT_PYTHON;
+  if (algoId === 'optimal-merge') return OPTIMAL_MERGE_PYTHON;
+  return null;
+}
+
 /** Returns the preset source for an algorithm in a given teaching language. */
 export function exampleFor(algoId: string, language: CodeLanguage): string {
   const entry = catalog[algoId];
@@ -148,6 +174,8 @@ export function exampleFor(algoId: string, language: CodeLanguage): string {
   if (searchPreset) return searchPreset;
   const sortingPreset = sorting10PythonExample(algoId);
   if (sortingPreset) return sortingPreset;
+  const externalPreset = externalSortPythonExample(algoId);
+  if (externalPreset) return externalPreset;
   const preset = LANGUAGE_EXAMPLES[language]?.[algoId];
   if (preset) return preset;
   const name = entry?.name[1] ?? algoId;

@@ -55,6 +55,14 @@ import { buildBlockSearchModel, type BlockSearchVisualModel } from './blockSearc
 import { buildBplusModel, type BplusVisualModel } from './bplusModel';
 import { buildKeyTreeModel, type KeyTreeVisualModel } from './keyTreeModel';
 import { buildTournamentModel, type TournamentVisualModel } from './tournamentModel';
+import {
+  buildMultiwayModel,
+  buildReplacementModel,
+  buildOptimalMergeModel,
+  type MultiwayVisualModel,
+  type ReplacementVisualModel,
+  type OptimalVisualModel,
+} from './externalSortModel';
 import { buildRadixModel, type RadixVisualModel } from './radixModel';
 
 /**
@@ -184,6 +192,9 @@ export type VisualModel =
   | KeyTreeVisualModel
   | TournamentVisualModel
   | RadixVisualModel
+  | MultiwayVisualModel
+  | ReplacementVisualModel
+  | OptimalVisualModel
   | { kind: 'graph'; edges: Array<[number, number]>; nodes: GraphNodeModel[]; isTree: boolean }
   | { kind: 'raw'; text: string };
 
@@ -394,6 +405,21 @@ export function buildVisualModel(
   if (structure !== undefined && structure.kind === 'radix') {
     if (kind !== 'array') return { kind: 'raw', text: labels.invalid };
     return buildRadixModel(structure);
+  }
+
+  if (structure !== undefined && structure.kind === 'multiway') {
+    if (kind !== 'array') return { kind: 'raw', text: labels.invalid };
+    return buildMultiwayModel(structure);
+  }
+
+  if (structure !== undefined && structure.kind === 'replacement') {
+    if (kind !== 'array') return { kind: 'raw', text: labels.invalid };
+    return buildReplacementModel(structure);
+  }
+
+  if (structure !== undefined && structure.kind === 'merge-tree') {
+    if (kind !== 'array') return { kind: 'raw', text: labels.invalid };
+    return buildOptimalMergeModel(structure);
   }
 
   if (structure !== undefined && structure.kind === 'generalized-list') {

@@ -212,6 +212,75 @@ export const COURSE_GUIDES: Record<string, CourseGuide> = {
     ),
   },
 
+  multiway: {
+    intro: text(
+      '外部排序的归并阶段要把 m 个初始归并段合并成一个完整有序文件。二路归并每次只比较两个候选，实现简单但归并趟数多；k 路归并同时维护 k 个候选，把趟数降到大约 1/k，代价是每个段都要一个输入缓冲区，并要在更多候选之间选最小。若每条记录都线性扫描 k 个候选，代价是 O(k)；教材用败者树缓存比较结果，使一次候选更新只重赛叶到根的一条路径，降到 O(log k)。',
+      'The merge phase of external sorting combines m initial runs into one sorted file. Two-way merging compares only two candidates and is simple but needs many passes; k-way merging keeps k candidates and reduces passes by about a factor of k, at the cost of an input buffer per run and selecting among more candidates. A linear scan costs O(k) per record; the textbook loser tree caches comparisons so one candidate change replays only its leaf-to-root path, reducing this to O(log k).',
+    ),
+    definition: text(
+      'k 路平衡归并同时从 k 个已有序归并段读取当前候选，反复选出全局最小记录写入输出缓冲区；某段缓冲区被取空后按块补充，输出缓冲区满块后模拟写回外存，直到所有段耗尽。',
+      'k-way balanced merge reads one current candidate from each of k sorted runs and repeatedly emits the global minimum into an output buffer. A consumed input buffer is refilled by block, and a full output buffer is simulated back to external storage until every run is exhausted.',
+    ),
+    ...algorithm(
+      step('登记 k 个有序段', 'Register k sorted runs', '输入段必须已非降序；段数必须恰好等于 k。', 'Input runs must already be non-decreasing, and their count must equal k.'),
+      step('读块填充输入缓冲区', 'Fill input buffers by block', '只有缓冲区队首是候选，读块计数随每次搬运增加。', 'Only buffer heads are candidates; every transfer increments the read count.'),
+      step('比较 k 个候选', 'Compare k candidates', '使用 (关键字, 原始下标)，重复关键字保持输入次序。', 'Compare (key, originalIndex) so duplicate keys preserve input order.'),
+      step('选最小并推进该段', 'Select the minimum and advance its run', '记录离开缓冲区头，对应 cursor 前进。', 'The record leaves the buffer head and that run’s cursor advances.'),
+      step('输出缓冲区满块写出', 'Flush a full output block', '尾部不满一块也必须写出。', 'The final partial block must also be written.'),
+      step('所有段耗尽', 'Every run exhausted', '输出条数等于输入总数且全局有序。', 'Output length equals total input and is globally sorted.'),
+    ),
+    conditions: list(
+      ['输入必须恰好有 k 段，且每段已经内部有序；不合法输入会被拒绝而不是自动重排。', '每个段需要一个输入缓冲区，另需一个共享输出缓冲区；k 受内存容量限制。', '本实现用线性候选扫描，单趟 O(nk)；败者树可实现 O(n log k)，但普通最小堆不能直接冒充败者树。', '读块、写块是模拟外存事件，不是浏览器真实磁盘访问。'],
+      ['Input must contain exactly k runs, each already internally sorted; invalid input is rejected rather than reordered.', 'Every run needs an input buffer plus one shared output buffer; k is bounded by memory.', 'This implementation scans candidates linearly, O(nk) per pass; a loser tree can achieve O(n log k), but a normal min-heap is not a loser tree.', 'Reads and writes are simulated external-memory events, not real browser disk access.'],
+    ),
+  },
+
+  replacement: {
+    intro: text(
+      '简单分批法的段长被工作区容量 M 硬限制，段数 m = ⌈n/M⌉ 往往很大，后续归并趟数也随之增加。置换选择换了一个思路：工作区始终装满记录，每次输出当前可输出的最小值，再把下一条记录读进空槽。新记录只要不小于上次输出，就仍能继续当前段，因此一个段可以超过 M 条；只有更小的记录才被冻结到下一段。',
+      'Simple batching caps a run at the workspace size M, so the run count m = ⌈n/M⌉ is often large and later merge passes grow. Replacement selection keeps the workspace full: emit the smallest eligible record, then read the next into the freed slot. A new record at least the last output remains in the current run, so a run may exceed M; only smaller records freeze for the next run.',
+    ),
+    definition: text(
+      '置换选择排序在容量为 M 的工作区中反复选择可输出记录的最小值，写入当前初始归并段；新读入记录不小于上次输出则继续可输出，否则冻结。当前段无可输出记录时封段并解冻，直到输入耗尽。',
+      'Replacement selection repeatedly emits the minimum eligible record from an M-slot workspace into the current initial run. A new record at least the last output stays eligible; otherwise it is frozen. When nothing is eligible, the run closes and frozen records are unfrozen, until input is exhausted.',
+    ),
+    ...algorithm(
+      step('工作区装入首批记录', 'Load the first workspace batch', '所有已装入记录初始可输出，lastOutput 为空。', 'Every loaded record starts eligible and lastOutput is empty.'),
+      step('选可输出最小值并写出', 'Select and emit the eligible minimum', '相等关键字按 originalIndex 稳定决胜。', 'Equal keys break stably by originalIndex.'),
+      step('读入下一条', 'Read the next record', '放入刚空出的槽位，inputIndex 前移。', 'Fill the freed slot and advance inputIndex.'),
+      step('按阈值判定冻结', 'Classify against the threshold', '小于 lastOutput 才冻结；相等仍可继续。', 'Only a key below lastOutput freezes; equality may continue.'),
+      step('无可输出时封段解冻', 'Close the run and unfreeze', '封段后清零 lastOutput，冻结记录改回可输出。', 'Clear lastOutput after closing and make frozen records eligible again.'),
+      step('输入耗尽，段全部生成', 'Input exhausted, all runs built', '每段内部有序，所有段覆盖全部输入记录。', 'Every run is sorted and the runs cover every input record.'),
+    ),
+    conditions: list(
+      ['工作区槽位数固定为 M；空槽不是关键字为 0 的记录。', '只有小于上次输出的新记录才冻结；冻结记录仍占槽位，不是删除。', '封段后必须解冻并把 lastOutput 清空，否则下一段会被旧阈值错误限制。', '随机输入下平均段长约为 2M；基本有序输入可能形成一个很长的段。'],
+      ['The workspace has exactly M slots; an empty slot is not a key-0 record.', 'Only a new record below the last output freezes; a frozen record still occupies a slot and is not deleted.', 'After closing a run, unfreeze and clear lastOutput, or the old threshold will wrongly constrain the next run.', 'Random input averages about 2M per run; nearly ordered input may produce one very long run.'],
+    ),
+  },
+
+  'optimal-merge': {
+    intro: text(
+      '当初始归并段长度不同，归并顺序会改变总处理量。平衡归并只按段数分层，可能让很短的段反复参与多轮合并。最佳归并树把段长当权重，每次选 k 个最轻的根合并，父权重为子权重之和；短段更早被合并，因而被重复处理的次数更少。总代价是所有内部节点权重之和，而不是根权重。',
+      'When initial run lengths differ, merge order changes total work. Balanced merging levels by run count and may drag very short runs through many rounds. The optimal merge tree treats run lengths as weights, combines the k lightest roots each time, and gives the parent the sum of its children. Short runs merge earlier and are reprocessed fewer times. Total cost is the sum of all internal weights, not the root weight.',
+    ),
+    definition: text(
+      '最佳归并树是一棵以初始归并段长度为叶权重的满 k 叉树：反复取 k 个最轻根构造父节点，父权重为子权重之和，直到森林只剩一个根；总归并代价等于所有内部节点权重之和。',
+      'The optimal merge tree is a full k-ary tree whose leaves are weighted by initial run lengths: repeatedly combine the k lightest roots into a parent whose weight is the children’s sum, until one root remains; total merge cost is the sum of all internal weights.',
+    ),
+    ...algorithm(
+      step('登记真实段权重', 'Register real run weights', '权重是记录条数，不是字符频率。', 'Weights are record counts, not character frequencies.'),
+      step('补足虚拟零权重叶', 'Add virtual zero-weight leaves', 'd 由 n 与 k 的满树约束决定；虚拟叶不是真实段。', 'd follows the full-tree constraint on n and k; virtual leaves are not real runs.'),
+      step('选 k 个最轻根', 'Select the k lightest roots', '相等权重优先真实节点，再按节点 id。', 'Equal weights prefer real nodes, then node id.'),
+      step('构造父节点并计代价', 'Build the parent and charge its weight', '父权重 = 子权重和；累计代价加上父权重。', 'Parent weight = sum of children; add it to the running total.'),
+      step('父节点放回森林', 'Return the parent to the forest', '森林节点数减少 k−1。', 'The forest loses k−1 nodes.'),
+      step('只剩一个根', 'One root remains', '总代价 = 所有内部权重之和。', 'Total cost = sum of all internal weights.'),
+    ),
+    conditions: list(
+      ['真实叶数 n 与 k 路满树可能不匹配，必须补 d = ((k−1) − ((n−1) mod (k−1))) mod (k−1) 个虚拟叶。', '虚拟叶权重为 0、必须与真实段区分，不能当成真实文件。', '一次合并代价是父权重；总代价是所有内部节点权重之和。', '该贪心构造与哈夫曼树思想相通，但目标是归并代价，不是字符编码长度。'],
+      ['The real leaf count n may not fit a full k-ary tree, so add d = ((k−1) − ((n−1) mod (k−1))) mod (k−1) virtual leaves.', 'Virtual leaves weigh 0 and must be distinguished from real runs, never treated as real files.', 'One combine costs the parent weight; total cost is the sum of all internal weights.', 'The greedy construction resembles a Huffman tree, but the objective is merge cost, not code length.'],
+    ),
+  },
+
   factorial: {
     intro: text(
       '阶乘的数学定义天然是递归的：n! 依赖 (n−1)!。如果直接写循环也能算，但递归定义更贴近“把同类子问题交给下一层”这一模式。递归实现必须显式给出 0! 或 1! 的终止条件，否则会无限下探；它的调用栈深度是 O(n)。',

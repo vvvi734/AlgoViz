@@ -225,6 +225,18 @@ const REFERENCE_LEARNING_NOTES: Record<string, LocalizedText> = {
     zh: '从根集合迭代标记可达对象，并用已标记/在栈集合阻止环无限重复。清除回收所有未标记对象；紧缩再把存活对象按地址前移，并重写每条引用的源/目标地址。标记 O(N+E)，清除 O(N)，紧缩另加存活字节。',
     en: 'Mark reachable objects iteratively from roots, using marked/queued sets to stop cycles. Sweep reclaims every unmarked object; compaction then packs live objects and rewrites every reference endpoint. Marking O(N+E), sweeping O(N), compaction plus live bytes.',
   },
+  multiway: {
+    zh: 'k 个已有序段各维护一个 FIFO 输入缓冲区，只有队首可作候选。反复选最小候选写入共享输出缓冲区，满块时模拟写出；某段缓冲空且仍有记录时补读一块。线性扫描 k 个候选为 O(nk)，败者树可降至 O(n log k)。所有读写计数只是教学模型事件。',
+    en: 'Each of k sorted runs keeps a FIFO input buffer exposing only its head as a candidate. Repeatedly emit the minimum into a shared output buffer, flushing a full block; refill a run when its buffer empties but records remain. Linear candidate scans cost O(nk), while a loser tree reduces selection to O(n log k). All counters are teaching-model events.',
+  },
+  replacement: {
+    zh: '工作区固定 M 槽，先装入前 M 条记录。每次输出最小 eligible 记录并补读一条；不小于 lastOutput 的记录继续 eligible，小于则冻结。无可输出记录时封段、解冻全部 frozen、清空阈值。因此段长可以超过 M，随机输入平均约 2M。',
+    en: 'A fixed M-slot workspace starts with the first M records. Repeatedly emit the smallest eligible record and read one replacement: keys at least lastOutput stay eligible, smaller keys freeze. When nothing is eligible, close the run, unfreeze all frozen records, and clear the threshold. Runs may therefore exceed M; random input averages about 2M.',
+  },
+  'optimal-merge': {
+    zh: '以初始段长度为权重，每次取 k 个最轻的根构造父节点，父权重为孩子和，累计代价加上父权重。真实段数不满足满 k 叉树时补 d 个零权重虚拟叶；总代价是所有内部权重之和，不是根权重。贪心思想与哈夫曼树相通，但目标是最小化归并代价。',
+    en: 'Weight leaves by initial-run length, combine the k lightest roots into a parent whose weight is the child sum, and add that weight to the running cost. Add d zero-weight virtual leaves when the real count cannot fill a full k-ary tree. Total cost is the sum of every internal weight, not the root alone. The greedy idea resembles Huffman construction, but the objective is merge cost.',
+  },
 };
 
 const LANGUAGE_NAME: Record<ReferenceLanguage, { zh: string; en: string }> = {

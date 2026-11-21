@@ -4,6 +4,7 @@ import { ConceptDiagram } from './ConceptDiagram';
 import { SearchConceptDiagram } from './SearchConceptDiagrams';
 import { QueueConceptDiagram } from './QueueConceptDiagrams';
 import { TreeConceptDiagram } from './TreeConceptDiagrams';
+import { ExternalSortConceptDiagram } from './ExternalSortConceptDiagrams';
 import '../../styles/concepts.css';
 
 /**
@@ -44,6 +45,10 @@ export function ConceptView({ concept }: { concept: ConceptPage }) {
         <div className="concept-diagram-frame" data-testid="concept-diagram">
           {concept.diagram === 'asl-decision-tree' || concept.diagram === 'block-search' ? (
             <SearchConceptDiagram kind={concept.diagram} lang={lang} />
+          ) : concept.diagram === 'external-sort' ||
+            concept.diagram === 'external-runs' ||
+            concept.diagram === 'external-comparison' ? (
+            <ExternalSortConceptDiagram kind={concept.diagram} lang={lang} />
           ) : concept.diagram === 'circular-queue' || concept.diagram === 'stack-queue-storage' ? (
             <QueueConceptDiagram kind={concept.diagram} lang={lang} />
           ) : concept.diagram === 'tree-storage' ||

@@ -170,6 +170,27 @@ export const REFERENCE_CODE: Record<string, ReferenceEntry> = {
       python: { fileName: 'radix_sort.py' },
     },
   },
+  multiway: {
+    files: {
+      c: { fileName: 'multiway_merge.c' },
+      cpp: { fileName: 'multiway_merge.cpp' },
+      python: { fileName: 'multiway_merge.py' },
+    },
+  },
+  replacement: {
+    files: {
+      c: { fileName: 'replacement_selection.c' },
+      cpp: { fileName: 'replacement_selection.cpp' },
+      python: { fileName: 'replacement_selection.py' },
+    },
+  },
+  'optimal-merge': {
+    files: {
+      c: { fileName: 'optimal_merge_tree.c' },
+      cpp: { fileName: 'optimal_merge_tree.cpp' },
+      python: { fileName: 'optimal_merge_tree.py' },
+    },
+  },
   factorial: {
     files: {
       c: { fileName: 'factorial.c' },

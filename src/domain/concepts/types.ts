@@ -45,7 +45,10 @@ export type ConceptDiagramKind =
   | 'threaded-binary-tree'
   | 'dynamic-storage'
   | 'boundary-tag-method'
-  | 'storage-compaction';
+  | 'storage-compaction'
+  | 'external-sort'
+  | 'external-runs'
+  | 'external-comparison';
 
 export interface ConceptDefinition {
   term: Bilingual;

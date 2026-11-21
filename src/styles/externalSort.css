@@ -1,0 +1,728 @@
+/* TEXTBOOK-11: simulated external storage, multiway merge, replacement selection,
+   and the optimal merge forest. All I/O counters are teaching-model events. */
+.external-visual {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.ext-head {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.ext-io-strip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 22px;
+  padding: 9px 12px;
+  margin-bottom: 10px;
+  border: 1px solid var(--line, #d8d8d8);
+  border-radius: 10px;
+  background: linear-gradient(180deg, #f7f9fb, #fff);
+  font-size: 11px;
+  color: var(--muted, #59636d);
+}
+
+.ext-io-strip > div {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.ext-io-strip strong {
+  font-size: 16px;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink, #1f2328);
+}
+
+.ext-io-strip small {
+  flex: 1 1 300px;
+  min-width: 240px;
+  line-height: 1.5;
+  color: #7a8189;
+}
+
+.ext-panel {
+  padding: 10px 12px;
+  margin-bottom: 10px;
+  border: 1px solid var(--line, #d8d8d8);
+  border-radius: 10px;
+  background: var(--panel, #fff);
+}
+
+.ext-panel h4 {
+  margin: 0 0 8px;
+  font-size: 12px;
+  font-weight: 650;
+  color: var(--muted, #59636d);
+}
+
+.ext-panel h4 span {
+  margin-left: 5px;
+  font-weight: 500;
+  color: #8a9098;
+}
+
+.ext-run-list {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.ext-run {
+  padding: 7px 9px;
+  border: 1px solid #e4e8ed;
+  border-radius: 8px;
+  background: #fbfcfd;
+}
+
+.ext-run-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin-bottom: 6px;
+  font-size: 10px;
+  color: var(--muted, #7a8189);
+}
+
+.ext-run-head b {
+  display: inline-grid;
+  place-items: center;
+  min-width: 28px;
+  padding: 1px 5px;
+  border-radius: 5px;
+  background: #eef2f6;
+  color: #3f4852;
+  font-size: 11px;
+}
+
+.ext-run-head .is-done {
+  color: #3d8f63;
+}
+
+.ext-run-track,
+.ext-chip-row,
+.ext-bucket {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  min-height: 34px;
+}
+
+.ext-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 7px;
+  border: 1px solid var(--line, #d8d8d8);
+  border-radius: 7px;
+  background: #f7f8fa;
+  color: var(--ink, #1f2328);
+  font-size: 11px;
+  transition: opacity 120ms ease;
+}
+
+.ext-chip strong {
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.ext-id {
+  color: #7a8189;
+  font-size: 9px;
+}
+
+.ext-order {
+  display: inline-grid;
+  place-items: center;
+  min-width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: #e7ebe4;
+  color: #52604a;
+  font-size: 9px;
+}
+
+.ext-chip.is-consumed {
+  opacity: 0.52;
+  border-style: dashed;
+  background: #f8f9fa;
+}
+
+.ext-chip.is-unread {
+  color: #7d858e;
+}
+
+.ext-chip.is-buffered {
+  border-color: #9fb2d0;
+  background: #f1f5fb;
+}
+
+.ext-chip.is-current,
+.ext-chip.is-run-head {
+  border-color: #c98218;
+  background: #fff4df;
+  box-shadow: 0 0 0 1px #c98218 inset;
+}
+
+.ext-chip.is-done {
+  opacity: 0.45;
+  border-style: dashed;
+  text-decoration: line-through;
+}
+
+.ext-chip.is-output,
+.ext-chip.is-output-buffer,
+.ext-chip.is-completed,
+.ext-chip.is-current-run {
+  border-color: #3d8f63;
+  background: #edf8f1;
+}
+
+.ext-chip.is-eligible {
+  border-color: #3d8f63;
+  background: #edf8f1;
+}
+
+.ext-chip.is-frozen {
+  border-color: #b0663f;
+  background: #fbeee8;
+}
+
+.ext-chip.is-current-run-new {
+  box-shadow: 0 0 0 2px #3d8f63 inset;
+}
+
+.ext-merge-row,
+.ext-replacement-main {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) auto minmax(220px, 0.85fr);
+  align-items: stretch;
+  gap: 8px;
+}
+
+.ext-merge-row > .ext-panel,
+.ext-replacement-main > .ext-panel {
+  margin-bottom: 10px;
+}
+
+.ext-candidates {
+  min-height: 110px;
+}
+
+.ext-candidate {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  min-width: 52px;
+  padding: 5px 7px;
+  border: 1px solid #d8dee6;
+  border-radius: 8px;
+  background: #f5f7fa;
+}
+
+.ext-candidate > span {
+  font-size: 9px;
+  color: #7a8189;
+}
+
+.ext-candidate strong {
+  font-size: 16px;
+  font-variant-numeric: tabular-nums;
+}
+
+.ext-candidate small {
+  color: #8a9098;
+  font-size: 9px;
+}
+
+.ext-candidate.is-winner {
+  border-color: #c98218;
+  background: #fff4df;
+  box-shadow: 0 0 0 1px #c98218 inset;
+}
+
+.ext-flow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-width: 74px;
+  margin-bottom: 10px;
+  color: var(--muted, #59636d);
+  font-size: 9px;
+  text-align: center;
+}
+
+.ext-flow b {
+  font-size: 20px;
+  line-height: 1;
+  color: #c98218;
+}
+
+.ext-bucket {
+  min-height: 46px;
+  padding: 5px;
+  border: 1px dashed #cfd6de;
+  border-radius: 8px;
+  background: #fbfcfd;
+}
+
+.ext-slot {
+  display: inline-grid;
+  place-items: center;
+  min-width: 42px;
+  height: 30px;
+  padding: 0 5px;
+  border-radius: 6px;
+  font-size: 10px;
+}
+
+.ext-slot.is-empty {
+  border: 1px dashed #d9dde2;
+  color: #adb3ba;
+}
+
+.ext-note {
+  margin: 6px 0 0;
+  font-size: 10px;
+  line-height: 1.55;
+  color: #7a8189;
+}
+
+.ext-empty {
+  color: #9aa1a9;
+  font-size: 11px;
+}
+
+.ext-input-tape {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  min-height: 46px;
+  padding: 6px;
+  border: 1px solid #e4e8ed;
+  border-radius: 8px;
+  background: repeating-linear-gradient(180deg, #fbfcfd, #fbfcfd 26px, #f5f7fa 26px, #f5f7fa 52px);
+}
+
+.ext-tape-record {
+  position: relative;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+  padding: 4px 7px;
+  border: 1px solid #d8dee6;
+  border-radius: 5px;
+  background: #fff;
+  opacity: 0.72;
+}
+
+.ext-tape-record b {
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.ext-tape-record small {
+  color: #8a9098;
+  font-size: 9px;
+}
+
+.ext-tape-record.is-eligible {
+  border-color: #3d8f63;
+  background: #edf8f1;
+  opacity: 1;
+}
+
+.ext-tape-record.is-frozen {
+  border-color: #b0663f;
+  background: #fbeee8;
+  opacity: 1;
+}
+
+.ext-tape-record.is-current-run,
+.ext-tape-record.is-completed {
+  border-color: #a8b8ac;
+  background: #f1f5f2;
+  opacity: 0.55;
+}
+
+.ext-input-progress {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 7px;
+  font-size: 9px;
+  color: #8a9098;
+}
+
+.ext-progress-line {
+  flex: 1;
+  height: 4px;
+  overflow: hidden;
+  border-radius: 4px;
+  background: #eceff3;
+}
+
+.ext-progress-line i {
+  display: block;
+  height: 100%;
+  background: #8fa8c4;
+}
+
+.ext-workspace {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.ext-workspace-slot {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  min-width: 74px;
+  min-height: 82px;
+  padding: 8px 6px 5px;
+  border: 1px solid #dfe4ea;
+  border-radius: 8px;
+  background: #fafbfc;
+}
+
+.ext-slot-index {
+  position: absolute;
+  top: 3px;
+  left: 5px;
+  color: #a8afb7;
+  font-size: 8px;
+}
+
+.ext-workspace-slot > small {
+  margin-top: auto;
+  font-size: 9px;
+  color: #8a9098;
+}
+
+.ext-workspace-slot .ext-chip {
+  min-width: 52px;
+  justify-content: center;
+  margin-top: 7px;
+}
+
+.ext-runs-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.ext-finished-run {
+  padding: 7px 9px;
+  border: 1px solid #e4e8ed;
+  border-radius: 8px;
+  background: #fbfcfd;
+}
+
+.ext-finished-run .ext-run-head {
+  margin-bottom: 5px;
+}
+
+.ext-finished-run .ext-run-head b {
+  background: #e9f2ec;
+  color: #346b4d;
+}
+
+.ext-optimal-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(250px, 0.42fr);
+  gap: 8px;
+  align-items: start;
+}
+
+.ext-optimal-grid > .ext-panel {
+  margin-bottom: 10px;
+}
+
+.ext-tree-scroll {
+  overflow-x: auto;
+  overflow-y: auto;
+  max-height: 440px;
+}
+
+.ext-tree {
+  display: block;
+  width: 100%;
+  min-width: 640px;
+  height: auto;
+  max-height: 430px;
+}
+
+.ext-tree line {
+  stroke: #c7ccd2;
+  stroke-width: 1.4;
+}
+
+.ext-tree line.is-selected {
+  stroke: #c98218;
+  stroke-width: 2.2;
+}
+
+.ext-node rect {
+  fill: #fff;
+  stroke: #c7ccd2;
+  stroke-width: 1.4;
+}
+
+.ext-node text {
+  text-anchor: middle;
+  fill: #1f2328;
+}
+
+.ext-node-weight {
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.ext-node-id {
+  font-size: 9px;
+  fill: #7a8189;
+}
+
+.ext-node-badge {
+  font-size: 7px;
+  fill: #b0663f;
+}
+
+.ext-node.is-leaf rect {
+  fill: #f5f9ff;
+  stroke: #a8bcd6;
+}
+
+.ext-node.is-internal rect {
+  fill: #fffaf0;
+  stroke: #c9a567;
+}
+
+.ext-node.is-virtual rect {
+  fill: #fbeee8;
+  stroke: #b0663f;
+  stroke-dasharray: 4 3;
+}
+
+.ext-node.is-selected rect {
+  fill: #fff0d2;
+  stroke: #c98218;
+  stroke-width: 2.4;
+}
+
+.ext-node.is-new rect {
+  fill: #edf8f1;
+  stroke: #3d8f63;
+  stroke-width: 2.4;
+}
+
+.ext-tree-roots {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  font-size: 9px;
+  color: #8a9098;
+}
+
+.ext-tree-roots b {
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: #f0f2f5;
+  color: #555d66;
+  font-size: 9px;
+}
+
+.ext-cost-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.ext-cost-selected > span {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 9px;
+  color: #8a9098;
+}
+
+.ext-cost-numbers {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 5px;
+  margin-top: 9px;
+}
+
+.ext-cost-numbers > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px 7px;
+  border-radius: 6px;
+  background: #f5f7fa;
+}
+
+.ext-cost-numbers span {
+  font-size: 8px;
+  color: #7a8189;
+}
+
+.ext-cost-numbers strong {
+  font-size: 15px;
+  font-variant-numeric: tabular-nums;
+}
+
+.ext-cost-numbers > div:nth-child(2) {
+  background: #fff4df;
+}
+
+.ext-cost-numbers > div:nth-child(2) strong {
+  color: #9c650f;
+}
+
+.ext-weight-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.ext-weight-chip {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+  padding: 4px 6px;
+  border: 1px solid #dfe4ea;
+  border-radius: 6px;
+  background: #f9fafb;
+}
+
+.ext-weight-chip strong {
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+.ext-weight-chip small {
+  color: #8a9098;
+  font-size: 8px;
+}
+
+.ext-virtual-note {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-top: 8px;
+  padding: 7px 8px;
+  border-left: 3px solid #b0663f;
+  border-radius: 0 6px 6px 0;
+  background: #fbeee8;
+  font-size: 9px;
+  line-height: 1.5;
+  color: #7e4a33;
+}
+
+.sort10-legend-item.is-consumed::before {
+  border-color: #b9bec4;
+  background: #f0f1f2;
+}
+
+.sort10-legend-item.is-buffered::before {
+  border-color: #9fb2d0;
+  background: #f1f5fb;
+}
+
+.sort10-legend-item.is-winner::before,
+.sort10-legend-item.is-eligible::before,
+.sort10-legend-item.is-completed::before {
+  border-color: #3d8f63;
+  background: #edf8f1;
+}
+
+.sort10-legend-item.is-frozen::before {
+  border-color: #b0663f;
+  background: #fbeee8;
+}
+
+/* Input editor for the three external-sorting courses. */
+.external-input-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.guided-external-runs {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--muted, #59636d);
+}
+
+.guided-external-runs > span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.guided-external-runs small {
+  font-size: 9px;
+  color: #8a9098;
+  font-variant-numeric: tabular-nums;
+}
+
+.external-runs-input {
+  width: 100%;
+  min-height: 78px;
+  resize: vertical;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  line-height: 1.55;
+}
+
+.guided-field-grid .external-input-editor .guided-field {
+  min-width: 0;
+}
+
+/* Static theory diagrams. */
+.external-concept-svg {
+  min-width: 860px;
+}
+
+.external-arrow-head {
+  fill: var(--accent, #3e6db5);
+}
+
+.external-frozen-chip {
+  fill: #fbeee8 !important;
+  stroke: #b0663f !important;
+}
+
+@media (max-width: 900px) {
+  .ext-merge-row,
+  .ext-replacement-main,
+  .ext-optimal-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .ext-flow {
+    flex-direction: row;
+    gap: 8px;
+    min-height: 20px;
+    margin: 0 0 8px;
+  }
+
+  .ext-flow b {
+    transform: rotate(90deg);
+  }
+}

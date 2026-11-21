@@ -273,7 +273,9 @@ export function useLabController(): LabController {
         ? 'js'
         : id === 'stack' || id === 'queue' || id === 'linked' || id === 'doubly' || id === 'circular' || id === 'seqlist' || id === 'inorder' || id === 'threaded-inorder' || id === 'bst' || id === 'avl' || id === 'btree' || id === 'block-search' || id === 'bplus-tree' || id === 'key-tree' || id === 'heap' || id === 'huffman' || id === 'selection' || id === 'insertion' || id === 'shell' || id === 'quick' || id === 'merge' || id === 'tournament' || id === 'radix' || id === 'linear' || id === 'binary' || id === 'hash-chain' || id === 'hash-probe' || id === 'kmp' || id === 'bf' || id === 'gl-depth' || id === 'gl-copy' || id === 'sparse-transpose' || id === 'static-linked-list' || id === 'polynomial-add' || id === 'factorial' || id === 'fib' || id === 'free-list' || id === 'buddy-system' || id === 'garbage-collection' || isGraphAlgorithm(id)
           ? 'python'
-          : codeLang;
+          : id === 'multiway' || id === 'replacement' || id === 'optimal-merge'
+            ? 'python'
+            : codeLang;
     if (preferredLang !== codeLang) {
       setCodeLangState(preferredLang);
       safeSet(CODE_LANG_KEY, preferredLang);

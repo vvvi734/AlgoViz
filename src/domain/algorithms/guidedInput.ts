@@ -135,6 +135,14 @@ import {
   randomSearchDraft,
   searchDraftFromInput,
 } from './searchInput';
+import {
+  EXTERNAL_SORT_GUIDED_INPUT_ALGORITHMS,
+  EXTERNAL_SORT_RANDOM_SCENARIOS,
+  buildExternalSortInput,
+  externalDraftFromInput,
+  isExternalSortGuidedInputAlgorithm,
+  randomExternalDraft,
+} from './externalSortInput';
 
 export { isStructureGuidedInputAlgorithm } from './structureInput';
 export { isSparseGuidedInputAlgorithm } from './sparseInput';
@@ -142,7 +150,9 @@ export { isRecursionGuidedInputAlgorithm } from './recursionInput';
 export { isExpressionGuidedInputAlgorithm } from './expressionInput';
 export { isGeneralizedListGuidedInputAlgorithm } from './generalizedListInput';
 export { isSearchGuidedInputAlgorithm } from './searchInput';
+export { isExternalSortGuidedInputAlgorithm } from './externalSortInput';
 export type { SearchGuidedInputAlgorithm } from './searchInput';
+export type { ExternalSortGuidedInputAlgorithm, ExternalSortInputFields } from './externalSortInput';
 export type { ExpressionGuidedInputAlgorithm } from './expressionInput';
 export type {
   GeneralizedListGuidedInputAlgorithm,
@@ -220,6 +230,7 @@ export const GUIDED_INPUT_ALGORITHMS = [
   BUDDY_GUIDED_INPUT,
   GARBAGE_COLLECTION_GUIDED_INPUT,
   ...SEARCH_GUIDED_INPUT_ALGORITHMS,
+  ...EXTERNAL_SORT_GUIDED_INPUT_ALGORITHMS,
 ] as const;
 export type GuidedInputAlgorithm = (typeof GUIDED_INPUT_ALGORITHMS)[number];
 
@@ -308,6 +319,9 @@ export const GUIDED_INPUT_LANGUAGE: Record<GuidedInputAlgorithm, CodeLanguage> =
   'block-search': 'python',
   'bplus-tree': 'python',
   'key-tree': 'python',
+  multiway: 'python',
+  replacement: 'python',
+  'optimal-merge': 'python',
 };
 
 export interface GuidedInputDraft {
@@ -356,6 +370,15 @@ export interface GuidedInputDraft {
   end?: string;
   /** TEXTBOOK-09 indexed sequential block size. */
   blockSize?: string;
+  /** TEXTBOOK-11 external-sorting runs, fan-in, buffers and segment weights. */
+  external?: {
+    runs: string;
+    k: string;
+    bufferCapacity: string;
+    blockSize: string;
+    weights: string;
+    workspaceCapacity: string;
+  };
 }
 
 export interface GuidedInputError {
@@ -520,6 +543,7 @@ const RANDOM_SCENARIOS: Record<GuidedInputAlgorithm, readonly GuidedRandomScenar
   'buddy-system': BUDDY_RANDOM_SCENARIOS,
   'garbage-collection': GARBAGE_RANDOM_SCENARIOS,
   ...SEARCH_RANDOM_SCENARIOS,
+  ...EXTERNAL_SORT_RANDOM_SCENARIOS,
 };
 
 export function isGuidedInputAlgorithm(id: string): id is GuidedInputAlgorithm {
@@ -711,6 +735,9 @@ function formatHashOperations(input: unknown): string {
 }
 
 export function guidedDraftFromInput(id: GuidedInputAlgorithm, input: unknown): GuidedInputDraft {
+  if (isExternalSortGuidedInputAlgorithm(id)) {
+    return externalDraftFromInput(id, input);
+  }
   if (isExpressionGuidedInputAlgorithm(id)) {
     return { ...EMPTY_DRAFT, text: expressionDraftFromInput(input) };
   }
@@ -796,6 +823,9 @@ export function guidedDraftFromInput(id: GuidedInputAlgorithm, input: unknown): 
 }
 
 export function buildGuidedInput(id: GuidedInputAlgorithm, draft: GuidedInputDraft): GuidedBuildResult {
+  if (isExternalSortGuidedInputAlgorithm(id)) {
+    return buildExternalSortInput(id, draft);
+  }
   if (isExpressionGuidedInputAlgorithm(id)) {
     return buildExpressionInput(id, draft.text);
   }
@@ -1253,6 +1283,9 @@ export function randomGuidedDraft(
   scenario: string,
   random: () => number = Math.random,
 ): GuidedInputDraft {
+  if (isExternalSortGuidedInputAlgorithm(id)) {
+    return randomExternalDraft(id, scenario, random);
+  }
   if (isExpressionGuidedInputAlgorithm(id)) {
     return { ...EMPTY_DRAFT, text: randomExpressionDraft(id, scenario, random) };
   }

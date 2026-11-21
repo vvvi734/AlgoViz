@@ -25,6 +25,9 @@ import { buddySnapshotSchema } from './buddySchema';
 import { gcSnapshotSchema } from './gcSchema';
 import { tournamentSnapshotSchema } from './tournamentSchema';
 import { radixSnapshotSchema } from './radixSchema';
+import { multiwaySnapshotSchema } from './multiwaySchema';
+import { replacementSnapshotSchema } from './replacementSchema';
+import { optimalSnapshotSchema } from './optimalMergeSchema';
 import { blockSearchSnapshotSchema } from './blockSearchSchema';
 import { bplusSnapshotSchema } from './bplusSchema';
 import { keyTreeSnapshotSchema } from './keyTreeSchema';
@@ -8351,6 +8354,9 @@ export const structureSchema = z.union([
   keyTreeSnapshotSchema,
   tournamentSnapshotSchema,
   radixSnapshotSchema,
+  multiwaySnapshotSchema,
+  replacementSnapshotSchema,
+  optimalSnapshotSchema,
 ]);
 export type AnyStructureSnapshot = z.infer<typeof structureSchema>;
 

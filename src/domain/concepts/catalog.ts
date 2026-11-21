@@ -5,6 +5,7 @@ import { GRAPH_STORAGE_CONCEPT_PAGES } from './graphStorageConcepts';
 import { GRAPH_CONNECTIVITY_CONCEPT_PAGES } from './graphConnectivityConcepts';
 import { DYNAMIC_STORAGE_CONCEPT_PAGES } from './dynamicStorageConcepts';
 import { SEARCH_CONCEPT_PAGES } from './searchConcepts';
+import { EXTERNAL_SORT_CONCEPT_PAGES } from './externalSortConcepts';
 
 /**
  * Authored concept lessons.
@@ -3101,6 +3102,7 @@ export const CONCEPT_PAGES: readonly ConceptPage[] = [
   ...GRAPH_CONNECTIVITY_CONCEPT_PAGES,
   ...DYNAMIC_STORAGE_CONCEPT_PAGES,
   ...SEARCH_CONCEPT_PAGES,
+  ...EXTERNAL_SORT_CONCEPT_PAGES,
 ];
 
 const BY_ID = new Map(CONCEPT_PAGES.map((page) => [page.id, page]));

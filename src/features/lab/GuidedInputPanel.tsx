@@ -13,6 +13,12 @@ import type { TreeGuidedInputAlgorithm } from '../../domain/algorithms/treeInput
 import type { GraphGuidedInputAlgorithm, GraphInputFields } from '../../domain/algorithms/graphInput';
 import type { SparseInputFields } from '../../domain/algorithms/sparseInput';
 import {
+  isExternalSortGuidedInputAlgorithm,
+  type ExternalSortGuidedInputAlgorithm,
+  type ExternalSortInputFields,
+} from '../../domain/algorithms/externalSortInput';
+import { ExternalSortInputEditor } from './ExternalSortInputEditor';
+import {
   buildGuidedInput,
   defaultGuidedScenario,
   guidedDraftFromInput,
@@ -121,6 +127,10 @@ const GRAPH_HINT_KEYS: Record<GraphGuidedInputAlgorithm, string> = {
 };
 
 function hintKeyFor(id: GuidedInputAlgorithm): string {
+  if (isExternalSortGuidedInputAlgorithm(id)) {
+    if (id === 'multiway') return 'guidedMultiwayHint';
+    return id === 'replacement' ? 'guidedReplacementHint' : 'guidedOptimalHint';
+  }
   if (isSearchGuidedInputAlgorithm(id)) {
     if (id === 'block-search') return 'guidedBlockSearchHint';
     if (id === 'bplus-tree') return 'guidedBplusHint';
@@ -327,6 +337,13 @@ export function GuidedInputPanel({ lab }: { lab: LabController }) {
     setRandomFilled(false);
   };
 
+  const setExternal = (external: ExternalSortInputFields) => {
+    setDraft((current) => ({ ...current, external }));
+    setMode('custom');
+    setIssue(null);
+    setRandomFilled(false);
+  };
+
   const loadOfficial = () => {
     const official = defaultInputFor(id);
     setMode('official');
@@ -455,6 +472,15 @@ export function GuidedInputPanel({ lab }: { lab: LabController }) {
           </label>
         ) : null}
       </div>
+
+      {isExternalSortGuidedInputAlgorithm(id) ? (
+        <ExternalSortInputEditor
+          algorithm={id as ExternalSortGuidedInputAlgorithm}
+          draft={draft}
+          onChange={setExternal}
+          onValuesChange={(value) => setField('values', value)}
+        />
+      ) : null}
 
       {isExpressionGuidedInputAlgorithm(id) ? (
         <ExpressionInputEditor
