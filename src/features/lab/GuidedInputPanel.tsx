@@ -94,6 +94,7 @@ const GRAPH_HINT_KEYS: Record<GraphGuidedInputAlgorithm, string> = {
   dfs: 'graphHintDfs',
   components: 'graphHintComponents',
   scc: 'graphHintScc',
+  articulation: 'graphHintArticulation',
   dijkstra: 'graphHintDijkstra',
   'floyd-warshall': 'graphHintFloyd',
   'bellman-ford': 'graphHintBellman',

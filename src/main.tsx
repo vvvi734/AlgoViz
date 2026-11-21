@@ -16,6 +16,7 @@ import './styles/g1.css';
 import './styles/g2.css';
 import './styles/g3.css';
 import './styles/g4.css';
+import './styles/ap.css';
 import './styles/t1.css';
 import './styles/t2.css';
 import './styles/ux01.css';

@@ -35,12 +35,13 @@ function officialInput(id: GraphGuidedInputAlgorithm): unknown {
 }
 
 describe('INPUT-06 shared graph input', () => {
-  it('registers all eleven graph lessons with their existing limits', () => {
+  it('registers all twelve graph lessons with their existing limits', () => {
     expect([...GRAPH_GUIDED_INPUT_ALGORITHMS]).toEqual([
       'bfs',
       'dfs',
       'components',
       'scc',
+      'articulation',
       'dijkstra',
       'floyd-warshall',
       'bellman-ford',
@@ -52,6 +53,7 @@ describe('INPUT-06 shared graph input', () => {
     expect(graphAlgorithmSpec('bfs')?.direction).toBe('optional');
     expect(graphAlgorithmSpec('components')?.direction).toBe('undirected');
     expect(graphAlgorithmSpec('scc')?.direction).toBe('directed');
+    expect(graphAlgorithmSpec('articulation')?.direction).toBe('undirected');
     expect(graphAlgorithmSpec('floyd-warshall')?.maxNodes).toBe(7);
     expect(graphAlgorithmSpec('prim')?.maxNodes).toBe(10);
     expect(graphAlgorithmSpec('critical-path')?.requireDag).toBe(true);
@@ -367,7 +369,8 @@ describe('INPUT-06 shared graph input', () => {
   it('exposes concise scenario choices and a stable default per algorithm', () => {
     for (const id of GRAPH_GUIDED_INPUT_ALGORITHMS) {
       expect(GRAPH_RANDOM_SCENARIOS[id].length).toBeGreaterThanOrEqual(2);
-      expect(GRAPH_RANDOM_SCENARIOS[id].length).toBeLessThanOrEqual(3);
+      const max = id === 'articulation' ? 6 : 3;
+      expect(GRAPH_RANDOM_SCENARIOS[id].length).toBeLessThanOrEqual(max);
       expect(defaultGraphScenario(id)).toBe(GRAPH_RANDOM_SCENARIOS[id][0]!.id);
     }
     expect(GRAPH_RANDOM_SCENARIOS['bellman-ford'].map((scenario) => scenario.id)).toEqual([

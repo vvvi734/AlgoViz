@@ -17,6 +17,7 @@ const nonLegacyIds = new Set([
   'gl-depth',
   'gl-copy',
   'threaded-inorder',
+  'articulation',
 ]);
 const legacyIds = Object.keys(catalog).filter((id) => !nonLegacyIds.has(id));
 
@@ -28,7 +29,7 @@ function visualFrames(code: string, input: unknown): TraceFrame[] {
 
 describe('algorithm catalogue (35 legacy presets plus real-trace additions)', () => {
   it('keeps all legacy presets and adds the real-trace additions', () => {
-    expect(algorithmIds()).toHaveLength(45);
+    expect(algorithmIds()).toHaveLength(46);
     expect(legacyIds).toHaveLength(35);
     expect(Object.keys(expected)).toHaveLength(35);
     expect(catalog.kmp.time).toBe('O(n + m)');

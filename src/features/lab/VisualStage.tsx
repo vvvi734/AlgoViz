@@ -31,6 +31,11 @@ import { BellmanFordVisual, FloydVisual } from './G1Visuals';
 import { KruskalVisual, PrimVisual } from './MSTVisuals';
 import { CriticalPathVisual, TopologicalSortVisual } from './DAGVisuals';
 import { ConnectedComponentsVisual, KosarajuVisual } from './ComponentVisuals';
+import {
+  ARTICULATION_HINT_KEYS,
+  ARTICULATION_OPERATION_KEYS,
+  ArticulationVisual,
+} from './ArticulationVisuals';
 import { BstVisual } from './BstVisual';
 import { AvlVisual } from './AvlVisual';
 import { BTreeVisual } from './BTreeVisual';
@@ -50,6 +55,7 @@ import type { HashVisualModel } from '../../domain/visualization/hashModel';
 import type { KruskalVisualModel, PrimVisualModel } from '../../domain/visualization/mstModel';
 import type { CriticalVisualModel, TopologicalVisualModel } from '../../domain/visualization/dagModel';
 import type { ConnectedComponentsVisualModel, SccVisualModel } from '../../domain/visualization/componentsModel';
+import type { ArticulationVisualModel } from '../../domain/visualization/articulationModel';
 import type { BstVisualModel } from '../../domain/visualization/bstModel';
 import type { AvlVisualModel } from '../../domain/visualization/avlModel';
 import type { BTreeVisualModel } from '../../domain/visualization/btreeModel';
@@ -529,6 +535,15 @@ export function VisualStage({
       content = (
         <KosarajuVisual
           model={model as SccVisualModel}
+        />
+      );
+      break;
+    case 'articulation':
+      content = (
+        <ArticulationVisual
+          model={model as ArticulationVisualModel}
+          operationText={t(ARTICULATION_OPERATION_KEYS[model.operation])}
+          hint={t(ARTICULATION_HINT_KEYS[model.operation])}
         />
       );
       break;

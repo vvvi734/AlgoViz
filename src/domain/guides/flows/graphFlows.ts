@@ -719,7 +719,83 @@ const SCC_FLOW: AlgorithmFlow = {
   ],
 };
 
+const ARTICULATION_FLOW: AlgorithmFlow = {
+  algorithmId: 'articulation',
+  sections: [
+    flowSection(
+      'main',
+      ['主流程：扫描所有未访问顶点', 'Main flow: scan every unseen vertex'],
+      ['每次选择一个未访问顶点作为新 DFS 树的根，根的孩子数单独统计。一次 DFS 完成后继续扫描，覆盖非连通图。', 'Choose each unseen vertex as the root of a new DFS tree; count its children separately. Continue scanning after one DFS to cover disconnected graphs.'],
+      [
+        start('ap-main-start', '开始：寻找关节点', 'Start: find articulation points'),
+        flowNode('ap-main-init', 'operation', 1, 0, ['把发现时间、low 和各类边集合都清空', 'Clear discovery times, low values and edge sets']),
+        flowNode('ap-main-loop', 'decision', 2, 0, ['还有未访问的顶点吗？', 'Any unseen vertex left?']),
+        flowEnd('ap-main-done', 2, 1, 'success', ['输出全部关节点与桥', 'Return all cut vertices and bridges']),
+        flowNode('ap-main-root', 'operation', 3, 0, ['选下一个未访问顶点作为新根，并清零根孩子数', 'Choose the next unseen vertex as a new root and reset its child count']),
+        flowNode('ap-main-call', 'subflow', 4, 0, ['进入这个根的深度优先搜索', 'Enter the depth-first search from this root']),
+      ],
+      [
+        flowEdge('ap-main-start', 'ap-main-init'),
+        flowEdge('ap-main-init', 'ap-main-loop'),
+        flowEdge('ap-main-loop', 'ap-main-done', 'no'),
+        flowEdge('ap-main-loop', 'ap-main-root', 'yes'),
+        flowEdge('ap-main-root', 'ap-main-call'),
+        loopEdge('ap-main-call', 'ap-main-loop', ['继续扫描下一个未访问顶点', 'Scan for the next unseen vertex']),
+      ],
+    ),
+    flowSection(
+      'dfs',
+      ['子流程：dfs(u, root) 与 low 回传', 'Subflow: dfs(u, root) and low propagation'],
+      ['进入 u 时写入 disc/low 并压栈；逐条检查邻边。未发现邻点形成树边并递归，返回后回传 low、判关节点与桥；已发现且 disc[v] < disc[u] 的非父邻点形成返祖边。根在全部邻边检查完后用孩子数单独判定。', 'On entering u, write disc/low and push. Inspect incident edges: an unseen neighbour creates a tree edge and recurses; after return, propagate low and test cut/bridge. A discovered non-parent neighbour with disc[v] < disc[u] forms a back edge. After all edges, the root applies its child-count test.'],
+      [
+        start('ap-dfs-start', '开始：进入当前顶点', 'Start: enter the current vertex'),
+        flowNode('ap-dfs-init', 'operation', 1, 0, ['发现时间加一，low 设为当前时间，并把顶点压栈', 'Increment discovery time, set low to it and push the vertex']),
+        flowNode('ap-dfs-loop', 'decision', 2, 0, ['还有邻接点要检查吗？', 'Any neighbour left to inspect?']),
+        flowNode('ap-dfs-inspect', 'operation', 3, 0, ['检查当前顶点与邻点的这条边', 'Inspect the edge to this neighbour']),
+        flowNode('ap-dfs-unseen', 'decision', 4, 0, ['这个邻点还没被发现吗？', 'Is this neighbour still unseen?']),
+        flowNode('ap-dfs-tree', 'operation', 5, 0, ['把邻点记为树孩子，先记录树边再递归', 'Mark the neighbour as a tree child, record the edge and recurse']),
+        flowNode('ap-dfs-return', 'operation', 6, 0, ['子节点返回后，用它的 low 更新当前顶点', 'After the child returns, lower the current low with the child’s low']),
+        flowNode('ap-dfs-cut', 'decision', 7, 0, ['当前顶点非根，且有树孩子的 low 不早于它的发现时间吗？', 'Is the current vertex non-root with a tree child whose low is not earlier than its discovery time?']),
+        flowNode('ap-dfs-mark-cut', 'operation', 8, 1, ['把当前顶点加入关节点集合', 'Add the current vertex to the cut set']),
+        flowNode('ap-dfs-bridge', 'decision', 9, 0, ['这个树孩子的 low 严格晚于当前顶点的发现时间吗？', 'Is the tree child’s low strictly later than the current discovery time?']),
+        flowNode('ap-dfs-mark-bridge', 'operation', 10, 1, ['把这条树边加入桥集合', 'Add this tree edge to the bridge set']),
+        flowNode('ap-dfs-back-check', 'decision', 11, 1, ['这个已发现邻点不是父节点，而且发现时间更早吗？', 'Is this discovered neighbour a non-parent with an earlier discovery time?']),
+        flowNode('ap-dfs-back', 'operation', 12, 1, ['记录返祖边，并用邻点的发现时间更新 low', 'Record the back edge and lower low with the neighbour’s discovery time']),
+        flowNode('ap-dfs-root-check', 'decision', 13, 1, ['当前顶点是这棵 DFS 树的根吗？', 'Is the current vertex the root of this DFS tree?']),
+        flowNode('ap-dfs-root', 'operation', 14, 0, ['根至少有两个树孩子时，把它加入关节点集合', 'Add the root to the cut set only when it has at least two tree children']),
+        flowNode('ap-dfs-pop', 'operation', 15, 0, ['当前顶点完成，弹出递归栈', 'Finish the current vertex and pop the recursion stack']),
+        flowEnd('ap-dfs-end', 16, 0, 'success', ['返回上一层调用', 'Return to the caller']),
+      ],
+      [
+        flowEdge('ap-dfs-start', 'ap-dfs-init'),
+        flowEdge('ap-dfs-init', 'ap-dfs-loop'),
+        flowEdge('ap-dfs-loop', 'ap-dfs-inspect', 'yes'),
+        flowEdge('ap-dfs-loop', 'ap-dfs-root-check', 'no'),
+        flowEdge('ap-dfs-inspect', 'ap-dfs-unseen'),
+        flowEdge('ap-dfs-unseen', 'ap-dfs-tree', 'yes'),
+        flowEdge('ap-dfs-tree', 'ap-dfs-return'),
+        flowEdge('ap-dfs-return', 'ap-dfs-cut'),
+        flowEdge('ap-dfs-cut', 'ap-dfs-mark-cut', 'yes'),
+        flowEdge('ap-dfs-cut', 'ap-dfs-bridge', 'no'),
+        flowEdge('ap-dfs-mark-cut', 'ap-dfs-bridge'),
+        flowEdge('ap-dfs-bridge', 'ap-dfs-mark-bridge', 'yes'),
+        loopEdge('ap-dfs-bridge', 'ap-dfs-loop', ['没有桥，回到邻边循环', 'No bridge; return to the edge loop'], 'no'),
+        loopEdge('ap-dfs-mark-bridge', 'ap-dfs-loop', ['记录桥后回到邻边循环', 'After recording the bridge, return to the edge loop']),
+        flowEdge('ap-dfs-unseen', 'ap-dfs-back-check', 'no'),
+        flowEdge('ap-dfs-back-check', 'ap-dfs-back', 'yes'),
+        loopEdge('ap-dfs-back', 'ap-dfs-loop', ['返祖边处理完，回到邻边循环', 'After the back edge, return to the edge loop']),
+        loopEdge('ap-dfs-back-check', 'ap-dfs-loop', ['不是返祖边，回到邻边循环', 'Not a back edge; return to the edge loop'], 'no'),
+        flowEdge('ap-dfs-root-check', 'ap-dfs-root', 'yes'),
+        flowEdge('ap-dfs-root-check', 'ap-dfs-pop', 'no'),
+        flowEdge('ap-dfs-root', 'ap-dfs-pop'),
+        flowEdge('ap-dfs-pop', 'ap-dfs-end'),
+      ],
+    ),
+  ],
+};
+
 export const GRAPH_FLOWS = {
+
   bfs: BFS_FLOW,
   dfs: DFS_FLOW,
   dijkstra: DIJKSTRA_FLOW,
@@ -730,6 +806,7 @@ export const GRAPH_FLOWS = {
   'critical-path': CRITICAL_PATH_FLOW,
   components: COMPONENTS_FLOW,
   scc: SCC_FLOW,
+  articulation: ARTICULATION_FLOW,
 } satisfies Record<string, AlgorithmFlow>;
 
 export type GraphFlowId = keyof typeof GRAPH_FLOWS;

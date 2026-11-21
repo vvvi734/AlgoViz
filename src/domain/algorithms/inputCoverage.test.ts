@@ -29,9 +29,9 @@ describe('RECUR-01 dynamic algorithm input coverage', () => {
   it('registers every dynamic algorithm exactly once as guided input', () => {
     const ids = algorithmIds();
     const guided = new Set<string>(GUIDED_INPUT_ALGORITHMS);
-    expect(ids).toHaveLength(45);
+    expect(ids).toHaveLength(46);
     expect(guided.size).toBe(GUIDED_INPUT_ALGORITHMS.length);
-    expect(guided.size).toBe(45);
+    expect(guided.size).toBe(46);
     for (const id of ids) expect(guided.has(id), id).toBe(true);
   });
 

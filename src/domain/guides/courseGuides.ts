@@ -852,6 +852,39 @@ export const COURSE_GUIDES: Record<string, CourseGuide> = {
     diagram: 'kosaraju',
   },
 
+  articulation: {
+    intro: text(
+      '关节点问题问的是“删掉哪个顶点会让连通分量变多”。朴素做法对每个顶点删除后重新数一遍连通分量，代价 O(V(V+E))。DFS low-link 把发现时间 disc 与子树最早可回溯时间 low 一次算完：非根顶点若有树孩子满足 low[child] ≥ disc[u]，删去 u 就会切断这棵子树；根没有祖先，只能看 DFS 树孩子数是否至少为 2。同一遍 DFS 还能用严格不等式 low[child] > disc[u] 找出桥。',
+      'The articulation-point problem asks which vertex deletion increases the component count. The naive method deletes each vertex and recounts components, costing O(V(V+E)). DFS low-link computes discovery time disc and the subtree’s earliest reachable time low in one pass: a non-root u is a cut vertex when a tree child satisfies low[child] ≥ disc[u], because deleting u separates that subtree. The root has no ancestor, so only its number of DFS tree children matters, with at least two required. The same pass finds bridges with the strict inequality low[child] > disc[u].',
+    ),
+    definition: text(
+      '无向图的关节点是删除它及其关联边后连通分量数增加的顶点；桥是删除后连通分量数增加的边。点双连通分量是不含自身关节点的极大子图，桥本身是一个含两个顶点的特殊块。',
+      'An articulation point of an undirected graph is a vertex whose deletion, together with its incident edges, increases the number of connected components; a bridge is an edge whose deletion does so. A vertex-biconnected component is a maximal subgraph with no internal articulation vertex, and a bridge is a special two-vertex block of its own.',
+    ),
+    ...algorithm(
+      step('记录发现时间并初始化 low', 'Record discovery time and initialise low', '进入顶点时 disc 递增，low 先等于自己的 disc。', 'On entry, disc increments and low starts equal to the vertex’s own disc.'),
+      step('扫描每个未访问顶点', 'Scan every unseen vertex', '非连通图要对每个未访问顶点重新开一棵 DFS 树。', 'A disconnected graph restarts a DFS tree at every unseen vertex.'),
+      step('分类树边与返祖边', 'Classify tree and back edges', '未发现邻点形成树边并递归；指向祖先的非父边才降低 low。', 'An unseen neighbour forms a tree edge and recurses; only a non-parent edge to an ancestor lowers low.'),
+      step('回传 low 并判非根关节点', 'Propagate low and test non-root cuts', '子节点返回后取 low 的较小值，再比较 low[child] ≥ disc[u]。', 'After a child returns, take the smaller low and compare low[child] ≥ disc[u].'),
+      step('用严格不等式判桥', 'Test bridges with the strict inequality', 'low[child] > disc[u] 才说明子树连 u 都回不到。', 'Only low[child] > disc[u] means the subtree cannot even return to u.'),
+      step('根节点单独数孩子', 'Count root children separately', '根至少有两个 DFS 树孩子才是关节点。', 'The root needs at least two DFS tree children to be a cut vertex.'),
+    ),
+    conditions: list(
+      [
+        '只适用于无向图；有向图应使用强连通分量或其它结构。',
+        '非连通图必须对每个未访问顶点重新启动 DFS。',
+        '非根关节点用 low[child] ≥ disc[u]，桥用严格 low[child] > disc[u]。',
+        '根节点不能套用 low 判据，只能数 DFS 树孩子。',
+      ],
+      [
+        'Only for undirected graphs; directed graphs need SCCs or another structure.',
+        'A disconnected graph must restart DFS at every unseen vertex.',
+        'Non-root cuts use low[child] ≥ disc[u]; bridges use the strict low[child] > disc[u].',
+        'The root never uses the low test; count its DFS tree children instead.',
+      ],
+    ),
+  },
+
   linear: {
     intro: text(
       '在无序数组中，元素位置与值没有关系，无法根据大小跳过候选。顺序查找从索引 0 开始逐个比较，命中就返回下标，全部检查完仍未命中则返回 −1。它实现最简单、对数据没有排序要求，但最坏需要 O(n) 次比较。',

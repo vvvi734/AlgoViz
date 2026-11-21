@@ -1,0 +1,184 @@
+/* TEXTBOOK-07 articulation-point stage. Edge class and node state are always
+   printed as text or a table value; colour is only a secondary cue. */
+
+.ap-stage .mst-graph-svg {
+  max-height: 360px;
+}
+
+.ap-edge {
+  stroke: var(--graph-line);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  transition: stroke 120ms ease, stroke-width 120ms ease, opacity 120ms ease;
+}
+
+.ap-edge.is-tree {
+  stroke: var(--accent);
+  stroke-width: 2.4;
+  opacity: 0.9;
+}
+
+.ap-edge.is-back {
+  stroke: var(--accent-2);
+  stroke-width: 2.2;
+  stroke-dasharray: 7 4;
+  opacity: 0.95;
+}
+
+.ap-edge.is-bridge {
+  stroke: var(--red);
+  stroke-width: 3.6;
+  opacity: 1;
+}
+
+.ap-edge.is-current {
+  filter: drop-shadow(0 0 3px var(--warn));
+}
+
+.ap-node .mst-node-body {
+  transition: fill 120ms ease, stroke 120ms ease;
+}
+
+.ap-node.is-undiscovered .mst-node-body {
+  fill: var(--graph-node);
+  stroke: var(--graph-node-edge);
+  opacity: 0.62;
+}
+
+.ap-node.is-discovered .mst-node-body {
+  fill: color-mix(in srgb, var(--accent) 16%, var(--panel));
+  stroke: var(--accent);
+  stroke-width: 1.8;
+}
+
+.ap-node.is-finished .mst-node-body {
+  fill: var(--panel);
+  stroke: var(--muted);
+  stroke-width: 1.6;
+}
+
+.ap-node.is-cut .mst-node-body {
+  fill: color-mix(in srgb, var(--red) 11%, var(--panel));
+}
+
+.ap-node.is-cut .mst-node-ring {
+  stroke: var(--red);
+  stroke-width: 2.8;
+  stroke-dasharray: 3 3;
+  opacity: 1;
+}
+
+.ap-node.is-current .mst-node-ring {
+  stroke: var(--warn);
+  stroke-width: 3.4;
+  filter: drop-shadow(0 0 5px var(--warn));
+}
+
+.ap-node.is-root .mst-node-ring {
+  stroke-dasharray: none;
+}
+
+.ap-node-role {
+  fill: var(--accent-2);
+  font: 900 var(--font-ui)/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+  letter-spacing: 0.06em;
+}
+
+.ap-cut-badge circle {
+  fill: var(--note-bg);
+  stroke: var(--red);
+  stroke-width: 1.5;
+}
+
+.ap-cut-badge text {
+  fill: var(--red);
+  font: 900 var(--font-ui)/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+
+.ap-disc-low rect {
+  fill: var(--panel-2);
+  stroke: var(--edge);
+  stroke-width: 1;
+  opacity: 0.94;
+}
+
+.ap-disc-low text {
+  fill: var(--txt);
+  font: 750 10px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+
+.ap-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  padding: 8px 12px 2px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.ap-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ap-legend i {
+  display: inline-block;
+  width: 24px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--graph-line);
+}
+
+.ap-legend i.is-tree { background: var(--accent); }
+.ap-legend i.is-back { background: var(--accent-2); }
+.ap-legend i.is-bridge { background: var(--red); }
+.ap-legend i.is-cut {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px dashed var(--red);
+  background: transparent;
+}
+
+.ap-current-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  padding: 4px 0 2px;
+}
+
+.ap-current-grid > div {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.ap-current-grid span {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.ap-current-grid b {
+  color: var(--txt);
+  font: 800 13px/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
+  overflow-wrap: anywhere;
+}
+
+.ap-decision {
+  margin-top: 8px;
+  padding: 7px 9px;
+  border-left: 3px solid var(--accent);
+  background: var(--note-bg);
+  color: var(--txt);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.ap-table code {
+  color: var(--accent-2);
+}
+
+.ap-stage .mst-result strong {
+  overflow-wrap: anywhere;
+}

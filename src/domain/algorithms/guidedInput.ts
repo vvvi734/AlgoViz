@@ -223,6 +223,7 @@ export const GUIDED_INPUT_LANGUAGE: Record<GuidedInputAlgorithm, CodeLanguage> =
   dfs: 'python',
   components: 'python',
   scc: 'python',
+  articulation: 'python',
   dijkstra: 'python',
   'floyd-warshall': 'python',
   'bellman-ford': 'python',

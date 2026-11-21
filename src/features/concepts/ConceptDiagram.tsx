@@ -1,6 +1,7 @@
 import type { Lang } from '../../i18n/types';
 import type { ConceptDiagramKind } from '../../domain/concepts/types';
 import { StorageConceptDiagram } from './StorageConceptDiagram';
+import { GraphStorageDiagram } from './GraphStorageDiagram';
 import { StringIndexDiagram } from './StringIndexDiagram';
 import { ArrayMemoryDiagram } from './ArrayMemoryDiagram';
 import {
@@ -34,6 +35,17 @@ export function ConceptDiagram({ kind, lang }: { kind: ConceptDiagramKind; lang:
 
   if (kind === 'multivariate-polynomial') {
     return <MultivariatePolynomialDiagram lang={lang} />;
+  }
+
+  if (
+    kind === 'graph-adjacency-matrix' ||
+    kind === 'graph-adjacency-list' ||
+    kind === 'graph-orthogonal-list' ||
+    kind === 'graph-adjacency-multilist' ||
+    kind === 'graph-storage-comparison' ||
+    kind === 'articulation-basics'
+  ) {
+    return <GraphStorageDiagram kind={kind} lang={lang} />;
   }
 
   if (kind === 'algorithm-properties') {

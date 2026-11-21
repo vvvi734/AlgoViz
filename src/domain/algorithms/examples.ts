@@ -10,6 +10,7 @@ import {
 import { SPARSE_TRANSPOSE_ENTRY } from './sparseTransposeExamples';
 import { POLYNOMIAL_ADD_ENTRY, STATIC_LINKED_ENTRY } from './chapter2Examples';
 import { THREADED_INORDER_ENTRY } from './threadedTreeExamples';
+import { ARTICULATION_ENTRY } from './articulationExamples';
 import { structureDefaultInput, structurePythonExample } from './structureExamples';
 import {
   INFIX_TO_POSTFIX_ENTRY,
@@ -31,6 +32,7 @@ export const catalog: AlgorithmCatalog = {
   'threaded-inorder': THREADED_INORDER_ENTRY,
   'infix-to-postfix': INFIX_TO_POSTFIX_ENTRY,
   'postfix-eval': POSTFIX_EVAL_ENTRY,
+  articulation: ARTICULATION_ENTRY,
 };
 
 export const algorithmIds = (): string[] => Object.keys(catalog);

@@ -202,6 +202,24 @@
   stroke-dasharray: 4 4;
 }
 
+/* Storage-table chapter: one-row/column wash plus a dashed ring for cut vertices. */
+.diagram-row-band {
+  fill: var(--note-bg);
+  stroke: none;
+  opacity: 0.55;
+}
+
+.diagram-cut-ring {
+  fill: none;
+  stroke: var(--red);
+  stroke-width: 2.2;
+  stroke-dasharray: 4 4;
+}
+
+.diagram-pointer-dot {
+  fill: var(--accent);
+}
+
 .diagram-pointer-front {
   fill: var(--warn);
   font-size: 12px;

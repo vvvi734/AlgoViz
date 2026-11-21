@@ -1,6 +1,8 @@
 import type { ConceptPage } from './types';
 import { STORAGE_CONCEPT_PAGES } from './storageConcepts';
 import { GENERALIZED_LIST_CONCEPT_PAGES } from './generalizedListConcepts';
+import { GRAPH_STORAGE_CONCEPT_PAGES } from './graphStorageConcepts';
+import { GRAPH_CONNECTIVITY_CONCEPT_PAGES } from './graphConnectivityConcepts';
 
 /**
  * Authored concept lessons.
@@ -492,20 +494,32 @@ const BASE_CONCEPT_PAGES: readonly ConceptPage[] = [
         text: ['边有方向为有向图，边无方向为无向图。', 'Edges with direction form a directed graph; otherwise it is undirected.'],
       },
       {
-        term: ['度', 'Degree'],
-        text: ['无向图中与顶点相连的边数；有向图分为入度和出度。', 'In an undirected graph, the number of incident edges; directed graphs have in-degree and out-degree.'],
+        term: ['度、入度与出度', 'Degree, in-degree and out-degree'],
+        text: [
+          '无向图中与顶点相连的边数称为度；有向图把度拆成入度（以该顶点为终点的弧数）和出度（以该顶点为起点的弧数）。',
+          'In an undirected graph, degree is the number of incident edges. A directed graph splits it into in-degree (arcs ending at the vertex) and out-degree (arcs starting there).',
+        ],
       },
       {
-        term: ['路径与回路', 'Path and cycle'],
-        text: ['路径是顶点和边的交替序列；起点与终点相同的路径是回路。', 'A path alternates vertices and edges; a path whose endpoints coincide is a cycle.'],
+        term: ['路径、简单路径与回路', 'Path, simple path and cycle'],
+        text: [
+          '路径是顶点和边的交替序列；顶点不重复的路径是简单路径；起点与终点相同的路径是回路。',
+          'A path alternates vertices and edges; a simple path repeats no vertex; a path whose endpoints coincide is a cycle.',
+        ],
       },
       {
         term: ['连通图与连通分量', 'Connected graph and component'],
-        text: ['任意两顶点间都有路径为连通图；无向图的极大连通子图是连通分量。', 'A graph is connected if every pair has a path; a maximal connected subgraph is a component.'],
+        text: [
+          '任意两顶点间都有路径为连通图；无向图的极大连通子图是连通分量。有向图则区分强连通与强连通分量。',
+          'A graph is connected if every pair has a path; a maximal connected subgraph is a component. Directed graphs instead distinguish strong connectivity and strongly connected components.',
+        ],
       },
       {
-        term: ['生成树', 'Spanning tree'],
-        text: ['连通无向图的一个极小连通子图，含全部 n 个顶点和 n−1 条边。', 'A minimal connected subgraph of a connected undirected graph: all n vertices and n−1 edges.'],
+        term: ['生成树与生成森林', 'Spanning tree and forest'],
+        text: [
+          '连通无向图的一个极小连通子图，含全部 n 个顶点和 n−1 条边，称为生成树；非连通图的每个连通分量各取一棵生成树，合起来是生成森林。',
+          'A minimal connected subgraph of a connected undirected graph, with all n vertices and n−1 edges, is a spanning tree. Taking one tree per component of a disconnected graph yields a spanning forest.',
+        ],
       },
     ],
     sections: [
@@ -538,6 +552,21 @@ const BASE_CONCEPT_PAGES: readonly ConceptPage[] = [
         points: [
           ['有 n 个顶点、少于 n−1 条边的无向图一定不连通。', 'An undirected graph with n vertices and fewer than n−1 edges cannot be connected.'],
           ['树是无环连通图；加一条边必产生回路，删一条边必断开。', 'A tree is a connected acyclic graph; adding an edge creates a cycle, removing one disconnects it.'],
+        ],
+      },
+      {
+        title: ['容易混淆的几组概念', 'Terms that are easy to confuse'],
+        body: [
+          '图论术语之间不是同义替换：完全图说的是边数达到上限，稠密图只是相对说法；强连通只对有向图有意义；生成森林也不是“很多棵彼此相连的树”。下面的对照帮助先把概念边界划清。',
+          'Graph terminology is not interchangeable: a complete graph hits the maximum edge count, while “dense” is only relative; strong connectivity applies to directed graphs; a spanning forest is not a set of connected trees. The contrasts below delimit the ideas.',
+        ],
+        points: [
+          ['完全图：简单无向图任意两顶点间都有边，边数为 n(n−1)/2；简单有向图若任意有序对都有弧，边数为 n(n−1)。', 'Complete graph: a simple undirected graph with an edge between every pair has n(n−1)/2 edges; a simple directed graph with every ordered pair has n(n−1) arcs.'],
+          ['稀疏图与稠密图：按 e 相对 n² 的大小粗略划分，没有绝对阈值。', 'Sparse and dense: a rough comparison of e with n², with no absolute threshold.'],
+          ['强连通：有向图中任意两顶点双向可达；其极大强连通子图是强连通分量。', 'Strongly connected: every pair is mutually reachable in a directed graph; its maximal strongly connected subgraph is an SCC.'],
+          ['网：带权图；权值可以表示距离、代价、时间等，但算法必须先明确“无边”和“零权边”的区分。', 'Network: a weighted graph. Weights may represent distance, cost or time, but the algorithm must distinguish “no edge” from “zero-weight edge”.'],
+          ['DAG：有向无环图；它一定有拓扑序列，但不一定强连通。', 'DAG: a directed acyclic graph. It always has a topological order but need not be strongly connected.'],
+          ['生成森林：非连通无向图中，每个连通分量各有一棵生成树，合起来覆盖全部顶点。', 'Spanning forest: in a disconnected undirected graph, each component contributes one spanning tree, together covering every vertex.'],
         ],
       },
     ],
@@ -871,107 +900,6 @@ const BASE_CONCEPT_PAGES: readonly ConceptPage[] = [
       ],
     },
     takeaway: ['线性表先看逻辑顺序，再看存储代价；位置合法性是操作的第一道检查。', 'Start with logical order, then storage cost; validate positions before every operation.'],
-  },
-  {
-    id: 'graph-storage',
-    topicId: 'graph-storage',
-    title: ['图的存储：邻接矩阵与邻接表', 'Graph storage: matrix and adjacency list'],
-    chapter: ['第 7 章 · 图', 'Chapter 7 · Graphs'],
-    summary: [
-      '同一个图可以用邻接矩阵或邻接表存储。矩阵用空间换 O(1) 的边查询，邻接表按实际边数分配空间，更适合稀疏图。',
-      'A graph can be stored as an adjacency matrix or an adjacency list. The matrix trades space for O(1) edge lookup; the list allocates by actual edges and suits sparse graphs.',
-    ],
-    diagram: 'graph-storage',
-    definitions: [
-      {
-        term: ['邻接矩阵', 'Adjacency matrix'],
-        text: ['用 n×n 矩阵 A 表示顶点之间的边；A[i][j] 记录 i 到 j 是否有边或边权。', 'An n×n matrix A records whether there is an edge from i to j, or its weight.'],
-      },
-      {
-        term: ['邻接表', 'Adjacency list'],
-        text: ['为每个顶点维护一个边表，表中每个结点记录一个相邻顶点及其边权。', 'Each vertex owns an edge list; every entry records an adjacent vertex and its weight.'],
-      },
-      {
-        term: ['边结点', 'Edge node'],
-        text: ['邻接表中的一个表项，通常保存邻接点编号、权值和下一个边结点的指针。', 'An entry in an adjacency list, usually storing the neighbour id, weight and a pointer to the next entry.'],
-      },
-      {
-        term: ['稀疏图与稠密图', 'Sparse and dense graphs'],
-        text: ['边数远小于 n² 为稀疏图；边数接近 n² 为稠密图。', 'A graph with far fewer than n² edges is sparse; one close to n² is dense.'],
-      },
-    ],
-    sections: [
-      {
-        title: ['邻接矩阵：二维表格', 'Adjacency matrix: a two-dimensional table'],
-        body: [
-          '无向图的邻接矩阵关于主对角线对称，因为 (u, v) 和 (v, u) 是同一条边；有向图通常不对称。带权图把 1 换成权值，并用 0 或 ∞ 表示没有边（具体取值取决于算法）。',
-          'An undirected graph has a symmetric adjacency matrix because (u, v) and (v, u) are the same edge; a directed graph need not be symmetric. A weighted graph stores weights instead of 1 and uses 0 or ∞ for “no edge”, depending on the algorithm.',
-        ],
-        points: [
-          ['空间固定为 O(n²)，与边数无关。', 'Space is O(n²), independent of the edge count.'],
-          ['判断 (i, j) 是否有边只需一次矩阵访问，O(1)。', 'Testing edge (i, j) takes one matrix access, O(1).'],
-          ['枚举 i 的所有邻接点要扫描整行，O(n)。', 'Listing all neighbours of i scans a full row, O(n).'],
-          ['适合稠密图和需要频繁判断两点是否相邻的场景。', 'Suits dense graphs and frequent adjacency tests.'],
-        ],
-        formula: 'A[i][j] = 1（或权值）表示 <i, j> ∈ E；否则为 0 或 ∞',
-      },
-      {
-        title: ['邻接表：按边分配', 'Adjacency list: allocate by edges'],
-        body: [
-          '邻接表有 n 个顶点表项，每个表项指向一条边链表。有向图通常只存出边；无向图的一条边会在两个端点的链表中各出现一次，所以边结点数是 2|E|。',
-          'An adjacency list has n vertex entries, each pointing to an edge list. A directed graph usually stores outgoing arcs only; an undirected edge appears in both endpoint lists, so there are 2|E| edge nodes.',
-        ],
-        points: [
-          ['空间为 O(n + e)，e 是边或弧的数目；无向图常写作 O(n + 2e)。', 'Space is O(n + e), where e counts edges or arcs; for undirected graphs it is often written O(n + 2e).'],
-          ['判断 (u, v) 是否有边要遍历 u 的边表，最坏 O(deg(u))。', 'Testing edge (u, v) scans u’s list, worst case O(deg(u)).'],
-          ['枚举 u 的邻接点只需走它的边表，代价与度数成正比。', 'Listing u’s neighbours walks its edge list, proportional to its degree.'],
-          ['适合稀疏图以及 BFS、DFS 等需要反复枚举邻接点的算法。', 'Suits sparse graphs and BFS/DFS, which repeatedly enumerate neighbours.'],
-        ],
-      },
-      {
-        title: ['怎样选择', 'How to choose'],
-        body: [
-          '先估计 n 和 e 的量级：若 e 接近 n²，矩阵的固定空间可以接受，且边查询更快；若 e 远小于 n²，邻接表避免大量空单元。实际还要看是否需要频繁判断任意两点相邻，以及是否要按顶点编号稳定输出。',
-          'Estimate n and e first. If e is close to n², the matrix’s fixed space is acceptable and edge lookup is faster. If e is far below n², an adjacency list avoids many empty cells. Also consider whether arbitrary adjacency tests dominate and whether stable vertex-order output matters.',
-        ],
-        points: [
-          ['稠密图、频繁查边：邻接矩阵。', 'Dense graph, frequent edge tests: adjacency matrix.'],
-          ['稀疏图、频繁遍历邻接点：邻接表。', 'Sparse graph, frequent neighbour scans: adjacency list.'],
-          ['两种表示都能支持 BFS/DFS，但枚举邻接点的代价不同。', 'Both support BFS/DFS, but neighbour enumeration costs differ.'],
-        ],
-      },
-    ],
-    comparison: {
-      title: ['邻接矩阵与邻接表', 'Adjacency matrix vs adjacency list'],
-      columns: [
-        ['比较项', 'Aspect'],
-        ['邻接矩阵', 'Adjacency matrix'],
-        ['邻接表', 'Adjacency list'],
-      ],
-      rows: [
-        [
-          ['空间', 'Space'],
-          ['O(n²)', 'O(n²)'],
-          ['O(n + e)', 'O(n + e)'],
-        ],
-        [
-          ['判断边 (u, v)', 'Test edge (u, v)'],
-          ['O(1)', 'O(1)'],
-          ['O(deg(u))', 'O(deg(u))'],
-        ],
-        [
-          ['枚举 u 的邻接点', 'List neighbours of u'],
-          ['O(n)', 'O(n)'],
-          ['O(deg(u))', 'O(deg(u))'],
-        ],
-        [
-          ['适用场景', 'Best for'],
-          ['稠密图、频繁查边', 'Dense graphs, frequent edge tests'],
-          ['稀疏图、频繁遍历', 'Sparse graphs, frequent scans'],
-        ],
-      ],
-    },
-    takeaway: ['矩阵看两点，邻接表看邻居；稠密选矩阵，稀疏选表。', 'A matrix asks “are these two adjacent?”; a list asks “who are the neighbours?”.'],
   },
   {
     id: 'sorting-basics',
@@ -2970,6 +2898,8 @@ export const CONCEPT_PAGES: readonly ConceptPage[] = [
   ...BASE_CONCEPT_PAGES,
   ...STORAGE_CONCEPT_PAGES,
   ...GENERALIZED_LIST_CONCEPT_PAGES,
+  ...GRAPH_STORAGE_CONCEPT_PAGES,
+  ...GRAPH_CONNECTIVITY_CONCEPT_PAGES,
 ];
 
 const BY_ID = new Map(CONCEPT_PAGES.map((page) => [page.id, page]));

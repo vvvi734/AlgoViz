@@ -37,6 +37,7 @@ import { topologicalSortLesson } from './topologicalSortLesson';
 import { criticalPathLesson } from './criticalPathLesson';
 import { connectedComponentsLesson } from './connectedComponentsLesson';
 import { stronglyConnectedComponentsLesson } from './stronglyConnectedComponentsLesson';
+import { articulationLesson } from './articulationLesson';
 import { linearSearchLesson } from './linearSearchLesson';
 import { binarySearchLesson } from './binarySearchLesson';
 import { hashChainingLesson } from './hashChainingLesson';
@@ -113,6 +114,7 @@ const BUNDLED: unknown[] = [
   criticalPathLesson,
   connectedComponentsLesson,
   stronglyConnectedComponentsLesson,
+  articulationLesson,
   linearSearchLesson,
   binarySearchLesson,
   hashChainingLesson,

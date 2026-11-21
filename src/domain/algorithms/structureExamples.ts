@@ -53,6 +53,10 @@ import {
   kosarajuPythonExample,
 } from './componentExamples';
 import {
+  ARTICULATION_DEFAULT_INPUT,
+  ARTICULATION_PYTHON,
+} from './articulationExamples';
+import {
   HEAP_DEFAULT_INPUT,
   HEAP_PYTHON,
 } from './heapExamples';
@@ -411,6 +415,7 @@ const STRUCTURE_PYTHON: Record<string, string> = {
   'critical-path': criticalPathPythonExample(),
   components: connectedComponentsPythonExample(),
   scc: kosarajuPythonExample(),
+  articulation: ARTICULATION_PYTHON,
   heap: HEAP_PYTHON,
   huffman: HUFFMAN_PYTHON,
   selection: SORTING_PYTHON.selection,
@@ -455,6 +460,7 @@ const STRUCTURE_INPUT: Record<string, unknown> = {
   'critical-path': CRITICAL_PATH_DEFAULT_INPUT,
   components: CONNECTED_COMPONENTS_DEFAULT_INPUT,
   scc: SCC_DEFAULT_INPUT,
+  articulation: ARTICULATION_DEFAULT_INPUT,
   heap: HEAP_DEFAULT_INPUT,
   huffman: HUFFMAN_DEFAULT_INPUT,
   selection: SELECTION_DEFAULT_INPUT,

@@ -25,6 +25,10 @@ import {
   type ConnectedComponentsVisualModel,
   type SccVisualModel,
 } from './componentsModel';
+import {
+  buildArticulationVisualModel,
+  type ArticulationVisualModel,
+} from './articulationModel';
 import { buildHeapModel, type HeapVisualModel } from './heapModel';
 import { buildHuffmanModel, type HuffmanVisualModel } from './huffmanModel';
 import { buildSortingModel, type SortingVisualModel } from './sortingModel';
@@ -163,6 +167,7 @@ export type VisualModel =
   | CriticalVisualModel
   | ConnectedComponentsVisualModel
   | SccVisualModel
+  | ArticulationVisualModel
   | { kind: 'graph'; edges: Array<[number, number]>; nodes: GraphNodeModel[]; isTree: boolean }
   | { kind: 'raw'; text: string };
 
@@ -504,6 +509,11 @@ export function buildVisualModel(
   if (structure !== undefined && structure.kind === 'kosaraju') {
     if (kind !== 'graph') return { kind: 'raw', text: labels.invalid };
     return buildKosarajuVisualModel(structure);
+  }
+
+  if (structure !== undefined && structure.kind === 'articulation') {
+    if (kind !== 'graph') return { kind: 'raw', text: labels.invalid };
+    return buildArticulationVisualModel(structure);
   }
 
   if (structure !== undefined && (structure.kind === 'doubly-linked-list' || structure.kind === 'circular-linked-list')) {

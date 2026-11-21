@@ -408,6 +408,13 @@ export const REFERENCE_CODE: Record<string, ReferenceEntry> = {
       python: { fileName: 'scc.py' },
     },
   },
+  articulation: {
+    files: {
+      c: { fileName: 'articulation.c' },
+      cpp: { fileName: 'articulation.cpp' },
+      python: { fileName: 'articulation.py' },
+    },
+  },
   linear: {
     files: {
       c: { fileName: 'linear_search.c' },

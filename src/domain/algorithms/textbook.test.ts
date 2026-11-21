@@ -56,7 +56,7 @@ describe('textbook directory after TEXTBOOK-01', () => {
 
   it('preserves every existing algorithm exactly once in its new primary home', () => {
     const ids = textbookAlgorithmIds(nav);
-    expect(ids).toHaveLength(45);
+    expect(ids).toHaveLength(46);
     expect(new Set(ids).size).toBe(ids.length);
     expect(new Set(ids)).toEqual(new Set(Object.keys(catalog)));
   });
@@ -73,7 +73,7 @@ describe('textbook directory after TEXTBOOK-01', () => {
       ]),
     );
     const conceptRows = rows.filter(({ row }) => row.conceptId);
-    expect(CONCEPT_PAGES).toHaveLength(32);
+    expect(CONCEPT_PAGES).toHaveLength(37);
     expect(conceptRows.map(({ row }) => row.conceptId).sort()).toEqual(
       CONCEPT_PAGES.map((page) => page.id).sort(),
     );
@@ -173,7 +173,7 @@ describe('textbook directory after TEXTBOOK-01', () => {
 
   it('keeps graph order aligned with the book: connectivity, MST, DAG, shortest paths', () => {
     const graph = nav.find((chapter) => chapter.id === 'ch7-graph')!;
-    expect(graph.algorithmCount).toBe(11);
+    expect(graph.algorithmCount).toBe(12);
     expect(graph.topics.map((topic) => topic.id)).toEqual([
       'graph-basics',
       'graph-storage',

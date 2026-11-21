@@ -12,6 +12,7 @@ export const GRAPH_GUIDED_INPUT_ALGORITHMS = [
   'dfs',
   'components',
   'scc',
+  'articulation',
   'dijkstra',
   'floyd-warshall',
   'bellman-ford',
@@ -94,6 +95,18 @@ const SPECS: Record<GraphGuidedInputAlgorithm, GraphAlgorithmSpec> = {
     needsTarget: false,
     maxNodes: 12,
     maxEdges: 20,
+    requireDag: false,
+  },
+  articulation: {
+    id: 'articulation',
+    direction: 'undirected',
+    weighted: false,
+    weightKind: 'none',
+    weightLabel: 'weight',
+    needsStart: false,
+    needsTarget: false,
+    maxNodes: 10,
+    maxEdges: 16,
     requireDag: false,
   },
   dijkstra: {
@@ -441,7 +454,7 @@ export function buildGraphInput(id: GraphGuidedInputAlgorithm, draft: GraphInput
   if (id === 'bfs' || id === 'dfs') {
     return { ok: true, input: { start, nodes, edges: plainEdges, directed } };
   }
-  if (id === 'components' || id === 'scc') {
+  if (id === 'components' || id === 'scc' || id === 'articulation') {
     return { ok: true, input: { nodes, edges: plainEdges } };
   }
   if (id === 'dijkstra' || id === 'floyd-warshall' || id === 'bellman-ford') {
@@ -813,6 +826,72 @@ function aoeAllCritical(random: () => number): GraphInputFields {
   return draft;
 }
 
+function articulationChain(random: () => number): GraphInputFields {
+  const count = randInt(random, 6, 8);
+  const draft = fields(nodeLabels(count), false, '');
+  for (let index = 0; index < count - 1; index += 1) {
+    addEdge(draft, draft.nodes[index]!, draft.nodes[index + 1]!);
+  }
+  return draft;
+}
+
+function articulationRing(random: () => number): GraphInputFields {
+  const count = randInt(random, 5, 8);
+  const draft = fields(nodeLabels(count), false, '');
+  for (let index = 0; index < count; index += 1) {
+    addEdge(draft, draft.nodes[index]!, draft.nodes[(index + 1) % count]!);
+  }
+  return draft;
+}
+
+function articulationBranches(random: () => number): GraphInputFields {
+  const draft = fields(nodeLabels(8), false, '');
+  addEdge(draft, 'A', 'B');
+  addEdge(draft, 'A', 'C');
+  addEdge(draft, 'A', 'D');
+  addEdge(draft, 'B', 'E');
+  addEdge(draft, 'B', 'F');
+  addEdge(draft, 'C', 'G');
+  addEdge(draft, 'C', 'H');
+  void random;
+  return draft;
+}
+
+function articulationBiconnected(random: () => number): GraphInputFields {
+  const draft = fields(nodeLabels(6), false, '');
+  addEdge(draft, 'A', 'B');
+  addEdge(draft, 'B', 'C');
+  addEdge(draft, 'C', 'D');
+  addEdge(draft, 'D', 'E');
+  addEdge(draft, 'E', 'F');
+  addEdge(draft, 'F', 'A');
+  addEdge(draft, 'A', 'C');
+  addEdge(draft, 'C', 'E');
+  addEdge(draft, 'E', 'A');
+  void random;
+  return draft;
+}
+
+function articulationDisconnected(random: () => number): GraphInputFields {
+  const draft = fields(nodeLabels(7), false, '');
+  addEdge(draft, 'A', 'B');
+  addEdge(draft, 'B', 'C');
+  addEdge(draft, 'C', 'A');
+  addEdge(draft, 'D', 'E');
+  addEdge(draft, 'E', 'F');
+  addEdge(draft, 'F', 'D');
+  // G is deliberately isolated so the root scan must continue after both blocks.
+  void random;
+  return draft;
+}
+
+function articulationStar(random: () => number): GraphInputFields {
+  const draft = fields(nodeLabels(7), false, '');
+  for (const leaf of ['B', 'C', 'D', 'E', 'F', 'G']) addEdge(draft, 'A', leaf);
+  void random;
+  return draft;
+}
+
 export const GRAPH_RANDOM_SCENARIOS: Record<
   GraphGuidedInputAlgorithm,
   readonly GraphRandomScenario[]
@@ -835,6 +914,14 @@ export const GRAPH_RANDOM_SCENARIOS: Record<
     { id: 'multiple', label: ['多个强连通分量', 'Multiple SCCs'] },
     { id: 'single', label: ['整体强连通', 'One SCC'] },
     { id: 'dag', label: ['DAG（每个节点单独成 SCC）', 'DAG (singleton SCCs)'] },
+  ],
+  articulation: [
+    { id: 'chain', label: ['链状图', 'Chain'] },
+    { id: 'ring', label: ['环形图', 'Ring'] },
+    { id: 'branches', label: ['多分支连接', 'Branched graph'] },
+    { id: 'biconnected', label: ['无关节点的双连通图', 'Biconnected, no cut vertex'] },
+    { id: 'disconnected', label: ['非连通图（含孤立点）', 'Disconnected with an isolated vertex'] },
+    { id: 'star', label: ['星形图（根节点条件）', 'Star (root condition)'] },
   ],
   dijkstra: [
     { id: 'alternative', label: ['多条候选路径', 'Alternative routes'] },
@@ -893,6 +980,14 @@ export function randomGraphDraft(
     if (scenario === 'single') return sccSingle(random);
     if (scenario === 'dag') return sccDag(random);
     return sccMultiple(random);
+  }
+  if (id === 'articulation') {
+    if (scenario === 'ring') return articulationRing(random);
+    if (scenario === 'branches') return articulationBranches(random);
+    if (scenario === 'biconnected') return articulationBiconnected(random);
+    if (scenario === 'disconnected') return articulationDisconnected(random);
+    if (scenario === 'star') return articulationStar(random);
+    return articulationChain(random);
   }
   if (id === 'dijkstra') {
     if (scenario === 'equal-cost') return dijkstraEqualCost(random);

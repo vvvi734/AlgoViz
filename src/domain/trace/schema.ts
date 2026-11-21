@@ -4913,6 +4913,14 @@ export const KOSARAJU_OPERATIONS = [
 ] as const;
 export type KosarajuOperation = (typeof KOSARAJU_OPERATIONS)[number];
 
+/** TEXTBOOK-07 low-link DFS. The operations name real algorithm transitions. */
+export const ARTICULATION_OPERATIONS = [
+  'init', 'start-root', 'discover', 'inspect-edge', 'tree-edge', 'back-edge', 'update-low', 'cut-vertex', 'bridge', 'root-confirm', 'root-check', 'finish-node', 'done',
+] as const;
+export type ArticulationOperation = (typeof ARTICULATION_OPERATIONS)[number];
+
+const articulationDecisionSchema = z.enum(['non-root-low', 'root-multi-child', 'root-single-child', 'bridge']);
+
 const componentGroupSchema = z.object({
   id: z.number().int().positive().max(GRAPH_LIMITS.MAX_NODES),
   nodeIds: z.array(z.string().min(1).max(LIMITS.MAX_NAME_CHARS)).min(1).max(GRAPH_LIMITS.MAX_NODES),
@@ -5268,6 +5276,172 @@ export const kosarajuSnapshotSchema = z
     }
   });
 export type KosarajuSnapshot = z.infer<typeof kosarajuSnapshotSchema>;
+
+const articulationNodeValueSchema = z.object({
+  nodeId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS),
+  value: z.number().int().nonnegative().max(GRAPH_LIMITS.MAX_NODES),
+});
+
+const articulationParentSchema = z.object({
+  nodeId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS),
+  parentId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+});
+
+/**
+ * The snapshot is one coherent low-link frame. `disc`/`low` are complete node
+ * tables on purpose: a paused frame must never depend on prior frames to know
+ * what the algorithm currently believes.
+ */
+export const articulationSnapshotSchema = z
+  .object({
+    kind: z.literal('articulation'),
+    algorithm: z.literal('articulation'),
+    operation: z.enum(ARTICULATION_OPERATIONS),
+    nodes: z.array(graphNodeSchema).max(GRAPH_LIMITS.MAX_NODES),
+    edges: z.array(graphEdgeSchema).max(GRAPH_LIMITS.MAX_EDGES),
+    directed: z.literal(false),
+    currentNodeId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+    currentEdgeId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+    neighborNodeId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+    rootId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+    parentId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+    rootChildCount: z.number().int().nonnegative().max(GRAPH_LIMITS.MAX_NODES),
+    disc: z.array(articulationNodeValueSchema).max(GRAPH_LIMITS.MAX_NODES),
+    low: z.array(articulationNodeValueSchema).max(GRAPH_LIMITS.MAX_NODES),
+    parents: z.array(articulationParentSchema).max(GRAPH_LIMITS.MAX_NODES),
+    dfsOrder: z.array(z.string().min(1).max(LIMITS.MAX_NAME_CHARS)).max(GRAPH_LIMITS.MAX_NODES),
+    treeEdgeIds: z.array(z.string().min(1).max(LIMITS.MAX_NAME_CHARS)).max(GRAPH_LIMITS.MAX_EDGES),
+    backEdgeIds: z.array(z.string().min(1).max(LIMITS.MAX_NAME_CHARS)).max(GRAPH_LIMITS.MAX_EDGES),
+    articulationIds: z.array(z.string().min(1).max(LIMITS.MAX_NAME_CHARS)).max(GRAPH_LIMITS.MAX_NODES),
+    bridgeIds: z.array(z.string().min(1).max(LIMITS.MAX_NAME_CHARS)).max(GRAPH_LIMITS.MAX_EDGES),
+    frontierItems: z.array(graphFrontierItemSchema).max(GRAPH_LIMITS.MAX_NODES),
+    frontierAdded: graphFrontierItemSchema.nullable(),
+    frontierRemoved: graphFrontierItemSchema.nullable(),
+    decision: articulationDecisionSchema.nullable(),
+  })
+  .superRefine((snapshot, ctx) => {
+    const add = (path: Array<string | number>, message: string) => {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path, message });
+    };
+    const { ids, edgeById } = validateComponentGraph(snapshot, add);
+    const n = snapshot.nodes.length;
+    const edgeIds = new Set(edgeById.keys());
+
+    const checkNode = (path: Array<string | number>, value: string | null) => {
+      if (value !== null && !ids.has(value)) add(path, 'unknown node id');
+    };
+    checkNode(['currentNodeId'], snapshot.currentNodeId);
+    checkNode(['neighborNodeId'], snapshot.neighborNodeId);
+    checkNode(['rootId'], snapshot.rootId);
+    checkNode(['parentId'], snapshot.parentId);
+
+    const checkEdge = (path: Array<string | number>, value: string | null) => {
+      if (value !== null && !edgeIds.has(value)) add(path, 'unknown edge id');
+    };
+    checkEdge(['currentEdgeId'], snapshot.currentEdgeId);
+
+    const valueTable = (
+      path: 'disc' | 'low',
+      records: Array<{ nodeId: string; value: number }>,
+    ): Map<string, number> => {
+      const table = new Map<string, number>();
+      records.forEach((record, index) => {
+        if (!ids.has(record.nodeId)) add([path, index], 'unknown node id');
+        if (table.has(record.nodeId)) add([path, index], 'duplicate node record');
+        table.set(record.nodeId, record.value);
+      });
+      if (records.length !== n) add([path], 'the table must contain exactly one entry per node');
+      return table;
+    };
+    const disc = valueTable('disc', snapshot.disc);
+    const low = valueTable('low', snapshot.low);
+    for (const node of snapshot.nodes) {
+      if (!disc.has(node.id)) add(['disc'], `missing disc for ${node.id}`);
+      if (!low.has(node.id)) add(['low'], `missing low for ${node.id}`);
+      if (disc.get(node.id) === 0 && low.get(node.id) !== 0) {
+        add(['low'], 'an undiscovered node must keep low 0');
+      }
+      if ((disc.get(node.id) ?? 0) > 0 && (low.get(node.id) ?? 0) > (disc.get(node.id) ?? 0)) {
+        add(['low'], 'low cannot exceed disc for a discovered node');
+      }
+    }
+
+    const parents = new Map<string, string | null>();
+    snapshot.parents.forEach((record, index) => {
+      if (!ids.has(record.nodeId)) add(['parents', index], 'unknown node id');
+      if (record.parentId !== null) {
+        if (!ids.has(record.parentId)) add(['parents', index], 'unknown parent id');
+        if (record.parentId === record.nodeId) add(['parents', index], 'a node cannot be its own parent');
+      }
+      if (parents.has(record.nodeId)) add(['parents', index], 'duplicate parent record');
+      if (record.nodeId === snapshot.rootId && record.parentId !== null) {
+        add(['parents', index], 'the root must have a null parent');
+      }
+      parents.set(record.nodeId, record.parentId);
+    });
+    if (snapshot.parents.length !== n) add(['parents'], 'the parent table must contain exactly one entry per node');
+
+    const order = new Set<string>();
+    snapshot.dfsOrder.forEach((id, index) => {
+      if (!ids.has(id)) add(['dfsOrder', index], 'unknown node id');
+      if (order.has(id)) add(['dfsOrder', index], 'discovery order repeats a node');
+      order.add(id);
+      if ((disc.get(id) ?? 0) === 0) add(['dfsOrder', index], 'a node cannot be discovered with disc 0');
+    });
+
+    const tree = new Set<string>();
+    snapshot.treeEdgeIds.forEach((id, index) => {
+      if (!edgeIds.has(id)) add(['treeEdgeIds', index], 'unknown edge id');
+      if (tree.has(id)) add(['treeEdgeIds', index], 'duplicate tree edge');
+      tree.add(id);
+    });
+    const back = new Set<string>();
+    snapshot.backEdgeIds.forEach((id, index) => {
+      if (!edgeIds.has(id)) add(['backEdgeIds', index], 'unknown edge id');
+      if (back.has(id)) add(['backEdgeIds', index], 'duplicate back edge');
+      if (tree.has(id)) add(['backEdgeIds', index], 'an edge cannot be both tree and back');
+      back.add(id);
+    });
+
+    const articulation = new Set<string>();
+    snapshot.articulationIds.forEach((id, index) => {
+      if (!ids.has(id)) add(['articulationIds', index], 'unknown node id');
+      if (articulation.has(id)) add(['articulationIds', index], 'duplicate articulation point');
+      articulation.add(id);
+      if ((disc.get(id) ?? 0) === 0) add(['articulationIds', index], 'an undiscovered node cannot be a cut vertex');
+    });
+
+    const bridges = new Set<string>();
+    snapshot.bridgeIds.forEach((id, index) => {
+      if (!edgeIds.has(id)) add(['bridgeIds', index], 'unknown edge id');
+      if (bridges.has(id)) add(['bridgeIds', index], 'duplicate bridge');
+      if (!tree.has(id)) add(['bridgeIds', index], 'only a DFS tree edge can be a bridge');
+      bridges.add(id);
+    });
+
+    const frontier = new Set<string>();
+    snapshot.frontierItems.forEach((item, index) => {
+      if (!ids.has(item.nodeId)) add(['frontierItems', index], 'unknown node id');
+      if (frontier.has(item.nodeId)) add(['frontierItems', index], 'a node appears twice on the DFS stack');
+      frontier.add(item.nodeId);
+    });
+    if (snapshot.frontierAdded && !frontier.has(snapshot.frontierAdded.nodeId)) {
+      add(['frontierAdded'], 'the added stack entry is absent from the frontier');
+    }
+    if (snapshot.frontierRemoved && frontier.has(snapshot.frontierRemoved.nodeId)) {
+      add(['frontierRemoved'], 'the removed stack entry is still present in the frontier');
+    }
+
+    if (snapshot.rootChildCount > n) add(['rootChildCount'], 'root child count exceeds the node count');
+    if (snapshot.operation === 'init' && snapshot.dfsOrder.length > 0) {
+      add(['dfsOrder'], 'init cannot already have discovered nodes');
+    }
+    if (n === 0 && snapshot.operation !== 'init' && snapshot.operation !== 'done') {
+      add(['operation'], 'an empty graph may only emit init or done');
+    }
+  });
+export type ArticulationSnapshot = z.infer<typeof articulationSnapshotSchema>;
+
 
 /**
  * T3: max-heap snapshots.
@@ -8045,6 +8219,7 @@ export const structureSchema = z.union([
   criticalPathSnapshotSchema,
   connectedComponentsSnapshotSchema,
   kosarajuSnapshotSchema,
+  articulationSnapshotSchema,
 ]);
 export type AnyStructureSnapshot = z.infer<typeof structureSchema>;
 

@@ -244,6 +244,24 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
       zh: "外层只从未访问顶点开启新分量；一次 DFS 会标记该连通分量的全部顶点。",
     },
   ],
+  "articulation.c": [
+    {
+      en: "The cut test is low[child] >= disc[parent]; the bridge test is strict low[child] > disc[parent].",
+      zh: "关节点判据是 low[child] >= disc[parent]；桥判据是严格的 low[child] > disc[parent]。",
+    },
+  ],
+  "articulation.cpp": [
+    {
+      en: "The cut test is low[child] >= disc[parent]; the bridge test is strict low[child] > disc[parent].",
+      zh: "关节点判据是 low[child] >= disc[parent]；桥判据是严格的 low[child] > disc[parent]。",
+    },
+  ],
+  "articulation.py": [
+    {
+      en: "The cut test is low[child] >= disc[parent]; the bridge test is strict low[child] > disc[parent].",
+      zh: "关节点判据是 low[child] >= disc[parent]；桥判据是严格的 low[child] > disc[parent]。",
+    },
+  ],
   "critical_path.c": [
     {
       en: "Forward pass takes the maximum predecessor finish; backward pass the minimum successor start; activity slack is latest(head) - earliest(tail) - weight.",

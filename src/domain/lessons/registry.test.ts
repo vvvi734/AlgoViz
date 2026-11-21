@@ -59,6 +59,7 @@ describe('Lesson registry (Stage 3B)', () => {
       'aoe-critical-path',
       'connected-components-dfs',
       'strongly-connected-components-kosaraju',
+      'articulation-points-low-link',
       'linear-search-basics',
       'binary-search-basics',
       'hash-chaining-basics',
@@ -103,11 +104,11 @@ describe('Lesson registry (Stage 3B)', () => {
     expect(broken.errors.join(' ')).toContain('buble-sort');
   });
 
-  it('covers all 44 algorithms with a validated course', () => {
+  it('covers all 46 algorithms with a validated course', () => {
     const covered = lessonRegistry.lessons.map((lesson) => lesson.algorithmId);
     const uncovered = catalogIds.filter((id) => !covered.includes(id));
-    expect(catalogIds.length).toBe(45);
-    expect(lessonRegistry.lessons.length).toBe(45);
+    expect(catalogIds.length).toBe(46);
+    expect(lessonRegistry.lessons.length).toBe(46);
     expect(uncovered).toEqual([]);
   });
 });

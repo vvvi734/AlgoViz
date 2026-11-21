@@ -45,7 +45,7 @@ import { usePlayback, type Playback } from './usePlayback';
 const CODE_LANG_KEY = 'algolens-code-language';
 
 function isGraphAlgorithm(id: string): boolean {
-  return id === 'bfs' || id === 'dfs' || id === 'dijkstra' || id === 'floyd-warshall' || id === 'bellman-ford' || id === 'prim' || id === 'kruskal' || id === 'topological' || id === 'critical-path' || id === 'components' || id === 'scc';
+  return id === 'bfs' || id === 'dfs' || id === 'dijkstra' || id === 'floyd-warshall' || id === 'bellman-ford' || id === 'prim' || id === 'kruskal' || id === 'topological' || id === 'critical-path' || id === 'components' || id === 'scc' || id === 'articulation';
 }
 
 export interface StatusMessage {
