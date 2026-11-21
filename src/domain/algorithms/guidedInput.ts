@@ -50,13 +50,25 @@ import {
   type GraphGuidedInputAlgorithm,
   type GraphInputFields,
 } from './graphInput';
+import {
+  SPARSE_GUIDED_INPUT,
+  SPARSE_RANDOM_SCENARIOS,
+  buildSparseInput,
+  emptySparseDraft,
+  isSparseGuidedInputAlgorithm,
+  randomSparseDraft,
+  sparseDraftFromInput,
+  type SparseInputFields,
+} from './sparseInput';
 
 export { isStructureGuidedInputAlgorithm } from './structureInput';
+export { isSparseGuidedInputAlgorithm } from './sparseInput';
 export type { StructureOperationDraft, StructureOperationSpec } from './structureInput';
 export type { TreeGuidedInputAlgorithm, TreeInputFields } from './treeInput';
 export type { HeapInputFields, HeapOperation } from './heapInput';
 export type { HuffmanInputFields } from './huffmanInput';
 export type { GraphGuidedInputAlgorithm, GraphInputFields } from './graphInput';
+export type { SparseGuidedInputAlgorithm, SparseInputFields, SparseTripleFields } from './sparseInput';
 
 export const GUIDED_INPUT_ALGORITHMS = [
   'bubble',
@@ -75,6 +87,7 @@ export const GUIDED_INPUT_ALGORITHMS = [
   ...TREE_GUIDED_INPUT_ALGORITHMS,
   HUFFMAN_GUIDED_INPUT,
   ...GRAPH_GUIDED_INPUT_ALGORITHMS,
+  SPARSE_GUIDED_INPUT,
 ] as const;
 export type GuidedInputAlgorithm = (typeof GUIDED_INPUT_ALGORITHMS)[number];
 
@@ -137,6 +150,7 @@ export const GUIDED_INPUT_LANGUAGE: Record<GuidedInputAlgorithm, CodeLanguage> =
   kruskal: 'python',
   topological: 'python',
   'critical-path': 'python',
+  'sparse-transpose': 'python',
 };
 
 export interface GuidedInputDraft {
@@ -161,6 +175,8 @@ export interface GuidedInputDraft {
   symbols: string;
   /** INPUT-06 shared graph node/edge table. */
   graph?: GraphInputFields;
+  /** INPUT-07 sparse matrix shape and row-major non-zero triples. */
+  sparse?: SparseInputFields;
 }
 
 export interface GuidedInputError {
@@ -172,6 +188,8 @@ export interface GuidedInputError {
   edge?: number;
   /** 1-based graph node row. */
   node?: number;
+  /** 1-based sparse triplet row. */
+  triple?: number;
 }
 
 export type GuidedBuildResult =
@@ -190,7 +208,7 @@ export const GUIDED_INPUT_LIMITS = {
   SORT_MAX: 16,
   LINEAR_MAX: 20,
   HASH_TABLE_SIZE: 7,
-  HASH_MAX_OPERATIONS: 16,
+  HASH_MAX_OPERATIONS: 20,
   HASH_KEY_MAX: 99,
   BINARY_MIN: 1,
   BINARY_MAX: 15,
@@ -211,6 +229,7 @@ const EMPTY_DRAFT: GuidedInputDraft = {
   command: '',
   symbols: '',
   graph: emptyGraphDraft(),
+  sparse: emptySparseDraft(),
 };
 
 const SORTING_SCENARIOS: readonly GuidedRandomScenario[] = [
@@ -270,6 +289,7 @@ const RANDOM_SCENARIOS: Record<GuidedInputAlgorithm, readonly GuidedRandomScenar
   ...TREE_RANDOM_SCENARIOS,
   huffman: HUFFMAN_RANDOM_SCENARIOS,
   ...GRAPH_RANDOM_SCENARIOS,
+  ...SPARSE_RANDOM_SCENARIOS,
 };
 
 export function isGuidedInputAlgorithm(id: string): id is GuidedInputAlgorithm {
@@ -460,6 +480,9 @@ export function guidedDraftFromInput(id: GuidedInputAlgorithm, input: unknown): 
   if (isGraphAlgorithmGuidedInput(id)) {
     return { ...EMPTY_DRAFT, graph: graphDraftFromInput(id, input) };
   }
+  if (isSparseGuidedInputAlgorithm(id)) {
+    return { ...EMPTY_DRAFT, sparse: sparseDraftFromInput(input) };
+  }
   if (isStructureGuidedInputAlgorithm(id)) {
     const parts = structureDraftFromInput(id, input);
     return { ...EMPTY_DRAFT, values: parts.values, rows: parts.rows };
@@ -503,6 +526,9 @@ export function guidedDraftFromInput(id: GuidedInputAlgorithm, input: unknown): 
 export function buildGuidedInput(id: GuidedInputAlgorithm, draft: GuidedInputDraft): GuidedBuildResult {
   if (isGraphAlgorithmGuidedInput(id)) {
     return buildGraphInput(id, draft.graph ?? emptyGraphDraft());
+  }
+  if (isSparseGuidedInputAlgorithm(id)) {
+    return buildSparseInput(draft.sparse ?? emptySparseDraft());
   }
   if (isStructureGuidedInputAlgorithm(id)) {
     return buildStructureInput(id, draft);
@@ -807,6 +833,9 @@ export function randomGuidedDraft(
 ): GuidedInputDraft {
   if (isGraphAlgorithmGuidedInput(id)) {
     return { ...EMPTY_DRAFT, graph: randomGraphDraft(id, scenario, random) };
+  }
+  if (isSparseGuidedInputAlgorithm(id)) {
+    return { ...EMPTY_DRAFT, sparse: randomSparseDraft(scenario, random) };
   }
   if (isStructureGuidedInputAlgorithm(id)) {
     return randomStructureDraft(id, scenario, random);

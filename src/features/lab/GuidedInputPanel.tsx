@@ -8,6 +8,7 @@ import { heapPresetFromInput } from '../../domain/algorithms/heapExamples';
 import { huffmanPresetFromInput } from '../../domain/algorithms/huffmanExamples';
 import type { TreeGuidedInputAlgorithm } from '../../domain/algorithms/treeInput';
 import type { GraphGuidedInputAlgorithm, GraphInputFields } from '../../domain/algorithms/graphInput';
+import type { SparseInputFields } from '../../domain/algorithms/sparseInput';
 import {
   buildGuidedInput,
   defaultGuidedScenario,
@@ -22,6 +23,7 @@ import {
   isHuffmanGuidedInputAlgorithm,
   isNumsTargetGuidedInputAlgorithm,
   isStructureGuidedInputAlgorithm,
+  isSparseGuidedInputAlgorithm,
   isTreeGuidedInputAlgorithm,
   randomGuidedDraft,
   type GuidedInputAlgorithm,
@@ -30,6 +32,7 @@ import {
   type GuidedInputMode,
   type GuidedRandomScenario,
 } from '../../domain/algorithms/guidedInput';
+import { emptySparseDraft } from '../../domain/algorithms/sparseInput';
 import type {
   StructureGuidedInputAlgorithm,
   StructureOperationDraft,
@@ -39,6 +42,7 @@ import { TreeInputEditor } from './TreeInputEditor';
 import { HeapInputEditor } from './HeapInputEditor';
 import { HuffmanInputEditor } from './HuffmanInputEditor';
 import { GraphInputEditor } from './GraphInputEditor';
+import { SparseInputEditor } from './SparseInputEditor';
 import type { LabController } from './useLabController';
 
 function parseInput(raw: string): unknown {
@@ -88,6 +92,9 @@ function hintKeyFor(id: GuidedInputAlgorithm): string {
   }
   if (isGraphAlgorithmGuidedInput(id)) {
     return GRAPH_HINT_KEYS[id];
+  }
+  if (isSparseGuidedInputAlgorithm(id)) {
+    return 'sparseHint';
   }
   if (isStructureGuidedInputAlgorithm(id)) {
     return STRUCTURE_HINT_KEYS[id as StructureGuidedInputAlgorithm];
@@ -195,6 +202,13 @@ export function GuidedInputPanel({ lab }: { lab: LabController }) {
     setRandomFilled(false);
   };
 
+  const setSparse = (sparse: SparseInputFields) => {
+    setDraft((current) => ({ ...current, sparse }));
+    setMode('custom');
+    setIssue(null);
+    setRandomFilled(false);
+  };
+
   const loadOfficial = () => {
     setMode('official');
     setIssue(null);
@@ -214,6 +228,9 @@ export function GuidedInputPanel({ lab }: { lab: LabController }) {
 
   const errorText = (error: GuidedInputError) => {
     const text = t(error.key).replace('{max}', String(error.max ?? ''));
+    if (error.triple !== undefined) {
+      return `${t('sparseTripleRowError').replace('{row}', String(error.triple))} ${text}`;
+    }
     if (error.edge !== undefined) {
       return `${t('graphEdgeRowError').replace('{row}', String(error.edge))} ${text}`;
     }
@@ -231,7 +248,8 @@ export function GuidedInputPanel({ lab }: { lab: LabController }) {
       // Picker-backed official examples write their selection into inputJson.
       // Official mode must run that selection, not a stale default.
       input = id === 'heap' || id === 'seqlist' || id === 'inorder' || id === 'bst' || id === 'avl' ||
-        id === 'btree' || id === 'huffman' || isGraphAlgorithmGuidedInput(id)
+        id === 'btree' || id === 'huffman' || isGraphAlgorithmGuidedInput(id) ||
+        isSparseGuidedInputAlgorithm(id)
         ? (parseInput(lab.inputJson) ?? defaultInputFor(id))
         : defaultInputFor(id);
     } else {
@@ -346,6 +364,13 @@ export function GuidedInputPanel({ lab }: { lab: LabController }) {
           spec={guidedGraphSpec(id)!}
           draft={draft.graph ?? { nodes: ['A'], edges: [], directed: false, start: 'A', target: '' }}
           onChange={setGraph}
+        />
+      ) : null}
+
+      {isSparseGuidedInputAlgorithm(id) ? (
+        <SparseInputEditor
+          draft={draft.sparse ?? emptySparseDraft()}
+          onChange={setSparse}
         />
       ) : null}
 

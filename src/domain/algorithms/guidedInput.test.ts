@@ -205,10 +205,10 @@ describe('INPUT-01/02 guided input parsing', () => {
       ok: false,
       error: { key: 'guidedErrorHashOperations' },
     });
-    const tooMany = Array.from({ length: 17 }, (_, index) => `insert ${index}`).join('\n');
+    const tooMany = Array.from({ length: 21 }, (_, index) => `insert ${index}`).join('\n');
     expect(buildGuidedInput('hash-probe', draft({ operations: tooMany }))).toEqual({
       ok: false,
-      error: { key: 'guidedErrorHashLimit', max: 16 },
+      error: { key: 'guidedErrorHashLimit', max: 20 },
     });
   });
 
