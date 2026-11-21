@@ -1,0 +1,193 @@
+/* TEXTBOOK-05 generalized-list player: one tree geometry for depth and copy. */
+.gl-visual {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  min-width: 0;
+  container-type: inline-size;
+}
+
+.gl-topline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.gl-op-chip, .gl-level-chip, .gl-active-chip, .gl-metric-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 4px 10px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  font-size: 13px;
+  line-height: 1.35;
+  background: var(--panel);
+}
+
+.gl-op-chip { border-color: var(--accent); font-weight: 700; }
+.gl-active-chip { border-color: #b88b2f; }
+.gl-metric-chip { margin-left: auto; }
+
+.gl-status {
+  margin: 0;
+  padding: 10px 12px;
+  border-left: 4px solid var(--accent);
+  border-radius: 0 6px 6px 0;
+  background: var(--panel);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.gl-status.is-done { border-left-color: #2f8f65; }
+
+.gl-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(250px, 0.65fr);
+  gap: 12px;
+  align-items: stretch;
+}
+
+.gl-body.has-two-trees { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+.gl-tree-panel, .gl-ledger {
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  overflow: hidden;
+}
+
+.gl-tree-panel.is-copy { border-color: #2f8f65; }
+
+.gl-panel-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px 12px;
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--line);
+  background: var(--panel-2);
+}
+
+.gl-panel-head h3 {
+  margin: 0;
+  font-size: 14px;
+}
+
+.gl-svg-wrap {
+  overflow-x: auto;
+  padding: 6px;
+}
+
+.gl-svg {
+  display: block;
+  width: 100%;
+  min-width: 340px;
+  height: auto;
+}
+
+.gl-edge {
+  stroke: #8b98a8;
+  stroke-width: 1.6;
+}
+
+.gl-node-box {
+  fill: var(--panel);
+  stroke: #98a4b3;
+  stroke-width: 1.5;
+}
+
+.gl-node-label {
+  fill: var(--text);
+  font-size: 13px;
+  font-weight: 700;
+  pointer-events: none;
+}
+
+.gl-node.is-atom .gl-node-box { fill: #f4f7fb; }
+.gl-node.is-list .gl-node-box { fill: #eef2f7; }
+.gl-node.is-active .gl-node-box { fill: #fff2d3; stroke: #b97800; stroke-width: 2.4; }
+.gl-node.is-parent .gl-node-box { fill: #e7f0ff; stroke: #3b6ea8; stroke-width: 2.2; }
+.gl-node.is-done .gl-node-box { fill: #e8f6ee; stroke: #2f8f65; }
+.gl-node.is-copied .gl-node-box { fill: #eef8f3; stroke: #2f8f65; }
+.gl-node.is-copied.is-active .gl-node-box { fill: #fff2d3; stroke: #b97800; }
+.gl-node.is-empty .gl-node-label { fill: #66727f; }
+
+.gl-depth-badge {
+  fill: #2f6f4e;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.gl-ledger-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 380px;
+  padding: 10px 12px;
+  overflow: auto;
+}
+
+.gl-ledger-row {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) 52px;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 7px;
+  border-radius: 5px;
+  font-size: 13px;
+}
+
+.gl-ledger-row.is-active { background: #fff2d3; }
+.gl-ledger-id, .gl-ledger-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gl-ledger-id { color: var(--muted); font-family: var(--mono); font-size: 12px; }
+.gl-ledger-value { justify-self: end; font-weight: 700; color: #2f6f4e; }
+
+.gl-ledger-formula {
+  margin: 0 12px 12px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  background: var(--panel-2);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.gl-empty-copy {
+  display: grid;
+  place-items: center;
+  min-height: 170px;
+  padding: 16px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.gl-done-banner {
+  padding: 10px 12px;
+  border: 1px solid #2f8f65;
+  border-radius: 7px;
+  background: #e8f6ee;
+  color: #225f43;
+  font-size: 14px;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+
+.gl-row {
+  align-items: center;
+}
+
+.gl-expression-count {
+  white-space: nowrap;
+  font-size: 12px;
+}
+
+@container (max-width: 780px) {
+  .gl-body, .gl-body.has-two-trees { grid-template-columns: minmax(0, 1fr); }
+}
+
+@media (max-width: 900px) {
+  .gl-body, .gl-body.has-two-trees { grid-template-columns: minmax(0, 1fr); }
+}

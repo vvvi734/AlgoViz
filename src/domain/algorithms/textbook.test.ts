@@ -56,7 +56,7 @@ describe('textbook directory after TEXTBOOK-01', () => {
 
   it('preserves every existing algorithm exactly once in its new primary home', () => {
     const ids = textbookAlgorithmIds(nav);
-    expect(ids).toHaveLength(42);
+    expect(ids).toHaveLength(44);
     expect(new Set(ids).size).toBe(ids.length);
     expect(new Set(ids)).toEqual(new Set(Object.keys(catalog)));
   });
@@ -65,7 +65,7 @@ describe('textbook directory after TEXTBOOK-01', () => {
     const conceptTopics = nav
       .flatMap((chapter) => chapter.topics)
       .filter((topic) => topic.conceptId);
-    expect(CONCEPT_PAGES).toHaveLength(29);
+    expect(CONCEPT_PAGES).toHaveLength(32);
     expect(conceptTopics.map((topic) => topic.conceptId).sort()).toEqual(
       CONCEPT_PAGES.map((page) => page.id).sort(),
     );
@@ -114,6 +114,8 @@ describe('textbook directory after TEXTBOOK-01', () => {
       'sparse-matrix',
       'sparse-transpose',
       'generalized-list',
+      'generalized-list-storage',
+      'generalized-list-recursion',
       'm-variable-polynomial',
     ]);
     expect(textbookPathFor(catalog, 'sparse-transpose')).toEqual({

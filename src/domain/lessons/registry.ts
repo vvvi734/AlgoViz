@@ -43,6 +43,7 @@ import { hashProbingLesson } from './hashProbingLesson';
 import { kmpLesson } from './kmpLesson';
 import { bfLesson } from './bfLesson';
 import { sparseTransposeLesson } from './sparseTransposeLesson';
+import { glDepthLesson, glCopyLesson } from './generalizedListLessons';
 import { staticLinkedListLesson } from './staticLinkedList';
 import { polynomialAddLesson } from './polynomialAdd';
 import { infixToPostfixLesson, postfixEvalLesson } from './expressionLessons';
@@ -117,6 +118,8 @@ const BUNDLED: unknown[] = [
   bfLesson,
   kmpLesson,
   sparseTransposeLesson,
+  glDepthLesson,
+  glCopyLesson,
   staticLinkedListLesson,
   polynomialAddLesson,
   infixToPostfixLesson,

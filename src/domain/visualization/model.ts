@@ -31,6 +31,7 @@ import { buildSearchModel, type SearchVisualModel } from './searchModel';
 import { buildHashModel, type HashVisualModel } from './hashModel';
 import { buildKmpModel, type KmpVisualModel } from './kmpModel';
 import { buildBfModel, type BfVisualModel } from './bfModel';
+import { buildGeneralizedListModel, type GeneralizedListVisualModel } from './glModel';
 import {
   buildSparseTransposeModel,
   type SparseTransposeVisualModel,
@@ -148,6 +149,7 @@ export type VisualModel =
   | SearchVisualModel
   | HashVisualModel
   | BfVisualModel
+  | GeneralizedListVisualModel
   | KmpVisualModel
   | SparseTransposeVisualModel
   | GraphVisualModel
@@ -330,6 +332,10 @@ export function buildVisualModel(
   const s = state as TraceState;
   const kind = s.type || 'array';
   const focus = asFocusSet(s);
+
+  if (structure !== undefined && structure.kind === 'generalized-list') {
+    return buildGeneralizedListModel(structure);
+  }
 
   if (structure !== undefined && structure.kind === 'expression') {
     if (kind !== 'expression') return { kind: 'raw', text: labels.invalid };

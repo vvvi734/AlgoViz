@@ -64,6 +64,12 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
   "bf.c": [],
   "bf.cpp": [],
   "bf.py": [],
+  "gl_depth.c": [],
+  "gl_depth.cpp": [],
+  "gl_depth.py": [],
+  "gl_copy.c": [],
+  "gl_copy.cpp": [],
+  "gl_copy.py": [],
   "bfs.c": [
     {
       en: "Mark a vertex when it enters the queue, not when it leaves, so it cannot be enqueued twice.",

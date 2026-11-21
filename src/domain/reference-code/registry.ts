@@ -463,8 +463,7 @@ export const REFERENCE_CODE: Record<string, ReferenceEntry> = {
       c: { fileName: 'sparse_transpose.c' },
       cpp: { fileName: 'sparse_transpose.cpp' },
       python: { fileName: 'sparse_transpose.py' },
-    },
-    convenience: {
+    },    convenience: {
       cpp: { fileName: 'sparse_transpose_sort.cpp' },
       python: { fileName: 'sparse_transpose_sort.py' },
     },
@@ -477,6 +476,20 @@ export const REFERENCE_CODE: Record<string, ReferenceEntry> = {
         zh: '便捷示例：先交换 row/col，再用 sorted 按 (col,row) 排序。结果与快速转置相同，但时间是 O(t log t)，不是本课的 O(t+c)，也没有使用 num/cpot。',
         en: 'Convenience example: swap row/col, then sort by (col,row) with sorted. The output matches fast transpose, but this is O(t log t), not the course’s O(t+c), and it does not use num/cpot.',
       },
+    },
+  },
+  'gl-depth': {
+    files: {
+      c: { fileName: 'gl_depth.c' },
+      cpp: { fileName: 'gl_depth.cpp' },
+      python: { fileName: 'gl_depth.py' },
+    },
+  },
+  'gl-copy': {
+    files: {
+      c: { fileName: 'gl_copy.c' },
+      cpp: { fileName: 'gl_copy.cpp' },
+      python: { fileName: 'gl_copy.py' },
     },
   },
 };

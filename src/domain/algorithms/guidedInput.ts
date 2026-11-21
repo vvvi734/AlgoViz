@@ -91,12 +91,26 @@ import {
   isExpressionGuidedInputAlgorithm,
   randomExpressionDraft,
 } from './expressionInput';
+import {
+  GENERALIZED_LIST_GUIDED_INPUT_ALGORITHMS,
+  GENERALIZED_LIST_RANDOM_SCENARIOS,
+  buildGeneralizedListInput,
+  generalizedListDraftFromInput,
+  isGeneralizedListGuidedInputAlgorithm,
+  randomGeneralizedListDraft,
+  type GeneralizedListInputFields,
+} from './generalizedListInput';
 
 export { isStructureGuidedInputAlgorithm } from './structureInput';
 export { isSparseGuidedInputAlgorithm } from './sparseInput';
 export { isRecursionGuidedInputAlgorithm } from './recursionInput';
 export { isExpressionGuidedInputAlgorithm } from './expressionInput';
+export { isGeneralizedListGuidedInputAlgorithm } from './generalizedListInput';
 export type { ExpressionGuidedInputAlgorithm } from './expressionInput';
+export type {
+  GeneralizedListGuidedInputAlgorithm,
+  GeneralizedListInputFields,
+} from './generalizedListInput';
 export type { StructureOperationDraft, StructureOperationSpec } from './structureInput';
 export type { TreeGuidedInputAlgorithm, TreeInputFields } from './treeInput';
 export type { HeapInputFields, HeapOperation } from './heapInput';
@@ -147,6 +161,7 @@ export const GUIDED_INPUT_ALGORITHMS = [
   STATIC_LINKED_GUIDED_INPUT,
   POLYNOMIAL_GUIDED_INPUT,
   ...EXPRESSION_GUIDED_INPUT_ALGORITHMS,
+  ...GENERALIZED_LIST_GUIDED_INPUT_ALGORITHMS,
 ] as const;
 export type GuidedInputAlgorithm = (typeof GUIDED_INPUT_ALGORITHMS)[number];
 
@@ -221,6 +236,8 @@ export const GUIDED_INPUT_LANGUAGE: Record<GuidedInputAlgorithm, CodeLanguage> =
   'polynomial-add': 'python',
   'infix-to-postfix': 'python',
   'postfix-eval': 'python',
+  'gl-depth': 'python',
+  'gl-copy': 'python',
 };
 
 export interface GuidedInputDraft {
@@ -257,6 +274,8 @@ export interface GuidedInputDraft {
   /** TEXTBOOK-02 polynomial add: two independently edited term lists. */
   polynomialA?: PolynomialTermRow[];
   polynomialB?: PolynomialTermRow[];
+  /** TEXTBOOK-05 generalized list: one bracketed expression. */
+  generalized?: GeneralizedListInputFields;
 }
 
 export interface GuidedInputError {
@@ -389,6 +408,8 @@ const RANDOM_SCENARIOS: Record<GuidedInputAlgorithm, readonly GuidedRandomScenar
   [POLYNOMIAL_GUIDED_INPUT]: POLYNOMIAL_RANDOM_SCENARIOS,
   'infix-to-postfix': EXPRESSION_RANDOM_SCENARIOS,
   'postfix-eval': EXPRESSION_RANDOM_SCENARIOS,
+  'gl-depth': GENERALIZED_LIST_RANDOM_SCENARIOS,
+  'gl-copy': GENERALIZED_LIST_RANDOM_SCENARIOS,
 };
 
 export function isGuidedInputAlgorithm(id: string): id is GuidedInputAlgorithm {
@@ -583,6 +604,9 @@ export function guidedDraftFromInput(id: GuidedInputAlgorithm, input: unknown): 
   if (isExpressionGuidedInputAlgorithm(id)) {
     return { ...EMPTY_DRAFT, text: expressionDraftFromInput(input) };
   }
+  if (isGeneralizedListGuidedInputAlgorithm(id)) {
+    return { ...EMPTY_DRAFT, generalized: generalizedListDraftFromInput(input) };
+  }
   if (isStaticLinkedGuidedInputAlgorithm(id)) {
     const parts = staticLinkedDraftFromInput(input);
     return {
@@ -652,6 +676,11 @@ export function guidedDraftFromInput(id: GuidedInputAlgorithm, input: unknown): 
 export function buildGuidedInput(id: GuidedInputAlgorithm, draft: GuidedInputDraft): GuidedBuildResult {
   if (isExpressionGuidedInputAlgorithm(id)) {
     return buildExpressionInput(id, draft.text);
+  }
+  if (isGeneralizedListGuidedInputAlgorithm(id)) {
+    return buildGeneralizedListInput(
+      draft.generalized ?? { expression: '(a, (b, c), ((d), e))' },
+    );
   }
   if (isStaticLinkedGuidedInputAlgorithm(id)) {
     return buildStaticLinkedInput({
@@ -1006,6 +1035,9 @@ export function randomGuidedDraft(
 ): GuidedInputDraft {
   if (isExpressionGuidedInputAlgorithm(id)) {
     return { ...EMPTY_DRAFT, text: randomExpressionDraft(id, scenario, random) };
+  }
+  if (isGeneralizedListGuidedInputAlgorithm(id)) {
+    return { ...EMPTY_DRAFT, generalized: randomGeneralizedListDraft(scenario, random) };
   }
   if (isStaticLinkedGuidedInputAlgorithm(id)) {
     const fields = randomStaticLinkedDraft(scenario, random);

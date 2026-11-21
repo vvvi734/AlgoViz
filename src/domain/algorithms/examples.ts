@@ -3,6 +3,10 @@ import { ALGORITHM_CATALOG, ALGORITHM_GROUPS } from './catalog.generated';
 import { LANGUAGE_EXAMPLES } from './languageExamples.generated';
 import { KMP_ENTRY } from './kmpExamples';
 import { BF_ENTRY } from './bfExamples';
+import {
+  GL_COPY_ENTRY,
+  GL_DEPTH_ENTRY,
+} from './generalizedListExamples';
 import { SPARSE_TRANSPOSE_ENTRY } from './sparseTransposeExamples';
 import { POLYNOMIAL_ADD_ENTRY, STATIC_LINKED_ENTRY } from './chapter2Examples';
 import { structureDefaultInput, structurePythonExample } from './structureExamples';
@@ -17,6 +21,8 @@ import type { AlgorithmCatalog, AlgorithmGroup, CodeLanguage } from './types';
 export const catalog: AlgorithmCatalog = {
   ...ALGORITHM_CATALOG,
   bf: BF_ENTRY,
+  'gl-depth': GL_DEPTH_ENTRY,
+  'gl-copy': GL_COPY_ENTRY,
   kmp: KMP_ENTRY,
   'sparse-transpose': SPARSE_TRANSPOSE_ENTRY,
   'static-linked-list': STATIC_LINKED_ENTRY,

@@ -1,5 +1,6 @@
 import type { ConceptPage } from './types';
 import { STORAGE_CONCEPT_PAGES } from './storageConcepts';
+import { GENERALIZED_LIST_CONCEPT_PAGES } from './generalizedListConcepts';
 
 /**
  * Authored concept lessons.
@@ -1376,10 +1377,10 @@ const BASE_CONCEPT_PAGES: readonly ConceptPage[] = [
     title: ['数组与多维数组', 'Arrays and multidimensional arrays'],
     chapter: ['第 5 章 · 数组和广义表', 'Chapter 5 · Arrays and generalized lists'],
     summary: [
-      '数组把相同类型的元素排成一条序列，并用连续存储单元实现按下标随机访问。二维数组可以看成“元素是一维数组的一维数组”，行优先与列优先决定它怎样压进一维内存。',
-      'An array stores elements of the same type in a sequence and uses contiguous cells to support random access by index. A 2D array is an array of 1D arrays; row-major or column-major order decides how it is flattened into one-dimensional memory.',
+      '数组把相同类型的元素排成一条序列，并用连续存储单元实现按下标随机访问。二维数组可以看成“元素是一维数组的一维数组”，行优先与列优先决定它怎样压进一维内存。下方 3×4 图可点击元素，并切换两种存储顺序。',
+      'An array stores elements of the same type in a sequence and uses contiguous cells to support random access by index. A 2D array is an array of 1D arrays; row-major or column-major order decides how it is flattened into one-dimensional memory. The 3×4 diagram below is clickable and switches between the two orders.',
     ],
-    diagram: 'array',
+    diagram: 'array-memory',
     definitions: [
       {
         term: ['数组', 'Array'],
@@ -1435,7 +1436,7 @@ const BASE_CONCEPT_PAGES: readonly ConceptPage[] = [
         points: [
           ['行优先：Loc(i,j) = base + (i*C + j)*w。', 'Row-major: Loc(i,j) = base + (i*C + j)*w.'],
           ['列优先：Loc(i,j) = base + (j*R + i)*w。', 'Column-major: Loc(i,j) = base + (j*R + i)*w.'],
-          ['例：R=2、C=4、base=1000、w=4。A[1][2] 的行优先地址是 1000+(1*4+2)*4 = 1024；列优先地址是 1000+(2*2+1)*4 = 1020。', 'Example: R=2, C=4, base=1000, w=4. A[1][2] is at 1000+(1*4+2)*4 = 1024 in row-major and 1000+(2*2+1)*4 = 1020 in column-major.'],
+          ['例：R=3、C=4、base=1000、w=4。A[1][2] 的行优先地址是 1000+(1*4+2)*4 = 1024；列优先地址是 1000+(2*3+1)*4 = 1028。', 'Example: R=3, C=4, base=1000, w=4. A[1][2] is at 1000+(1*4+2)*4 = 1024 in row-major and 1000+(2*3+1)*4 = 1028 in column-major.'],
           ['若题目下标从 1 开始，先把 i、j 各减 1，再代入上面的 0 基公式；不要直接把 1 基下标塞进公式。', 'If the problem uses 1-based indices, subtract 1 from i and j before using the 0-based formulas; never substitute 1-based indices directly.'],
         ],
         formula: '行优先 Loc(i,j) = base + (i*C + j)*w',
@@ -2968,6 +2969,7 @@ const BASE_CONCEPT_PAGES: readonly ConceptPage[] = [
 export const CONCEPT_PAGES: readonly ConceptPage[] = [
   ...BASE_CONCEPT_PAGES,
   ...STORAGE_CONCEPT_PAGES,
+  ...GENERALIZED_LIST_CONCEPT_PAGES,
 ];
 
 const BY_ID = new Map(CONCEPT_PAGES.map((page) => [page.id, page]));

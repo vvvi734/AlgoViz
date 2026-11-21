@@ -18,6 +18,7 @@ import {
   guidedRandomScenarios,
   isArrayGuidedInputAlgorithm,
   isExpressionGuidedInputAlgorithm,
+  isGeneralizedListGuidedInputAlgorithm,
   isGraphAlgorithmGuidedInput,
   isHashGuidedInputAlgorithm,
   isHeapGuidedInputAlgorithm,
@@ -60,6 +61,7 @@ import { SparseInputEditor } from './SparseInputEditor';
 import { RecursionInputEditor } from './RecursionInputEditor';
 import { StaticLinkedInputEditor } from './StaticLinkedInputEditor';
 import { PolynomialInputEditor } from './PolynomialInputEditor';
+import { GeneralizedListInputEditor } from './GeneralizedListInputEditor';
 import type { RecursionGuidedInputAlgorithm } from '../../domain/algorithms/recursionInput';
 import type { LabController } from './useLabController';
 
@@ -104,6 +106,7 @@ function hintKeyFor(id: GuidedInputAlgorithm): string {
   if (isExpressionGuidedInputAlgorithm(id)) {
     return id === 'infix-to-postfix' ? 'expressionHintInfix' : 'expressionHintPostfix';
   }
+  if (isGeneralizedListGuidedInputAlgorithm(id)) return 'guidedGLHint';
   if (isStaticLinkedGuidedInputAlgorithm(id)) return 'staticLinkedHint';
   if (isPolynomialGuidedInputAlgorithm(id)) return 'polynomialHint';
   if (isRecursionGuidedInputAlgorithm(id)) {
@@ -224,6 +227,18 @@ export function GuidedInputPanel({ lab }: { lab: LabController }) {
 
   const setStructureStorage = (storage: StructureStorage) => {
     setDraft((current) => ({ ...current, storage }));
+    setMode('custom');
+    setIssue(null);
+    setRandomFilled(false);
+  };
+
+  const setGeneralized = (fields: { expression?: string }) => {
+    setDraft((current) => ({
+      ...current,
+      generalized: {
+        expression: fields.expression ?? current.generalized?.expression ?? '(a, (b, c), ((d), e))',
+      },
+    }));
     setMode('custom');
     setIssue(null);
     setRandomFilled(false);
@@ -395,6 +410,14 @@ export function GuidedInputPanel({ lab }: { lab: LabController }) {
           algorithm={id as ExpressionGuidedInputAlgorithm}
           value={draft.text}
           onChange={(value) => setField('text', value)}
+        />
+      ) : null}
+
+      {isGeneralizedListGuidedInputAlgorithm(id) ? (
+        <GeneralizedListInputEditor
+          algorithm={id}
+          value={draft.generalized ?? { expression: '(a, (b, c), ((d), e))' }}
+          onChange={setGeneralized}
         />
       ) : null}
 

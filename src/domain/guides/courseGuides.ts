@@ -1107,6 +1107,75 @@ export const COURSE_GUIDES: Record<string, CourseGuide> = {
       ],
     ),
   },
+  'gl-depth': {
+    intro: text(
+      '广义表的深度不是元素个数，而是嵌套层数。若只用一个循环扫描节点，遇到子表就不知道该往下走几层，也无法回答“哪条分支最深”。递归把每个子表当成同类的子问题：原子和空表直接给出终止值，非空表汇总所有子表返回值，取最大值再加当前这一层。这样每个节点只访问一次，深度随调用栈自然得到。',
+      'The depth of a generalized list is nesting, not element count. A single scan cannot tell how many levels to descend at a sublist or which branch is deepest. Recursion treats each sublist as the same subproblem: atoms and empty lists return base values, while a non-empty list combines all child returns, takes the maximum and adds its own level. Every node is visited once and depth falls out of the call stack.',
+    ),
+    definition: text(
+      '广义表深度递归：Depth(atom)=0；Depth(())=1；对非空表 (e1,…,en)，Depth=1+max(Depth(ei))。真实程序从根开始先序进入每个节点，原子/空表立即返回，非空表递归全部孩子后合并最大值。',
+      'Generalized-list depth recursion: Depth(atom)=0; Depth(())=1; for a non-empty list (e1,…,en), Depth=1+max(Depth(ei)). The real program enters nodes preorder from the root, returns immediately at atoms/empty lists, and combines child maxima after recursing all children of a non-empty list.',
+    ),
+    ...algorithm(
+      step('解析表达式并建立节点', 'Parse the expression and build nodes', '括号决定层级，逗号只分隔同一层；节点按先序获得稳定 id。', 'Parentheses define levels and commas separate siblings; nodes receive stable preorder ids.'),
+      step('进入节点，区分原子与子表', 'Enter a node and classify it', 'enter 帧只记录当前节点、父节点和递归层，还没有返回值。', 'The enter frame records the node, parent and level; it does not yet produce a value.'),
+      step('原子返回 0，空表返回 1', 'Atom returns 0; empty list returns 1', '两种终止条件不同：原子不可再分，空表仍占一层括号。', 'The two base cases differ: an atom is indivisible, while an empty list still occupies one bracket level.'),
+      step('递归所有子表，记录最大子深度', 'Recurse into every child and keep the maximum', '每个 child 的返回值与 best 比较，只保留最大值，不累加。', 'Compare each child return with best and keep only the maximum; never sum them.'),
+      step('当前层返回 1 + best', 'Return 1 + best for this level', '当前层只加一次，写回该节点的深度账本。', 'Add the current level exactly once and write it into that node’s ledger entry.'),
+      step('根返回整表深度', 'The root returns the whole depth', 'done 帧显示最终结果；最深路径决定深度。', 'The done frame shows the result; the deepest path determines it.'),
+    ),
+    conditions: list(
+      [
+        '本课深度约定：原子 0，空表 1，非空表 1 + 子表最大深度；三处必须同时遵守。',
+        '输入只接受有限、无环、无共享子表的括号表达式，最多 80 字符、40 节点、8 层。',
+        '一个表有多个子表时取 max，不能求和；长度才数最外层元素。',
+        '每个节点只进入一次；原子和空表必须立即返回，不能再展开。',
+        '时间 O(n)，递归栈 O(h)；本课将 h 限制在 8。',
+      ],
+      [
+        'Depth convention here: atom 0, empty list 1, non-empty list 1 + maximum child depth; all three must agree.',
+        'Inputs are finite, acyclic bracketed expressions without shared sublists, at most 80 characters, 40 nodes and 8 levels.',
+        'With several children take max, never a sum; length, by contrast, counts outermost elements.',
+        'Each node is entered once; atoms and empty lists must return immediately and never expand.',
+        'Time O(n), recursion stack O(h); this course caps h at 8.',
+      ],
+    ),
+  },
+
+  'gl-copy': {
+    intro: text(
+      '把 copy_root = root 赋值只复制了根指针，新旧表仍共享全部节点；修改副本会污染原表。真正的复制要构造同形但独立的新节点。广义表节点分为原子和子表，孩子数量不固定，普通的一层循环无法覆盖嵌套。递归复制在进入每个源节点时先分配新节点并接到新父节点，再按源 children 递归；原子复制值，空表保留真实节点，最终返回独立的新根。',
+      'Assigning copy_root = root copies only the root pointer, so both lists still share every node and editing the copy mutates the original. A real copy builds new nodes with the same shape but independent identity. Generalized-list nodes are atoms or sublists with variable child counts, so one flat loop cannot cover nesting. Recursive copying allocates a new node on entry and attaches it to the new parent, then recurses through source children; atoms copy values, empty lists remain real nodes, and an independent new root is returned.',
+    ),
+    definition: text(
+      '广义表复制递归：clone(node,parent_copy) 先按 node.kind 分配同类型新节点；根写入 copy_root，其余追加到 parent_copy.children。原子写入相同 atom 后返回；空表直接返回新空表节点；非空表按源 children 顺序递归，每个子调用返回的新节点已接到当前新节点，全部完成后返回当前新节点。',
+      'Generalized-list copy recursion: clone(node,parent_copy) allocates a new node of the same kind; the root becomes copy_root and others append to parent_copy.children. An atom copies its value and returns; an empty list returns its new empty node; a non-empty list recurses through source children, each returned new child is already attached, and the current new node is returned after all children finish.',
+    ),
+    ...algorithm(
+      step('解析源表，准备独立副本', 'Parse the source and prepare a copy', '源节点 n0… 与复制节点 c0… 使用不同 id 空间。', 'Source nodes n0… and copy nodes c0… use separate id spaces.'),
+      step('进入源节点，判断原子或子表', 'Enter the source node and classify it', 'enter 帧还没有 copyId，因为新节点尚未分配。', 'The enter frame has no copyId because no new node exists yet.'),
+      step('先分配新节点并接父', 'Allocate the new node and attach it first', '根写入 copy_root，其余追加到 parent_copy；children 暂为空。', 'The root becomes copy_root; others append to parent_copy with empty children.'),
+      step('原子复制值，空表保留节点', 'Copy atom values; keep empty-list nodes', '空表不能简化为 NULL，否则 (()) 会丢失一个元素。', 'Never collapse an empty list to NULL, or (()) loses an element.'),
+      step('按源 children 递归并接回', 'Recurse through source children and relink', '每个子调用返回新节点，父层把它接到新 children；绝不接源节点。', 'Each child call returns a new node; the parent links it into new children, never to a source node.'),
+      step('返回新根：结构等价、节点独立', 'Return the new root: equivalent but independent', '复制计数等于源节点总数；文本相同且无新节点指向源节点。', 'The copied count equals the source node count; text matches and no new node points at a source node.'),
+    ),
+    conditions: list(
+      [
+        '复制必须构造新节点，不能只返回源根指针或复用源 children。',
+        '先分配父节点、再递归孩子；否则孩子没有可接入的新父节点。',
+        '原子复制 atom 值并返回新节点；空表必须保留真实新节点，hp=NULL 不等于没有该元素。',
+        '新节点 children 只连接 c 前缀新节点；sourceId 仅用于教学对照，不能用于结构连接。',
+        '时间 O(n)，新表占 O(n)，递归栈 O(h)；节点最多 40、深度最多 8。',
+      ],
+      [
+        'A copy must allocate new nodes; never return the source root or reuse source children.',
+        'Allocate the parent before recursing so children have a new parent to attach to.',
+        'Atoms copy their value and return a new node; empty lists keep a real new node, since hp=NULL does not mean the element is absent.',
+        'New children link only to c-prefixed nodes; sourceId is for teaching comparison, never structural linking.',
+        'Time O(n), new storage O(n), recursion stack O(h); at most 40 nodes and 8 levels.',
+      ],
+    ),
+  },
 };
 
 export type CourseGuideId = keyof typeof COURSE_GUIDES;

@@ -82,6 +82,12 @@ import {
 import { KMP_DEFAULT_INPUT, KMP_PYTHON } from './kmpExamples';
 import { BF_DEFAULT_INPUT, BF_PYTHON } from './bfExamples';
 import {
+  GL_COPY_DEFAULT_INPUT,
+  GL_COPY_PYTHON,
+  GL_DEPTH_DEFAULT_INPUT,
+  GL_DEPTH_PYTHON,
+} from './generalizedListExamples';
+import {
   SPARSE_TRANSPOSE_DEFAULT_INPUT,
   SPARSE_TRANSPOSE_PYTHON,
 } from './sparseTransposeExamples';
@@ -413,6 +419,8 @@ const STRUCTURE_PYTHON: Record<string, string> = {
   'hash-chain': CHAINING_PYTHON,
   'hash-probe': PROBING_PYTHON,
   bf: BF_PYTHON,
+  'gl-depth': GL_DEPTH_PYTHON,
+  'gl-copy': GL_COPY_PYTHON,
   kmp: KMP_PYTHON,
   'sparse-transpose': SPARSE_TRANSPOSE_PYTHON,
   btree: btreePythonExample(),
@@ -454,6 +462,8 @@ const STRUCTURE_INPUT: Record<string, unknown> = {
   'hash-chain': HASH_CHAIN_INPUT,
   'hash-probe': HASH_PROBE_INPUT,
   bf: BF_DEFAULT_INPUT,
+  'gl-depth': GL_DEPTH_DEFAULT_INPUT,
+  'gl-copy': GL_COPY_DEFAULT_INPUT,
   kmp: KMP_DEFAULT_INPUT,
   'sparse-transpose': SPARSE_TRANSPOSE_DEFAULT_INPUT,
   btree: BTREE_DEFAULT_INPUT,

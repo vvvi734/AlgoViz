@@ -174,6 +174,14 @@ const REFERENCE_LEARNING_NOTES: Record<string, LocalizedText> = {
     zh: '快速转置先统计原矩阵每列的非零个数 num，再求各列在结果中的起始槽 cpot；按行扫描三元组并写入 cpot 指向的位置。O(t+c)。',
     en: 'Fast transpose counts nonzeros per original column, computes each column starting slot cpot, then scans triplets in row order and writes them at cpot positions. O(t+c).',
   },
+  'gl-depth': {
+    zh: '按 tag 区分原子与子表：原子返回 0，空表(head 为 NULL)返回 1，非空表递归每个孩子并取最大深度加 1。时间 O(n)，递归栈 O(h)。',
+    en: 'Use tag to distinguish atoms from sublists: an atom returns 0, an empty list (head NULL) returns 1, and a non-empty list recurses each child, takes the maximum and adds 1. O(n) time, O(h) stack.',
+  },
+  'gl-copy': {
+    zh: '先按源节点 tag 分配新节点；原子复制值，子表沿源 head 递归并把新孩子接到新 next。copy_one 不复制源 next，调用方负责接同层后继。O(n)。',
+    en: 'Allocate a new node from the source tag first; an atom copies its value, while a sublist recurses along source head and links new children through next. copy_one does not copy source next; the caller links siblings. O(n).',
+  },
   'static-linked-list': {
     zh: '结点存放在固定数组，data 保存元素、cur 保存后继下标；插入先从空闲链借单元并保住后继，删除先摘链再把单元还给空闲链。按位置定位 O(n)，改游标 O(1)。',
     en: 'Nodes live in a fixed array: data stores the element and cur the successor index. Insertion borrows a free cell and preserves the successor; deletion unlinks first, then recycles the cell. Locating by position is O(n), while rewiring cursors is O(1).',

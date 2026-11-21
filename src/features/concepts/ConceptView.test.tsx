@@ -241,7 +241,8 @@ describe('ConceptView (CORE-REFINE-01)', () => {
   it('has a diagram for each concept kind', () => {
     for (const concept of CONCEPT_PAGES) {
       renderConcept(concept.id);
-      expect(screen.getByTestId('concept-diagram').querySelector('svg')).not.toBeNull();
+      const diagram = screen.getByTestId('concept-diagram');
+      expect(diagram.querySelector('svg, [data-testid="array-memory"]'), concept.id).not.toBeNull();
       cleanup();
     }
   });

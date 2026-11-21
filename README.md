@@ -26,7 +26,7 @@ AlgoViz 是一个浏览器端的数据结构与算法学习平台。Python 通�
 11. 外部排序
 12. 文件
 
-当前共有 **28 个理论专题、37 个动态算法、37 门双语课程**。28 个专题均有中英文正文和静态图；37 个算法均有真实 Python Trace、输入 Schema、官方 / 自定义 / 随机输入、导学与流程图、三语言参考代码。第 8、11、12 章以及部分暂未实现的小节保留为“待完善”目录项，不生成假动画。
+当前共有 **32 个理论专题、44 个动态算法、44 门双语课程**。32 个专题均有中英文正文和静态图或轻量交互图；44 个算法均有真实 Python Trace、输入 Schema、官方 / 自定义 / 随机输入、导学与流程图、三语言参考代码。第 8、11、12 章以及部分暂未实现的小节保留为“待完善”目录项，不生成假动画。
 
 完整的已完成 / 待开发清单见 [教材课程覆盖表](docs/TEXTBOOK_COVERAGE.md)；两本参考教材的章节、印刷页与 PDF 页索引见 [参考书索引](docs/REFERENCE_BOOKS.md)。
 
@@ -51,9 +51,9 @@ src/
   components/   与具体算法无关的通用 UI
   domain/
     algorithms/ 算法目录、教材 12 章、输入 Schema 与随机生成
-    concepts/   28 个理论专题及静态图类型
+    concepts/   32 个理论专题及静态图类型
     guides/     算法导学与声明式流程图
-    lessons/    37 门双语课程的数据与注册表
+    lessons/    44 门双语课程的数据与注册表
     reference-code/  C / C++ / Python 参考代码与注释
     trace/      Trace Schema、适配器、播放器
     visualization/ 纯视觉模型与布局
@@ -117,7 +117,7 @@ MIT，见 [LICENSE](LICENSE)。教材只参考章节与知识分类，没有复�
 
 ## English summary
 
-AlgoViz is a browser-first data-structure and algorithm learning platform. Python runs in Pyodide and every animation frame comes from a real execution trace. The textbook directory follows Yan Weimin and Wu Weimin's *Data Structures (C Language Edition)* in 12 chapters. The repository currently ships 28 bilingual concept pages, 37 bilingual algorithm courses, real inputs and traces, a single player, algorithm guides, and read-only C / C++ / Python reference code. AI tutor, MCP, knowledge packs, the question bank, C/C++ execution and the editable Monaco workflow have been removed.
+AlgoViz is a browser-first data-structure and algorithm learning platform. Python runs in Pyodide and every animation frame comes from a real execution trace. The textbook directory follows Yan Weimin and Wu Weimin's *Data Structures (C Language Edition)* in 12 chapters. The repository currently ships 32 bilingual concept pages, 44 bilingual algorithm courses, real inputs and traces, a single player, algorithm guides, and read-only C / C++ / Python reference code. AI tutor, MCP, knowledge packs, the question bank, C/C++ execution and the editable Monaco workflow have been removed.
 
 ```sh
 npm ci && npm run dev

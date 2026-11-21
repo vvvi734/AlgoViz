@@ -2,6 +2,12 @@ import type { Lang } from '../../i18n/types';
 import type { ConceptDiagramKind } from '../../domain/concepts/types';
 import { StorageConceptDiagram } from './StorageConceptDiagram';
 import { StringIndexDiagram } from './StringIndexDiagram';
+import { ArrayMemoryDiagram } from './ArrayMemoryDiagram';
+import {
+  GeneralizedListDiagram,
+  GeneralizedListStorageDiagram,
+  MultivariatePolynomialDiagram,
+} from './GeneralizedListDiagram';
 
 /**
  * Large, static SVG diagrams for concept lessons. They never animate and never
@@ -12,6 +18,22 @@ export function ConceptDiagram({ kind, lang }: { kind: ConceptDiagramKind; lang:
 
   if (kind === 'string-index') {
     return <StringIndexDiagram lang={lang} />;
+  }
+
+  if (kind === 'array-memory') {
+    return <ArrayMemoryDiagram lang={lang} />;
+  }
+
+  if (kind === 'generalized-list') {
+    return <GeneralizedListDiagram lang={lang} />;
+  }
+
+  if (kind === 'generalized-list-storage') {
+    return <GeneralizedListStorageDiagram lang={lang} />;
+  }
+
+  if (kind === 'multivariate-polynomial') {
+    return <MultivariatePolynomialDiagram lang={lang} />;
   }
 
   if (kind === 'algorithm-properties') {

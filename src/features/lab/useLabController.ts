@@ -254,7 +254,7 @@ export function useLabController(): LabController {
     const preferredLang: CodeLanguage =
       id === 'bubble'
         ? 'js'
-        : id === 'stack' || id === 'queue' || id === 'linked' || id === 'doubly' || id === 'circular' || id === 'seqlist' || id === 'inorder' || id === 'bst' || id === 'avl' || id === 'btree' || id === 'heap' || id === 'huffman' || id === 'selection' || id === 'insertion' || id === 'shell' || id === 'quick' || id === 'merge' || id === 'linear' || id === 'binary' || id === 'hash-chain' || id === 'hash-probe' || id === 'kmp' || id === 'bf' || id === 'sparse-transpose' || id === 'static-linked-list' || id === 'polynomial-add' || id === 'factorial' || id === 'fib' || isGraphAlgorithm(id)
+        : id === 'stack' || id === 'queue' || id === 'linked' || id === 'doubly' || id === 'circular' || id === 'seqlist' || id === 'inorder' || id === 'bst' || id === 'avl' || id === 'btree' || id === 'heap' || id === 'huffman' || id === 'selection' || id === 'insertion' || id === 'shell' || id === 'quick' || id === 'merge' || id === 'linear' || id === 'binary' || id === 'hash-chain' || id === 'hash-probe' || id === 'kmp' || id === 'bf' || id === 'gl-depth' || id === 'gl-copy' || id === 'sparse-transpose' || id === 'static-linked-list' || id === 'polynomial-add' || id === 'factorial' || id === 'fib' || isGraphAlgorithm(id)
           ? 'python'
           : codeLang;
     if (preferredLang !== codeLang) {
