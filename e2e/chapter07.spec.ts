@@ -156,4 +156,29 @@ test.describe('TEXTBOOK-07 — chapter 7 storage, articulation and real Python t
     await expect(page.getByTestId('ap-result')).toContainText('根: S');
     await expect(page.getByTestId('ap-result')).toContainText('根树孩子=3');
   });
+
+  test('ring and biconnected random scenarios report no cuts or bridges', async ({ page }) => {
+    test.setTimeout(300_000);
+    await openPhone(page);
+    await openArticulation(page);
+    await page.getByTestId('guided-mode-random').click();
+    await expect(page.getByTestId('guided-random-scenario')).toBeVisible();
+
+    await page.getByTestId('guided-random-scenario').selectOption('ring');
+    await page.getByTestId('random-btn').click();
+    const ringNodes = await page.getByTestId('graph-node-input').count();
+    const ringTotal = await runEditedGraph(page, ringNodes);
+    await setFrame(page, ringTotal - 1, ringTotal);
+    await expect(page.getByTestId('ap-stage')).toHaveAttribute('data-articulation-count', '0');
+    await expect(page.getByTestId('ap-result')).toContainText('关节点结果: 无');
+    await expect(page.getByTestId('ap-result')).toContainText('桥结果: 无');
+
+    await page.getByTestId('guided-random-scenario').selectOption('biconnected');
+    const biconnectedNodes = await page.getByTestId('graph-node-input').count();
+    const biconnectedTotal = await runEditedGraph(page, biconnectedNodes);
+    await setFrame(page, biconnectedTotal - 1, biconnectedTotal);
+    await expect(page.getByTestId('ap-stage')).toHaveAttribute('data-articulation-count', '0');
+    await expect(page.getByTestId('ap-result')).toContainText('关节点结果: 无');
+    await expect(page.getByTestId('ap-result')).toContainText('桥结果: 无');
+  });
 });
