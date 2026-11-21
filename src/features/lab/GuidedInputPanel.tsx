@@ -1,12 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
 import { useI18n } from '../../i18n/I18nProvider';
 import { defaultInputFor } from '../../domain/algorithms/examples';
+import { heapPresetFromInput } from '../../domain/algorithms/heapExamples';
 import {
   buildGuidedInput,
   defaultGuidedScenario,
   guidedDraftFromInput,
   guidedExecutionLanguage,
   guidedRandomScenarios,
+  isArrayGuidedInputAlgorithm,
   randomGuidedDraft,
   type GuidedInputAlgorithm,
   type GuidedInputDraft,
@@ -29,7 +31,7 @@ function fieldDraft(id: GuidedInputAlgorithm, input: unknown): GuidedInputDraft 
 }
 
 /**
- * INPUT-01: one compact input surface shared by the first three algorithms.
+ * INPUT-01/02: one compact input surface shared by the guided algorithms.
  *
  * Official / Custom / Random describe where the values came from, not three
  * separate execution systems. Every accepted draft is converted by the domain
@@ -50,14 +52,18 @@ export function GuidedInputPanel({ lab }: { lab: LabController }) {
   useEffect(() => {
     if (previousAlgo.current === id && previousInput.current === lab.inputJson) return;
     const algorithmChanged = previousAlgo.current !== id;
+    // HeapPicker changes inputJson without going through this panel. A genuine
+    // official preset must put the panel back into Official mode; custom sort
+    // objects have preset=null and therefore never trigger this path.
+    const heapPresetSelected = id === 'heap' && heapPresetFromInput(parseInput(lab.inputJson)) !== null;
     previousAlgo.current = id;
     previousInput.current = lab.inputJson;
     setDraft(fieldDraft(id, parseInput(lab.inputJson)));
     setIssue(null);
     setRandomFilled(false);
-    if (algorithmChanged) {
+    if (algorithmChanged || heapPresetSelected) {
       setMode('official');
-      setScenario(defaultGuidedScenario(id));
+      if (algorithmChanged) setScenario(defaultGuidedScenario(id));
     }
   }, [id, lab.inputJson]);
 
@@ -93,7 +99,9 @@ export function GuidedInputPanel({ lab }: { lab: LabController }) {
   const generate = () => {
     let input: unknown;
     if (mode === 'official') {
-      input = defaultInputFor(id);
+      // HeapPicker writes the selected official preset into inputJson. Other
+      // official examples come straight from the algorithm's default contract.
+      input = id === 'heap' ? (parseInput(lab.inputJson) ?? defaultInputFor(id)) : defaultInputFor(id);
     } else {
       const built = buildGuidedInput(id, draft);
       if (!built.ok) {
@@ -167,7 +175,7 @@ export function GuidedInputPanel({ lab }: { lab: LabController }) {
         ) : null}
       </div>
 
-      {id === 'bubble' ? (
+      {isArrayGuidedInputAlgorithm(id) ? (
         <div className="guided-field-row">
           <label className="guided-field-label" htmlFor="run-input">{t('guidedValuesLabel')}</label>
           <input
@@ -247,8 +255,12 @@ export function GuidedInputPanel({ lab }: { lab: LabController }) {
       ) : null}
 
       <p className="guided-hint note muted">
-        {id === 'bubble'
-          ? t('guidedBubbleHint')
+        {isArrayGuidedInputAlgorithm(id)
+          ? id === 'bubble'
+            ? t('guidedBubbleHint')
+            : id === 'heap'
+              ? t('guidedHeapHint')
+              : t('guidedSortHint')
           : id === 'binary'
             ? t('guidedBinaryHint')
             : t('guidedKmpHint')}

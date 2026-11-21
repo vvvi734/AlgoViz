@@ -1,5 +1,5 @@
 /**
- * INPUT-01: reusable input contracts for the first three guided algorithms.
+ * INPUT-01/02: reusable input contracts for guided algorithms.
  *
  * The UI deliberately does not own parsing rules. Every draft is converted here
  * into the exact object shape the existing Python/JavaScript program already
@@ -9,8 +9,31 @@
  */
 import type { CodeLanguage } from './types';
 
-export const GUIDED_INPUT_ALGORITHMS = ['bubble', 'binary', 'kmp'] as const;
+export const GUIDED_INPUT_ALGORITHMS = [
+  'bubble',
+  'selection',
+  'insertion',
+  'shell',
+  'quick',
+  'merge',
+  'heap',
+  'binary',
+  'kmp',
+] as const;
 export type GuidedInputAlgorithm = (typeof GUIDED_INPUT_ALGORITHMS)[number];
+
+/** Algorithms whose visible input is one integer array. */
+export const ARRAY_GUIDED_INPUT_ALGORITHMS = [
+  'bubble',
+  'selection',
+  'insertion',
+  'shell',
+  'quick',
+  'merge',
+  'heap',
+] as const;
+export type ArrayGuidedInputAlgorithm = (typeof ARRAY_GUIDED_INPUT_ALGORITHMS)[number];
+
 export type GuidedInputMode = 'official' | 'custom' | 'random';
 
 export const GUIDED_INPUT_LANGUAGE: Record<GuidedInputAlgorithm, CodeLanguage> = {
@@ -18,12 +41,18 @@ export const GUIDED_INPUT_LANGUAGE: Record<GuidedInputAlgorithm, CodeLanguage> =
   // classroom trace. Generated bubble traces use real Python; see
   // guidedExecutionLanguage below.
   bubble: 'js',
+  selection: 'python',
+  insertion: 'python',
+  shell: 'python',
+  quick: 'python',
+  merge: 'python',
+  heap: 'python',
   binary: 'python',
   kmp: 'python',
 };
 
 export interface GuidedInputDraft {
-  /** Bubble sort values, comma/space separated. */
+  /** Integer array for bubble, selection, insertion, Shell, quick, merge and heap. */
   values: string;
   /** Binary search array, comma/space separated. */
   nums: string;
@@ -52,6 +81,8 @@ export interface GuidedRandomScenario {
 export const GUIDED_INPUT_LIMITS = {
   BUBBLE_MIN: 1,
   BUBBLE_MAX: 16,
+  SORT_MIN: 2,
+  SORT_MAX: 16,
   BINARY_MIN: 1,
   BINARY_MAX: 15,
   KMP_TEXT_MAX: 24,
@@ -67,13 +98,21 @@ const EMPTY_DRAFT: GuidedInputDraft = {
   pattern: '',
 };
 
+const SORTING_SCENARIOS: readonly GuidedRandomScenario[] = [
+  { id: 'shuffled', label: ['普通乱序', 'Shuffled'] },
+  { id: 'nearly-sorted', label: ['基本有序', 'Nearly sorted'] },
+  { id: 'reversed', label: ['逆序', 'Reversed'] },
+  { id: 'duplicates', label: ['重复值较多', 'Many duplicates'] },
+];
+
 const RANDOM_SCENARIOS: Record<GuidedInputAlgorithm, readonly GuidedRandomScenario[]> = {
-  bubble: [
-    { id: 'shuffled', label: ['普通乱序', 'Shuffled'] },
-    { id: 'nearly-sorted', label: ['基本有序', 'Nearly sorted'] },
-    { id: 'reversed', label: ['逆序', 'Reversed'] },
-    { id: 'duplicates', label: ['重复值较多', 'Many duplicates'] },
-  ],
+  bubble: SORTING_SCENARIOS,
+  selection: SORTING_SCENARIOS,
+  insertion: SORTING_SCENARIOS,
+  shell: SORTING_SCENARIOS,
+  quick: SORTING_SCENARIOS,
+  merge: SORTING_SCENARIOS,
+  heap: SORTING_SCENARIOS,
   binary: [
     { id: 'found', label: ['一定能找到', 'Always found'] },
     { id: 'not-found', label: ['一定找不到', 'Never found'] },
@@ -89,6 +128,10 @@ const RANDOM_SCENARIOS: Record<GuidedInputAlgorithm, readonly GuidedRandomScenar
 
 export function isGuidedInputAlgorithm(id: string): id is GuidedInputAlgorithm {
   return (GUIDED_INPUT_ALGORITHMS as readonly string[]).includes(id);
+}
+
+export function isArrayGuidedInputAlgorithm(id: string): id is ArrayGuidedInputAlgorithm {
+  return (ARRAY_GUIDED_INPUT_ALGORITHMS as readonly string[]).includes(id);
 }
 
 export function guidedLanguageFor(id: string): CodeLanguage | null {
@@ -183,12 +226,17 @@ function parseInteger(raw: string): number | null {
 }
 
 export function guidedDraftFromInput(id: GuidedInputAlgorithm, input: unknown): GuidedInputDraft {
-  if (id === 'bubble') {
-    const values = Array.isArray(input)
-      ? input
-      : isRecord(input) && Array.isArray(input.values)
-        ? input.values
-        : [];
+  if (isArrayGuidedInputAlgorithm(id)) {
+    const values =
+      id === 'heap'
+        ? isRecord(input) && Array.isArray(input.heap)
+          ? input.heap
+          : []
+        : Array.isArray(input)
+          ? input
+          : isRecord(input) && Array.isArray(input.values)
+            ? input.values
+            : [];
     return { ...EMPTY_DRAFT, values: formatNumbers(values) };
   }
   if (id === 'binary') {
@@ -208,14 +256,28 @@ export function guidedDraftFromInput(id: GuidedInputAlgorithm, input: unknown): 
 }
 
 export function buildGuidedInput(id: GuidedInputAlgorithm, draft: GuidedInputDraft): GuidedBuildResult {
-  if (id === 'bubble') {
+  if (isArrayGuidedInputAlgorithm(id)) {
     const parsed = parseIntegerList(draft.values);
     if (!parsed.ok) return { ok: false, error: { key: 'guidedErrorIntegerList' } };
-    if (
-      parsed.values.length < GUIDED_INPUT_LIMITS.BUBBLE_MIN ||
-      parsed.values.length > GUIDED_INPUT_LIMITS.BUBBLE_MAX
-    ) {
-      return { ok: false, error: { key: 'guidedErrorBubbleLength', max: GUIDED_INPUT_LIMITS.BUBBLE_MAX } };
+    const min = id === 'bubble' ? GUIDED_INPUT_LIMITS.BUBBLE_MIN : GUIDED_INPUT_LIMITS.SORT_MIN;
+    const max = id === 'bubble' ? GUIDED_INPUT_LIMITS.BUBBLE_MAX : GUIDED_INPUT_LIMITS.SORT_MAX;
+    if (parsed.values.length < min || parsed.values.length > max) {
+      return {
+        ok: false,
+        error: {
+          key: id === 'bubble' ? 'guidedErrorBubbleLength' : 'guidedErrorSortLength',
+          max,
+        },
+      };
+    }
+    // Heap sorting consumes one object that names its operation explicitly.
+    // Custom and random drafts always run in-place heap sort, never a hidden
+    // build/push/extract preset.
+    if (id === 'heap') {
+      return {
+        ok: true,
+        input: { preset: null, operation: 'sort', heap: parsed.values, value: null },
+      };
     }
     return { ok: true, input: parsed.values };
   }
@@ -273,7 +335,7 @@ function isAscending(values: number[]): boolean {
   return values.every((value, index) => index === 0 || values[index - 1]! <= value);
 }
 
-function randomBubbleValues(scenario: string, random: () => number): number[] {
+function randomArrayValues(scenario: string, random: () => number): number[] {
   const length = randInt(random, 8, 11);
   const pick = () => randInt(random, -20, 60);
 
@@ -357,8 +419,8 @@ export function randomGuidedDraft(
   scenario: string,
   random: () => number = Math.random,
 ): GuidedInputDraft {
-  if (id === 'bubble') {
-    return { ...EMPTY_DRAFT, values: randomBubbleValues(scenario, random).join(', ') };
+  if (isArrayGuidedInputAlgorithm(id)) {
+    return { ...EMPTY_DRAFT, values: randomArrayValues(scenario, random).join(', ') };
   }
   if (id === 'binary') {
     const generated = randomBinaryValues(scenario, random);
