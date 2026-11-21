@@ -24,6 +24,7 @@
 #include <vector>
 
 // The buffer is shared across recursive calls; ties take the left run, which keeps the merge stable.
+// Purpose: Merge the two sorted halves by copying the smaller head into buffer, then copy back.
 // 作用：合并左右两段有序区间；每次取较小者写入 buffer，再拷回原数组。
 void merge_range(std::vector<int> &values, std::vector<int> &buffer, int left, int middle,
                  int right)
@@ -58,6 +59,7 @@ void merge_range(std::vector<int> &values, std::vector<int> &buffer, int left, i
     }
 }
 
+// Purpose: Recursively split the range and merge the sorted halves; stop when fewer than two elements remain.
 // 作用：递归拆分区间，排序两半后合并；终止条件是区间不足两个元素。
 void merge_sort_range(std::vector<int> &values, std::vector<int> &buffer, int left, int right)
 {
@@ -72,6 +74,7 @@ void merge_sort_range(std::vector<int> &values, std::vector<int> &buffer, int le
 }
 
 // Recursive divide-and-conquer; the merge step takes the smaller front element to stay stable.
+// Purpose: Merge-sort entry: allocate one buffer as long as the array, once.
 // 作用：归并排序入口：分配与数组等长的 buffer，只分配一次。
 void merge_sort(std::vector<int> &values)
 {
@@ -83,6 +86,7 @@ void merge_sort(std::vector<int> &values)
     merge_sort_range(values, buffer, 0, static_cast<int>(values.size()) - 1);
 }
 
+// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
 // 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main()
 {

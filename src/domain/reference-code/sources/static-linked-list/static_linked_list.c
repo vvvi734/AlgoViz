@@ -43,6 +43,7 @@ typedef struct
 } StaticList;
 
 /* Build the live chain in logical order, then chain every remaining cell. */
+// Purpose: Build a static list from the given values by chaining the data list first and the leftover slots into the free list.
 // 作用：用给定值建立静态链表：先串数据链表，再把剩余槽串成空闲链表。
 static void static_init(StaticList *list, const int *values, int count)
 {
@@ -73,6 +74,7 @@ static void static_init(StaticList *list, const int *values, int count)
         list->free_head = count;
 }
 
+// Purpose: Count live elements by following next from the data-list head.
 // 作用：从数据链表头沿 next 计数，返回当前有效元素个数。
 static int static_length(const StaticList *list)
 {
@@ -86,6 +88,7 @@ static int static_length(const StaticList *list)
     return count;
 }
 
+// Purpose: Return the cursor preceding position; position 0 returns the head cursor.
 // 作用：返回位置 position 的前驱游标；position=0 时返回头游标。
 static int static_predecessor(const StaticList *list, int position)
 {
@@ -102,6 +105,7 @@ static int static_predecessor(const StaticList *list, int position)
 }
 
 /* Insert at 1-based logical position. Returns 0 on failure, 1 on success. */
+// Purpose: Insert value before position by allocating a free node, then relinking the predecessor's next; return success or failure.
 // 作用：在 position 前插入 value：先分配空闲结点，再改前驱 next；返回成功/失败。
 static int static_insert(StaticList *list, int position, int value)
 {
@@ -138,6 +142,7 @@ static int static_insert(StaticList *list, int position, int value)
 }
 
 /* Delete at 1-based logical position. Returns 0 if the position is invalid. */
+// Purpose: Delete the node at position by linking its predecessor to its successor, then recycle the node into the free list.
 // 作用：删除 position 位置结点：把前驱 next 指向后继，再把结点归还空闲链表。
 static int static_delete(StaticList *list, int position, int *removed)
 {
@@ -172,6 +177,7 @@ static int static_delete(StaticList *list, int position, int *removed)
     return 1;
 }
 
+// Purpose: Print every element along the data-list next cursors; read-only.
 // 作用：沿数据链表 next 游标输出全部元素；只读。
 static void static_traverse(const StaticList *list)
 {
@@ -185,6 +191,7 @@ static void static_traverse(const StaticList *list)
     printf(" -> NULL\n");
 }
 
+// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
 // 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main(void)
 {

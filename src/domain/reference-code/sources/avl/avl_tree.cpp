@@ -30,6 +30,7 @@ class AVLTree
   public:
     struct Node
     {
+        // Purpose: Construct an AVL node with the key, height 1 and null children.
         // 作用：构造 AVL 结点：保存键值，把高度置为 1，左右孩子置空。
         explicit Node(int key) : value(key), height(1)
         {
@@ -40,12 +41,14 @@ class AVLTree
         std::unique_ptr<Node> right;
     };
 
+    // Purpose: Insert value into the AVL tree, ignore duplicates, and update heights and rotate while recursion unwinds.
     // 作用：在 AVL 树中插入 value；重复键忽略，递归返回时更新高度并旋转修复平衡。
     void insert(int value)
     {
         root_ = insert(std::move(root_), value);
     }
 
+    // Purpose: Inorder traversal of the whole tree printing ascending keys; read-only.
     // 作用：中序遍历整棵树并输出升序键值；只读。
     void inorder() const
     {
@@ -53,6 +56,7 @@ class AVLTree
         std::cout << '\n';
     }
 
+    // Purpose: Return the root pointer for read-only access; do not bypass the class to mutate the tree.
     // 作用：返回根指针供只读访问；不要绕过封装修改树结构。
     const Node *root() const
     {
@@ -60,24 +64,28 @@ class AVLTree
     }
 
   private:
+    // Purpose: Return node height with null mapped to 0, the basis for balance-factor calculations.
     // 作用：返回结点高度；空指针返回 0，是平衡因子计算的基础。
     static int height(const Node *node)
     {
         return node ? node->height : 0;
     }
 
+    // Purpose: Recompute the current node's height from child heights after a rotation.
     // 作用：由左右子树高度重算当前结点高度；旋转后必须调用。
     static void update_height(Node *node)
     {
         node->height = 1 + std::max(height(node->left.get()), height(node->right.get()));
     }
 
+    // Purpose: Return left height minus right height; an absolute value greater than 1 means imbalance.
     // 作用：返回左子树高度减右子树高度；绝对值大于 1 表示失衡。
     static int balance_factor(const Node *node)
     {
         return node ? height(node->left.get()) - height(node->right.get()) : 0;
     }
 
+    // Purpose: Rotate right and return the new subtree root; update the affected heights afterwards.
     // 作用：右旋并返回新的子树根；旋转后要更新受影响结点的高度。
     static std::unique_ptr<Node> rotate_right(std::unique_ptr<Node> y)
     {
@@ -89,6 +97,7 @@ class AVLTree
         return x;
     }
 
+    // Purpose: Rotate left and return the new subtree root; update the affected heights afterwards.
     // 作用：左旋并返回新的子树根；旋转后要更新受影响结点的高度。
     static std::unique_ptr<Node> rotate_left(std::unique_ptr<Node> x)
     {
@@ -101,6 +110,7 @@ class AVLTree
     }
 
     // Recompute height after insertion, then apply LL/RR/LR/RL if balance leaves {-1, 0, 1}.
+    // Purpose: Choose LL, LR, RR or RL from the balance factor and return the repaired subtree root.
     // 作用：根据平衡因子选择 LL/LR/RR/RL 四种旋转，返回修复后的子树根。
     static std::unique_ptr<Node> balance(std::unique_ptr<Node> node)
     {
@@ -127,6 +137,7 @@ class AVLTree
         return node;
     }
 
+    // Purpose: Insert value into the AVL tree, ignore duplicates, and update heights and rotate while recursion unwinds.
     // 作用：在 AVL 树中插入 value；重复键忽略，递归返回时更新高度并旋转修复平衡。
     static std::unique_ptr<Node> insert(std::unique_ptr<Node> node, int value)
     {
@@ -149,6 +160,7 @@ class AVLTree
         return balance(std::move(node));
     }
 
+    // Purpose: Inorder traversal of the whole tree printing ascending keys; read-only.
     // 作用：中序遍历整棵树并输出升序键值；只读。
     static void inorder(const Node *node)
     {
@@ -164,6 +176,7 @@ class AVLTree
     std::unique_ptr<Node> root_;
 };
 
+// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
 // 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main()
 {

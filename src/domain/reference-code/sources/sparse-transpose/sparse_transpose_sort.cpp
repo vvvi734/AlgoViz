@@ -43,6 +43,7 @@ struct SparseMatrix
     std::vector<Triple> triples;
 };
 
+// Purpose: Sort triplets into transposed row-major order to produce the transposed matrix.
 // 作用：按转置后的行优先顺序排序三元组，得到转置矩阵。
 SparseMatrix sort_transpose(const SparseMatrix &source)
 {
@@ -63,6 +64,7 @@ SparseMatrix sort_transpose(const SparseMatrix &source)
     return result;
 }
 
+// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
 // 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main()
 {

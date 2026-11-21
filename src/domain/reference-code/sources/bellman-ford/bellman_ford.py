@@ -27,6 +27,7 @@ INF = float("inf")
 
 # V - 1 passes suffice because a shortest simple path uses at most V - 1 edges.
 # V-1 full passes settle every simple shortest path; one more pass that still relaxes proves a reachable negative cycle.
+# Purpose: Return shortest distances from source; return None for a reachable negative cycle and do not modify edges.
 # 作用：返回从 source 出发的最短距离；可达负环返回 None，不修改 edges。
 def bellman_ford(vertex_count: int, edges: list[tuple[int, int, int]], source: int) -> list[float] | None:
     dist: list[float] = [INF] * vertex_count
@@ -50,6 +51,7 @@ def bellman_ford(vertex_count: int, edges: list[tuple[int, int, int]], source: i
     return dist
 
 
+# Purpose: Build a demo graph with negative edges and print shortest distances.
 # 作用：构造含负权边的演示图并打印最短距离。
 def main() -> None:
     edges = [

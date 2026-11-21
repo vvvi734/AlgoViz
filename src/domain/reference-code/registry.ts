@@ -548,8 +548,10 @@ export function referenceConvenienceNote(
 }
 
 /**
- * Language of the comments stored in the source files. All reference code is
- * authored in English, so Chinese pages add a generated teaching header.
+ * Base language of the reference sources. Comments are now bilingual: the
+ * Chinese pages select Chinese comments and the English pages select English
+ * comments from the same algorithm body. This helper is retained for callers
+ * that still need the historical source language.
  */
 export function referenceCommentLanguage(): 'en' {
   return 'en';

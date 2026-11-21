@@ -26,6 +26,7 @@ typedef struct TreeNode
 } TreeNode;
 
 // Recurse left, visit the root, then recurse right; for a BST this emits keys in ascending order.
+// Purpose: Inorder traversal: left subtree, then root, then right subtree; read-only.
 // 作用：中序遍历：先左子树，再访问根，最后右子树；只读。
 void InOrder(const TreeNode *node)
 {
@@ -38,6 +39,7 @@ void InOrder(const TreeNode *node)
     InOrder(node->right);
 }
 
+// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
 // 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main(void)
 {

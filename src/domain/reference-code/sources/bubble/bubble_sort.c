@@ -20,6 +20,7 @@
 #include <stdio.h>
 
 // After pass k the largest k values sit at the right end; an unchanged pass ends the sort early.
+// Purpose: Bubble-sort values[0..count): each pass moves the largest unsorted value to the end, stopping early when swapped stays false.
 // 作用：对 values[0..count) 做冒泡排序：每轮把未排序区最大值推到末尾，swapped 为假时提前结束。
 void BubbleSort(int *values, int count)
 {
@@ -43,6 +44,7 @@ void BubbleSort(int *values, int count)
     }
 }
 
+// Purpose: Print array elements read-only so each sorting step can be checked.
 // 作用：只读输出数组元素，用于检查排序每一步的结果。
 static void PrintValues(const int *values, int count)
 {
@@ -52,6 +54,7 @@ static void PrintValues(const int *values, int count)
     }
 }
 
+// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
 // 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main(void)
 {

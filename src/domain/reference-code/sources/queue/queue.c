@@ -29,6 +29,7 @@ typedef struct
     int rear;
 } Queue;
 
+// Purpose: Initialize an empty queue with front = rear = 0; front == rear means empty.
 /*
  * 作用：初始化空队列。front = rear = 0；此后 front == rear 表示空。
  */
@@ -38,6 +39,7 @@ void InitQueue(Queue *queue)
     queue->rear = 0;
 }
 
+// Purpose: Read-only empty check; under the reserved-slot convention, front == rear means empty.
 /*
  * 作用：只读判断队列是否为空。牺牲单元约定下，front == rear 就是空。
  */
@@ -48,6 +50,7 @@ bool QueueEmpty(const Queue *queue)
 
 // front == rear means empty; one reserved slot makes (rear + 1) % capacity == front full.
 
+// Purpose: Read-only full check: if the slot after rear meets front, only the reserved slot remains.
 /*
  * 作用：只读判断队列是否已满。rear 的下一个位置若撞上 front，就说明数组里
  * 只剩那个保留空位，不能再入队。
@@ -57,6 +60,7 @@ bool QueueFull(const Queue *queue)
     return (queue->rear + 1) % QUEUE_CAPACITY == queue->front;
 }
 
+// Purpose: Enqueue: check fullness, write value to data[rear], then advance rear modulo capacity.
 /*
  * 作用：入队。先判满，再把 value 写入 data[rear]，最后让 rear 取模后移。
  * 取模使 rear 从最后一个下标回到 0，完成物理数组上的回绕。
@@ -72,6 +76,7 @@ bool Enqueue(Queue *queue, int value)
     return true;
 }
 
+// Purpose: Dequeue: return false when empty; otherwise read data[front] and advance front modulo capacity.
 /*
  * 作用：出队。空队列返回 false；否则读取 data[front]，再让 front 取模后移。
  * 前移即可，不需要搬移其余元素。
@@ -87,6 +92,7 @@ bool Dequeue(Queue *queue, int *value)
     return true;
 }
 
+// Purpose: Read the queue front without removing it; access data[front] and leave front unchanged.
 /*
  * 作用：读取队首但不删除。只访问 data[front]，不移动 front。
  */
@@ -100,6 +106,7 @@ bool QueueFront(const Queue *queue, int *value)
     return true;
 }
 
+// Purpose: Demonstrate filling the queue, reading the front, dequeueing and wrap-around enqueueing, printing each state.
 /*
  * 作用：演示入队到满、读取队首、出队、回绕后再入队，并输出每一步状态。
  */

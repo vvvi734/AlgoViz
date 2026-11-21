@@ -30,6 +30,7 @@ typedef struct
     int weight;
 } Edge;
 
+// Purpose: Edge-weight ascending comparator for qsort; a negative result means left should come first.
 // 作用：qsort 使用的边权升序比较器；返回负数表示 left 应排在前面。
 static int CompareEdges(const void *left, const void *right)
 {
@@ -38,6 +39,7 @@ static int CompareEdges(const void *left, const void *right)
     return a->weight - b->weight;
 }
 
+// Purpose: Find the union-find root with path compression, attaching every node on the path directly to the root.
 // 作用：并查集查找根；带路径压缩，把路径上的结点直接挂到根。
 static int FindRoot(int parent[], int vertex)
 {
@@ -48,6 +50,7 @@ static int FindRoot(int parent[], int vertex)
     return parent[vertex];
 }
 
+// Purpose: Union two sets by rank only when their roots differ; return whether a merge happened.
 // 作用：按秩合并两个集合；只有根不同才合并，返回是否合并成功。
 static int UnionRoots(int parent[], int rank[], int left, int right)
 {
@@ -74,6 +77,7 @@ static int UnionRoots(int parent[], int rank[], int left, int right)
 }
 
 // Sort by weight, then accept an edge only when union-find reports different components; otherwise it closes a cycle.
+// Purpose: Scan edges by increasing weight, skip cycle-forming edges with union-find, and stop after selecting V-1 edges.
 // 作用：按边权升序扫描；用并查集跳过成环边，选满 V-1 条边即得到最小生成树。
 void Kruskal(Edge edges[], int edge_count)
 {
@@ -101,6 +105,7 @@ void Kruskal(Edge edges[], int edge_count)
     printf("total: %d\n", total);
 }
 
+// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
 // 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main(void)
 {

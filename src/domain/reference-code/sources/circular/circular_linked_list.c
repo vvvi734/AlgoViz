@@ -39,6 +39,7 @@ typedef struct
     Node *tail;
 } CircularList;
 
+// Purpose: Initialize the list with null head/tail and zero length so an empty list traverses safely.
 // 作用：初始化链表：head/tail 置空、length 置 0；空表状态要能安全遍历。
 void list_init(CircularList *list)
 {
@@ -48,6 +49,7 @@ void list_init(CircularList *list)
 
 // New node points at head; the old tail points at the new node, preserving the ring.
 // The tail's `next` points back to `head`, so traversal stops after returning to head, not at NULL.
+// Purpose: Append value at the circular-list tail; the tail's next must point back to the head.
 // 作用：在循环链表尾部追加 value；尾结点的 next 必须重新指回头结点。
 bool list_append(CircularList *list, int value)
 {
@@ -71,6 +73,7 @@ bool list_append(CircularList *list, int value)
     return true;
 }
 
+// Purpose: Traverse and print the list without changing head or node links.
 // 作用：只读遍历并输出链表；不修改 head 或结点链接。
 void list_print(const CircularList *list)
 {
@@ -88,6 +91,7 @@ void list_print(const CircularList *list)
     printf("\n");
 }
 
+// Purpose: Free every circular-list node and restore the empty state; stop at the correct point in the ring.
 // 作用：释放循环链表全部结点，并恢复空表状态；注意环的终止条件。
 void list_free(CircularList *list)
 {
@@ -107,6 +111,7 @@ void list_free(CircularList *list)
     list->tail = NULL;
 }
 
+// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
 // 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main(void)
 {

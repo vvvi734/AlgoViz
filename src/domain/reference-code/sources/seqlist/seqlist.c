@@ -28,6 +28,7 @@ typedef struct
     int length;
 } SeqList;
 
+// Purpose: Initialize the sequential list by setting length to zero while keeping capacity.
 // 作用：初始化顺序表：把 length 置 0，容量保持不变。
 void InitList(SeqList *list)
 {
@@ -35,6 +36,7 @@ void InitList(SeqList *list)
 }
 
 // `length` is the live element count, not capacity; insert/erase shift only the live range and then update it.
+// Purpose: Insert value before index after checking the index range and capacity, shifting elements from back to front.
 // 作用：在下标 index 前插入 value；先检查 index 范围和容量，再从后往前搬移。
 bool ListInsert(SeqList *list, int index, int value)
 {
@@ -51,6 +53,7 @@ bool ListInsert(SeqList *list, int index, int value)
     return true;
 }
 
+// Purpose: Remove the element at index: save its value, shift later elements forward to fill the gap, and decrement length.
 // 作用：删除下标 index 的元素；先保存值，再从前往后搬移覆盖空位并减小 length。
 bool ListErase(SeqList *list, int index, int *removed)
 {
@@ -67,6 +70,7 @@ bool ListErase(SeqList *list, int index, int *removed)
     return true;
 }
 
+// Purpose: Traverse and print the list without changing head or node links.
 // 作用：只读遍历并输出链表；不修改 head 或结点链接。
 void PrintList(const SeqList *list)
 {
@@ -76,6 +80,7 @@ void PrintList(const SeqList *list)
     }
 }
 
+// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
 // 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main(void)
 {

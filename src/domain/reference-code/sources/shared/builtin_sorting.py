@@ -26,6 +26,7 @@ Convention: 0-based list indices; both routes are stable.
 from __future__ import annotations
 
 
+# Purpose: Demonstrate stable sorting with sorted.
 # 作用：用 sorted 演示稳定排序。
 def main() -> None:
     values = [5, 1, 4, 2, 8, 0, 3, 7, 6, 9]

@@ -27,6 +27,7 @@
 #include <iterator>
 #include <list>
 
+// Purpose: Traverse and print the current structure without modifying data, so each step can be checked.
 // 作用：只读遍历并输出当前结构；不会修改数据，适合在每一步后核对状态。
 template <typename T> void print(const std::list<T> &values)
 {
@@ -37,6 +38,7 @@ template <typename T> void print(const std::list<T> &values)
     std::cout << '\n';
 }
 
+// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
 // 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main()
 {

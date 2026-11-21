@@ -22,6 +22,7 @@ from __future__ import annotations
 
 # Return the first matching index; -1 means the whole array was scanned.
 # Return the first matching index; -1 is correct only after the entire array has been scanned.
+# Purpose: Return target's first index or -1 without modifying values.
 # 作用：返回 target 的首个下标或 -1；不修改 values。
 def linear_search(values: list[int], target: int) -> int:
     for index, value in enumerate(values):
@@ -30,6 +31,7 @@ def linear_search(values: list[int], target: int) -> int:
     return -1
 
 
+# Purpose: Demonstrate both a hit and a miss.
 # 作用：演示命中和未命中。
 def main() -> None:
     values = [4, 7, 2, 9, 1, 5]

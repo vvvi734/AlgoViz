@@ -19,6 +19,7 @@
 #include <stdio.h>
 
 // Return the first matching index; -1 is correct only after the entire array has been scanned.
+// Purpose: Compare from 0 through count-1; return the matching index or -1.
 // 作用：从 0 到 count-1 逐个比较；找到返回下标，失败返回 -1。
 int LinearSearch(const int *values, int count, int target)
 {
@@ -32,6 +33,7 @@ int LinearSearch(const int *values, int count, int target)
     return -1;
 }
 
+// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
 // 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main(void)
 {

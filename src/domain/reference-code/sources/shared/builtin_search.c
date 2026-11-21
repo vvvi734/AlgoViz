@@ -27,6 +27,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// Purpose: Integer ascending comparator used by the standard-library sort/search.
 // 作用：标准库排序/查找使用的整数升序比较器。
 int compare_int(const void *left, const void *right)
 {
@@ -35,6 +36,7 @@ int compare_int(const void *left, const void *right)
     return (a > b) - (a < b);
 }
 
+// Purpose: Standard-library comparison: binary-search a sorted range and return an index or -1.
 // 作用：标准库对照实现：在有序区间中二分查找目标，返回下标或 -1。
 int binary_search_builtin(const int *values, int length, int target)
 {
@@ -48,6 +50,7 @@ int binary_search_builtin(const int *values, int length, int target)
     return found == NULL ? -1 : (int)(found - values);
 }
 
+// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
 // 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main(void)
 {

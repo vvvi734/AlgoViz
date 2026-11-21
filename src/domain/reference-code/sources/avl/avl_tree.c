@@ -28,24 +28,28 @@ typedef struct AVLNode
     struct AVLNode *right;
 } AVLNode;
 
+// Purpose: Return the larger of two integers when recomputing node height.
 // 作用：返回两个整数中的较大值，用于计算结点高度。
 static int MaxInt(int left, int right)
 {
     return left > right ? left : right;
 }
 
+// Purpose: Return node height, treating null as 0 so rotations need no extra null check.
 // 作用：返回结点高度；空结点按 0 处理，保证旋转时不必额外判空。
 static int NodeHeight(const AVLNode *node)
 {
     return node == NULL ? 0 : node->height;
 }
 
+// Purpose: Recompute the current node's height from child heights after any structural change.
 // 作用：由左右子树高度重算当前结点高度；任何结构变化后都要调用。
 static void RefreshHeight(AVLNode *node)
 {
     node->height = 1 + MaxInt(NodeHeight(node->left), NodeHeight(node->right));
 }
 
+// Purpose: Rotate right around root: the left child becomes the new root, its right subtree moves to root's left, and the new subtree root is returned.
 // 作用：以 root 为轴右旋：左孩子上位，左孩子的右子树改挂到 root 左侧；返回新的子树根。
 static AVLNode *RotateRight(AVLNode *root)
 {
@@ -58,6 +62,7 @@ static AVLNode *RotateRight(AVLNode *root)
     return pivot;
 }
 
+// Purpose: Rotate left around root: the right child becomes the new root, its left subtree moves to root's right, and the new subtree root is returned.
 // 作用：以 root 为轴左旋：右孩子上位，右孩子的左子树改挂到 root 右侧；返回新的子树根。
 static AVLNode *RotateLeft(AVLNode *root)
 {
@@ -70,6 +75,7 @@ static AVLNode *RotateLeft(AVLNode *root)
     return pivot;
 }
 
+// Purpose: Insert by BST ordering, recompute heights while recursion unwinds, and apply one of the four rotations; returns the new subtree root.
 // 作用：按 BST 规则插入 value，并在递归返回时重算高度、按四种失衡情况旋转；返回新的子树根。
 AVLNode *AVLInsert(AVLNode *root, int value)
 {
@@ -124,6 +130,7 @@ AVLNode *AVLInsert(AVLNode *root, int value)
     return root;
 }
 
+// Purpose: Inorder traversal that prints keys; the order should be ascending, which verifies the BST property.
 // 作用：中序遍历并输出键值；顺序应为升序，可用于验证 BST 性质。
 void InOrder(const AVLNode *root)
 {
@@ -136,6 +143,7 @@ void InOrder(const AVLNode *root)
     InOrder(root->right);
 }
 
+// Purpose: Free an AVL tree postorder: release both children before the current node.
 // 作用：后序释放 AVL 树：先释放左右子树，再释放当前结点。
 void FreeAVL(AVLNode *root)
 {
@@ -148,6 +156,7 @@ void FreeAVL(AVLNode *root)
     free(root);
 }
 
+// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
 // 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main(void)
 {

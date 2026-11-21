@@ -26,6 +26,7 @@ static const int GRAPH[VERTEX_COUNT][VERTEX_COUNT] = {
 };
 
 // Mark a vertex when it enters the queue, not when it leaves, so it cannot be enqueued twice.
+// Purpose: Traverse from start in distance layers; mark visited on enqueue so the queue finishes nearer layers first.
 // 作用：从 start 开始按距离分层遍历；入队时标记 visited，队列保证先访问近层。
 void BFS(int start)
 {
@@ -54,6 +55,7 @@ void BFS(int start)
     printf("\n");
 }
 
+// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
 // 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main(void)
 {

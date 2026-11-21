@@ -26,6 +26,7 @@
 #include <iostream>
 #include <vector>
 
+// Purpose: Print the current live elements of the sequential list read-only.
 // 作用：只读输出顺序表当前有效元素。
 template <typename T> void print(const std::vector<T> &values)
 {
@@ -36,6 +37,7 @@ template <typename T> void print(const std::vector<T> &values)
     std::cout << '\n';
 }
 
+// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
 // 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main()
 {

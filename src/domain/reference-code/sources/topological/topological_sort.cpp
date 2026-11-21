@@ -28,6 +28,7 @@
 #include <vector>
 
 // A vertex enters the queue only when its indegree reaches zero; fewer than V emitted vertices means a directed cycle.
+// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
 // 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main()
 {

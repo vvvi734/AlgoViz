@@ -26,6 +26,7 @@ from collections import deque
 
 # Mark a neighbour before enqueueing it; the FIFO frontier then visits level by level.
 # Mark a vertex when it enters the queue, not when it leaves, so it cannot be enqueued twice.
+# Purpose: Return the BFS order of vertices reachable from start without modifying graph.
 # 作用：返回从 start 可达顶点的 BFS 顺序；不修改 graph。
 def bfs(graph: list[list[int]], start: int) -> list[int]:
     visited = [False] * len(graph)
@@ -43,6 +44,7 @@ def bfs(graph: list[list[int]], start: int) -> list[int]:
     return order
 
 
+# Purpose: Build a demo graph and print its BFS sequence.
 # 作用：构造演示图并打印 BFS 序列。
 def main() -> None:
     graph: list[list[int]] = [[] for _ in range(6)]

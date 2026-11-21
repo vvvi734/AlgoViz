@@ -33,6 +33,7 @@ class CircularList
         Node *next = nullptr;
     };
 
+    // Purpose: Destructor: release every dynamic node, restore null head/tail and zero length, and save next before freeing each node.
     // 作用：析构：释放容器中所有动态结点，并把头尾指针和长度恢复为空状态；先保存 next 再释放当前结点。
     ~CircularList()
     {
@@ -41,6 +42,7 @@ class CircularList
 
     // New node points at head; the old tail points at the new node, preserving the ring.
     // The tail's `next` points back to `head`, so traversal stops after returning to head, not at NULL.
+    // Purpose: Append value at the circular-list tail while maintaining tail and the closing link.
     // 作用：在循环链表尾部追加 value，并维护 tail 与环的闭合关系。
     bool append(int value)
     {
@@ -63,6 +65,7 @@ class CircularList
         return true;
     }
 
+    // Purpose: Traverse and print the current structure without modifying data, so each step can be checked.
     // 作用：只读遍历并输出当前结构；不会修改数据，适合在每一步后核对状态。
     void print() const
     {
@@ -80,6 +83,7 @@ class CircularList
         std::cout << '\n';
     }
 
+    // Purpose: Return the tail pointer for read-only access; the tail's next points back to the head.
     // 作用：返回尾指针供只读访问；尾结点的 next 指向头结点。
     const Node *tail() const
     {
@@ -87,6 +91,7 @@ class CircularList
     }
 
   private:
+    // Purpose: Clear the container, release every dynamic node, and restore null head/tail and zero length.
     // 作用：清空容器并释放所有动态结点，把头尾指针和长度恢复为空状态。
     void clear()
     {
@@ -110,6 +115,7 @@ class CircularList
     Node *tail_ = nullptr;
 };
 
+// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
 // 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main()
 {

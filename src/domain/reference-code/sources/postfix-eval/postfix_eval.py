@@ -23,6 +23,7 @@ class PostfixError(ValueError):
     """Raised for operand shortage/surplus, invalid tokens or division by zero."""
 
 
+# Purpose: Evaluate the postfix expression and return its integer result; the caller guarantees valid input.
 # 作用：计算后缀表达式并返回整数结果；非法表达式由调用方保证。
 def evaluate(tokens: list[str]) -> int:
     """Evaluate a tokenised postfix expression or raise PostfixError."""
@@ -61,6 +62,7 @@ def evaluate(tokens: list[str]) -> int:
     return stack[0]
 
 
+# Purpose: Demonstrate evaluating 3 4 + 2 *.
 # 作用：演示 3 4 + 2 * 的求值。
 def main() -> None:
     expression = "3 4 + 2 *"

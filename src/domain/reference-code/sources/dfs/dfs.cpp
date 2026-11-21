@@ -26,6 +26,7 @@
 
 // Mark on entry, then recurse into every unvisited neighbour before backtracking.
 // Mark a vertex on entry; the recursion then visits every unvisited neighbour before returning.
+// Purpose: Recursively visit unvisited neighbours of vertex; mark visited on entry so back edges are not expanded twice.
 // 作用：递归访问 vertex 的未访问邻居；进入时立即标记 visited，避免回边重复展开。
 void dfs_visit(const std::vector<std::vector<int>> &graph, int vertex, std::vector<bool> &visited)
 {
@@ -40,6 +41,7 @@ void dfs_visit(const std::vector<std::vector<int>> &graph, int vertex, std::vect
     }
 }
 
+// Purpose: Depth-first traverse from start; the recursion stack holds the current path.
 // 作用：从 start 开始深度优先遍历；递归栈保存当前路径。
 void dfs(const std::vector<std::vector<int>> &graph, int start)
 {
@@ -49,6 +51,7 @@ void dfs(const std::vector<std::vector<int>> &graph, int start)
     std::cout << '\n';
 }
 
+// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
 // 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main()
 {

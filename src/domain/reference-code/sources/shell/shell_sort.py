@@ -25,6 +25,7 @@ from __future__ import annotations
 
 # Each gap pass insertion-sorts independent subsequences; gap 1 finishes the array.
 # Each gap pass insertion-sorts independent subsequences; gap 1 is the final ordinary insertion sort.
+# Purpose: Sort values ascending in place using gap-grouped insertion sort.
 # 作用：原地升序排序 values；按 gap 分组做插入排序。
 def shell_sort(values: list[int]) -> None:
     gap = len(values) // 2
@@ -39,6 +40,7 @@ def shell_sort(values: list[int]) -> None:
         gap //= 2
 
 
+# Purpose: Demonstrate shell sort and print the result.
 # 作用：演示希尔排序并打印结果。
 def main() -> None:
     values = [5, 1, 4, 2, 8, 0, 3, 7, 6, 9]

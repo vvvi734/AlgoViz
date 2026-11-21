@@ -27,6 +27,7 @@ struct Node
     struct Node *next;
 };
 
+// Purpose: Create a singly linked-list node holding value with a null next pointer.
 // 作用：创建一个单链表结点，保存 value 并把 next 置空。
 static struct Node *CreateNode(int value)
 {
@@ -40,6 +41,7 @@ static struct Node *CreateNode(int value)
     return node;
 }
 
+// Purpose: Insert value before index; index 0 changes head, and an out-of-range index or allocation failure returns false.
 // 作用：在位置 index 前插入 value；index=0 时改 head；越界或分配失败返回 false。
 bool ListInsert(struct Node **head, int index, int value)
 {
@@ -79,6 +81,7 @@ bool ListInsert(struct Node **head, int index, int value)
     return true;
 }
 
+// Purpose: Delete the node at index: find the predecessor, keep the target, relink next, then free the node.
 // 作用：删除位置 index 的结点；先找前驱并保存目标，再重接 next，最后释放。
 bool ListDelete(struct Node **head, int index, int *removed)
 {
@@ -113,6 +116,7 @@ bool ListDelete(struct Node **head, int index, int *removed)
     return true;
 }
 
+// Purpose: Traverse and print the list without changing head or node links.
 // 作用：只读遍历并输出链表；不修改 head 或结点链接。
 void PrintList(const struct Node *head)
 {
@@ -124,6 +128,7 @@ void PrintList(const struct Node *head)
     printf("\n");
 }
 
+// Purpose: Traverse and free every node, then clear head; save next before calling free.
 // 作用：遍历释放链表全部结点，并把 head 置空；先保存 next 再 free。
 void FreeList(struct Node **head)
 {
@@ -137,6 +142,7 @@ void FreeList(struct Node **head)
     *head = NULL;
 }
 
+// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
 // 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main(void)
 {

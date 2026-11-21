@@ -25,6 +25,7 @@ from __future__ import annotations
 from math import factorial
 
 
+# Purpose: Demonstrate math.factorial and print the result.
 # 作用：演示 math.factorial 并打印结果。
 def main() -> None:
     # `math.factorial` returns an arbitrary-precision integer and rejects negative input.

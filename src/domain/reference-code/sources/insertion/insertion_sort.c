@@ -19,6 +19,7 @@
 #include <stdio.h>
 
 // Shift only while the previous value is strictly greater; equal keys stop the shift and keep the sort stable.
+// Purpose: Maintain a sorted prefix: save key, shift larger values right by one slot, then place key in the gap.
 // 作用：维护已排序前缀：保存 key，把更大的元素右移一格，再把 key 放到空位。
 void InsertionSort(int *values, int count)
 {
@@ -35,6 +36,7 @@ void InsertionSort(int *values, int count)
     }
 }
 
+// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
 // 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main(void)
 {

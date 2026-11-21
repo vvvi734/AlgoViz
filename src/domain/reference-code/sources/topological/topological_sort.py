@@ -25,6 +25,7 @@ from collections import deque
 
 
 # A vertex enters the queue only when its indegree reaches zero; fewer than V emitted vertices means a directed cycle.
+# Purpose: Build a demo DAG and print its topological order.
 # 作用：构造演示 DAG 并打印拓扑序。
 def main() -> None:
     edges = [(5, 2), (5, 0), (4, 0), (4, 1), (2, 3), (3, 1)]

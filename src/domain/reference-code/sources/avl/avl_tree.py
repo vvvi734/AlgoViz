@@ -30,21 +30,25 @@ class Node:
     right: "Node | None" = None
 
 
+# Purpose: Return subtree height with 0 for an empty subtree; no side effects.
 # 作用：返回子树高度；空子树为 0，无副作用。
 def height(node: Node | None) -> int:
     return node.height if node is not None else 0
 
 
+# Purpose: Recompute node.height from child heights; call it after every rotation.
 # 作用：由左右子树高度重算 node.height；旋转后必须调用。
 def update_height(node: Node) -> None:
     node.height = 1 + max(height(node.left), height(node.right))
 
 
+# Purpose: Return left height minus right height, with 0 for a null node.
 # 作用：返回左子树高度减右子树高度；空结点为 0。
 def balance_factor(node: Node | None) -> int:
     return height(node.left) - height(node.right) if node is not None else 0
 
 
+# Purpose: Rotate right around y, return the new subtree root, and update the heights of the affected nodes.
 # 作用：以 y 为轴右旋，返回新的子树根，并更新受影响结点高度。
 def rotate_right(y: Node) -> Node:
     x = y.left
@@ -57,6 +61,7 @@ def rotate_right(y: Node) -> Node:
     return x
 
 
+# Purpose: Rotate left around x, return the new subtree root, and update the heights of the affected nodes.
 # 作用：以 x 为轴左旋，返回新的子树根，并更新受影响结点高度。
 def rotate_left(x: Node) -> Node:
     y = x.right
@@ -70,6 +75,7 @@ def rotate_left(x: Node) -> Node:
 
 
 # Recompute height after insertion, then apply LL/RR/LR/RL if balance leaves {-1, 0, 1}.
+# Purpose: Recompute height, repair imbalance with LL/RR/LR/RL, and return the new subtree root.
 # 作用：重算高度并按 LL/RR/LR/RL 修复失衡，返回新的子树根。
 def balance(node: Node) -> Node:
     update_height(node)
@@ -89,6 +95,7 @@ def balance(node: Node) -> Node:
     return node
 
 
+# Purpose: Insert by BST ordering and rebalance while recursion unwinds; returns the new subtree root and leaves duplicate keys unchanged.
 # 作用：按 BST 规则插入 value，回溯时重新平衡；返回新的子树根，重复键原样返回。
 def insert(node: Node | None, value: int) -> Node:
     if node is None:
@@ -102,6 +109,7 @@ def insert(node: Node | None, value: int) -> Node:
     return balance(node)
 
 
+# Purpose: Inorder traversal of a subtree that appends keys to output; read-only.
 # 作用：中序遍历子树，把键依次追加到 output；只读。
 def inorder(node: Node | None, output: list[int]) -> None:
     if node is None:
@@ -111,6 +119,7 @@ def inorder(node: Node | None, output: list[int]) -> None:
     inorder(node.right, output)
 
 
+# Purpose: Build a demo AVL tree and print its inorder sequence.
 # 作用：构造演示 AVL 树并打印中序序列。
 def main() -> None:
     root: Node | None = None

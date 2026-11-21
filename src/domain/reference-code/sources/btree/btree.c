@@ -32,6 +32,7 @@ typedef struct BTreeNode
     struct BTreeNode *children[MAX_CHILDREN];
 } BTreeNode;
 
+// Purpose: Allocate and initialize a B-tree node; set the leaf flag and key_count together.
 // 作用：分配并初始化一个 B 树结点；leaf 标记和 key_count 必须同时设置。
 static BTreeNode *NewNode(void)
 {
@@ -39,6 +40,7 @@ static BTreeNode *NewNode(void)
     return node;
 }
 
+// Purpose: Compare keys inside the node, then descend through the only possible child; return 1 on a hit.
 // 作用：在结点内顺序比较键，再沿唯一可能的分支下降；找到返回 1。
 static int Contains(const BTreeNode *node, int key)
 {
@@ -62,6 +64,7 @@ static int Contains(const BTreeNode *node, int key)
     return Contains(node->children[index], key);
 }
 
+// Purpose: Split a full child: promote the middle key to parent, keep the left half in the old node and the right half in a new node; children always has one more entry than keys.
 // 作用：分裂满子结点：中间键上移到 parent，左右两半分别留在原结点和新结点；children 比 keys 多一个。
 void split(BTreeNode *parent, int index, BTreeNode *full)
 {
@@ -97,6 +100,7 @@ void split(BTreeNode *parent, int index, BTreeNode *full)
     ++parent->key_count;
 }
 
+// Purpose: Insert into a subtree known not to be full; split a full child before descending so no backtracking is needed.
 // 作用：在确定未满的子树中插入；遇到满孩子先分裂再下降，避免回溯。
 static void InsertNonFull(BTreeNode *node, int key)
 {
@@ -130,6 +134,7 @@ static void InsertNonFull(BTreeNode *node, int key)
 }
 
 // A full child is split before descending; its median moves into the parent, so insertion never needs to back up.
+// Purpose: B-tree insertion entry: reject duplicates; when the root is full, create a new root and split so height grows by one.
 // 作用：B 树插入入口：重复键拒绝；根满时先建新根并分裂，保证树高只增一层。
 void InsertBTree(BTreeNode **root, int key)
 {
@@ -162,6 +167,7 @@ void InsertBTree(BTreeNode **root, int key)
     InsertNonFull(*root, key);
 }
 
+// Purpose: Print B-tree nodes and keys by depth in preorder to inspect parent-child links after splits; read-only.
 // 作用：按缩进/先序输出 B 树结点及键值，便于检查分裂后的父子关系；只读。
 static void PrintTree(const BTreeNode *node, int depth)
 {
@@ -188,6 +194,7 @@ static void PrintTree(const BTreeNode *node, int depth)
     }
 }
 
+// Purpose: Free B-tree nodes and child arrays postorder so releasing only the root cannot leak.
 // 作用：后序释放 B 树结点与子树数组，避免只释放根造成泄漏。
 void FreeBTree(BTreeNode *node)
 {
@@ -205,6 +212,7 @@ void FreeBTree(BTreeNode *node)
     free(node);
 }
 
+// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
 // 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main(void)
 {

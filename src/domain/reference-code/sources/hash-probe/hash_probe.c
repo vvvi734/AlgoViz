@@ -29,6 +29,7 @@ typedef struct
     int slots[HASH_CAPACITY];
 } HashTable;
 
+// Purpose: Initialize open addressing by marking every slot EMPTY and clearing the tombstone count.
 // 作用：初始化开放地址散列表：所有槽先标为 EMPTY，并清零墓碑计数。
 void InitHashTable(HashTable *table)
 {
@@ -38,6 +39,7 @@ void InitHashTable(HashTable *table)
     }
 }
 
+// Purpose: Compute key's initial slot; linear probing starts there and scans forward for a free slot.
 // 作用：计算 key 的初始槽位；后续线性探测从这里开始向后找空位。
 static int HomeSlot(int key)
 {
@@ -46,6 +48,7 @@ static int HomeSlot(int key)
 }
 
 // This teaching version has no deletion, so an empty slot ends the probe; adding tombstones would require lookup to continue past them.
+// Purpose: Find the first EMPTY slot by linear probing and write there; DELETED slots are reusable but must not terminate a search.
 // 作用：线性探测找第一个 EMPTY 槽写入；遇到 DELETED 可复用，但查找不能在此截断。
 bool HashInsert(HashTable *table, int key)
 {
@@ -66,6 +69,7 @@ bool HashInsert(HashTable *table, int key)
     return false;
 }
 
+// Purpose: Start linear probing at HomeSlot and stop only at EMPTY; continue past DELETED slots.
 // 作用：从 HomeSlot 开始线性探测；遇到 EMPTY 才停止，DELETED 要继续向后找。
 bool HashContains(const HashTable *table, int key)
 {
@@ -85,6 +89,7 @@ bool HashContains(const HashTable *table, int key)
     return false;
 }
 
+// Purpose: Print every hash slot's state and contents to observe collisions and tombstones.
 // 作用：输出散列表每个槽的状态和内容，用于观察冲突与墓碑。
 void PrintHashTable(const HashTable *table)
 {
@@ -102,6 +107,7 @@ void PrintHashTable(const HashTable *table)
     }
 }
 
+// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
 // 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main(void)
 {

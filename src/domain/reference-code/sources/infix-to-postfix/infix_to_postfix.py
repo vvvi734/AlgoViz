@@ -19,6 +19,7 @@ Complexity: O(n) time, O(n) space.
 from __future__ import annotations
 
 
+# Purpose: Return operator precedence: + and - are 1, * and / are 2, everything else is 0.
 # 作用：返回运算符优先级；+/- 为 1，*// 为 2，其他为 0。
 def precedence(operator: str) -> int:
     """Return 1 for +/-, 2 for */, and 0 for anything else."""
@@ -29,6 +30,7 @@ def precedence(operator: str) -> int:
     return 0
 
 
+# Purpose: Split the expression into numbers and multi-character operators while skipping whitespace.
 # 作用：把表达式拆成数字和多字符运算符，跳过空白。
 def tokenize(expression: str) -> list[str]:
     """Split into numbers, parentheses and single-character operators."""
@@ -54,6 +56,7 @@ def tokenize(expression: str) -> list[str]:
     return tokens
 
 
+# Purpose: Return the postfix expression; the caller guarantees that parentheses are balanced.
 # 作用：返回后缀表达式；括号不匹配时由调用方保证输入合法。
 def infix_to_postfix(expression: str) -> str:
     """Convert an infix expression; raise ValueError on unbalanced parentheses."""
@@ -89,6 +92,7 @@ def infix_to_postfix(expression: str) -> str:
     return " ".join(output)
 
 
+# Purpose: Demonstrate the conversion of (3 + 4) * 2.
 # 作用：演示 (3 + 4) * 2 的转换结果。
 def main() -> None:
     print("infix:  (3 + 4) * 2")

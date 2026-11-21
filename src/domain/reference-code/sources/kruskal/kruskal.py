@@ -29,6 +29,7 @@ class DisjointSet:
         self.parent = list(range(size))
         self.rank = [0] * size
 
+    # Purpose: Return the root of vertex's set and apply path compression.
     # 作用：返回 vertex 所在集合的根，并做路径压缩。
     def find(self, vertex: int) -> int:
         while self.parent[vertex] != vertex:
@@ -38,6 +39,7 @@ class DisjointSet:
 
     # Union by rank keeps DSU trees shallow; a rejected edge would close a cycle.
     # Sort by weight, then accept an edge only when union-find reports different components; otherwise it closes a cycle.
+    # Purpose: Union the sets containing a and b by rank; return False when they already match, otherwise merge and return True.
     # 作用：按秩合并 a、b 所在集合；已在同一集合返回 False，否则合并并返回 True。
     def unite(self, a: int, b: int) -> bool:
         root_a = self.find(a)
@@ -54,6 +56,7 @@ class DisjointSet:
         return True
 
 
+# Purpose: Build a demo graph, select edges with Kruskal, and print the total weight.
 # 作用：构造演示图，按 Kruskal 选边并打印总权值。
 def main() -> None:
     edges = [

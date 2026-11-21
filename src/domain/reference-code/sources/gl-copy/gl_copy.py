@@ -1,3 +1,8 @@
+# Generalized-list copy in Python 3.
+# Every source node gets a fresh node, so the copy owns its own subtree and
+# never shares list/tuple objects with the source. `copy_gl` copies the current
+# node and its `head` chain but not its `next` sibling; the caller links it.
+# Time O(n), new tree O(n), recursion space O(h).
 """AlgoViz 参考代码 · 广义表复制 · Python 3
 原理实现
 
@@ -22,6 +27,7 @@ head；忘记把子节点接到 next 导致只剩第一个孩子。
 from __future__ import annotations
 
 
+# Purpose: One node carries a tag and either atom text or a child head.
 class GLNode:
     """广义表节点：tag 为 atom/list，next 指向同层后继。"""
 
@@ -34,16 +40,19 @@ class GLNode:
         self.next: GLNode | None = None
 
 
+# Purpose: Construct an atom node; the caller keeps text within the length limit.
 def make_atom(text: str) -> GLNode:
     """构造原子节点；text 由调用方保证不超过 8 个字符。"""
     return GLNode("atom", text)
 
 
+# Purpose: Construct an empty list; head is None but () is still a real node.
 def make_list() -> GLNode:
     """构造空表节点；head 为空但节点本身代表真实的 ()。"""
     return GLNode("list")
 
 
+# Purpose: Append child to parent's sibling chain and set its next to None.
 def append_child(parent: GLNode, child: GLNode) -> None:
     """把 child 追加到 parent 同层链尾。"""
     if parent.tag != "list":
@@ -57,6 +66,7 @@ def append_child(parent: GLNode, child: GLNode) -> None:
     tail.next = child
 
 
+# Purpose: Copy one node and its subtree; src.next is intentionally not copied.
 def copy_one(src: GLNode | None) -> GLNode | None:
     """复制一个节点及其子树，不复制 src.next；返回新节点。"""
     if src is None:
@@ -70,6 +80,8 @@ def copy_one(src: GLNode | None) -> GLNode | None:
         child_copy = copy_one(child)
         if child_copy is None:
             raise MemoryError("copy allocation failed")
+        # 新节点逐个接入：dst.head 只指向第一个复制孩子，其余走 next。
+        # Purpose: Link copies one by one; dst.head holds the first child and next holds the rest.
         if dst.head is None:
             dst.head = child_copy
         else:
@@ -79,6 +91,7 @@ def copy_one(src: GLNode | None) -> GLNode | None:
     return dst
 
 
+# Purpose: Render the list in parenthesized form so copy and source can be compared.
 def format_gl(node: GLNode | None) -> str:
     """输出无空格括号表达式，用于核对结构等价。"""
     if node is None:
@@ -93,6 +106,7 @@ def format_gl(node: GLNode | None) -> str:
     return "(" + ",".join(parts) + ")"
 
 
+# Purpose: Build (a,(b,c),((d),e)) for the copy demo.
 def build_demo() -> GLNode:
     """构造 (a,(b,c),((d),e))，用于演示复制。"""
     root = make_list()

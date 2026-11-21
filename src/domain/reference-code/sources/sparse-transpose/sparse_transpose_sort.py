@@ -31,6 +31,7 @@ class Triple:
     value: int
 
 
+# Purpose: Return the transposed triplets sorted in row-major order.
 # 作用：返回按行优先排序的转置三元组。
 def sort_transpose(triples: List[Triple]) -> List[Triple]:
     swapped = [Triple(item.col, item.row, item.value) for item in triples]
@@ -38,6 +39,7 @@ def sort_transpose(triples: List[Triple]) -> List[Triple]:
     return sorted(swapped, key=lambda item: (item.row, item.col))
 
 
+# Purpose: Build a demo sparse matrix and print the transposed result.
 # 作用：构造演示稀疏矩阵并打印转置结果。
 def main() -> None:
     triples = [

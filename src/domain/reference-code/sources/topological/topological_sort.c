@@ -28,6 +28,7 @@ static const int GRAPH[VERTEX_COUNT][VERTEX_COUNT] = {
 };
 
 // A vertex enters the queue only when its indegree reaches zero; fewer than V emitted vertices means a directed cycle.
+// Purpose: Repeatedly output a zero-indegree vertex and decrement its neighbours; fewer than V outputs means a cycle.
 // 作用：反复取入度为 0 的结点输出，并减少邻居入度；输出少于 V 说明有环。
 int TopologicalSort(int order[])
 {
@@ -75,6 +76,7 @@ int TopologicalSort(int order[])
     return emitted;
 }
 
+// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
 // 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main(void)
 {

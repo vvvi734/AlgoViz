@@ -34,6 +34,7 @@
 #include <string>
 #include <vector>
 
+// Purpose: Standard-library comparison: loop over string::find to report every match, including overlaps.
 // 作用：标准库对照实现：用 string::find 循环查找所有匹配，允许重叠。
 std::vector<std::size_t> find_all(const std::string &text, const std::string &pattern)
 {
@@ -54,6 +55,7 @@ std::vector<std::size_t> find_all(const std::string &text, const std::string &pa
     return starts;
 }
 
+// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
 // 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main()
 {

@@ -42,6 +42,7 @@ struct Node
 
 struct Compare
 {
+    // Purpose: Priority-queue comparator: lower frequency wins, and insertion order breaks ties.
     // 作用：优先队列比较器：频率小的结点优先；频率相同用插入序号打破平局。
     bool operator()(const Node *a, const Node *b) const
     {
@@ -53,6 +54,7 @@ struct Compare
     }
 };
 
+// Purpose: Recursively print each leaf's Huffman code along the 0/1 tree path without modifying the tree.
 // 作用：沿树的 0/1 路径递归输出每个叶子的哈夫曼编码；不修改树。
 void print_codes(const Node *node, const std::string &path)
 {
@@ -71,6 +73,7 @@ void print_codes(const Node *node, const std::string &path)
     }
 }
 
+// Purpose: Free a Huffman tree postorder: release both children before the current node.
 // 作用：后序释放哈夫曼树：先释放左右孩子，再释放当前结点。
 void free_tree(Node *node)
 {
@@ -83,6 +86,7 @@ void free_tree(Node *node)
     delete node;
 }
 
+// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
 // 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main()
 {

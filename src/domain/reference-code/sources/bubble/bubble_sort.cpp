@@ -29,6 +29,7 @@
 
 // Invariant: after each pass, the largest remaining values are fixed at the right end.
 // After pass k the largest k values sit at the right end; an unchanged pass ends the sort early.
+// Purpose: Bubble-sort the vector, shrinking the unsorted suffix each pass and stopping when a pass makes no swap.
 // 作用：对 vector 做冒泡排序；每轮缩小未排序区，某轮没有交换就提前结束。
 void bubble_sort(std::vector<int> &values)
 {
@@ -56,6 +57,7 @@ void bubble_sort(std::vector<int> &values)
     }
 }
 
+// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
 // 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main()
 {

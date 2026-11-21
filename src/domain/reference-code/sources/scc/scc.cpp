@@ -29,6 +29,7 @@
 #include <vector>
 
 // First pass records finish order; the reverse graph is then explored in decreasing finish order to isolate SCCs.
+// Purpose: First DFS pass: record each finish time while position increases, producing the reverse finish order.
 // 作用：第一遍 DFS：记录每个结点的完成时间；position 递增，最后得到逆完成顺序。
 void first_pass(const std::vector<std::vector<int>> &graph, int vertex, std::vector<bool> &visited,
                 std::vector<int> &order)
@@ -44,6 +45,7 @@ void first_pass(const std::vector<std::vector<int>> &graph, int vertex, std::vec
     order.push_back(vertex);
 }
 
+// Purpose: Collect one SCC from vertex on the reversed graph, expanding only through unvisited vertices.
 // 作用：在反向图上从 vertex 出发收集同一强连通分量；只沿未访问结点扩散。
 void collect(const std::vector<std::vector<int>> &reverse_graph, int vertex,
              std::vector<bool> &visited, std::vector<int> &component)
@@ -59,6 +61,7 @@ void collect(const std::vector<std::vector<int>> &reverse_graph, int vertex,
     }
 }
 
+// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
 // 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main()
 {

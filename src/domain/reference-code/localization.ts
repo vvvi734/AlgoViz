@@ -3,7 +3,6 @@ import type { LocalizedText } from '../lessons/types';
 import { REFERENCE_ANNOTATIONS, type ReferenceAnnotation } from './annotations';
 import {
   REFERENCE_CONVENIENCE_NOTES,
-  referenceCommentLanguage,
   type ReferenceImplementation,
   type ReferenceLanguage,
 } from './registry';
@@ -379,49 +378,272 @@ function annotationText(line: string, language: ReferenceLanguage): string | nul
   return trimmed.slice(marker.length).trim();
 }
 
-function annotateBody(
-  source: string,
-  stripped: string,
-  language: ReferenceLanguage,
-  annotations: readonly ReferenceAnnotation[],
-): string {
-  if (annotations.length === 0) return stripped;
+function hasCjk(text: string): boolean {
+  return /[\u3400-\u9fff]/.test(text);
+}
 
-  const originalLines = source.split('\n');
-  const strippedLines = stripped.split('\n');
-  const firstContent = strippedLines.findIndex((line) => line.trim().length > 0);
-  if (firstContent < 0) return stripped;
+interface CommentSpan {
+  start: number;
+  end: number;
+  text: string;
+}
 
-  const bodyLines = [...strippedLines];
-  const marker = language === 'python' ? '#' : '//';
+function scanCCommentSpans(source: string): CommentSpan[] {
+  const spans: CommentSpan[] = [];
+  let index = 0;
 
-  // Sources may already carry reviewed Chinese line comments. Stripping removes
-  // every comment, so restore those lines before overlaying translated English
-  // annotations; otherwise the Chinese view would lose the richest explanations.
-  originalLines.forEach((line, index) => {
-    const text = annotationText(line, language);
-    if (text && /[\u3400-\u9fff]/.test(text)) bodyLines[index] = line;
-  });
+  while (index < source.length) {
+    const current = source[index];
+    const next = source[index + 1];
 
-  for (const annotation of annotations) {
-    const sourceIndex = originalLines.findIndex(
-      (line) => annotationText(line, language) === annotation.en,
-    );
-    if (sourceIndex < 0 || sourceIndex < firstContent) continue;
-    const indent = originalLines[sourceIndex].slice(
-      0,
-      originalLines[sourceIndex].length - originalLines[sourceIndex].trimStart().length,
-    );
-    bodyLines[sourceIndex] = `${indent}${marker} ${annotation.zh}`;
+    if (current === '"' || current === "'") {
+      const quote = current;
+      index += 1;
+      while (index < source.length && source[index] !== quote) {
+        if (source[index] === '\\') index += 1;
+        index += 1;
+      }
+      index += 1;
+      continue;
+    }
+
+    if (current === '/' && next === '/') {
+      const start = index;
+      index += 2;
+      while (index < source.length && source[index] !== '\n') index += 1;
+      spans.push({ start, end: index, text: source.slice(start, index) });
+      continue;
+    }
+
+    if (current === '/' && next === '*') {
+      const start = index;
+      index += 2;
+      while (index < source.length && !(source[index] === '*' && source[index + 1] === '/')) {
+        index += 1;
+      }
+      if (index < source.length) index += 2;
+      spans.push({ start, end: index, text: source.slice(start, index) });
+      continue;
+    }
+
+    index += 1;
   }
 
-  return bodyLines.slice(firstContent).join('\n');
+  return spans;
+}
+
+function scanPythonCommentSpans(source: string): CommentSpan[] {
+  const spans: CommentSpan[] = [];
+  let index = 0;
+
+  while (index < source.length) {
+    const current = source[index];
+
+    if (current === '#') {
+      const start = index;
+      while (index < source.length && source[index] !== '\n') index += 1;
+      spans.push({ start, end: index, text: source.slice(start, index) });
+      continue;
+    }
+
+    if (current === '"' || current === "'") {
+      const quote = current;
+      const triple = source[index + 1] === quote && source[index + 2] === quote;
+      const lineStart = source.lastIndexOf('\n', index - 1) + 1;
+      const statementPrefix = source.slice(lineStart, index);
+      const isDocstring = triple && statementPrefix.trim().length === 0;
+
+      if (triple) {
+        const start = index;
+        index += 3;
+        while (index < source.length) {
+          if (
+            source[index] === quote &&
+            source[index + 1] === quote &&
+            source[index + 2] === quote
+          ) {
+            index += 3;
+            break;
+          }
+          if (source[index] === '\\') index += 1;
+          index += 1;
+        }
+        if (isDocstring) {
+          spans.push({ start, end: index, text: source.slice(start, index) });
+        }
+        continue;
+      }
+
+      index += 1;
+      while (index < source.length && source[index] !== quote) {
+        if (source[index] === '\\') index += 1;
+        index += 1;
+      }
+      index += 1;
+      continue;
+    }
+
+    index += 1;
+  }
+
+  return spans;
+}
+
+function commentSpans(source: string, language: ReferenceLanguage): CommentSpan[] {
+  return language === 'python'
+    ? scanPythonCommentSpans(source)
+    : scanCCommentSpans(source);
+}
+
+function commentBody(line: string, language: ReferenceLanguage): string {
+  let body = line.trim();
+  if (language === 'python') {
+    body = body.replace(/^("{3}|'{3})/, '').replace(/(("{3})|('{3}))$/, '').trim();
+    return body;
+  }
+  body = body.replace(/^\/\*+/, '').replace(/\*+\/$/, '').replace(/^\*+/, '').trim();
+  return body;
+}
+
+function hasTeachingText(line: string, language: ReferenceLanguage): boolean {
+  return /[A-Za-z]{3,}/.test(commentBody(line, language));
+}
+
+function mixedCommentReplacement(
+  text: string,
+  language: ReferenceLanguage,
+  target: Lang,
+): string | null {
+  const lines = text.split('\n');
+  const bodies = lines.map((line) => commentBody(line, language));
+  const cjkCount = bodies.filter((body) => hasCjk(body)).length;
+  const englishCount = bodies.filter(
+    (body) => body.length > 0 && !hasCjk(body) && hasTeachingText(body, language),
+  ).length;
+
+  if (cjkCount === 0 || englishCount === 0) return null;
+
+  const indent = lines[0].slice(0, lines[0].length - lines[0].trimStart().length);
+  const content = bodies.filter((body) => body.length > 0);
+  const keptContent = content.filter((body) => (target === 'zh' ? hasCjk(body) : !hasCjk(body)));
+
+  if (language === 'python') {
+    const delimiter = text.trimStart().startsWith("'''") ? "'''" : '"""';
+    return [
+      `${indent}${delimiter}`,
+      ...keptContent.map((body) => `${indent}${body}`),
+      `${indent}${delimiter}`,
+    ].join('\n');
+  }
+
+  return [
+    `${indent}/*`,
+    ...keptContent.map((body) => `${indent} * ${body}`),
+    `${indent} */`,
+  ].join('\n');
+}
+
+function insertText(text: string, edits: Array<{ start: number; end: number; replacement: string }>): string {
+  let cursor = 0;
+  let output = '';
+  for (const edit of edits.sort((a, b) => a.start - b.start)) {
+    output += text.slice(cursor, edit.start) + edit.replacement;
+    cursor = edit.end;
+  }
+  return output + text.slice(cursor);
 }
 
 /**
- * Keep one algorithm body and add a reviewed annotation layer for the opposite
- * UI language. When the source already uses that language, its native comments
- * remain visible unchanged.
+ * Remove comments that do not belong to `target`. The scan is lexical, so URL
+ * slashes, string literals and indentation inside code survive unchanged.
+ * Standalone comments disappear together with their line; inline comments only
+ * lose the comment token. A mixed block (for example a Python module docstring
+ * with both languages) is reduced to the target-language lines while its
+ * delimiters and line structure stay intact.
+ */
+export function selectReferenceComments(
+  source: string,
+  language: ReferenceLanguage,
+  target: Lang,
+): string {
+  const edits: Array<{ start: number; end: number; replacement: string }> = [];
+
+  for (const span of commentSpans(source, language)) {
+    const mixed = mixedCommentReplacement(span.text, language, target);
+    if (mixed !== null) {
+      edits.push({ start: span.start, end: span.end, replacement: mixed });
+      continue;
+    }
+
+    const keep = target === 'zh' ? hasCjk(span.text) : !hasCjk(span.text);
+    if (keep) continue;
+
+    const lineStart = source.lastIndexOf('\n', span.start - 1) + 1;
+    const nextNewline = source.indexOf('\n', span.end);
+    const lineEnd = nextNewline < 0 ? source.length : nextNewline;
+    const before = source.slice(lineStart, span.start);
+    const after = source.slice(span.end, lineEnd);
+
+    if (before.trim().length === 0 && after.trim().length === 0) {
+      edits.push({
+        start: lineStart,
+        end: nextNewline < 0 ? source.length : nextNewline + 1,
+        replacement: '',
+      });
+    } else {
+      edits.push({ start: span.start, end: span.end, replacement: '' });
+    }
+  }
+
+  return insertText(source, edits);
+}
+
+/**
+ * Replace reviewed English line-comment anchors with their Chinese rendering
+ * before the language filter runs. The replacement keeps indentation and the
+ * comment marker, so the selected output remains a normal source file.
+ */
+function applyChineseAnnotations(
+  source: string,
+  language: ReferenceLanguage,
+  annotations: readonly ReferenceAnnotation[],
+): string {
+  if (annotations.length === 0) return source;
+
+  const lines = source.split('\n');
+  const marker = language === 'python' ? '#' : '//';
+
+  for (const annotation of annotations) {
+    const sourceIndex = lines.findIndex(
+      (line) => annotationText(line, language) === annotation.en,
+    );
+    if (sourceIndex < 0) continue;
+    const line = lines[sourceIndex];
+    const indent = line.slice(0, line.length - line.trimStart().length);
+    lines[sourceIndex] = `${indent}${marker} ${annotation.zh}`;
+  }
+
+  return lines.join('\n');
+}
+
+function hasLeadingHeader(source: string, language: ReferenceLanguage): boolean {
+  const trimmed = source.replace(/^(?:[ \t]*\r?\n)+/, '');
+  if (language === 'python') {
+    return trimmed.startsWith('#') || trimmed.startsWith('"""') || trimmed.startsWith("'''");
+  }
+  return trimmed.startsWith('//') || trimmed.startsWith('/*');
+}
+
+/**
+ * Keep one algorithm body and select only comments in the current UI language.
+ * The source can carry reviewed comments in both languages for the same line;
+ * `selectReferenceComments` removes the other language lexically, never by
+ * rewriting code. Reviewed English anchors are first rendered into Chinese so
+ * comments that only exist in English still have a teaching translation.
+ *
+ * A source without a header in the selected language receives the generated
+ * compact header; sources that already have one keep their richer original
+ * header instead of stacking two introductions.
  */
 export function localizeReferenceSource(
   source: string,
@@ -441,18 +663,23 @@ export function localizeReferenceSource(
     lang: Lang;
   },
 ): string {
-  const nativeLanguage = referenceCommentLanguage();
-  if (nativeLanguage === lang) return source;
+  const annotated =
+    lang === 'zh'
+      ? applyChineseAnnotations(
+          source,
+          language,
+          fileName ? REFERENCE_ANNOTATIONS[fileName] ?? [] : [],
+        )
+      : source;
+  const selected = selectReferenceComments(annotated, language, lang).replace(
+    /^(?:[ \t]*\r?\n)+/,
+    '',
+  );
 
-  const stripped = stripReferenceComments(source, language);
-  const body = annotateBody(
-    source,
-    stripped,
-    language,
-    fileName ? REFERENCE_ANNOTATIONS[fileName] ?? [] : [],
-  ).replace(/^(?:[ \t]*\n)+/, '');
+  if (selected.trim().length === 0 || hasLeadingHeader(selected, language)) return selected;
+
   return `${wrapHeader(
     headerLines(algorithmId, algorithmName, language, implementation, lang),
     language,
-  )}\n\n${body}`;
+  )}\n\n${selected}`;
 }

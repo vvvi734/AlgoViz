@@ -24,6 +24,7 @@
 
 #define MAX_TOKENS 64
 
+// Purpose: Check that token consists only of decimal digits; an empty string returns false.
 /*
  * 作用：判断 token 是否只由十进制数字组成；空串返回 false。
  */
@@ -43,6 +44,7 @@ static bool IsNumber(const char *token)
     return true;
 }
 
+// Purpose: Evaluate postfix; return false for insufficient/extra operands, an invalid token or division by zero.
 /*
  * 作用：后缀求值主函数。返回 false 表示操作数不足/过多、非法 token 或除零。
  * value 只在成功时写入最终结果。
@@ -119,6 +121,7 @@ bool EvalPostfix(char *expression, int *value, char *error, size_t error_capacit
     return true;
 }
 
+// Purpose: Evaluate the official example 3 4 + 2 *, expecting 14.
 /*
  * 作用：用官方示例 3 4 + 2 * 演示求值，期望结果 14。
  */

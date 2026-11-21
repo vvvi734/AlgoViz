@@ -32,6 +32,7 @@ class Node:
     right: "Node | None" = None
 
 
+# Purpose: Collect leaf codes recursively, appending 0 on the left branch and 1 on the right branch.
 # 作用：递归收集叶子编码；左分支补 0，右分支补 1。
 def collect_codes(node: Node, path: str, codes: dict[str, str]) -> None:
     if node.left is None and node.right is None:
@@ -43,6 +44,7 @@ def collect_codes(node: Node, path: str, codes: dict[str, str]) -> None:
         collect_codes(node.right, path + "1", codes)
 
 
+# Purpose: Build a demo weight set and print Huffman codes.
 # 作用：构造演示权值集合并打印哈夫曼编码。
 def main() -> None:
     symbols = ["a", "b", "c", "d", "e", "f"]

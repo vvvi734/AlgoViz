@@ -35,6 +35,7 @@ class DoublyList
         std::unique_ptr<Node> next;
     };
 
+    // Purpose: Destructor: release every dynamic node, restore null head/tail and zero length, and save next before freeing each node.
     // 作用：析构：释放容器中所有动态结点，并把头尾指针和长度恢复为空状态；先保存 next 再释放当前结点。
     ~DoublyList()
     {
@@ -45,6 +46,7 @@ class DoublyList
     }
 
     // Append wires prev and next first; only then does tail move to the new node.
+    // Purpose: Append value at the doubly linked-list tail while maintaining prev, next, tail and length.
     // 作用：在双向链表尾部追加 value，同时维护 prev、next、tail 和 length。
     Node *append(int value)
     {
@@ -65,6 +67,7 @@ class DoublyList
     }
 
     // Removal repairs both `prev` and `next`; removing the head or tail must also update the external head/tail pointer.
+    // Purpose: Remove a known node by reconnecting its predecessor and successor before freeing it; handle head and tail boundaries.
     // 作用：删除已知结点：让前驱与后继互相接回，再释放结点；注意头尾边界。
     void remove(Node *node)
     {
@@ -87,6 +90,7 @@ class DoublyList
         }
     }
 
+    // Purpose: Print the list forward from head along next; read-only and does not alter links.
     // 作用：从 head 沿 next 正向输出链表；只读，不改变结构。
     void print_forward() const
     {
@@ -97,6 +101,7 @@ class DoublyList
         std::cout << '\n';
     }
 
+    // Purpose: Print the list backward from tail along prev; read-only and does not alter links.
     // 作用：从 tail 沿 prev 反向输出链表；只读，不改变结构。
     void print_backward() const
     {
@@ -111,6 +116,7 @@ class DoublyList
     Node *tail_ = nullptr;
 };
 
+// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
 // 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main()
 {

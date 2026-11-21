@@ -27,6 +27,7 @@ static const int GRAPH[VERTEX_COUNT][VERTEX_COUNT] = {
 };
 
 // `key[v]` is the lightest edge from v to the current tree; `parent[v]` records the endpoint that supplied it.
+// Purpose: Grow the chosen set by repeatedly taking the lightest edge across the cut and updating neighbour keys until every vertex is in the tree.
 // 作用：从起点扩张已选集合：每次选连接内外的最小边，更新邻居 key，直到所有结点入树。
 void Prim(void)
 {
@@ -75,6 +76,7 @@ void Prim(void)
     printf("total: %d\n", total);
 }
 
+// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
 // 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main(void)
 {

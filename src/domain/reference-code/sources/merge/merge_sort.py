@@ -22,6 +22,7 @@ from __future__ import annotations
 
 
 # The buffer is shared across recursive calls; ties take the left run, which keeps the merge stable.
+# Purpose: Merge values[left..middle] and [middle+1..right] through buffer, then copy the merged run back.
 # 作用：把 values[left..middle] 与 [middle+1..right] 合并到 buffer 再写回。
 def merge_range(values: list[int], buffer: list[int], left: int, middle: int, right: int) -> None:
     i, j, k = left, middle + 1, left
@@ -49,6 +50,7 @@ def merge_range(values: list[int], buffer: list[int], left: int, middle: int, ri
         values[index] = buffer[index]
 
 
+# Purpose: Recursively sort the inclusive interval [left, right].
 # 作用：递归排序闭区间 [left, right]。
 def merge_sort_range(values: list[int], buffer: list[int], left: int, right: int) -> None:
     if left >= right:
@@ -60,6 +62,7 @@ def merge_sort_range(values: list[int], buffer: list[int], left: int, right: int
 
 
 # Recursive divide-and-conquer; the merge step takes the smaller front element to stay stable.
+# Purpose: Allocate the buffer for the whole array and start recursive sorting.
 # 作用：为整个数组分配 buffer 并启动递归排序。
 def merge_sort(values: list[int]) -> None:
     if len(values) < 2:
@@ -68,6 +71,7 @@ def merge_sort(values: list[int]) -> None:
     merge_sort_range(values, buffer, 0, len(values) - 1)
 
 
+# Purpose: Demonstrate merge sort and print the result.
 # 作用：演示归并排序并打印结果。
 def main() -> None:
     values = [9, 4, 7, 2, 6, 1, 3, 8, 5]

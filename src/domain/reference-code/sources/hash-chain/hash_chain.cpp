@@ -29,6 +29,7 @@ class HashTable
   public:
     // Search the target bucket before appending; the chain holds only colliding keys.
     // Each bucket owns a chain; inserting at the bucket head is O(1), and duplicates are rejected before allocation.
+    // Purpose: Insert at the bucket head after checking for duplicates; return false for an existing key.
     // 作用：头插到对应桶；先查重，重复键返回 false。
     bool insert(int key)
     {
@@ -44,6 +45,7 @@ class HashTable
         return true;
     }
 
+    // Purpose: Traverse the target bucket and compare real keys rather than only hash values.
     // 作用：只读遍历目标桶，比较真实键而不是只比较哈希值。
     bool contains(int key) const
     {
@@ -58,6 +60,7 @@ class HashTable
         return false;
     }
 
+    // Purpose: Print the chained hash table bucket by bucket to observe collision chains; read-only.
     // 作用：逐桶输出链地址散列表的内容，用于观察冲突链；只读。
     void print() const
     {
@@ -73,6 +76,7 @@ class HashTable
     }
 
   private:
+    // Purpose: Map key to a bucket index in 0..bucket_count-1; convert negative keys to a non-negative value first.
     // 作用：把 key 映射到 0..bucket_count-1 的桶下标；负键要先转成非负。
     std::size_t hash_index(int key) const
     {
@@ -84,6 +88,7 @@ class HashTable
     std::vector<std::vector<int>> buckets_ = std::vector<std::vector<int>>(7);
 };
 
+// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
 // 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main()
 {

@@ -26,6 +26,7 @@ static const int GRAPH[VERTEX_COUNT][VERTEX_COUNT] = {
 };
 
 // Mark a vertex on entry; the recursion then visits every unvisited neighbour before returning.
+// Purpose: Recursively visit vertex and its unvisited neighbours; mark visited on entry so back edges are not expanded twice.
 // 作用：递归访问 vertex 及其未访问邻居；进入时立即标记 visited，避免回边重复展开。
 static void Visit(int vertex, int visited[VERTEX_COUNT])
 {
@@ -40,6 +41,7 @@ static void Visit(int vertex, int visited[VERTEX_COUNT])
     }
 }
 
+// Purpose: Depth-first traverse from start; the recursion stack holds the current root-to-node path.
 // 作用：从 start 开始深度优先遍历；递归栈保存当前根到当前结点的路径。
 void DFS(int start)
 {
@@ -49,6 +51,7 @@ void DFS(int start)
     printf("\n");
 }
 
+// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
 // 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main(void)
 {

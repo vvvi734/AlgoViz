@@ -23,6 +23,7 @@ from __future__ import annotations
 
 # Invariant: after each pass, the largest remaining values are fixed at the right end.
 # After pass k the largest k values sit at the right end; an unchanged pass ends the sort early.
+# Purpose: Sort values ascending in place with no return value; stable.
 # 作用：原地升序排序 values；无返回值，稳定。
 def bubble_sort(values: list[int]) -> None:
     end = len(values) - 1
@@ -38,6 +39,7 @@ def bubble_sort(values: list[int]) -> None:
         end -= 1
 
 
+# Purpose: Demonstrate bubble sort and print the result.
 # 作用：演示冒泡排序并打印结果。
 def main() -> None:
     values = [5, 1, 4, 2, 8, 0, 3, 7, 6, 9]

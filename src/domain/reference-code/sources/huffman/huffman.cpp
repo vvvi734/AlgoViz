@@ -38,12 +38,14 @@ struct Node
 class MinHeap
 {
   public:
+    // Purpose: Build a min-heap from leaf nodes, storing indices only while the real nodes live in nodes_.
     // 作用：用叶子结点数组建最小堆；只保存下标，真实结点在 nodes_ 中。
     explicit MinHeap(std::vector<Node> &nodes) : nodes_(nodes)
     {
     }
 
     // Min-heap ordering is (frequency, insertion order), keeping ties deterministic.
+    // Purpose: Push a node index into the min-heap and sift it up using less(index, index) for comparisons.
     // 作用：把结点下标加入最小堆并上浮；比较用 less(index, index)。
     void push(int index)
     {
@@ -51,6 +53,7 @@ class MinHeap
         sift_up(heap_.size() - 1);
     }
 
+    // Purpose: Pop the heap-top index, sift the last index down, and return the index of the least frequent node.
     // 作用：弹出堆顶下标并把末尾下标下沉；返回频率最小的结点下标。
     int pop()
     {
@@ -64,12 +67,14 @@ class MinHeap
         return top;
     }
 
+    // Purpose: Read-only emptiness test that does not modify the structure.
     // 作用：只读判断容器是否为空；不修改结构。
     bool empty() const
     {
         return heap_.empty();
     }
 
+    // Purpose: Return the current element count from the maintained field instead of traversing.
     // 作用：返回当前有效元素个数；直接读取维护字段，不遍历。
     std::size_t size() const
     {
@@ -77,6 +82,7 @@ class MinHeap
     }
 
   private:
+    // Purpose: Compare two node indices by frequency, using insertion order to break frequency ties stably.
     // 作用：比较两个结点下标：频率小者优先，频率相同按插入序号稳定排序。
     bool less(int a, int b) const
     {
@@ -87,6 +93,7 @@ class MinHeap
         return nodes_[a].order < nodes_[b].order;
     }
 
+    // Purpose: Sift up from index, swapping with the parent until min-heap order is restored.
     // 作用：从 index 向上与父结点比较并交换，直到最小堆序恢复。
     void sift_up(std::size_t index)
     {
@@ -102,6 +109,7 @@ class MinHeap
         }
     }
 
+    // Purpose: Sift down from index, swapping with the smaller child until min-heap order is restored.
     // 作用：从 index 向下与较小孩子交换，直到最小堆序恢复。
     void sift_down(std::size_t index)
     {
@@ -131,6 +139,7 @@ class MinHeap
     std::vector<int> heap_;
 };
 
+// Purpose: Recursively print each leaf's Huffman code along the 0/1 tree path without modifying the tree.
 // 作用：沿树的 0/1 路径递归输出每个叶子的哈夫曼编码；不修改树。
 void print_codes(const std::vector<Node> &nodes, int index, std::string path)
 {
@@ -150,6 +159,7 @@ void print_codes(const std::vector<Node> &nodes, int index, std::string path)
     }
 }
 
+// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
 // 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main()
 {

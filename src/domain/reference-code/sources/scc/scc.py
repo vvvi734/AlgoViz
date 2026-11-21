@@ -26,6 +26,7 @@ from __future__ import annotations
 
 # First pass appends a vertex only after all its outgoing neighbours are finished.
 # First pass records finish order; the reverse graph is then explored in decreasing finish order to isolate SCCs.
+# Purpose: DFS on the original graph and append finished vertices to order.
 # 作用：在原图上 DFS，把完成顶点追加到 order。
 def first_pass(graph: list[list[int]], vertex: int, visited: list[bool], order: list[int]) -> None:
     visited[vertex] = True
@@ -35,6 +36,7 @@ def first_pass(graph: list[list[int]], vertex: int, visited: list[bool], order: 
     order.append(vertex)
 
 
+# Purpose: Collect one SCC from vertex on the reversed graph and append its vertices to component.
 # 作用：在反向图上从 vertex 收集一个 SCC，并追加到 component。
 def collect(reverse_graph: list[list[int]], vertex: int, visited: list[bool], component: list[int]) -> None:
     visited[vertex] = True
@@ -44,6 +46,7 @@ def collect(reverse_graph: list[list[int]], vertex: int, visited: list[bool], co
             collect(reverse_graph, neighbor, visited, component)
 
 
+# Purpose: Build a demo directed graph and print its SCCs.
 # 作用：构造演示有向图并打印 SCC。
 def main() -> None:
     edges = [(0, 1), (1, 2), (2, 0), (2, 3), (3, 4), (4, 5), (5, 3)]

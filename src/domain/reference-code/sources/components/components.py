@@ -22,6 +22,7 @@ Convention: Components are numbered in ascending order of their smallest vertex.
 from __future__ import annotations
 
 
+# Purpose: Recursively mark vertex's whole connected component and append each vertex to component.
 # 作用：从 vertex 递归标记整个连通分量，并追加到 component。
 def visit(graph: list[list[int]], vertex: int, visited: list[bool], component: list[int]) -> None:
     visited[vertex] = True
@@ -33,6 +34,7 @@ def visit(graph: list[list[int]], vertex: int, visited: list[bool], component: l
 
 # Every unvisited start opens a new component; one DFS marks all vertices reachable from it.
 # The outer scan opens a new component only at an unvisited vertex; one DFS marks its whole component.
+# Purpose: Return the vertex lists of all connected components without modifying graph.
 # 作用：返回所有连通分量的顶点列表；不修改 graph。
 def count_components(graph: list[list[int]]) -> list[list[int]]:
     visited = [False] * len(graph)
@@ -45,6 +47,7 @@ def count_components(graph: list[list[int]]) -> list[list[int]]:
     return components
 
 
+# Purpose: Build a demo graph with two components and print the result.
 # 作用：构造含两个分量的演示图并打印结果。
 def main() -> None:
     graph: list[list[int]] = [[] for _ in range(7)]

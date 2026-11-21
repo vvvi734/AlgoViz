@@ -21,6 +21,7 @@ Convention: Positions are 0-based; insert accepts 0..len, pop requires a valid i
 from __future__ import annotations
 
 
+# Purpose: Demonstrate basic sequential-list operations with a list.
 # 作用：用 list 演示顺序表的基本操作。
 def main() -> None:
     # `list.insert/pop` shift the tail; this adapter has no separate capacity field.

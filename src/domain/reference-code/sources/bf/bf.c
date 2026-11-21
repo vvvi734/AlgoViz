@@ -23,9 +23,21 @@
  * 复杂度：最坏 O(nm) 时间；除结果数组外只用常数个下标与计数，O(1) 空间。
  */
 
+/*
+ * Brute-force substring search (BF) in C11.
+ *
+ * Enumerate every legal alignment of the pattern in the text. For each start s,
+ * compare text[s + j] with pattern[j] from j = 0; on a mismatch, move s right and
+ * restart at j = 0. A match is recorded whenever j reaches m, and the loop still
+ * continues with s + 1 so overlapping occurrences are reported as well.
+ * Time O(nm) worst case, extra space O(1) apart from the output array. An empty
+ * pattern, a null pointer, or insufficient output capacity returns -1.
+ */
+
 #include <stdio.h>
 #include <string.h>
 
+// Purpose: Record all 0-based occurrence starts, including overlaps; return the count or -1.
 /*
  * 在 text 中找出 pattern 的全部匹配起点（允许重叠）。
  *
@@ -52,6 +64,7 @@ int bf_find_all(const char *text, const char *pattern, int *starts, int capacity
     }
 
     // n < m 时连一个完整对齐都放不下，直接返回 0，不能进入候选循环。
+    // Purpose: No alignment can hold the pattern when n < m, so return 0 and skip the loop.
     if (n < m)
     {
         return 0;
@@ -61,17 +74,20 @@ int bf_find_all(const char *text, const char *pattern, int *starts, int capacity
     int candidate_count = n - m + 1;
 
     // 外层只枚举合法起点；s 再大就会让 s + m - 1 越过主串末尾。
+    // Purpose: Enumerate legal starts only; a larger s would put s + m - 1 past the text end.
     for (int s = 0; s < candidate_count; ++s)
     {
         int j = 0;
 
         // j 同时表示“已确认相等的前缀长度”和“下一个待比较的模式下标”。
+        // Purpose: j is both the confirmed prefix length and the next pattern index.
         while (j < m && text[s + j] == pattern[j])
         {
             ++j;
         }
 
         // 内层自然结束时 j == m，表示 m 个字符全部相等，而不只是某一对相等。
+        // Purpose: j == m means all m characters matched, not just the last pair.
         if (j == m)
         {
             if (matches == capacity)
@@ -83,11 +99,13 @@ int bf_find_all(const char *text, const char *pattern, int *starts, int capacity
         }
 
         // 这里不 break：一个起点成功后仍要检查 s + 1，才能保留重叠匹配。
+        // Purpose: No break here; checking s + 1 is what preserves overlapping matches.
     }
 
     return matches;
 }
 
+// Purpose: Demo all four outcomes: normal, overlapping, no fit, and empty pattern.
 /*
  * 演示入口：用同一组输入验证普通匹配、重叠匹配、无匹配和非法空模式串。
  * 输出只用于人工核对，不参与算法本身。
@@ -106,13 +124,16 @@ int main(void)
     }
 
     // AAAAA 中查找 AAA 应得到 0、1、2，验证成功后继续右移的语义。
+    // Purpose: Searching AAA in AAAAA must return 0, 1, 2, proving we continue after a hit.
     int overlap_count = bf_find_all("AAAAA", "AAA", starts, 16);
     printf("overlapping = %d\n", overlap_count);
 
     // 模式串比主串长时没有合法起点，返回 0 而不是 -1。
+    // Purpose: A longer pattern has no legal start; return 0, not -1.
     printf("shorter text = %d\n", bf_find_all("AB", "ABC", starts, 16));
 
     // 空模式串没有定义好的匹配语义，作为参数错误返回 -1。
+    // Purpose: An empty pattern has no defined match semantics, so it is a parameter error (-1).
     printf("empty pattern = %d\n", bf_find_all("ABC", "", starts, 16));
     return 0;
 }

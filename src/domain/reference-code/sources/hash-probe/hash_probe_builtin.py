@@ -20,6 +20,7 @@ Convention: Unique integer keys; the internal table layout is unspecified.
 from __future__ import annotations
 
 
+# Purpose: Demonstrate insertion, lookup and deletion with a dictionary.
 # 作用：用字典演示插入、查找和删除。
 def main() -> None:
     # A dict may use any collision strategy; probe sequences and tombstones are not exposed.

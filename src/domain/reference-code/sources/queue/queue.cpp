@@ -26,6 +26,7 @@ class CircularQueue
 public:
     static constexpr std::size_t kCapacity = 8;
 
+    // Purpose: Construct an empty queue with front_ and rear_ starting at 0; equality means empty.
     /*
      * 作用：构造空队列。front_ 与 rear_ 都从 0 开始，二者相等表示空。
      */
@@ -33,6 +34,7 @@ public:
     {
     }
 
+    // Purpose: Read-only empty check; under the reserved-slot convention, front_ == rear_ means empty.
     /*
      * 作用：只读判断是否为空。牺牲单元约定下，front_ == rear_ 就是空。
      */
@@ -43,6 +45,7 @@ public:
 
     // front == rear means empty; one reserved slot makes (rear + 1) % capacity == front full.
 
+    // Purpose: Read-only full check: when the slot after rear_ meets front_, only the reserved slot remains.
     /*
      * 作用：只读判断是否已满。rear_ 的下一个位置撞上 front_ 时，数组只剩保留空位。
      */
@@ -51,6 +54,7 @@ public:
         return (rear_ + 1) % kCapacity == front_;
     }
 
+    // Purpose: Enqueue: check fullness, write data_[rear_], and advance rear_ modulo capacity.
     /*
      * 作用：入队。先判满，再写入 data_[rear_] 并让 rear_ 取模后移。
      */
@@ -65,6 +69,7 @@ public:
         return true;
     }
 
+    // Purpose: Dequeue: return std::nullopt when empty; otherwise read data_[front_] and advance front_ modulo capacity.
     /*
      * 作用：出队。空队列返回 std::nullopt；否则读取 data_[front_] 后让 front_ 取模后移。
      */
@@ -79,6 +84,7 @@ public:
         return value;
     }
 
+    // Purpose: Read the queue front without removing it; return std::nullopt when empty, otherwise data_[front_].
     /*
      * 作用：读取队首但不删除。空队列返回 std::nullopt，否则返回 data_[front_]。
      */
@@ -97,6 +103,7 @@ private:
     std::size_t rear_;
 };
 
+// Purpose: Demonstrate filling the queue, reading the front, dequeueing, wrap-around enqueueing and clearing, printing key states.
 /*
  * 作用：演示入队到满、读队首、出队、回绕入队和清空，并打印关键状态。
  */

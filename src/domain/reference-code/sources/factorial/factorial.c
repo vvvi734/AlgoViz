@@ -26,6 +26,7 @@
 #include <stdio.h>
 
 // Base cases collapse to 1; the unwind multiplies n by the already-computed (n-1)!.
+// Purpose: Compute n! recursively; n = 0 or 1 are the base cases, otherwise multiply after factorial(n-1) returns.
 // 作用：递归计算 n!；n=0/1 是递归基，其余情况等待 factorial(n-1) 返回后再相乘。
 unsigned long long factorial(unsigned int number)
 {
@@ -36,6 +37,7 @@ unsigned long long factorial(unsigned int number)
     return (unsigned long long)number * factorial(number - 1U);
 }
 
+// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
 // 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main(void)
 {

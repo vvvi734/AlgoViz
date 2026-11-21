@@ -34,6 +34,7 @@ class Node:
     right: "Node | None" = None
 
 
+# Purpose: Provide an ascending-weight comparison for heapq, using the symbol to keep equal weights stable.
 # 作用：为 heapq 提供按权值升序的比较；权值相同时按字符稳定排序。
 def node_less(a: Node, b: Node) -> bool:
     return (a.frequency, a.order) < (b.frequency, b.order)
@@ -81,6 +82,7 @@ class MinHeap:
         return top
 
 
+# Purpose: Collect leaf codes recursively with 0 for the left edge and 1 for the right edge.
 # 作用：递归收集叶子编码；左 0 右 1。
 def collect_codes(node: Node, path: str, codes: dict[str, str]) -> None:
     if node.left is None and node.right is None:
@@ -92,6 +94,7 @@ def collect_codes(node: Node, path: str, codes: dict[str, str]) -> None:
         collect_codes(node.right, path + "1", codes)
 
 
+# Purpose: Build a demo Huffman tree and print the codes.
 # 作用：构造演示哈夫曼树并打印编码。
 def main() -> None:
     symbols = ["a", "b", "c", "d", "e", "f"]

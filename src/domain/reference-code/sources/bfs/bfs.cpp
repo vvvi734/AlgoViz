@@ -28,6 +28,7 @@
 
 // Mark a neighbour before enqueueing it; the FIFO frontier then visits level by level.
 // Mark a vertex when it enters the queue, not when it leaves, so it cannot be enqueued twice.
+// Purpose: Traverse the graph from start in distance layers; the queue holds pending vertices and visited is set on enqueue.
 // 作用：从 start 开始按距离分层遍历图；用队列保存待访问结点，入队时立即标记 visited。
 void bfs(const std::vector<std::vector<int>> &graph, int start)
 {
@@ -55,6 +56,7 @@ void bfs(const std::vector<std::vector<int>> &graph, int start)
     std::cout << '\n';
 }
 
+// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
 // 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main()
 {

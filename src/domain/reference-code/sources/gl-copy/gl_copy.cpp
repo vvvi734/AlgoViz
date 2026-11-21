@@ -21,6 +21,15 @@
  * 复杂度：时间 O(n)，新表 O(n)，递归栈 O(h)。
  */
 
+/*
+ * Generalized-list copy in C++17.
+ *
+ * Copying allocates a fresh node for every source node. An atom copies its
+ * text; a sublist recursively copies children and rebuilds the sibling chain
+ * through `next`. `copy_one` owns the returned subtree but not its own `next`;
+ * the caller links it. Time O(n), new tree O(n), recursion space O(h).
+ */
+
 #include <cstdio>
 #include <cstring>
 #include <iostream>
@@ -46,6 +55,8 @@ struct GLNode
 
 void free_gl(GLNode *node);
 
+// 作用：分配零初始化节点，tag 从源节点继承。
+// Purpose: Allocate a zero-initialized node; inherit the tag from the source.
 /* 分配零初始化节点，tag 从源节点继承。 */
 GLNode *new_node(int tag)
 {
@@ -54,6 +65,8 @@ GLNode *new_node(int tag)
     return node;
 }
 
+// 作用：构造原子节点，供示例树使用。
+// Purpose: Construct an atom node for the demo tree.
 /* 构造原子节点，供示例树使用。 */
 GLNode *make_atom(const char *text)
 {
@@ -62,12 +75,16 @@ GLNode *make_atom(const char *text)
     return node;
 }
 
+// 作用：构造空表节点；head 为空，但节点本身代表真实的 ()。
+// Purpose: Construct an empty list; head is null, but the node represents a real ().
 /* 构造空表节点；head 为空，但节点本身代表真实的 ()。 */
 GLNode *make_list()
 {
     return new_node(GL_LIST);
 }
 
+// 作用：把 child 追加到 parent 的同层链尾。
+// Purpose: Append child to parent's sibling chain.
 /* 把 child 追加到 parent 的同层链尾。 */
 void append_child(GLNode *parent, GLNode *child)
 {
@@ -83,6 +100,8 @@ void append_child(GLNode *parent, GLNode *child)
     *tail = child;
 }
 
+// 作用：复制一个节点及其子树，不复制 src->next；返回新节点，失败返回 nullptr。
+// Purpose: Copy one node and subtree without src->next; return nullptr on failure.
 /*
  * 复制一个节点及其子树；不复制 src->next。
  * 返回新节点，分配失败返回 nullptr。调用方负责连接同层后继。
@@ -103,6 +122,8 @@ GLNode *copy_one(const GLNode *src)
     for (const GLNode *child = src->value.head; child != nullptr; child = child->next)
     {
         GLNode *child_copy = copy_one(child);
+        // 分配失败时回收已建好的半棵副本，避免内存泄漏。
+        // Purpose: On allocation failure, free the half-built copy instead of leaking it.
         if (child_copy == nullptr)
         {
             free_gl(dst);
@@ -114,6 +135,8 @@ GLNode *copy_one(const GLNode *src)
     return dst;
 }
 
+// 作用：递归释放整棵树；先保存 next，避免释放后继续解引用。
+// Purpose: Free the tree recursively; save next before freeing to avoid use-after-free.
 /* 递归释放整棵表；先保存 next，避免释放后继续解引用。 */
 void free_gl(GLNode *node)
 {
@@ -129,6 +152,8 @@ void free_gl(GLNode *node)
     }
 }
 
+// 作用：按括号形式打印，用于比较源表与副本。
+// Purpose: Print the parenthesized form to compare source and copy.
 /* 打印标准括号形式，用于比较源表与副本。 */
 void print_gl(const GLNode *node)
 {
@@ -153,6 +178,8 @@ void print_gl(const GLNode *node)
     std::cout << ")";
 }
 
+// 作用：构造示例树，验证副本与源树根节点互相独立后分别释放。
+// Purpose: Build the demo, verify the two roots are independent, then free both trees.
 int main()
 {
     GLNode *root = make_list();

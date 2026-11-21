@@ -34,6 +34,7 @@ class HashTable:
 
     # Probe forward modulo capacity; an empty slot both accepts an insert and proves absence.
     # This teaching version has no deletion, so an empty slot ends the probe; adding tombstones would require lookup to continue past them.
+    # Purpose: Insert key by linear probing; return False for a duplicate key or a full table.
     # 作用：线性探测插入 key；重复键或表满返回 False。
     def insert(self, key: int) -> bool:
         start = self._index(key)
@@ -46,6 +47,7 @@ class HashTable:
                 return False
         return False
 
+    # Purpose: Search for key along the probe sequence and stop at EMPTY.
     # 作用：沿探测序列查找 key，遇到 EMPTY 停止。
     def contains(self, key: int) -> bool:
         start = self._index(key)
@@ -57,6 +59,7 @@ class HashTable:
                 return True
         return False
 
+    # Purpose: Return a copy of the slot content to demonstrate empty and occupied states.
     # 作用：返回槽内容副本，便于演示空/占用状态。
     def slots(self) -> list[int]:
         return list(self._slots)

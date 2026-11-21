@@ -46,6 +46,7 @@ typedef struct
     Triple *data;
 } TripletList;
 
+// Purpose: Print triplets (row, col, value) in row-major order; read-only.
 // 作用：按行优先输出三元组 (row, col, value)；只读。
 static void print_triplets(const TripletList *matrix)
 {
@@ -62,6 +63,7 @@ static void print_triplets(const TripletList *matrix)
  * invalid dimensions. dst must not alias src.
  */
 // `cpot[col]` is the next write position for that column; writing a triple increments it for the next entry.
+// Purpose: Fast transpose: count nonzeros per column, prefix-sum the counts into column starts, then fill the target triplets in the original order.
 // 作用：快速转置：先统计每列非零个数，再累加得到每列起始位置，最后按原顺序填入目标三元组。
 static int fast_transpose(const TripletList *src, TripletList *dst)
 {
@@ -136,6 +138,7 @@ static int fast_transpose(const TripletList *src, TripletList *dst)
     return 1;
 }
 
+// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
 // 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main(void)
 {

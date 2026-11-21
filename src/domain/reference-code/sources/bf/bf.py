@@ -1,3 +1,8 @@
+# Brute-force substring search (BF) in Python 3.
+# Try every legal alignment of the pattern. For start s, compare text[s + j]
+# with pattern[j] from j = 0; a mismatch moves s right and restarts at j = 0.
+# Reaching j == m records a match, and the loop still continues with s + 1 so
+# overlapping occurrences are kept. Worst-case time O(nm), extra space O(1).
 """朴素模式匹配（BF）— AlgoViz Python 参考实现。
 
 中文导读：逐个枚举模式串在主串中的对齐起点，每个起点都从 P[0] 重新逐位比较；命中后仍继续下一起点，因此不会漏掉重叠出现。
@@ -27,6 +32,7 @@ s + j 定位主串；最后看命中后为什么不 return。
 from __future__ import annotations
 
 
+# Purpose: Return every 0-based occurrence start, overlaps included; empty pattern raises.
 def bf_find_all(text: str, pattern: str) -> list[int]:
     """返回 pattern 在 text 中的全部匹配起点，允许重叠。
 
@@ -50,6 +56,8 @@ def bf_find_all(text: str, pattern: str) -> list[int]:
     m = len(pattern)
     starts: list[int] = []
 
+    # With n < m no alignment can hold the pattern; returning early also avoids
+    # a non-positive range bound, even though an empty range would also work.
     # n < m 时连一次完整对齐都放不下，直接返回空列表；若继续算 n - m + 1
     # 会得到非正上界，range 为空虽然也能工作，但显式分支更易读。
     if n < m:
@@ -59,18 +67,24 @@ def bf_find_all(text: str, pattern: str) -> list[int]:
 
     # 外层只枚举合法起点。s 是模式串首字符对齐到主串的位置，不是主串中
     # 任意一个字符位置；s 的最大值是 n - m。
+    # Purpose: Enumerate only legal starts; start aligns pattern[0] with text[start],
+    # so its maximum is n - m, not any text index.
     for start in range(candidate_count):
         j = 0
 
         # 内层逐个确认字符。j 同时表示“已经确认相等的前缀长度”和“下一个
         # 待比较的模式下标”，真正的比较位置是 start + j。
+        # j is both the confirmed prefix length and the next pattern index;
+        # the text position compared is start + j, never j alone.
         while j < m and text[start + j] == pattern[j]:
             j += 1
 
         # 循环自然结束时 j == m，说明 m 个字符全部相等，而不是某一对相等。
+        # Purpose: j == m means all m characters matched, not just the last pair.
         if j == m:
             starts.append(start)
 
+        # Do not break after a hit: start + 1 may still form an overlapping match.
         # 这里不能 break 或 return：当前起点匹配成功后，start + 1 仍可能
         # 形成一个重叠匹配，例如 AAAAA 中查找 AAA 的 0、1、2。
 
@@ -86,12 +100,15 @@ if __name__ == "__main__":
         print(f"start[{index}] = {start}")
 
     # 重叠检查：AAA 在 AAAAA 中应得到 0、1、2。
+    # Purpose: Overlap check: AAA in AAAAA must yield 0, 1, 2.
     print(f"overlapping = {bf_find_all('AAAAA', 'AAA')}")
 
     # 主串短于模式串是合法输入，只返回空列表。
+    # Purpose: A shorter text is valid input and yields an empty list.
     print(f"shorter text = {bf_find_all('AB', 'ABC')}")
 
     # 空模式串必须被拒绝，而不是返回所有下标。
+    # Purpose: An empty pattern must be rejected, not treated as matching all indices.
     try:
         bf_find_all("ABC", "")
     except ValueError as error:

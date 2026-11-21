@@ -31,6 +31,7 @@ class BST
   public:
     struct Node
     {
+        // Purpose: Construct a BST node with the key and null children.
         // 作用：构造 BST 结点：保存键值，左右孩子置空。
         explicit Node(int key) : value(key)
         {
@@ -42,12 +43,14 @@ class BST
 
     // Descend one branch by key comparison; duplicates are ignored by the insert contract.
     // BST invariant: left keys < root < right keys; duplicates are rejected, so search follows one path.
+    // Purpose: Insert value into the BST, ignore duplicates, and return the new subtree root.
     // 作用：在 BST 中插入 value；重复键忽略，返回新的子树根。
     void insert(int value)
     {
         root_ = insert(std::move(root_), value);
     }
 
+    // Purpose: Descend by the left-smaller/right-larger rule to find value; return true on a hit.
     // 作用：按左小右大下探查找 value；找到返回 true。
     bool contains(int value) const
     {
@@ -63,12 +66,14 @@ class BST
         return false;
     }
 
+    // Purpose: Delete value in three cases: leaf, one child, or two children; with two children, replace it with the minimum node of the right subtree.
     // 作用：删除 value：分叶子、单孩子、双孩子三种情况；双孩子用右子树最小结点替换。
     void remove(int value)
     {
         root_ = remove(std::move(root_), value);
     }
 
+    // Purpose: Inorder traversal of the whole tree printing ascending keys; the static overload recurses left-root-right and is read-only.
     // 作用：中序遍历整棵树并输出升序键值；静态重载负责递归左—根—右，只读。
     void inorder() const
     {
@@ -76,6 +81,7 @@ class BST
         std::cout << '\n';
     }
 
+    // Purpose: Return the root pointer for read-only access; do not bypass the class to mutate the tree.
     // 作用：返回根指针供只读访问；不要绕过封装修改树结构。
     const Node *root() const
     {
@@ -83,6 +89,7 @@ class BST
     }
 
   private:
+    // Purpose: Insert value into the BST, ignore duplicates, and return the new subtree root.
     // 作用：在 BST 中插入 value；重复键忽略，返回新的子树根。
     static std::unique_ptr<Node> insert(std::unique_ptr<Node> node, int value)
     {
@@ -101,6 +108,7 @@ class BST
         return node;
     }
 
+    // Purpose: Delete value in three cases: leaf, one child, or two children; with two children, replace it with the minimum node of the right subtree.
     // 作用：删除 value：分叶子、单孩子、双孩子三种情况；双孩子用右子树最小结点替换。
     static std::unique_ptr<Node> remove(std::unique_ptr<Node> node, int value)
     {
@@ -136,6 +144,7 @@ class BST
         return node;
     }
 
+    // Purpose: Inorder traversal of the whole tree printing ascending keys; the static overload recurses left-root-right and is read-only.
     // 作用：中序遍历整棵树并输出升序键值；静态重载负责递归左—根—右，只读。
     static void inorder(const Node *node)
     {
@@ -151,6 +160,7 @@ class BST
     std::unique_ptr<Node> root_;
 };
 
+// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
 // 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main()
 {

@@ -22,6 +22,7 @@
 #include <iostream>
 
 // The two recursive calls are independent and uncached, so identical subproblems are recomputed.
+// Purpose: Naive recursion for F(n): the two child calls are independent and uncached, so identical subproblems are recomputed.
 // 作用：朴素递归计算 F(n)；两个子调用彼此独立且没有缓存，因此会重复计算相同子问题。
 unsigned long long fib(unsigned int n)
 {
@@ -32,6 +33,7 @@ unsigned long long fib(unsigned int n)
     return fib(n - 1U) + fib(n - 2U);
 }
 
+// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
 // 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main()
 {

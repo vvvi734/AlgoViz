@@ -24,6 +24,15 @@
  * 复杂度：每个节点访问一次，时间 O(n)；递归栈 O(h)，h 为嵌套层数。
  */
 
+/*
+ * Generalized-list depth in C11.
+ *
+ * `tag` separates atoms from sublists: an atom stores text in `value.atom`, a
+ * sublist stores its first child in `value.head`, and `next` links siblings at
+ * the same level. Depth is 0 for an atom, 1 for an empty list, and 1 plus the
+ * maximum child depth otherwise. O(n) time and O(h) recursion space.
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -43,6 +52,8 @@ typedef struct GLNode
     struct GLNode *next;
 } GLNode;
 
+// 作用：分配零初始化节点；tag 决定之后读取 atom 还是 head。
+// Purpose: Allocate a zero-initialized node; tag decides whether atom or head is read.
 /* 分配一个零初始化节点；tag 决定后续读取 union 的哪一支。 */
 static GLNode *new_node(int tag)
 {
@@ -55,6 +66,8 @@ static GLNode *new_node(int tag)
     return node;
 }
 
+// 作用：构造原子节点并复制文本；调用方保证长度不超过 GL_ATOM_MAX。
+// Purpose: Construct an atom and copy text; the caller keeps it within GL_ATOM_MAX.
 /* 构造原子节点；调用方保证 text 不超过 GL_ATOM_MAX。 */
 GLNode *make_atom(const char *text)
 {
@@ -68,12 +81,16 @@ GLNode *make_atom(const char *text)
     return node;
 }
 
+// 作用：构造空表节点；head 为 NULL，但节点本身代表真实的 ()。
+// Purpose: Construct an empty list; head is NULL, but the node is a real ().
 /* 构造空表节点；空表的 head 为 NULL，但节点本身真实存在。 */
 GLNode *make_list(void)
 {
     return new_node(GL_LIST);
 }
 
+// 作用：把 child 追加到同层链尾；child 的 next 由这里重新接好。
+// Purpose: Append child to the sibling chain and set its next here.
 /* 把 child 追加到 list 同层链尾；child 的 next 由这里重新接好。 */
 void append_child(GLNode *list, GLNode *child)
 {
@@ -89,6 +106,8 @@ void append_child(GLNode *list, GLNode *child)
     *tail = child;
 }
 
+// 作用：返回广义表深度；原子 0、空表 1、非空表 1 + 最大子深度。
+// Purpose: Return depth: 0 for an atom, 1 for (), or 1 plus the maximum child depth.
 /*
  * 求广义表深度。
  * node 是当前表节点；返回原子 0、空表 1、非空表 1 + 最大子深度。
@@ -111,6 +130,8 @@ int gl_depth(const GLNode *node)
     int best = 0;
     for (const GLNode *child = node->value.head; child != NULL; child = child->next)
     {
+        // 子表之间是并列关系，深度取最大值，不能把各子表深度相加。
+        // Purpose: Sibling sublists are alternatives, so take the maximum depth, never the sum.
         int child_depth = gl_depth(child);
         if (child_depth > best)
         {
@@ -120,6 +141,8 @@ int gl_depth(const GLNode *node)
     return best + 1;
 }
 
+// 作用：递归释放整棵表；先保存 next，再释放当前节点和 head 链。
+// Purpose: Free the table recursively; save next before freeing the node and its head chain.
 /* 递归释放整棵表；先保存 next，再释放当前节点及其 head 链。 */
 void free_gl(GLNode *node)
 {
@@ -135,6 +158,8 @@ void free_gl(GLNode *node)
     }
 }
 
+// 作用：按括号形式输出广义表，仅用于人工核对示例结构。
+// Purpose: Print the parenthesized list only to verify the demo structure.
 /* 按 (a,(b,c)) 的形式打印，仅用于人工核对示例结果。 */
 void print_gl(const GLNode *node)
 {
@@ -159,6 +184,8 @@ void print_gl(const GLNode *node)
     printf(")");
 }
 
+// 作用：构造示例 (a,(b,c),((d),e))，打印深度后释放整棵树。
+// Purpose: Build the demo (a,(b,c),((d),e)), print its depth, then free the tree.
 int main(void)
 {
     GLNode *root = make_list();

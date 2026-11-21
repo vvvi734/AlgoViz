@@ -60,6 +60,7 @@ class CircularList:
                 return values
 
 
+# Purpose: Build a circular linked list and demonstrate head insertion, tail insertion, deletion and traversal.
 # 作用：构造循环链表并演示头插、尾插、删除和遍历。
 def main() -> None:
     lst = CircularList()

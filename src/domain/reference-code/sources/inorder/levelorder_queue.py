@@ -32,6 +32,7 @@ class Node:
 
 
 # `deque.popleft()` is O(1); a list pop(0) would shift every remaining element.
+# Purpose: Return the level-order traversal; an empty tree returns an empty list.
 # 作用：返回层序遍历结果；空树返回空列表。
 def level_order(root: Node | None) -> list[int]:
     if root is None:
@@ -51,6 +52,7 @@ def level_order(root: Node | None) -> list[int]:
     return output
 
 
+# Purpose: Build a demo tree and print its level-order sequence.
 # 作用：构造演示树并打印层序序列。
 def main() -> None:
     root = Node(

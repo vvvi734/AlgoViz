@@ -22,6 +22,7 @@ from __future__ import annotations
 from collections import deque
 
 
+# Purpose: Demonstrate FIFO queue behaviour with deque.
 # 作用：用 deque 演示队列的 FIFO 行为。
 def main() -> None:
     # `deque.popleft()` is O(1); a list pop(0) would shift every remaining element.

@@ -23,6 +23,7 @@
 #define INF 1000000
 
 // The outer loop must be the intermediate vertex k; relaxing k before it is allowed would use incomplete paths.
+// Purpose: Treat each vertex k as the allowed intermediate and update every i→j distance; k must be the outermost loop.
 // 作用：以每个结点 k 作为允许的中间点，更新所有 i→j 的最短距离；k 必须在最外层。
 void FloydWarshall(int distance[VERTEX_COUNT][VERTEX_COUNT])
 {
@@ -42,6 +43,7 @@ void FloydWarshall(int distance[VERTEX_COUNT][VERTEX_COUNT])
     }
 }
 
+// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
 // 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main(void)
 {

@@ -28,12 +28,14 @@ class StaticList
     static constexpr int kCapacity = 8;
     static constexpr int kNull = -1;
 
+    // Purpose: Build a static list from the given values, linking the data list and chaining leftover slots into the free list.
     // 作用：用给定值构造静态链表：建立数据链表并把剩余槽串成空闲链表。
     explicit StaticList(const std::vector<int> &values)
     {
         initialise(values);
     }
 
+    // Purpose: Insert value before position by taking a node from the free list and rewiring cursors; return false on failure.
     // 作用：在 position 前插入 value：先从空闲链表取结点，再重接游标；失败返回 false。
     bool insert(int position, int value)
     {
@@ -61,6 +63,7 @@ class StaticList
         return true;
     }
 
+    // Purpose: Delete the node at position, recycle it into the free list, and return the removed value.
     // 作用：删除 position 位置结点，把结点归还空闲链表，并返回被删值。
     std::optional<int> remove(int position)
     {
@@ -82,6 +85,7 @@ class StaticList
         return removed;
     }
 
+    // Purpose: Traverse and print the current structure without modifying data, so each step can be checked.
     // 作用：只读遍历并输出当前结构；不会修改数据，适合在每一步后核对状态。
     void print() const
     {
@@ -106,6 +110,7 @@ class StaticList
         int cur = kNull;
     };
 
+    // Purpose: Rebuild the static list from the given values and reset both the data-list head and the free-list head.
     // 作用：按给定值重建静态链表，并重置数据链表头与空闲链表头。
     void initialise(const std::vector<int> &values)
     {
@@ -125,6 +130,7 @@ class StaticList
         freeHead_ = count < kCapacity ? count : kNull;
     }
 
+    // Purpose: Return the data-list length from the maintained length field.
     // 作用：返回数据链表长度；直接读维护的 length 字段。
     int size() const
     {
@@ -134,6 +140,7 @@ class StaticList
         return count;
     }
 
+    // Purpose: Return the array index of position's predecessor; position 0 returns the data-list head cursor.
     // 作用：返回 position 前驱的数组下标；position=0 时返回数据链表头游标。
     int predecessor(int position) const
     {
@@ -152,6 +159,7 @@ class StaticList
     int freeHead_ = kNull;
 };
 
+// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
 // 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main()
 {

@@ -28,6 +28,7 @@ public:
 
     // top is the live top index; -1 means empty.
 
+    // Purpose: Construct an empty stack with top_ = -1, matching the data-structure convention.
     /*
      * 作用：构造空栈。top_ = -1 表示还没有元素，与顶层数据结构约定一致。
      */
@@ -35,6 +36,7 @@ public:
     {
     }
 
+    // Purpose: Read-only empty check; the only condition is top_ == -1.
     /*
      * 作用：只读判断栈是否为空。空栈的唯一条件是 top_ == -1。
      */
@@ -43,6 +45,7 @@ public:
         return top_ == -1;
     }
 
+    // Purpose: Push value after checking capacity, increment top_, and write data_[top_]; return false when full.
     /*
      * 作用：压入 value。先检查容量，再 ++top_ 并写入 data_[top_]；栈满返回 false。
      */
@@ -57,6 +60,7 @@ public:
         return true;
     }
 
+    // Purpose: Pop: return std::nullopt when empty; otherwise read data_[top_] and decrement top_.
     /*
      * 作用：弹出栈顶。空栈返回 std::nullopt；否则读取 data_[top_] 后 --top_。
      */
@@ -71,6 +75,7 @@ public:
         return value;
     }
 
+    // Purpose: Read-only peek: return std::nullopt when empty, otherwise data_[top_], without moving top_.
     /*
      * 作用：只读栈顶。空栈返回 std::nullopt，成功时返回 data_[top_]，不移动 top_。
      */
@@ -88,6 +93,7 @@ private:
     int top_;
 };
 
+// Purpose: Demonstrate stack creation, push, peek, pop and empty checks, printing each step.
 /*
  * 作用：演示建栈、压栈、peek、弹栈与空栈检测，并输出每一步结果。
  */

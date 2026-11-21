@@ -33,12 +33,14 @@ typedef struct
     int size;
 } MaxHeap;
 
+// Purpose: Initialize the heap with size zero and a fixed array capacity.
 // 作用：初始化堆：size 置 0，数组容量固定。
 void heap_init(MaxHeap *heap)
 {
     heap->size = 0;
 }
 
+// Purpose: Swap two integers for reuse by heap sift-up and sift-down.
 // 作用：交换两个整数，供堆的上浮/下沉复用。
 void swap_int(int *a, int *b)
 {
@@ -48,6 +50,7 @@ void swap_int(int *a, int *b)
 }
 
 // Sift up while the parent is smaller; stop when the heap property holds or root is reached.
+// Purpose: Sift up from index, swapping with the parent until heap order is restored or the root is reached.
 // 作用：从 index 向上与父结点比较并交换，直到堆序恢复或到达根。
 void sift_up(MaxHeap *heap, int index)
 {
@@ -64,6 +67,7 @@ void sift_up(MaxHeap *heap, int index)
 }
 
 // For index i the children are 2*i+1 and 2*i+2; sift-down swaps with the larger child until the parent is >= both.
+// Purpose: Sift down from index, swapping with the larger child until heap order is restored or a leaf is reached.
 // 作用：从 index 向下与较大的孩子交换，直到堆序恢复或到达叶子。
 void sift_down(MaxHeap *heap, int index)
 {
@@ -89,6 +93,7 @@ void sift_down(MaxHeap *heap, int index)
     }
 }
 
+// Purpose: Place value at the end of the array and sift up the parent chain to its correct position; return false when full.
 // 作用：把 value 放到数组末尾，再沿父链上浮到正确位置；堆满返回 false。
 bool heap_push(MaxHeap *heap, int value)
 {
@@ -102,6 +107,7 @@ bool heap_push(MaxHeap *heap, int value)
     return true;
 }
 
+// Purpose: Remove the heap maximum, move the last element to the root and sift down; return false when empty.
 // 作用：取出堆顶最大值，把末尾元素移到根，再下沉恢复堆序；空堆返回 false。
 bool heap_pop(MaxHeap *heap, int *out_value)
 {
@@ -119,6 +125,7 @@ bool heap_pop(MaxHeap *heap, int *out_value)
     return true;
 }
 
+// Purpose: Print heap elements in array order; read-only, so parent-child indices can be checked directly.
 // 作用：按数组顺序输出堆元素；只读，可直接核对父子下标关系。
 void heap_print(const MaxHeap *heap)
 {
@@ -129,6 +136,7 @@ void heap_print(const MaxHeap *heap)
     printf("\n");
 }
 
+// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
 // 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main(void)
 {

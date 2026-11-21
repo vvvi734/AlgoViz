@@ -29,6 +29,7 @@
 class HashTable
 {
   public:
+    // Purpose: Construct an open-addressing table by allocating capacity slots and marking them all EMPTY.
     // 作用：构造开放地址散列表：分配 capacity 个槽并全部标为 EMPTY。
     explicit HashTable(std::size_t size) : slots_(size, kEmpty)
     {
@@ -36,6 +37,7 @@ class HashTable
 
     // Probe forward modulo capacity; an empty slot both accepts an insert and proves absence.
     // This teaching version has no deletion, so an empty slot ends the probe; adding tombstones would require lookup to continue past them.
+    // Purpose: Linear-probe for a free slot; return false for a duplicate key or a full table.
     // 作用：线性探测找空位写入；重复键返回 false，表满返回 false。
     bool insert(int key)
     {
@@ -56,6 +58,7 @@ class HashTable
         return false;
     }
 
+    // Purpose: Linear-probe from the initial slot and stop at EMPTY; a DELETED slot must not end the search.
     // 作用：从初始槽位线性探测；遇到 EMPTY 停止，DELETED 不能截断查找。
     bool contains(int key) const
     {
@@ -75,6 +78,7 @@ class HashTable
         return false;
     }
 
+    // Purpose: Print each slot's state (empty, occupied or tombstone) and key; read-only.
     // 作用：输出每个槽的状态（空/占用/墓碑）和键值；只读。
     void print() const
     {
@@ -95,6 +99,7 @@ class HashTable
   private:
     static constexpr int kEmpty = -1;
 
+    // Purpose: Map key to the initial slot in 0..capacity-1.
     // 作用：把 key 映射到 0..capacity-1 的初始槽位。
     std::size_t hash_index(int key) const
     {
@@ -106,6 +111,7 @@ class HashTable
     std::vector<int> slots_;
 };
 
+// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
 // 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main()
 {

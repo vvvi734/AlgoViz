@@ -27,6 +27,7 @@ static const int GRAPH[VERTEX_COUNT][VERTEX_COUNT] = {
     {0, 15, 11, 0, 6, 0}, {0, 0, 0, 6, 0, 9},   {14, 0, 2, 0, 9, 0},
 };
 
+// Purpose: Follow previous[] backward to print the path from source to vertex; read-only.
 // 作用：递归回溯 previous[]，打印 source 到 vertex 的路径；只读。
 static void PrintPath(const int previous[], int vertex)
 {
@@ -42,6 +43,7 @@ static void PrintPath(const int previous[], int vertex)
     }
 }
 
+// Purpose: Select the unsettled vertex with the smallest dist, relax its outgoing edges, and never change a settled distance again.
 // 作用：每次选未确定结点中 dist 最小者，松弛其出边；已确定结点的距离不再改变。
 void Dijkstra(int source)
 {
@@ -99,6 +101,7 @@ void Dijkstra(int source)
     }
 }
 
+// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
 // 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main(void)
 {

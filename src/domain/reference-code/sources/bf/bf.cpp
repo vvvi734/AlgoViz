@@ -20,12 +20,22 @@
  * 复杂度：最坏 O(nm) 时间；额外空间 O(1)，返回的结果容器不计入辅助空间。
  */
 
+/*
+ * Brute-force substring search (BF) in C++17.
+ *
+ * Try every legal start s and compare text[s + j] with pattern[j] from j = 0.
+ * A mismatch discards this alignment: s moves right and j restarts at 0. When j
+ * reaches m, record s and keep going, so overlapping matches are preserved.
+ * Time O(nm) worst case, extra space O(1); an empty pattern throws.
+ */
+
 #include <cstddef>
 #include <iostream>
 #include <stdexcept>
 #include <string>
 #include <vector>
 
+// Purpose: Return every 0-based match start; text may be empty, and an empty pattern throws std::invalid_argument.
 /*
  * 返回 text 中 pattern 的全部匹配起点。
  *
@@ -47,7 +57,8 @@ std::vector<int> bf_find_all(const std::string &text, const std::string &pattern
     std::size_t n = text.size();
     std::size_t m = pattern.size();
 
-    // n < m 时不存在能容纳整个模式串的对齐，空结果就是正确结果。
+    // 当 n < m 时，没有任何对齐能容纳整个模式串，空结果就是正确答案。
+    // Purpose: If n < m no alignment can hold the pattern, so the empty result is correct.
     if (n < m)
     {
         return matches;
@@ -55,29 +66,34 @@ std::vector<int> bf_find_all(const std::string &text, const std::string &pattern
 
     std::size_t candidate_count = n - m + 1;
 
-    // 外层枚举起点；用 size_t 时上界必须是 candidate_count，不能写 s <= n - m + 1。
+    // 外层枚举起点；size_t 是无符号类型，上界只能写 candidate_count，不能写 s <= n - m + 1。
+    // Purpose: Enumerate starts below candidate_count; size_t is unsigned, so avoid s <= n - m + 1.
     for (std::size_t s = 0; s < candidate_count; ++s)
     {
         std::size_t j = 0;
 
         // 逐个确认前缀；循环结束时 j 可能等于 m，也可能停在第一个失配字符。
+        // Purpose: Confirm the prefix; j ends at m on success or at the first mismatch.
         while (j < m && text[s + j] == pattern[j])
         {
             ++j;
         }
 
         // 只有 j == m 才代表整个模式串匹配，不能只看最后一次比较是否相等。
+        // Purpose: Only j == m proves the whole pattern matched, not the last comparison.
         if (j == m)
         {
             matches.push_back(static_cast<int>(s));
         }
 
         // 成功分支也不提前退出：s 继续加一，重叠匹配才不会丢。
+        // Purpose: Do not stop after a hit; advancing s preserves overlapping matches.
     }
 
     return matches;
 }
 
+// Purpose: Demo normal, overlapping, too-short and empty-pattern cases; catch the exception.
 /*
  * 演示入口：打印匹配数量与每个起点，并覆盖重叠、主串过短和空模式串。
  * 空模式串的异常在这里被捕获，避免程序直接终止。

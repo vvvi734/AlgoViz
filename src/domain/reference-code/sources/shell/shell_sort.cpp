@@ -28,6 +28,7 @@
 
 // Each gap pass insertion-sorts independent subsequences; gap 1 finishes the array.
 // Each gap pass insertion-sorts independent subsequences; gap 1 is the final ordinary insertion sort.
+// Purpose: Insertion-sort gap-separated groups while shrinking the gap; the gap-1 pass leaves the whole array sorted.
 // 作用：按缩小 gap 做分组插入排序；最后 gap=1 时整个数组有序。
 void shell_sort(std::vector<int> &values)
 {
@@ -47,6 +48,7 @@ void shell_sort(std::vector<int> &values)
     }
 }
 
+// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
 // 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main()
 {

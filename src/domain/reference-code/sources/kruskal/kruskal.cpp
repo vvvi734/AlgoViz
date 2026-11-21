@@ -38,6 +38,7 @@ struct Edge
 class DisjointSet
 {
   public:
+    // Purpose: Initialize union-find with one singleton set per vertex and rank zero.
     // 作用：初始化并查集：每个结点自成一个集合，秩初始为 0。
     explicit DisjointSet(int size) : parent_(size), rank_(size, 0)
     {
@@ -49,6 +50,7 @@ class DisjointSet
 
     // Union by rank keeps DSU trees shallow; a rejected edge would close a cycle.
     // Sort by weight, then accept an edge only when union-find reports different components; otherwise it closes a cycle.
+    // Purpose: Union two sets: find their roots; equal roots mean a cycle, otherwise attach by rank and update rank.
     // 作用：合并两个集合：先找根，根相同说明会成环；否则按秩挂接并更新秩。
     bool unite(int a, int b)
     {
@@ -75,6 +77,7 @@ class DisjointSet
     }
 
   private:
+    // Purpose: Find the union-find root with path compression to keep later queries shallow.
     // 作用：并查集查找根；带路径压缩，降低后续查询高度。
     int find(int vertex)
     {
@@ -90,6 +93,7 @@ class DisjointSet
     std::vector<int> rank_;
 };
 
+// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
 // 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main()
 {

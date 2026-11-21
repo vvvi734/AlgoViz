@@ -40,6 +40,7 @@ typedef struct
     int count;
 } Queue;
 
+// Purpose: Initialize the circular queue with front = rear = 0 and no elements.
 // 作用：初始化顺序队列：front=rear=0，元素个数为 0。
 void queue_init(Queue *q)
 {
@@ -48,6 +49,7 @@ void queue_init(Queue *q)
     q->count = 0;
 }
 
+// Purpose: Append a tree-node pointer to the sequential queue; return 0 when the queue is full.
 // 作用：把树结点指针放入顺序队列尾部；队列满返回 0。
 int queue_enqueue(Queue *q, BiTNode *node)
 {
@@ -61,6 +63,7 @@ int queue_enqueue(Queue *q, BiTNode *node)
     return 1;
 }
 
+// Purpose: Remove the tree-node pointer at the queue front; return NULL when the queue is empty.
 // 作用：从队首取出树结点指针；队列空返回 NULL。
 BiTNode *queue_dequeue(Queue *q)
 {
@@ -76,6 +79,7 @@ BiTNode *queue_dequeue(Queue *q)
 
 // Visit each node exactly once, level by level and left to right.
 // The FIFO queue holds pending nodes; enqueue children after visiting the parent to keep level order.
+// Purpose: Visit the tree level by level with a queue: enqueue the root, then enqueue left and right children after each dequeue, using each level's size.
 // 作用：借助队列逐层访问二叉树：先根，出队后把左右孩子依次入队；用每层 size 分层输出。
 void level_order(BiTNode *root)
 {
@@ -104,6 +108,7 @@ void level_order(BiTNode *root)
     }
 }
 
+// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
 // 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main(void)
 {

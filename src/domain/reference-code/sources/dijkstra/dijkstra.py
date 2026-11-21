@@ -26,6 +26,7 @@ import heapq
 
 
 # Settle the nearest unsettled vertex, then relax its outgoing non-negative edges.
+# Purpose: Return (distances, previous); edge weights must be non-negative and graph is not modified.
 # 作用：返回 (distances, previous)；要求边权非负，不修改 graph。
 def dijkstra(
     graph: dict[str, list[tuple[str, int]]],
@@ -57,6 +58,7 @@ def dijkstra(
     return distance, previous
 
 
+# Purpose: Walk previous from target back to the source and return the path vertices.
 # 作用：沿 previous 从 target 回溯到源点，返回路径顶点列表。
 def path_to(previous: dict[str, str | None], target: str) -> list[str]:
     path: list[str] = []
@@ -67,6 +69,7 @@ def path_to(previous: dict[str, str | None], target: str) -> list[str]:
     return list(reversed(path))
 
 
+# Purpose: Build a demo graph and print shortest distances and one path.
 # 作用：构造演示图并打印最短距离与一条路径。
 def main() -> None:
     graph = {

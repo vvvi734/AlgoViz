@@ -41,6 +41,7 @@ typedef struct
     Node *tail;
 } DoublyList;
 
+// Purpose: Initialize the list with null head/tail and zero length so an empty list traverses safely.
 // 作用：初始化链表：head/tail 置空、length 置 0；空表状态要能安全遍历。
 void list_init(DoublyList *list)
 {
@@ -49,6 +50,7 @@ void list_init(DoublyList *list)
 }
 
 // Append wires prev and next first; only then does tail move to the new node.
+// Purpose: Append value at the doubly linked-list tail while maintaining prev, next, tail and length.
 // 作用：在双向链表尾部追加 value，同时维护 prev、next、tail 和 length。
 Node *list_append(DoublyList *list, int value)
 {
@@ -73,6 +75,7 @@ Node *list_append(DoublyList *list, int value)
 }
 
 // Removal repairs both `prev` and `next`; removing the head or tail must also update the external head/tail pointer.
+// Purpose: Remove a known node by linking its predecessor to its successor and its successor back to its predecessor, then freeing it.
 // 作用：删除已知结点 node：让前驱的 next 指向后继，后继的 prev 指回前驱，再释放结点。
 void list_remove(DoublyList *list, Node *node)
 {
@@ -95,6 +98,7 @@ void list_remove(DoublyList *list, Node *node)
     free(node);
 }
 
+// Purpose: Print the list forward from head along next; read-only and does not alter links.
 // 作用：从 head 沿 next 正向输出链表；只读，不改变结构。
 void list_print_forward(const DoublyList *list)
 {
@@ -105,6 +109,7 @@ void list_print_forward(const DoublyList *list)
     printf("\n");
 }
 
+// Purpose: Print the list backward from tail along prev; read-only and does not alter links.
 // 作用：从 tail 沿 prev 反向输出链表；只读，不改变结构。
 void list_print_backward(const DoublyList *list)
 {
@@ -115,6 +120,7 @@ void list_print_backward(const DoublyList *list)
     printf("\n");
 }
 
+// Purpose: Free every circular-list node and restore the empty state; stop at the correct point in the ring.
 // 作用：释放循环链表全部结点，并恢复空表状态；注意环的终止条件。
 void list_free(DoublyList *list)
 {
@@ -129,6 +135,7 @@ void list_free(DoublyList *list)
     list->tail = NULL;
 }
 
+// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
 // 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main(void)
 {

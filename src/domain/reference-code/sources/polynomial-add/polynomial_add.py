@@ -50,6 +50,7 @@ class Polynomial:
             previous_exponent = exponent
             self.append(coefficient, exponent)
 
+    # Purpose: Append a non-zero term at the tail; the caller keeps exponents in descending order.
     # 作用：在尾部追加一个非零项；调用方负责保持指数降序。
     def append(self, coefficient: int, exponent: int) -> None:
         """Append one term at the tail; the caller keeps the chain ordered."""
@@ -67,6 +68,7 @@ class Polynomial:
             node = node.next
 
 
+# Purpose: Merge two ordered polynomials into a new list without modifying a or b.
 # 作用：合并两个有序多项式，返回新链表；不修改 a、b。
 def add_polynomials(a: Polynomial, b: Polynomial) -> Polynomial:
     """Merge two ordered chains into a new result chain in O(m + n)."""
@@ -100,6 +102,7 @@ def add_polynomials(a: Polynomial, b: Polynomial) -> Polynomial:
     return result
 
 
+# Purpose: Format the polynomial as a readable string.
 # 作用：把多项式格式化为可读字符串。
 def format_polynomial(poly: Polynomial) -> str:
     pieces: list[str] = []
@@ -126,6 +129,7 @@ def format_polynomial(poly: Polynomial) -> str:
 SUPERSCRIPT = str.maketrans("0123456789", "⁰¹²³⁴⁵⁶⁷⁸⁹")
 
 
+# Purpose: Convert an integer exponent to superscript characters for display.
 # 作用：把整数指数转成上标字符，供输出使用。
 def superscript(value: int) -> str:
     return str(value).translate(SUPERSCRIPT)

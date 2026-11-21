@@ -22,6 +22,7 @@ Convention: 0-based indices; low and high are inclusive; duplicate targets may r
 from __future__ import annotations
 
 
+# Purpose: Check that adjacent values are non-decreasing; empty and single-element arrays return True.
 # 作用：判断相邻元素是否非降；空数组和单元素数组返回 True。
 def is_non_decreasing(values: list[int]) -> bool:
     return all(values[i - 1] <= values[i] for i in range(1, len(values)))
@@ -29,6 +30,7 @@ def is_non_decreasing(values: list[int]) -> bool:
 
 # Invariant: the answer, if present, stays inside the inclusive [low, high] window.
 # The window is inclusive: low == high still leaves one candidate, and mid is computed without overflow.
+# Purpose: Return target's index or -1; values must be non-decreasing.
 # 作用：返回 target 的下标或 -1；要求 values 已非降排序。
 def binary_search(values: list[int], target: int) -> int:
     """Return the index of target in a non-decreasing list, or -1."""
@@ -46,6 +48,7 @@ def binary_search(values: list[int], target: int) -> int:
     return -1
 
 
+# Purpose: Demonstrate a hit and a miss on a sorted array.
 # 作用：演示有序数组上的命中和未命中。
 def main() -> None:
     sorted_values = [1, 3, 5, 7, 9, 11, 13]

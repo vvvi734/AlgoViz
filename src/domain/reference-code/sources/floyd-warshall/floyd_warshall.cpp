@@ -30,6 +30,7 @@ constexpr int kInfinity = 1000000;
 
 // Outer loop fixes the only allowed intermediate vertex k; relax i -> j through k.
 // The outer loop must be the intermediate vertex k; relaxing k before it is allowed would use incomplete paths.
+// Purpose: Three nested loops compute all-pairs shortest paths; k is outermost and dist[i][j] allows only intermediates 0..k.
 // 作用：三层循环求全源最短路；k 是最外层，dist[i][j] 表示只允许 0..k 作为中间点的结果。
 void floyd_warshall(std::vector<std::vector<int>> &dist)
 {
@@ -57,6 +58,7 @@ void floyd_warshall(std::vector<std::vector<int>> &dist)
     }
 }
 
+// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
 // 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main()
 {

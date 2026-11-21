@@ -76,6 +76,7 @@ class DoublyList:
         return values
 
 
+# Purpose: Build a doubly linked list and demonstrate insertion, deletion and traversal in both directions.
 # 作用：构造双向链表并演示插入、删除和双向遍历。
 def main() -> None:
     lst = DoublyList()

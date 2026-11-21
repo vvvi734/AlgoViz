@@ -29,6 +29,7 @@ typedef struct BSTNode
 } BSTNode;
 
 // BST invariant: left keys < root < right keys; duplicates are rejected, so search follows one path.
+// Purpose: Insert value by the left-smaller/right-larger rule; inserted distinguishes a new key from a duplicate, and the new subtree root is returned.
 // 作用：按左小右大插入 value；inserted 区分新插入与重复键，返回新的子树根。
 BSTNode *BSTInsert(BSTNode *root, int value, bool *inserted)
 {
@@ -61,6 +62,7 @@ BSTNode *BSTInsert(BSTNode *root, int value, bool *inserted)
     return root;
 }
 
+// Purpose: Search for target along one root-to-leaf path and return the node pointer, or NULL when absent.
 // 作用：沿一条根到叶路径查找 target；找到返回结点指针，否则返回 NULL。
 BSTNode *BSTSearch(BSTNode *root, int target)
 {
@@ -75,6 +77,7 @@ BSTNode *BSTSearch(BSTNode *root, int target)
     return NULL;
 }
 
+// Purpose: Inorder traversal that prints keys; ascending output verifies the BST ordering property.
 // 作用：中序遍历并输出键值；升序输出可验证 BST 的排序性质。
 void InOrder(const BSTNode *root)
 {
@@ -87,6 +90,7 @@ void InOrder(const BSTNode *root)
     InOrder(root->right);
 }
 
+// Purpose: Free a BST postorder: release both children before the current node.
 // 作用：后序释放二叉搜索树：先释放左右子树，再释放当前结点。
 void FreeTree(BSTNode *root)
 {
@@ -99,6 +103,7 @@ void FreeTree(BSTNode *root)
     free(root);
 }
 
+// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
 // 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main(void)
 {

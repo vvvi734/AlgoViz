@@ -41,6 +41,7 @@ typedef struct
 
 // V - 1 passes suffice because a shortest simple path uses at most V - 1 edges.
 // V-1 full passes settle every simple shortest path; one more pass that still relaxes proves a reachable negative cycle.
+// Purpose: Relax every edge for V-1 passes; a further relaxation on pass V proves a negative cycle reachable from the source.
 // 作用：对所有边做 V-1 轮松弛；若第 V 轮仍能松弛，说明存在从源点可达的负环。
 bool bellman_ford(int vertex_count, const Edge edges[], int edge_count, int source, int dist[])
 {
@@ -84,6 +85,7 @@ bool bellman_ford(int vertex_count, const Edge edges[], int edge_count, int sour
     return true;
 }
 
+// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
 // 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main(void)
 {

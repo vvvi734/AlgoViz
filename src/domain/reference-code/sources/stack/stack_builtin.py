@@ -20,6 +20,7 @@ Convention: The end of the list is the top; pop from an empty list raises IndexE
 from __future__ import annotations
 
 
+# Purpose: Demonstrate LIFO stack behaviour with a list.
 # 作用：用 list 演示栈的 LIFO 行为。
 def main() -> None:
     # A Python list is a dynamic stack; pop() on an empty list raises IndexError.

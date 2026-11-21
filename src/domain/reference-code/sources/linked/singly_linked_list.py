@@ -83,6 +83,7 @@ class SinglyLinkedList:
         return values
 
 
+# Purpose: Build a singly linked list and demonstrate insertion, deletion and traversal.
 # 作用：构造单链表并演示插入、删除和遍历。
 def main() -> None:
     linked = SinglyLinkedList()

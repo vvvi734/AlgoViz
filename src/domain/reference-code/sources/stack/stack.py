@@ -29,6 +29,7 @@ class Stack:
         self._top = -1
 
     # top is the live top index; -1 means empty.
+    # Purpose: Push: check whether top is already capacity - 1, increment top, then write data[top].
     # 作用：压栈。先检查 top 是否已到 capacity - 1，再 ++top 后写入。
     def push(self, value: int) -> bool:
         if self._top >= len(self._data) - 1:
@@ -37,6 +38,7 @@ class Stack:
         self._data[self._top] = value
         return True
 
+    # Purpose: Pop: read data[top], then decrement top; return None for an empty stack.
     # 作用：弹栈。先读取当前栈顶，再 --top；空栈返回 None。
     def pop(self) -> int | None:
         if self._top == -1:
@@ -45,12 +47,14 @@ class Stack:
         self._top -= 1
         return value
 
+    # Purpose: Read the top without moving top; return None for an empty stack.
     # 作用：只读栈顶，不移动 top；空栈返回 None。
     def peek(self) -> int | None:
         if self._top == -1:
             return None
         return self._data[self._top]
 
+    # Purpose: Test for an empty stack: the only condition is top == -1.
     # 作用：判断空栈。唯一条件是 top == -1。
     def is_empty(self) -> bool:
         return self._top == -1

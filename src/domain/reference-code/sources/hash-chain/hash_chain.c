@@ -40,6 +40,7 @@ typedef struct
     Node *buckets[TABLE_SIZE];
 } HashTable;
 
+// Purpose: Initialize the chained hash table by clearing every bucket head.
 // 作用：初始化链地址散列表：所有桶头指针置空。
 void table_init(HashTable *table)
 {
@@ -49,6 +50,7 @@ void table_init(HashTable *table)
     }
 }
 
+// Purpose: Map key to a bucket index in 0..bucket_count-1; convert negative keys to a non-negative value first.
 // 作用：把 key 映射到 0..bucket_count-1 的桶下标；负键要先转成非负。
 int hash_index(int key)
 {
@@ -58,6 +60,7 @@ int hash_index(int key)
 
 // Search the target bucket before appending; the chain holds only colliding keys.
 // Each bucket owns a chain; inserting at the bucket head is O(1), and duplicates are rejected before allocation.
+// Purpose: Insert at the bucket head after checking for duplicates; return false for an existing key.
 // 作用：头插到对应桶；先查重，重复键返回 false。
 bool table_insert(HashTable *table, int key)
 {
@@ -80,6 +83,7 @@ bool table_insert(HashTable *table, int key)
     return true;
 }
 
+// Purpose: Traverse the target bucket and compare real keys rather than only hash values.
 // 作用：只读遍历目标桶，比较真实键而不是只比较哈希值。
 bool table_contains(const HashTable *table, int key)
 {
@@ -94,6 +98,7 @@ bool table_contains(const HashTable *table, int key)
     return false;
 }
 
+// Purpose: Print the chained hash table bucket by bucket to observe collision chains; read-only.
 // 作用：逐桶输出链地址散列表的内容，用于观察冲突链；只读。
 void table_print(const HashTable *table)
 {
@@ -108,6 +113,7 @@ void table_print(const HashTable *table)
     }
 }
 
+// Purpose: Free every node in every bucket, then clear each bucket head to avoid leaks.
 // 作用：释放所有桶中的结点，再把桶头置空，避免内存泄漏。
 void table_free(HashTable *table)
 {
@@ -123,6 +129,7 @@ void table_free(HashTable *table)
     }
 }
 
+// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
 // 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main(void)
 {

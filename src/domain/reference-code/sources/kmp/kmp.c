@@ -22,6 +22,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+// Purpose: Build the one-based failure table next[0..m].
 /*
  * 作用：构造 1 基失败表 next[0..m]。
  * 参数：pattern 是以 '\0' 结尾的非空模式串；next 至少有 m+1 个 int 槽。
@@ -50,6 +51,7 @@ void get_next(const char *pattern, int next[])
     }
 }
 
+// Purpose: Count occurrences of pattern in text, including overlapping matches.
 /*
  * 作用：统计 pattern 在 text 中出现的次数，包含重叠出现。
  * 参数：text 可为空串；pattern 为空串或 malloc 失败时按 0 次处理。
@@ -99,6 +101,7 @@ int KMP(const char *text, const char *pattern)
     return matches;
 }
 
+// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
 // 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main(void)
 {

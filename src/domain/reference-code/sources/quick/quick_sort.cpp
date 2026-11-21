@@ -30,6 +30,7 @@ namespace
 
 // Lomuto partition: <= pivot goes left, > pivot goes right, pivot returns at boundary + 1.
 // Lomuto partition: `boundary` marks the end of the <= pivot region and starts at low - 1; the pivot is swapped to `boundary + 1`.
+// Purpose: Partition around the last element and return its final index; the left side is not greater and the right side is not smaller than the pivot.
 // 作用：以区间末尾为基准划分，返回基准最终下标；左右两侧分别不大于/不小于基准。
 int partition(std::vector<int> &values, int low, int high)
 {
@@ -49,6 +50,7 @@ int partition(std::vector<int> &values, int low, int high)
     return boundary + 1;
 }
 
+// Purpose: Recursively sort the range: after partitioning, recurse on both sides without the pivot.
 // 作用：递归排序区间：划分后排除基准位置，分别处理左右两段。
 void quick_sort_range(std::vector<int> &values, int low, int high)
 {
@@ -63,12 +65,14 @@ void quick_sort_range(std::vector<int> &values, int low, int high)
 
 } // namespace
 
+// Purpose: Quicksort entry: start the recursive partition on the whole vector.
 // 作用：快速排序入口：对整个 vector 调用递归划分。
 void quick_sort(std::vector<int> &values)
 {
     quick_sort_range(values, 0, static_cast<int>(values.size()) - 1);
 }
 
+// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
 // 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main()
 {

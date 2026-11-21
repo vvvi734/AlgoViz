@@ -27,6 +27,7 @@ from collections import deque
 
 
 # Forward pass takes the maximum predecessor finish; backward pass the minimum successor start; activity slack is latest(head) - earliest(tail) - weight.
+# Purpose: Build a demo AOE network and print critical-path information.
 # 作用：构造演示 AOE 网并打印关键路径信息。
 def main() -> None:
     activities = [

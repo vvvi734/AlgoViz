@@ -27,6 +27,7 @@ Convention: 0-based string indices; lps values are lengths, not positions.
 
 
 # lps[i] is a length, not a position: on mismatch fall back to lps[j - 1].
+# Purpose: Return the longest proper border length for every pattern prefix; an empty pattern returns [].
 # 作用：返回模式串每个前缀的最长真 border 长度；空串返回 []。
 def build_lps(pattern: str) -> list[int]:
     """Return the 0-based lps table for pattern.
@@ -59,6 +60,7 @@ def build_lps(pattern: str) -> list[int]:
     return lps
 
 
+# Purpose: Return all 0-based starts; an empty pattern raises ValueError and overlaps are included.
 # 作用：返回全部 0 基起点；空模式串抛 ValueError，支持重叠。
 def kmp_find_all(text: str, pattern: str) -> list[int]:
     """Return every 0-based match start, including overlapping occurrences.

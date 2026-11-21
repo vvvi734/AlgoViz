@@ -43,6 +43,7 @@ typedef struct
     int size;
 } MinHeap;
 
+// Purpose: Min-heap comparator: lower frequency wins, and insertion order breaks ties so the tree shape stays stable.
 // 作用：最小堆比较器：频率小的优先；频率相同用插入序号打破平局，保证树形稳定。
 int node_less(const HNode *a, const HNode *b)
 {
@@ -53,6 +54,7 @@ int node_less(const HNode *a, const HNode *b)
     return a->order < b->order;
 }
 
+// Purpose: Initialize the heap with size zero and a fixed array capacity.
 // 作用：初始化堆：size 置 0，数组容量固定。
 void heap_init(MinHeap *heap)
 {
@@ -60,6 +62,7 @@ void heap_init(MinHeap *heap)
 }
 
 // Min-heap ordering is (frequency, insertion order), keeping ties deterministic.
+// Purpose: Insert a new node into the min-heap and sift it up using node_less for comparisons.
 // 作用：把新结点插入最小堆并上浮；比较使用 node_less。
 void heap_push(MinHeap *heap, HNode *node)
 {
@@ -79,6 +82,7 @@ void heap_push(MinHeap *heap, HNode *node)
     }
 }
 
+// Purpose: Pop the least frequent node, move the last node to the root, and sift down to restore heap order.
 // 作用：弹出频率最小的结点，把末尾结点移到根后下沉恢复堆序。
 HNode *heap_pop(MinHeap *heap)
 {
@@ -115,6 +119,7 @@ HNode *heap_pop(MinHeap *heap)
     return top;
 }
 
+// Purpose: Create a Huffman node holding frequency, symbol and insertion order; internal nodes use a placeholder symbol.
 // 作用：创建哈夫曼结点：保存频率、字符和插入顺序；内部结点字符用占位符。
 HNode *make_node(int frequency, char symbol, int order)
 {
@@ -131,6 +136,7 @@ HNode *make_node(int frequency, char symbol, int order)
     return node;
 }
 
+// Purpose: Recursively print each leaf's Huffman code along the 0/1 tree path without modifying the tree.
 // 作用：沿树的 0/1 路径递归输出每个叶子的哈夫曼编码；不修改树。
 void print_codes(const HNode *node, char path[], int depth)
 {
@@ -152,6 +158,7 @@ void print_codes(const HNode *node, char path[], int depth)
     }
 }
 
+// Purpose: Free a Huffman tree postorder: release both children before the current node.
 // 作用：后序释放哈夫曼树：先释放左右孩子，再释放当前结点。
 void free_tree(HNode *node)
 {
@@ -164,6 +171,7 @@ void free_tree(HNode *node)
     free(node);
 }
 
+// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
 // 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main(void)
 {

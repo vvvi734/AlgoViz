@@ -35,6 +35,7 @@ static const Activity ACTIVITIES[ACTIVITY_COUNT] = {
 };
 
 // Forward pass takes the maximum predecessor finish; backward pass the minimum successor start; activity slack is latest(head) - earliest(tail) - weight.
+// Purpose: Topologically compute earliest event times ve, then reverse-topologically compute latest vl, and finally select activities whose e equals l.
 // 作用：先拓扑排序求事件最早时间 ve，再逆拓扑求最迟 vl，最后找 e 与 l 相等的关键活动。
 void CriticalPath(void)
 {
@@ -86,6 +87,7 @@ void CriticalPath(void)
     printf("project duration: %d\n", earliest[EVENT_COUNT - 1]);
 }
 
+// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
 // 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main(void)
 {

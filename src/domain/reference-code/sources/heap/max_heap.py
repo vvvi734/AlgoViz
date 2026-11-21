@@ -24,11 +24,13 @@ class MaxHeap:
     def __init__(self) -> None:
         self._items: list[int] = []
 
+    # Purpose: Append value and sift it up until the max-heap property holds.
     # 作用：追加 value 并上滤到满足最大堆性质。
     def push(self, value: int) -> None:
         self._items.append(value)
         self._sift_up(len(self._items) - 1)
 
+    # Purpose: Return and remove the heap top; return None when empty, otherwise sift down the new root.
     # 作用：返回并删除堆顶；空堆返回 None，随后下滤新根。
     def pop(self) -> int | None:
         if not self._items:
@@ -41,6 +43,7 @@ class MaxHeap:
         return top
 
     # Sift up while the parent is smaller; stop when the heap property holds or root is reached.
+    # Purpose: Sift up from index until the parent is larger or the root is reached.
     # 作用：从 index 向上与父结点交换，直到父结点更大或到达根。
     def _sift_up(self, index: int) -> None:
         while index > 0:
@@ -51,6 +54,7 @@ class MaxHeap:
             index = parent
 
     # For index i the children are 2*i+1 and 2*i+2; sift-down swaps with the larger child until the parent is >= both.
+    # Purpose: Sift down from index, swapping with the larger child until heap order holds or a leaf is reached.
     # 作用：从 index 向下与较大孩子交换，直到满足堆序或到叶。
     def _sift_down(self, index: int) -> None:
         while True:

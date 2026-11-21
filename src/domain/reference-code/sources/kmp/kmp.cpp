@@ -35,6 +35,7 @@
 #include <vector>
 
 // lps[i] is a length, not a position: on mismatch fall back to lps[j - 1].
+// Purpose: Build the LPS/next table, recording the longest equal prefix-suffix length for each pattern prefix.
 // 作用：构建 LPS/next 数组：每个位置记录模式串前缀的最长相等前后缀长度。
 std::vector<std::size_t> build_lps(const std::string &pattern)
 {
@@ -65,6 +66,7 @@ std::vector<std::size_t> build_lps(const std::string &pattern)
 }
 
 // All starts, including overlapping occurrences.
+// Purpose: Use the LPS table to find every match in text, including overlaps, and return each start index.
 // 作用：用 LPS 在 text 中查找全部匹配（允许重叠）；返回每个起始下标。
 std::vector<std::size_t> kmp_find_all(const std::string &text, const std::string &pattern)
 {
@@ -105,6 +107,7 @@ std::vector<std::size_t> kmp_find_all(const std::string &text, const std::string
     return starts;
 }
 
+// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
 // 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main()
 {

@@ -23,6 +23,7 @@ from __future__ import annotations
 import heapq
 
 
+# Purpose: Demonstrate max-heap insertion and extraction using negated values.
 # 作用：用负值技巧演示最大堆的插入与弹出。
 def main() -> None:
     heap: list[int] = []

@@ -32,6 +32,7 @@ class HashTable:
 
     # Search the target bucket before appending; the chain holds only colliding keys.
     # Each bucket owns a chain; inserting at the bucket head is O(1), and duplicates are rejected before allocation.
+    # Purpose: Insert key into its bucket; return False if it already exists, otherwise append and return True.
     # 作用：把 key 插入对应桶；已存在返回 False，否则追加并返回 True。
     def insert(self, key: int) -> bool:
         bucket = self._buckets[self._index(key)]
@@ -40,10 +41,12 @@ class HashTable:
         bucket.append(key)
         return True
 
+    # Purpose: Check whether key exists in its target bucket.
     # 作用：判断 key 是否在目标桶中。
     def contains(self, key: int) -> bool:
         return key in self._buckets[self._index(key)]
 
+    # Purpose: Return a copy of the bucket contents so callers cannot mutate the internal chain.
     # 作用：返回桶内容的副本，避免调用方直接改内部链。
     def buckets(self) -> list[list[int]]:
         return [list(bucket) for bucket in self._buckets]

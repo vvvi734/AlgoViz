@@ -20,6 +20,7 @@
 #include <stdio.h>
 
 // Each gap pass insertion-sorts independent subsequences; gap 1 is the final ordinary insertion sort.
+// Purpose: Insertion-sort each gap-spaced subsequence while shrinking gap, finishing with the ordinary gap-1 pass.
 // 作用：按缩小 gap 做插入排序；每个 gap 下对相隔 gap 的子序列排序，最后 gap=1 收尾。
 void ShellSort(int *values, int count)
 {
@@ -39,6 +40,7 @@ void ShellSort(int *values, int count)
     }
 }
 
+// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
 // 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main(void)
 {

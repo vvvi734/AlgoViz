@@ -24,6 +24,7 @@ from __future__ import annotations
 
 # Lomuto partition: <= pivot goes left, > pivot goes right, pivot returns at boundary + 1.
 # Lomuto partition: `boundary` marks the end of the <= pivot region and starts at low - 1; the pivot is swapped to `boundary + 1`.
+# Purpose: Partition [low, high] around values[high] and return the pivot's final index.
 # 作用：以 values[high] 为枢轴划分 [low, high]，返回枢轴最终下标。
 def partition(values: list[int], low: int, high: int) -> int:
     pivot = values[high]
@@ -36,6 +37,7 @@ def partition(values: list[int], low: int, high: int) -> int:
     return boundary + 1
 
 
+# Purpose: Recursively sort the inclusive interval [low, high].
 # 作用：递归排序闭区间 [low, high]。
 def quick_sort_range(values: list[int], low: int, high: int) -> None:
     if low >= high:
@@ -45,11 +47,13 @@ def quick_sort_range(values: list[int], low: int, high: int) -> None:
     quick_sort_range(values, middle + 1, high)
 
 
+# Purpose: Start quicksort on the whole array.
 # 作用：对整数组启动快速排序。
 def quick_sort(values: list[int]) -> None:
     quick_sort_range(values, 0, len(values) - 1)
 
 
+# Purpose: Demonstrate quicksort and print the result.
 # 作用：演示快速排序并打印结果。
 def main() -> None:
     values = [5, 1, 4, 2, 8, 0, 3, 7, 6, 9]

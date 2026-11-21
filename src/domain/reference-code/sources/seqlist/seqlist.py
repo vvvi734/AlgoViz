@@ -55,6 +55,7 @@ class SeqList:
         return self._items[: self._size]
 
 
+# Purpose: Build a sequential list and demonstrate insertion, deletion and search.
 # 作用：构造顺序表并演示插入、删除和查找。
 def main() -> None:
     seq = SeqList()

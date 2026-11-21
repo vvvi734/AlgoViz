@@ -24,6 +24,7 @@ from __future__ import annotations
 
 # Invariant: [0, i) is sorted; shift larger values right before writing the key.
 # Shift only while the previous value is strictly greater; equal keys stop the shift and keep the sort stable.
+# Purpose: Sort values ascending in place; equal elements are not swapped, so stability is preserved.
 # 作用：原地升序排序 values；相等元素不交换，保持稳定。
 def insertion_sort(values: list[int]) -> None:
     for index in range(1, len(values)):
@@ -35,6 +36,7 @@ def insertion_sort(values: list[int]) -> None:
         values[position] = current
 
 
+# Purpose: Demonstrate insertion sort and print the result.
 # 作用：演示插入排序并打印结果。
 def main() -> None:
     values = [5, 1, 4, 2, 8, 0, 3, 7, 6, 9]

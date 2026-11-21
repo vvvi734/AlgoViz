@@ -33,6 +33,7 @@ class Node:
 
 # Descend one branch by key comparison; duplicates are ignored by the insert contract.
 # BST invariant: left keys < root < right keys; duplicates are rejected, so search follows one path.
+# Purpose: Insert value and return the new subtree root; leave duplicate keys unchanged.
 # 作用：插入 value 并返回新的子树根；重复键原样返回。
 def insert(root: Node | None, value: int) -> Node:
     if root is None:
@@ -44,6 +45,7 @@ def insert(root: Node | None, value: int) -> Node:
     return root
 
 
+# Purpose: Check whether value exists in the tree; read-only.
 # 作用：判断 value 是否在树中；只读。
 def contains(root: Node | None, value: int) -> bool:
     node = root
@@ -54,6 +56,7 @@ def contains(root: Node | None, value: int) -> bool:
     return False
 
 
+# Purpose: Return the node holding the smallest key in the subtree; the caller guarantees node is non-null.
 # 作用：返回子树中最小键所在结点；调用方保证 node 非空。
 def minimum(node: Node) -> Node:
     while node.left is not None:
@@ -61,6 +64,7 @@ def minimum(node: Node) -> Node:
     return node
 
 
+# Purpose: Delete value and return the new subtree root; return the tree unchanged when value is absent.
 # 作用：删除 value 并返回新的子树根；不存在时原样返回。
 def remove(root: Node | None, value: int) -> Node | None:
     if root is None:
@@ -80,6 +84,7 @@ def remove(root: Node | None, value: int) -> Node | None:
     return root
 
 
+# Purpose: Inorder traversal that appends to output; read-only.
 # 作用：中序遍历并追加到 output；只读。
 def inorder(root: Node | None, output: list[int]) -> None:
     if root is None:
@@ -89,6 +94,7 @@ def inorder(root: Node | None, output: list[int]) -> None:
     inorder(root.right, output)
 
 
+# Purpose: Build a demo BST and print its inorder, search and deletion results.
 # 作用：构造演示 BST 并打印中序、查找和删除结果。
 def main() -> None:
     root: Node | None = None

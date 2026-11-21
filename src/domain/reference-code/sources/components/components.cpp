@@ -24,6 +24,7 @@
 #include <iostream>
 #include <vector>
 
+// Purpose: DFS from vertex, marking every vertex in the same connected component as visited.
 // 作用：从 vertex 出发 DFS，把同一连通分量中的所有结点标记为已访问。
 void visit(const std::vector<std::vector<int>> &graph, int vertex, std::vector<bool> &visited)
 {
@@ -40,6 +41,7 @@ void visit(const std::vector<std::vector<int>> &graph, int vertex, std::vector<b
 
 // Every unvisited start opens a new component; one DFS marks all vertices reachable from it.
 // The outer scan opens a new component only at an unvisited vertex; one DFS marks its whole component.
+// Purpose: Scan all unvisited vertices; each new DFS start yields one connected component.
 // 作用：扫描所有未访问结点，每启动一次 DFS 就得到一个连通分量。
 int count_components(const std::vector<std::vector<int>> &graph)
 {
@@ -58,6 +60,7 @@ int count_components(const std::vector<std::vector<int>> &graph)
     return components;
 }
 
+// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
 // 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main()
 {

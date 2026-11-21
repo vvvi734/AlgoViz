@@ -28,6 +28,7 @@
 
 #define VERTEX_COUNT 7
 
+// Purpose: Write both a→b and b→a in the undirected adjacency matrix so neither direction is missed.
 // 作用：在无向邻接矩阵中同时写入 a→b 与 b→a，避免只连一个方向。
 void add_edge(int graph[VERTEX_COUNT][VERTEX_COUNT], int a, int b)
 {
@@ -35,6 +36,7 @@ void add_edge(int graph[VERTEX_COUNT][VERTEX_COUNT], int a, int b)
     graph[b][a] = 1;
 }
 
+// Purpose: DFS from vertex, marking every vertex in the same connected component as visited.
 // 作用：从 vertex 出发 DFS，把同一连通分量中的所有结点标记为已访问。
 void visit(int graph[VERTEX_COUNT][VERTEX_COUNT], int vertex, bool visited[VERTEX_COUNT])
 {
@@ -51,6 +53,7 @@ void visit(int graph[VERTEX_COUNT][VERTEX_COUNT], int vertex, bool visited[VERTE
 
 // Every unvisited start opens a new component; one DFS marks all vertices reachable from it.
 // The outer scan opens a new component only at an unvisited vertex; one DFS marks its whole component.
+// Purpose: Scan all unvisited vertices; each new DFS start yields one connected component.
 // 作用：扫描所有未访问结点，每启动一次 DFS 就得到一个连通分量。
 int count_components(int graph[VERTEX_COUNT][VERTEX_COUNT])
 {
@@ -69,6 +72,7 @@ int count_components(int graph[VERTEX_COUNT][VERTEX_COUNT])
     return components;
 }
 
+// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
 // 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main(void)
 {

@@ -20,6 +20,7 @@
 #include <stdio.h>
 
 // Lomuto partition: `boundary` marks the end of the <= pivot region and starts at low - 1; the pivot is swapped to `boundary + 1`.
+// Purpose: Partition around the last element: values not greater than the pivot go left, larger values go right, and the pivot's final index is returned.
 // 作用：以区间末尾为基准划分：小于等于基准的放左侧，大于的放右侧，返回基准最终下标。
 static int Partition(int *values, int low, int high)
 {
@@ -42,6 +43,7 @@ static int Partition(int *values, int low, int high)
     return boundary + 1;
 }
 
+// Purpose: Recursively sort [low..high]: partition first, then recurse on both sides excluding the pivot position.
 // 作用：递归排序 [low..high]：先划分，再排除基准位置递归左右两段。
 static void QuickSortRange(int *values, int low, int high)
 {
@@ -54,6 +56,7 @@ static void QuickSortRange(int *values, int low, int high)
     QuickSortRange(values, pivot + 1, high);
 }
 
+// Purpose: Quicksort entry: start the recursive partition on [0..count).
 // 作用：快速排序入口：对 [0..count) 调用递归划分。
 void QuickSort(int *values, int count)
 {
@@ -64,6 +67,7 @@ void QuickSort(int *values, int count)
     QuickSortRange(values, 0, count - 1);
 }
 
+// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
 // 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main(void)
 {

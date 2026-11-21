@@ -24,6 +24,7 @@ from __future__ import annotations
 
 # Mark on entry, then recurse into every unvisited neighbour before backtracking.
 # Mark a vertex on entry; the recursion then visits every unvisited neighbour before returning.
+# Purpose: Recursively visit unmarked neighbours of vertex and append the visit order to order.
 # 作用：从 vertex 递归访问未标记邻居，并把访问顺序追加到 order。
 def dfs_visit(graph: list[list[int]], vertex: int, visited: list[bool], order: list[int]) -> None:
     visited[vertex] = True
@@ -33,6 +34,7 @@ def dfs_visit(graph: list[list[int]], vertex: int, visited: list[bool], order: l
             dfs_visit(graph, neighbor, visited, order)
 
 
+# Purpose: Return the DFS order of vertices reachable from start without modifying graph.
 # 作用：返回从 start 可达顶点的 DFS 顺序；不修改 graph。
 def dfs(graph: list[list[int]], start: int) -> list[int]:
     visited = [False] * len(graph)
@@ -41,6 +43,7 @@ def dfs(graph: list[list[int]], start: int) -> list[int]:
     return order
 
 
+# Purpose: Build a demo graph and print its DFS sequence.
 # 作用：构造演示图并打印 DFS 序列。
 def main() -> None:
     graph: list[list[int]] = [[] for _ in range(6)]

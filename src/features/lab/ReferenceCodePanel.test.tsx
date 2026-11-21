@@ -176,7 +176,7 @@ describe('ReferenceCodePanel', () => {
     renderPanel('binary', '二分查找');
     await waitForCode();
     expect(screen.getByTestId('reference-lang-c').getAttribute('aria-selected')).toBe('true');
-    expect(screen.getByTestId('reference-code-fallback').textContent).toContain('AlgoViz 参考代码');
+    expect(screen.getByTestId('reference-code-fallback').textContent).toContain('中文导读');
     expect(screen.getByTestId('reference-code-fallback').textContent).toContain('int Binary_Search');
 
     fireEvent.click(screen.getByTestId('reference-lang-cpp'));
@@ -184,7 +184,7 @@ describe('ReferenceCodePanel', () => {
       expect(screen.getByTestId('reference-code-fallback').textContent).toContain('std::vector<int>'),
     );
     const zhCode = screen.getByTestId('reference-code-fallback').textContent ?? '';
-    expect(zhCode).toContain('思路：');
+    expect(zhCode).toContain('中文导读');
     expect(zhCode).toContain('二分查找');
 
     fireEvent.click(screen.getByTestId('test-toggle-language'));

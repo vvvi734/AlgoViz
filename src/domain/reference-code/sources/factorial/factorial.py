@@ -22,6 +22,7 @@ from __future__ import annotations
 
 
 # Base cases collapse to 1; the unwind multiplies n by the already-computed (n-1)!.
+# Purpose: Return n!; negative inputs raise ValueError, and 0! and 1! return 1.
 # 作用：返回 n!；负数抛 ValueError，0! 和 1! 返回 1。
 def factorial(number: int) -> int:
     """Return number! for a non-negative integer."""
@@ -32,6 +33,7 @@ def factorial(number: int) -> int:
     return number * factorial(number - 1)
 
 
+# Purpose: Demonstrate recursive factorial and print the result.
 # 作用：演示递归阶乘并打印结果。
 def main() -> None:
     assert factorial(0) == 1

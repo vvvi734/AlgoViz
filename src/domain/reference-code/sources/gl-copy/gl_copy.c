@@ -23,6 +23,16 @@
  * 复杂度：时间 O(n)，新表占 O(n)，递归栈 O(h)。
  */
 
+/*
+ * Generalized-list copy in C11.
+ *
+ * Copying allocates a new node for every source node instead of sharing the
+ * root pointer. An atom copies `value.atom`; a sublist recursively copies each
+ * child and rebuilds the sibling chain through the new node's `next`. The
+ * returned node owns its subtree but not its own `next`; the caller links it.
+ * Time O(n), new tree O(n), recursion space O(h).
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -44,6 +54,8 @@ typedef struct GLNode
 
 void free_gl(GLNode *node);
 
+// 作用：分配零初始化节点，tag 必须从源节点继承。
+// Purpose: Allocate a zero-initialized node; the copy must inherit the source tag.
 /* 分配零初始化节点；复制时 tag 必须从源节点继承。 */
 static GLNode *new_node(int tag)
 {
@@ -56,6 +68,8 @@ static GLNode *new_node(int tag)
     return node;
 }
 
+// 作用：构造原子节点，供示例树使用。
+// Purpose: Construct an atom node for the demo tree.
 /* 构造原子节点，供示例树使用。 */
 GLNode *make_atom(const char *text)
 {
@@ -69,12 +83,16 @@ GLNode *make_atom(const char *text)
     return node;
 }
 
+// 作用：构造空表节点；head 为 NULL，但节点本身必须真实存在。
+// Purpose: Construct an empty-list node; head is NULL, but the node itself is a real ().
 /* 构造空表节点；空表的 head 为 NULL，但节点本身必须真实存在。 */
 GLNode *make_list(void)
 {
     return new_node(GL_LIST);
 }
 
+// 作用：把 child 追加到同层链尾，由这里接好 child->next。
+// Purpose: Append child to the sibling chain; this function sets child->next.
 /* 把 child 追加到 list 同层链尾。 */
 void append_child(GLNode *list, GLNode *child)
 {
@@ -90,6 +108,8 @@ void append_child(GLNode *list, GLNode *child)
     *tail = child;
 }
 
+// 作用：复制一个节点及其子树，但不复制 src 的 next；失败返回 NULL。
+// Purpose: Copy one node and its subtree but not src->next; return NULL on failure.
 /*
  * 复制一个节点及其子树，但不复制该节点的 next 后继。
  * src 是源节点；返回新节点，失败返回 NULL。调用方负责把返回值接到父链。
@@ -114,6 +134,8 @@ GLNode *copy_one(const GLNode *src)
     for (const GLNode *child = src->value.head; child != NULL; child = child->next)
     {
         GLNode *child_copy = copy_one(child);
+        // 新副本一旦分配失败，必须回收已经建好的部分，避免半成品泄漏。
+        // Purpose: If a child copy fails, free the partially built subtree to avoid a leak.
         if (child_copy == NULL)
         {
             free_gl(dst);
@@ -125,6 +147,8 @@ GLNode *copy_one(const GLNode *src)
     return dst;
 }
 
+// 作用：递归释放整棵表；先保存 next，再释放当前节点和 head 链。
+// Purpose: Free the table recursively; save next before freeing the node and its head chain.
 /* 递归释放整棵表；先保存 next，再释放当前节点及其 head 链。 */
 void free_gl(GLNode *node)
 {
@@ -140,6 +164,8 @@ void free_gl(GLNode *node)
     }
 }
 
+// 作用：按括号形式打印，用于比较源表与副本的文本是否一致。
+// Purpose: Print the parenthesized form to compare source and copy text.
 /* 打印标准括号形式，用于核对复制前后的文本是否一致。 */
 void print_gl(const GLNode *node)
 {
@@ -164,6 +190,8 @@ void print_gl(const GLNode *node)
     printf(")");
 }
 
+// 作用：构造示例树，复制后分别打印并释放源树与副本。
+// Purpose: Build the demo tree, then print and free both the source and the copy.
 int main(void)
 {
     GLNode *root = make_list();

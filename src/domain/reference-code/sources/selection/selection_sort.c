@@ -19,6 +19,7 @@
 #include <stdio.h>
 
 // `minimum` holds the index of the smallest value seen in the unsorted suffix; swap only after the scan finishes.
+// Purpose: Each pass selects the minimum from the unsorted suffix and swaps it into the front of that suffix, growing a globally sorted prefix.
 // 作用：每轮从未排序区选最小值，与未排序区首位交换；外层前缀逐步变为全局有序。
 void SelectionSort(int *values, int count)
 {
@@ -41,6 +42,7 @@ void SelectionSort(int *values, int count)
     }
 }
 
+// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
 // 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main(void)
 {

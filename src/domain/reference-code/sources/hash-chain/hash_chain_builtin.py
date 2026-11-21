@@ -21,6 +21,7 @@ Convention: Unique integer keys; do not rely on ordering for hash-table semantic
 from __future__ import annotations
 
 
+# Purpose: Demonstrate insertion, lookup and deletion with a dictionary.
 # 作用：用字典演示插入、查找和删除。
 def main() -> None:
     # A dict owns hashing and collision resolution; insertion order is incidental, not a hash-table guarantee.

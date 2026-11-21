@@ -47,6 +47,7 @@ struct QueueEntry
     }
 };
 
+// Purpose: Compute single-source shortest paths from source; return distances and write predecessors into previous for path_to.
 // 作用：求 source 的单源最短路；返回距离数组，并把前驱写入 previous 供 path_to 还原路径。
 std::vector<long long> dijkstra(const std::vector<std::vector<Edge>> &graph, int source,
                                 std::vector<int> &previous)
@@ -95,6 +96,7 @@ std::vector<long long> dijkstra(const std::vector<std::vector<Edge>> &graph, int
     return distance;
 }
 
+// Purpose: Walk previous[] from target back to the source, reverse it, and return a readable path string.
 // 作用：沿 previous[] 从 target 回溯到源点并反转，返回可读路径字符串。
 std::string path_to(const std::vector<int> &previous, int target,
                     const std::vector<std::string> &names)
@@ -112,6 +114,7 @@ std::string path_to(const std::vector<int> &previous, int target,
     return result;
 }
 
+// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
 // 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main()
 {

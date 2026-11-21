@@ -23,6 +23,7 @@
 #include <string>
 #include <vector>
 
+// Purpose: Return precedence: + and - are 1, * and / are 2, everything else is 0.
 /*
  * 作用：返回 +、- 为 1，*、/ 为 2，其他为 0。
  */
@@ -39,6 +40,7 @@ int precedence(char op)
     return 0;
 }
 
+// Purpose: Append a whole token to the output and insert one separating space.
 /*
  * 作用：把 whole token 追加到输出，自动补一个空格。
  */
@@ -51,6 +53,7 @@ void append_token(std::string &output, const std::string &token)
     output += token;
 }
 
+// Purpose: Main conversion routine; return std::nullopt for mismatched parentheses or an invalid character.
 /*
  * 作用：转换主函数。返回 std::nullopt 表示括号不匹配或出现非法字符。
  */
@@ -108,6 +111,7 @@ std::optional<std::string> to_postfix(const std::string &expression)
         if (current == '+' || current == '-' || current == '*' || current == '/')
         {
             // 同级左结合：>= 保证 8 - 3 - 2 先把第一个 - 输出。
+            // Purpose: >= preserves left associativity, so 8 - 3 - 2 emits the first minus first.
             while (!operators.empty() && operators.back() != '(' &&
                    precedence(operators.back()) >= precedence(current))
             {
@@ -134,6 +138,7 @@ std::optional<std::string> to_postfix(const std::string &expression)
     return output;
 }
 
+// Purpose: Demonstrate conversion with the official example (3 + 4) * 2, expecting 3 4 + 2 *.
 /*
  * 作用：用官方示例 (3 + 4) * 2 演示转换，期望输出 3 4 + 2 *。
  */

@@ -23,6 +23,7 @@ Convention: 0-based positions; an empty pattern is handled separately to avoid a
 # 复杂度：取决于 CPython 实现，不保证 O(n+m)。
 
 
+# Purpose: Return every 0-based start of pattern in text; an empty pattern raises ValueError.
 # 作用：返回 pattern 在 text 中的全部 0 基起点；空模式串抛 ValueError。
 def find_all(text: str, pattern: str) -> list[int]:
     if not pattern:

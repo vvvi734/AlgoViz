@@ -24,6 +24,7 @@ from __future__ import annotations
 from bisect import bisect_left, insort
 
 
+# Purpose: Build an ordered list and demonstrate insertion, search and deletion.
 # 作用：构造有序列表并演示插入、查找和删除。
 def main() -> None:
     tree: list[int] = []

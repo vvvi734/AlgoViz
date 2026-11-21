@@ -27,6 +27,7 @@
 class MaxHeap
 {
   public:
+    // Purpose: Place value at the end of the array and sift it up to restore the max-heap; return false when full.
     // 作用：把 value 放到数组末尾，再上浮恢复最大堆；堆满返回 false。
     bool push(int value)
     {
@@ -35,6 +36,7 @@ class MaxHeap
         return true;
     }
 
+    // Purpose: Pop the heap maximum, move the last element to the root and sift down; return an empty optional when the heap is empty.
     // 作用：弹出堆顶最大值，把末尾元素移到根后下沉；空堆返回空 optional。
     std::optional<int> pop()
     {
@@ -52,6 +54,7 @@ class MaxHeap
         return top;
     }
 
+    // Purpose: Traverse and print the current structure without modifying data, so each step can be checked.
     // 作用：只读遍历并输出当前结构；不会修改数据，适合在每一步后核对状态。
     void print() const
     {
@@ -64,6 +67,7 @@ class MaxHeap
 
   private:
     // Sift up while the parent is smaller; stop when the heap property holds or root is reached.
+    // Purpose: Sift up from index, swapping with the parent until heap order is restored or the root is reached.
     // 作用：从 index 向上与父结点比较并交换，直到堆序恢复或到达根。
     void sift_up(std::size_t index)
     {
@@ -80,6 +84,7 @@ class MaxHeap
     }
 
     // For index i the children are 2*i+1 and 2*i+2; sift-down swaps with the larger child until the parent is >= both.
+    // Purpose: Sift down from index, swapping with the larger child until heap order is restored or a leaf is reached.
     // 作用：从 index 向下与较大的孩子交换，直到堆序恢复或到达叶子。
     void sift_down(std::size_t index)
     {
@@ -108,6 +113,7 @@ class MaxHeap
     std::vector<int> items_;
 };
 
+// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
 // 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main()
 {

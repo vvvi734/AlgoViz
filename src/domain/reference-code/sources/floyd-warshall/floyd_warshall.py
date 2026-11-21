@@ -27,6 +27,7 @@ INF = float("inf")
 
 # Outer loop fixes the only allowed intermediate vertex k; relax i -> j through k.
 # The outer loop must be the intermediate vertex k; relaxing k before it is allowed would use incomplete paths.
+# Purpose: Update dist in place with all-pairs shortest paths; no new matrix is returned.
 # 作用：原地把 dist 更新为全源最短路径；不返回新矩阵。
 def floyd_warshall(dist: list[list[float]]) -> None:
     size = len(dist)
@@ -42,6 +43,7 @@ def floyd_warshall(dist: list[list[float]]) -> None:
                     dist[source][target] = candidate
 
 
+# Purpose: Build a demo matrix and print final distances.
 # 作用：构造演示矩阵并打印最终距离。
 def main() -> None:
     dist = [

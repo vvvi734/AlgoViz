@@ -44,6 +44,7 @@ struct BTreeNode
 
 using NodePtr = std::shared_ptr<BTreeNode>;
 
+// Purpose: Create a new node with its value and pointer initialized; the caller owns the release.
 // 作用：创建一个新结点并初始化值和指针；调用者负责释放。
 NodePtr make_node(bool leaf)
 {
@@ -53,6 +54,7 @@ NodePtr make_node(bool leaf)
 }
 
 /* Read-only search; comparisons counts key comparisons when non-null. */
+// Purpose: Read-only lookup: compare keys inside the node, descend through the only possible child, and optionally count comparisons.
 // 作用：只读查找：在结点内比较键，再沿唯一可能的分支下降；可选统计比较次数。
 bool btree_search(const NodePtr &node, int target, int *comparisons = nullptr)
 {
@@ -86,6 +88,7 @@ bool btree_search(const NodePtr &node, int target, int *comparisons = nullptr)
 }
 
 /* Split parent->children[index] (full) and promote its median into parent. */
+// Purpose: Split a full child by promoting its median key to the parent, moving the right half into a new node, and fixing child indices.
 // 作用：分裂满孩子：把中位键提升到父结点，右半部分放进新结点，并修正 children 下标。
 NodePtr split_child(const NodePtr &parent, std::size_t index)
 {
@@ -110,6 +113,7 @@ NodePtr split_child(const NodePtr &parent, std::size_t index)
 
 /* Insert a unique key; returns the possibly new root. Duplicate is rejected. */
 // A full child is split before descending; its median moves into the parent, so insertion never needs to back up.
+// Purpose: B-tree insertion entry: reject duplicates; when the root is full, create and split a new root, then descend along a non-full path.
 // 作用：B 树插入入口：重复键拒绝；根满时先建新根并分裂，再沿未满路径下降插入。
 NodePtr btree_insert(NodePtr root, int value)
 {
@@ -159,6 +163,7 @@ NodePtr btree_insert(NodePtr root, int value)
     return root;
 }
 
+// Purpose: Print B-tree nodes and keys level by level to inspect parent-child links after splits; read-only.
 // 作用：按层输出 B 树结点及键值，用于检查分裂后的父子关系；只读。
 void print_tree(const NodePtr &root)
 {
@@ -197,6 +202,7 @@ void print_tree(const NodePtr &root)
     }
 }
 
+// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
 // 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main()
 {

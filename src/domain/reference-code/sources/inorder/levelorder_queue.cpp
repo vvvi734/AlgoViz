@@ -31,6 +31,7 @@ struct Node
 };
 
 // The FIFO queue holds pending nodes; enqueue children after visiting the parent to keep level order.
+// Purpose: Visit the tree level by level with a queue: enqueue the root, then enqueue left and right children after each dequeue, using each level's size.
 // 作用：借助队列逐层访问二叉树：先根，出队后把左右孩子依次入队；用每层 size 分层输出。
 void level_order(const Node *root)
 {
@@ -59,6 +60,7 @@ void level_order(const Node *root)
     }
 }
 
+// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
 // 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main()
 {

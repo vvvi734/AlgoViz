@@ -20,6 +20,7 @@
 #include <stdio.h>
 
 // The window is inclusive: low == high still leaves one candidate, and mid is computed without overflow.
+// Purpose: Binary-search a sorted array and return the index, or -1 when absent; the interval convention is documented on the function's first comment.
 // 作用：在有序数组中做二分查找；返回下标，找不到返回 -1。区间约定见函数第一行注释。
 int Binary_Search(const int *values, int count, int target)
 {
@@ -45,6 +46,7 @@ int Binary_Search(const int *values, int count, int target)
     return -1;
 }
 
+// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
 // 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main(void)
 {

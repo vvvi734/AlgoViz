@@ -24,6 +24,7 @@ from __future__ import annotations
 from bisect import bisect_left
 
 
+# Purpose: Return target's index or -1; values must be sorted.
 # 作用：返回 target 的下标或 -1；要求 values 已排序。
 def binary_search_builtin(values: list[int], target: int) -> int:
     # `bisect_left` returns an insertion point in [0, len]; check the slot before treating it as a hit.
@@ -33,6 +34,7 @@ def binary_search_builtin(values: list[int], target: int) -> int:
     return position
 
 
+# Purpose: Demonstrate a bisect lookup.
 # 作用：演示 bisect 查找。
 def main() -> None:
     values = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]

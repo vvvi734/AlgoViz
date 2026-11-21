@@ -33,6 +33,7 @@ class BTreeNode:
         self.leaf = leaf
 
 
+# Purpose: Read-only lookup for target: return True on a hit and optionally accumulate key comparisons in comparisons[0].
 # 作用：只读查找 target；命中返回 True，可选的 comparisons[0] 累计键比较次数。
 def btree_search(node, target, comparisons=None):
     """Read-only search. Returns True on a hit; counts key comparisons."""
@@ -52,6 +53,7 @@ def btree_search(node, target, comparisons=None):
     return False
 
 
+# Purpose: Split parent's full child, promote its median into parent, and return the new right sibling.
 # 作用：切分 parent 的满孩子，把中位数提升到 parent，返回新右结点。
 def split_child(parent, index):
     """Split a full child; promote its median into parent. Returns the new right node."""
@@ -71,6 +73,7 @@ def split_child(parent, index):
 
 
 # A full child is split before descending; its median moves into the parent, so insertion never needs to back up.
+# Purpose: Insert a unique key and return the possibly updated root; reject duplicates before changing the tree.
 # 作用：插入唯一键并返回可能更新的根；重复键在修改前拒绝。
 def btree_insert(root, value):
     """Insert one unique key; returns the possibly new root.
@@ -111,6 +114,7 @@ def btree_insert(root, value):
     return root
 
 
+# Purpose: Print keys level by level so the result of each split is easy to inspect.
 # 作用：按层打印键列表，便于观察分裂结果。
 def print_tree(root):
     """Level-order print: every node shows its keys in one bracket."""

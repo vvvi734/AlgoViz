@@ -23,6 +23,7 @@ from __future__ import annotations
 
 # Invariant: [0, start) is sorted; each scan finds the minimum of the unsorted suffix.
 # `minimum` holds the index of the smallest value seen in the unsorted suffix; swap only after the scan finishes.
+# Purpose: Sort values ascending in place; not stable.
 # 作用：原地升序排序 values；不稳定。
 def selection_sort(values: list[int]) -> None:
     for start in range(len(values) - 1):
@@ -34,6 +35,7 @@ def selection_sort(values: list[int]) -> None:
             values[start], values[minimum] = values[minimum], values[start]
 
 
+# Purpose: Demonstrate selection sort and print the result.
 # 作用：演示选择排序并打印结果。
 def main() -> None:
     values = [5, 1, 4, 2, 8, 0, 3, 7, 6, 9]

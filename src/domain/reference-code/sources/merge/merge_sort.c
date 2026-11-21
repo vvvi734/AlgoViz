@@ -20,6 +20,7 @@
 #include <stdlib.h>
 
 // The buffer is shared across recursive calls; ties take the left run, which keeps the merge stable.
+// Purpose: Merge the sorted ranges values[low..middle) and [middle..high] and write the result back, reusing buffer as temporary space.
 // 作用：合并 values[low..middle) 与 [middle..high] 两段有序区间，结果写回原数组；buffer 复用临时空间。
 static void MergeRange(int *values, int low, int middle, int high, int *buffer)
 {
@@ -52,6 +53,7 @@ static void MergeRange(int *values, int low, int middle, int high, int *buffer)
     }
 }
 
+// Purpose: Recursively split [low..high], sort both halves, then merge them with MergeRange.
 // 作用：递归拆分 [low..high]，对两半排序后调用 MergeRange 合并。
 static void MergeSortRange(int *values, int low, int high, int *buffer)
 {
@@ -65,6 +67,7 @@ static void MergeSortRange(int *values, int low, int high, int *buffer)
     MergeRange(values, low, middle, high, buffer);
 }
 
+// Purpose: Merge-sort entry: allocate one temporary buffer and recursively sort the whole array.
 // 作用：归并排序入口：分配一次临时 buffer，递归排序整个数组。
 void MergeSort(int *values, int count)
 {
@@ -81,6 +84,7 @@ void MergeSort(int *values, int count)
     free(buffer);
 }
 
+// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
 // 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main(void)
 {

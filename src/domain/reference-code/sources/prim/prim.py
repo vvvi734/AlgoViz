@@ -27,6 +27,7 @@ import heapq
 
 
 # This implementation grows the tree by popping the lightest cut edge from `candidates`; selected vertices are skipped as stale.
+# Purpose: Build a demo graph, select edges with Prim, and print the total weight.
 # 作用：构造演示图，用 Prim 选边并打印总权值。
 def main() -> None:
     graph: list[list[tuple[int, int]]] = [[] for _ in range(5)]

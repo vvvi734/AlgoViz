@@ -67,24 +67,24 @@ describe('reference code localization', () => {
     expect(stripped).not.toContain('block');
   });
 
-  it('adds Chinese annotations to an English C++ source without changing the code', async () => {
+  it('selects Chinese comments from the bilingual source without changing the code', async () => {
     const source = await loadReferenceCode('binary', 'cpp');
     expect(source).toContain('AlgoViz reference implementation');
     const translated = localized(source!, 'cpp', 'principle', 'zh');
-    expect(translated).toContain('AlgoViz 参考代码');
-    expect(translated).toContain('思路：');
+    expect(translated).toContain('中文导读');
     expect(translated).toContain('binary_search_index');
     expect(translated).not.toContain('Reading guide');
+    expect(translated).not.toContain('The window is inclusive');
     expect(codeOnly(translated, 'cpp')).toBe(codeOnly(source!, 'cpp'));
   });
 
-  it('adds Chinese annotations to an English C source', async () => {
+  it('selects Chinese block comments from an English C source', async () => {
     const source = await loadReferenceCode('binary', 'c');
     expect(source).toContain('Binary search in C11');
     const translated = localized(source!, 'c', 'principle', 'zh');
-    expect(translated).toContain('AlgoViz 参考代码');
-    expect(translated).toContain('思路：');
+    expect(translated).toContain('中文导读');
     expect(translated).toContain('int Binary_Search');
+    expect(translated).not.toContain('Binary search in C11');
     expect(translated).not.toMatch(/来源：|许可：/);
     expect(codeOnly(translated, 'c')).toBe(codeOnly(source!, 'c'));
   });
@@ -92,13 +92,14 @@ describe('reference code localization', () => {
   it('localizes Python docstrings and comments while preserving executable code', async () => {
     const source = await loadReferenceCode('binary', 'python');
     const zh = localized(source!, 'python', 'principle', 'zh');
-    expect(zh).toContain('# 思路：');
+    expect(zh).toContain('# 中文导读');
     expect(zh).not.toContain('AlgoViz reference implementation');
+    expect(zh).not.toContain('Reading guide');
     expect(zh).toContain('def binary_search');
     expect(codeOnly(zh, 'python')).toBe(codeOnly(source!, 'python'));
   });
 
-  it('uses the standard-library caveat for convenience sources', async () => {
+  it('keeps a standard-library header for convenience sources', async () => {
     const source = await loadReferenceCode('bubble', 'c', 'convenience');
     const translated = localizeReferenceSource(source!, {
       algorithmId: 'bubble',
@@ -107,12 +108,12 @@ describe('reference code localization', () => {
       implementation: 'convenience',
       lang: 'zh',
     });
-    expect(translated).toContain('标准库快捷方法不一定采用本课演示的底层算法');
+    expect(translated).toContain('标准库');
     expect(translated).toContain('qsort');
     expect(translated).toContain('compare_int');
   });
 
-  it('has a reviewed teaching note for every registered algorithm', async () => {
+  it('has a reviewed teaching header for every registered algorithm', async () => {
     expect(REFERENCE_CODE_ALGORITHMS).toHaveLength(45);
     for (const algorithmId of REFERENCE_CODE_ALGORITHMS) {
       const source = await loadReferenceCode(algorithmId, 'cpp');
@@ -124,7 +125,7 @@ describe('reference code localization', () => {
         implementation: 'principle',
         lang: 'zh',
       });
-      expect(translated, algorithmId).toMatch(/思路：.+/);
+      expect(translated, algorithmId).toMatch(/中文导读|思路：/);
       expect(translated, algorithmId).not.toMatch(/来源：|许可：/);
     }
   });
@@ -183,11 +184,57 @@ describe('reference code localization', () => {
     }
   });
 
-  it('leaves native-language sources untouched', async () => {
-    const source = await loadReferenceCode('binary', 'c');
-    expect(localized(source!, 'c', 'principle', 'en')).toBe(source);
-    expect(localized(source!, 'c', 'principle', 'zh')).not.toBe(source);
-    const cpp = await loadReferenceCode('binary', 'cpp');
-    expect(localized(cpp!, 'cpp', 'principle', 'en')).toBe(cpp);
+  it('never mixes teaching languages across the selected source', async () => {
+    for (const algorithmId of REFERENCE_CODE_ALGORITHMS) {
+      for (const language of ['c', 'cpp', 'python'] as const) {
+        for (const implementation of ['principle', 'convenience'] as const) {
+          const source = await loadReferenceCode(algorithmId, language, implementation);
+          if (source == null) continue;
+
+          const en = localizeReferenceSource(source, {
+            algorithmId,
+            algorithmName: algorithmId,
+            language,
+            implementation,
+            fileName: undefined,
+            lang: 'en',
+          });
+          expect(en, `${algorithmId}/${language}/${implementation}/en`).not.toMatch(
+            /[\u3400-\u9fff]/,
+          );
+          expect(codeOnly(en, language), `${algorithmId}/${language}/${implementation}/en`).toBe(
+            codeOnly(source, language),
+          );
+
+          const zh = localizeReferenceSource(source, {
+            algorithmId,
+            algorithmName: algorithmId,
+            language,
+            implementation,
+            lang: 'zh',
+          });
+          expect(zh, `${algorithmId}/${language}/${implementation}/zh`).not.toMatch(
+            /Reading guide|Principle implementation|Convenience implementation/,
+          );
+          expect(codeOnly(zh, language), `${algorithmId}/${language}/${implementation}/zh`).toBe(
+            codeOnly(source, language),
+          );
+        }
+      }
+    }
+  });
+
+  it('keeps executable Python docstrings and string literals intact', async () => {
+    const source = await loadReferenceCode('bf', 'python');
+    const en = localized(source!, 'python', 'principle', 'en');
+    expect(en).toContain('def bf_find_all');
+    expect(en).toContain('pattern must be a non-empty string');
+    expect(en).not.toContain('中文导读');
+
+    const zh = localized(source!, 'python', 'principle', 'zh');
+    expect(zh).toContain('中文导读');
+    expect(zh).toContain('def bf_find_all');
+    expect(zh).toContain('pattern must be a non-empty string');
+    expect(codeOnly(zh, 'python')).toBe(codeOnly(source!, 'python'));
   });
 });

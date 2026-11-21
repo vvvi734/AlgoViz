@@ -25,6 +25,7 @@
 #include <iostream>
 #include <vector>
 
+// Purpose: Check that the array is non-decreasing as the precondition for binary search.
 // 作用：检查数组是否按非降序排列，作为二分查找的前置条件检查。
 bool is_non_decreasing(const std::vector<int> &values)
 {
@@ -39,6 +40,7 @@ bool is_non_decreasing(const std::vector<int> &values)
 }
 
 // The window is inclusive: low == high still leaves one candidate, and mid is computed without overflow.
+// Purpose: Binary-search a sorted vector and return the target index, or -1 when absent.
 // 作用：在有序 vector 中做二分查找；返回目标下标，找不到返回 -1。
 int binary_search_index(const std::vector<int> &values, int target)
 {
@@ -67,6 +69,7 @@ int binary_search_index(const std::vector<int> &values, int target)
     return -1;
 }
 
+// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
 // 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main()
 {

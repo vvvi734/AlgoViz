@@ -29,6 +29,7 @@ struct EvalError
     std::string message;
 };
 
+// Purpose: Check that token contains only digits so "12a" is not pushed as a number.
 /*
  * 作用：判断 token 是否只含数字，防止 "12a" 被当作数字压栈。
  */
@@ -48,6 +49,7 @@ bool is_number(const std::string &token)
     return true;
 }
 
+// Purpose: Evaluate postfix: return a value on success, or an EvalError describing insufficient/extra operands, an invalid token or division by zero.
 /*
  * 作用：后缀求值。成功返回值；失败返回 EvalError 说明操作数不足/过多、非法 token 或除零。
  */
@@ -118,6 +120,7 @@ std::variant<int, EvalError> evaluate(const std::string &expression)
     return stack.back();
 }
 
+// Purpose: Evaluate the official example 3 4 + 2 *, expecting 14; print the reason and return non-zero on error.
 /*
  * 作用：用官方示例 3 4 + 2 * 演示求值，期望结果 14；出错时打印原因并返回非零。
  */

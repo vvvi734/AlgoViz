@@ -27,6 +27,7 @@
 
 // Invariant: [0, start) is sorted; each scan finds the minimum of the unsorted suffix.
 // `minimum` holds the index of the smallest value seen in the unsorted suffix; swap only after the scan finishes.
+// Purpose: Each pass places the minimum of the unsorted suffix at the end of the prefix, using one swap to reduce writes.
 // 作用：每轮从未排序区选最小值放到前缀末尾；只交换一次，减少写操作。
 void selection_sort(std::vector<int> &values)
 {
@@ -47,6 +48,7 @@ void selection_sort(std::vector<int> &values)
     }
 }
 
+// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
 // 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main()
 {

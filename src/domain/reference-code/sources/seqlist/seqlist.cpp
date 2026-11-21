@@ -29,6 +29,7 @@ template <typename T, std::size_t Capacity> class SeqList
   public:
     // Insert shifts [index, length) one slot right, then writes the new value.
     // `length` is the live element count, not capacity; insert/erase shift only the live range and then update it.
+    // Purpose: Insert value before index after checking range and capacity, shifting elements from back to front.
     // 作用：在下标 index 前插入 value；先检查范围和容量，再从后往前搬移。
     bool insert(std::size_t index, const T &value)
     {
@@ -45,6 +46,7 @@ template <typename T, std::size_t Capacity> class SeqList
         return true;
     }
 
+    // Purpose: Remove and return the element at index by shifting later elements forward into the gap.
     // 作用：删除下标 index 的元素并返回它；从前往后搬移覆盖空位。
     std::optional<T> erase(std::size_t index)
     {
@@ -61,6 +63,7 @@ template <typename T, std::size_t Capacity> class SeqList
         return removed;
     }
 
+    // Purpose: Print the current live elements of the sequential list read-only.
     // 作用：只读输出顺序表当前有效元素。
     void print() const
     {
@@ -76,6 +79,7 @@ template <typename T, std::size_t Capacity> class SeqList
     std::size_t size_ = 0;
 };
 
+// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
 // 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main()
 {

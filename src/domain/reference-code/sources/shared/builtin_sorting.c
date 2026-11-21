@@ -31,6 +31,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// Purpose: Integer ascending comparator used by the standard-library sort/search.
 // 作用：标准库排序/查找使用的整数升序比较器。
 static int compare_int(const void *left, const void *right)
 {
@@ -40,6 +41,7 @@ static int compare_int(const void *left, const void *right)
     return (a > b) - (a < b);
 }
 
+// Purpose: Print array elements read-only so each sorting step can be checked.
 // 作用：只读输出数组元素，用于检查排序每一步的结果。
 static void print_values(const int *values, size_t length)
 {
@@ -49,6 +51,7 @@ static void print_values(const int *values, size_t length)
     }
 }
 
+// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
 // 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main(void)
 {

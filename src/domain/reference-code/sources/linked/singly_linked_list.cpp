@@ -30,6 +30,7 @@ struct Node
     int value;
     Node *next;
 
+    // Purpose: Construct a singly linked-list node with value and a null next pointer.
     // 作用：构造单链表结点：保存 value，next 置空。
     explicit Node(int value_) : value(value_), next(nullptr)
     {
@@ -39,6 +40,7 @@ struct Node
 class SinglyLinkedList
 {
   public:
+    // Purpose: Construct an empty singly linked list with null head/tail and zero length.
     // 作用：构造空单链表：head、tail 置空，length 归零。
     SinglyLinkedList() : head_(nullptr), tail_(nullptr), length_(0)
     {
@@ -48,18 +50,21 @@ class SinglyLinkedList
     SinglyLinkedList(const SinglyLinkedList &) = delete;
     SinglyLinkedList &operator=(const SinglyLinkedList &) = delete;
 
+    // Purpose: Destructor: release every dynamic node, restore null head/tail and zero length, and save next before freeing each node.
     // 作用：析构：释放容器中所有动态结点，并把头尾指针和长度恢复为空状态；先保存 next 再释放当前结点。
     ~SinglyLinkedList()
     {
         clear();
     }
 
+    // Purpose: Return the head pointer for read-only access.
     // 作用：返回头指针供只读访问。
     Node *head() const
     {
         return head_;
     }
 
+    // Purpose: Head insertion: point the new node at the old head, then update head, and update tail when the list was empty.
     // 作用：头插：新结点的 next 指向旧 head，再更新 head；空表时同时更新 tail。
     void insert_head(int value)
     {
@@ -74,6 +79,7 @@ class SinglyLinkedList
         ++length_;
     }
 
+    // Purpose: Find the predecessor of target for deletion or insertion after a known node.
     // 作用：查找 target 的前驱结点；用于删除或“在已知结点后插入”。
     Node *find_prev(const Node *target) const
     {
@@ -89,6 +95,7 @@ class SinglyLinkedList
         return prev->next == target ? prev : nullptr;
     }
 
+    // Purpose: Insert value after known node prev by linking the new node to the successor before changing prev->next.
     // 作用：在已知结点 prev 后插入 value；先接新结点到后继，再改 prev->next。
     bool insert_after(Node *prev, int value)
     {
@@ -107,6 +114,7 @@ class SinglyLinkedList
         return true;
     }
 
+    // Purpose: Find and remove the first node with the given value, updating tail and length after the removal.
     // 作用：按值查找并删除第一个匹配结点；删除后同步更新 tail 和 length。
     bool remove_value(int value)
     {
@@ -139,6 +147,7 @@ class SinglyLinkedList
         return true;
     }
 
+    // Purpose: Traverse and print the current structure without modifying data, so each step can be checked.
     // 作用：只读遍历并输出当前结构；不会修改数据，适合在每一步后核对状态。
     void print() const
     {
@@ -150,12 +159,14 @@ class SinglyLinkedList
         std::cout << '\n';
     }
 
+    // Purpose: Return the list length by reading length_ directly, without traversal.
     // 作用：返回链表长度；直接读取 length_，不遍历。
     std::size_t length() const
     {
         return length_;
     }
 
+    // Purpose: Clear the container, release every dynamic node, and restore null head/tail and zero length.
     // 作用：清空容器并释放所有动态结点，把头尾指针和长度恢复为空状态。
     void clear()
     {
@@ -177,6 +188,7 @@ class SinglyLinkedList
     std::size_t length_;
 };
 
+// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
 // 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main()
 {
