@@ -1,0 +1,1448 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-21",
+  "note": "只记录书目信息、目录层级和页码，不包含教材正文或插图；PDF 为本地参考文件，不纳入仓库。",
+  "books": [
+    {
+      "id": "yan-weimin-c",
+      "title": "数据结构（C语言版）",
+      "authors": [
+        "严蔚敏",
+        "吴伟民"
+      ],
+      "publisher": "清华大学出版社",
+      "edition": "1997 年 4 月第 1 版",
+      "localFile": "数据结构（C语言版） (严蔚敏，吴伟民) .pdf",
+      "pdfPages": 347,
+      "printedPageOffset": 10,
+      "pageFormula": "PDF 页 = 印刷页 + 10",
+      "textLayer": "Paper Capture OCR；目录与章节标题可用，正文公式和代码需回看原页。",
+      "chapters": [
+        {
+          "number": 1,
+          "title": "绪论",
+          "printedStart": 1,
+          "printedEnd": 17,
+          "pdfStart": 11,
+          "pdfEnd": 27
+        },
+        {
+          "number": 2,
+          "title": "线性表",
+          "printedStart": 18,
+          "printedEnd": 43,
+          "pdfStart": 28,
+          "pdfEnd": 53
+        },
+        {
+          "number": 3,
+          "title": "栈和队列",
+          "printedStart": 44,
+          "printedEnd": 69,
+          "pdfStart": 54,
+          "pdfEnd": 79
+        },
+        {
+          "number": 4,
+          "title": "串",
+          "printedStart": 70,
+          "printedEnd": 89,
+          "pdfStart": 80,
+          "pdfEnd": 99
+        },
+        {
+          "number": 5,
+          "title": "数组和广义表",
+          "printedStart": 90,
+          "printedEnd": 117,
+          "pdfStart": 100,
+          "pdfEnd": 127
+        },
+        {
+          "number": 6,
+          "title": "树和二叉树",
+          "printedStart": 118,
+          "printedEnd": 155,
+          "pdfStart": 128,
+          "pdfEnd": 165
+        },
+        {
+          "number": 7,
+          "title": "图",
+          "printedStart": 156,
+          "printedEnd": 192,
+          "pdfStart": 166,
+          "pdfEnd": 202
+        },
+        {
+          "number": 8,
+          "title": "动态存储管理",
+          "printedStart": 193,
+          "printedEnd": 213,
+          "pdfStart": 203,
+          "pdfEnd": 223
+        },
+        {
+          "number": 9,
+          "title": "查找",
+          "printedStart": 214,
+          "printedEnd": 262,
+          "pdfStart": 224,
+          "pdfEnd": 272
+        },
+        {
+          "number": 10,
+          "title": "内部排序",
+          "printedStart": 263,
+          "printedEnd": 292,
+          "pdfStart": 273,
+          "pdfEnd": 302
+        },
+        {
+          "number": 11,
+          "title": "外部排序",
+          "printedStart": 293,
+          "printedEnd": 305,
+          "pdfStart": 303,
+          "pdfEnd": 315
+        },
+        {
+          "number": 12,
+          "title": "文件",
+          "printedStart": 306,
+          "printedEnd": 321,
+          "pdfStart": 316,
+          "pdfEnd": 331
+        }
+      ],
+      "outline": [
+        {
+          "title": "第1章 绪论",
+          "chapter": 1,
+          "pdfPage": 11,
+          "printedPage": 1
+        },
+        {
+          "title": "1.1什么是数据结构",
+          "chapter": 1,
+          "pdfPage": 11,
+          "printedPage": 1
+        },
+        {
+          "title": "1.2基本概念和术语",
+          "chapter": 1,
+          "pdfPage": 14,
+          "printedPage": 4
+        },
+        {
+          "title": "1.3抽象数据类型的表示与实现",
+          "chapter": 1,
+          "pdfPage": 19,
+          "printedPage": 9
+        },
+        {
+          "title": "1.4算法和算法分析",
+          "chapter": 1,
+          "pdfPage": 23,
+          "printedPage": 13
+        },
+        {
+          "title": "1.4.1算法",
+          "chapter": 1,
+          "pdfPage": 23,
+          "printedPage": 13
+        },
+        {
+          "title": "1.4.2算法设计的要求",
+          "chapter": 1,
+          "pdfPage": 23,
+          "printedPage": 13
+        },
+        {
+          "title": "1.4.3算法效率的度量",
+          "chapter": 1,
+          "pdfPage": 24,
+          "printedPage": 14
+        },
+        {
+          "title": "1.4.4算法的存储空间需求",
+          "chapter": 1,
+          "pdfPage": 27,
+          "printedPage": 17
+        },
+        {
+          "title": "第2章 线性表",
+          "chapter": 2,
+          "pdfPage": 28,
+          "printedPage": 18
+        },
+        {
+          "title": "2.1线性表的类型定义",
+          "chapter": 2,
+          "pdfPage": 28,
+          "printedPage": 18
+        },
+        {
+          "title": "2.2线性表的顺序表示和实现",
+          "chapter": 2,
+          "pdfPage": 31,
+          "printedPage": 21
+        },
+        {
+          "title": "2.3线性表的链式表示和实现",
+          "chapter": 2,
+          "pdfPage": 37,
+          "printedPage": 27
+        },
+        {
+          "title": "2.3.1线性链表",
+          "chapter": 2,
+          "pdfPage": 37,
+          "printedPage": 27
+        },
+        {
+          "title": "2.3.2循环链表",
+          "chapter": 2,
+          "pdfPage": 45,
+          "printedPage": 35
+        },
+        {
+          "title": "2.3.3双向链表",
+          "chapter": 2,
+          "pdfPage": 45,
+          "printedPage": 35
+        },
+        {
+          "title": "2.4一元多项式的表示及相加",
+          "chapter": 2,
+          "pdfPage": 49,
+          "printedPage": 39
+        },
+        {
+          "title": "第3章 栈和队列",
+          "chapter": 3,
+          "pdfPage": 54,
+          "printedPage": 44
+        },
+        {
+          "title": "3.1栈",
+          "chapter": 3,
+          "pdfPage": 54,
+          "printedPage": 44
+        },
+        {
+          "title": "3.1.1抽象数据类型栈的定义",
+          "chapter": 3,
+          "pdfPage": 54,
+          "printedPage": 44
+        },
+        {
+          "title": "3.1.2栈的表示和实现",
+          "chapter": 3,
+          "pdfPage": 55,
+          "printedPage": 45
+        },
+        {
+          "title": "3.2栈的应用举例",
+          "chapter": 3,
+          "pdfPage": 58,
+          "printedPage": 48
+        },
+        {
+          "title": "3.2.1数制转换",
+          "chapter": 3,
+          "pdfPage": 58,
+          "printedPage": 48
+        },
+        {
+          "title": "3.2.2括号匹配的检验",
+          "chapter": 3,
+          "pdfPage": 59,
+          "printedPage": 49
+        },
+        {
+          "title": "3.2.3行编辑程序",
+          "chapter": 3,
+          "pdfPage": 59,
+          "printedPage": 49
+        },
+        {
+          "title": "3.2.4迷宫求解",
+          "chapter": 3,
+          "pdfPage": 60,
+          "printedPage": 50
+        },
+        {
+          "title": "3.2.5表达式求值",
+          "chapter": 3,
+          "pdfPage": 62,
+          "printedPage": 52
+        },
+        {
+          "title": "3.3栈与递归的实现",
+          "chapter": 3,
+          "pdfPage": 64,
+          "printedPage": 54
+        },
+        {
+          "title": "3.4队列",
+          "chapter": 3,
+          "pdfPage": 68,
+          "printedPage": 58
+        },
+        {
+          "title": "3.4.1抽象数据类型队列的定义",
+          "chapter": 3,
+          "pdfPage": 68,
+          "printedPage": 58
+        },
+        {
+          "title": "3.4.2链队列——队列的链式表示和实现",
+          "chapter": 3,
+          "pdfPage": 70,
+          "printedPage": 60
+        },
+        {
+          "title": "3.4.3循环队列——队列的顺序表示和实现",
+          "chapter": 3,
+          "pdfPage": 73,
+          "printedPage": 63
+        },
+        {
+          "title": "3.5离散事件模拟",
+          "chapter": 3,
+          "pdfPage": 75,
+          "printedPage": 65
+        },
+        {
+          "title": "第4章串",
+          "chapter": 4,
+          "pdfPage": 80,
+          "printedPage": 70
+        },
+        {
+          "title": "4.1串类型的定义",
+          "chapter": 4,
+          "pdfPage": 80,
+          "printedPage": 70
+        },
+        {
+          "title": "4.2串的表示和实现",
+          "chapter": 4,
+          "pdfPage": 82,
+          "printedPage": 72
+        },
+        {
+          "title": "4.2.1定长顺序存储表示",
+          "chapter": 4,
+          "pdfPage": 83,
+          "printedPage": 73
+        },
+        {
+          "title": "4.2.2堆分配存储表示",
+          "chapter": 4,
+          "pdfPage": 85,
+          "printedPage": 75
+        },
+        {
+          "title": "4.2.3串的块链存储表示",
+          "chapter": 4,
+          "pdfPage": 88,
+          "printedPage": 78
+        },
+        {
+          "title": "4.3串的模式匹配算法",
+          "chapter": 4,
+          "pdfPage": 89,
+          "printedPage": 79
+        },
+        {
+          "title": "4.3.1求子串位置的定位函数Index （S， T，pos）",
+          "chapter": 4,
+          "pdfPage": 89,
+          "printedPage": 79
+        },
+        {
+          "title": "4.3.2模式匹配的一种改进算法",
+          "chapter": 4,
+          "pdfPage": 90,
+          "printedPage": 80
+        },
+        {
+          "title": "4.4串操作应用举例",
+          "chapter": 4,
+          "pdfPage": 94,
+          "printedPage": 84
+        },
+        {
+          "title": "4.4.1文本编辑",
+          "chapter": 4,
+          "pdfPage": 94,
+          "printedPage": 84
+        },
+        {
+          "title": "4.4.2建立词索引表",
+          "chapter": 4,
+          "pdfPage": 96,
+          "printedPage": 86
+        },
+        {
+          "title": "第5章 数组和广义表",
+          "chapter": 5,
+          "pdfPage": 100,
+          "printedPage": 90
+        },
+        {
+          "title": "5.1数组的定义",
+          "chapter": 5,
+          "pdfPage": 100,
+          "printedPage": 90
+        },
+        {
+          "title": "5.2数组的顺序表示和实现",
+          "chapter": 5,
+          "pdfPage": 101,
+          "printedPage": 91
+        },
+        {
+          "title": "5.3矩阵的压缩存储",
+          "chapter": 5,
+          "pdfPage": 105,
+          "printedPage": 95
+        },
+        {
+          "title": "5.3.1特殊矩阵",
+          "chapter": 5,
+          "pdfPage": 105,
+          "printedPage": 95
+        },
+        {
+          "title": "5.3.2稀疏矩阵",
+          "chapter": 5,
+          "pdfPage": 106,
+          "printedPage": 96
+        },
+        {
+          "title": "5.4广义表的定义",
+          "chapter": 5,
+          "pdfPage": 116,
+          "printedPage": 106
+        },
+        {
+          "title": "5.5广义表的存储结构",
+          "chapter": 5,
+          "pdfPage": 119,
+          "printedPage": 109
+        },
+        {
+          "title": "5.6 m元多项式的表示",
+          "chapter": 5,
+          "pdfPage": 120,
+          "printedPage": 110
+        },
+        {
+          "title": "5.7广义表的递归算法",
+          "chapter": 5,
+          "pdfPage": 122,
+          "printedPage": 112
+        },
+        {
+          "title": "5.7.1求广义表的深度",
+          "chapter": 5,
+          "pdfPage": 123,
+          "printedPage": 113
+        },
+        {
+          "title": "5.7.2复制广义表",
+          "chapter": 5,
+          "pdfPage": 125,
+          "printedPage": 115
+        },
+        {
+          "title": "5.7.3建立广义表的存储结构",
+          "chapter": 5,
+          "pdfPage": 125,
+          "printedPage": 115
+        },
+        {
+          "title": "第6章 树和二叉树",
+          "chapter": 6,
+          "pdfPage": 128,
+          "printedPage": 118
+        },
+        {
+          "title": "6.1树的定义和基本术语",
+          "chapter": 6,
+          "pdfPage": 128,
+          "printedPage": 118
+        },
+        {
+          "title": "6.2二叉树",
+          "chapter": 6,
+          "pdfPage": 131,
+          "printedPage": 121
+        },
+        {
+          "title": "6.2.1二叉树的定义",
+          "chapter": 6,
+          "pdfPage": 131,
+          "printedPage": 121
+        },
+        {
+          "title": "6.2.2二叉树的性质",
+          "chapter": 6,
+          "pdfPage": 133,
+          "printedPage": 123
+        },
+        {
+          "title": "6.2.3二叉树的存储结构",
+          "chapter": 6,
+          "pdfPage": 136,
+          "printedPage": 126
+        },
+        {
+          "title": "6.3遍历二叉树和线索二叉树",
+          "chapter": 6,
+          "pdfPage": 138,
+          "printedPage": 128
+        },
+        {
+          "title": "6.3.1遍历二叉树",
+          "chapter": 6,
+          "pdfPage": 138,
+          "printedPage": 128
+        },
+        {
+          "title": "6.3.2线索二叉树",
+          "chapter": 6,
+          "pdfPage": 142,
+          "printedPage": 132
+        },
+        {
+          "title": "6.4树和森林",
+          "chapter": 6,
+          "pdfPage": 145,
+          "printedPage": 135
+        },
+        {
+          "title": "6.4.1树的存储结构",
+          "chapter": 6,
+          "pdfPage": 145,
+          "printedPage": 135
+        },
+        {
+          "title": "6.4.2森林与二叉树的转换",
+          "chapter": 6,
+          "pdfPage": 147,
+          "printedPage": 137
+        },
+        {
+          "title": "6.4.3树和森林的遍历",
+          "chapter": 6,
+          "pdfPage": 148,
+          "printedPage": 138
+        },
+        {
+          "title": "6.5树与等价问题",
+          "chapter": 6,
+          "pdfPage": 149,
+          "printedPage": 139
+        },
+        {
+          "title": "6.6赫夫曼树及其应用",
+          "chapter": 6,
+          "pdfPage": 154,
+          "printedPage": 144
+        },
+        {
+          "title": "6.6.1最优二叉树（赫夫曼树）",
+          "chapter": 6,
+          "pdfPage": 154,
+          "printedPage": 144
+        },
+        {
+          "title": "6.6.2赫夫曼编码",
+          "chapter": 6,
+          "pdfPage": 156,
+          "printedPage": 146
+        },
+        {
+          "title": "6.7回溯法与树的遍历",
+          "chapter": 6,
+          "pdfPage": 159,
+          "printedPage": 149
+        },
+        {
+          "title": "6.8树的计数",
+          "chapter": 6,
+          "pdfPage": 162,
+          "printedPage": 152
+        },
+        {
+          "title": "第7章图",
+          "chapter": 7,
+          "pdfPage": 166,
+          "printedPage": 156
+        },
+        {
+          "title": "7.1图的定义和术语",
+          "chapter": 7,
+          "pdfPage": 166,
+          "printedPage": 156
+        },
+        {
+          "title": "7.2图的存储结构",
+          "chapter": 7,
+          "pdfPage": 170,
+          "printedPage": 160
+        },
+        {
+          "title": "7.2.1数组表示法",
+          "chapter": 7,
+          "pdfPage": 171,
+          "printedPage": 161
+        },
+        {
+          "title": "7.2.2邻接表",
+          "chapter": 7,
+          "pdfPage": 173,
+          "printedPage": 163
+        },
+        {
+          "title": "7.2.3十字链表",
+          "chapter": 7,
+          "pdfPage": 174,
+          "printedPage": 164
+        },
+        {
+          "title": "7.2.4邻接多重表",
+          "chapter": 7,
+          "pdfPage": 176,
+          "printedPage": 166
+        },
+        {
+          "title": "7.3图的遍历",
+          "chapter": 7,
+          "pdfPage": 177,
+          "printedPage": 167
+        },
+        {
+          "title": "7.3.1深度优先搜索",
+          "chapter": 7,
+          "pdfPage": 177,
+          "printedPage": 167
+        },
+        {
+          "title": "7.3.2广度优先搜索",
+          "chapter": 7,
+          "pdfPage": 179,
+          "printedPage": 169
+        },
+        {
+          "title": "7.4图的连通性问题",
+          "chapter": 7,
+          "pdfPage": 180,
+          "printedPage": 170
+        },
+        {
+          "title": "7.4.1无向图的连通分量和生成树",
+          "chapter": 7,
+          "pdfPage": 180,
+          "printedPage": 170
+        },
+        {
+          "title": "7.4.2有向图的强连通分量",
+          "chapter": 7,
+          "pdfPage": 182,
+          "printedPage": 172
+        },
+        {
+          "title": "7.4.3最小生成树",
+          "chapter": 7,
+          "pdfPage": 183,
+          "printedPage": 173
+        },
+        {
+          "title": "7.4.4关节点和重连通分量",
+          "chapter": 7,
+          "pdfPage": 186,
+          "printedPage": 176
+        },
+        {
+          "title": "7.5有向无环图及其应用",
+          "chapter": 7,
+          "pdfPage": 189,
+          "printedPage": 179
+        },
+        {
+          "title": "7.5.1拓扑排序",
+          "chapter": 7,
+          "pdfPage": 190,
+          "printedPage": 180
+        },
+        {
+          "title": "7.5.2关键路径",
+          "chapter": 7,
+          "pdfPage": 193,
+          "printedPage": 183
+        },
+        {
+          "title": "7.6最短路径",
+          "chapter": 7,
+          "pdfPage": 196,
+          "printedPage": 186
+        },
+        {
+          "title": "7.6.1从某个源点到其余各顶点的最短路径",
+          "chapter": 7,
+          "pdfPage": 197,
+          "printedPage": 187
+        },
+        {
+          "title": "7.6.2每一对顶点之间的最短路径",
+          "chapter": 7,
+          "pdfPage": 200,
+          "printedPage": 190
+        },
+        {
+          "title": "第8章 动态存储管理",
+          "chapter": 8,
+          "pdfPage": 203,
+          "printedPage": 193
+        },
+        {
+          "title": "8.1概述",
+          "chapter": 8,
+          "pdfPage": 203,
+          "printedPage": 193
+        },
+        {
+          "title": "8.2可利用空间表及分配方法",
+          "chapter": 8,
+          "pdfPage": 205,
+          "printedPage": 195
+        },
+        {
+          "title": "8.3边界标识法",
+          "chapter": 8,
+          "pdfPage": 208,
+          "printedPage": 198
+        },
+        {
+          "title": "8.3.1可利用空间表的结构",
+          "chapter": 8,
+          "pdfPage": 208,
+          "printedPage": 198
+        },
+        {
+          "title": "8.3.2分配算法",
+          "chapter": 8,
+          "pdfPage": 209,
+          "printedPage": 199
+        },
+        {
+          "title": "8.3.3回收算法",
+          "chapter": 8,
+          "pdfPage": 211,
+          "printedPage": 201
+        },
+        {
+          "title": "8.4伙伴系统",
+          "chapter": 8,
+          "pdfPage": 213,
+          "printedPage": 203
+        },
+        {
+          "title": "8.4.1可利用空间表的结构",
+          "chapter": 8,
+          "pdfPage": 213,
+          "printedPage": 203
+        },
+        {
+          "title": "8.4.2分配算法",
+          "chapter": 8,
+          "pdfPage": 214,
+          "printedPage": 204
+        },
+        {
+          "title": "8.4.3回收算法",
+          "chapter": 8,
+          "pdfPage": 215,
+          "printedPage": 205
+        },
+        {
+          "title": "8.5无用单元收集",
+          "chapter": 8,
+          "pdfPage": 216,
+          "printedPage": 206
+        },
+        {
+          "title": "8.6存储紧缩",
+          "chapter": 8,
+          "pdfPage": 222,
+          "printedPage": 212
+        },
+        {
+          "title": "第9章查找",
+          "chapter": 9,
+          "pdfPage": 224,
+          "printedPage": 214
+        },
+        {
+          "title": "9.1静态查找表",
+          "chapter": 9,
+          "pdfPage": 226,
+          "printedPage": 216
+        },
+        {
+          "title": "9.1.1顺序表的查找",
+          "chapter": 9,
+          "pdfPage": 226,
+          "printedPage": 216
+        },
+        {
+          "title": "9.1.2有序表的查找",
+          "chapter": 9,
+          "pdfPage": 228,
+          "printedPage": 218
+        },
+        {
+          "title": "9.1.3静态树表的查找",
+          "chapter": 9,
+          "pdfPage": 232,
+          "printedPage": 222
+        },
+        {
+          "title": "9.1.4索引顺序表的查找",
+          "chapter": 9,
+          "pdfPage": 235,
+          "printedPage": 225
+        },
+        {
+          "title": "9.2动态查找表",
+          "chapter": 9,
+          "pdfPage": 236,
+          "printedPage": 226
+        },
+        {
+          "title": "9.2.1二叉排序树和平衡二叉树",
+          "chapter": 9,
+          "pdfPage": 237,
+          "printedPage": 227
+        },
+        {
+          "title": "9.2.2 B-树和B+树",
+          "chapter": 9,
+          "pdfPage": 248,
+          "printedPage": 238
+        },
+        {
+          "title": "9.2.3键树",
+          "chapter": 9,
+          "pdfPage": 257,
+          "printedPage": 247
+        },
+        {
+          "title": "9.3哈希表",
+          "chapter": 9,
+          "pdfPage": 261,
+          "printedPage": 251
+        },
+        {
+          "title": "9.3.1什么是哈希表",
+          "chapter": 9,
+          "pdfPage": 261,
+          "printedPage": 251
+        },
+        {
+          "title": "9.3.2哈希函数的构造方法",
+          "chapter": 9,
+          "pdfPage": 263,
+          "printedPage": 253
+        },
+        {
+          "title": "9.3.3处理冲突的方法",
+          "chapter": 9,
+          "pdfPage": 266,
+          "printedPage": 256
+        },
+        {
+          "title": "9.3.4哈希表的查找及其分析",
+          "chapter": 9,
+          "pdfPage": 269,
+          "printedPage": 259
+        },
+        {
+          "title": "第10章 内部排序",
+          "chapter": 10,
+          "pdfPage": 273,
+          "printedPage": 263
+        },
+        {
+          "title": "10.1概述",
+          "chapter": 10,
+          "pdfPage": 273,
+          "printedPage": 263
+        },
+        {
+          "title": "10.2插入排序",
+          "chapter": 10,
+          "pdfPage": 275,
+          "printedPage": 265
+        },
+        {
+          "title": "10.2.1直接插入排序",
+          "chapter": 10,
+          "pdfPage": 275,
+          "printedPage": 265
+        },
+        {
+          "title": "10.2.2其他插入排序",
+          "chapter": 10,
+          "pdfPage": 276,
+          "printedPage": 266
+        },
+        {
+          "title": "10.2.3希尔排序",
+          "chapter": 10,
+          "pdfPage": 281,
+          "printedPage": 271
+        },
+        {
+          "title": "10.3快速排序",
+          "chapter": 10,
+          "pdfPage": 282,
+          "printedPage": 272
+        },
+        {
+          "title": "10.4选择排序",
+          "chapter": 10,
+          "pdfPage": 287,
+          "printedPage": 277
+        },
+        {
+          "title": "10.4.1简单选择排序",
+          "chapter": 10,
+          "pdfPage": 287,
+          "printedPage": 277
+        },
+        {
+          "title": "10.4.2树形选择排序",
+          "chapter": 10,
+          "pdfPage": 288,
+          "printedPage": 278
+        },
+        {
+          "title": "10.4.3堆排序",
+          "chapter": 10,
+          "pdfPage": 289,
+          "printedPage": 279
+        },
+        {
+          "title": "10.5归并排序",
+          "chapter": 10,
+          "pdfPage": 293,
+          "printedPage": 283
+        },
+        {
+          "title": "10.6基数排序",
+          "chapter": 10,
+          "pdfPage": 294,
+          "printedPage": 284
+        },
+        {
+          "title": "10.6.1多关键字的排序",
+          "chapter": 10,
+          "pdfPage": 294,
+          "printedPage": 284
+        },
+        {
+          "title": "10.6.2链式基数排序",
+          "chapter": 10,
+          "pdfPage": 296,
+          "printedPage": 286
+        },
+        {
+          "title": "10.7各种内部排序方法的比较讨论",
+          "chapter": 10,
+          "pdfPage": 298,
+          "printedPage": 288
+        },
+        {
+          "title": "第11章 外部排序",
+          "chapter": 11,
+          "pdfPage": 303,
+          "printedPage": 293
+        },
+        {
+          "title": "11.1外存信息的存取",
+          "chapter": 11,
+          "pdfPage": 303,
+          "printedPage": 293
+        },
+        {
+          "title": "11.2外部排序的方法",
+          "chapter": 11,
+          "pdfPage": 305,
+          "printedPage": 295
+        },
+        {
+          "title": "11.3多路平衡归并的实现",
+          "chapter": 11,
+          "pdfPage": 307,
+          "printedPage": 297
+        },
+        {
+          "title": "11.4置换-选择排序",
+          "chapter": 11,
+          "pdfPage": 309,
+          "printedPage": 299
+        },
+        {
+          "title": "11.5最佳归并树",
+          "chapter": 11,
+          "pdfPage": 314,
+          "printedPage": 304
+        },
+        {
+          "title": "第12章 文件",
+          "chapter": 12,
+          "pdfPage": 316,
+          "printedPage": 306
+        },
+        {
+          "title": "12.1有关文件的基本概念",
+          "chapter": 12,
+          "pdfPage": 316,
+          "printedPage": 306
+        },
+        {
+          "title": "12.2顺序文件",
+          "chapter": 12,
+          "pdfPage": 318,
+          "printedPage": 308
+        },
+        {
+          "title": "12.3索引文件",
+          "chapter": 12,
+          "pdfPage": 321,
+          "printedPage": 311
+        },
+        {
+          "title": "12.4 ISAM文件和VSAM文件",
+          "chapter": 12,
+          "pdfPage": 323,
+          "printedPage": 313
+        },
+        {
+          "title": "12.4.1 ISAM文件",
+          "chapter": 12,
+          "pdfPage": 323,
+          "printedPage": 313
+        },
+        {
+          "title": "12.4.2 VSAM文件",
+          "chapter": 12,
+          "pdfPage": 326,
+          "printedPage": 316
+        },
+        {
+          "title": "12.5直接存取文件（散列文件）",
+          "chapter": 12,
+          "pdfPage": 327,
+          "printedPage": 317
+        },
+        {
+          "title": "12.6多关键字文件",
+          "chapter": 12,
+          "pdfPage": 329,
+          "printedPage": 319
+        },
+        {
+          "title": "12.6.1多重表文件",
+          "chapter": 12,
+          "pdfPage": 329,
+          "printedPage": 319
+        },
+        {
+          "title": "12.6.2倒排文件",
+          "chapter": 12,
+          "pdfPage": 329,
+          "printedPage": 319
+        },
+        {
+          "title": "附录A名词索引",
+          "chapter": 12,
+          "pdfPage": 332,
+          "printedPage": 322
+        },
+        {
+          "title": "附录B函数索引",
+          "chapter": 12,
+          "pdfPage": 339,
+          "printedPage": 329
+        },
+        {
+          "title": "参考书目",
+          "chapter": 12,
+          "pdfPage": 344,
+          "printedPage": 334
+        }
+      ]
+    },
+    {
+      "id": "dahua",
+      "title": "大话数据结构（溢彩加强版）",
+      "authors": [
+        "程杰"
+      ],
+      "publisher": "清华大学出版社",
+      "edition": "2020 年修订版",
+      "localFile": "大话数据结构.pdf",
+      "pdfPages": 389,
+      "printedPageOffset": 29,
+      "pageFormula": "PDF 页 = 印刷页 + 29（正文页；前置目录页不适用）",
+      "textLayer": "扫描件 OCR；可用关键词定位，错字较多，引用或核对细节必须回看页面图像。",
+      "chapters": [
+        {
+          "number": 1,
+          "title": "数据结构绪论",
+          "printedStart": 1,
+          "printedEnd": 14,
+          "pdfStart": 30,
+          "pdfEnd": 43
+        },
+        {
+          "number": 2,
+          "title": "算法",
+          "printedStart": 15,
+          "printedEnd": 36,
+          "pdfStart": 44,
+          "pdfEnd": 65
+        },
+        {
+          "number": 3,
+          "title": "线性表",
+          "printedStart": 37,
+          "printedEnd": 74,
+          "pdfStart": 66,
+          "pdfEnd": 103
+        },
+        {
+          "number": 4,
+          "title": "栈与队列",
+          "printedStart": 75,
+          "printedEnd": 102,
+          "pdfStart": 104,
+          "pdfEnd": 131
+        },
+        {
+          "number": 5,
+          "title": "串",
+          "printedStart": 103,
+          "printedEnd": 124,
+          "pdfStart": 132,
+          "pdfEnd": 153
+        },
+        {
+          "number": 6,
+          "title": "树",
+          "printedStart": 125,
+          "printedEnd": 180,
+          "pdfStart": 154,
+          "pdfEnd": 209
+        },
+        {
+          "number": 7,
+          "title": "图",
+          "printedStart": 181,
+          "printedEnd": 244,
+          "pdfStart": 210,
+          "pdfEnd": 273
+        },
+        {
+          "number": 8,
+          "title": "查找",
+          "printedStart": 245,
+          "printedEnd": 308,
+          "pdfStart": 274,
+          "pdfEnd": 337
+        },
+        {
+          "number": 9,
+          "title": "排序",
+          "printedStart": 309,
+          "printedEnd": 360,
+          "pdfStart": 338,
+          "pdfEnd": 389
+        }
+      ],
+      "keySections": [
+        {
+          "section": "1.4",
+          "title": "基本概念和术语",
+          "printedPage": 5,
+          "pdfPage": 34
+        },
+        {
+          "section": "2.9",
+          "title": "算法时间复杂度",
+          "printedPage": 27,
+          "pdfPage": 56
+        },
+        {
+          "section": "3.4",
+          "title": "线性表的顺序存储结构",
+          "printedPage": 43,
+          "pdfPage": 72
+        },
+        {
+          "section": "3.5",
+          "title": "顺序存储结构的插入与删除",
+          "printedPage": 46,
+          "pdfPage": 75
+        },
+        {
+          "section": "3.6",
+          "title": "线性表的链式存储结构",
+          "printedPage": 49,
+          "pdfPage": 78
+        },
+        {
+          "section": "3.8",
+          "title": "单链表的插入与删除",
+          "printedPage": 54,
+          "pdfPage": 83
+        },
+        {
+          "section": "3.12",
+          "title": "静态链表",
+          "printedPage": 62,
+          "pdfPage": 91
+        },
+        {
+          "section": "3.13",
+          "title": "循环链表",
+          "printedPage": 67,
+          "pdfPage": 96
+        },
+        {
+          "section": "3.14",
+          "title": "双向链表",
+          "printedPage": 70,
+          "pdfPage": 99
+        },
+        {
+          "section": "4.4",
+          "title": "栈的顺序存储结构及实现",
+          "printedPage": 79,
+          "pdfPage": 108
+        },
+        {
+          "section": "4.6",
+          "title": "栈的链式存储结构及实现",
+          "printedPage": 83,
+          "pdfPage": 112
+        },
+        {
+          "section": "4.8",
+          "title": "栈的应用——递归",
+          "printedPage": 86,
+          "pdfPage": 115
+        },
+        {
+          "section": "4.9",
+          "title": "栈的应用——四则运算表达式求值",
+          "printedPage": 89,
+          "pdfPage": 118
+        },
+        {
+          "section": "4.12",
+          "title": "循环队列",
+          "printedPage": 95,
+          "pdfPage": 124
+        },
+        {
+          "section": "4.13",
+          "title": "队列的链式存储结构及实现",
+          "printedPage": 99,
+          "pdfPage": 128
+        },
+        {
+          "section": "5.6",
+          "title": "朴素的模式匹配算法",
+          "printedPage": 110,
+          "pdfPage": 139
+        },
+        {
+          "section": "5.7",
+          "title": "KMP 模式匹配算法",
+          "printedPage": 113,
+          "pdfPage": 142
+        },
+        {
+          "section": "6.4",
+          "title": "树的存储结构",
+          "printedPage": 130,
+          "pdfPage": 159
+        },
+        {
+          "section": "6.8",
+          "title": "遍历二叉树",
+          "printedPage": 147,
+          "pdfPage": 176
+        },
+        {
+          "section": "6.10",
+          "title": "线索二叉树",
+          "printedPage": 159,
+          "pdfPage": 188
+        },
+        {
+          "section": "6.11",
+          "title": "树、森林与二叉树的转换",
+          "printedPage": 166,
+          "pdfPage": 195
+        },
+        {
+          "section": "6.12",
+          "title": "哈夫曼树及其应用",
+          "printedPage": 171,
+          "pdfPage": 200
+        },
+        {
+          "section": "7.4",
+          "title": "图的存储结构",
+          "printedPage": 191,
+          "pdfPage": 220
+        },
+        {
+          "section": "7.5",
+          "title": "图的遍历",
+          "printedPage": 202,
+          "pdfPage": 231
+        },
+        {
+          "section": "7.6",
+          "title": "最小生成树",
+          "printedPage": 208,
+          "pdfPage": 237
+        },
+        {
+          "section": "7.7",
+          "title": "最短路径",
+          "printedPage": 218,
+          "pdfPage": 247
+        },
+        {
+          "section": "7.8",
+          "title": "拓扑排序",
+          "printedPage": 229,
+          "pdfPage": 258
+        },
+        {
+          "section": "7.9",
+          "title": "关键路径",
+          "printedPage": 234,
+          "pdfPage": 263
+        },
+        {
+          "section": "8.3",
+          "title": "顺序表查找",
+          "printedPage": 249,
+          "pdfPage": 278
+        },
+        {
+          "section": "8.4",
+          "title": "有序表查找",
+          "printedPage": 251,
+          "pdfPage": 280
+        },
+        {
+          "section": "8.5",
+          "title": "线性索引查找",
+          "printedPage": 257,
+          "pdfPage": 286
+        },
+        {
+          "section": "8.6",
+          "title": "二叉排序树",
+          "printedPage": 262,
+          "pdfPage": 291
+        },
+        {
+          "section": "8.7",
+          "title": "平衡二叉树（AVL 树）",
+          "printedPage": 273,
+          "pdfPage": 302
+        },
+        {
+          "section": "8.8",
+          "title": "多路查找树（B 树）",
+          "printedPage": 284,
+          "pdfPage": 313
+        },
+        {
+          "section": "8.9",
+          "title": "散列表查找（哈希表）概述",
+          "printedPage": 294,
+          "pdfPage": 323
+        },
+        {
+          "section": "8.11",
+          "title": "处理散列冲突的方法",
+          "printedPage": 300,
+          "pdfPage": 329
+        },
+        {
+          "section": "9.3",
+          "title": "冒泡排序",
+          "printedPage": 314,
+          "pdfPage": 343
+        },
+        {
+          "section": "9.4",
+          "title": "简单选择排序",
+          "printedPage": 318,
+          "pdfPage": 347
+        },
+        {
+          "section": "9.5",
+          "title": "直接插入排序",
+          "printedPage": 320,
+          "pdfPage": 349
+        },
+        {
+          "section": "9.6",
+          "title": "希尔排序",
+          "printedPage": 323,
+          "pdfPage": 352
+        },
+        {
+          "section": "9.7",
+          "title": "堆排序",
+          "printedPage": 329,
+          "pdfPage": 358
+        },
+        {
+          "section": "9.8",
+          "title": "归并排序",
+          "printedPage": 337,
+          "pdfPage": 366
+        },
+        {
+          "section": "9.9",
+          "title": "快速排序",
+          "printedPage": 346,
+          "pdfPage": 375
+        },
+        {
+          "section": "9.10",
+          "title": "排序方法比较",
+          "printedPage": 354,
+          "pdfPage": 383
+        }
+      ]
+    }
+  ]
+}

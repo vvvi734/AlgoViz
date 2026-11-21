@@ -12,3 +12,7 @@ __pycache__/
 *.tsbuildinfo
 test-results/
 playwright-report/
+
+# Local-only copyrighted reference books
+/数据结构（C语言版） (严蔚敏，吴伟民) .pdf
+/大话数据结构.pdf
