@@ -46,13 +46,19 @@
   min-width: 0;
 }
 
+.algorithm-flow-frame {
+  display: grid;
+  gap: 7px;
+  width: max-content;
+  max-width: 100%;
+  min-width: 0;
+}
+
 .algorithm-flow-svg {
   display: block;
-  flex: 0 0 auto;
   width: auto;
   max-width: 100%;
   height: auto;
-  overflow: visible;
 }
 
 .flow-edge-path {
@@ -60,6 +66,7 @@
   stroke: color-mix(in srgb, var(--muted) 62%, var(--txt));
   stroke-width: 1.2;
   stroke-linejoin: round;
+  shape-rendering: geometricPrecision;
 }
 
 .flow-edge--yes .flow-edge-path {
@@ -87,20 +94,74 @@
   fill: color-mix(in srgb, var(--muted) 62%, var(--txt));
 }
 
+.flow-edge-label-box {
+  fill: var(--panel);
+  stroke: color-mix(in srgb, var(--edge) 72%, var(--muted));
+  stroke-width: 0.8;
+}
+
+.flow-edge--yes .flow-edge-label-box,
+.flow-edge--loop .flow-edge-label-box {
+  stroke: color-mix(in srgb, var(--accent) 62%, var(--panel));
+}
+
 .flow-edge-label {
-  fill: var(--muted);
-  font-size: 13px;
-  font-weight: 700;
+  fill: var(--txt);
+  font-size: 12.5px;
+  font-weight: 650;
   letter-spacing: 0.01em;
-  paint-order: stroke fill;
-  stroke: var(--panel);
-  stroke-width: 4.5px;
-  stroke-linecap: round;
 }
 
 .flow-edge--yes .flow-edge-label,
 .flow-edge--loop .flow-edge-label {
+  fill: color-mix(in srgb, var(--accent) 82%, var(--txt));
+}
+
+.flow-loop-badge circle {
+  fill: var(--panel);
+  stroke: color-mix(in srgb, var(--accent) 72%, var(--panel));
+  stroke-width: 1;
+}
+
+.flow-loop-badge text {
   fill: var(--accent);
+  font-size: 11px;
+  font-weight: 750;
+}
+
+.flow-loop-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 5px 18px;
+  margin: 0;
+  padding: 8px 2px 0;
+  border-top: 1px dashed color-mix(in srgb, var(--edge) 76%, transparent);
+  color: var(--muted);
+  font-size: 12.5px;
+  line-height: 1.5;
+  list-style: none;
+}
+
+.flow-loop-legend li {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  min-width: 0;
+}
+
+.flow-loop-legend-index {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 17px;
+  height: 17px;
+  border: 1px solid color-mix(in srgb, var(--accent) 58%, var(--panel));
+  border-radius: 999px;
+  color: var(--accent);
+  font-size: 10.5px;
+  font-weight: 750;
 }
 
 .flow-node-shape {
@@ -153,16 +214,16 @@
 
 .flow-node-label {
   fill: var(--txt);
-  font-size: 13px;
+  font-size: 13.5px;
   font-weight: 750;
-  line-height: 17px;
+  line-height: 18px;
 }
 
 .flow-node-detail {
   fill: var(--muted);
   font-size: 13px;
   font-weight: 500;
-  line-height: 16px;
+  line-height: 17px;
 }
 
 .algorithm-flow-mobile {
