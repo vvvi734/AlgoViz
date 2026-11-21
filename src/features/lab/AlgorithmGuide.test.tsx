@@ -141,9 +141,12 @@ describe('algorithm review sheet UI', () => {
       '归并排序',
     );
     const merge = screen.getByTestId('algorithm-flow-section-recursive-range');
-    expect(merge.querySelector('[data-node-kind="call"]')).toBeTruthy();
-    expect(merge.querySelector('[data-node-kind="subreturn"]')).toBeTruthy();
-    expect(merge.textContent).toContain('左半');
+    expect(merge.querySelectorAll('.algorithm-flow-desktop [data-node-kind="call"]')).toHaveLength(2);
+    expect(merge.querySelector('[data-node-kind="subreturn"]')).toBeNull();
+    expect(merge.querySelector('[data-edge-from="merge-call-left"][data-edge-to="merge-call-right"]')).toBeTruthy();
+    expect(merge.querySelector('[data-edge-from="merge-call-right"][data-edge-to="merge-combine"]')).toBeTruthy();
+    expect(merge.textContent).toContain('合并两个有序半区');
+    expect(merge.textContent).toContain('左半返回：已有序');
   });
 
   it('provides an explicit start action without any player controls', () => {

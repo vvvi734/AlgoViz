@@ -401,7 +401,7 @@ const FLOW_PLAIN_ENTRIES: ReadonlyArray<readonly [string, string, string, string
   ['boundary += 1；交换 A[boundary] 与 A[index]', 'boundary += 1; swap A[boundary] with A[index]', '把较小元素换到左区', 'Swap the smaller element into the left part'],
   ['交换 A[boundary + 1] 与 A[high]', 'Swap A[boundary + 1] with A[high]', '基准放到最终位置', 'Put the pivot in its final place'],
   ['开始：quick_sort_range(low, high)', 'Start: quick_sort_range(low, high)', '开始：递归快速排序', 'Start: recursive quicksort'],
-  ['low == high ？', 'Is low == high?', '区间只剩一个元素吗？', 'Does the range hold only one element?'],
+  ['low == high ？', 'Is low == high?', '区间只剩一个元素？', 'One element left?'],
   ['调用 partition(low, high)', 'Call partition(low, high)', '先划分当前区间', 'Partition the current range first'],
   ['递归排序左区间 [low, pivot − 1]', 'Recursively sort the left part [low, pivot − 1]', '递归排序基准左侧', 'Recursively sort the left of the pivot'],
   ['递归排序右区间 [pivot + 1, high]', 'Recursively sort the right part [pivot + 1, high]', '递归排序基准右侧', 'Recursively sort the right of the pivot'],
@@ -440,10 +440,11 @@ const FLOW_PLAIN_ENTRIES: ReadonlyArray<readonly [string, string, string, string
   ['交换 A[0] 与 A[end]', 'Swap A[0] with A[end]', '把当前最大值换到末尾', 'Swap the current maximum to the end'],
   ['sift_down(0, end)', 'sift_down(0, end)', '缩小堆范围，继续调整', 'Shrink the heap and sift again'],
   ['开始：merge_sort_range(A, left, right)', 'Start: merge_sort_range(A, left, right)', '开始：递归归并排序', 'Start: recursive merge sort'],
-  ['left == right ？', 'Is left == right?', '区间只剩一个元素吗？', 'Does the range hold only one element?'],
+  ['left == right ？', 'Is left == right?', '区间只剩一个元素？', 'One element left?'],
   ['middle = (left + right) // 2', 'middle = (left + right) // 2', '取区间中点', 'Take the middle of the range'],
-  ['递归调用：排序左半 [left, middle]', 'Recursive call: sort the left half [left, middle]', '递归排序左半区', 'Recursively sort the left half'],
-  ['递归调用：排序右半 [middle + 1, right]', 'Recursive call: sort the right half [middle + 1, right]', '递归排序右半区', 'Recursively sort the right half'],
+  ['递归调用：排序左半 [left, middle]', 'Recursive call: sort the left half [left, middle]', '递归排序左半', 'Recursively sort the left half'],
+  ['递归调用：排序右半 [middle + 1, right]', 'Recursive call: sort the right half [middle + 1, right]', '递归排序右半', 'Recursively sort the right half'],
+  ['合并两个有序区间到 buffer', 'Merge both sorted halves into the buffer', '合并两个有序半区', 'Merge the two sorted halves'],
   ['把 buffer 写回 [left, right]', 'Write the buffer back into [left, right]', '把合并结果写回区间', 'Write the merged result back into the range'],
 
   // Loop bounds and state checks that still read like source code.

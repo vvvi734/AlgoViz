@@ -12,7 +12,7 @@ import '../../styles/algorithm-flow.css';
 
 const NODE_WIDTH = 168;
 const NODE_GAP = 16;
-const ROW_GAP = 9;
+const ROW_GAP = 24;
 const GRAPH_PAD_TOP = 9;
 const GRAPH_PAD_X = 11;
 const LOOP_CHANNEL_GAP = 10;
@@ -332,7 +332,7 @@ function layoutSection(
       if (Math.abs(source.x - target.x) < 1) {
         path = `M ${source.x} ${sourceBottom} L ${target.x} ${targetTop}`;
         if (branch) {
-          label = { x: source.x + 9, y: (sourceBottom + targetTop) / 2, anchor: 'start' };
+          label = { x: source.x + 9, y: (sourceBottom + targetTop) / 2 + 6, anchor: 'start' };
         }
       } else {
         const midY = (sourceBottom + targetTop) / 2;
@@ -378,7 +378,10 @@ function labelY(node: NodeGeometry): number {
   const detailHeight = node.detail?.height ?? 0;
   const total = node.label.height + (node.detail ? 6 + detailHeight : 0);
   const top = node.y - total / 2 + NODE_LINE / 2;
-  return top;
+  // SVG text boxes include the font ascent above the baseline. Nodes with a
+  // detail line need a small optical shift so the first line does not touch the
+  // top border when the label + detail block is vertically centered.
+  return top + (node.detail ? 4 : 0);
 }
 
 function nodeTextLines(node: NodeGeometry) {

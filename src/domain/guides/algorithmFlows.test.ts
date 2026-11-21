@@ -70,18 +70,21 @@ describe('declarative algorithm flows (VISUAL-01 + VISUAL-02)', () => {
     expect(ALGORITHM_FLOWS.kmp.sections.map((item) => item.id)).toEqual(['lps', 'match']);
   });
 
-  it('Merge sort exposes the base case, recursive calls, returns and merge order', () => {
+  it('Merge sort exposes the base case and folds subproblem returns into the call edges', () => {
     const flow = section('merge', 'recursive-range');
     const kinds = flow.nodes.map((node) => node.kind);
 
-    expect(kinds).toContain('call');
-    expect(kinds).toContain('subreturn');
+    expect(kinds.filter((kind) => kind === 'call')).toHaveLength(2);
+    expect(kinds).not.toContain('subreturn');
     expect(edge(flow, 'merge-base', 'merge-base-return')?.kind).toBe('yes');
     expect(edge(flow, 'merge-base', 'merge-split')?.kind).toBe('no');
-    expect(edge(flow, 'merge-call-left', 'merge-return-left')?.kind).toBe('return');
-    expect(edge(flow, 'merge-call-right', 'merge-return-right')?.kind).toBe('return');
+    expect(edge(flow, 'merge-call-left', 'merge-call-right')?.kind).toBe('return');
+    expect(edge(flow, 'merge-call-right', 'merge-combine')?.kind).toBe('return');
+    expect(edge(flow, 'merge-call-left', 'merge-call-right')?.label?.zh).toBe('左半返回：已有序');
+    expect(edge(flow, 'merge-call-right', 'merge-combine')?.label?.zh).toBe('右半返回：已有序');
     expect(edge(flow, 'merge-combine', 'merge-writeback')?.kind).toBe('next');
     expect(flow.nodes.find((node) => node.id === 'merge-return')?.kind).toBe('end');
+    expect(flow.nodes.find((node) => node.id === 'merge-call-right')?.detail?.zh).toBe('[middle+1, right]');
   });
 
   it('covers every bundled algorithm lesson exactly once', () => {
@@ -138,9 +141,11 @@ describe('declarative algorithm flows (VISUAL-01 + VISUAL-02)', () => {
     expect(backward.nodes.find((node) => node.id === 'aoe-backward-calc')?.label.zh).toContain('min');
 
     const paths = section('critical-path', 'paths');
-    expect(edge(paths, 'aoe-paths-call', 'aoe-paths-return')?.kind).toBe('return');
+    expect(edge(paths, 'aoe-paths-call', 'aoe-paths-next')?.kind).toBe('return');
+    expect(edge(paths, 'aoe-paths-call', 'aoe-paths-next')?.label?.zh).toBe('collect 返回');
     const collect = section('critical-path', 'collect');
-    expect(edge(collect, 'aoe-collect-call', 'aoe-collect-subreturn')?.kind).toBe('return');
+    expect(edge(collect, 'aoe-collect-call', 'aoe-collect-pop')?.kind).toBe('return');
+    expect(edge(collect, 'aoe-collect-call', 'aoe-collect-pop')?.label?.zh).toBe('子调用返回');
     expect(edge(collect, 'aoe-collect-advance', 'aoe-collect-loop')?.back).toBe(true);
   });
 
@@ -176,12 +181,38 @@ describe('declarative algorithm flows (VISUAL-01 + VISUAL-02)', () => {
     expect(edge(section('scc', 'dfs2'), 'scc-dfs2-assigned', 'scc-dfs2-push')?.kind).toBe('no');
   });
 
-  it('models recursive courses with calls, base cases and returns', () => {
-    for (const id of ['factorial', 'fib', 'inorder', 'quick', 'merge'] as const) {
-      const nodes = ALGORITHM_FLOWS[id].sections.flatMap((item) => item.nodes);
+  it('models recursive courses with calls, base cases and returns on call edges', () => {
+    for (const id of ['factorial', 'fib', 'inorder', 'quick', 'merge', 'huffman'] as const) {
+      const sections = ALGORITHM_FLOWS[id].sections;
+      const nodes = sections.flatMap((item) => item.nodes);
       expect(nodes.some((node) => node.kind === 'call'), id).toBe(true);
-      expect(nodes.some((node) => node.kind === 'subreturn'), id).toBe(true);
+      expect(nodes.some((node) => node.kind === 'subreturn'), id).toBe(false);
+      expect(sections.some((item) => item.edges.some((edge) => edge.kind === 'return')), id).toBe(true);
     }
+  });
+
+  it('labels recursive returns instead of repeating return nodes', () => {
+    const quick = section('quick', 'recursive-range');
+    expect(edge(quick, 'quick-left-call', 'quick-right-call')?.kind).toBe('return');
+    expect(edge(quick, 'quick-left-call', 'quick-right-call')?.label?.zh).toBe('左区间返回：已有序');
+    expect(edge(quick, 'quick-right-call', 'quick-return')?.label?.zh).toBe('右区间返回：已有序');
+
+    const factorial = section('factorial', 'main');
+    expect(edge(factorial, 'factorial-call', 'factorial-multiply')?.kind).toBe('return');
+    expect(edge(factorial, 'factorial-call', 'factorial-multiply')?.label?.zh).toBe('(n − 1)! 返回当前层');
+
+    const fib = section('fib', 'main');
+    expect(edge(fib, 'fib-left-call', 'fib-right-call')?.kind).toBe('return');
+    expect(edge(fib, 'fib-right-call', 'fib-add')?.kind).toBe('return');
+    expect(edge(fib, 'fib-right-call', 'fib-add')?.label?.zh).toBe('F(n − 2) 返回');
+
+    const inorder = section('inorder', 'main');
+    expect(edge(inorder, 'inorder-left-call', 'inorder-visit')?.label?.zh).toBe('左子树已遍历');
+    expect(edge(inorder, 'inorder-right-call', 'inorder-done')?.label?.zh).toBe('右子树已遍历');
+
+    const huffman = section('huffman', 'codes');
+    expect(edge(huffman, 'huffman-codes-left-call', 'huffman-codes-right-call')?.label?.zh).toBe('左子树编码完成');
+    expect(edge(huffman, 'huffman-codes-right-call', 'huffman-codes-done')?.label?.zh).toBe('右子树编码完成');
   });
 
   it('distinguishes operations and recursive control across representative courses', () => {
@@ -209,7 +240,8 @@ describe('declarative algorithm flows (VISUAL-01 + VISUAL-02)', () => {
     const merges = ALGORITHM_FLOWS.merge.sections.find((item) => item.id === 'recursive-range');
     for (const flow of [quick, merges]) {
       expect(flow?.nodes.some((node) => node.kind === 'call')).toBe(true);
-      expect(flow?.nodes.some((node) => node.kind === 'subreturn')).toBe(true);
+      expect(flow?.nodes.some((node) => node.kind === 'subreturn')).toBe(false);
+      expect(flow?.edges.some((edge) => edge.kind === 'return')).toBe(true);
     }
 
     expect(edge(section('bubble', 'main'), 'bubble-inner', 'bubble-compare')?.back).toBe(true);
