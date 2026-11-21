@@ -1,0 +1,315 @@
+/*
+ * RECUR-01: factorial call chain and Fibonacci call tree.
+ *
+ * Node geometry is fixed in the model, not scaled to fit. Wide trees scroll
+ * horizontally; tall chains scroll vertically, so labels stay at the normal
+ * teaching font size on both desktop and mobile.
+ */
+.recursion-stage {
+  min-height: 340px;
+}
+
+.recursion-visual {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  min-width: 0;
+}
+
+.recursion-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px 18px;
+  flex-wrap: wrap;
+}
+
+.recursion-heading h3 {
+  margin: 0;
+  font-size: var(--font-title);
+  color: var(--txt);
+}
+
+.recursion-heading small {
+  display: block;
+  margin-top: 3px;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+.recursion-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
+.recursion-stats span {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+  padding: 3px 8px;
+  border: 1px solid var(--edge);
+  border-radius: 6px;
+  background: var(--stat-bg);
+  color: var(--muted);
+  font-size: 12.5px;
+  white-space: nowrap;
+}
+
+.recursion-stats b {
+  color: var(--txt);
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+
+.recursion-stats .recursion-result b {
+  color: var(--accent);
+}
+
+.recursion-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  align-items: center;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+.recursion-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.recursion-legend span::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 1px solid var(--muted);
+  background: transparent;
+}
+
+.recursion-legend .is-active::before {
+  border-color: var(--accent);
+  background: var(--accent);
+}
+
+.recursion-legend .is-waiting::before {
+  border-color: var(--accent-2);
+  background: var(--accent-2);
+}
+
+.recursion-legend .is-returning::before {
+  border-color: var(--warn);
+  background: var(--warn);
+}
+
+.recursion-legend .is-returned::before {
+  border-color: var(--tag-green-fg);
+  background: var(--tag-green-fg);
+}
+
+.recursion-repeat-note {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 8px;
+  padding: 6px 9px;
+  border: 1px solid var(--info-edge);
+  border-radius: 7px;
+  background: var(--info-bg);
+  color: var(--muted);
+  font-size: 12.5px;
+}
+
+.recursion-repeat-chip {
+  padding: 1px 7px;
+  border: 1px solid color-mix(in srgb, var(--accent-2) 50%, var(--edge));
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent-2) 14%, var(--panel));
+  color: var(--txt);
+  font-variant-numeric: tabular-nums;
+}
+
+.recursion-repeat-note small {
+  color: var(--muted);
+}
+
+.recursion-canvas {
+  min-height: 300px;
+  max-height: 72vh;
+  overflow: auto;
+  border: 1px solid var(--stage-edge);
+  border-radius: 10px;
+  background:
+    linear-gradient(180deg, var(--stage-bg-a), var(--stage-bg-b)),
+    repeating-linear-gradient(0deg, var(--stage-grid) 0 1px, transparent 1px 26px);
+}
+
+.recursion-svg {
+  display: block;
+}
+
+.recursion-link {
+  fill: none;
+  stroke: var(--edge);
+  stroke-width: 1.4;
+  opacity: 0.45;
+}
+
+.recursion-link.is-active {
+  stroke: var(--accent);
+  stroke-width: 2;
+  opacity: 0.95;
+}
+
+.recursion-link.is-returned {
+  stroke: var(--tag-green-fg);
+  stroke-width: 1.6;
+  opacity: 0.6;
+}
+
+.recursion-arrow.is-pending {
+  fill: var(--muted);
+}
+
+.recursion-arrow.is-active {
+  fill: var(--accent);
+}
+
+.recursion-arrow.is-returned {
+  fill: var(--tag-green-fg);
+}
+
+.recursion-node .recursion-node-box {
+  fill: var(--panel-2);
+  stroke: var(--edge);
+  stroke-width: 1.5;
+}
+
+.recursion-node.is-pending {
+  opacity: 0.46;
+}
+
+.recursion-node.is-pending .recursion-node-box {
+  stroke-dasharray: 4 4;
+}
+
+.recursion-node.is-active .recursion-node-box {
+  fill: var(--node-focus-bg);
+  stroke: var(--accent);
+  stroke-width: 2.4;
+}
+
+.recursion-node.is-waiting .recursion-node-box {
+  fill: var(--panel);
+  stroke: var(--accent-2);
+  stroke-width: 1.8;
+}
+
+.recursion-node.is-returning .recursion-node-box {
+  fill: var(--tag-orange-bg);
+  stroke: var(--warn);
+  stroke-width: 2.4;
+}
+
+.recursion-node.is-returned .recursion-node-box {
+  fill: var(--tag-green-bg);
+  stroke: var(--tag-green-fg);
+  stroke-width: 1.6;
+}
+
+.recursion-node-label {
+  fill: var(--txt);
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.recursion-node-value {
+  fill: var(--muted);
+  font-size: 11.5px;
+}
+
+.recursion-node.is-active .recursion-node-value {
+  fill: var(--accent);
+}
+
+.recursion-node.is-returning .recursion-node-value {
+  fill: var(--warn);
+}
+
+.recursion-node.is-returned .recursion-node-value {
+  fill: var(--tag-green-fg);
+}
+
+.recursion-repeat-badge {
+  fill: var(--muted);
+  font-size: 9.5px;
+}
+
+/* Stable same-n input palette: identical subproblems share one auxiliary hue. */
+.recursion-node.repeat-tone-0 { --recursion-repeat: var(--accent); }
+.recursion-node.repeat-tone-1 { --recursion-repeat: var(--accent-2); }
+.recursion-node.repeat-tone-2 { --recursion-repeat: var(--warn); }
+.recursion-node.repeat-tone-3 { --recursion-repeat: var(--red); }
+.recursion-node.repeat-tone-4 { --recursion-repeat: var(--bar-a); }
+.recursion-node.repeat-tone-5 { --recursion-repeat: var(--tag-orange-fg); }
+.recursion-node.repeat-tone-6 { --recursion-repeat: var(--graph-node-visited); }
+.recursion-node.repeat-tone-7 { --recursion-repeat: var(--logo-b); }
+
+.recursion-node[class*='repeat-tone-'] .recursion-node-box {
+  fill: color-mix(in srgb, var(--recursion-repeat) 13%, var(--panel-2));
+}
+
+.recursion-node[class*='repeat-tone-'] .recursion-repeat-badge {
+  fill: var(--recursion-repeat);
+}
+
+.recursion-node[class*='repeat-tone-'].is-active .recursion-node-box {
+  fill: color-mix(in srgb, var(--node-focus-bg) 72%, var(--recursion-repeat));
+}
+
+.recursion-pending-note {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12.5px;
+}
+
+.guided-recursion-field {
+  align-items: center;
+  gap: 10px;
+}
+
+.guided-recursion-input {
+  flex: 0 0 120px;
+  max-width: 140px;
+}
+
+.guided-limit {
+  color: var(--muted);
+  font-size: 12.5px;
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .recursion-stats {
+    justify-content: flex-start;
+  }
+
+  .recursion-canvas {
+    min-height: 260px;
+    max-height: 64vh;
+  }
+
+  .guided-recursion-field {
+    flex-wrap: wrap;
+  }
+
+  .guided-limit {
+    flex-basis: 100%;
+  }
+}

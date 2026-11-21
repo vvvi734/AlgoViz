@@ -60,15 +60,26 @@ import {
   sparseDraftFromInput,
   type SparseInputFields,
 } from './sparseInput';
+import {
+  RECURSION_GUIDED_INPUT_ALGORITHMS,
+  RECURSION_RANDOM_SCENARIOS,
+  buildRecursionInput,
+  isRecursionGuidedInputAlgorithm,
+  randomRecursionN,
+  recursionDraftFromInput,
+  type RecursionGuidedInputAlgorithm,
+} from './recursionInput';
 
 export { isStructureGuidedInputAlgorithm } from './structureInput';
 export { isSparseGuidedInputAlgorithm } from './sparseInput';
+export { isRecursionGuidedInputAlgorithm } from './recursionInput';
 export type { StructureOperationDraft, StructureOperationSpec } from './structureInput';
 export type { TreeGuidedInputAlgorithm, TreeInputFields } from './treeInput';
 export type { HeapInputFields, HeapOperation } from './heapInput';
 export type { HuffmanInputFields } from './huffmanInput';
 export type { GraphGuidedInputAlgorithm, GraphInputFields } from './graphInput';
 export type { SparseGuidedInputAlgorithm, SparseInputFields, SparseTripleFields } from './sparseInput';
+export type { RecursionGuidedInputAlgorithm } from './recursionInput';
 
 export const GUIDED_INPUT_ALGORITHMS = [
   'bubble',
@@ -88,6 +99,7 @@ export const GUIDED_INPUT_ALGORITHMS = [
   HUFFMAN_GUIDED_INPUT,
   ...GRAPH_GUIDED_INPUT_ALGORITHMS,
   SPARSE_GUIDED_INPUT,
+  ...RECURSION_GUIDED_INPUT_ALGORITHMS,
 ] as const;
 export type GuidedInputAlgorithm = (typeof GUIDED_INPUT_ALGORITHMS)[number];
 
@@ -151,6 +163,8 @@ export const GUIDED_INPUT_LANGUAGE: Record<GuidedInputAlgorithm, CodeLanguage> =
   topological: 'python',
   'critical-path': 'python',
   'sparse-transpose': 'python',
+  factorial: 'python',
+  fib: 'python',
 };
 
 export interface GuidedInputDraft {
@@ -158,8 +172,10 @@ export interface GuidedInputDraft {
   values: string;
   /** Search array, comma/space separated. */
   nums: string;
-  /** Integer search target, tree command target or heap push value. */
+  /** INTEGER search target, tree command target or heap push value. */
   target: string;
+  /** RECUR-01: the single non-negative argument n for factorial / fib. */
+  n: string;
   /** KMP text. */
   text: string;
   /** KMP pattern. */
@@ -221,6 +237,7 @@ const EMPTY_DRAFT: GuidedInputDraft = {
   values: '',
   nums: '',
   target: '',
+  n: '',
   text: '',
   pattern: '',
   operations: '',
@@ -290,6 +307,7 @@ const RANDOM_SCENARIOS: Record<GuidedInputAlgorithm, readonly GuidedRandomScenar
   huffman: HUFFMAN_RANDOM_SCENARIOS,
   ...GRAPH_RANDOM_SCENARIOS,
   ...SPARSE_RANDOM_SCENARIOS,
+  ...RECURSION_RANDOM_SCENARIOS,
 };
 
 export function isGuidedInputAlgorithm(id: string): id is GuidedInputAlgorithm {
@@ -477,6 +495,9 @@ function formatHashOperations(input: unknown): string {
 }
 
 export function guidedDraftFromInput(id: GuidedInputAlgorithm, input: unknown): GuidedInputDraft {
+  if (isRecursionGuidedInputAlgorithm(id)) {
+    return { ...EMPTY_DRAFT, n: recursionDraftFromInput(input) };
+  }
   if (isGraphAlgorithmGuidedInput(id)) {
     return { ...EMPTY_DRAFT, graph: graphDraftFromInput(id, input) };
   }
@@ -524,6 +545,9 @@ export function guidedDraftFromInput(id: GuidedInputAlgorithm, input: unknown): 
 }
 
 export function buildGuidedInput(id: GuidedInputAlgorithm, draft: GuidedInputDraft): GuidedBuildResult {
+  if (isRecursionGuidedInputAlgorithm(id)) {
+    return buildRecursionInput(id, draft.n);
+  }
   if (isGraphAlgorithmGuidedInput(id)) {
     return buildGraphInput(id, draft.graph ?? emptyGraphDraft());
   }
@@ -831,6 +855,9 @@ export function randomGuidedDraft(
   scenario: string,
   random: () => number = Math.random,
 ): GuidedInputDraft {
+  if (isRecursionGuidedInputAlgorithm(id)) {
+    return { ...EMPTY_DRAFT, n: String(randomRecursionN(id as RecursionGuidedInputAlgorithm, scenario, random)) };
+  }
   if (isGraphAlgorithmGuidedInput(id)) {
     return { ...EMPTY_DRAFT, graph: randomGraphDraft(id, scenario, random) };
   }

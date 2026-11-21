@@ -85,6 +85,12 @@ import {
   SPARSE_TRANSPOSE_PYTHON,
 } from './sparseTransposeExamples';
 import { BTREE_DEFAULT_INPUT, btreePythonExample } from './btreeExamples';
+import {
+  FACTORIAL_DEFAULT_INPUT,
+  FACTORIAL_PYTHON,
+  FIB_DEFAULT_INPUT,
+  FIB_PYTHON,
+} from './recursionExamples';
 
 export const STACK_DEFAULT_INPUT: unknown = [
   ['push', 3],
@@ -225,6 +231,8 @@ const STRUCTURE_PYTHON: Record<string, string> = {
   kmp: KMP_PYTHON,
   'sparse-transpose': SPARSE_TRANSPOSE_PYTHON,
   btree: btreePythonExample(),
+  factorial: FACTORIAL_PYTHON,
+  fib: FIB_PYTHON,
 };
 
 const STRUCTURE_INPUT: Record<string, unknown> = {
@@ -261,6 +269,8 @@ const STRUCTURE_INPUT: Record<string, unknown> = {
   kmp: KMP_DEFAULT_INPUT,
   'sparse-transpose': SPARSE_TRANSPOSE_DEFAULT_INPUT,
   btree: BTREE_DEFAULT_INPUT,
+  factorial: FACTORIAL_DEFAULT_INPUT,
+  fib: FIB_DEFAULT_INPUT,
 };
 
 export function structurePythonExample(algorithmId: string): string | undefined {

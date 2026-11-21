@@ -11,14 +11,12 @@ import {
 } from './guidedInput';
 
 /**
- * INPUT-07 coverage lock.
+ * RECUR-01 coverage lock.
  *
  * The registry is the source of truth; theory pages are not dynamic algorithms
- * and are deliberately absent. Factorial and Fibonacci keep their frozen
- * recursion visualisations and are excluded from guided-input support.
+ * and are deliberately absent. All 37 dynamic algorithms now have official,
+ * custom and random guided inputs; no algorithm is frozen.
  */
-export const INPUT07_FROZEN_ALGORITHMS = ['factorial', 'fib'] as const;
-
 function seeded(seed: number): () => number {
   let state = seed >>> 0;
   return () => {
@@ -27,25 +25,20 @@ function seeded(seed: number): () => number {
   };
 }
 
-describe('INPUT-07 dynamic algorithm input coverage', () => {
-  it('classifies every registered dynamic algorithm exactly once', () => {
+describe('RECUR-01 dynamic algorithm input coverage', () => {
+  it('registers every dynamic algorithm exactly once as guided input', () => {
     const ids = algorithmIds();
     const guided = new Set<string>(GUIDED_INPUT_ALGORITHMS);
-    const frozen = new Set<string>(INPUT07_FROZEN_ALGORITHMS);
     expect(ids).toHaveLength(37);
     expect(guided.size).toBe(GUIDED_INPUT_ALGORITHMS.length);
-    expect(frozen.size).toBe(2);
-    expect([...guided].filter((id) => frozen.has(id))).toEqual([]);
-    for (const id of ids) {
-      expect(guided.has(id) || frozen.has(id), id).toBe(true);
-    }
-    expect(guided.size + frozen.size).toBe(ids.length);
-    expect(guided.size).toBe(35);
+    expect(guided.size).toBe(37);
+    for (const id of ids) expect(guided.has(id), id).toBe(true);
   });
 
-  it('provides official, custom and random guided support for all 35 supported ids', () => {
+  it('provides official, custom and random support for all 37 ids', () => {
     for (const id of GUIDED_INPUT_ALGORITHMS) {
       expect(algorithmIds()).toContain(id);
+      expect(isGuidedInputAlgorithm(id)).toBe(true);
       const official = defaultInputFor(id);
       expect(official, `${id} official`).not.toBeNull();
       const builtOfficial = buildGuidedInput(id, guidedDraftFromInput(id, official));
@@ -68,11 +61,13 @@ describe('INPUT-07 dynamic algorithm input coverage', () => {
     }
   });
 
-  it('keeps frozen recursion lessons outside guided input', () => {
-    for (const id of INPUT07_FROZEN_ALGORITHMS) {
+  it('keeps both recursive courses in the registry with their official Python input', () => {
+    for (const id of ['factorial', 'fib'] as const) {
       expect(algorithmIds()).toContain(id);
-      expect(isGuidedInputAlgorithm(id)).toBe(false);
-      expect(defaultInputFor(id)).not.toBeNull();
+      expect(isGuidedInputAlgorithm(id)).toBe(true);
+      expect(defaultInputFor(id)).toBe(4);
+      expect(guidedExecutionLanguage(id, 'official')).toBe('python');
+      expect(guidedExecutionLanguage(id, 'custom')).toBe('python');
     }
   });
 });

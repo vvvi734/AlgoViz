@@ -187,6 +187,29 @@ export const COURSE_GUIDES: Record<string, CourseGuide> = {
     ),
   },
 
+  fib: {
+    intro: text(
+      '斐波那契的递归定义有两个子问题，因此调用形状从阶乘的“链”变成了“树”。朴素实现不缓存任何子结果，同一个 fib(k) 会在不同分支被反复计算，调用数随 n 指数增长；这不是算法写错，而是它真实的代价。任一时刻活动调用栈仍只有一条根到当前节点的路径，空间是 O(n)。',
+      'Fibonacci’s recursive definition has two subproblems, so its call shape becomes a tree instead of factorial’s chain. The naive implementation caches nothing: the same fib(k) is recomputed in different branches and the call count grows exponentially with n. That is not a bug but its real cost. At any instant the live stack is only one root-to-current path, so space is O(n).',
+    ),
+    definition: text(
+      '斐波那契数列满足 F(0)=0、F(1)=1，且 F(n)=F(n−1)+F(n−2)（n≥2）；朴素递归直接按这条定义展开两个子调用，不使用记忆化。',
+      'The Fibonacci sequence satisfies F(0)=0, F(1)=1 and F(n)=F(n−1)+F(n−2) for n≥2. Naive recursion expands both subcalls directly from this definition and uses no memoization.',
+    ),
+    ...algorithm(
+      step('建立调用并检查终止条件', 'Create a frame and check the base case', 'n≤1 时直接返回 n；否则准备展开两个子调用。', 'Return n immediately when n≤1; otherwise prepare both subcalls.'),
+      step('展开左分支 fib(n−1)', 'Expand the left branch fib(n−1)', '父帧暂停，调用栈加深；左子树一直展开到终止条件。', 'The parent suspends, the stack deepens, and the left subtree runs to its base case.'),
+      step('左分支返回，保存 left', 'Left returns into left', '左子帧弹出，父帧恢复，但还不能相加。', 'The left child pops; the parent resumes but still cannot add.'),
+      step('展开右分支 fib(n−2)', 'Expand the right branch fib(n−2)', '右分支是另一棵独立子树，可能重复计算相同 n。', 'The right branch is a separate subtree and may recompute the same n.'),
+      step('右分支返回，合并 left + right', 'Right returns, then combine left + right'),
+      step('逐层返回并弹栈', 'Return through the tree and pop'),
+    ),
+    conditions: list(
+      ['n 必须是非负整数，0 与 1 都必须命中终止条件。', '右侧参数是 n−2，不能误写成 n−1。', '本课程展示朴素递归，不加入缓存或动态规划。'],
+      ['n must be a non-negative integer; both 0 and 1 must hit the base case.', 'The right argument is n−2, not n−1.', 'This course shows naive recursion without a cache or dynamic programming.'],
+    ),
+  },
+
   stack: {
     intro: text(
       '很多场景只需要在序列的一端追加和删除，例如撤销操作、括号匹配和函数调用。用数组在头部插入会把所有元素后移，成本 O(n)；栈把插入和删除都限制在栈顶，因此 push/pop/peek 都是 O(1)。代价是不能随机访问中间元素，查找仍需 O(n)。',

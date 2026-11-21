@@ -35,6 +35,7 @@ function draft(
     values,
     nums: '',
     target: '',
+    n: '',
     text: '',
     pattern: '',
     operations: '',

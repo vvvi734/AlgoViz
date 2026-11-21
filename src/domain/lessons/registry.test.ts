@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { catalog } from '../algorithms/examples';
 import { bubbleSortLesson } from './bubbleSort';
 import { factorialLesson } from './factorial';
+import { fibonacciLesson } from './fibonacci';
 import { createLessonRegistry, lessonRegistry, validateLessonsAgainstCatalog } from './registry';
 
 const catalogIds = Object.keys(catalog);
@@ -10,15 +11,17 @@ describe('Lesson registry (Stage 3B)', () => {
   it('looks a course up by lesson id and by algorithm id', () => {
     expect(lessonRegistry.byId('bubble-sort-basics')).toBe(bubbleSortLesson);
     expect(lessonRegistry.byId('factorial-recursion-basics')).toBe(factorialLesson);
+    expect(lessonRegistry.byId('fibonacci-recursion-basics')).toBe(fibonacciLesson);
     expect(lessonRegistry.byAlgorithm('bubble')).toBe(bubbleSortLesson);
     expect(lessonRegistry.byAlgorithm('factorial')).toBe(factorialLesson);
+    expect(lessonRegistry.byAlgorithm('fib')).toBe(fibonacciLesson);
   });
 
   it('returns undefined (never throws) for algorithms and ids without a course', () => {
-    expect(lessonRegistry.byAlgorithm('fib')).toBeUndefined();
     expect(lessonRegistry.byAlgorithm('not-an-algorithm')).toBeUndefined();
     expect(lessonRegistry.byId('missing')).toBeUndefined();
-    expect(lessonRegistry.has('fib')).toBe(false);
+    expect(lessonRegistry.has('not-an-algorithm')).toBe(false);
+    expect(lessonRegistry.has('fib')).toBe(true);
     expect(lessonRegistry.has('bubble')).toBe(true);
   });
 
@@ -31,6 +34,7 @@ describe('Lesson registry (Stage 3B)', () => {
       'quick-sort-basics',
       'merge-sort-basics',
       'factorial-recursion-basics',
+      'fibonacci-recursion-basics',
       'stack-lifo-basics',
       'queue-fifo-basics',
       'sequential-list-basics',
@@ -91,11 +95,11 @@ describe('Lesson registry (Stage 3B)', () => {
     expect(broken.errors.join(' ')).toContain('buble-sort');
   });
 
-  it('leaves the other algorithms without a course, and that is legal', () => {
+  it('covers all 37 algorithms with a validated course', () => {
     const covered = lessonRegistry.lessons.map((lesson) => lesson.algorithmId);
     const uncovered = catalogIds.filter((id) => !covered.includes(id));
     expect(catalogIds.length).toBe(37);
-    expect(uncovered.length).toBe(1);
-    expect(uncovered).toEqual(['fib']);
+    expect(lessonRegistry.lessons.length).toBe(37);
+    expect(uncovered).toEqual([]);
   });
 });

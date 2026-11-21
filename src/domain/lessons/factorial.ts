@@ -11,7 +11,7 @@ import type { Lesson } from './types';
 export const factorialLesson: Lesson = {
   lessonId: 'factorial-recursion-basics',
   algorithmId: 'factorial',
-  contentVersion: '1.0.0',
+  contentVersion: '1.1.0',
   title: { zh: '递归阶乘：一层层下去，再一层层上来', en: 'Factorial recursion: go down layer by layer, then come back up' },
   oneLiner: {
     zh: '把 n! 拆成 n × (n-1)!，一路拆到 1! 为止，再把结果一层层乘回去。',
@@ -51,8 +51,8 @@ export const factorialLesson: Lesson = {
       stepId: 'check',
       title: { zh: '② 检查终止条件', en: '② Check the base case' },
       explanation: {
-        zh: '进入函数后先判断 n <= 1。一旦成立就直接返回 1，不再继续调用自己——这是递归能停下来的唯一保证。',
-        en: 'Right after entering, the function checks n <= 1. If it holds, it returns 1 immediately and never calls itself again — this is the only thing that stops the recursion.',
+        zh: '进入函数后先判断 n <= 1。n = 0 和 n = 1 都直接返回 1，不再继续调用自己——这既符合 0! = 1，也保证递归一定停下来。',
+        en: 'Right after entering, the function checks n <= 1. Both n = 0 and n = 1 return 1 immediately and never call themselves again — this matches 0! = 1 and guarantees the recursion stops.',
       },
       tip: { zh: '只有最上面那一层会命中终止条件，其他层都在等下一层的结果。', en: 'Only the deepest layer hits the base case; every other layer is waiting for its child.' },
     },

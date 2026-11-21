@@ -166,6 +166,13 @@ export const REFERENCE_CODE: Record<string, ReferenceEntry> = {
       python: { fileName: 'factorial_builtin.py' },
     },
   },
+  fib: {
+    files: {
+      c: { fileName: 'fib.c' },
+      cpp: { fileName: 'fib.cpp' },
+      python: { fileName: 'fib.py' },
+    },
+  },
   stack: {
     files: {
       c: { fileName: 'stack.c' },

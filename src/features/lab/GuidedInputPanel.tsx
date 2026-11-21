@@ -22,6 +22,7 @@ import {
   isHeapGuidedInputAlgorithm,
   isHuffmanGuidedInputAlgorithm,
   isNumsTargetGuidedInputAlgorithm,
+  isRecursionGuidedInputAlgorithm,
   isStructureGuidedInputAlgorithm,
   isSparseGuidedInputAlgorithm,
   isTreeGuidedInputAlgorithm,
@@ -43,6 +44,8 @@ import { HeapInputEditor } from './HeapInputEditor';
 import { HuffmanInputEditor } from './HuffmanInputEditor';
 import { GraphInputEditor } from './GraphInputEditor';
 import { SparseInputEditor } from './SparseInputEditor';
+import { RecursionInputEditor } from './RecursionInputEditor';
+import type { RecursionGuidedInputAlgorithm } from '../../domain/algorithms/recursionInput';
 import type { LabController } from './useLabController';
 
 function parseInput(raw: string): unknown {
@@ -83,6 +86,9 @@ const GRAPH_HINT_KEYS: Record<GraphGuidedInputAlgorithm, string> = {
 };
 
 function hintKeyFor(id: GuidedInputAlgorithm): string {
+  if (isRecursionGuidedInputAlgorithm(id)) {
+    return id === 'factorial' ? 'guidedFactorialHint' : 'guidedFibHint';
+  }
   if (isArrayGuidedInputAlgorithm(id)) return id === 'bubble' ? 'guidedBubbleHint' : 'guidedSortHint';
   if (isNumsTargetGuidedInputAlgorithm(id)) {
     return id === 'binary' ? 'guidedBinaryHint' : 'guidedLinearHint';
@@ -210,10 +216,15 @@ export function GuidedInputPanel({ lab }: { lab: LabController }) {
   };
 
   const loadOfficial = () => {
+    const official = defaultInputFor(id);
     setMode('official');
     setIssue(null);
     setRandomFilled(false);
-    lab.runInput(defaultInputFor(id));
+    // Restore the field immediately. After a rejected custom run the trace is
+    // cleared and `inputJson` may still hold the old official value, so the
+    // effect below cannot be relied on to rewrite the visible draft.
+    setDraft(fieldDraft(id, official));
+    lab.runInput(official);
   };
 
   const switchMode = (next: GuidedInputMode) => {
@@ -331,6 +342,14 @@ export function GuidedInputPanel({ lab }: { lab: LabController }) {
           </label>
         ) : null}
       </div>
+
+      {isRecursionGuidedInputAlgorithm(id) ? (
+        <RecursionInputEditor
+          algorithm={id as RecursionGuidedInputAlgorithm}
+          draft={draft}
+          onChange={setField}
+        />
+      ) : null}
 
       {isStructureGuidedInputAlgorithm(id) ? (
         <StructureOperationEditor

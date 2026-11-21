@@ -49,6 +49,10 @@ const REFERENCE_LEARNING_NOTES: Record<string, LocalizedText> = {
     zh: '递归把 n! 化为 n × (n−1)!，以 0! = 1! = 1 为终止条件；返回时逐层相乘。时间 O(n)，递归栈 O(n)。',
     en: 'Recursively reduce n! to n × (n−1)!, with 0! = 1! = 1 as the base cases, then multiply while unwinding. O(n) time and O(n) recursion space.',
   },
+  fib: {
+    zh: '朴素递归把 F(n) 化为 F(n−1)+F(n−2)，以 F(0)=0、F(1)=1 终止；两个分支互不共享结果，调用数指数增长，但活动栈深度只有 O(n)。',
+    en: 'Naive recursion expands F(n) into F(n−1)+F(n−2), with F(0)=0 and F(1)=1 as base cases. Branches share no results, so calls grow exponentially while the live stack stays O(n) deep.',
+  },
   stack: {
     zh: '用数组和栈顶下标实现后进先出；push 先检查容量再写入，pop 先检查空栈再减 top。单次操作 O(1)，额外空间 O(n)。',
     en: 'A LIFO stack uses an array and a top index; push checks capacity before writing, and pop checks emptiness before decrementing top. O(1) per operation and O(n) space.',

@@ -46,6 +46,8 @@ import type { ConnectedComponentsVisualModel, SccVisualModel } from '../../domai
 import type { BstVisualModel } from '../../domain/visualization/bstModel';
 import type { AvlVisualModel } from '../../domain/visualization/avlModel';
 import type { BTreeVisualModel } from '../../domain/visualization/btreeModel';
+import { RecursionVisual } from './RecursionVisual';
+import { buildRecursionModel } from '../../domain/visualization/recursionModel';
 
 const GRAPH_OPERATION_KEYS: Record<GraphOperation, string> = {
   init: 'graphOpInit',
@@ -337,8 +339,34 @@ function PriorityQueuePanel({ model, operationText }: { model: GraphVisualModel;
   );
 }
 
-export function VisualStage({ event }: { event: TraceEvent | undefined }) {
+export function VisualStage({
+  event,
+  events,
+  index,
+  algorithmId,
+}: {
+  event: TraceEvent | undefined;
+  /** Full validated trace, needed by the recursion call graph. */
+  events?: readonly TraceEvent[];
+  /** Playhead index into `events`. */
+  index?: number;
+  algorithmId?: string;
+}) {
   const { t } = useI18n();
+  const recursionModel = algorithmId && events?.length
+    ? buildRecursionModel(events, index ?? 0, algorithmId)
+    : null;
+  if (recursionModel) {
+    return (
+      <div
+        className="stage has-structure recursion-stage"
+        aria-label="Algorithm visualization"
+        data-testid="visual-stage"
+      >
+        <RecursionVisual model={recursionModel} />
+      </div>
+    );
+  }
   const model = event
     ? buildVisualModel(
         event.state,

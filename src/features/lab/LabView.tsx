@@ -331,7 +331,12 @@ export function LabView({
                 />
               </div>
             ) : null}
-            <VisualStage event={currentEvent} />
+            <VisualStage
+              event={currentEvent}
+              events={lab.events}
+              index={lab.playback.index}
+              algorithmId={lab.currentAlgo}
+            />
             {showBstPicker ? (
               <BstPicker
                 inputJson={lab.inputJson}

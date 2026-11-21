@@ -37,7 +37,7 @@ test.describe('Stage 3 — Python recursion in the real browser', () => {
     const last = await page.locator('[data-testid="scrub"]').evaluate((el) => (el as HTMLInputElement).max);
     await page.locator('[data-testid="scrub"]').fill(String(last));
     await expect(page.locator('[data-testid="variables-watch"]')).toContainText('24');
-    await expect(page.locator('[data-testid="current-step-message"]')).toContainText('完成');
+    await expect(page.locator('[data-testid="current-step-message"]')).toContainText('全部调用已返回');
   });
 
   test('Stage 3 — Python Fibonacci recursion: real Pyodide branches, result 3', async ({ page }) => {
@@ -50,10 +50,17 @@ test.describe('Stage 3 — Python recursion in the real browser', () => {
     await expect(page.locator('[data-testid="call-stack"]')).toBeVisible({ timeout: 120_000 });
     await expect(page.locator('[data-testid="call-frame-f1"]')).toBeVisible();
 
-    // fib(4) recurses into several branches, each a distinct frame.
-    await page.click('[data-testid="next-btn"]');
+    // fib(4) now records the `left` expansion event before the real fib(3)
+    // call, so step forward until the deeper Python frame exists.
+    for (let step = 0; step < 4; step += 1) {
+      await page.click('[data-testid="next-btn"]');
+      if (await page.locator('[data-testid="call-frame-f2"]').isVisible()) break;
+    }
     await expect(page.locator('[data-testid="call-frame-f2"]')).toBeVisible({ timeout: 15_000 });
-    await page.click('[data-testid="next-btn"]');
+    for (let step = 0; step < 4; step += 1) {
+      await page.click('[data-testid="next-btn"]');
+      if (await page.locator('[data-testid="call-frame-f3"]').isVisible()) break;
+    }
     await expect(page.locator('[data-testid="call-frame-f3"]')).toBeVisible({ timeout: 15_000 });
 
     // Scrub to the end: fib(4) = 3.
