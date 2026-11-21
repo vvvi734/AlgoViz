@@ -313,6 +313,13 @@ export const REFERENCE_CODE: Record<string, ReferenceEntry> = {
       python: { fileName: 'max_heap_builtin.py' },
     },
   },
+  'threaded-inorder': {
+    files: {
+      c: { fileName: 'threaded_inorder.c' },
+      cpp: { fileName: 'threaded_inorder.cpp' },
+      python: { fileName: 'threaded_inorder.py' },
+    },
+  },
   huffman: {
     files: {
       c: { fileName: 'huffman.c' },

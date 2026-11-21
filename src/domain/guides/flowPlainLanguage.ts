@@ -171,7 +171,7 @@ const FLOW_PLAIN_ENTRIES: ReadonlyArray<readonly [string, string, string, string
   ['node == null ？', 'Is node == null?', '当前结点为空吗？', 'Is the current node empty?'],
   ['递归 inorder(node.left)', 'Recurse inorder(node.left)', '先递归遍历左子树', 'Traverse the left subtree first'],
   ['递归 inorder(node.right)', 'Recurse inorder(node.right)', '再递归遍历右子树', 'Then traverse the right subtree'],
-  ['开始：build(symbols)', 'Start: build(symbols)', '开始：构建哈夫曼树', 'Start: build the Huffman tree'],
+  ['开始：build(symbols)', 'Start: build(symbols)', '开始：构建哈夫曼树', 'Start: build the Huffman Tree'],
   ['每个字符建叶子，按 (weight, order) 入最小堆', 'Make a leaf per symbol and push into the min-heap by (weight, order)', '每个字符建叶子，按权重放入最小堆', 'Make one leaf per symbol and push it into the min-heap by weight'],
   ['创建父节点：weight = a.weight + b.weight，left = a，right = b', 'Create a parent: weight = a.weight + b.weight, left = a, right = b', '合并最小两项，生成父结点', 'Merge the two lightest nodes into a parent'],
   ['父节点按 (weight, 创建序) 重新入堆', 'Push the parent back by (weight, creation order)', '父结点按权重放回最小堆', 'Push the parent back into the min-heap by weight'],
@@ -179,6 +179,20 @@ const FLOW_PLAIN_ENTRIES: ReadonlyArray<readonly [string, string, string, string
   ['开始：encode(node, prefix)', 'Start: encode(node, prefix)', '开始：生成编码', 'Start: generate a code'],
   ['递归 encode(left, prefix + “0”)', 'Recurse encode(left, prefix + “0”)', '向左走，编码末尾加零', 'Go left and append zero to the code'],
   ['递归 encode(right, prefix + “1”)', 'Recurse encode(right, prefix + “1”)', '向右走，编码末尾加一', 'Go right and append one to the code'],
+
+  // In-order threading and thread-based traversal.
+  ['node.left == None ？', 'node.left == None?', '左孩子为空吗？', 'Is the left child empty?'],
+  ['ltag = 1；left_thread = PRE', 'ltag = 1; left_thread = PRE', '把空左指针改为指向前驱，并标记为线索', 'Turn the empty left pointer into a predecessor thread and mark it'],
+  ['PRE ≠ None 且 PRE.right == None ？', 'PRE ≠ None and PRE.right == None?', '前驱存在且右孩子为空吗？', 'Does the predecessor exist with an empty right child?'],
+  ['PRE.rtag = 1；PRE.right_thread = node', 'PRE.rtag = 1; PRE.right_thread = node', '把前驱的空右指针改为指向当前结点', 'Turn the predecessor’s empty right pointer into a successor thread'],
+  ['PRE = node', 'PRE = node', '当前结点成为下一轮的前驱', 'The current node becomes the next predecessor'],
+  ['node.right == None ？', 'node.right == None?', '右孩子为空吗？', 'Is the right child empty?'],
+  ['最后一个结点：rtag = 1；right_thread = None', 'Last node: rtag = 1; right_thread = None', '最后一个中序结点保留空右线索，但仍标记 rtag', 'The last inorder node keeps a null right thread but still sets rtag'],
+  ['开始：node = leftmost(root)', 'Start: node = leftmost(root)', '开始：从最左结点出发', 'Start from the left-most node'],
+  ['node.rtag == 1 ？', 'node.rtag == 1?', '右指针是线索吗？', 'Is the right pointer a thread?'],
+  ['right_thread == None ？', 'right_thread == None?', '后继线索为空吗？', 'Is the successor thread empty?'],
+  ['node = node.right_thread', 'node = node.right_thread', '沿右线索跳到后继', 'Follow the right thread to the successor'],
+  ['node = leftmost(node.right)', 'node = leftmost(node.right)', '进入右子树并走到最左结点', 'Enter the right subtree and descend to its left-most node'],
 
   // Graph traversal, components and strongly connected components.
   ['开始：BFS(start)', 'Start: BFS(start)', '开始：广度优先遍历', 'Start: breadth-first traversal'],

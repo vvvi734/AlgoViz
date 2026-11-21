@@ -11,7 +11,7 @@ AlgoViz 是一个浏览器端的数据结构与算法学习平台。Python 通�
 
 ## 教材目录
 
-按严蔚敏、吴伟民《数据结构（C语言版）》（清华大学出版社，1997 年 4 月第 1 版）组织为 12 章：
+按严蔚敏、吴伟民《数据结构（C语言版）》（清华大学出版社，1997 年 4 月第 1 版）的 12 章知识体系组织章节顺序，通俗讲解与典型应用选材参考程杰《大话数据结构（溢彩加强版）》。不机械照搬目录：二级、三级分组按知识关系组织，理论内容用静态图与文字完整讲解，只有具备独立教学价值的算法才提供动画。教材中的数制转换、行编辑、迷宫等辅助例题不单独建课。
 
 1. 绪论
 2. 线性表
@@ -26,13 +26,13 @@ AlgoViz 是一个浏览器端的数据结构与算法学习平台。Python 通�
 11. 外部排序
 12. 文件
 
-当前共有 **32 个理论专题、44 个动态算法、44 门双语课程**。32 个专题均有中英文正文和静态图或轻量交互图；44 个算法均有真实 Python Trace、输入 Schema、官方 / 自定义 / 随机输入、导学与流程图、三语言参考代码。第 8、11、12 章以及部分暂未实现的小节保留为“待完善”目录项，不生成假动画。
+当前共有 **32 个理论专题、45 个动态算法、45 门双语课程**。32 个专题均有中英文正文和静态图或轻量交互图；45 个算法均有真实 Python Trace、输入 Schema、官方 / 自定义 / 随机输入、导学与流程图、三语言参考代码。第 8、11、12 章以及部分暂未实现的小节保留为“待完善”目录项，不生成假动画。
 
-完整的已完成 / 待开发清单见 [教材课程覆盖表](docs/TEXTBOOK_COVERAGE.md)；两本参考教材的章节、印刷页与 PDF 页索引见 [参考书索引](docs/REFERENCE_BOOKS.md)。
+完整的已完成 / 待开发清单与目录层级说明见 [教材课程覆盖表](docs/TEXTBOOK_COVERAGE.md)；两本参考教材的章节、印刷页与 PDF 页索引见 [参考书索引](docs/REFERENCE_BOOKS.md)。
 
 ## 现有能力
 
-- 左侧 12 章教材目录：章 → 专题 → 算法三级折叠，可全部展开 / 收起，当前路径自动高亮。
+- 左侧 12 章教材目录：章 → 二级专题/课程 → 三级课程折叠，可全部展开 / 收起，当前路径自动高亮；只有含三级叶子的分组显示展开箭头。
 - 官方、自定义、随机输入；输入校验失败不会执行旧 Trace。
 - Python 真实执行、逐帧播放 / 暂停 / 回退 / 单步 / 拖动。
 - 变量观察、递归调用栈、真实结构快照。
@@ -53,7 +53,7 @@ src/
     algorithms/ 算法目录、教材 12 章、输入 Schema 与随机生成
     concepts/   32 个理论专题及静态图类型
     guides/     算法导学与声明式流程图
-    lessons/    44 门双语课程的数据与注册表
+    lessons/    45 门双语课程的数据与注册表
     reference-code/  C / C++ / Python 参考代码与注释
     trace/      Trace Schema、适配器、播放器
     visualization/ 纯视觉模型与布局
@@ -106,7 +106,7 @@ npm run preview
 npm run test:e2e
 ```
 
-- `npm test`：Vitest 单测、真实 Python fixture 与 jsdom 回归；TEXTBOOK-01 当前为 **996 项通过**。
+- `npm test`：Vitest 单测、真实 Python fixture 与 jsdom 回归；TEXTBOOK-06 当前为 **1107 项通过**。
 - `npm run test:e2e`：Playwright，默认使用本机 Microsoft Edge；全量 176 条，本阶段运行目录、播放器、输入与真实 Pyodide 的代表流程。
 - `npm run sync:legacy`：从迁移前定义重新生成 `*.generated.ts` 与帧基线。会改写生成文件，运行后必须 review 再提交。
 - 不要用 `file://` 直接打开构建产物；Worker 和模块加载需要 `npm run dev` 或 `npm run preview`。
@@ -117,7 +117,7 @@ MIT，见 [LICENSE](LICENSE)。教材只参考章节与知识分类，没有复�
 
 ## English summary
 
-AlgoViz is a browser-first data-structure and algorithm learning platform. Python runs in Pyodide and every animation frame comes from a real execution trace. The textbook directory follows Yan Weimin and Wu Weimin's *Data Structures (C Language Edition)* in 12 chapters. The repository currently ships 32 bilingual concept pages, 44 bilingual algorithm courses, real inputs and traces, a single player, algorithm guides, and read-only C / C++ / Python reference code. AI tutor, MCP, knowledge packs, the question bank, C/C++ execution and the editable Monaco workflow have been removed.
+AlgoViz is a browser-first data-structure and algorithm learning platform. Python runs in Pyodide and every animation frame comes from a real execution trace. The textbook directory follows Yan Weimin and Wu Weimin's *Data Structures (C Language Edition)* in 12 chapters. The repository currently ships 32 bilingual concept pages, 45 bilingual algorithm courses, real inputs and traces, a single player, algorithm guides, and read-only C / C++ / Python reference code. AI tutor, MCP, knowledge packs, the question bank, C/C++ execution and the editable Monaco workflow have been removed.
 
 ```sh
 npm ci && npm run dev

@@ -484,6 +484,24 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
       zh: "反复合并频率最小的两个节点；最终树让频率更高的符号获得更短编码。",
     },
   ],
+  "threaded_inorder.c": [
+    {
+      en: "Thread null left pointers into predecessors and null right pointers into successors.",
+      zh: "空左指针线索化为前驱，空右指针线索化为后继。",
+    },
+  ],
+  "threaded_inorder.cpp": [
+    {
+      en: "Thread null left pointers into predecessors and null right pointers into successors.",
+      zh: "空左指针线索化为前驱，空右指针线索化为后继。",
+    },
+  ],
+  "threaded_inorder.py": [
+    {
+      en: "Thread null left pointers into predecessors and null right pointers into successors.",
+      zh: "空左指针线索化为前驱，空右指针线索化为后继。",
+    },
+  ],
   "inorder.c": [
     {
       en: "Recurse left, visit the root, then recurse right; for a BST this emits keys in ascending order.",

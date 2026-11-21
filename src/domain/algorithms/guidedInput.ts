@@ -214,6 +214,7 @@ export const GUIDED_INPUT_LANGUAGE: Record<GuidedInputAlgorithm, CodeLanguage> =
   stack: 'python',
   queue: 'python',
   inorder: 'python',
+  'threaded-inorder': 'python',
   bst: 'python',
   avl: 'python',
   btree: 'python',

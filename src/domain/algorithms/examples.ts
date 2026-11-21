@@ -9,6 +9,7 @@ import {
 } from './generalizedListExamples';
 import { SPARSE_TRANSPOSE_ENTRY } from './sparseTransposeExamples';
 import { POLYNOMIAL_ADD_ENTRY, STATIC_LINKED_ENTRY } from './chapter2Examples';
+import { THREADED_INORDER_ENTRY } from './threadedTreeExamples';
 import { structureDefaultInput, structurePythonExample } from './structureExamples';
 import {
   INFIX_TO_POSTFIX_ENTRY,
@@ -27,6 +28,7 @@ export const catalog: AlgorithmCatalog = {
   'sparse-transpose': SPARSE_TRANSPOSE_ENTRY,
   'static-linked-list': STATIC_LINKED_ENTRY,
   'polynomial-add': POLYNOMIAL_ADD_ENTRY,
+  'threaded-inorder': THREADED_INORDER_ENTRY,
   'infix-to-postfix': INFIX_TO_POSTFIX_ENTRY,
   'postfix-eval': POSTFIX_EVAL_ENTRY,
 };

@@ -862,6 +862,75 @@ const INORDER_FLOW: AlgorithmFlow = {
   ],
 };
 
+const THREADED_FLOW: AlgorithmFlow = {
+  algorithmId: 'threaded-inorder',
+  sections: [
+    flowSection(
+      'thread',
+      ['阶段一：中序线索化', 'Phase 1: in-order threading'],
+      ['按左、根、右递归。空左指针指向前驱并置 ltag=1；前驱的右指针为空时指向当前结点并置 rtag=1。最后一个中序结点的右线索为空，但 rtag 仍为 1。', 'Recurse left, node, right. A null left pointer becomes the predecessor thread with ltag=1; when the predecessor’s right pointer is null it becomes a successor thread with rtag=1. The last inorder node keeps a null thread target but still sets rtag=1.'],
+      [
+        start('thread-start', '开始：walk(node)', 'Start: walk(node)'),
+        flowNode('thread-enter', 'operation', 1, 0, ['进入子树，记录真实调用帧', 'Enter the subtree and push a real call frame']),
+        flowNode('thread-left-null', 'decision', 2, 0, ['node.left == None ？', 'node.left == None?']),
+        flowNode('thread-write-pre', 'operation', 3, 0, ['ltag = 1；left_thread = PRE', 'ltag = 1; left_thread = PRE']),
+        flowNode('thread-left-recurse', 'call', 3, 1, ['walk(node.left)', 'walk(node.left)']),
+        flowNode('thread-pre-right', 'decision', 4, 0, ['PRE ≠ None 且 PRE.right == None ？', 'PRE ≠ None and PRE.right == None?']),
+        flowNode('thread-write-succ', 'operation', 5, 0, ['PRE.rtag = 1；PRE.right_thread = node', 'PRE.rtag = 1; PRE.right_thread = node']),
+        flowNode('thread-set-pre', 'operation', 5, 1, ['PRE = node', 'PRE = node']),
+        flowNode('thread-right-null', 'decision', 6, 0, ['node.right == None ？', 'node.right == None?']),
+        flowNode('thread-right-recurse', 'call', 7, 1, ['walk(node.right)', 'walk(node.right)']),
+        flowNode('thread-return', 'operation', 8, 0, ['子树处理完，返回上一层', 'Subtree done; return to the caller']),
+        flowNode('thread-last', 'operation', 9, 0, ['最后一个结点：rtag = 1；right_thread = None', 'Last node: rtag = 1; right_thread = None']),
+        flowEnd('thread-done', 10, 0, 'success', ['线索化完成', 'Threading complete']),
+      ],
+      [
+        flowEdge('thread-start', 'thread-enter'),
+        flowEdge('thread-enter', 'thread-left-null'),
+        flowEdge('thread-left-null', 'thread-write-pre', 'yes'),
+        flowEdge('thread-left-null', 'thread-left-recurse', 'no'),
+        flowEdge('thread-write-pre', 'thread-left-recurse'),
+        flowEdge('thread-left-recurse', 'thread-pre-right', 'return', ['左子树完成，检查前驱', 'Left subtree done; inspect the predecessor']),
+        flowEdge('thread-pre-right', 'thread-write-succ', 'yes'),
+        flowEdge('thread-pre-right', 'thread-set-pre', 'no'),
+        flowEdge('thread-write-succ', 'thread-set-pre'),
+        flowEdge('thread-set-pre', 'thread-right-null'),
+        flowEdge('thread-right-null', 'thread-right-recurse', 'no'),
+        flowEdge('thread-right-null', 'thread-return', 'yes'),
+        flowEdge('thread-right-recurse', 'thread-return', 'return', ['右子树完成', 'Right subtree done']),
+        flowEdge('thread-return', 'thread-last'),
+        flowEdge('thread-last', 'thread-done'),
+      ],
+    ),
+    flowSection(
+      'traverse',
+      ['阶段二：沿线索中序遍历', 'Phase 2: traverse by threads'],
+      ['从根一路向左得到第一个结点。访问后若 rtag=1 就沿右线索跳到后继；若 rtag=0 就进入右子树再一路向左。没有递归栈，额外空间 O(1)。', 'Descend left from the root to find the first node. After visiting, rtag=1 follows the right thread; rtag=0 enters the right subtree and descends left again. No recursion stack, so extra space is O(1).'],
+      [
+        start('threaded-trav-start', '开始：node = leftmost(root)', 'Start: node = leftmost(root)'),
+        flowNode('threaded-trav-leftmost', 'operation', 1, 0, ['沿真实 left 下降到最左结点', 'Follow real left pointers to the left-most node']),
+        flowNode('threaded-trav-visit', 'operation', 2, 0, ['访问 node，加入 VISITED', 'Visit node and append to VISITED']),
+        flowNode('threaded-trav-rtag', 'decision', 3, 0, ['node.rtag == 1 ？', 'node.rtag == 1?']),
+        flowNode('threaded-trav-succ', 'decision', 4, 0, ['right_thread == None ？', 'right_thread == None?']),
+        flowNode('threaded-trav-follow', 'operation', 5, 0, ['node = node.right_thread', 'node = node.right_thread']),
+        flowNode('threaded-trav-right', 'operation', 5, 1, ['node = leftmost(node.right)', 'node = leftmost(node.right)']),
+        flowEnd('threaded-trav-done', 6, -1, 'success', ['后继为空：遍历结束', 'No successor: traversal complete']),
+      ],
+      [
+        flowEdge('threaded-trav-start', 'threaded-trav-leftmost'),
+        flowEdge('threaded-trav-leftmost', 'threaded-trav-visit'),
+        flowEdge('threaded-trav-visit', 'threaded-trav-rtag'),
+        flowEdge('threaded-trav-rtag', 'threaded-trav-succ', 'yes'),
+        flowEdge('threaded-trav-rtag', 'threaded-trav-right', 'no', ['进入右子树', 'Enter the right subtree']),
+        flowEdge('threaded-trav-succ', 'threaded-trav-done', 'yes'),
+        flowEdge('threaded-trav-succ', 'threaded-trav-follow', 'no'),
+        loopEdge('threaded-trav-follow', 'threaded-trav-visit', ['沿线索到后继', 'Thread to the successor']),
+        loopEdge('threaded-trav-right', 'threaded-trav-visit', ['右子树最左结点', 'Left-most of the right subtree']),
+      ],
+    ),
+  ],
+};
+
 const BST_FLOW: AlgorithmFlow = {
   algorithmId: 'bst',
   sections: [
@@ -1400,7 +1469,7 @@ const HUFFMAN_FLOW: AlgorithmFlow = {
         flowNode('huffman-build-merge', 'operation', 5, 0, ['创建父节点：weight = a.weight + b.weight，left = a，right = b', 'Create a parent with weight = a.weight + b.weight, left = a, right = b']),
         flowNode('huffman-build-push', 'operation', 6, 0, ['父节点按 (weight, 创建序) 重新入堆', 'Push the parent by (weight, order)']),
         flowNode('huffman-build-root', 'operation', 7, 1, ['root = 堆中唯一节点', 'root = the only remaining node']),
-        flowEnd('huffman-build-done', 8, 0, 'success', ['Huffman 树构建完成', 'Huffman tree complete']),
+        flowEnd('huffman-build-done', 8, 0, 'success', ['Huffman 树构建完成', 'Huffman Tree complete']),
       ],
       [
         flowEdge('huffman-build-start', 'huffman-build-empty'),
@@ -1597,6 +1666,7 @@ export const STRUCTURE_FLOWS = {
   doubly: DOUBLY_FLOW,
   circular: CIRCULAR_FLOW,
   inorder: INORDER_FLOW,
+  'threaded-inorder': THREADED_FLOW,
   bst: BST_FLOW,
   avl: AVL_FLOW,
   btree: BTREE_FLOW,

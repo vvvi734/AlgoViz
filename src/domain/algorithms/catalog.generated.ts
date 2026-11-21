@@ -723,7 +723,7 @@ export const ALGORITHM_CATALOG: AlgorithmCatalog = {
     "icon": "⌁",
     "name": [
       "哈夫曼树与哈夫曼编码",
-      "Huffman tree & prefix codes"
+      "Huffman Tree & Prefix Codes"
     ],
     "desc": [
       "用真实 heapq 最小堆逐次取出两个最小权值，创建带真实 left/right 引用的父节点并重新入堆；建树后从根走到叶子生成 0/1 前缀编码，并计算 WPL 与定长编码对比。",

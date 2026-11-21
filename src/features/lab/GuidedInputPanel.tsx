@@ -83,6 +83,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 const TREE_HINT_KEYS: Record<TreeGuidedInputAlgorithm, string> = {
   inorder: 'treeHintTraversal',
+  'threaded-inorder': 'treeHintThreaded',
   bst: 'treeHintBst',
   avl: 'treeHintAvl',
   btree: 'treeHintBtree',

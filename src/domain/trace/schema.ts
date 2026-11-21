@@ -19,7 +19,14 @@ import { kmpSnapshotSchema } from './kmpSchema';
 import { sparseTransposeSnapshotSchema } from './sparseTransposeSchema';
 import { expressionSnapshotSchema } from './expressionSchema';
 import { generalizedListSnapshotSchema } from './generalizedListSchema';
+import { threadedTreeSnapshotSchema } from './threadedTreeSchema';
 export type { BfSnapshot, BfOperation } from './bfSchema';
+export type {
+  ThreadedTreeSnapshot,
+  ThreadedTreeOperation,
+  ThreadedTreePhase,
+  ThreadedTreeNode,
+} from './threadedTreeSchema';
 export type { KmpSnapshot, KmpOperation, KmpPhase } from './kmpSchema';
 export type {
   SparseTransposeSnapshot,
@@ -8023,6 +8030,7 @@ export const structureSchema = z.union([
   doublyLinkedListSnapshotSchema,
   circularLinkedListSnapshotSchema,
   binaryTreeSnapshotSchema,
+  threadedTreeSnapshotSchema,
   bstSnapshotSchema,
   avlSnapshotSchema,
   btreeSnapshotSchema,

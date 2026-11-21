@@ -70,7 +70,7 @@ const polynomialSnapshot = {
 };
 
 describe('TEXTBOOK-02 chapter 2 directory', () => {
-  it('publishes all nine topics without planned placeholders and with a working entry', () => {
+  it('publishes all eight topics without planned placeholders and with a working entry', () => {
     const chapter = buildTextbookNavigation(catalog).find((item) => item.id === 'ch2-linear');
     expect(chapter).toBeTruthy();
     expect(chapter!.topics.map((topic) => topic.id)).toEqual([
@@ -78,23 +78,27 @@ describe('TEXTBOOK-02 chapter 2 directory', () => {
       'sequential-list',
       'sequential-capacity',
       'linked-list',
-      'static-linked-list',
-      'static-linked-operations',
+      'static-linked-group',
       'circular-linked-list',
       'doubly-linked-list',
       'polynomial-add',
     ]);
     for (const topic of chapter!.topics) {
       expect(topic.planned, topic.id).toBeUndefined();
-      expect(Boolean(topic.conceptId) || topic.algorithms.length > 0, topic.id).toBe(true);
+      expect(Boolean(topic.conceptId) || topic.algorithms.length > 0 || Boolean(topic.children?.length), topic.id).toBe(true);
     }
     expect(chapter!.topics.find((topic) => topic.id === 'sequential-capacity')?.conceptId).toBe(
       'sequential-list-capacity',
     );
-    expect(chapter!.topics.find((topic) => topic.id === 'static-linked-list')?.conceptId).toBe(
+    const staticGroup = chapter!.topics.find((topic) => topic.id === 'static-linked-group');
+    expect(staticGroup?.children?.map((child) => child.id)).toEqual([
+      'static-linked-list',
+      'static-linked-operations',
+    ]);
+    expect(staticGroup?.children?.find((child) => child.id === 'static-linked-list')?.conceptId).toBe(
       'static-linked-list',
     );
-    expect(chapter!.topics.find((topic) => topic.id === 'static-linked-operations')?.algorithms.map(
+    expect(staticGroup?.children?.find((child) => child.id === 'static-linked-operations')?.algorithms.map(
       (algorithm) => algorithm.id,
     )).toEqual(['static-linked-list']);
     expect(chapter!.topics.find((topic) => topic.id === 'polynomial-add')?.algorithms.map(

@@ -106,6 +106,10 @@ const REFERENCE_LEARNING_NOTES: Record<string, LocalizedText> = {
     zh: '反复从最小堆取两个最小权值合并，新权值放回堆，直到只剩一棵树；得到的叶编码满足前缀性质，总代价最小。',
     en: 'Repeatedly merge the two smallest weights from a min-heap and put the sum back until one tree remains; the leaf codes are prefix-free and minimise the weighted path length.',
   },
+  'threaded-inorder': {
+    zh: '按中序顺序线索化：空左指针写前驱、前驱的空右指针写后继，并用 ltag/rtag 区分真实孩子与线索；遍历从最左结点出发，沿右线索或右子树最左结点前进。',
+    en: 'Thread in inorder order: a null left pointer stores the predecessor, a null right pointer of the predecessor stores the successor, and ltag/rtag separate real children from threads. Traversal starts at the left-most node and moves by right thread or left-most descent.',
+  },
   bfs: {
     zh: '用 FIFO 队列从起点逐层扩展：出队访问，再把未访问邻居入队。邻接表时间 O(V+E)，额外空间 O(V)。',
     en: 'A FIFO queue expands from the source level by level: dequeue to visit, then enqueue unvisited neighbours. O(V+E) time for adjacency lists and O(V) extra space.',

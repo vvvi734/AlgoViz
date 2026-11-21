@@ -5,7 +5,7 @@
  */
 import type { TreeMode } from './treeTraversalExamples';
 
-export const TREE_GUIDED_INPUT_ALGORITHMS = ['inorder', 'bst', 'avl', 'btree'] as const;
+export const TREE_GUIDED_INPUT_ALGORITHMS = ['inorder', 'threaded-inorder', 'bst', 'avl', 'btree'] as const;
 export type TreeGuidedInputAlgorithm = (typeof TREE_GUIDED_INPUT_ALGORITHMS)[number];
 
 export const TREE_INPUT_LIMITS = {
@@ -49,6 +49,12 @@ export const TREE_RANDOM_SCENARIOS: Record<
     { id: 'right', label: ['右偏树', 'Right-skewed tree'] },
     { id: 'balanced', label: ['相对平衡树', 'Balanced tree'] },
   ],
+  'threaded-inorder': [
+    { id: 'ordinary', label: ['普通二叉树', 'Ordinary tree'] },
+    { id: 'left', label: ['左偏树', 'Left-skewed tree'] },
+    { id: 'right', label: ['右偏树', 'Right-skewed tree'] },
+    { id: 'balanced', label: ['相对平衡树', 'Balanced tree'] },
+  ],
   bst: [
     { id: 'insert', label: ['普通插入', 'Ordinary insert'] },
     { id: 'find-hit', label: ['查找成功', 'Successful lookup'] },
@@ -82,6 +88,7 @@ export const TREE_TRAVERSAL_MODES: readonly { id: TreeMode; label: string }[] = 
 
 export const TREE_COMMANDS: Record<TreeGuidedInputAlgorithm, readonly string[]> = {
   inorder: [],
+  'threaded-inorder': [],
   bst: ['find', 'insert', 'delete'],
   avl: ['insert'],
   btree: ['find', 'insert'],
@@ -91,7 +98,7 @@ export function treeDraftFromInput(
   id: TreeGuidedInputAlgorithm,
   input: unknown,
 ): TreeInputFields {
-  if (id === 'inorder') {
+  if (id === 'inorder' || id === 'threaded-inorder') {
     const tree = Array.isArray(input)
       ? input
       : isRecord(input) && Array.isArray(input.tree)
@@ -101,7 +108,7 @@ export function treeDraftFromInput(
       values: formatTreeTokens(tree),
       target: '',
       command: '',
-      mode: modeFromInput(input),
+      mode: id === 'threaded-inorder' ? 'inorder' : modeFromInput(input),
     };
   }
   const record = isRecord(input) ? input : {};
@@ -114,8 +121,8 @@ export function treeDraftFromInput(
 }
 
 export function buildTreeInput(id: TreeGuidedInputAlgorithm, fields: TreeInputFields): TreeBuildResult {
-  if (id === 'inorder') {
-    const mode = normalizeMode(fields.mode);
+  if (id === 'inorder' || id === 'threaded-inorder') {
+    const mode = id === 'threaded-inorder' ? 'inorder' : normalizeMode(fields.mode);
     if (!mode) return { ok: false, error: { key: 'treeErrorMode' } };
     const parsed = parseTreeTokens(fields.values);
     if (!parsed.ok) return parsed;
@@ -155,7 +162,7 @@ export function randomTreeDraft(
   scenario: string,
   random: () => number = Math.random,
 ): TreeInputFields {
-  if (id === 'inorder') return randomTraversalDraft(scenario, random);
+  if (id === 'inorder' || id === 'threaded-inorder') return randomTraversalDraft(scenario, random);
   if (id === 'bst') return randomBstDraft(scenario, random);
   if (id === 'avl') return randomAvlDraft(scenario, random);
   return randomBtreeDraft(scenario, random);

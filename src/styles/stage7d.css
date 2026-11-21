@@ -415,3 +415,225 @@
     transition: none !important;
   }
 }
+
+/* ---- TEXTBOOK-06: threaded binary tree ---- */
+.threaded-visual {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 1;
+}
+
+.threaded-toolbar {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.threaded-op-group {
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
+  flex-wrap: wrap;
+}
+
+.threaded-op-label {
+  color: var(--accent);
+  font: 850 var(--font-ui)/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
+  letter-spacing: 1.1px;
+  text-transform: uppercase;
+}
+
+.threaded-phase {
+  color: var(--muted);
+  font: 750 var(--font-ui)/1.3 ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+
+.threaded-legend {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  color: var(--muted);
+  font-size: var(--font-ui);
+}
+
+.threaded-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.threaded-legend-child,
+.threaded-legend-thread {
+  width: 26px;
+  height: 0;
+  display: inline-block;
+}
+
+.threaded-legend-child {
+  border-top: 2px solid var(--node-edge);
+}
+
+.threaded-legend-thread {
+  border-top: 2px dashed var(--accent-2);
+}
+
+.threaded-summary-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px 18px;
+  flex-wrap: wrap;
+  padding: 7px 10px;
+  border: 1px solid var(--node-edge);
+  border-radius: 7px;
+  background: var(--stat-bg);
+  min-width: 0;
+}
+
+.threaded-metric {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  min-width: 0;
+}
+
+.threaded-metric-wide {
+  flex: 1 1 270px;
+  flex-wrap: wrap;
+}
+
+.threaded-summary-label {
+  color: var(--muted);
+  font: 800 var(--font-ui)/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+}
+
+.threaded-summary-empty {
+  color: var(--muted);
+  font-size: var(--font-ui);
+}
+
+.threaded-value-chip,
+.threaded-visited-item {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+  padding: 1px 6px;
+  border-radius: 4px;
+  border: 1px solid var(--node-edge);
+  color: var(--txt);
+  font: 800 var(--font-ui)/1.3 ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+
+.threaded-value-chip small {
+  color: var(--muted);
+  font-size: calc(var(--font-ui) * .86);
+}
+
+.threaded-visited-item {
+  border-color: var(--accent-2);
+}
+
+.threaded-edges {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.threaded-child-edge {
+  stroke: var(--node-edge);
+  stroke-width: 1.4;
+}
+
+.threaded-thread-edge {
+  stroke: var(--accent-2);
+  stroke-width: 1.8;
+  stroke-dasharray: 7 5;
+}
+
+.threaded-thread-edge.is-stub {
+  stroke-dasharray: 4 4;
+  opacity: .72;
+}
+
+.threaded-stub-mark {
+  fill: var(--muted);
+  font: 800 calc(var(--font-ui) * 1.15)/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+
+.threaded-node {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid var(--node-edge);
+  border-radius: 10px;
+  background: var(--node-bg);
+  color: var(--node-fg);
+  box-shadow: 0 5px 14px var(--stage-bg-b);
+  overflow: visible;
+  transition: border-color .16s, background .16s, box-shadow .16s;
+  z-index: 2;
+}
+
+.threaded-node.is-visited {
+  background: var(--node-focus-bg);
+}
+
+.threaded-node.is-threaded {
+  border-style: dashed;
+}
+
+.threaded-node.is-prev {
+  border-color: var(--accent-2);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent-2) 32%, transparent);
+}
+
+.threaded-node.is-active {
+  border-style: solid;
+  border-color: var(--accent);
+  background: var(--node-focus-bg);
+  box-shadow: 0 0 0 2px var(--node-focus-ring), 0 0 22px var(--bar-focus-glow);
+  z-index: 4;
+}
+
+.threaded-tag {
+  position: absolute;
+  bottom: 2px;
+  min-width: 15px;
+  height: 15px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  background: var(--stat-bg);
+  color: var(--muted);
+  font: 800 calc(var(--font-ui) * .9)/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+  border: 1px solid var(--node-edge);
+}
+
+.threaded-tag-left { left: 4px; }
+.threaded-tag-right { right: 4px; }
+
+.threaded-node.is-threaded .threaded-tag,
+.threaded-node.is-active .threaded-tag {
+  color: var(--accent-2);
+  border-color: var(--accent-2);
+}
+
+.threaded-scroller {
+  min-height: 120px;
+}
+
+@media (max-width: 720px) {
+  .threaded-toolbar { align-items: flex-start; }
+  .threaded-metric-wide { flex-basis: 100%; }
+}

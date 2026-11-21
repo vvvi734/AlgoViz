@@ -13,7 +13,7 @@ export const huffmanLesson: Lesson = {
   lessonId: 'huffman-build-and-prefix-codes',
   algorithmId: 'huffman',
   contentVersion: '1.0.0',
-  title: { zh: '哈夫曼树与哈夫曼编码：最小堆建树、前缀码与 WPL', en: 'Huffman tree and codes: min-heap build, prefix codes and WPL' },
+  title: { zh: '哈夫曼树与哈夫曼编码：最小堆建树、前缀码与 WPL', en: 'Huffman Tree and Huffman Coding: min-heap build, prefix codes and WPL' },
   oneLiner: {
     zh: '把每个字符看成带频率的叶子，反复合并当前最小的两个权值，得到一棵带权路径长度最小的二叉树；再从根到叶读 0/1 路径，就得到频率越高码越短的前缀编码。',
     en: 'Treat every symbol as a leaf with a frequency, repeatedly merge the two smallest weights into one binary tree of minimum weighted path length, then read each root-to-leaf 0/1 path to obtain prefix codes that are shorter for more frequent symbols.',

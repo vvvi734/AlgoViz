@@ -32,10 +32,27 @@ export interface TextbookAlgorithmRef {
   extension?: boolean;
 }
 
+export interface TextbookSubtopic {
+  id: string;
+  title: TextbookTitle;
+  algorithms: TextbookAlgorithmRef[];
+  /** A static theory leaf inside a second-level group. */
+  concept?: boolean;
+  conceptId?: string;
+  planned?: boolean;
+  extension?: boolean;
+}
+
 export interface TextbookTopic {
   id: string;
   title: TextbookTitle;
   algorithms: TextbookAlgorithmRef[];
+  /**
+   * Optional third-level leaves. The group itself is only a disclosure heading;
+   * every leaf must point at one shipped algorithm or one authored concept.
+   * Groups are authored only when the relation is real, never for visual tidiness.
+   */
+  children?: TextbookSubtopic[];
   /**
    * Knowledge explanation. Such a topic is never a runnable animation; it may
    * still be awaiting its lesson page, so the sidebar shows the concept type and
@@ -178,16 +195,23 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
         algorithms: [{ id: 'linked' }],
       },
       {
-        id: 'static-linked-list',
-        title: { zh: '静态链表', en: 'Static linked list' },
+        id: 'static-linked-group',
+        title: { zh: '静态链表', en: 'Static linked lists' },
         algorithms: [],
-        concept: true,
-        conceptId: 'static-linked-list',
-      },
-      {
-        id: 'static-linked-operations',
-        title: { zh: '静态链表的操作', en: 'Static linked-list operations' },
-        algorithms: [{ id: 'static-linked-list' }],
+        children: [
+          {
+            id: 'static-linked-list',
+            title: { zh: '静态链表的存储结构', en: 'Static linked-list storage' },
+            algorithms: [],
+            concept: true,
+            conceptId: 'static-linked-list',
+          },
+          {
+            id: 'static-linked-operations',
+            title: { zh: '静态链表的操作', en: 'Static linked-list operations' },
+            algorithms: [{ id: 'static-linked-list' }],
+          },
+        ],
       },
       {
         id: 'circular-linked-list',
@@ -219,10 +243,19 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
       },
       {
         id: 'stack-applications',
-        title: { zh: '栈的应用举例', en: 'Stack applications' },
-        algorithms: [
-          { id: 'infix-to-postfix' },
-          { id: 'postfix-eval' },
+        title: { zh: '栈的应用', en: 'Stack applications' },
+        algorithms: [],
+        children: [
+          {
+            id: 'infix-to-postfix',
+            title: { zh: '中缀表达式转后缀', en: 'Infix to postfix' },
+            algorithms: [{ id: 'infix-to-postfix' }],
+          },
+          {
+            id: 'postfix-eval',
+            title: { zh: '后缀表达式求值', en: 'Postfix evaluation' },
+            algorithms: [{ id: 'postfix-eval' }],
+          },
         ],
       },
       {
@@ -235,9 +268,18 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
       {
         id: 'recursion-examples',
         title: { zh: '递归调用的执行过程', en: 'Execution of recursive calls' },
-        algorithms: [
-          { id: 'factorial', extension: true },
-          { id: 'fib', extension: true },
+        algorithms: [],
+        children: [
+          {
+            id: 'factorial',
+            title: { zh: '阶乘递归', en: 'Factorial recursion' },
+            algorithms: [{ id: 'factorial', extension: true }],
+          },
+          {
+            id: 'fib',
+            title: { zh: '斐波那契递归', en: 'Fibonacci recursion' },
+            algorithms: [{ id: 'fib', extension: true }],
+          },
         ],
       },
       {
@@ -289,14 +331,21 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
         conceptId: 'naive-matching',
       },
       {
-        id: 'bf',
-        title: { zh: '朴素匹配动画（BF）', en: 'Naive matching visual (BF)' },
-        algorithms: [{ id: 'bf' }],
-      },
-      {
-        id: 'kmp',
-        title: { zh: 'KMP 模式匹配算法', en: 'KMP pattern matching' },
-        algorithms: [{ id: 'kmp' }],
+        id: 'pattern-matching',
+        title: { zh: '模式匹配算法', en: 'Pattern-matching algorithms' },
+        algorithms: [],
+        children: [
+          {
+            id: 'bf',
+            title: { zh: '朴素匹配（BF）', en: 'Naive matching (BF)' },
+            algorithms: [{ id: 'bf' }],
+          },
+          {
+            id: 'kmp',
+            title: { zh: 'KMP 模式匹配', en: 'KMP pattern matching' },
+            algorithms: [{ id: 'kmp' }],
+          },
+        ],
       },
     ],
   },
@@ -307,25 +356,32 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
     shortTitle: { zh: '数组和广义表', en: 'Arrays & generalized lists' },
     topics: [
       {
-        id: 'array-basics',
-        title: { zh: '数组的定义与顺序表示', en: 'Array definition and sequential representation' },
+        id: 'array-matrix',
+        title: { zh: '数组与矩阵', en: 'Arrays and matrices' },
         algorithms: [],
-        concept: true,
-        conceptId: 'array-basics',
-      },
-      {
-        id: 'special-matrices',
-        title: { zh: '特殊矩阵的压缩存储', en: 'Compressed storage for special matrices' },
-        algorithms: [],
-        concept: true,
-        conceptId: 'special-matrices',
-      },
-      {
-        id: 'sparse-matrix',
-        title: { zh: '稀疏矩阵', en: 'Sparse matrices' },
-        algorithms: [],
-        concept: true,
-        conceptId: 'sparse-matrix',
+        children: [
+          {
+            id: 'array-basics',
+            title: { zh: '数组的定义与顺序表示', en: 'Array definition and sequential representation' },
+            algorithms: [],
+            concept: true,
+            conceptId: 'array-basics',
+          },
+          {
+            id: 'special-matrices',
+            title: { zh: '特殊矩阵的压缩存储', en: 'Compressed storage for special matrices' },
+            algorithms: [],
+            concept: true,
+            conceptId: 'special-matrices',
+          },
+          {
+            id: 'sparse-matrix',
+            title: { zh: '稀疏矩阵', en: 'Sparse matrices' },
+            algorithms: [],
+            concept: true,
+            conceptId: 'sparse-matrix',
+          },
+        ],
       },
       {
         id: 'sparse-transpose',
@@ -333,30 +389,42 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
         algorithms: [{ id: 'sparse-transpose' }],
       },
       {
-        id: 'generalized-list',
-        title: { zh: '广义表的定义、长度与深度', en: 'Generalized lists: definition, length and depth' },
+        id: 'generalized-list-group',
+        title: { zh: '广义表', en: 'Generalized lists' },
         algorithms: [],
-        concept: true,
-        conceptId: 'generalized-list-definition',
-      },
-      {
-        id: 'generalized-list-storage',
-        title: { zh: '广义表的存储结构', en: 'Storage structure for generalized lists' },
-        algorithms: [],
-        concept: true,
-        conceptId: 'generalized-list-storage',
-      },
-      {
-        id: 'generalized-list-recursion',
-        title: { zh: '广义表的递归算法：深度与复制', en: 'Recursive algorithms: depth and copy' },
-        algorithms: [{ id: 'gl-depth' }, { id: 'gl-copy' }],
-      },
-      {
-        id: 'm-variable-polynomial',
-        title: { zh: 'm 元多项式的表示', en: 'Representing polynomials in m variables' },
-        algorithms: [],
-        concept: true,
-        conceptId: 'multivariate-polynomial',
+        children: [
+          {
+            id: 'generalized-list',
+            title: { zh: '定义、长度与深度', en: 'Definition, length and depth' },
+            algorithms: [],
+            concept: true,
+            conceptId: 'generalized-list-definition',
+          },
+          {
+            id: 'generalized-list-storage',
+            title: { zh: '广义表的存储结构', en: 'Storage structure' },
+            algorithms: [],
+            concept: true,
+            conceptId: 'generalized-list-storage',
+          },
+          {
+            id: 'gl-depth',
+            title: { zh: '递归求广义表深度', en: 'Recursive depth' },
+            algorithms: [{ id: 'gl-depth' }],
+          },
+          {
+            id: 'gl-copy',
+            title: { zh: '递归复制广义表', en: 'Recursive copy' },
+            algorithms: [{ id: 'gl-copy' }],
+          },
+          {
+            id: 'm-variable-polynomial',
+            title: { zh: 'm 元多项式的表示', en: 'Polynomials in m variables' },
+            algorithms: [],
+            concept: true,
+            conceptId: 'multivariate-polynomial',
+          },
+        ],
       },
     ],
   },
@@ -386,11 +454,23 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
         algorithms: [{ id: 'inorder' }],
       },
       {
-        id: 'threaded-tree',
-        title: { zh: '线索二叉树', en: 'Threaded binary tree' },
+        id: 'threaded-tree-group',
+        title: { zh: '线索二叉树', en: 'Threaded binary trees' },
         algorithms: [],
-        concept: true,
-        conceptId: 'threaded-binary-tree',
+        children: [
+          {
+            id: 'threaded-tree',
+            title: { zh: '线索标志与空指针利用', en: 'Tags and reuse of null pointers' },
+            algorithms: [],
+            concept: true,
+            conceptId: 'threaded-binary-tree',
+          },
+          {
+            id: 'threaded-inorder',
+            title: { zh: '中序线索化与遍历', en: 'In-order threading and traversal' },
+            algorithms: [{ id: 'threaded-inorder' }],
+          },
+        ],
       },
       {
         id: 'forest-conversion',
@@ -401,14 +481,8 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
       },
       {
         id: 'huffman',
-        title: { zh: '赫夫曼树及其应用', en: 'Huffman trees and coding' },
+        title: { zh: '哈夫曼树及其应用', en: 'Huffman Tree and Its Applications' },
         algorithms: [{ id: 'huffman' }],
-      },
-      {
-        id: 'backtracking-tree',
-        title: { zh: '回溯法与树的遍历', en: 'Backtracking and tree traversal' },
-        algorithms: [],
-        planned: true,
       },
     ],
   },
@@ -435,35 +509,91 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
       {
         id: 'graph-traversal',
         title: { zh: '图的遍历', en: 'Graph traversal' },
-        algorithms: [{ id: 'bfs' }, { id: 'dfs' }],
+        algorithms: [],
+        children: [
+          {
+            id: 'bfs',
+            title: { zh: '广度优先遍历（BFS）', en: 'Breadth-first traversal (BFS)' },
+            algorithms: [{ id: 'bfs' }],
+          },
+          {
+            id: 'dfs',
+            title: { zh: '深度优先遍历（DFS）', en: 'Depth-first traversal (DFS)' },
+            algorithms: [{ id: 'dfs' }],
+          },
+        ],
       },
       {
         id: 'graph-connectivity',
-        title: { zh: '图的连通性问题', en: 'Graph connectivity' },
-        algorithms: [{ id: 'components' }, { id: 'scc' }],
+        title: { zh: '连通性', en: 'Connectivity' },
+        algorithms: [],
+        children: [
+          {
+            id: 'components',
+            title: { zh: '连通分量', en: 'Connected components' },
+            algorithms: [{ id: 'components' }],
+          },
+          {
+            id: 'scc',
+            title: { zh: '强连通分量（Kosaraju）', en: 'Strongly connected components (Kosaraju)' },
+            algorithms: [{ id: 'scc' }],
+          },
+        ],
       },
       {
         id: 'mst',
         title: { zh: '最小生成树', en: 'Minimum spanning tree' },
-        algorithms: [{ id: 'prim' }, { id: 'kruskal' }],
+        algorithms: [],
+        children: [
+          {
+            id: 'prim',
+            title: { zh: 'Prim 算法', en: 'Prim algorithm' },
+            algorithms: [{ id: 'prim' }],
+          },
+          {
+            id: 'kruskal',
+            title: { zh: 'Kruskal 算法', en: 'Kruskal algorithm' },
+            algorithms: [{ id: 'kruskal' }],
+          },
+        ],
       },
       {
-        id: 'topological',
-        title: { zh: '有向无环图：拓扑排序', en: 'DAG: topological sort' },
-        algorithms: [{ id: 'topological' }],
-      },
-      {
-        id: 'critical-path',
-        title: { zh: '有向无环图：关键路径', en: 'DAG: critical path' },
-        algorithms: [{ id: 'critical-path' }],
+        id: 'dag',
+        title: { zh: '有向无环图', en: 'Directed acyclic graphs' },
+        algorithms: [],
+        children: [
+          {
+            id: 'topological',
+            title: { zh: '拓扑排序', en: 'Topological sort' },
+            algorithms: [{ id: 'topological' }],
+          },
+          {
+            id: 'critical-path',
+            title: { zh: '关键路径', en: 'Critical path' },
+            algorithms: [{ id: 'critical-path' }],
+          },
+        ],
       },
       {
         id: 'shortest-path',
         title: { zh: '最短路径', en: 'Shortest paths' },
-        algorithms: [
-          { id: 'dijkstra' },
-          { id: 'floyd-warshall' },
-          { id: 'bellman-ford', extension: true },
+        algorithms: [],
+        children: [
+          {
+            id: 'dijkstra',
+            title: { zh: 'Dijkstra 算法', en: 'Dijkstra algorithm' },
+            algorithms: [{ id: 'dijkstra' }],
+          },
+          {
+            id: 'floyd-warshall',
+            title: { zh: 'Floyd 算法', en: 'Floyd algorithm' },
+            algorithms: [{ id: 'floyd-warshall' }],
+          },
+          {
+            id: 'bellman-ford',
+            title: { zh: 'Bellman-Ford（扩展）', en: 'Bellman-Ford (extension)' },
+            algorithms: [{ id: 'bellman-ford', extension: true }],
+          },
         ],
       },
     ],
@@ -519,62 +649,88 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
     shortTitle: { zh: '查找', en: 'Searching' },
     topics: [
       {
-        id: 'sequential-search',
-        title: { zh: '静态查找表：顺序表的查找', en: 'Static search: sequential search' },
-        algorithms: [{ id: 'linear' }],
-      },
-      {
-        id: 'ordered-search',
-        title: { zh: '静态查找表：有序表的查找', en: 'Static search: ordered-table search' },
-        algorithms: [{ id: 'binary' }],
-      },
-      {
-        id: 'search-asl',
-        title: { zh: '平均查找长度与判定树', en: 'Average search length and decision trees' },
+        id: 'static-search',
+        title: { zh: '静态查找表', en: 'Static search tables' },
         algorithms: [],
-        concept: true,
-        conceptId: 'asl-decision-tree',
+        children: [
+          {
+            id: 'sequential-search',
+            title: { zh: '顺序查找', en: 'Sequential search' },
+            algorithms: [{ id: 'linear' }],
+          },
+          {
+            id: 'ordered-search',
+            title: { zh: '折半查找', en: 'Binary search' },
+            algorithms: [{ id: 'binary' }],
+          },
+          {
+            id: 'search-asl',
+            title: { zh: '平均查找长度与判定树', en: 'Average search length and decision trees' },
+            algorithms: [],
+            concept: true,
+            conceptId: 'asl-decision-tree',
+          },
+          {
+            id: 'indexed-search',
+            title: { zh: '索引顺序表的查找', en: 'Indexed sequential search' },
+            algorithms: [],
+            concept: true,
+            conceptId: 'indexed-search',
+          },
+        ],
       },
       {
-        id: 'indexed-search',
-        title: { zh: '静态查找表：索引顺序表的查找', en: 'Static search: indexed sequential search' },
+        id: 'tree-search',
+        title: { zh: '树表查找', en: 'Tree-table search' },
         algorithms: [],
-        concept: true,
-        conceptId: 'indexed-search',
-      },
-      {
-        id: 'bst',
-        title: { zh: '二叉排序树', en: 'Binary sort tree' },
-        algorithms: [{ id: 'bst' }],
-      },
-      {
-        id: 'avl',
-        title: { zh: '平衡二叉树（AVL）', en: 'Balanced binary tree (AVL)' },
-        algorithms: [{ id: 'avl' }],
-      },
-      {
-        id: 'multiway-tree',
-        title: { zh: 'B 树', en: 'B-tree' },
-        algorithms: [],
-        concept: true,
-        conceptId: 'b-tree',
-      },
-      {
-        id: 'bplus-tree',
-        title: { zh: 'B+ 树', en: 'B+ tree' },
-        algorithms: [],
-        concept: true,
-        conceptId: 'b-plus-tree',
-      },
-      {
-        id: 'btree-demo',
-        title: { zh: 'B 树查找与插入', en: 'B-tree search and insertion' },
-        algorithms: [{ id: 'btree' }],
+        children: [
+          {
+            id: 'bst',
+            title: { zh: '二叉排序树', en: 'Binary sort tree' },
+            algorithms: [{ id: 'bst' }],
+          },
+          {
+            id: 'avl',
+            title: { zh: '平衡二叉树（AVL）', en: 'Balanced binary tree (AVL)' },
+            algorithms: [{ id: 'avl' }],
+          },
+          {
+            id: 'multiway-tree',
+            title: { zh: 'B 树', en: 'B-tree' },
+            algorithms: [],
+            concept: true,
+            conceptId: 'b-tree',
+          },
+          {
+            id: 'bplus-tree',
+            title: { zh: 'B+ 树', en: 'B+ tree' },
+            algorithms: [],
+            concept: true,
+            conceptId: 'b-plus-tree',
+          },
+          {
+            id: 'btree-demo',
+            title: { zh: 'B 树查找与插入', en: 'B-tree search and insertion' },
+            algorithms: [{ id: 'btree' }],
+          },
+        ],
       },
       {
         id: 'hash-search',
-        title: { zh: '哈希表', en: 'Hash tables' },
-        algorithms: [{ id: 'hash-chain' }, { id: 'hash-probe' }],
+        title: { zh: '哈希查找', en: 'Hashing' },
+        algorithms: [],
+        children: [
+          {
+            id: 'hash-chain',
+            title: { zh: '链地址法', en: 'Separate chaining' },
+            algorithms: [{ id: 'hash-chain' }],
+          },
+          {
+            id: 'hash-probe',
+            title: { zh: '开放地址法', en: 'Open addressing' },
+            algorithms: [{ id: 'hash-probe' }],
+          },
+        ],
       },
     ],
   },
@@ -593,34 +749,54 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
       },
       {
         id: 'insertion-sort',
-        title: { zh: '插入排序：直接插入排序', en: 'Insertion sort: direct insertion' },
-        algorithms: [{ id: 'insertion' }],
+        title: { zh: '插入排序', en: 'Insertion sort' },
+        algorithms: [],
+        children: [
+          {
+            id: 'direct-insertion',
+            title: { zh: '直接插入排序', en: 'Direct insertion sort' },
+            algorithms: [{ id: 'insertion' }],
+          },
+          {
+            id: 'shell-sort',
+            title: { zh: '希尔排序', en: 'Shell sort' },
+            algorithms: [{ id: 'shell' }],
+          },
+        ],
       },
       {
-        id: 'shell-sort',
-        title: { zh: '插入排序：希尔排序', en: 'Insertion sort: Shell sort' },
-        algorithms: [{ id: 'shell' }],
-      },
-      {
-        id: 'bubble-sort',
-        title: { zh: '冒泡排序（补充）', en: 'Bubble sort (supplement)' },
-        algorithms: [{ id: 'bubble', extension: true }],
-        extension: true,
-      },
-      {
-        id: 'quick-sort',
-        title: { zh: '快速排序', en: 'Quicksort' },
-        algorithms: [{ id: 'quick' }],
+        id: 'exchange-sort',
+        title: { zh: '交换排序', en: 'Exchange sort' },
+        algorithms: [],
+        children: [
+          {
+            id: 'bubble-sort',
+            title: { zh: '冒泡排序', en: 'Bubble sort' },
+            algorithms: [{ id: 'bubble' }],
+          },
+          {
+            id: 'quick-sort',
+            title: { zh: '快速排序', en: 'Quicksort' },
+            algorithms: [{ id: 'quick' }],
+          },
+        ],
       },
       {
         id: 'selection-sort',
-        title: { zh: '选择排序：简单选择排序', en: 'Selection sort: simple selection' },
-        algorithms: [{ id: 'selection' }],
-      },
-      {
-        id: 'heap-sort',
-        title: { zh: '选择排序：堆排序', en: 'Selection sort: heapsort' },
-        algorithms: [{ id: 'heap' }],
+        title: { zh: '选择排序', en: 'Selection sort' },
+        algorithms: [],
+        children: [
+          {
+            id: 'simple-selection-sort',
+            title: { zh: '简单选择排序', en: 'Simple selection sort' },
+            algorithms: [{ id: 'selection' }],
+          },
+          {
+            id: 'heap-sort',
+            title: { zh: '堆排序', en: 'Heapsort' },
+            algorithms: [{ id: 'heap' }],
+          },
+        ],
       },
       {
         id: 'merge-sort',
@@ -756,8 +932,15 @@ export type TextbookTopicKind = 'concept' | 'planned' | 'algorithm' | 'group';
  */
 export type TextbookTopicCategory = 'theory' | 'visual' | 'pending';
 
-export interface TextbookTopicView extends TextbookTopic {
+export interface TextbookSubtopicView extends TextbookSubtopic {
   algorithms: TextbookAlgorithmNode[];
+  kind: 'concept' | 'planned' | 'algorithm';
+  category: TextbookTopicCategory;
+}
+
+export interface TextbookTopicView extends Omit<TextbookTopic, 'children'> {
+  algorithms: TextbookAlgorithmNode[];
+  children: TextbookSubtopicView[];
   kind: TextbookTopicKind;
   category: TextbookTopicCategory;
 }
@@ -780,6 +963,7 @@ function textbookTopicKind(
   topic: TextbookTopic,
   algorithms: readonly TextbookAlgorithmNode[],
 ): TextbookTopicKind {
+  if (topic.children && topic.children.length > 0) return 'group';
   if (topic.concept) return 'concept';
   if (topic.planned) return 'planned';
   if (algorithms.length === 1) return 'algorithm';
@@ -787,18 +971,38 @@ function textbookTopicKind(
   return 'planned';
 }
 
+function textbookSubtopicKind(subtopic: TextbookSubtopic): TextbookSubtopicView['kind'] {
+  if (subtopic.concept) return 'concept';
+  if (subtopic.planned) return 'planned';
+  return 'algorithm';
+}
+
+function textbookSubtopicCategory(
+  subtopic: TextbookSubtopic,
+  kind: TextbookSubtopicView['kind'],
+): TextbookTopicCategory {
+  if (kind === 'concept') return subtopic.conceptId ? 'theory' : 'pending';
+  if (kind === 'algorithm') return 'visual';
+  return 'pending';
+}
+
 /**
  * Keep the two axes explicit: `kind` describes the row structure, while
- * `category` describes how the student should read it. A concept slot without
- * a lesson is not a theory page yet; an authored static SVG does not turn it
- * into a visual algorithm either.
+ * `category` describes how the student should read it. A group inherits its
+ * category from its leaves, so a group of theory pages is still theory.
  */
 export function textbookTopicCategory(
   topic: TextbookTopic,
   kind: TextbookTopicKind,
+  children: readonly TextbookSubtopicView[] = [],
 ): TextbookTopicCategory {
+  if (kind === 'group') {
+    if (children.some((child) => child.category === 'visual')) return 'visual';
+    if (children.some((child) => child.category === 'theory')) return 'theory';
+    return 'pending';
+  }
   if (kind === 'concept') return topic.conceptId ? 'theory' : 'pending';
-  if (kind === 'algorithm' || kind === 'group') return 'visual';
+  if (kind === 'algorithm') return 'visual';
   return 'pending';
 }
 
@@ -815,29 +1019,51 @@ export function buildTextbookNavigation(catalog: AlgorithmCatalog): TextbookChap
   const mapped = new Set<string>();
   const chapters: TextbookChapterView[] = [];
 
+  const resolveAlgorithms = (refs: readonly TextbookAlgorithmRef[]): TextbookAlgorithmNode[] => {
+    const algorithms: TextbookAlgorithmNode[] = [];
+    for (const ref of refs) {
+      if (!catalog[ref.id] || mapped.has(ref.id)) continue;
+      mapped.add(ref.id);
+      algorithms.push({ id: ref.id, extension: ref.extension === true });
+    }
+    return algorithms;
+  };
+
   for (const chapter of TEXTBOOK_CHAPTERS) {
     const topics: TextbookTopicView[] = chapter.topics.map((topic) => {
-      const algorithms: TextbookAlgorithmNode[] = [];
-      for (const ref of topic.algorithms) {
-        if (!catalog[ref.id] || mapped.has(ref.id)) continue;
-        mapped.add(ref.id);
-        algorithms.push({ id: ref.id, extension: ref.extension === true });
-      }
+      const algorithms = resolveAlgorithms(topic.algorithms);
+      const children: TextbookSubtopicView[] = (topic.children ?? []).map((child) => {
+        const childAlgorithms = resolveAlgorithms(child.algorithms);
+        const kind = textbookSubtopicKind(child);
+        return {
+          ...child,
+          algorithms: childAlgorithms,
+          kind,
+          category: textbookSubtopicCategory(child, kind),
+        };
+      });
       const kind = textbookTopicKind(topic, algorithms);
       return {
         ...topic,
         algorithms,
+        children,
         kind,
-        category: textbookTopicCategory(topic, kind),
+        category: textbookTopicCategory(topic, kind, children),
       };
     });
 
-    if (chapter.extension && topics.every((topic) => topic.algorithms.length === 0)) continue;
+    if (chapter.extension && topics.every((topic) => topic.algorithms.length === 0 && topic.children.length === 0)) {
+      continue;
+    }
 
     chapters.push({
       ...chapter,
       topics,
-      algorithmCount: topics.reduce((total, topic) => total + topic.algorithms.length, 0),
+      algorithmCount: topics.reduce(
+        (total, topic) =>
+          total + topic.algorithms.length + topic.children.reduce((sum, child) => sum + child.algorithms.length, 0),
+        0,
+      ),
     });
   }
 
@@ -858,6 +1084,7 @@ export function buildTextbookNavigation(catalog: AlgorithmCatalog): TextbookChap
         id: 'unclassified',
         title: { zh: '其他算法', en: 'Other algorithms' },
         algorithms: unmapped.map((id) => ({ id, extension: true })),
+        children: [],
         kind: unmapped.length === 1 ? 'algorithm' : 'group',
         category: 'visual',
         extension: true,
@@ -884,6 +1111,9 @@ export function findTextbookPath(
       if (topic.algorithms.some((algorithm) => algorithm.id === algorithmId)) {
         return { chapterId: chapter.id, topicId: topic.id };
       }
+      if (topic.children.some((child) => child.algorithms.some((algorithm) => algorithm.id === algorithmId))) {
+        return { chapterId: chapter.id, topicId: topic.id };
+      }
     }
   }
   return null;
@@ -899,6 +1129,9 @@ export function findConceptPath(
       if (topic.conceptId === conceptId) {
         return { chapterId: chapter.id, topicId: topic.id };
       }
+      if (topic.children.some((child) => child.conceptId === conceptId)) {
+        return { chapterId: chapter.id, topicId: topic.id };
+      }
     }
   }
   return null;
@@ -912,6 +1145,9 @@ export function textbookPathFor(catalog: AlgorithmCatalog, algorithmId: string):
 /** All algorithm ids reachable in the rendered directory. */
 export function textbookAlgorithmIds(chapters: TextbookChapterView[]): string[] {
   return chapters.flatMap((chapter) =>
-    chapter.topics.flatMap((topic) => topic.algorithms.map((algorithm) => algorithm.id)),
+    chapter.topics.flatMap((topic) => [
+      ...topic.algorithms.map((algorithm) => algorithm.id),
+      ...topic.children.flatMap((child) => child.algorithms.map((algorithm) => algorithm.id)),
+    ]),
   );
 }

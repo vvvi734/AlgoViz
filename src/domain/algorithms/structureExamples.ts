@@ -104,6 +104,10 @@ import {
   STATIC_LINKED_DEFAULT_INPUT,
   STATIC_LINKED_PYTHON,
 } from './chapter2Examples';
+import {
+  THREADED_DEFAULT_INPUT,
+  THREADED_TREE_PYTHON,
+} from './threadedTreeExamples';
 
 export const STACK_DEFAULT_INPUT: unknown = {
   storage: 'array',
@@ -428,6 +432,7 @@ const STRUCTURE_PYTHON: Record<string, string> = {
   fib: FIB_PYTHON,
   'static-linked-list': STATIC_LINKED_PYTHON,
   'polynomial-add': POLYNOMIAL_ADD_PYTHON,
+  'threaded-inorder': THREADED_TREE_PYTHON,
 };
 
 const STRUCTURE_INPUT: Record<string, unknown> = {
@@ -471,6 +476,7 @@ const STRUCTURE_INPUT: Record<string, unknown> = {
   fib: FIB_DEFAULT_INPUT,
   'static-linked-list': STATIC_LINKED_DEFAULT_INPUT,
   'polynomial-add': POLYNOMIAL_ADD_DEFAULT_INPUT,
+  'threaded-inorder': THREADED_DEFAULT_INPUT,
 };
 
 export function structurePythonExample(algorithmId: string): string | undefined {

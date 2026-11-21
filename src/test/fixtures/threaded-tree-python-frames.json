@@ -1,0 +1,2726 @@
+[
+  {
+    "state": {
+      "type": "tree",
+      "values": [
+        4,
+        2,
+        6,
+        1,
+        3
+      ],
+      "visited": [],
+      "focus": [],
+      "done": false
+    },
+    "message": "初始化：所有标志为 0 / init: all tags are 0",
+    "variables": {
+      "node": null,
+      "pre": null,
+      "ltag": null,
+      "rtag": null,
+      "threaded": 0,
+      "visited": [],
+      "phase": "thread"
+    },
+    "lessonStepId": "init",
+    "structure": {
+      "kind": "threaded-tree",
+      "phase": "thread",
+      "operation": "init",
+      "rootId": "n1",
+      "nodes": [
+        {
+          "id": "n1",
+          "value": 4,
+          "leftId": "n2",
+          "rightId": "n3",
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n2",
+          "value": 2,
+          "leftId": "n4",
+          "rightId": "n5",
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n3",
+          "value": 6,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n4",
+          "value": 1,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n5",
+          "value": 3,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        }
+      ],
+      "currentNodeId": null,
+      "prevId": null,
+      "visitedIds": [],
+      "threadedCount": 0
+    }
+  },
+  {
+    "state": {
+      "type": "tree",
+      "values": [
+        4,
+        2,
+        6,
+        1,
+        3
+      ],
+      "visited": [],
+      "focus": [
+        "n1"
+      ],
+      "done": false
+    },
+    "message": "进入子树 / enter n1",
+    "variables": {
+      "node": "n1",
+      "pre": null,
+      "ltag": 0,
+      "rtag": 0,
+      "threaded": 0,
+      "visited": [],
+      "phase": "thread"
+    },
+    "lessonStepId": "enter",
+    "structure": {
+      "kind": "threaded-tree",
+      "phase": "thread",
+      "operation": "enter",
+      "rootId": "n1",
+      "nodes": [
+        {
+          "id": "n1",
+          "value": 4,
+          "leftId": "n2",
+          "rightId": "n3",
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n2",
+          "value": 2,
+          "leftId": "n4",
+          "rightId": "n5",
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n3",
+          "value": 6,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n4",
+          "value": 1,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n5",
+          "value": 3,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        }
+      ],
+      "currentNodeId": "n1",
+      "prevId": null,
+      "visitedIds": [],
+      "threadedCount": 0
+    }
+  },
+  {
+    "state": {
+      "type": "tree",
+      "values": [
+        4,
+        2,
+        6,
+        1,
+        3
+      ],
+      "visited": [],
+      "focus": [
+        "n2"
+      ],
+      "done": false
+    },
+    "message": "进入子树 / enter n2",
+    "variables": {
+      "node": "n2",
+      "pre": null,
+      "ltag": 0,
+      "rtag": 0,
+      "threaded": 0,
+      "visited": [],
+      "phase": "thread"
+    },
+    "lessonStepId": "enter",
+    "structure": {
+      "kind": "threaded-tree",
+      "phase": "thread",
+      "operation": "enter",
+      "rootId": "n1",
+      "nodes": [
+        {
+          "id": "n1",
+          "value": 4,
+          "leftId": "n2",
+          "rightId": "n3",
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n2",
+          "value": 2,
+          "leftId": "n4",
+          "rightId": "n5",
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n3",
+          "value": 6,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n4",
+          "value": 1,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n5",
+          "value": 3,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        }
+      ],
+      "currentNodeId": "n2",
+      "prevId": null,
+      "visitedIds": [],
+      "threadedCount": 0
+    }
+  },
+  {
+    "state": {
+      "type": "tree",
+      "values": [
+        4,
+        2,
+        6,
+        1,
+        3
+      ],
+      "visited": [],
+      "focus": [
+        "n4"
+      ],
+      "done": false
+    },
+    "message": "进入子树 / enter n4",
+    "variables": {
+      "node": "n4",
+      "pre": null,
+      "ltag": 0,
+      "rtag": 0,
+      "threaded": 0,
+      "visited": [],
+      "phase": "thread"
+    },
+    "lessonStepId": "enter",
+    "structure": {
+      "kind": "threaded-tree",
+      "phase": "thread",
+      "operation": "enter",
+      "rootId": "n1",
+      "nodes": [
+        {
+          "id": "n1",
+          "value": 4,
+          "leftId": "n2",
+          "rightId": "n3",
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n2",
+          "value": 2,
+          "leftId": "n4",
+          "rightId": "n5",
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n3",
+          "value": 6,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n4",
+          "value": 1,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n5",
+          "value": 3,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        }
+      ],
+      "currentNodeId": "n4",
+      "prevId": null,
+      "visitedIds": [],
+      "threadedCount": 0
+    }
+  },
+  {
+    "state": {
+      "type": "tree",
+      "values": [
+        4,
+        2,
+        6,
+        1,
+        3
+      ],
+      "visited": [],
+      "focus": [
+        "n4"
+      ],
+      "done": false
+    },
+    "message": "左指针为空：写入前驱 / null left becomes predecessor None",
+    "variables": {
+      "node": "n4",
+      "pre": null,
+      "ltag": 1,
+      "rtag": 0,
+      "threaded": 1,
+      "visited": [],
+      "phase": "thread"
+    },
+    "lessonStepId": "thread-left",
+    "structure": {
+      "kind": "threaded-tree",
+      "phase": "thread",
+      "operation": "thread-left",
+      "rootId": "n1",
+      "nodes": [
+        {
+          "id": "n1",
+          "value": 4,
+          "leftId": "n2",
+          "rightId": "n3",
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n2",
+          "value": 2,
+          "leftId": "n4",
+          "rightId": "n5",
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n3",
+          "value": 6,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n4",
+          "value": 1,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 1,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n5",
+          "value": 3,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        }
+      ],
+      "currentNodeId": "n4",
+      "prevId": null,
+      "visitedIds": [],
+      "threadedCount": 1
+    }
+  },
+  {
+    "state": {
+      "type": "tree",
+      "values": [
+        4,
+        2,
+        6,
+        1,
+        3
+      ],
+      "visited": [],
+      "focus": [
+        "n4"
+      ],
+      "done": false
+    },
+    "message": "子树处理完 / return n4",
+    "variables": {
+      "node": "n4",
+      "pre": "n4",
+      "ltag": 1,
+      "rtag": 0,
+      "threaded": 1,
+      "visited": [],
+      "phase": "thread"
+    },
+    "lessonStepId": "return",
+    "structure": {
+      "kind": "threaded-tree",
+      "phase": "thread",
+      "operation": "return",
+      "rootId": "n1",
+      "nodes": [
+        {
+          "id": "n1",
+          "value": 4,
+          "leftId": "n2",
+          "rightId": "n3",
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n2",
+          "value": 2,
+          "leftId": "n4",
+          "rightId": "n5",
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n3",
+          "value": 6,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n4",
+          "value": 1,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 1,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n5",
+          "value": 3,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        }
+      ],
+      "currentNodeId": "n4",
+      "prevId": "n4",
+      "visitedIds": [],
+      "threadedCount": 1
+    }
+  },
+  {
+    "state": {
+      "type": "tree",
+      "values": [
+        4,
+        2,
+        6,
+        1,
+        3
+      ],
+      "visited": [],
+      "focus": [
+        "n2"
+      ],
+      "done": false
+    },
+    "message": "前驱右指针为空：写入后继 / null right of n4 becomes successor n2",
+    "variables": {
+      "node": "n2",
+      "pre": "n4",
+      "ltag": 0,
+      "rtag": 0,
+      "threaded": 2,
+      "visited": [],
+      "phase": "thread"
+    },
+    "lessonStepId": "thread-right",
+    "structure": {
+      "kind": "threaded-tree",
+      "phase": "thread",
+      "operation": "thread-right",
+      "rootId": "n1",
+      "nodes": [
+        {
+          "id": "n1",
+          "value": 4,
+          "leftId": "n2",
+          "rightId": "n3",
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n2",
+          "value": 2,
+          "leftId": "n4",
+          "rightId": "n5",
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n3",
+          "value": 6,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n4",
+          "value": 1,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 1,
+          "rtag": 1,
+          "leftThreadId": null,
+          "rightThreadId": "n2"
+        },
+        {
+          "id": "n5",
+          "value": 3,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        }
+      ],
+      "currentNodeId": "n2",
+      "prevId": "n4",
+      "visitedIds": [],
+      "threadedCount": 2
+    }
+  },
+  {
+    "state": {
+      "type": "tree",
+      "values": [
+        4,
+        2,
+        6,
+        1,
+        3
+      ],
+      "visited": [],
+      "focus": [
+        "n5"
+      ],
+      "done": false
+    },
+    "message": "进入子树 / enter n5",
+    "variables": {
+      "node": "n5",
+      "pre": "n2",
+      "ltag": 0,
+      "rtag": 0,
+      "threaded": 2,
+      "visited": [],
+      "phase": "thread"
+    },
+    "lessonStepId": "enter",
+    "structure": {
+      "kind": "threaded-tree",
+      "phase": "thread",
+      "operation": "enter",
+      "rootId": "n1",
+      "nodes": [
+        {
+          "id": "n1",
+          "value": 4,
+          "leftId": "n2",
+          "rightId": "n3",
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n2",
+          "value": 2,
+          "leftId": "n4",
+          "rightId": "n5",
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n3",
+          "value": 6,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n4",
+          "value": 1,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 1,
+          "rtag": 1,
+          "leftThreadId": null,
+          "rightThreadId": "n2"
+        },
+        {
+          "id": "n5",
+          "value": 3,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        }
+      ],
+      "currentNodeId": "n5",
+      "prevId": "n2",
+      "visitedIds": [],
+      "threadedCount": 2
+    }
+  },
+  {
+    "state": {
+      "type": "tree",
+      "values": [
+        4,
+        2,
+        6,
+        1,
+        3
+      ],
+      "visited": [],
+      "focus": [
+        "n5"
+      ],
+      "done": false
+    },
+    "message": "左指针为空：写入前驱 / null left becomes predecessor n2",
+    "variables": {
+      "node": "n5",
+      "pre": "n2",
+      "ltag": 1,
+      "rtag": 0,
+      "threaded": 3,
+      "visited": [],
+      "phase": "thread"
+    },
+    "lessonStepId": "thread-left",
+    "structure": {
+      "kind": "threaded-tree",
+      "phase": "thread",
+      "operation": "thread-left",
+      "rootId": "n1",
+      "nodes": [
+        {
+          "id": "n1",
+          "value": 4,
+          "leftId": "n2",
+          "rightId": "n3",
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n2",
+          "value": 2,
+          "leftId": "n4",
+          "rightId": "n5",
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n3",
+          "value": 6,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n4",
+          "value": 1,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 1,
+          "rtag": 1,
+          "leftThreadId": null,
+          "rightThreadId": "n2"
+        },
+        {
+          "id": "n5",
+          "value": 3,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 1,
+          "rtag": 0,
+          "leftThreadId": "n2",
+          "rightThreadId": null
+        }
+      ],
+      "currentNodeId": "n5",
+      "prevId": "n2",
+      "visitedIds": [],
+      "threadedCount": 3
+    }
+  },
+  {
+    "state": {
+      "type": "tree",
+      "values": [
+        4,
+        2,
+        6,
+        1,
+        3
+      ],
+      "visited": [],
+      "focus": [
+        "n5"
+      ],
+      "done": false
+    },
+    "message": "子树处理完 / return n5",
+    "variables": {
+      "node": "n5",
+      "pre": "n5",
+      "ltag": 1,
+      "rtag": 0,
+      "threaded": 3,
+      "visited": [],
+      "phase": "thread"
+    },
+    "lessonStepId": "return",
+    "structure": {
+      "kind": "threaded-tree",
+      "phase": "thread",
+      "operation": "return",
+      "rootId": "n1",
+      "nodes": [
+        {
+          "id": "n1",
+          "value": 4,
+          "leftId": "n2",
+          "rightId": "n3",
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n2",
+          "value": 2,
+          "leftId": "n4",
+          "rightId": "n5",
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n3",
+          "value": 6,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n4",
+          "value": 1,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 1,
+          "rtag": 1,
+          "leftThreadId": null,
+          "rightThreadId": "n2"
+        },
+        {
+          "id": "n5",
+          "value": 3,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 1,
+          "rtag": 0,
+          "leftThreadId": "n2",
+          "rightThreadId": null
+        }
+      ],
+      "currentNodeId": "n5",
+      "prevId": "n5",
+      "visitedIds": [],
+      "threadedCount": 3
+    }
+  },
+  {
+    "state": {
+      "type": "tree",
+      "values": [
+        4,
+        2,
+        6,
+        1,
+        3
+      ],
+      "visited": [],
+      "focus": [
+        "n2"
+      ],
+      "done": false
+    },
+    "message": "子树处理完 / return n2",
+    "variables": {
+      "node": "n2",
+      "pre": "n5",
+      "ltag": 0,
+      "rtag": 0,
+      "threaded": 3,
+      "visited": [],
+      "phase": "thread"
+    },
+    "lessonStepId": "return",
+    "structure": {
+      "kind": "threaded-tree",
+      "phase": "thread",
+      "operation": "return",
+      "rootId": "n1",
+      "nodes": [
+        {
+          "id": "n1",
+          "value": 4,
+          "leftId": "n2",
+          "rightId": "n3",
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n2",
+          "value": 2,
+          "leftId": "n4",
+          "rightId": "n5",
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n3",
+          "value": 6,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n4",
+          "value": 1,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 1,
+          "rtag": 1,
+          "leftThreadId": null,
+          "rightThreadId": "n2"
+        },
+        {
+          "id": "n5",
+          "value": 3,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 1,
+          "rtag": 0,
+          "leftThreadId": "n2",
+          "rightThreadId": null
+        }
+      ],
+      "currentNodeId": "n2",
+      "prevId": "n5",
+      "visitedIds": [],
+      "threadedCount": 3
+    }
+  },
+  {
+    "state": {
+      "type": "tree",
+      "values": [
+        4,
+        2,
+        6,
+        1,
+        3
+      ],
+      "visited": [],
+      "focus": [
+        "n1"
+      ],
+      "done": false
+    },
+    "message": "前驱右指针为空：写入后继 / null right of n5 becomes successor n1",
+    "variables": {
+      "node": "n1",
+      "pre": "n5",
+      "ltag": 0,
+      "rtag": 0,
+      "threaded": 4,
+      "visited": [],
+      "phase": "thread"
+    },
+    "lessonStepId": "thread-right",
+    "structure": {
+      "kind": "threaded-tree",
+      "phase": "thread",
+      "operation": "thread-right",
+      "rootId": "n1",
+      "nodes": [
+        {
+          "id": "n1",
+          "value": 4,
+          "leftId": "n2",
+          "rightId": "n3",
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n2",
+          "value": 2,
+          "leftId": "n4",
+          "rightId": "n5",
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n3",
+          "value": 6,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n4",
+          "value": 1,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 1,
+          "rtag": 1,
+          "leftThreadId": null,
+          "rightThreadId": "n2"
+        },
+        {
+          "id": "n5",
+          "value": 3,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 1,
+          "rtag": 1,
+          "leftThreadId": "n2",
+          "rightThreadId": "n1"
+        }
+      ],
+      "currentNodeId": "n1",
+      "prevId": "n5",
+      "visitedIds": [],
+      "threadedCount": 4
+    }
+  },
+  {
+    "state": {
+      "type": "tree",
+      "values": [
+        4,
+        2,
+        6,
+        1,
+        3
+      ],
+      "visited": [],
+      "focus": [
+        "n3"
+      ],
+      "done": false
+    },
+    "message": "进入子树 / enter n3",
+    "variables": {
+      "node": "n3",
+      "pre": "n1",
+      "ltag": 0,
+      "rtag": 0,
+      "threaded": 4,
+      "visited": [],
+      "phase": "thread"
+    },
+    "lessonStepId": "enter",
+    "structure": {
+      "kind": "threaded-tree",
+      "phase": "thread",
+      "operation": "enter",
+      "rootId": "n1",
+      "nodes": [
+        {
+          "id": "n1",
+          "value": 4,
+          "leftId": "n2",
+          "rightId": "n3",
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n2",
+          "value": 2,
+          "leftId": "n4",
+          "rightId": "n5",
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n3",
+          "value": 6,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n4",
+          "value": 1,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 1,
+          "rtag": 1,
+          "leftThreadId": null,
+          "rightThreadId": "n2"
+        },
+        {
+          "id": "n5",
+          "value": 3,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 1,
+          "rtag": 1,
+          "leftThreadId": "n2",
+          "rightThreadId": "n1"
+        }
+      ],
+      "currentNodeId": "n3",
+      "prevId": "n1",
+      "visitedIds": [],
+      "threadedCount": 4
+    }
+  },
+  {
+    "state": {
+      "type": "tree",
+      "values": [
+        4,
+        2,
+        6,
+        1,
+        3
+      ],
+      "visited": [],
+      "focus": [
+        "n3"
+      ],
+      "done": false
+    },
+    "message": "左指针为空：写入前驱 / null left becomes predecessor n1",
+    "variables": {
+      "node": "n3",
+      "pre": "n1",
+      "ltag": 1,
+      "rtag": 0,
+      "threaded": 5,
+      "visited": [],
+      "phase": "thread"
+    },
+    "lessonStepId": "thread-left",
+    "structure": {
+      "kind": "threaded-tree",
+      "phase": "thread",
+      "operation": "thread-left",
+      "rootId": "n1",
+      "nodes": [
+        {
+          "id": "n1",
+          "value": 4,
+          "leftId": "n2",
+          "rightId": "n3",
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n2",
+          "value": 2,
+          "leftId": "n4",
+          "rightId": "n5",
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n3",
+          "value": 6,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 1,
+          "rtag": 0,
+          "leftThreadId": "n1",
+          "rightThreadId": null
+        },
+        {
+          "id": "n4",
+          "value": 1,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 1,
+          "rtag": 1,
+          "leftThreadId": null,
+          "rightThreadId": "n2"
+        },
+        {
+          "id": "n5",
+          "value": 3,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 1,
+          "rtag": 1,
+          "leftThreadId": "n2",
+          "rightThreadId": "n1"
+        }
+      ],
+      "currentNodeId": "n3",
+      "prevId": "n1",
+      "visitedIds": [],
+      "threadedCount": 5
+    }
+  },
+  {
+    "state": {
+      "type": "tree",
+      "values": [
+        4,
+        2,
+        6,
+        1,
+        3
+      ],
+      "visited": [],
+      "focus": [
+        "n3"
+      ],
+      "done": false
+    },
+    "message": "子树处理完 / return n3",
+    "variables": {
+      "node": "n3",
+      "pre": "n3",
+      "ltag": 1,
+      "rtag": 0,
+      "threaded": 5,
+      "visited": [],
+      "phase": "thread"
+    },
+    "lessonStepId": "return",
+    "structure": {
+      "kind": "threaded-tree",
+      "phase": "thread",
+      "operation": "return",
+      "rootId": "n1",
+      "nodes": [
+        {
+          "id": "n1",
+          "value": 4,
+          "leftId": "n2",
+          "rightId": "n3",
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n2",
+          "value": 2,
+          "leftId": "n4",
+          "rightId": "n5",
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n3",
+          "value": 6,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 1,
+          "rtag": 0,
+          "leftThreadId": "n1",
+          "rightThreadId": null
+        },
+        {
+          "id": "n4",
+          "value": 1,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 1,
+          "rtag": 1,
+          "leftThreadId": null,
+          "rightThreadId": "n2"
+        },
+        {
+          "id": "n5",
+          "value": 3,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 1,
+          "rtag": 1,
+          "leftThreadId": "n2",
+          "rightThreadId": "n1"
+        }
+      ],
+      "currentNodeId": "n3",
+      "prevId": "n3",
+      "visitedIds": [],
+      "threadedCount": 5
+    }
+  },
+  {
+    "state": {
+      "type": "tree",
+      "values": [
+        4,
+        2,
+        6,
+        1,
+        3
+      ],
+      "visited": [],
+      "focus": [
+        "n1"
+      ],
+      "done": false
+    },
+    "message": "子树处理完 / return n1",
+    "variables": {
+      "node": "n1",
+      "pre": "n3",
+      "ltag": 0,
+      "rtag": 0,
+      "threaded": 5,
+      "visited": [],
+      "phase": "thread"
+    },
+    "lessonStepId": "return",
+    "structure": {
+      "kind": "threaded-tree",
+      "phase": "thread",
+      "operation": "return",
+      "rootId": "n1",
+      "nodes": [
+        {
+          "id": "n1",
+          "value": 4,
+          "leftId": "n2",
+          "rightId": "n3",
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n2",
+          "value": 2,
+          "leftId": "n4",
+          "rightId": "n5",
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n3",
+          "value": 6,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 1,
+          "rtag": 0,
+          "leftThreadId": "n1",
+          "rightThreadId": null
+        },
+        {
+          "id": "n4",
+          "value": 1,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 1,
+          "rtag": 1,
+          "leftThreadId": null,
+          "rightThreadId": "n2"
+        },
+        {
+          "id": "n5",
+          "value": 3,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 1,
+          "rtag": 1,
+          "leftThreadId": "n2",
+          "rightThreadId": "n1"
+        }
+      ],
+      "currentNodeId": "n1",
+      "prevId": "n3",
+      "visitedIds": [],
+      "threadedCount": 5
+    }
+  },
+  {
+    "state": {
+      "type": "tree",
+      "values": [
+        4,
+        2,
+        6,
+        1,
+        3
+      ],
+      "visited": [],
+      "focus": [
+        "n3"
+      ],
+      "done": false
+    },
+    "message": "中序最后一个结点：右线索为空 / last in-order node keeps a null successor",
+    "variables": {
+      "node": "n3",
+      "pre": "n3",
+      "ltag": 1,
+      "rtag": 1,
+      "threaded": 6,
+      "visited": [],
+      "phase": "thread"
+    },
+    "lessonStepId": "thread-last",
+    "structure": {
+      "kind": "threaded-tree",
+      "phase": "thread",
+      "operation": "thread-last",
+      "rootId": "n1",
+      "nodes": [
+        {
+          "id": "n1",
+          "value": 4,
+          "leftId": "n2",
+          "rightId": "n3",
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n2",
+          "value": 2,
+          "leftId": "n4",
+          "rightId": "n5",
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n3",
+          "value": 6,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 1,
+          "rtag": 1,
+          "leftThreadId": "n1",
+          "rightThreadId": null
+        },
+        {
+          "id": "n4",
+          "value": 1,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 1,
+          "rtag": 1,
+          "leftThreadId": null,
+          "rightThreadId": "n2"
+        },
+        {
+          "id": "n5",
+          "value": 3,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 1,
+          "rtag": 1,
+          "leftThreadId": "n2",
+          "rightThreadId": "n1"
+        }
+      ],
+      "currentNodeId": "n3",
+      "prevId": "n3",
+      "visitedIds": [],
+      "threadedCount": 6
+    }
+  },
+  {
+    "state": {
+      "type": "tree",
+      "values": [
+        4,
+        2,
+        6,
+        1,
+        3
+      ],
+      "visited": [],
+      "focus": [],
+      "done": false
+    },
+    "message": "线索建立完成 / threading complete",
+    "variables": {
+      "node": null,
+      "pre": "n3",
+      "ltag": null,
+      "rtag": null,
+      "threaded": 6,
+      "visited": [],
+      "phase": "traverse"
+    },
+    "lessonStepId": "thread-complete",
+    "structure": {
+      "kind": "threaded-tree",
+      "phase": "traverse",
+      "operation": "thread-complete",
+      "rootId": "n1",
+      "nodes": [
+        {
+          "id": "n1",
+          "value": 4,
+          "leftId": "n2",
+          "rightId": "n3",
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n2",
+          "value": 2,
+          "leftId": "n4",
+          "rightId": "n5",
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n3",
+          "value": 6,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 1,
+          "rtag": 1,
+          "leftThreadId": "n1",
+          "rightThreadId": null
+        },
+        {
+          "id": "n4",
+          "value": 1,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 1,
+          "rtag": 1,
+          "leftThreadId": null,
+          "rightThreadId": "n2"
+        },
+        {
+          "id": "n5",
+          "value": 3,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 1,
+          "rtag": 1,
+          "leftThreadId": "n2",
+          "rightThreadId": "n1"
+        }
+      ],
+      "currentNodeId": null,
+      "prevId": "n3",
+      "visitedIds": [],
+      "threadedCount": 6
+    }
+  },
+  {
+    "state": {
+      "type": "tree",
+      "values": [
+        4,
+        2,
+        6,
+        1,
+        3
+      ],
+      "visited": [],
+      "focus": [
+        "n4"
+      ],
+      "done": false
+    },
+    "message": "从最左结点开始 / start at the left-most node",
+    "variables": {
+      "node": "n4",
+      "pre": "n3",
+      "ltag": 1,
+      "rtag": 1,
+      "threaded": 6,
+      "visited": [],
+      "phase": "traverse"
+    },
+    "lessonStepId": "start",
+    "structure": {
+      "kind": "threaded-tree",
+      "phase": "traverse",
+      "operation": "start",
+      "rootId": "n1",
+      "nodes": [
+        {
+          "id": "n1",
+          "value": 4,
+          "leftId": "n2",
+          "rightId": "n3",
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n2",
+          "value": 2,
+          "leftId": "n4",
+          "rightId": "n5",
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n3",
+          "value": 6,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 1,
+          "rtag": 1,
+          "leftThreadId": "n1",
+          "rightThreadId": null
+        },
+        {
+          "id": "n4",
+          "value": 1,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 1,
+          "rtag": 1,
+          "leftThreadId": null,
+          "rightThreadId": "n2"
+        },
+        {
+          "id": "n5",
+          "value": 3,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 1,
+          "rtag": 1,
+          "leftThreadId": "n2",
+          "rightThreadId": "n1"
+        }
+      ],
+      "currentNodeId": "n4",
+      "prevId": "n3",
+      "visitedIds": [],
+      "threadedCount": 6
+    }
+  },
+  {
+    "state": {
+      "type": "tree",
+      "values": [
+        4,
+        2,
+        6,
+        1,
+        3
+      ],
+      "visited": [
+        "n4"
+      ],
+      "focus": [
+        "n4"
+      ],
+      "done": false
+    },
+    "message": "访问结点 / visit n4 = 1",
+    "variables": {
+      "node": "n4",
+      "pre": "n3",
+      "ltag": 1,
+      "rtag": 1,
+      "threaded": 6,
+      "visited": [
+        1
+      ],
+      "phase": "traverse"
+    },
+    "lessonStepId": "visit",
+    "structure": {
+      "kind": "threaded-tree",
+      "phase": "traverse",
+      "operation": "visit",
+      "rootId": "n1",
+      "nodes": [
+        {
+          "id": "n1",
+          "value": 4,
+          "leftId": "n2",
+          "rightId": "n3",
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n2",
+          "value": 2,
+          "leftId": "n4",
+          "rightId": "n5",
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n3",
+          "value": 6,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 1,
+          "rtag": 1,
+          "leftThreadId": "n1",
+          "rightThreadId": null
+        },
+        {
+          "id": "n4",
+          "value": 1,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 1,
+          "rtag": 1,
+          "leftThreadId": null,
+          "rightThreadId": "n2"
+        },
+        {
+          "id": "n5",
+          "value": 3,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 1,
+          "rtag": 1,
+          "leftThreadId": "n2",
+          "rightThreadId": "n1"
+        }
+      ],
+      "currentNodeId": "n4",
+      "prevId": "n3",
+      "visitedIds": [
+        "n4"
+      ],
+      "threadedCount": 6
+    }
+  },
+  {
+    "state": {
+      "type": "tree",
+      "values": [
+        4,
+        2,
+        6,
+        1,
+        3
+      ],
+      "visited": [
+        "n4"
+      ],
+      "focus": [
+        "n2"
+      ],
+      "done": false
+    },
+    "message": "沿右线索到后继 / follow right thread to n2",
+    "variables": {
+      "node": "n2",
+      "pre": "n3",
+      "ltag": 0,
+      "rtag": 0,
+      "threaded": 6,
+      "visited": [
+        1
+      ],
+      "phase": "traverse"
+    },
+    "lessonStepId": "follow-thread",
+    "structure": {
+      "kind": "threaded-tree",
+      "phase": "traverse",
+      "operation": "follow-thread",
+      "rootId": "n1",
+      "nodes": [
+        {
+          "id": "n1",
+          "value": 4,
+          "leftId": "n2",
+          "rightId": "n3",
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n2",
+          "value": 2,
+          "leftId": "n4",
+          "rightId": "n5",
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n3",
+          "value": 6,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 1,
+          "rtag": 1,
+          "leftThreadId": "n1",
+          "rightThreadId": null
+        },
+        {
+          "id": "n4",
+          "value": 1,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 1,
+          "rtag": 1,
+          "leftThreadId": null,
+          "rightThreadId": "n2"
+        },
+        {
+          "id": "n5",
+          "value": 3,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 1,
+          "rtag": 1,
+          "leftThreadId": "n2",
+          "rightThreadId": "n1"
+        }
+      ],
+      "currentNodeId": "n2",
+      "prevId": "n3",
+      "visitedIds": [
+        "n4"
+      ],
+      "threadedCount": 6
+    }
+  },
+  {
+    "state": {
+      "type": "tree",
+      "values": [
+        4,
+        2,
+        6,
+        1,
+        3
+      ],
+      "visited": [
+        "n4",
+        "n2"
+      ],
+      "focus": [
+        "n2"
+      ],
+      "done": false
+    },
+    "message": "访问结点 / visit n2 = 2",
+    "variables": {
+      "node": "n2",
+      "pre": "n3",
+      "ltag": 0,
+      "rtag": 0,
+      "threaded": 6,
+      "visited": [
+        1,
+        2
+      ],
+      "phase": "traverse"
+    },
+    "lessonStepId": "visit",
+    "structure": {
+      "kind": "threaded-tree",
+      "phase": "traverse",
+      "operation": "visit",
+      "rootId": "n1",
+      "nodes": [
+        {
+          "id": "n1",
+          "value": 4,
+          "leftId": "n2",
+          "rightId": "n3",
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n2",
+          "value": 2,
+          "leftId": "n4",
+          "rightId": "n5",
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n3",
+          "value": 6,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 1,
+          "rtag": 1,
+          "leftThreadId": "n1",
+          "rightThreadId": null
+        },
+        {
+          "id": "n4",
+          "value": 1,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 1,
+          "rtag": 1,
+          "leftThreadId": null,
+          "rightThreadId": "n2"
+        },
+        {
+          "id": "n5",
+          "value": 3,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 1,
+          "rtag": 1,
+          "leftThreadId": "n2",
+          "rightThreadId": "n1"
+        }
+      ],
+      "currentNodeId": "n2",
+      "prevId": "n3",
+      "visitedIds": [
+        "n4",
+        "n2"
+      ],
+      "threadedCount": 6
+    }
+  },
+  {
+    "state": {
+      "type": "tree",
+      "values": [
+        4,
+        2,
+        6,
+        1,
+        3
+      ],
+      "visited": [
+        "n4",
+        "n2"
+      ],
+      "focus": [
+        "n5"
+      ],
+      "done": false
+    },
+    "message": "进入右子树并走到最左 / descend to left-most of right subtree: n5",
+    "variables": {
+      "node": "n5",
+      "pre": "n3",
+      "ltag": 1,
+      "rtag": 1,
+      "threaded": 6,
+      "visited": [
+        1,
+        2
+      ],
+      "phase": "traverse"
+    },
+    "lessonStepId": "descend-left",
+    "structure": {
+      "kind": "threaded-tree",
+      "phase": "traverse",
+      "operation": "descend-left",
+      "rootId": "n1",
+      "nodes": [
+        {
+          "id": "n1",
+          "value": 4,
+          "leftId": "n2",
+          "rightId": "n3",
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n2",
+          "value": 2,
+          "leftId": "n4",
+          "rightId": "n5",
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n3",
+          "value": 6,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 1,
+          "rtag": 1,
+          "leftThreadId": "n1",
+          "rightThreadId": null
+        },
+        {
+          "id": "n4",
+          "value": 1,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 1,
+          "rtag": 1,
+          "leftThreadId": null,
+          "rightThreadId": "n2"
+        },
+        {
+          "id": "n5",
+          "value": 3,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 1,
+          "rtag": 1,
+          "leftThreadId": "n2",
+          "rightThreadId": "n1"
+        }
+      ],
+      "currentNodeId": "n5",
+      "prevId": "n3",
+      "visitedIds": [
+        "n4",
+        "n2"
+      ],
+      "threadedCount": 6
+    }
+  },
+  {
+    "state": {
+      "type": "tree",
+      "values": [
+        4,
+        2,
+        6,
+        1,
+        3
+      ],
+      "visited": [
+        "n4",
+        "n2",
+        "n5"
+      ],
+      "focus": [
+        "n5"
+      ],
+      "done": false
+    },
+    "message": "访问结点 / visit n5 = 3",
+    "variables": {
+      "node": "n5",
+      "pre": "n3",
+      "ltag": 1,
+      "rtag": 1,
+      "threaded": 6,
+      "visited": [
+        1,
+        2,
+        3
+      ],
+      "phase": "traverse"
+    },
+    "lessonStepId": "visit",
+    "structure": {
+      "kind": "threaded-tree",
+      "phase": "traverse",
+      "operation": "visit",
+      "rootId": "n1",
+      "nodes": [
+        {
+          "id": "n1",
+          "value": 4,
+          "leftId": "n2",
+          "rightId": "n3",
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n2",
+          "value": 2,
+          "leftId": "n4",
+          "rightId": "n5",
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n3",
+          "value": 6,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 1,
+          "rtag": 1,
+          "leftThreadId": "n1",
+          "rightThreadId": null
+        },
+        {
+          "id": "n4",
+          "value": 1,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 1,
+          "rtag": 1,
+          "leftThreadId": null,
+          "rightThreadId": "n2"
+        },
+        {
+          "id": "n5",
+          "value": 3,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 1,
+          "rtag": 1,
+          "leftThreadId": "n2",
+          "rightThreadId": "n1"
+        }
+      ],
+      "currentNodeId": "n5",
+      "prevId": "n3",
+      "visitedIds": [
+        "n4",
+        "n2",
+        "n5"
+      ],
+      "threadedCount": 6
+    }
+  },
+  {
+    "state": {
+      "type": "tree",
+      "values": [
+        4,
+        2,
+        6,
+        1,
+        3
+      ],
+      "visited": [
+        "n4",
+        "n2",
+        "n5"
+      ],
+      "focus": [
+        "n1"
+      ],
+      "done": false
+    },
+    "message": "沿右线索到后继 / follow right thread to n1",
+    "variables": {
+      "node": "n1",
+      "pre": "n3",
+      "ltag": 0,
+      "rtag": 0,
+      "threaded": 6,
+      "visited": [
+        1,
+        2,
+        3
+      ],
+      "phase": "traverse"
+    },
+    "lessonStepId": "follow-thread",
+    "structure": {
+      "kind": "threaded-tree",
+      "phase": "traverse",
+      "operation": "follow-thread",
+      "rootId": "n1",
+      "nodes": [
+        {
+          "id": "n1",
+          "value": 4,
+          "leftId": "n2",
+          "rightId": "n3",
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n2",
+          "value": 2,
+          "leftId": "n4",
+          "rightId": "n5",
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n3",
+          "value": 6,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 1,
+          "rtag": 1,
+          "leftThreadId": "n1",
+          "rightThreadId": null
+        },
+        {
+          "id": "n4",
+          "value": 1,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 1,
+          "rtag": 1,
+          "leftThreadId": null,
+          "rightThreadId": "n2"
+        },
+        {
+          "id": "n5",
+          "value": 3,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 1,
+          "rtag": 1,
+          "leftThreadId": "n2",
+          "rightThreadId": "n1"
+        }
+      ],
+      "currentNodeId": "n1",
+      "prevId": "n3",
+      "visitedIds": [
+        "n4",
+        "n2",
+        "n5"
+      ],
+      "threadedCount": 6
+    }
+  },
+  {
+    "state": {
+      "type": "tree",
+      "values": [
+        4,
+        2,
+        6,
+        1,
+        3
+      ],
+      "visited": [
+        "n4",
+        "n2",
+        "n5",
+        "n1"
+      ],
+      "focus": [
+        "n1"
+      ],
+      "done": false
+    },
+    "message": "访问结点 / visit n1 = 4",
+    "variables": {
+      "node": "n1",
+      "pre": "n3",
+      "ltag": 0,
+      "rtag": 0,
+      "threaded": 6,
+      "visited": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "phase": "traverse"
+    },
+    "lessonStepId": "visit",
+    "structure": {
+      "kind": "threaded-tree",
+      "phase": "traverse",
+      "operation": "visit",
+      "rootId": "n1",
+      "nodes": [
+        {
+          "id": "n1",
+          "value": 4,
+          "leftId": "n2",
+          "rightId": "n3",
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n2",
+          "value": 2,
+          "leftId": "n4",
+          "rightId": "n5",
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n3",
+          "value": 6,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 1,
+          "rtag": 1,
+          "leftThreadId": "n1",
+          "rightThreadId": null
+        },
+        {
+          "id": "n4",
+          "value": 1,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 1,
+          "rtag": 1,
+          "leftThreadId": null,
+          "rightThreadId": "n2"
+        },
+        {
+          "id": "n5",
+          "value": 3,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 1,
+          "rtag": 1,
+          "leftThreadId": "n2",
+          "rightThreadId": "n1"
+        }
+      ],
+      "currentNodeId": "n1",
+      "prevId": "n3",
+      "visitedIds": [
+        "n4",
+        "n2",
+        "n5",
+        "n1"
+      ],
+      "threadedCount": 6
+    }
+  },
+  {
+    "state": {
+      "type": "tree",
+      "values": [
+        4,
+        2,
+        6,
+        1,
+        3
+      ],
+      "visited": [
+        "n4",
+        "n2",
+        "n5",
+        "n1"
+      ],
+      "focus": [
+        "n3"
+      ],
+      "done": false
+    },
+    "message": "进入右子树并走到最左 / descend to left-most of right subtree: n3",
+    "variables": {
+      "node": "n3",
+      "pre": "n3",
+      "ltag": 1,
+      "rtag": 1,
+      "threaded": 6,
+      "visited": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "phase": "traverse"
+    },
+    "lessonStepId": "descend-left",
+    "structure": {
+      "kind": "threaded-tree",
+      "phase": "traverse",
+      "operation": "descend-left",
+      "rootId": "n1",
+      "nodes": [
+        {
+          "id": "n1",
+          "value": 4,
+          "leftId": "n2",
+          "rightId": "n3",
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n2",
+          "value": 2,
+          "leftId": "n4",
+          "rightId": "n5",
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n3",
+          "value": 6,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 1,
+          "rtag": 1,
+          "leftThreadId": "n1",
+          "rightThreadId": null
+        },
+        {
+          "id": "n4",
+          "value": 1,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 1,
+          "rtag": 1,
+          "leftThreadId": null,
+          "rightThreadId": "n2"
+        },
+        {
+          "id": "n5",
+          "value": 3,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 1,
+          "rtag": 1,
+          "leftThreadId": "n2",
+          "rightThreadId": "n1"
+        }
+      ],
+      "currentNodeId": "n3",
+      "prevId": "n3",
+      "visitedIds": [
+        "n4",
+        "n2",
+        "n5",
+        "n1"
+      ],
+      "threadedCount": 6
+    }
+  },
+  {
+    "state": {
+      "type": "tree",
+      "values": [
+        4,
+        2,
+        6,
+        1,
+        3
+      ],
+      "visited": [
+        "n4",
+        "n2",
+        "n5",
+        "n1",
+        "n3"
+      ],
+      "focus": [
+        "n3"
+      ],
+      "done": false
+    },
+    "message": "访问结点 / visit n3 = 6",
+    "variables": {
+      "node": "n3",
+      "pre": "n3",
+      "ltag": 1,
+      "rtag": 1,
+      "threaded": 6,
+      "visited": [
+        1,
+        2,
+        3,
+        4,
+        6
+      ],
+      "phase": "traverse"
+    },
+    "lessonStepId": "visit",
+    "structure": {
+      "kind": "threaded-tree",
+      "phase": "traverse",
+      "operation": "visit",
+      "rootId": "n1",
+      "nodes": [
+        {
+          "id": "n1",
+          "value": 4,
+          "leftId": "n2",
+          "rightId": "n3",
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n2",
+          "value": 2,
+          "leftId": "n4",
+          "rightId": "n5",
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n3",
+          "value": 6,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 1,
+          "rtag": 1,
+          "leftThreadId": "n1",
+          "rightThreadId": null
+        },
+        {
+          "id": "n4",
+          "value": 1,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 1,
+          "rtag": 1,
+          "leftThreadId": null,
+          "rightThreadId": "n2"
+        },
+        {
+          "id": "n5",
+          "value": 3,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 1,
+          "rtag": 1,
+          "leftThreadId": "n2",
+          "rightThreadId": "n1"
+        }
+      ],
+      "currentNodeId": "n3",
+      "prevId": "n3",
+      "visitedIds": [
+        "n4",
+        "n2",
+        "n5",
+        "n1",
+        "n3"
+      ],
+      "threadedCount": 6
+    }
+  },
+  {
+    "state": {
+      "type": "tree",
+      "values": [
+        4,
+        2,
+        6,
+        1,
+        3
+      ],
+      "visited": [
+        "n4",
+        "n2",
+        "n5",
+        "n1",
+        "n3"
+      ],
+      "focus": [],
+      "done": true
+    },
+    "message": "中序线索遍历完成 / threaded in-order traversal done",
+    "variables": {
+      "node": null,
+      "pre": "n3",
+      "ltag": null,
+      "rtag": null,
+      "threaded": 6,
+      "visited": [
+        1,
+        2,
+        3,
+        4,
+        6
+      ],
+      "phase": "done"
+    },
+    "lessonStepId": "done",
+    "structure": {
+      "kind": "threaded-tree",
+      "phase": "done",
+      "operation": "done",
+      "rootId": "n1",
+      "nodes": [
+        {
+          "id": "n1",
+          "value": 4,
+          "leftId": "n2",
+          "rightId": "n3",
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n2",
+          "value": 2,
+          "leftId": "n4",
+          "rightId": "n5",
+          "ltag": 0,
+          "rtag": 0,
+          "leftThreadId": null,
+          "rightThreadId": null
+        },
+        {
+          "id": "n3",
+          "value": 6,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 1,
+          "rtag": 1,
+          "leftThreadId": "n1",
+          "rightThreadId": null
+        },
+        {
+          "id": "n4",
+          "value": 1,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 1,
+          "rtag": 1,
+          "leftThreadId": null,
+          "rightThreadId": "n2"
+        },
+        {
+          "id": "n5",
+          "value": 3,
+          "leftId": null,
+          "rightId": null,
+          "ltag": 1,
+          "rtag": 1,
+          "leftThreadId": "n2",
+          "rightThreadId": "n1"
+        }
+      ],
+      "currentNodeId": null,
+      "prevId": "n3",
+      "visitedIds": [
+        "n4",
+        "n2",
+        "n5",
+        "n1",
+        "n3"
+      ],
+      "threadedCount": 6
+    }
+  }
+]

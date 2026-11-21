@@ -14,15 +14,8 @@
   padding: 1px 2px 7px;
 }
 
-.textbook-source {
-  margin: 0 2px 6px;
-  padding-left: 7px;
-  border-left: 2px solid var(--accent);
-  color: var(--muted);
-  font-size: var(--font-ui);
-  line-height: 1.4;
-  letter-spacing: .1px;
-}
+/* The directory starts with its short title; the textbook reference belongs in
+   README/project docs, not in the permanently visible navigation. */
 
 /* CORE-REFINE-01: compact, keyboard-native expand/collapse-all controls. */
 .sidebar-actions {
@@ -153,19 +146,8 @@
   white-space: nowrap;
   opacity: .78;
 }
-.textbook-chapter-chevron {
-  flex: 0 0 auto;
-  width: 10px;
-  color: var(--muted);
-  font-size: var(--font-ui);
-  line-height: 1;
-  text-align: center;
-  transform: rotate(0deg);
-  transition: transform .18s ease;
-}
-.textbook-chapter-head[aria-expanded='true'] .textbook-chapter-chevron {
-  transform: rotate(90deg);
-}
+/* A chapter is one whole-row disclosure. It deliberately has no right chevron:
+   that glyph is reserved for a second-level group with third-level leaves. */
 
 /* 0fr → 1fr height transition. `visibility` and `inert` keep closed content
    out of hit-testing, Playwright visibility and the tab order. */
@@ -214,7 +196,7 @@
 
 .textbook-topic.is-link {
   width: 100%;
-  border: 0;
+  border: 1px solid transparent;
   background: transparent;
   font: inherit;
   text-align: left;
@@ -227,9 +209,12 @@
   color: var(--txt);
 }
 
+/* Theory and visual leaves share one selection rule; course type is carried by
+   the small icon only, never by a different title colour or weight. */
 .textbook-topic.is-link.active {
   color: var(--accent);
-  background: var(--tab-active-bg);
+  background: var(--alg-active-bg);
+  border-color: var(--alg-active-edge);
 }
 
 .textbook-topic-chevron {
@@ -252,9 +237,10 @@
   flex: 1 1 auto;
   min-width: 0;
   font-size: var(--font-ui);
+  font-weight: 400;
   line-height: 1.35;
   overflow-wrap: anywhere;
-  opacity: .82;
+  opacity: 1;
 }
 
 /* Directory category: icon-only marker in a fixed leading slot, so every title
@@ -278,15 +264,14 @@
 .textbook-category {
   display: inline-flex;
   align-items: center;
+  color: var(--muted);
   font-size: var(--font-ui);
   line-height: 1;
   opacity: .9;
 }
-.textbook-category.is-theory {
-  color: var(--accent);
-}
+.textbook-category.is-theory,
 .textbook-category.is-visual {
-  color: var(--accent-2);
+  color: var(--muted);
 }
 
 .textbook-topic-head {
@@ -397,10 +382,55 @@
 }
 .textbook-topic-body-inner {
   min-height: 0;
+  min-width: 0;
   overflow: hidden;
   margin-left: 6px;
   padding-left: 6px;
   border-left: 1px dashed var(--edge);
+}
+
+/* Third-level leaves. They use the same title size and weight as every other
+   course; indentation, not colour, communicates hierarchy. */
+.textbook-subtopic {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+  padding: 4px 5px 4px 9px;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  color: var(--muted);
+}
+.textbook-subtopic.is-link {
+  width: 100%;
+  background: transparent;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.textbook-subtopic.is-link:hover,
+.textbook-subtopic.is-link:focus-visible {
+  background: var(--alg-hover);
+  color: var(--txt);
+}
+.textbook-subtopic.is-link.active {
+  background: var(--alg-active-bg);
+  border-color: var(--alg-active-edge);
+  color: var(--accent);
+}
+.textbook-subtopic-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: var(--font-ui);
+  font-weight: 400;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+.textbook-subtopic.is-algorithm {
+  padding: 0;
+}
+.textbook-subtopic.is-algorithm .alg-item {
+  padding-left: 9px;
 }
 
 /* Third level: the existing registry item, only more compact. The current
@@ -489,7 +519,6 @@
   .textbook-chapter-body[data-open='true'],
   .textbook-topic-body,
   .textbook-topic-body[data-open='true'],
-  .textbook-chapter-chevron,
   .textbook-topic-chevron {
     transition: none;
   }

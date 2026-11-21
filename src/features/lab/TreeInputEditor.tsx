@@ -19,7 +19,7 @@ export function TreeInputEditor({
 }) {
   const { t } = useI18n();
   const commands = TREE_COMMANDS[algorithm];
-  const traversal = algorithm === 'inorder';
+  const traversal = algorithm === 'inorder' || algorithm === 'threaded-inorder';
   const targetLabel =
     algorithm === 'bst'
       ? t('treeTargetLabel')

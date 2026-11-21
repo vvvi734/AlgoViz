@@ -460,6 +460,29 @@ export const COURSE_GUIDES: Record<string, CourseGuide> = {
     ),
   },
 
+  'threaded-inorder': {
+    intro: text(
+      '普通二叉树的 n 个结点有 n+1 个空指针，递归遍历还要额外付出 O(h) 的调用栈。线索二叉树把这些空指针原地改造成指向前驱/后继的线索，并用 ltag、rtag 区分“真实孩子”和“线索”，于是中序遍历可以只靠当前指针走完全树。代价是插入、删除结点时必须同步维护线索。',
+      'A binary tree with n nodes has n+1 null pointers, and recursive traversal still pays O(h) call-stack space. A threaded binary tree rewrites those null pointers in place as predecessor/successor threads and uses ltag/rtag to distinguish a real child from a thread, so an in-order traversal can walk the whole tree with only a current pointer. The cost is that insertion and deletion must maintain the threads.',
+    ),
+    definition: text(
+      '线索二叉树在每个结点增加 ltag、rtag 与线索字段：tag=0 表示指针指向真实孩子，tag=1 表示该指针是一条前驱或后继线索。中序线索化按中序顺序把空左指针指向前驱、空右指针指向后继。',
+      'A threaded binary tree adds ltag, rtag and thread fields to every node: tag=0 means the pointer addresses a real child, tag=1 means it is a predecessor or successor thread. In-order threading fills null left pointers with predecessors and null right pointers with successors, following in-order order.',
+    ),
+    ...algorithm(
+      step('按左、根、右递归线索化', 'Thread recursively: left, node, right'),
+      step('空左指针写入前驱', 'Null left pointer becomes the predecessor', '写 left_thread 并置 ltag=1，不能覆盖真实 left。', 'Write left_thread and set ltag=1; never overwrite a real left child.'),
+      step('前驱的空右指针写入后继', 'The predecessor’s null right pointer becomes the successor'),
+      step('最后一个结点保留空后继', 'The last node keeps a null successor', '右线索为空，但 rtag 仍必须置 1。', 'Its right thread is null, but rtag must still be 1.'),
+      step('从最左结点开始遍历', 'Start traversal at the left-most node'),
+      step('rtag=1 沿线索，rtag=0 进入右子树最左', 'rtag=1 follows a thread; rtag=0 enters the right subtree and goes left-most'),
+    ),
+    conditions: list(
+      ['共有 n+1 个空指针可被线索利用；本例 5 个结点有 6 个空指针。', '线索化时间 O(n)，递归栈 O(h)；线索遍历时间 O(n)、额外空间 O(1)。', 'tag 必须与指针分开保存，否则无法区分真实孩子和线索。'],
+      ['There are n+1 null pointers available for threads; this five-node example has six.', 'Threading costs O(n) time and O(h) stack; threaded traversal costs O(n) time and O(1) extra space.', 'Tags must be stored separately from pointers, otherwise a real child cannot be distinguished from a thread.'],
+    ),
+  },
+
   bst: {
     intro: text(
       '在无序数组中查找要 O(n)。二叉搜索树利用“左小右大”把每次比较变成一次分支，平均查找 O(log n)。代价是树形依赖插入顺序：按升序插入会退化成链，最坏 O(n)。删除还要处理 0/1/2 个孩子的不同重连情况。',

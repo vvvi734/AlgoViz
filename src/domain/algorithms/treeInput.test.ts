@@ -308,6 +308,6 @@ describe('INPUT-05 order-4 B-tree input', () => {
   });
 
   it('declares every guided tree algorithm in one exported list', () => {
-    expect(TREE_GUIDED_INPUT_ALGORITHMS).toEqual(['inorder', 'bst', 'avl', 'btree']);
+    expect(TREE_GUIDED_INPUT_ALGORITHMS).toEqual(['inorder', 'threaded-inorder', 'bst', 'avl', 'btree']);
   });
 });

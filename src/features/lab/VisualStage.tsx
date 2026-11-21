@@ -25,6 +25,7 @@ import { StaticLinkedListVisual } from './StaticLinkedListVisual';
 import { PolynomialVisual } from './PolynomialVisual';
 import type { SequentialListVisualModel } from '../../domain/visualization/sequentialListModel';
 import { BinaryTreeVisual } from './BinaryTreeVisual';
+import { ThreadedTreeVisual } from './ThreadedTreeVisual';
 import { GraphVisual } from './GraphVisual';
 import { BellmanFordVisual, FloydVisual } from './G1Visuals';
 import { KruskalVisual, PrimVisual } from './MSTVisuals';
@@ -426,6 +427,9 @@ export function VisualStage({
     case 'binary-tree':
       content = <BinaryTreeVisual model={model} />;
       break;
+    case 'threaded-tree':
+      content = <ThreadedTreeVisual model={model} />;
+      break;
     case 'bst':
       content = <BstVisual model={model as BstVisualModel} />;
       break;
@@ -649,6 +653,7 @@ export function VisualStage({
     model.kind === 'static-linked-list' ||
     model.kind === 'polynomial' ||
     model.kind === 'binary-tree' ||
+    model.kind === 'threaded-tree' ||
     model.kind === 'bst' ||
     model.kind === 'avl' ||
     model.kind === 'btree' ||

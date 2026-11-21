@@ -56,28 +56,34 @@ describe('textbook directory after TEXTBOOK-01', () => {
 
   it('preserves every existing algorithm exactly once in its new primary home', () => {
     const ids = textbookAlgorithmIds(nav);
-    expect(ids).toHaveLength(44);
+    expect(ids).toHaveLength(45);
     expect(new Set(ids).size).toBe(ids.length);
     expect(new Set(ids)).toEqual(new Set(Object.keys(catalog)));
   });
 
-  it('maps every authored concept page to a real concept topic', () => {
-    const conceptTopics = nav
-      .flatMap((chapter) => chapter.topics)
-      .filter((topic) => topic.conceptId);
+  it('maps every authored concept page to a real concept topic at any depth', () => {
+    const rows = nav.flatMap((chapter) =>
+      chapter.topics.flatMap((topic) => [
+        { chapterId: chapter.id, parentId: topic.id, row: topic },
+        ...topic.children.map((child) => ({
+          chapterId: chapter.id,
+          parentId: topic.id,
+          row: child,
+        })),
+      ]),
+    );
+    const conceptRows = rows.filter(({ row }) => row.conceptId);
     expect(CONCEPT_PAGES).toHaveLength(32);
-    expect(conceptTopics.map((topic) => topic.conceptId).sort()).toEqual(
+    expect(conceptRows.map(({ row }) => row.conceptId).sort()).toEqual(
       CONCEPT_PAGES.map((page) => page.id).sort(),
     );
-    for (const topic of conceptTopics) {
-      const page = conceptById(topic.conceptId!);
-      expect(page, topic.id).toBeTruthy();
-      expect(page?.topicId).toBe(topic.id);
-      expect(findConceptPath(nav, topic.conceptId!)).toEqual({
-        chapterId: nav.find((chapter) =>
-          chapter.topics.some((entry) => entry.id === topic.id),
-        )?.id,
-        topicId: topic.id,
+    for (const { chapterId, parentId, row } of conceptRows) {
+      const page = conceptById(row.conceptId!);
+      expect(page, row.id).toBeTruthy();
+      expect(page?.topicId).toBe(row.id);
+      expect(findConceptPath(nav, row.conceptId!)).toEqual({
+        chapterId,
+        topicId: parentId,
       });
     }
   });
@@ -93,63 +99,66 @@ describe('textbook directory after TEXTBOOK-01', () => {
     expect(migrateTextbookTopicId('kmp')).toBe('kmp');
   });
 
-  it('places KMP in chapter 4 and sparse transpose in chapter 5', () => {
+  it('groups BF and KMP under pattern matching, and array/matrix theory under one group', () => {
     const strings = nav.find((chapter) => chapter.id === 'ch4-string')!;
     expect(strings.topics.map((topic) => topic.id)).toEqual([
       'string-basics',
       'string-storage',
       'naive-match',
-      'bf',
-      'kmp',
+      'pattern-matching',
     ]);
-    expect(strings.topics.find((topic) => topic.id === 'kmp')?.algorithms).toEqual([
+    const matching = strings.topics.find((topic) => topic.id === 'pattern-matching')!;
+    expect(matching.kind).toBe('group');
+    expect(matching.children.map((child) => child.id)).toEqual(['bf', 'kmp']);
+    expect(matching.children.find((child) => child.id === 'kmp')?.algorithms).toEqual([
       expect.objectContaining({ id: 'kmp' }),
     ]);
-    expect(textbookPathFor(catalog, 'kmp')).toEqual({ chapterId: 'ch4-string', topicId: 'kmp' });
+    expect(textbookPathFor(catalog, 'kmp')).toEqual({
+      chapterId: 'ch4-string',
+      topicId: 'pattern-matching',
+    });
 
     const arrays = nav.find((chapter) => chapter.id === 'ch5-array')!;
     expect(arrays.topics.map((topic) => topic.id)).toEqual([
-      'array-basics',
-      'special-matrices',
-      'sparse-matrix',
+      'array-matrix',
       'sparse-transpose',
-      'generalized-list',
-      'generalized-list-storage',
-      'generalized-list-recursion',
-      'm-variable-polynomial',
+      'generalized-list-group',
     ]);
+    expect(
+      arrays.topics.find((topic) => topic.id === 'array-matrix')?.children.map((child) => child.id),
+    ).toEqual(['array-basics', 'special-matrices', 'sparse-matrix']);
     expect(textbookPathFor(catalog, 'sparse-transpose')).toEqual({
       chapterId: 'ch5-array',
       topicId: 'sparse-transpose',
     });
+    expect(textbookPathFor(catalog, 'gl-depth')).toEqual({
+      chapterId: 'ch5-array',
+      topicId: 'generalized-list-group',
+    });
   });
 
-  it('wires the three completed concept pages into chapters 2, 3 and 4', () => {
+  it('keeps the static linked list theory and visual operations under one group', () => {
     const staticList = nav.find((chapter) => chapter.id === 'ch2-linear')!;
-    const recursion = nav.find((chapter) => chapter.id === 'ch3-stack-queue')!;
-    const strings = nav.find((chapter) => chapter.id === 'ch4-string')!;
-
-    for (const [chapter, topicId, pageId] of [
-      [staticList, 'static-linked-list', 'static-linked-list'],
-      [recursion, 'stack-recursion', 'stack-recursion'],
-      [strings, 'string-storage', 'string-storage'],
-    ] as const) {
-      const topic = chapter.topics.find((entry) => entry.id === topicId)!;
-      expect(topic.conceptId).toBe(pageId);
-      expect(topic.category).toBe('theory');
-      expect(topic.planned).toBeUndefined();
-      expect(topic.algorithms).toHaveLength(0);
-      expect(conceptById(pageId)).toBeTruthy();
-    }
-
-    const recursionTopic = recursion.topics.find((topic) => topic.id === 'stack-recursion')!;
-    expect(recursionTopic.algorithms).toHaveLength(0);
-    const recursionExamples = recursion.topics.find((topic) => topic.id === 'recursion-examples')!;
-    expect(recursionExamples.algorithms.map((algorithm) => algorithm.id)).toEqual([
-      'factorial',
-      'fib',
+    const group = staticList.topics.find((topic) => topic.id === 'static-linked-group')!;
+    expect(group.kind).toBe('group');
+    expect(group.children.map((child) => child.id)).toEqual([
+      'static-linked-list',
+      'static-linked-operations',
     ]);
-    expect(recursionExamples.algorithms.every((algorithm) => algorithm.extension)).toBe(true);
+    expect(group.children[0].conceptId).toBe('static-linked-list');
+    expect(group.children[0].category).toBe('theory');
+    expect(group.children[1].algorithms.map((algorithm) => algorithm.id)).toEqual([
+      'static-linked-list',
+    ]);
+    expect(findConceptPath(nav, 'static-linked-list')).toEqual({
+      chapterId: 'ch2-linear',
+      topicId: 'static-linked-group',
+    });
+
+    const recursion = nav.find((chapter) => chapter.id === 'ch3-stack-queue')!;
+    const examples = recursion.topics.find((topic) => topic.id === 'recursion-examples')!;
+    expect(examples.children.map((child) => child.id)).toEqual(['factorial', 'fib']);
+    expect(examples.children.every((child) => child.algorithms[0].extension === true)).toBe(true);
   });
 
   it('keeps chapter 8, 11 and 12 visible as planned knowledge even without algorithms', () => {
@@ -171,64 +180,88 @@ describe('textbook directory after TEXTBOOK-01', () => {
       'graph-traversal',
       'graph-connectivity',
       'mst',
-      'topological',
-      'critical-path',
+      'dag',
       'shortest-path',
     ]);
     const ids = graph.topics.map((topic) => topic.id);
     expect(ids.indexOf('graph-connectivity')).toBeLessThan(ids.indexOf('mst'));
-    expect(ids.indexOf('topological')).toBeLessThan(ids.indexOf('shortest-path'));
+    expect(ids.indexOf('dag')).toBeLessThan(ids.indexOf('shortest-path'));
+    expect(graph.topics.find((topic) => topic.id === 'dag')?.children.map((child) => child.id)).toEqual([
+      'topological',
+      'critical-path',
+    ]);
     for (const id of ['bfs', 'dfs', 'components', 'scc', 'prim', 'kruskal', 'topological', 'critical-path', 'dijkstra', 'floyd-warshall', 'bellman-ford']) {
       expect(textbookPathFor(catalog, id)?.chapterId).toBe('ch7-graph');
     }
+    const shortest = graph.topics.find((topic) => topic.id === 'shortest-path')!;
     expect(
-      graph.topics.find((topic) => topic.id === 'shortest-path')?.algorithms.find((algorithm) => algorithm.id === 'bellman-ford')?.extension,
+      shortest.children.find((child) => child.id === 'bellman-ford')?.algorithms[0].extension,
     ).toBe(true);
   });
 
-  it('puts tree traversal and Huffman in chapter 6, and BST/AVL/B-tree/hash in chapter 9', () => {
+  it('puts threaded traversal and Huffman in chapter 6, and tree/hash search in chapter 9', () => {
     const tree = nav.find((chapter) => chapter.id === 'ch6-tree')!;
     const search = nav.find((chapter) => chapter.id === 'ch9-search')!;
-    expect(tree.algorithmCount).toBe(2);
+    expect(tree.algorithmCount).toBe(3);
     expect(tree.topics.find((topic) => topic.id === 'binary-tree-traversal')?.algorithms[0].id).toBe('inorder');
     expect(tree.topics.find((topic) => topic.id === 'huffman')?.algorithms[0].id).toBe('huffman');
+    const threaded = tree.topics.find((topic) => topic.id === 'threaded-tree-group')!;
+    expect(threaded.kind).toBe('group');
+    expect(threaded.children.map((child) => child.id)).toEqual(['threaded-tree', 'threaded-inorder']);
+    expect(threaded.children[0].conceptId).toBe('threaded-binary-tree');
+    expect(threaded.children[1].algorithms[0].id).toBe('threaded-inorder');
+    expect(tree.topics.some((topic) => topic.id === 'backtracking-tree')).toBe(false);
+
     expect(search.algorithmCount).toBe(7);
+    expect(search.topics.map((topic) => topic.id)).toEqual(['static-search', 'tree-search', 'hash-search']);
     for (const id of ['linear', 'binary', 'bst', 'avl', 'btree', 'hash-chain', 'hash-probe']) {
       expect(textbookPathFor(catalog, id)?.chapterId).toBe('ch9-search');
     }
     expect(textbookPathFor(catalog, 'btree')).toEqual({
       chapterId: 'ch9-search',
-      topicId: 'btree-demo',
+      topicId: 'tree-search',
     });
   });
 
-  it('orders internal sorting by insertion/quick/selection/merge and keeps bubble as a supplement', () => {
+  it('orders internal sorting by insertion/exchange/selection/merge and keeps bubble as a core course', () => {
     const sort = nav.find((chapter) => chapter.id === 'ch10-sort')!;
     expect(sort.algorithmCount).toBe(7);
     expect(sort.topics.map((topic) => topic.id)).toEqual([
       'sort-basics',
       'insertion-sort',
-      'shell-sort',
-      'bubble-sort',
-      'quick-sort',
+      'exchange-sort',
       'selection-sort',
-      'heap-sort',
       'merge-sort',
       'radix-sort',
       'sort-comparison',
     ]);
-    const bubble = sort.topics.find((topic) => topic.id === 'bubble-sort')!;
-    expect(bubble.extension).toBe(true);
-    expect(bubble.algorithms[0]).toEqual(expect.objectContaining({ id: 'bubble', extension: true }));
+    const insertion = sort.topics.find((topic) => topic.id === 'insertion-sort')!;
+    expect(insertion.children.map((child) => child.id)).toEqual(['direct-insertion', 'shell-sort']);
+    const exchange = sort.topics.find((topic) => topic.id === 'exchange-sort')!;
+    expect(exchange.children.map((child) => child.id)).toEqual(['bubble-sort', 'quick-sort']);
+    const bubble = exchange.children.find((child) => child.id === 'bubble-sort')!;
+    expect(bubble.category).toBe('visual');
+    expect(bubble.extension).toBeUndefined();
+    expect(bubble.algorithms[0]).toEqual(expect.objectContaining({ id: 'bubble' }));
+    expect(bubble.algorithms[0].extension).toBe(false);
+    const selection = sort.topics.find((topic) => topic.id === 'selection-sort')!;
+    expect(selection.children.map((child) => child.id)).toEqual([
+      'simple-selection-sort',
+      'heap-sort',
+    ]);
     expect(sort.topics.find((topic) => topic.id === 'radix-sort')?.category).toBe('pending');
-    expect(textbookPathFor(catalog, 'quick')).toEqual({ chapterId: 'ch10-sort', topicId: 'quick-sort' });
+    expect(textbookPathFor(catalog, 'quick')).toEqual({
+      chapterId: 'ch10-sort',
+      topicId: 'exchange-sort',
+    });
   });
 
-  it('keeps planned rows target-free and concept rows separate from planned rows', () => {
+  it('keeps planned rows target-free and groups backed by real children', () => {
     for (const chapter of TEXTBOOK_CHAPTERS) {
       for (const topic of chapter.topics) {
         if (topic.concept || topic.planned) {
           expect(topic.algorithms).toHaveLength(0);
+          expect(topic.children ?? []).toHaveLength(0);
         }
         expect(Boolean(topic.concept && topic.planned), topic.id).toBe(false);
       }
@@ -236,7 +269,8 @@ describe('textbook directory after TEXTBOOK-01', () => {
     for (const chapter of nav) {
       for (const topic of chapter.topics) {
         expect(
-          topic.algorithms.length > 0 ||
+          topic.children.length > 0 ||
+            topic.algorithms.length > 0 ||
             topic.kind === 'planned' ||
             (topic.kind === 'concept' && topic.conceptId !== undefined),
           `${chapter.id}/${topic.id}`,
@@ -244,11 +278,15 @@ describe('textbook directory after TEXTBOOK-01', () => {
         if (topic.kind === 'planned') {
           expect(findTextbookPath(nav, topic.id)).toBeNull();
         }
+        if (topic.kind === 'group') {
+          expect(topic.children.length).toBeGreaterThan(0);
+          expect(topic.algorithms).toHaveLength(0);
+        }
       }
     }
   });
 
-  it('derives theory, visual and pending categories from row semantics', () => {
+  it('derives theory, visual and pending categories from row and leaf semantics', () => {
     const topics = nav.flatMap((chapter) => chapter.topics);
     const theory = topics.filter((topic) => topic.category === 'theory');
     const visual = topics.filter((topic) => topic.category === 'visual');
@@ -256,15 +294,29 @@ describe('textbook directory after TEXTBOOK-01', () => {
     expect(theory.length).toBeGreaterThan(0);
     expect(visual.length).toBeGreaterThan(0);
     expect(pending.length).toBeGreaterThan(0);
-    expect(theory.every((topic) => topic.kind === 'concept' && Boolean(topic.conceptId))).toBe(true);
-    expect(visual.every((topic) => topic.kind === 'algorithm' || topic.kind === 'group')).toBe(true);
     expect(
-      pending.every(
+      theory.every(
         (topic) =>
-          topic.kind === 'planned' ||
-          (topic.kind === 'concept' && Boolean(topic.conceptId) === false),
+          (topic.kind === 'concept' && Boolean(topic.conceptId)) ||
+          (topic.kind === 'group' &&
+            topic.children.length > 0 &&
+            topic.children.every((child) => child.category === 'theory')),
       ),
     ).toBe(true);
+    expect(
+      visual.every(
+        (topic) =>
+          topic.kind === 'algorithm' ||
+          (topic.kind === 'group' && topic.children.some((child) => child.category === 'visual')),
+      ),
+    ).toBe(true);
+    const staticGroup = topics.find((topic) => topic.id === 'static-linked-group')!;
+    expect(staticGroup.category).toBe('visual');
+    expect(staticGroup.children.find((child) => child.id === 'static-linked-list')?.category).toBe(
+      'theory',
+    );
+    const matrixGroup = topics.find((topic) => topic.id === 'array-matrix')!;
+    expect(matrixGroup.category).toBe('theory');
     expect(topics.find((topic) => topic.id === 'string-storage')?.category).toBe('theory');
     expect(topics.find((topic) => topic.id === 'sparse-transpose')?.category).toBe('visual');
   });

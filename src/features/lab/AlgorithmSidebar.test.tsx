@@ -27,7 +27,7 @@ function Harness({
 }) {
   const [collapsed, setCollapsed] = useState(initialCollapsed);
   const [openChapters, setOpenChapters] = useState<ReadonlySet<string>>(new Set(['ch10-sort']));
-  const [openTopics, setOpenTopics] = useState<ReadonlySet<string>>(new Set(['bubble-sort']));
+  const [openTopics, setOpenTopics] = useState<ReadonlySet<string>>(new Set(['exchange-sort']));
   return (
     <I18nProvider>
       <AlgorithmSidebar
@@ -112,22 +112,25 @@ describe('AlgorithmSidebar — textbook chapters (UX-03)', () => {
     expect(searchBody?.getAttribute('data-open')).toBe('false');
     expect(searchBody?.hasAttribute('inert')).toBe(true);
 
-    // The current direct entry is visible because only its chapter needs to open.
-    expect(screen.getByTestId('topic-bubble-sort').getAttribute('data-direct')).toBe('true');
+    // The current leaf is visible because its chapter and parent group are open.
+    expect(screen.getByTestId('topic-exchange-sort').getAttribute('aria-expanded')).toBe('true');
     expect(screen.getByTestId('topic-bubble-sort').getAttribute('data-kind')).toBe('algorithm');
+    expect(screen.getByTestId('topic-bubble-sort').getAttribute('data-parent-topic')).toBe('exchange-sort');
     expect(screen.getByTestId('topic-bubble-sort').hasAttribute('aria-expanded')).toBe(false);
-    expect(screen.getByTestId('topic-quick-sort').getAttribute('data-direct')).toBe('true');
+    expect(screen.getByTestId('algo-bubble').getAttribute('data-leaf-topic')).toBe('bubble-sort');
+    expect(screen.getByTestId('topic-quick-sort').getAttribute('data-parent-topic')).toBe('exchange-sort');
   });
 
   it('renders a single-algorithm topic as one direct row, not a duplicate hierarchy', () => {
     render(<Harness />);
-    const bubbleTopic = screen.getByTestId('topic-bubble-sort');
-    expect(bubbleTopic.getAttribute('data-direct')).toBe('true');
-    expect(bubbleTopic.getAttribute('data-has-current')).toBe('true');
-    expect(bubbleTopic.querySelector('.textbook-topic-head')).toBeNull();
-    expect(within(bubbleTopic).getAllByText(/冒泡排序/)).toHaveLength(1);
-    expect(within(bubbleTopic).getByTestId('algo-bubble')).toBeTruthy();
-    expect(within(bubbleTopic).getAllByTestId(/^algo-/)).toHaveLength(1);
+    const mergeTopic = screen.getByTestId('topic-merge-sort');
+    expect(mergeTopic.getAttribute('data-direct')).toBe('true');
+    expect(mergeTopic.getAttribute('data-has-current')).toBe('false');
+    expect(mergeTopic.querySelector('.textbook-topic-head')).toBeNull();
+    expect(mergeTopic.querySelector('.textbook-topic-chevron')).toBeNull();
+    expect(within(mergeTopic).getAllByText(/归并排序/)).toHaveLength(1);
+    expect(within(mergeTopic).getByTestId('algo-merge')).toBeTruthy();
+    expect(within(mergeTopic).getAllByTestId(/^algo-/)).toHaveLength(1);
   });
 
   it('keeps multi-algorithm topics expandable and collapses them independently', () => {
@@ -157,7 +160,8 @@ describe('AlgorithmSidebar — textbook chapters (UX-03)', () => {
     fireEvent.click(search);
     expect(search.getAttribute('aria-expanded')).toBe('true');
     expect(sort.getAttribute('aria-expanded')).toBe('true');
-    expect(screen.getByTestId('topic-bst').getAttribute('data-direct')).toBe('true');
+    expect(screen.getByTestId('topic-bst').getAttribute('data-parent-topic')).toBe('tree-search');
+    fireEvent.click(screen.getByTestId('topic-tree-search'));
     expect(screen.getByTestId('algo-bst')).toBeTruthy();
 
     fireEvent.click(screen.getByTestId('chapter-ch7-graph'));
@@ -178,8 +182,10 @@ describe('AlgorithmSidebar — textbook chapters (UX-03)', () => {
     expect(bubble.className).toContain('active');
     expect(bubble.getAttribute('aria-current')).toBe('true');
     expect(bubble.getAttribute('data-chapter')).toBe('ch10-sort');
-    expect(bubble.getAttribute('data-topic')).toBe('bubble-sort');
+    expect(bubble.getAttribute('data-topic')).toBe('exchange-sort');
+    expect(bubble.getAttribute('data-leaf-topic')).toBe('bubble-sort');
     expect(screen.getByTestId('chapter-ch10-sort').getAttribute('data-has-current')).toBe('true');
+    expect(screen.getByTestId('topic-exchange-sort').getAttribute('data-has-current')).toBe('true');
     expect(screen.getByTestId('topic-bubble-sort').getAttribute('data-has-current')).toBe('true');
     expect(screen.getByTestId('chapter-ch7-graph').getAttribute('data-has-current')).toBe('false');
     expect(screen.getAllByTestId(/^algo-/).filter((item) => item.getAttribute('aria-current') === 'true')).toHaveLength(1);
@@ -197,6 +203,7 @@ describe('AlgorithmSidebar — textbook chapters (UX-03)', () => {
 
     const shellSort = screen.getByTestId('topic-shell-sort');
     expect(shellSort.getAttribute('data-kind')).toBe('algorithm');
+    expect(shellSort.getAttribute('data-parent-topic')).toBe('insertion-sort');
     expect(screen.getByTestId('algo-shell')).toBeTruthy();
 
     const huffman = screen.getByTestId('topic-huffman');
@@ -215,7 +222,7 @@ describe('AlgorithmSidebar — textbook chapters (UX-03)', () => {
     fireEvent.click(graphBasics);
     expect(onSelectConcept).toHaveBeenCalledWith('graph-basics');
 
-    const unAuthored = screen.getByTestId('topic-backtracking-tree');
+    const unAuthored = screen.getByTestId('topic-radix-sort');
     expect(unAuthored.tagName).toBe('DIV');
     expect(unAuthored.getAttribute('aria-disabled')).toBe('true');
     expect(unAuthored.getAttribute('data-category')).toBe('pending');
@@ -311,6 +318,52 @@ describe('AlgorithmSidebar — textbook chapters (UX-03)', () => {
     fireEvent.click(screen.getByTestId('chapter-ch10-sort'));
     fireEvent.click(screen.getByTestId('sidebar-collapse'));
     expect(onSelect).not.toHaveBeenCalled();
+  });
+
+  it('shows a chevron only on a second-level group with third-level children', () => {
+    render(<Harness />);
+    expect(screen.getByTestId('sidebar').querySelector('.textbook-source')).toBeNull();
+    expect(screen.getByTestId('sidebar').textContent).not.toContain('严蔚敏');
+    expect(screen.getByTestId('sidebar').textContent).not.toContain('依据');
+    expect(screen.getAllByTestId(/^chapter-/).every(
+      (chapter) => chapter.querySelector('.textbook-chapter-chevron') === null,
+    )).toBe(true);
+
+    const exchange = screen.getByTestId('topic-exchange-sort');
+    expect(exchange.querySelector('.textbook-topic-chevron')?.textContent).toBe('›');
+    expect(screen.getByTestId('topic-shortest-path').querySelector('.textbook-topic-chevron')).toBeTruthy();
+    expect(screen.getByTestId('topic-threaded-tree-group').querySelector('.textbook-topic-chevron')).toBeTruthy();
+
+    expect(screen.getByTestId('topic-merge-sort').querySelector('.textbook-topic-chevron')).toBeNull();
+    expect(screen.getByTestId('topic-huffman').querySelector('.textbook-topic-chevron')).toBeNull();
+    expect(screen.getByTestId('topic-tree-basics').querySelector('.textbook-topic-chevron')).toBeNull();
+    expect(screen.getByTestId('topic-forest-conversion').querySelector('.textbook-topic-chevron')).toBeNull();
+    expect(screen.getByTestId('topic-bubble-sort').querySelector('.textbook-topic-chevron')).toBeNull();
+    expect(screen.getByTestId('topic-shortest-path').getAttribute('aria-expanded')).toBe('false');
+  });
+
+  it('does not render a decorative chevron on a leaf algorithm or theory row', () => {
+    render(<Harness />);
+    expect(screen.getByTestId('topic-bubble-sort').querySelector('.textbook-topic-chevron')).toBeNull();
+    expect(screen.getByTestId('topic-bubble-sort').hasAttribute('aria-expanded')).toBe(false);
+    expect(screen.getByTestId('topic-graph-basics').hasAttribute('aria-expanded')).toBe(false);
+    expect(screen.getByTestId('topic-graph-basics').querySelector('.textbook-topic-chevron')).toBeNull();
+  });
+
+  it('renders theory and visual titles with the same title mechanism and icon slot', () => {
+    render(<Harness />);
+    const concept = screen.getByTestId('topic-graph-basics');
+    const visual = screen.getByTestId('topic-huffman');
+    expect(concept.querySelector('.textbook-topic-name')).toBeTruthy();
+    expect(visual.querySelector('.textbook-direct-title')).toBeTruthy();
+    expect(concept.querySelector('.textbook-category-slot')).toBeTruthy();
+    expect(visual.querySelector('.textbook-category-slot')).toBeTruthy();
+    expect(concept.querySelector('.textbook-category')?.className).toContain('textbook-category');
+    expect(visual.querySelector('.textbook-category')?.className).toContain('textbook-category');
+    const leafConcept = screen.getByTestId('topic-threaded-tree');
+    const leafAlgorithm = screen.getByTestId('topic-bubble-sort');
+    expect(leafConcept.querySelector('.textbook-subtopic-name')).toBeTruthy();
+    expect(leafAlgorithm.querySelector('.alg-name')).toBeTruthy();
   });
 
   it('collapses to a chapter rail and re-expands the chosen chapter', () => {

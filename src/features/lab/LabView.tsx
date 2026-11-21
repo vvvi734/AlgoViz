@@ -271,7 +271,10 @@ export function LabView({
                   label={`${chapter.extension ? '' : `${chapter.number}. `}${textbookTitle(chapter.title, lang)}`}
                 >
                   {chapter.topics.flatMap((topic) =>
-                    topic.algorithms.map((algorithm) => {
+                    [
+                      ...topic.algorithms,
+                      ...topic.children.flatMap((child) => child.algorithms),
+                    ].map((algorithm) => {
                       const item = lab.catalog[algorithm.id];
                       return item ? (
                         <option key={algorithm.id} value={algorithm.id}>

@@ -5,8 +5,8 @@ import {
   findConceptPath,
   findTextbookPath,
   textbookTitle,
-  TEXTBOOK_REFERENCE,
   type TextbookChapterView,
+  type TextbookSubtopicView,
   type TextbookTopicView,
 } from '../../domain/algorithms/textbook';
 import { useI18n } from '../../i18n/I18nProvider';
@@ -162,13 +162,6 @@ export function AlgorithmSidebar({
         </button>
       </div>
 
-      <div
-        className="textbook-source"
-        title={`${TEXTBOOK_REFERENCE.author}《${TEXTBOOK_REFERENCE.title.zh}》${TEXTBOOK_REFERENCE.edition.zh}`}
-      >
-        {t('textbookReference')}
-      </div>
-
       <div className="sidebar-actions" role="group" aria-label={t('textbookExpandActions')}>
         <button
           type="button"
@@ -216,7 +209,6 @@ export function AlgorithmSidebar({
                 ) : chapter.topics.some((topic) => topic.category !== 'pending') ? null : (
                   <span className="textbook-pending" aria-hidden="true">{t('textbookPending')}</span>
                 )}
-                <span className="textbook-chapter-chevron" aria-hidden="true">›</span>
               </button>
 
               <div
@@ -339,7 +331,6 @@ function TextbookTopicRow({
           <span className="textbook-topic-name">{title}</span>
         </span>
         {active && <span className="textbook-current-dot" aria-hidden="true" />}
-        <span className="textbook-topic-chevron" aria-hidden="true">›</span>
       </button>
     );
   }
@@ -389,10 +380,11 @@ function TextbookTopicRow({
 
   return (
     <section
-      className="textbook-topic"
+      className="textbook-topic is-group"
       data-topic={topic.id}
       data-kind="group"
       data-category={topic.category}
+      data-has-current={holdsCurrent ? 'true' : 'false'}
     >
       <button
         type="button"
@@ -415,9 +407,11 @@ function TextbookTopicRow({
         )}
         {holdsCurrent && <span className="textbook-current-dot" aria-hidden="true" />}
         <span className="textbook-count" aria-hidden="true">
-          {topic.algorithms.length}
+          {topic.children.length || topic.algorithms.length}
         </span>
-        <span className="textbook-topic-chevron" aria-hidden="true">›</span>
+        {topic.children.length > 0 && (
+          <span className="textbook-topic-chevron" aria-hidden="true">›</span>
+        )}
       </button>
 
       <div
@@ -428,34 +422,194 @@ function TextbookTopicRow({
         inert={!open}
       >
         <div className="textbook-topic-body-inner">
-          {topic.algorithms.map((algorithm) => {
-            const entry = catalog[algorithm.id];
-            if (!entry) return null;
-            const active = algorithm.id === currentAlgo;
-            return (
-              <button
-                key={algorithm.id}
-                type="button"
-                className={`alg-item textbook-algorithm-item ${active ? 'active' : ''}`}
-                onClick={() => onSelect(algorithm.id)}
-                data-testid={`algo-${algorithm.id}`}
-                data-chapter={chapterId}
-                data-topic={topic.id}
-                data-kind="algorithm"
-                data-category="visual"
-                aria-current={active ? 'true' : undefined}
-                aria-label={`${pick(entry.name)} · ${t('textbookVisualLong')}`}
-              >
-                <TextbookCategoryMark category="visual" />
-                <span className="alg-name">{pick(entry.name)}</span>
-                {algorithm.extension && (
-                  <span className="textbook-extension" aria-hidden="true">{t('textbookExtension')}</span>
-                )}
-              </button>
-            );
-          })}
+          {topic.children.length > 0
+            ? topic.children.map((child) => (
+                <TextbookSubtopicRow
+                  key={child.id}
+                  chapterId={chapterId}
+                  parentTopicId={topic.id}
+                  subtopic={child}
+                  catalog={catalog}
+                  currentAlgo={currentAlgo}
+                  currentConceptId={currentConceptId}
+                  holdsCurrent={child.conceptId === currentConceptId ||
+                    child.algorithms.some((algorithm) => algorithm.id === currentAlgo)}
+                  onSelect={onSelect}
+                  onSelectConcept={onSelectConcept}
+                />
+              ))
+            : topic.algorithms.map((algorithm) => {
+                const entry = catalog[algorithm.id];
+                if (!entry) return null;
+                return (
+                  <AlgorithmLeafRow
+                    key={algorithm.id}
+                    chapterId={chapterId}
+                    parentTopicId={topic.id}
+                    topicId={algorithm.id}
+                    algorithm={algorithm}
+                    catalog={catalog}
+                    active={algorithm.id === currentAlgo}
+                    onSelect={onSelect}
+                  />
+                );
+              })}
         </div>
       </div>
     </section>
+  );
+}
+
+function TextbookSubtopicRow({
+  chapterId,
+  parentTopicId,
+  subtopic,
+  catalog,
+  currentAlgo,
+  currentConceptId,
+  holdsCurrent,
+  onSelect,
+  onSelectConcept,
+}: {
+  chapterId: string;
+  parentTopicId: string;
+  subtopic: TextbookSubtopicView;
+  catalog: AlgorithmCatalog;
+  currentAlgo: string;
+  currentConceptId?: string | null;
+  holdsCurrent: boolean;
+  onSelect: (id: string) => void;
+  onSelectConcept?: (conceptId: string) => void;
+}) {
+  const { lang, t } = useI18n();
+  const title = textbookTitle(subtopic.title, lang);
+
+  if (subtopic.kind === 'concept') {
+    const conceptId = subtopic.conceptId;
+    const selectConcept = conceptId && onSelectConcept
+      ? () => onSelectConcept(conceptId)
+      : null;
+    const active = Boolean(conceptId && currentConceptId === conceptId);
+    if (!selectConcept) {
+      return (
+        <div
+          className="textbook-subtopic is-concept"
+          data-topic={subtopic.id}
+          data-parent-topic={parentTopicId}
+          data-kind="concept"
+          data-category="pending"
+          data-testid={`topic-${subtopic.id}`}
+          aria-disabled="true"
+        >
+          <TextbookCategoryMark category="pending" />
+          <span className="textbook-topic-name">{title}</span>
+          <span className="textbook-kind-status">{t('textbookPending')}</span>
+        </div>
+      );
+    }
+    return (
+      <button
+        type="button"
+        className={`textbook-subtopic is-concept is-link${active ? ' active' : ''}`}
+        data-topic={subtopic.id}
+        data-parent-topic={parentTopicId}
+        data-kind="concept"
+        data-category="theory"
+        data-concept-id={conceptId}
+        data-testid={`topic-${subtopic.id}`}
+        aria-current={active ? 'true' : undefined}
+        aria-label={`${title} · ${t('textbookTheoryLong')}`}
+        onClick={selectConcept}
+      >
+        <TextbookCategoryMark category="theory" />
+        <span className="textbook-subtopic-name">{title}</span>
+        {active && <span className="textbook-current-dot" aria-hidden="true" />}
+      </button>
+    );
+  }
+
+  if (subtopic.kind === 'planned') {
+    return (
+      <div
+        className="textbook-subtopic is-planned"
+        data-topic={subtopic.id}
+        data-parent-topic={parentTopicId}
+        data-kind="planned"
+        data-category="pending"
+        data-testid={`topic-${subtopic.id}`}
+        aria-disabled="true"
+      >
+        <TextbookCategoryMark category="pending" />
+        <span className="textbook-topic-name">{title}</span>
+        <span className="textbook-kind-status">{t('textbookPending')}</span>
+      </div>
+    );
+  }
+
+  const algorithm = subtopic.algorithms[0];
+  if (!algorithm) return null;
+  return (
+    <div
+      className="textbook-subtopic is-algorithm"
+      data-topic={subtopic.id}
+      data-parent-topic={parentTopicId}
+      data-kind="algorithm"
+      data-category="visual"
+      data-testid={`topic-${subtopic.id}`}
+      data-has-current={holdsCurrent ? 'true' : 'false'}
+    >
+      <AlgorithmLeafRow
+        chapterId={chapterId}
+        parentTopicId={parentTopicId}
+        topicId={subtopic.id}
+        algorithm={algorithm}
+        catalog={catalog}
+        active={algorithm.id === currentAlgo}
+        onSelect={onSelect}
+      />
+    </div>
+  );
+}
+
+function AlgorithmLeafRow({
+  chapterId,
+  parentTopicId,
+  topicId,
+  algorithm,
+  catalog,
+  active,
+  onSelect,
+}: {
+  chapterId: string;
+  parentTopicId: string;
+  topicId: string;
+  algorithm: TextbookSubtopicView['algorithms'][number];
+  catalog: AlgorithmCatalog;
+  active: boolean;
+  onSelect: (id: string) => void;
+}) {
+  const { pick, t } = useI18n();
+  const entry = catalog[algorithm.id];
+  if (!entry) return null;
+  return (
+    <button
+      type="button"
+      className={`alg-item textbook-algorithm-item${active ? ' active' : ''}`}
+      onClick={() => onSelect(algorithm.id)}
+      data-testid={`algo-${algorithm.id}`}
+      data-chapter={chapterId}
+      data-topic={parentTopicId}
+      data-leaf-topic={topicId}
+      data-kind="algorithm"
+      data-category="visual"
+      aria-current={active ? 'true' : undefined}
+      aria-label={`${pick(entry.name)} · ${t('textbookVisualLong')}`}
+    >
+      <TextbookCategoryMark category="visual" />
+      <span className="alg-name">{pick(entry.name)}</span>
+      {algorithm.extension && (
+        <span className="textbook-extension" aria-hidden="true">{t('textbookExtension')}</span>
+      )}
+    </button>
   );
 }

@@ -71,7 +71,8 @@ describe('UX-03 textbook directory does not touch learning state', () => {
     fireEvent.change(screen.getByTestId('mobile-algo-select'), { target: { value: 'insertion' } });
     await waitFor(() => expect(screen.getByTestId('lab-title').textContent).toBe('插入排序'));
     expect(screen.getByTestId('chapter-ch10-sort').getAttribute('aria-expanded')).toBe('true');
-    expect(screen.getByTestId('topic-insertion-sort').getAttribute('data-direct')).toBe('true');
+    expect(screen.getByTestId('topic-insertion-sort').getAttribute('aria-expanded')).toBe('true');
+    expect(screen.getByTestId('topic-direct-insertion')).toBeTruthy();
     expect(screen.getByTestId('algo-insertion').getAttribute('aria-current')).toBe('true');
   });
 

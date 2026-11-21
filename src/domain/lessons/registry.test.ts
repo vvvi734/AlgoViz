@@ -42,6 +42,7 @@ describe('Lesson registry (Stage 3B)', () => {
       'doubly-linked-list-pointers',
       'circular-linked-list-cycle',
       'binary-tree-traversal-basics',
+      'threaded-binary-tree-inorder',
       'binary-search-tree-search-insert-delete',
       'b-tree-search-insert-split',
       'avl-balanced-binary-search-tree',
@@ -105,8 +106,8 @@ describe('Lesson registry (Stage 3B)', () => {
   it('covers all 44 algorithms with a validated course', () => {
     const covered = lessonRegistry.lessons.map((lesson) => lesson.algorithmId);
     const uncovered = catalogIds.filter((id) => !covered.includes(id));
-    expect(catalogIds.length).toBe(44);
-    expect(lessonRegistry.lessons.length).toBe(44);
+    expect(catalogIds.length).toBe(45);
+    expect(lessonRegistry.lessons.length).toBe(45);
     expect(uncovered).toEqual([]);
   });
 });

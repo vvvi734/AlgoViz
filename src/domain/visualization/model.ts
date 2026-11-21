@@ -1,6 +1,7 @@
 import type { TraceState } from '../trace/types';
 import type { AnyStructureSnapshot, StructureOperation, StructureSnapshot } from '../trace/schema';
 import { buildBinaryTreeModel, type BinaryTreeVisualModel } from './binaryTreeModel';
+import { buildThreadedTreeModel, type ThreadedTreeVisualModel } from './threadedTreeModel';
 import { buildBstModel, type BstVisualModel } from './bstModel';
 import { buildAvlModel, type AvlVisualModel } from './avlModel';
 import { buildBTreeModel, type BTreeVisualModel } from './btreeModel';
@@ -140,6 +141,7 @@ export type VisualModel =
   | StaticLinkedListVisualModel
   | PolynomialVisualModel
   | BinaryTreeVisualModel
+  | ThreadedTreeVisualModel
   | BstVisualModel
   | AvlVisualModel
   | BTreeVisualModel
@@ -424,6 +426,11 @@ export function buildVisualModel(
     const model = buildBstModel(structure, labels.emptyBst ?? labels.emptyTree ?? labels.emptyStructure);
     if (!model) return { kind: 'raw', text: labels.invalid };
     return model;
+  }
+
+  if (structure !== undefined && structure.kind === 'threaded-tree') {
+    if (kind !== 'tree') return { kind: 'raw', text: labels.invalid };
+    return buildThreadedTreeModel(structure, labels.emptyTree ?? labels.emptyStructure);
   }
 
   if (structure !== undefined && structure.kind === 'binary-tree') {
