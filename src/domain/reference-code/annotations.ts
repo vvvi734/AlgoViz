@@ -1267,4 +1267,13 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
   "optimal_merge_tree.c": [],
   "optimal_merge_tree.cpp": [],
   "optimal_merge_tree.py": [],
+  "indexed_file.c": [],
+  "indexed_file.cpp": [],
+  "indexed_file.py": [],
+  "isam_file.c": [],
+  "isam_file.cpp": [],
+  "isam_file.py": [],
+  "inverted_index.c": [],
+  "inverted_index.cpp": [],
+  "inverted_index.py": [],
 };

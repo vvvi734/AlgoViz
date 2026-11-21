@@ -82,6 +82,12 @@ import type {
 import type { BuddyVisualModel } from '../../domain/visualization/buddyModel';
 import type { GcVisualModel } from '../../domain/visualization/gcModel';
 import type { FreeListVisualModel } from '../../domain/visualization/freeListModel';
+import { FileIndexVisual, InvertedIndexVisual, IsamVisual } from './FileStructureVisuals';
+import type {
+  FileIndexVisualModel,
+  InvertedVisualModel,
+  IsamVisualModel,
+} from '../../domain/visualization/fileStructureModel';
 
 const GRAPH_OPERATION_KEYS: Record<GraphOperation, string> = {
   init: 'graphOpInit',
@@ -601,6 +607,15 @@ export function VisualStage({
     case 'merge-tree':
       content = <OptimalMergeTreeVisual model={model as OptimalVisualModel} />;
       break;
+    case 'file-index':
+      content = <FileIndexVisual model={model as FileIndexVisualModel} />;
+      break;
+    case 'isam':
+      content = <IsamVisual model={model as IsamVisualModel} />;
+      break;
+    case 'inverted-index':
+      content = <InvertedIndexVisual model={model as InvertedVisualModel} />;
+      break;
     case 'graph-traversal': {
       const operationText = graphOperationText(model, t);
       if (model.algorithm === 'dijkstra') {
@@ -751,6 +766,9 @@ export function VisualStage({
     model.kind === 'multiway' ||
     model.kind === 'replacement' ||
     model.kind === 'merge-tree' ||
+    model.kind === 'file-index' ||
+    model.kind === 'isam' ||
+    model.kind === 'inverted-index' ||
     model.kind === 'garbage-collection';
   return (
     <div

@@ -38,8 +38,9 @@ describe('UX-03 textbook directory does not touch learning state', () => {
     await ready();
 
     fireEvent.click(screen.getByTestId('next-btn'));
+    await waitFor(() => expect(screen.getByTestId('progress').textContent).toBe('2 / 3'));
     fireEvent.click(screen.getByTestId('next-btn'));
-    expect(screen.getByTestId('progress').textContent).toBe('3 / 3');
+    await waitFor(() => expect(screen.getByTestId('progress').textContent).toBe('3 / 3'));
 
     // Folding the chapter that holds the current algorithm is also layout-only.
     fireEvent.click(screen.getByTestId('chapter-ch10-sort'));

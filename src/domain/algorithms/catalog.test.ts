@@ -29,6 +29,9 @@ const nonLegacyIds = new Set([
   'multiway',
   'replacement',
   'optimal-merge',
+  'file-index',
+  'isam',
+  'inverted-index',
 ]);
 const legacyIds = Object.keys(catalog).filter((id) => !nonLegacyIds.has(id));
 
@@ -40,7 +43,7 @@ function visualFrames(code: string, input: unknown): TraceFrame[] {
 
 describe('algorithm catalogue (35 legacy presets plus real-trace additions)', () => {
   it('keeps all legacy presets and adds the real-trace additions', () => {
-    expect(algorithmIds()).toHaveLength(57);
+    expect(algorithmIds()).toHaveLength(60);
     expect(legacyIds).toHaveLength(35);
     expect(Object.keys(expected)).toHaveLength(35);
     expect(catalog.kmp.time).toBe('O(n + m)');

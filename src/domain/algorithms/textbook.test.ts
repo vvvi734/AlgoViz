@@ -56,7 +56,7 @@ describe('textbook directory after TEXTBOOK-01', () => {
 
   it('preserves every existing algorithm exactly once in its new primary home', () => {
     const ids = textbookAlgorithmIds(nav);
-    expect(ids).toHaveLength(57);
+    expect(ids).toHaveLength(60);
     expect(new Set(ids).size).toBe(ids.length);
     expect(new Set(ids)).toEqual(new Set(Object.keys(catalog)));
   });
@@ -73,7 +73,7 @@ describe('textbook directory after TEXTBOOK-01', () => {
       ]),
     );
     const conceptRows = rows.filter(({ row }) => row.conceptId);
-    expect(CONCEPT_PAGES).toHaveLength(48);
+    expect(CONCEPT_PAGES).toHaveLength(56);
     expect(conceptRows.map(({ row }) => row.conceptId).sort()).toEqual(
       CONCEPT_PAGES.map((page) => page.id).sort(),
     );
@@ -216,7 +216,7 @@ describe('textbook directory after TEXTBOOK-01', () => {
     });
   });
 
-  it('authors chapter 11 while chapter 12 remains planned knowledge', () => {
+  it('authors chapter 11 and completes chapter 12 with files theory and three runnable courses', () => {
     const chapter11 = nav.find((entry) => entry.id === 'ch11-external-sort')!;
     expect(chapter11.algorithmCount).toBe(3);
     expect(chapter11.topics.map((topic) => topic.id)).toEqual([
@@ -239,10 +239,32 @@ describe('textbook directory after TEXTBOOK-01', () => {
     });
 
     const chapter12 = nav.find((entry) => entry.id === 'ch12-files')!;
-    expect(chapter12.algorithmCount).toBe(0);
-    expect(chapter12.topics.length).toBeGreaterThan(0);
-    expect(chapter12.topics.every((topic) => topic.category === 'pending')).toBe(true);
-    expect(chapter12.topics.every((topic) => topic.algorithms.length === 0)).toBe(true);
+    expect(chapter12.algorithmCount).toBe(3);
+    expect(chapter12.topics.map((topic) => topic.id)).toEqual([
+      'file-basics',
+      'sequential-file',
+      'indexed-files',
+      'index-sequential',
+      'direct-file',
+      'multi-key-files',
+      'file-comparison',
+    ]);
+    expect(chapter12.topics.some((topic) => topic.category === 'pending')).toBe(false);
+    for (const id of ['file-index', 'isam', 'inverted-index']) {
+      expect(textbookPathFor(catalog, id)?.chapterId).toBe('ch12-files');
+    }
+    for (const conceptId of [
+      'file-basics',
+      'sequential-file',
+      'index-file',
+      'isam-vsam',
+      'hashed-file',
+      'multi-table-file',
+      'inverted-file',
+      'file-comparison',
+    ]) {
+      expect(findConceptPath(nav, conceptId)).toBeTruthy();
+    }
   });
 
   it('keeps graph order aligned with the book: connectivity, MST, DAG, shortest paths', () => {
@@ -393,7 +415,7 @@ describe('textbook directory after TEXTBOOK-01', () => {
     const pending = topics.filter((topic) => topic.category === 'pending');
     expect(theory.length).toBeGreaterThan(0);
     expect(visual.length).toBeGreaterThan(0);
-    expect(pending.length).toBeGreaterThan(0);
+    expect(pending).toHaveLength(0);
     expect(
       theory.every(
         (topic) =>
@@ -421,3 +443,4 @@ describe('textbook directory after TEXTBOOK-01', () => {
     expect(topics.find((topic) => topic.id === 'sparse-transpose')?.category).toBe('visual');
   });
 });
+

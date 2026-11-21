@@ -191,6 +191,27 @@ export const REFERENCE_CODE: Record<string, ReferenceEntry> = {
       python: { fileName: 'optimal_merge_tree.py' },
     },
   },
+  'file-index': {
+    files: {
+      c: { fileName: 'indexed_file.c' },
+      cpp: { fileName: 'indexed_file.cpp' },
+      python: { fileName: 'indexed_file.py' },
+    },
+  },
+  isam: {
+    files: {
+      c: { fileName: 'isam_file.c' },
+      cpp: { fileName: 'isam_file.cpp' },
+      python: { fileName: 'isam_file.py' },
+    },
+  },
+  'inverted-index': {
+    files: {
+      c: { fileName: 'inverted_index.c' },
+      cpp: { fileName: 'inverted_index.cpp' },
+      python: { fileName: 'inverted_index.py' },
+    },
+  },
   factorial: {
     files: {
       c: { fileName: 'factorial.c' },

@@ -227,13 +227,13 @@ describe('AlgorithmSidebar — textbook chapters (UX-03)', () => {
     fireEvent.click(graphBasics);
     expect(onSelectConcept).toHaveBeenCalledWith('graph-basics');
 
-    const unAuthored = screen.getByTestId('topic-file-concepts');
-    expect(unAuthored.tagName).toBe('DIV');
-    expect(unAuthored.getAttribute('aria-disabled')).toBe('true');
-    expect(unAuthored.getAttribute('data-category')).toBe('pending');
-    expect(unAuthored.textContent).toContain('待完善');
-    expect(unAuthored.querySelector('.textbook-category')).toBeNull();
-    expect(within(unAuthored).queryByRole('button')).toBeNull();
+    const fileBasics = screen.getByTestId('topic-file-basics');
+    expect(fileBasics.tagName).toBe('BUTTON');
+    expect(fileBasics.getAttribute('data-kind')).toBe('concept');
+    expect(fileBasics.getAttribute('data-category')).toBe('theory');
+    expect(fileBasics.getAttribute('data-concept-id')).toBe('file-basics');
+    fireEvent.click(fileBasics);
+    expect(onSelectConcept).toHaveBeenCalledWith('file-basics');
 
     const threaded = screen.getByTestId('topic-threaded-tree');
     expect(threaded.tagName).toBe('BUTTON');

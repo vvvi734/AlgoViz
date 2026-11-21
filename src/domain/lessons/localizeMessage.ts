@@ -69,6 +69,30 @@ const COMPLEXITY_EN: Record<string, string> = {
     'O(d(n + k)) where d is the maximum digit count and k=10 is the radix',
   'O(n + k)（记录引用/链节点与 10 个桶）':
     'O(n + k) (record references/links and 10 buckets)',
+  'O(n × k)；败者树可降至 O(n log k)':
+    'O(n × k); a loser tree reduces selection to O(n log k)',
+  'O(k × B + B) 个缓冲区槽位，外加输出序列':
+    'O(k × B + B) buffer slots plus the output sequence',
+  '每条输出线性扫描工作区 O(M)，共 n 条，O(n × M)':
+    'Each output scans the workspace in O(M); n outputs cost O(n × M)',
+  'O(M) 工作区 + O(n) 输入与输出段':
+    'O(M) workspace plus O(n) input and output run storage',
+  'O(n × k)；用堆可降至 O(n log n)':
+    'O(n × k); a heap can reduce this to O(n log n)',
+  'O(n) 个树节点（含虚拟叶）':
+    'O(n) tree nodes including virtual leaves',
+  'O(E + B)，E 为实际检查的索引项数，B 为块内记录数':
+    'O(E + B), where E is the index entries actually probed and B is the records per block',
+  'O(n) 稠密索引 / O(n/B) 稀疏索引，外加数据块':
+    'O(n) for a dense index or O(n/B) for a sparse index, plus the data blocks',
+  'O(E + C + B)，E 索引项、C 溢出链节点、B 块内记录':
+    'O(E + C + B), where E is index entries, C is overflow nodes and B is records per block',
+  '主区 O(n) + 索引 O(块数) + 溢出区 O(溢出记录)':
+    'O(n) main area + O(number of blocks) index + O(overflow records) overflow area',
+  '构建 O(T)；查询 O(Σ|L_i|) 的列表读取与集合运算':
+    'Build O(T); query reads posting lists and performs set operations in O(Σ|L_i|)',
+  'O(T + P)，T 为不同关键字数，P 为倒排项总数':
+    'O(T + P), where T is the number of distinct terms and P is the total number of postings',
 };
 
 /** Translate the Chinese descriptor in a lesson complexity row. */

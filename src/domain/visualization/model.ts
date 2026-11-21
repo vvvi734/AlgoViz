@@ -63,6 +63,14 @@ import {
   type ReplacementVisualModel,
   type OptimalVisualModel,
 } from './externalSortModel';
+import {
+  buildFileIndexModel,
+  buildIsamModel,
+  buildInvertedModel,
+  type FileIndexVisualModel,
+  type IsamVisualModel,
+  type InvertedVisualModel,
+} from './fileStructureModel';
 import { buildRadixModel, type RadixVisualModel } from './radixModel';
 
 /**
@@ -195,6 +203,9 @@ export type VisualModel =
   | MultiwayVisualModel
   | ReplacementVisualModel
   | OptimalVisualModel
+  | FileIndexVisualModel
+  | IsamVisualModel
+  | InvertedVisualModel
   | { kind: 'graph'; edges: Array<[number, number]>; nodes: GraphNodeModel[]; isTree: boolean }
   | { kind: 'raw'; text: string };
 
@@ -410,6 +421,21 @@ export function buildVisualModel(
   if (structure !== undefined && structure.kind === 'multiway') {
     if (kind !== 'array') return { kind: 'raw', text: labels.invalid };
     return buildMultiwayModel(structure);
+  }
+
+  if (structure !== undefined && structure.kind === 'file-index') {
+    if (kind !== 'array') return { kind: 'raw', text: labels.invalid };
+    return buildFileIndexModel(structure);
+  }
+
+  if (structure !== undefined && structure.kind === 'isam') {
+    if (kind !== 'array') return { kind: 'raw', text: labels.invalid };
+    return buildIsamModel(structure);
+  }
+
+  if (structure !== undefined && structure.kind === 'inverted-index') {
+    if (kind !== 'array') return { kind: 'raw', text: labels.invalid };
+    return buildInvertedModel(structure);
   }
 
   if (structure !== undefined && structure.kind === 'replacement') {

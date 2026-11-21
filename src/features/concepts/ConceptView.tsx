@@ -5,6 +5,7 @@ import { SearchConceptDiagram } from './SearchConceptDiagrams';
 import { QueueConceptDiagram } from './QueueConceptDiagrams';
 import { TreeConceptDiagram } from './TreeConceptDiagrams';
 import { ExternalSortConceptDiagram } from './ExternalSortConceptDiagrams';
+import { FileStructureConceptDiagram } from './FileStructureConceptDiagrams';
 import '../../styles/concepts.css';
 
 /**
@@ -49,6 +50,15 @@ export function ConceptView({ concept }: { concept: ConceptPage }) {
             concept.diagram === 'external-runs' ||
             concept.diagram === 'external-comparison' ? (
             <ExternalSortConceptDiagram kind={concept.diagram} lang={lang} />
+          ) : concept.diagram === 'file-basics' ||
+            concept.diagram === 'sequential-file' ||
+            concept.diagram === 'indexed-file' ||
+            concept.diagram === 'isam-vsam' ||
+            concept.diagram === 'hashed-file' ||
+            concept.diagram === 'multi-table-file' ||
+            concept.diagram === 'inverted-file' ||
+            concept.diagram === 'file-comparison' ? (
+            <FileStructureConceptDiagram kind={concept.diagram} lang={lang} />
           ) : concept.diagram === 'circular-queue' || concept.diagram === 'stack-queue-storage' ? (
             <QueueConceptDiagram kind={concept.diagram} lang={lang} />
           ) : concept.diagram === 'tree-storage' ||

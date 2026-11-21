@@ -17,7 +17,13 @@ import {
   type ExternalSortGuidedInputAlgorithm,
   type ExternalSortInputFields,
 } from '../../domain/algorithms/externalSortInput';
+import {
+  isFileStructureGuidedInputAlgorithm,
+  type FileStructureGuidedInputAlgorithm,
+  type FileStructureInputFields,
+} from '../../domain/algorithms/fileStructureInput';
 import { ExternalSortInputEditor } from './ExternalSortInputEditor';
+import { FileStructureInputEditor } from './FileStructureInputEditor';
 import {
   buildGuidedInput,
   defaultGuidedScenario,
@@ -344,6 +350,13 @@ export function GuidedInputPanel({ lab }: { lab: LabController }) {
     setRandomFilled(false);
   };
 
+  const setFileStructure = (file: FileStructureInputFields) => {
+    setDraft((current) => ({ ...current, file }));
+    setMode('custom');
+    setIssue(null);
+    setRandomFilled(false);
+  };
+
   const loadOfficial = () => {
     const official = defaultInputFor(id);
     setMode('official');
@@ -479,6 +492,14 @@ export function GuidedInputPanel({ lab }: { lab: LabController }) {
           draft={draft}
           onChange={setExternal}
           onValuesChange={(value) => setField('values', value)}
+        />
+      ) : null}
+
+      {isFileStructureGuidedInputAlgorithm(id) ? (
+        <FileStructureInputEditor
+          algorithm={id as FileStructureGuidedInputAlgorithm}
+          draft={draft}
+          onChange={setFileStructure}
         />
       ) : null}
 

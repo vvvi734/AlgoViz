@@ -237,6 +237,18 @@ const REFERENCE_LEARNING_NOTES: Record<string, LocalizedText> = {
     zh: '以初始段长度为权重，每次取 k 个最轻的根构造父节点，父权重为孩子和，累计代价加上父权重。真实段数不满足满 k 叉树时补 d 个零权重虚拟叶；总代价是所有内部权重之和，不是根权重。贪心思想与哈夫曼树相通，但目标是最小化归并代价。',
     en: 'Weight leaves by initial-run length, combine the k lightest roots into a parent whose weight is the child sum, and add that weight to the running cost. Add d zero-weight virtual leaves when the real count cannot fill a full k-ary tree. Total cost is the sum of every internal weight, not the root alone. The greedy idea resembles Huffman construction, but the objective is merge cost.',
   },
+  'file-index': {
+    zh: '记录按主键排序分块。稠密索引每记录一项；稀疏索引每块只保留上界。查找线性检查索引，选“不大于目标的最后一项”，读一个数据块并在块内确认；成功与失败都计一次数据块读取。索引表按一块计。',
+    en: 'Records are sorted and blocked by primary key. A dense index has one entry per record; a sparse index keeps one upper bound per block. A lookup probes entries linearly, chooses the last entry not above the target, reads one data block and confirms inside; both hit and miss count one block read. The index table counts as one block.',
+  },
+  isam: {
+    zh: '主区按关键字有序分块，索引保存每块含溢出链的最大键。查找按上界选块、扫描主块，再沿该块专属溢出链继续。块满时插入溢出区，必须维护链接并刷新可能变化的上界；插入后真实重查。索引相对静态，不是 B+ 树。',
+    en: 'Main blocks are ordered by key and the index stores each block’s maximum including its overflow chain. Lookup selects a block by bound, scans it, then follows that block’s private chain. When full, insertion enters overflow and must maintain links and refresh a changed bound; the inserted record is genuinely looked up again. The index is relatively static, not a B+ tree.',
+  },
+  'inverted-index': {
+    zh: '为每个关键字维护记录 ID 倒排表。构建逐记录追加 ID；查询读取多张表，AND 求交、OR 求并，按原记录顺序过滤并去重。缺失词是空表；一个词可对应多条记录。课程不做分词、排名或全文搜索。',
+    en: 'Each term has a posting list of record ids. Building appends ids record by record; querying reads lists, intersects for AND or unions for OR, filters in original record order and deduplicates. A missing term is an empty list; one term may match many records. The course implements no tokenizer, ranking or full-text search.',
+  },
 };
 
 const LANGUAGE_NAME: Record<ReferenceLanguage, { zh: string; en: string }> = {

@@ -84,6 +84,9 @@ describe('Lesson registry (Stage 3B)', () => {
       'multiway-balanced-merge',
       'replacement-selection-runs',
       'optimal-merge-tree',
+      'indexed-file-lookup',
+      'isam-overflow-chain',
+      'inverted-index-query',
     ]);
   });
 
@@ -115,11 +118,12 @@ describe('Lesson registry (Stage 3B)', () => {
     expect(broken.errors.join(' ')).toContain('buble-sort');
   });
 
-  it('covers all 57 algorithms with a validated course', () => {
+  it('covers all 60 algorithms with a validated course', () => {
     const covered = lessonRegistry.lessons.map((lesson) => lesson.algorithmId);
     const uncovered = catalogIds.filter((id) => !covered.includes(id));
-    expect(catalogIds.length).toBe(57);
-    expect(lessonRegistry.lessons.length).toBe(57);
+    expect(catalogIds.length).toBe(60);
+    expect(lessonRegistry.lessons.length).toBe(60);
     expect(uncovered).toEqual([]);
   });
 });
+

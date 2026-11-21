@@ -105,7 +105,7 @@ const OPTIMAL_FLOW: AlgorithmFlow = {
         flowNode('om-loop', 'decision', 3, 0, ['森林中多于一个根吗？', 'Does the forest have more than one root?']),
         flowEnd('om-done', 3, 1, 'success', ['只剩一个根：返回总归并代价', 'One root remains: return total merge cost']),
         flowNode('om-select', 'operation', 4, 0, ['选取 k 个权重最小的根', 'Select the k lightest roots']),
-        flowNode('om-combine', 'operation', 5, 0, ['构造父节点：权重 = 子权重之和', 'Build a parent whose weight is the children’s sum']),
+        flowNode('om-combine', 'operation', 5, 0, ['构造父节点，其权重为各子权重之和', 'Build a parent whose weight is the children’s sum']),
         flowNode('om-cost', 'operation', 6, 0, ['累计代价加上父节点权重', 'Add the parent weight to the total cost']),
         flowNode('om-reinsert', 'operation', 7, 0, ['父节点放回森林，移除已选根', 'Return the parent and remove the selected roots']),
       ],

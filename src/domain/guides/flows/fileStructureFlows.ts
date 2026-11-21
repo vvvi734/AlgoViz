@@ -1,0 +1,180 @@
+import type { AlgorithmFlow } from '../flowTypes';
+import { flowEdge, flowEnd, flowNode, flowSection, loopEdge } from './flowDsl';
+
+/**
+ * TEXTBOOK-12 flows describe control decisions, not animation captions:
+ * entry selection, block reads, overflow traversal, index refresh, posting
+ * construction and set operations all have explicit branches and terminals.
+ */
+
+const FILE_INDEX_FLOW: AlgorithmFlow = {
+  algorithmId: 'file-index',
+  sections: [
+    flowSection(
+      'lookup',
+      ['主流程：索引定位与块内确认', 'Main flow: index routing and in-block confirmation'],
+      ['先建块和索引，再逐项检查索引；选中不大于目标的最后一项后读取一个数据块，块内命中或耗尽后给出结果。', 'Build blocks and the index, probe entries, choose the last entry not above the target, read exactly one block, then report a hit or an exhausted miss.'],
+      [
+        flowNode('fi-start', 'start', 0, 0, ['开始：按关键字查找记录', 'Start: look up a record by key']),
+        flowNode('fi-build', 'operation', 1, 0, ['排序、分块，建立稠密或稀疏索引', 'Sort, block and build a dense or sparse index']),
+        flowNode('fi-more', 'decision', 2, 0, ['还有未检查的索引项吗？', 'Any index entry left to probe?']),
+        flowNode('fi-entry', 'decision', 3, 0, ['当前索引键 ≤ 目标吗？', 'Is the current entry key ≤ the target?']),
+        flowNode('fi-equal', 'decision', 4, 0, ['当前索引键等于目标吗？', 'Does the entry key equal the target?']),
+        flowNode('fi-advance', 'operation', 5, 0, ['保留当前项为候选，检查下一项', 'Keep this entry as a candidate and probe the next']),
+        flowNode('fi-select', 'operation', 4, 1, ['选定不大于目标的最后一项', 'Choose the last entry not above the target']),
+        flowNode('fi-read', 'operation', 5, 1, ['读取索引项指向的一个数据块', 'Read exactly one data block addressed by the entry']),
+        flowNode('fi-scan', 'decision', 6, 1, ['块内还有记录吗？', 'Any record left in the block?']),
+        flowNode('fi-compare', 'decision', 7, 0, ['块内记录键等于目标吗？', 'Does the resident record key equal the target?']),
+        flowEnd('fi-found', 8, 0, 'success', ['命中：记录 ID 与关键字一致', 'Hit: record id and key agree']),
+        flowEnd('fi-miss', 8, 1, 'failure', ['失败：索引定位正确，但块内无目标', 'Miss: routing was valid but the block lacks the key']),
+      ],
+      [
+        flowEdge('fi-start', 'fi-build'),
+        flowEdge('fi-build', 'fi-more'),
+        flowEdge('fi-more', 'fi-entry', 'yes'),
+        flowEdge('fi-more', 'fi-select', 'no'),
+        flowEdge('fi-entry', 'fi-equal', 'yes'),
+        flowEdge('fi-entry', 'fi-select', 'no'),
+        flowEdge('fi-equal', 'fi-select', 'yes'),
+        flowEdge('fi-equal', 'fi-advance', 'no'),
+        loopEdge('fi-advance', 'fi-more', ['检查下一索引项', 'Probe the next entry']),
+        flowEdge('fi-select', 'fi-read'),
+        flowEdge('fi-read', 'fi-scan'),
+        flowEdge('fi-scan', 'fi-compare', 'yes'),
+        flowEdge('fi-scan', 'fi-miss', 'no'),
+        flowEdge('fi-compare', 'fi-found', 'yes'),
+        loopEdge('fi-compare', 'fi-scan', ['未命中：继续块内下一条', 'Not equal: continue with the next resident record'], 'no'),
+      ],
+    ),
+  ],
+};
+
+const ISAM_FLOW: AlgorithmFlow = {
+  algorithmId: 'isam',
+  sections: [
+    flowSection(
+      'find',
+      ['查找：索引上界 → 主块 → 溢出链', 'Lookup: bounds → main block → overflow chain'],
+      ['选第一个上界不小于目标的主块；主块扫描未命中且链非空时，沿该块专属链继续；链尾仍未命中才报告失败。', 'Choose the first block whose bound is not below the target; if the main scan misses and a chain exists, follow that block’s private chain; report failure only at its end.'],
+      [
+        flowNode('is-start', 'start', 0, 0, ['开始：ISAM 查找', 'Start: ISAM lookup']),
+        flowNode('is-init', 'operation', 1, 0, ['建立有序主块、索引上界与空链', 'Build ordered blocks, bounds and empty chains']),
+        flowNode('is-probe', 'decision', 2, 0, ['还有上界小于目标的主块吗？', 'Any block bound below the target?']),
+        flowNode('is-next-bound', 'operation', 3, -1, ['检查下一项上界', 'Probe the next bound']),
+        flowNode('is-select', 'operation', 3, 0, ['选定第一个上界不小于目标的主块', 'Choose the first block whose bound is not below the target']),
+        flowNode('is-read-main', 'operation', 4, 0, ['读入主块，主区读计数加一', 'Read the main block and increment main reads']),
+        flowNode('is-scan', 'decision', 5, 0, ['主块内还有记录吗？', 'Any record left in the main block?']),
+        flowNode('is-compare', 'decision', 6, 0, ['主块记录键等于目标吗？', 'Does the resident key equal the target?']),
+        flowNode('is-chain', 'decision', 6, 1, ['该主块有溢出链吗？', 'Does this block have an overflow chain?']),
+        flowNode('is-read-ov', 'operation', 7, 1, ['读取下一个溢出节点，溢出读加一', 'Read the next overflow node and increment overflow reads']),
+        flowNode('is-ov-scan', 'decision', 8, 1, ['溢出节点内还有记录吗？', 'Any record left in this overflow node?']),
+        flowNode('is-ov-compare', 'decision', 9, 1, ['溢出记录键等于目标吗？', 'Does the overflow key equal the target?']),
+        flowNode('is-next-node', 'decision', 9, 0, ['还有 nextId 吗？', 'Is there a nextId?']),
+        flowEnd('is-found', 10, -1, 'success', ['命中：主区或溢出区记录', 'Hit: a record in the main area or overflow']),
+        flowEnd('is-miss', 10, 0, 'failure', ['失败：主块与完整链均无目标', 'Miss: neither the block nor its full chain contains the target']),
+      ],
+      [
+        flowEdge('is-start', 'is-init'),
+        flowEdge('is-init', 'is-probe'),
+        flowEdge('is-probe', 'is-next-bound', 'yes'),
+        loopEdge('is-next-bound', 'is-probe', ['继续比较下一上界', 'Compare the next bound']),
+        flowEdge('is-probe', 'is-select', 'no'),
+        flowEdge('is-select', 'is-read-main'),
+        flowEdge('is-read-main', 'is-scan'),
+        flowEdge('is-scan', 'is-compare', 'yes'),
+        flowEdge('is-compare', 'is-found', 'yes'),
+        loopEdge('is-compare', 'is-scan', ['主块未命中：比较下一条', 'Main miss: compare the next record'], 'no'),
+        flowEdge('is-scan', 'is-chain', 'no'),
+        flowEdge('is-chain', 'is-read-ov', 'yes'),
+        flowEdge('is-chain', 'is-miss', 'no'),
+        flowEdge('is-read-ov', 'is-ov-scan'),
+        flowEdge('is-ov-scan', 'is-ov-compare', 'yes'),
+        flowEdge('is-ov-compare', 'is-found', 'yes'),
+        loopEdge('is-ov-compare', 'is-ov-scan', ['溢出节点未命中：下一条', 'Overflow miss: next record'], 'no'),
+        flowEdge('is-ov-scan', 'is-next-node', 'no'),
+        loopEdge('is-next-node', 'is-read-ov', ['沿 nextId 读下一节点', 'Follow nextId to the next node'], 'yes'),
+        flowEdge('is-next-node', 'is-miss', 'no'),
+      ],
+    ),
+    flowSection(
+      'insert',
+      ['插入：选块 → 主区/溢出 → 刷新上界 → 重查', 'Insert: choose block → main/overflow → refresh bound → re-lookup'],
+      ['主块有空间时按序插入；块满则创建溢出记录并维护链。若块最大键变化则刷新索引上界，最后必须从结构重查新记录。', 'Insert in order when the block has space; when full, create an overflow record and maintain its link. If the block maximum changes, refresh the bound, then genuinely look the new record up again.'],
+      [
+        flowNode('is-ins-start', 'start', 0, 0, ['开始：ISAM 插入', 'Start: ISAM insertion']),
+        flowNode('is-ins-select', 'operation', 1, 0, ['按新关键字选择主块', 'Choose a block for the new key']),
+        flowNode('is-full', 'decision', 2, 0, ['主块已满吗？', 'Is the main block full?']),
+        flowNode('is-ins-main', 'operation', 3, -1, ['按序插入主区', 'Insert into the main area in order']),
+        flowNode('is-ins-over', 'operation', 3, 1, ['在溢出区创建记录', 'Create the record in overflow']),
+        flowNode('is-is-first', 'decision', 4, 1, ['这是该块的第一个溢出节点吗？', 'Is this the block’s first overflow node?']),
+        flowNode('is-set-head', 'operation', 5, 1, ['设置 overflowHead', 'Set overflowHead']),
+        flowNode('is-link', 'operation', 5, -1, ['把前驱 nextId 指向新节点', 'Point the predecessor’s nextId to the new node']),
+        flowNode('is-bound', 'decision', 6, 0, ['该块最大键变化了吗？', 'Did the block maximum change?']),
+        flowNode('is-update', 'operation', 7, -1, ['刷新索引上界', 'Refresh the index bound']),
+        flowNode('is-relookup', 'operation', 7, 0, ['从结构重新查找新记录', 'Look the new record up through the structure']),
+        flowEnd('is-ins-done', 8, 0, 'success', ['结束：新记录可被索引查到', 'Done: the new record is found through the index']),
+      ],
+      [
+        flowEdge('is-ins-start', 'is-ins-select'),
+        flowEdge('is-ins-select', 'is-full'),
+        flowEdge('is-full', 'is-ins-main', 'no'),
+        flowEdge('is-full', 'is-ins-over', 'yes'),
+        flowEdge('is-ins-main', 'is-bound'),
+        flowEdge('is-ins-over', 'is-is-first'),
+        flowEdge('is-is-first', 'is-set-head', 'yes'),
+        flowEdge('is-is-first', 'is-link', 'no'),
+        flowEdge('is-set-head', 'is-bound'),
+        flowEdge('is-link', 'is-bound'),
+        flowEdge('is-bound', 'is-update', 'yes'),
+        flowEdge('is-bound', 'is-relookup', 'no'),
+        flowEdge('is-update', 'is-relookup'),
+        flowEdge('is-relookup', 'is-ins-done'),
+      ],
+    ),
+  ],
+};
+
+const INVERTED_FLOW: AlgorithmFlow = {
+  algorithmId: 'inverted-index',
+  sections: [
+    flowSection(
+      'build',
+      ['构建：逐记录、逐关键字追加 posting', 'Build: append postings record by record, term by term'],
+      ['先为每个不同关键字建立空表；每条记录扫描后，逐词把记录 ID 追加到对应表；全部记录处理完才进入查询。', 'Create an empty list per distinct term; scan each record and append its id to every term; only after all records are processed does querying begin.'],
+      [
+        flowNode('iv-start', 'start', 0, 0, ['开始：构建并查询倒排索引', 'Start: build and query an inverted index']),
+        flowNode('iv-init', 'operation', 1, 0, ['为全部关键字建立空倒排表', 'Create an empty list for every term']),
+        flowNode('iv-more-rec', 'decision', 2, 0, ['还有未扫描的记录吗？', 'Any record left to scan?']),
+        flowNode('iv-scan', 'operation', 3, 0, ['扫描记录，读取已分好的关键字', 'Scan the record’s segmented terms']),
+        flowNode('iv-more-term', 'decision', 4, 0, ['该记录还有未处理的关键字吗？', 'Any term left in this record?']),
+        flowNode('iv-add', 'operation', 5, 0, ['把记录 ID 追加到该词的倒排表', 'Append the record id to that term’s list']),
+        flowNode('iv-build-done', 'operation', 6, 1, ['构建完成：每张表等于真实记录集合', 'Build done: every list equals its true record set']),
+        flowNode('iv-more-query', 'decision', 7, 0, ['还有未读取的查询词吗？', 'Any query term left?']),
+        flowNode('iv-read', 'operation', 8, 1, ['读取该查询词的倒排表', 'Read that term’s posting list']),
+        flowNode('iv-combine', 'operation', 9, 1, ['与累计结果求 AND 交集或 OR 并集', 'Intersect or union with the running result']),
+        flowEnd('iv-done', 10, 1, 'success', ['结束：matchedIds 映射回原记录', 'Done: matchedIds map back to original records']),
+      ],
+      [
+        flowEdge('iv-start', 'iv-init'),
+        flowEdge('iv-init', 'iv-more-rec'),
+        flowEdge('iv-more-rec', 'iv-scan', 'yes'),
+        flowEdge('iv-scan', 'iv-more-term'),
+        flowEdge('iv-more-term', 'iv-add', 'yes'),
+        loopEdge('iv-add', 'iv-more-term', ['处理该记录的下一个关键字', 'Process the record’s next term']),
+        loopEdge('iv-more-term', 'iv-more-rec', ['该记录处理完，扫描下一条', 'Record complete: scan the next record'], 'no'),
+        flowEdge('iv-more-rec', 'iv-build-done', 'no'),
+        flowEdge('iv-build-done', 'iv-more-query'),
+        flowEdge('iv-more-query', 'iv-read', 'yes'),
+        flowEdge('iv-read', 'iv-combine'),
+        loopEdge('iv-combine', 'iv-more-query', ['读取下一个查询词并继续集合运算', 'Read the next query term and continue']),
+        flowEdge('iv-more-query', 'iv-done', 'no'),
+      ],
+    ),
+  ],
+};
+
+export const FILE_STRUCTURE_FLOWS: Record<string, AlgorithmFlow> = {
+  'file-index': FILE_INDEX_FLOW,
+  isam: ISAM_FLOW,
+  'inverted-index': INVERTED_FLOW,
+};

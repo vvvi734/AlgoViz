@@ -1562,6 +1562,111 @@ export const COURSE_GUIDES: Record<string, CourseGuide> = {
       ],
     ),
   },
+
+  'file-index': {
+    intro: text(
+      '如果每次都从文件开头逐条扫描，按主关键字查找会退化为整文件扫描。索引文件把关键字与块地址单独列出，先查索引缩小到一个数据块，再在块内确认记录。稠密索引为每条记录建项，稀疏索引只为每块建一项；前者索引更大但省去块内定位，后者更小但命中块后仍需扫描。',
+      'Scanning from the beginning makes every primary-key lookup a full-file scan. An indexed file lists keys and block addresses separately, so a lookup narrows the search to one block before confirming inside. A dense index has one entry per record and is larger but avoids in-block positioning; a sparse index has one entry per block and is smaller but still scans the chosen block.',
+    ),
+    definition: text(
+      '索引文件由有序数据文件与索引表组成；索引项至少包含关键字和记录/块地址，查找按索引路由读取目标块，再在块内比较记录。',
+      'An indexed file consists of an ordered data file and an index table. Each entry contains at least a key and a record/block address; a lookup routes through the index, reads the target block, and compares records inside.',
+    ),
+    ...algorithm(
+      step('排序并分块', 'Sort and block the records'),
+      step('建立稠密或稀疏索引', 'Build a dense or sparse index', '稠密每记录一项；稀疏每块一项，使用块首键或上界。', 'Dense: one entry per record; sparse: one per block using a start key or bound.'),
+      step('逐项检查索引', 'Probe index entries', '选择不大于目标的最后一项；目标越界时仍选首块或末块。', 'Choose the last entry not above the target; out-of-range keys still select the first or last block.'),
+      step('读取目标数据块', 'Read the target data block', '成功和失败都恰好读取一个数据块。', 'Both hit and miss read exactly one data block.'),
+      step('块内比较并确认', 'Compare inside the block'),
+    ),
+    conditions: list(
+      [
+        '块内与块间按关键字有序；否则稀疏索引无法路由。',
+        '索引项地址必须等于真实块号，索引键必须与块边界一致。',
+        '稠密索引空间 O(n)，稀疏索引空间 O(n/B)。',
+        '本课程只模拟一级索引，不把线性索引检查说成 B+ 树的 O(log n)。',
+        '索引表固定按一个索引块计，读取数据块固定一次，缓存不纳入模型。',
+      ],
+      [
+        'Keys are ordered inside and across blocks; otherwise a sparse index cannot route.',
+        'An entry address must equal the real block number, and its key must match the block boundary.',
+        'Dense space is O(n); sparse space is O(n/B).',
+        'This course models a one-level index and never calls its linear probe an O(log n) B+ tree.',
+        'The index table counts as one index block, exactly one data block is read, and caching is excluded.',
+      ],
+    ),
+  },
+
+  isam: {
+    intro: text(
+      '有序主区支持按关键字扫描，但块满后的插入不能随意移动整个文件。ISAM 把新记录放进该主块专属的溢出链，并在索引层记录主块与链的最大键。查找先用上界选块，扫主块，再沿链继续；大量溢出会拉长链，因此需要定期重组。',
+      'An ordered main area supports key scans, but insertion into a full block cannot freely move the whole file. ISAM places new records in that block’s private overflow chain and records the maximum key of the block plus chain in the index. A lookup selects a block by its bound, scans it, then follows the chain; heavy overflow lengthens chains and motivates periodic reorganization.',
+    ),
+    definition: text(
+      'ISAM 是一种索引顺序文件组织：主数据区按关键字有序分块，索引层保存每块（含溢出链）的上界，块满后的记录进入该块专属溢出区并通过链接访问。',
+      'ISAM is an index-sequential file organization: an ordered, blocked main data area is indexed by each block’s upper bound including overflow, and records beyond block capacity enter that block’s private overflow area through links.',
+    ),
+    ...operations(
+      step('建立主区、上界与空链', 'Build main blocks, bounds and empty chains'),
+      step('按上界选择主块', 'Select a block by its bound', '选第一个上界不小于目标的主块；目标超过全部上界时选最后一块。', 'Choose the first bound not below the target; if it exceeds every bound, choose the last block.'),
+      step('扫描主块', 'Scan the main block'),
+      step('沿专属溢出链继续', 'Follow the private overflow chain', '只有主块未命中才访问链；每个实际访问的节点计一次溢出读。', 'Visit the chain only after a main miss; every visited node costs one overflow read.'),
+      step('主块满时插入溢出区', 'Insert into overflow when the block is full'),
+      step('链接并刷新上界', 'Link the node and refresh the bound', '新节点必须有前驱链接；最大键变化才刷新索引。', 'A new node needs a predecessor link; refresh the index only when the maximum changes.'),
+      step('插入后真实重查', 'Re-look up the inserted record'),
+    ),
+    conditions: list(
+      [
+        '主块内部有序，记录只属于一个主块；溢出节点的 nextId 不跨块、不成环。',
+        '索引上界等于该块与溢出链的真实最大键。',
+        '主块读取固定一次；每个实际访问的溢出节点各计一次读取。',
+        'ISAM 的索引相对静态，没有 B+ 树的自动分裂和平衡；大量溢出后需要重组。',
+        '本课程不实现完整磁盘管理器或重组过程。',
+      ],
+      [
+        'Main blocks are ordered and every record belongs to one block; nextId stays within the block and cannot cycle.',
+        'Each index bound equals the real maximum of its block and chain.',
+        'One main-block read is counted, plus one read per visited overflow node.',
+        'ISAM’s index is relatively static, without B+ tree splits and balancing; heavy overflow needs reorganization.',
+        'This course implements neither a full disk manager nor reorganization.',
+      ],
+    ),
+  },
+
+  'inverted-index': {
+    intro: text(
+      '按多个次关键字筛选时，逐条检查记录会把每个条件都变成全文件扫描。倒排文件反过来保存“每个关键字对应哪些记录 ID”，查询直接读取相关倒排表，再做交集或并集便得到候选记录。它的代价是额外保存大量记录 ID，并在插入、删除时维护多个表。',
+      'Filtering by several secondary keys turns every condition into a full scan. An inverted file instead stores “which record ids contain each term”; a query reads the relevant lists and intersects or unions them to obtain candidates. The cost is storing many ids and maintaining several lists on insertion or deletion.',
+    ),
+    definition: text(
+      '倒排文件为每个次关键字维护一张倒排表，保存包含该关键字的记录 ID；查询通过读取一张或多张倒排表并执行集合运算，再把 ID 映射回原记录。',
+      'An inverted file maintains a posting list per secondary key containing the ids of records with that term; a query reads one or more lists, applies set operations, and maps ids back to original records.',
+    ),
+    ...algorithm(
+      step('为不同关键字建立空表', 'Create an empty list per distinct term'),
+      step('逐记录扫描已分好的关键字', 'Scan each record’s segmented terms', '本课程不做中文分词；输入必须已经给出关键字集合。', 'No tokenizer is used; input already provides the term sets.'),
+      step('把记录 ID 追加到对应倒排表', 'Append the record id to each term list'),
+      step('构建完成并核对真实集合', 'Finish the build and verify the true sets'),
+      step('读取查询词的倒排表', 'Read each query term’s list'),
+      step('AND 求交或 OR 求并', 'Intersect for AND or union for OR', '结果去重并按原记录顺序过滤；缺失词是空表而非错误。', 'Deduplicate and filter in record order; a missing term is an empty list, not an error.'),
+    ),
+    conditions: list(
+      [
+        '每条记录的关键字已分好且不重复；输入长度 2–9 条记录，每条 1–4 个词。',
+        '一个关键字可对应多条记录；倒排表不是唯一键索引。',
+        '构建结果必须精确等于每条记录真实包含该词的记录 ID 集合。',
+        'AND 结果等于真实交集，OR 结果等于真实并集，顺序与原记录一致。',
+        '本课程不实现中文分词、排名、全文搜索语法或数据库 SQL。',
+      ],
+      [
+        'Every record’s terms are pre-segmented and unique; input has 2–9 records with 1–4 terms each.',
+        'One term may match many records; a posting list is not a unique-key index.',
+        'The built lists must exactly equal the ids of records really containing each term.',
+        'AND equals the true intersection and OR the true union, both in original record order.',
+        'This course implements no Chinese tokenizer, ranking, full-text query grammar or SQL.',
+      ],
+    ),
+  },
 };
 
 export type CourseGuideId = keyof typeof COURSE_GUIDES;

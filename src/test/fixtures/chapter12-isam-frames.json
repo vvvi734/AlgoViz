@@ -1,0 +1,8215 @@
+{
+  "find-hit": {
+    "input": {
+      "preset": "find-hit",
+      "command": "find",
+      "blockCapacity": 2,
+      "targetKey": 104,
+      "records": [
+        {
+          "key": 101,
+          "label": "A"
+        },
+        {
+          "key": 102,
+          "label": "B"
+        },
+        {
+          "key": 103,
+          "label": "C"
+        },
+        {
+          "key": 104,
+          "label": "D"
+        },
+        {
+          "key": 105,
+          "label": "E"
+        },
+        {
+          "key": 106,
+          "label": "F"
+        },
+        {
+          "key": 107,
+          "label": "G"
+        },
+        {
+          "key": 108,
+          "label": "H"
+        }
+      ]
+    },
+    "frames": [
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            101,
+            102,
+            103,
+            104,
+            105,
+            106,
+            107,
+            108
+          ],
+          "done": false
+        },
+        "message": "建立主数据区、每块索引上界与空溢出链 / build main blocks, index bounds and empty chains",
+        "line": 262,
+        "variables": {
+          "command": "find",
+          "targetKey": 104,
+          "mainBlocks": 4,
+          "overflowNodes": 0,
+          "indexBlockReads": 1,
+          "mainBlockReads": 0,
+          "overflowBlockReads": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "init",
+        "structure": {
+          "kind": "isam",
+          "preset": "find-hit",
+          "command": "find",
+          "operation": "init",
+          "blockCapacity": 2,
+          "targetKey": 104,
+          "records": [
+            {
+              "key": 101,
+              "label": "A",
+              "id": "R1"
+            },
+            {
+              "key": 102,
+              "label": "B",
+              "id": "R2"
+            },
+            {
+              "key": 103,
+              "label": "C",
+              "id": "R3"
+            },
+            {
+              "key": 104,
+              "label": "D",
+              "id": "R4"
+            },
+            {
+              "key": 105,
+              "label": "E",
+              "id": "R5"
+            },
+            {
+              "key": 106,
+              "label": "F",
+              "id": "R6"
+            },
+            {
+              "key": 107,
+              "label": "G",
+              "id": "R7"
+            },
+            {
+              "key": 108,
+              "label": "H",
+              "id": "R8"
+            }
+          ],
+          "blocks": [
+            {
+              "id": "B0",
+              "indexKey": 102,
+              "recordIds": [
+                "R1",
+                "R2"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B1",
+              "indexKey": 104,
+              "recordIds": [
+                "R3",
+                "R4"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B2",
+              "indexKey": 106,
+              "recordIds": [
+                "R5",
+                "R6"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B3",
+              "indexKey": 108,
+              "recordIds": [
+                "R7",
+                "R8"
+              ],
+              "overflowHead": null
+            }
+          ],
+          "indexEntries": [
+            {
+              "key": 102,
+              "blockId": "B0"
+            },
+            {
+              "key": 104,
+              "blockId": "B1"
+            },
+            {
+              "key": 106,
+              "blockId": "B2"
+            },
+            {
+              "key": 108,
+              "blockId": "B3"
+            }
+          ],
+          "overflowNodes": [],
+          "currentIndexIndex": null,
+          "selectedBlockId": null,
+          "currentBlockId": null,
+          "currentOverflowId": null,
+          "compareId": null,
+          "foundId": null,
+          "insertedId": null,
+          "indexBlockReads": 1,
+          "mainBlockReads": 0,
+          "overflowBlockReads": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            101,
+            102,
+            103,
+            104,
+            105,
+            106,
+            107,
+            108
+          ],
+          "done": false
+        },
+        "message": "索引上界选中主块 B1 / choose a main block by its upper bound",
+        "line": 184,
+        "variables": {
+          "command": "find",
+          "targetKey": 104,
+          "mainBlocks": 4,
+          "overflowNodes": 0,
+          "indexBlockReads": 1,
+          "mainBlockReads": 0,
+          "overflowBlockReads": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "index-probe",
+        "structure": {
+          "kind": "isam",
+          "preset": "find-hit",
+          "command": "find",
+          "operation": "index-probe",
+          "blockCapacity": 2,
+          "targetKey": 104,
+          "records": [
+            {
+              "key": 101,
+              "label": "A",
+              "id": "R1"
+            },
+            {
+              "key": 102,
+              "label": "B",
+              "id": "R2"
+            },
+            {
+              "key": 103,
+              "label": "C",
+              "id": "R3"
+            },
+            {
+              "key": 104,
+              "label": "D",
+              "id": "R4"
+            },
+            {
+              "key": 105,
+              "label": "E",
+              "id": "R5"
+            },
+            {
+              "key": 106,
+              "label": "F",
+              "id": "R6"
+            },
+            {
+              "key": 107,
+              "label": "G",
+              "id": "R7"
+            },
+            {
+              "key": 108,
+              "label": "H",
+              "id": "R8"
+            }
+          ],
+          "blocks": [
+            {
+              "id": "B0",
+              "indexKey": 102,
+              "recordIds": [
+                "R1",
+                "R2"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B1",
+              "indexKey": 104,
+              "recordIds": [
+                "R3",
+                "R4"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B2",
+              "indexKey": 106,
+              "recordIds": [
+                "R5",
+                "R6"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B3",
+              "indexKey": 108,
+              "recordIds": [
+                "R7",
+                "R8"
+              ],
+              "overflowHead": null
+            }
+          ],
+          "indexEntries": [
+            {
+              "key": 102,
+              "blockId": "B0"
+            },
+            {
+              "key": 104,
+              "blockId": "B1"
+            },
+            {
+              "key": 106,
+              "blockId": "B2"
+            },
+            {
+              "key": 108,
+              "blockId": "B3"
+            }
+          ],
+          "overflowNodes": [],
+          "currentIndexIndex": 1,
+          "selectedBlockId": "B1",
+          "currentBlockId": null,
+          "currentOverflowId": null,
+          "compareId": null,
+          "foundId": null,
+          "insertedId": null,
+          "indexBlockReads": 1,
+          "mainBlockReads": 0,
+          "overflowBlockReads": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            101,
+            102,
+            103,
+            104,
+            105,
+            106,
+            107,
+            108
+          ],
+          "done": false
+        },
+        "message": "读入主区 B1 并检查块内记录 / read and scan the main block",
+        "line": 192,
+        "variables": {
+          "command": "find",
+          "targetKey": 104,
+          "mainBlocks": 4,
+          "overflowNodes": 0,
+          "indexBlockReads": 1,
+          "mainBlockReads": 1,
+          "overflowBlockReads": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "read-main",
+        "structure": {
+          "kind": "isam",
+          "preset": "find-hit",
+          "command": "find",
+          "operation": "read-main",
+          "blockCapacity": 2,
+          "targetKey": 104,
+          "records": [
+            {
+              "key": 101,
+              "label": "A",
+              "id": "R1"
+            },
+            {
+              "key": 102,
+              "label": "B",
+              "id": "R2"
+            },
+            {
+              "key": 103,
+              "label": "C",
+              "id": "R3"
+            },
+            {
+              "key": 104,
+              "label": "D",
+              "id": "R4"
+            },
+            {
+              "key": 105,
+              "label": "E",
+              "id": "R5"
+            },
+            {
+              "key": 106,
+              "label": "F",
+              "id": "R6"
+            },
+            {
+              "key": 107,
+              "label": "G",
+              "id": "R7"
+            },
+            {
+              "key": 108,
+              "label": "H",
+              "id": "R8"
+            }
+          ],
+          "blocks": [
+            {
+              "id": "B0",
+              "indexKey": 102,
+              "recordIds": [
+                "R1",
+                "R2"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B1",
+              "indexKey": 104,
+              "recordIds": [
+                "R3",
+                "R4"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B2",
+              "indexKey": 106,
+              "recordIds": [
+                "R5",
+                "R6"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B3",
+              "indexKey": 108,
+              "recordIds": [
+                "R7",
+                "R8"
+              ],
+              "overflowHead": null
+            }
+          ],
+          "indexEntries": [
+            {
+              "key": 102,
+              "blockId": "B0"
+            },
+            {
+              "key": 104,
+              "blockId": "B1"
+            },
+            {
+              "key": 106,
+              "blockId": "B2"
+            },
+            {
+              "key": 108,
+              "blockId": "B3"
+            }
+          ],
+          "overflowNodes": [],
+          "currentIndexIndex": 1,
+          "selectedBlockId": "B1",
+          "currentBlockId": "B1",
+          "currentOverflowId": null,
+          "compareId": null,
+          "foundId": null,
+          "insertedId": null,
+          "indexBlockReads": 1,
+          "mainBlockReads": 1,
+          "overflowBlockReads": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            101,
+            102,
+            103,
+            104,
+            105,
+            106,
+            107,
+            108
+          ],
+          "done": false
+        },
+        "message": "比较主块记录 103 / compare a main-block record",
+        "line": 199,
+        "variables": {
+          "command": "find",
+          "targetKey": 104,
+          "mainBlocks": 4,
+          "overflowNodes": 0,
+          "indexBlockReads": 1,
+          "mainBlockReads": 1,
+          "overflowBlockReads": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "compare",
+        "structure": {
+          "kind": "isam",
+          "preset": "find-hit",
+          "command": "find",
+          "operation": "compare",
+          "blockCapacity": 2,
+          "targetKey": 104,
+          "records": [
+            {
+              "key": 101,
+              "label": "A",
+              "id": "R1"
+            },
+            {
+              "key": 102,
+              "label": "B",
+              "id": "R2"
+            },
+            {
+              "key": 103,
+              "label": "C",
+              "id": "R3"
+            },
+            {
+              "key": 104,
+              "label": "D",
+              "id": "R4"
+            },
+            {
+              "key": 105,
+              "label": "E",
+              "id": "R5"
+            },
+            {
+              "key": 106,
+              "label": "F",
+              "id": "R6"
+            },
+            {
+              "key": 107,
+              "label": "G",
+              "id": "R7"
+            },
+            {
+              "key": 108,
+              "label": "H",
+              "id": "R8"
+            }
+          ],
+          "blocks": [
+            {
+              "id": "B0",
+              "indexKey": 102,
+              "recordIds": [
+                "R1",
+                "R2"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B1",
+              "indexKey": 104,
+              "recordIds": [
+                "R3",
+                "R4"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B2",
+              "indexKey": 106,
+              "recordIds": [
+                "R5",
+                "R6"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B3",
+              "indexKey": 108,
+              "recordIds": [
+                "R7",
+                "R8"
+              ],
+              "overflowHead": null
+            }
+          ],
+          "indexEntries": [
+            {
+              "key": 102,
+              "blockId": "B0"
+            },
+            {
+              "key": 104,
+              "blockId": "B1"
+            },
+            {
+              "key": 106,
+              "blockId": "B2"
+            },
+            {
+              "key": 108,
+              "blockId": "B3"
+            }
+          ],
+          "overflowNodes": [],
+          "currentIndexIndex": 1,
+          "selectedBlockId": "B1",
+          "currentBlockId": "B1",
+          "currentOverflowId": null,
+          "compareId": "R3",
+          "foundId": null,
+          "insertedId": null,
+          "indexBlockReads": 1,
+          "mainBlockReads": 1,
+          "overflowBlockReads": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            101,
+            102,
+            103,
+            104,
+            105,
+            106,
+            107,
+            108
+          ],
+          "done": false
+        },
+        "message": "比较主块记录 104 / compare a main-block record",
+        "line": 199,
+        "variables": {
+          "command": "find",
+          "targetKey": 104,
+          "mainBlocks": 4,
+          "overflowNodes": 0,
+          "indexBlockReads": 1,
+          "mainBlockReads": 1,
+          "overflowBlockReads": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "compare",
+        "structure": {
+          "kind": "isam",
+          "preset": "find-hit",
+          "command": "find",
+          "operation": "compare",
+          "blockCapacity": 2,
+          "targetKey": 104,
+          "records": [
+            {
+              "key": 101,
+              "label": "A",
+              "id": "R1"
+            },
+            {
+              "key": 102,
+              "label": "B",
+              "id": "R2"
+            },
+            {
+              "key": 103,
+              "label": "C",
+              "id": "R3"
+            },
+            {
+              "key": 104,
+              "label": "D",
+              "id": "R4"
+            },
+            {
+              "key": 105,
+              "label": "E",
+              "id": "R5"
+            },
+            {
+              "key": 106,
+              "label": "F",
+              "id": "R6"
+            },
+            {
+              "key": 107,
+              "label": "G",
+              "id": "R7"
+            },
+            {
+              "key": 108,
+              "label": "H",
+              "id": "R8"
+            }
+          ],
+          "blocks": [
+            {
+              "id": "B0",
+              "indexKey": 102,
+              "recordIds": [
+                "R1",
+                "R2"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B1",
+              "indexKey": 104,
+              "recordIds": [
+                "R3",
+                "R4"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B2",
+              "indexKey": 106,
+              "recordIds": [
+                "R5",
+                "R6"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B3",
+              "indexKey": 108,
+              "recordIds": [
+                "R7",
+                "R8"
+              ],
+              "overflowHead": null
+            }
+          ],
+          "indexEntries": [
+            {
+              "key": 102,
+              "blockId": "B0"
+            },
+            {
+              "key": 104,
+              "blockId": "B1"
+            },
+            {
+              "key": 106,
+              "blockId": "B2"
+            },
+            {
+              "key": 108,
+              "blockId": "B3"
+            }
+          ],
+          "overflowNodes": [],
+          "currentIndexIndex": 1,
+          "selectedBlockId": "B1",
+          "currentBlockId": "B1",
+          "currentOverflowId": null,
+          "compareId": "R4",
+          "foundId": null,
+          "insertedId": null,
+          "indexBlockReads": 1,
+          "mainBlockReads": 1,
+          "overflowBlockReads": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            101,
+            102,
+            103,
+            104,
+            105,
+            106,
+            107,
+            108
+          ],
+          "done": false
+        },
+        "message": "在主区命中 R4 / record found",
+        "line": 234,
+        "variables": {
+          "command": "find",
+          "targetKey": 104,
+          "mainBlocks": 4,
+          "overflowNodes": 0,
+          "indexBlockReads": 1,
+          "mainBlockReads": 1,
+          "overflowBlockReads": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "found",
+        "structure": {
+          "kind": "isam",
+          "preset": "find-hit",
+          "command": "find",
+          "operation": "found",
+          "blockCapacity": 2,
+          "targetKey": 104,
+          "records": [
+            {
+              "key": 101,
+              "label": "A",
+              "id": "R1"
+            },
+            {
+              "key": 102,
+              "label": "B",
+              "id": "R2"
+            },
+            {
+              "key": 103,
+              "label": "C",
+              "id": "R3"
+            },
+            {
+              "key": 104,
+              "label": "D",
+              "id": "R4"
+            },
+            {
+              "key": 105,
+              "label": "E",
+              "id": "R5"
+            },
+            {
+              "key": 106,
+              "label": "F",
+              "id": "R6"
+            },
+            {
+              "key": 107,
+              "label": "G",
+              "id": "R7"
+            },
+            {
+              "key": 108,
+              "label": "H",
+              "id": "R8"
+            }
+          ],
+          "blocks": [
+            {
+              "id": "B0",
+              "indexKey": 102,
+              "recordIds": [
+                "R1",
+                "R2"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B1",
+              "indexKey": 104,
+              "recordIds": [
+                "R3",
+                "R4"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B2",
+              "indexKey": 106,
+              "recordIds": [
+                "R5",
+                "R6"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B3",
+              "indexKey": 108,
+              "recordIds": [
+                "R7",
+                "R8"
+              ],
+              "overflowHead": null
+            }
+          ],
+          "indexEntries": [
+            {
+              "key": 102,
+              "blockId": "B0"
+            },
+            {
+              "key": 104,
+              "blockId": "B1"
+            },
+            {
+              "key": 106,
+              "blockId": "B2"
+            },
+            {
+              "key": 108,
+              "blockId": "B3"
+            }
+          ],
+          "overflowNodes": [],
+          "currentIndexIndex": 1,
+          "selectedBlockId": "B1",
+          "currentBlockId": "B1",
+          "currentOverflowId": null,
+          "compareId": null,
+          "foundId": "R4",
+          "insertedId": null,
+          "indexBlockReads": 1,
+          "mainBlockReads": 1,
+          "overflowBlockReads": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            101,
+            102,
+            103,
+            104,
+            105,
+            106,
+            107,
+            108
+          ],
+          "done": true
+        },
+        "message": "查找结束 / ISAM operation complete",
+        "line": 325,
+        "variables": {
+          "command": "find",
+          "targetKey": 104,
+          "mainBlocks": 4,
+          "overflowNodes": 0,
+          "indexBlockReads": 1,
+          "mainBlockReads": 1,
+          "overflowBlockReads": 0,
+          "result": "found"
+        },
+        "lessonStepId": "done",
+        "structure": {
+          "kind": "isam",
+          "preset": "find-hit",
+          "command": "find",
+          "operation": "done",
+          "blockCapacity": 2,
+          "targetKey": 104,
+          "records": [
+            {
+              "key": 101,
+              "label": "A",
+              "id": "R1"
+            },
+            {
+              "key": 102,
+              "label": "B",
+              "id": "R2"
+            },
+            {
+              "key": 103,
+              "label": "C",
+              "id": "R3"
+            },
+            {
+              "key": 104,
+              "label": "D",
+              "id": "R4"
+            },
+            {
+              "key": 105,
+              "label": "E",
+              "id": "R5"
+            },
+            {
+              "key": 106,
+              "label": "F",
+              "id": "R6"
+            },
+            {
+              "key": 107,
+              "label": "G",
+              "id": "R7"
+            },
+            {
+              "key": 108,
+              "label": "H",
+              "id": "R8"
+            }
+          ],
+          "blocks": [
+            {
+              "id": "B0",
+              "indexKey": 102,
+              "recordIds": [
+                "R1",
+                "R2"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B1",
+              "indexKey": 104,
+              "recordIds": [
+                "R3",
+                "R4"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B2",
+              "indexKey": 106,
+              "recordIds": [
+                "R5",
+                "R6"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B3",
+              "indexKey": 108,
+              "recordIds": [
+                "R7",
+                "R8"
+              ],
+              "overflowHead": null
+            }
+          ],
+          "indexEntries": [
+            {
+              "key": 102,
+              "blockId": "B0"
+            },
+            {
+              "key": 104,
+              "blockId": "B1"
+            },
+            {
+              "key": 106,
+              "blockId": "B2"
+            },
+            {
+              "key": 108,
+              "blockId": "B3"
+            }
+          ],
+          "overflowNodes": [],
+          "currentIndexIndex": 1,
+          "selectedBlockId": "B1",
+          "currentBlockId": "B1",
+          "currentOverflowId": null,
+          "compareId": null,
+          "foundId": "R4",
+          "insertedId": null,
+          "indexBlockReads": 1,
+          "mainBlockReads": 1,
+          "overflowBlockReads": 0,
+          "result": "found"
+        }
+      }
+    ]
+  },
+  "find-overflow": {
+    "input": {
+      "preset": "find-overflow",
+      "command": "insert",
+      "blockCapacity": 2,
+      "targetKey": 105,
+      "newLabel": "I",
+      "records": [
+        {
+          "key": 101,
+          "label": "A"
+        },
+        {
+          "key": 102,
+          "label": "B"
+        },
+        {
+          "key": 103,
+          "label": "C"
+        },
+        {
+          "key": 104,
+          "label": "D"
+        },
+        {
+          "key": 106,
+          "label": "F"
+        },
+        {
+          "key": 107,
+          "label": "G"
+        },
+        {
+          "key": 108,
+          "label": "H"
+        }
+      ]
+    },
+    "frames": [
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            101,
+            102,
+            103,
+            104,
+            106,
+            107,
+            108
+          ],
+          "done": false
+        },
+        "message": "建立主数据区、每块索引上界与空溢出链 / build main blocks, index bounds and empty chains",
+        "line": 262,
+        "variables": {
+          "command": "insert",
+          "targetKey": 105,
+          "mainBlocks": 4,
+          "overflowNodes": 0,
+          "indexBlockReads": 1,
+          "mainBlockReads": 0,
+          "overflowBlockReads": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "init",
+        "structure": {
+          "kind": "isam",
+          "preset": "find-overflow",
+          "command": "insert",
+          "operation": "init",
+          "blockCapacity": 2,
+          "targetKey": 105,
+          "records": [
+            {
+              "key": 101,
+              "label": "A",
+              "id": "R1"
+            },
+            {
+              "key": 102,
+              "label": "B",
+              "id": "R2"
+            },
+            {
+              "key": 103,
+              "label": "C",
+              "id": "R3"
+            },
+            {
+              "key": 104,
+              "label": "D",
+              "id": "R4"
+            },
+            {
+              "key": 106,
+              "label": "F",
+              "id": "R5"
+            },
+            {
+              "key": 107,
+              "label": "G",
+              "id": "R6"
+            },
+            {
+              "key": 108,
+              "label": "H",
+              "id": "R7"
+            }
+          ],
+          "blocks": [
+            {
+              "id": "B0",
+              "indexKey": 102,
+              "recordIds": [
+                "R1",
+                "R2"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B1",
+              "indexKey": 104,
+              "recordIds": [
+                "R3",
+                "R4"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B2",
+              "indexKey": 107,
+              "recordIds": [
+                "R5",
+                "R6"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B3",
+              "indexKey": 108,
+              "recordIds": [
+                "R7"
+              ],
+              "overflowHead": null
+            }
+          ],
+          "indexEntries": [
+            {
+              "key": 102,
+              "blockId": "B0"
+            },
+            {
+              "key": 104,
+              "blockId": "B1"
+            },
+            {
+              "key": 107,
+              "blockId": "B2"
+            },
+            {
+              "key": 108,
+              "blockId": "B3"
+            }
+          ],
+          "overflowNodes": [],
+          "currentIndexIndex": null,
+          "selectedBlockId": null,
+          "currentBlockId": null,
+          "currentOverflowId": null,
+          "compareId": null,
+          "foundId": null,
+          "insertedId": null,
+          "indexBlockReads": 1,
+          "mainBlockReads": 0,
+          "overflowBlockReads": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            101,
+            102,
+            103,
+            104,
+            106,
+            107,
+            108
+          ],
+          "done": false
+        },
+        "message": "按新关键字选择主块 B2 / choose a block for insertion",
+        "line": 270,
+        "variables": {
+          "command": "insert",
+          "targetKey": 105,
+          "mainBlocks": 4,
+          "overflowNodes": 0,
+          "indexBlockReads": 1,
+          "mainBlockReads": 0,
+          "overflowBlockReads": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "index-probe",
+        "structure": {
+          "kind": "isam",
+          "preset": "find-overflow",
+          "command": "insert",
+          "operation": "index-probe",
+          "blockCapacity": 2,
+          "targetKey": 105,
+          "records": [
+            {
+              "key": 101,
+              "label": "A",
+              "id": "R1"
+            },
+            {
+              "key": 102,
+              "label": "B",
+              "id": "R2"
+            },
+            {
+              "key": 103,
+              "label": "C",
+              "id": "R3"
+            },
+            {
+              "key": 104,
+              "label": "D",
+              "id": "R4"
+            },
+            {
+              "key": 106,
+              "label": "F",
+              "id": "R5"
+            },
+            {
+              "key": 107,
+              "label": "G",
+              "id": "R6"
+            },
+            {
+              "key": 108,
+              "label": "H",
+              "id": "R7"
+            }
+          ],
+          "blocks": [
+            {
+              "id": "B0",
+              "indexKey": 102,
+              "recordIds": [
+                "R1",
+                "R2"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B1",
+              "indexKey": 104,
+              "recordIds": [
+                "R3",
+                "R4"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B2",
+              "indexKey": 107,
+              "recordIds": [
+                "R5",
+                "R6"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B3",
+              "indexKey": 108,
+              "recordIds": [
+                "R7"
+              ],
+              "overflowHead": null
+            }
+          ],
+          "indexEntries": [
+            {
+              "key": 102,
+              "blockId": "B0"
+            },
+            {
+              "key": 104,
+              "blockId": "B1"
+            },
+            {
+              "key": 107,
+              "blockId": "B2"
+            },
+            {
+              "key": 108,
+              "blockId": "B3"
+            }
+          ],
+          "overflowNodes": [],
+          "currentIndexIndex": 2,
+          "selectedBlockId": "B2",
+          "currentBlockId": null,
+          "currentOverflowId": null,
+          "compareId": null,
+          "foundId": null,
+          "insertedId": null,
+          "indexBlockReads": 1,
+          "mainBlockReads": 0,
+          "overflowBlockReads": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            101,
+            102,
+            103,
+            104,
+            106,
+            107,
+            108,
+            105
+          ],
+          "done": false
+        },
+        "message": "主块已满，记录 R8 进入溢出链 / append the record to overflow",
+        "line": 304,
+        "variables": {
+          "command": "insert",
+          "targetKey": 105,
+          "mainBlocks": 4,
+          "overflowNodes": 1,
+          "indexBlockReads": 1,
+          "mainBlockReads": 0,
+          "overflowBlockReads": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "insert-overflow",
+        "structure": {
+          "kind": "isam",
+          "preset": "find-overflow",
+          "command": "insert",
+          "operation": "insert-overflow",
+          "blockCapacity": 2,
+          "targetKey": 105,
+          "records": [
+            {
+              "key": 101,
+              "label": "A",
+              "id": "R1"
+            },
+            {
+              "key": 102,
+              "label": "B",
+              "id": "R2"
+            },
+            {
+              "key": 103,
+              "label": "C",
+              "id": "R3"
+            },
+            {
+              "key": 104,
+              "label": "D",
+              "id": "R4"
+            },
+            {
+              "key": 106,
+              "label": "F",
+              "id": "R5"
+            },
+            {
+              "key": 107,
+              "label": "G",
+              "id": "R6"
+            },
+            {
+              "key": 108,
+              "label": "H",
+              "id": "R7"
+            },
+            {
+              "id": "R8",
+              "key": 105,
+              "label": "I"
+            }
+          ],
+          "blocks": [
+            {
+              "id": "B0",
+              "indexKey": 102,
+              "recordIds": [
+                "R1",
+                "R2"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B1",
+              "indexKey": 104,
+              "recordIds": [
+                "R3",
+                "R4"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B2",
+              "indexKey": 107,
+              "recordIds": [
+                "R5",
+                "R6"
+              ],
+              "overflowHead": "O0"
+            },
+            {
+              "id": "B3",
+              "indexKey": 108,
+              "recordIds": [
+                "R7"
+              ],
+              "overflowHead": null
+            }
+          ],
+          "indexEntries": [
+            {
+              "key": 102,
+              "blockId": "B0"
+            },
+            {
+              "key": 104,
+              "blockId": "B1"
+            },
+            {
+              "key": 107,
+              "blockId": "B2"
+            },
+            {
+              "key": 108,
+              "blockId": "B3"
+            }
+          ],
+          "overflowNodes": [
+            {
+              "id": "O0",
+              "blockId": "B2",
+              "recordIds": [
+                "R8"
+              ],
+              "nextId": null
+            }
+          ],
+          "currentIndexIndex": 2,
+          "selectedBlockId": "B2",
+          "currentBlockId": "B2",
+          "currentOverflowId": "O0",
+          "compareId": null,
+          "foundId": null,
+          "insertedId": "R8",
+          "indexBlockReads": 1,
+          "mainBlockReads": 0,
+          "overflowBlockReads": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            101,
+            102,
+            103,
+            104,
+            106,
+            107,
+            108,
+            105
+          ],
+          "done": false
+        },
+        "message": "新溢出节点已链接到 B2 / link the new overflow node",
+        "line": 310,
+        "variables": {
+          "command": "insert",
+          "targetKey": 105,
+          "mainBlocks": 4,
+          "overflowNodes": 1,
+          "indexBlockReads": 1,
+          "mainBlockReads": 0,
+          "overflowBlockReads": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "link-overflow",
+        "structure": {
+          "kind": "isam",
+          "preset": "find-overflow",
+          "command": "insert",
+          "operation": "link-overflow",
+          "blockCapacity": 2,
+          "targetKey": 105,
+          "records": [
+            {
+              "key": 101,
+              "label": "A",
+              "id": "R1"
+            },
+            {
+              "key": 102,
+              "label": "B",
+              "id": "R2"
+            },
+            {
+              "key": 103,
+              "label": "C",
+              "id": "R3"
+            },
+            {
+              "key": 104,
+              "label": "D",
+              "id": "R4"
+            },
+            {
+              "key": 106,
+              "label": "F",
+              "id": "R5"
+            },
+            {
+              "key": 107,
+              "label": "G",
+              "id": "R6"
+            },
+            {
+              "key": 108,
+              "label": "H",
+              "id": "R7"
+            },
+            {
+              "id": "R8",
+              "key": 105,
+              "label": "I"
+            }
+          ],
+          "blocks": [
+            {
+              "id": "B0",
+              "indexKey": 102,
+              "recordIds": [
+                "R1",
+                "R2"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B1",
+              "indexKey": 104,
+              "recordIds": [
+                "R3",
+                "R4"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B2",
+              "indexKey": 107,
+              "recordIds": [
+                "R5",
+                "R6"
+              ],
+              "overflowHead": "O0"
+            },
+            {
+              "id": "B3",
+              "indexKey": 108,
+              "recordIds": [
+                "R7"
+              ],
+              "overflowHead": null
+            }
+          ],
+          "indexEntries": [
+            {
+              "key": 102,
+              "blockId": "B0"
+            },
+            {
+              "key": 104,
+              "blockId": "B1"
+            },
+            {
+              "key": 107,
+              "blockId": "B2"
+            },
+            {
+              "key": 108,
+              "blockId": "B3"
+            }
+          ],
+          "overflowNodes": [
+            {
+              "id": "O0",
+              "blockId": "B2",
+              "recordIds": [
+                "R8"
+              ],
+              "nextId": null
+            }
+          ],
+          "currentIndexIndex": 2,
+          "selectedBlockId": "B2",
+          "currentBlockId": "B2",
+          "currentOverflowId": "O0",
+          "compareId": null,
+          "foundId": null,
+          "insertedId": "R8",
+          "indexBlockReads": 1,
+          "mainBlockReads": 0,
+          "overflowBlockReads": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            101,
+            102,
+            103,
+            104,
+            106,
+            107,
+            108,
+            105
+          ],
+          "done": false
+        },
+        "message": "索引上界选中主块 B2 / choose a main block by its upper bound",
+        "line": 184,
+        "variables": {
+          "command": "insert",
+          "targetKey": 105,
+          "mainBlocks": 4,
+          "overflowNodes": 1,
+          "indexBlockReads": 1,
+          "mainBlockReads": 0,
+          "overflowBlockReads": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "index-probe",
+        "structure": {
+          "kind": "isam",
+          "preset": "find-overflow",
+          "command": "insert",
+          "operation": "index-probe",
+          "blockCapacity": 2,
+          "targetKey": 105,
+          "records": [
+            {
+              "key": 101,
+              "label": "A",
+              "id": "R1"
+            },
+            {
+              "key": 102,
+              "label": "B",
+              "id": "R2"
+            },
+            {
+              "key": 103,
+              "label": "C",
+              "id": "R3"
+            },
+            {
+              "key": 104,
+              "label": "D",
+              "id": "R4"
+            },
+            {
+              "key": 106,
+              "label": "F",
+              "id": "R5"
+            },
+            {
+              "key": 107,
+              "label": "G",
+              "id": "R6"
+            },
+            {
+              "key": 108,
+              "label": "H",
+              "id": "R7"
+            },
+            {
+              "id": "R8",
+              "key": 105,
+              "label": "I"
+            }
+          ],
+          "blocks": [
+            {
+              "id": "B0",
+              "indexKey": 102,
+              "recordIds": [
+                "R1",
+                "R2"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B1",
+              "indexKey": 104,
+              "recordIds": [
+                "R3",
+                "R4"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B2",
+              "indexKey": 107,
+              "recordIds": [
+                "R5",
+                "R6"
+              ],
+              "overflowHead": "O0"
+            },
+            {
+              "id": "B3",
+              "indexKey": 108,
+              "recordIds": [
+                "R7"
+              ],
+              "overflowHead": null
+            }
+          ],
+          "indexEntries": [
+            {
+              "key": 102,
+              "blockId": "B0"
+            },
+            {
+              "key": 104,
+              "blockId": "B1"
+            },
+            {
+              "key": 107,
+              "blockId": "B2"
+            },
+            {
+              "key": 108,
+              "blockId": "B3"
+            }
+          ],
+          "overflowNodes": [
+            {
+              "id": "O0",
+              "blockId": "B2",
+              "recordIds": [
+                "R8"
+              ],
+              "nextId": null
+            }
+          ],
+          "currentIndexIndex": 2,
+          "selectedBlockId": "B2",
+          "currentBlockId": "B2",
+          "currentOverflowId": null,
+          "compareId": null,
+          "foundId": null,
+          "insertedId": "R8",
+          "indexBlockReads": 1,
+          "mainBlockReads": 0,
+          "overflowBlockReads": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            101,
+            102,
+            103,
+            104,
+            106,
+            107,
+            108,
+            105
+          ],
+          "done": false
+        },
+        "message": "读入主区 B2 并检查块内记录 / read and scan the main block",
+        "line": 192,
+        "variables": {
+          "command": "insert",
+          "targetKey": 105,
+          "mainBlocks": 4,
+          "overflowNodes": 1,
+          "indexBlockReads": 1,
+          "mainBlockReads": 1,
+          "overflowBlockReads": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "read-main",
+        "structure": {
+          "kind": "isam",
+          "preset": "find-overflow",
+          "command": "insert",
+          "operation": "read-main",
+          "blockCapacity": 2,
+          "targetKey": 105,
+          "records": [
+            {
+              "key": 101,
+              "label": "A",
+              "id": "R1"
+            },
+            {
+              "key": 102,
+              "label": "B",
+              "id": "R2"
+            },
+            {
+              "key": 103,
+              "label": "C",
+              "id": "R3"
+            },
+            {
+              "key": 104,
+              "label": "D",
+              "id": "R4"
+            },
+            {
+              "key": 106,
+              "label": "F",
+              "id": "R5"
+            },
+            {
+              "key": 107,
+              "label": "G",
+              "id": "R6"
+            },
+            {
+              "key": 108,
+              "label": "H",
+              "id": "R7"
+            },
+            {
+              "id": "R8",
+              "key": 105,
+              "label": "I"
+            }
+          ],
+          "blocks": [
+            {
+              "id": "B0",
+              "indexKey": 102,
+              "recordIds": [
+                "R1",
+                "R2"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B1",
+              "indexKey": 104,
+              "recordIds": [
+                "R3",
+                "R4"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B2",
+              "indexKey": 107,
+              "recordIds": [
+                "R5",
+                "R6"
+              ],
+              "overflowHead": "O0"
+            },
+            {
+              "id": "B3",
+              "indexKey": 108,
+              "recordIds": [
+                "R7"
+              ],
+              "overflowHead": null
+            }
+          ],
+          "indexEntries": [
+            {
+              "key": 102,
+              "blockId": "B0"
+            },
+            {
+              "key": 104,
+              "blockId": "B1"
+            },
+            {
+              "key": 107,
+              "blockId": "B2"
+            },
+            {
+              "key": 108,
+              "blockId": "B3"
+            }
+          ],
+          "overflowNodes": [
+            {
+              "id": "O0",
+              "blockId": "B2",
+              "recordIds": [
+                "R8"
+              ],
+              "nextId": null
+            }
+          ],
+          "currentIndexIndex": 2,
+          "selectedBlockId": "B2",
+          "currentBlockId": "B2",
+          "currentOverflowId": null,
+          "compareId": null,
+          "foundId": null,
+          "insertedId": "R8",
+          "indexBlockReads": 1,
+          "mainBlockReads": 1,
+          "overflowBlockReads": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            101,
+            102,
+            103,
+            104,
+            106,
+            107,
+            108,
+            105
+          ],
+          "done": false
+        },
+        "message": "比较主块记录 106 / compare a main-block record",
+        "line": 199,
+        "variables": {
+          "command": "insert",
+          "targetKey": 105,
+          "mainBlocks": 4,
+          "overflowNodes": 1,
+          "indexBlockReads": 1,
+          "mainBlockReads": 1,
+          "overflowBlockReads": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "compare",
+        "structure": {
+          "kind": "isam",
+          "preset": "find-overflow",
+          "command": "insert",
+          "operation": "compare",
+          "blockCapacity": 2,
+          "targetKey": 105,
+          "records": [
+            {
+              "key": 101,
+              "label": "A",
+              "id": "R1"
+            },
+            {
+              "key": 102,
+              "label": "B",
+              "id": "R2"
+            },
+            {
+              "key": 103,
+              "label": "C",
+              "id": "R3"
+            },
+            {
+              "key": 104,
+              "label": "D",
+              "id": "R4"
+            },
+            {
+              "key": 106,
+              "label": "F",
+              "id": "R5"
+            },
+            {
+              "key": 107,
+              "label": "G",
+              "id": "R6"
+            },
+            {
+              "key": 108,
+              "label": "H",
+              "id": "R7"
+            },
+            {
+              "id": "R8",
+              "key": 105,
+              "label": "I"
+            }
+          ],
+          "blocks": [
+            {
+              "id": "B0",
+              "indexKey": 102,
+              "recordIds": [
+                "R1",
+                "R2"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B1",
+              "indexKey": 104,
+              "recordIds": [
+                "R3",
+                "R4"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B2",
+              "indexKey": 107,
+              "recordIds": [
+                "R5",
+                "R6"
+              ],
+              "overflowHead": "O0"
+            },
+            {
+              "id": "B3",
+              "indexKey": 108,
+              "recordIds": [
+                "R7"
+              ],
+              "overflowHead": null
+            }
+          ],
+          "indexEntries": [
+            {
+              "key": 102,
+              "blockId": "B0"
+            },
+            {
+              "key": 104,
+              "blockId": "B1"
+            },
+            {
+              "key": 107,
+              "blockId": "B2"
+            },
+            {
+              "key": 108,
+              "blockId": "B3"
+            }
+          ],
+          "overflowNodes": [
+            {
+              "id": "O0",
+              "blockId": "B2",
+              "recordIds": [
+                "R8"
+              ],
+              "nextId": null
+            }
+          ],
+          "currentIndexIndex": 2,
+          "selectedBlockId": "B2",
+          "currentBlockId": "B2",
+          "currentOverflowId": null,
+          "compareId": "R5",
+          "foundId": null,
+          "insertedId": "R8",
+          "indexBlockReads": 1,
+          "mainBlockReads": 1,
+          "overflowBlockReads": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            101,
+            102,
+            103,
+            104,
+            106,
+            107,
+            108,
+            105
+          ],
+          "done": false
+        },
+        "message": "比较主块记录 107 / compare a main-block record",
+        "line": 199,
+        "variables": {
+          "command": "insert",
+          "targetKey": 105,
+          "mainBlocks": 4,
+          "overflowNodes": 1,
+          "indexBlockReads": 1,
+          "mainBlockReads": 1,
+          "overflowBlockReads": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "compare",
+        "structure": {
+          "kind": "isam",
+          "preset": "find-overflow",
+          "command": "insert",
+          "operation": "compare",
+          "blockCapacity": 2,
+          "targetKey": 105,
+          "records": [
+            {
+              "key": 101,
+              "label": "A",
+              "id": "R1"
+            },
+            {
+              "key": 102,
+              "label": "B",
+              "id": "R2"
+            },
+            {
+              "key": 103,
+              "label": "C",
+              "id": "R3"
+            },
+            {
+              "key": 104,
+              "label": "D",
+              "id": "R4"
+            },
+            {
+              "key": 106,
+              "label": "F",
+              "id": "R5"
+            },
+            {
+              "key": 107,
+              "label": "G",
+              "id": "R6"
+            },
+            {
+              "key": 108,
+              "label": "H",
+              "id": "R7"
+            },
+            {
+              "id": "R8",
+              "key": 105,
+              "label": "I"
+            }
+          ],
+          "blocks": [
+            {
+              "id": "B0",
+              "indexKey": 102,
+              "recordIds": [
+                "R1",
+                "R2"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B1",
+              "indexKey": 104,
+              "recordIds": [
+                "R3",
+                "R4"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B2",
+              "indexKey": 107,
+              "recordIds": [
+                "R5",
+                "R6"
+              ],
+              "overflowHead": "O0"
+            },
+            {
+              "id": "B3",
+              "indexKey": 108,
+              "recordIds": [
+                "R7"
+              ],
+              "overflowHead": null
+            }
+          ],
+          "indexEntries": [
+            {
+              "key": 102,
+              "blockId": "B0"
+            },
+            {
+              "key": 104,
+              "blockId": "B1"
+            },
+            {
+              "key": 107,
+              "blockId": "B2"
+            },
+            {
+              "key": 108,
+              "blockId": "B3"
+            }
+          ],
+          "overflowNodes": [
+            {
+              "id": "O0",
+              "blockId": "B2",
+              "recordIds": [
+                "R8"
+              ],
+              "nextId": null
+            }
+          ],
+          "currentIndexIndex": 2,
+          "selectedBlockId": "B2",
+          "currentBlockId": "B2",
+          "currentOverflowId": null,
+          "compareId": "R6",
+          "foundId": null,
+          "insertedId": "R8",
+          "indexBlockReads": 1,
+          "mainBlockReads": 1,
+          "overflowBlockReads": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            101,
+            102,
+            103,
+            104,
+            106,
+            107,
+            108,
+            105
+          ],
+          "done": false
+        },
+        "message": "继续读溢出节点 O0 / read the linked overflow node",
+        "line": 213,
+        "variables": {
+          "command": "insert",
+          "targetKey": 105,
+          "mainBlocks": 4,
+          "overflowNodes": 1,
+          "indexBlockReads": 1,
+          "mainBlockReads": 1,
+          "overflowBlockReads": 1,
+          "result": "pending"
+        },
+        "lessonStepId": "read-overflow",
+        "structure": {
+          "kind": "isam",
+          "preset": "find-overflow",
+          "command": "insert",
+          "operation": "read-overflow",
+          "blockCapacity": 2,
+          "targetKey": 105,
+          "records": [
+            {
+              "key": 101,
+              "label": "A",
+              "id": "R1"
+            },
+            {
+              "key": 102,
+              "label": "B",
+              "id": "R2"
+            },
+            {
+              "key": 103,
+              "label": "C",
+              "id": "R3"
+            },
+            {
+              "key": 104,
+              "label": "D",
+              "id": "R4"
+            },
+            {
+              "key": 106,
+              "label": "F",
+              "id": "R5"
+            },
+            {
+              "key": 107,
+              "label": "G",
+              "id": "R6"
+            },
+            {
+              "key": 108,
+              "label": "H",
+              "id": "R7"
+            },
+            {
+              "id": "R8",
+              "key": 105,
+              "label": "I"
+            }
+          ],
+          "blocks": [
+            {
+              "id": "B0",
+              "indexKey": 102,
+              "recordIds": [
+                "R1",
+                "R2"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B1",
+              "indexKey": 104,
+              "recordIds": [
+                "R3",
+                "R4"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B2",
+              "indexKey": 107,
+              "recordIds": [
+                "R5",
+                "R6"
+              ],
+              "overflowHead": "O0"
+            },
+            {
+              "id": "B3",
+              "indexKey": 108,
+              "recordIds": [
+                "R7"
+              ],
+              "overflowHead": null
+            }
+          ],
+          "indexEntries": [
+            {
+              "key": 102,
+              "blockId": "B0"
+            },
+            {
+              "key": 104,
+              "blockId": "B1"
+            },
+            {
+              "key": 107,
+              "blockId": "B2"
+            },
+            {
+              "key": 108,
+              "blockId": "B3"
+            }
+          ],
+          "overflowNodes": [
+            {
+              "id": "O0",
+              "blockId": "B2",
+              "recordIds": [
+                "R8"
+              ],
+              "nextId": null
+            }
+          ],
+          "currentIndexIndex": 2,
+          "selectedBlockId": "B2",
+          "currentBlockId": "B2",
+          "currentOverflowId": "O0",
+          "compareId": "R6",
+          "foundId": null,
+          "insertedId": "R8",
+          "indexBlockReads": 1,
+          "mainBlockReads": 1,
+          "overflowBlockReads": 1,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            101,
+            102,
+            103,
+            104,
+            106,
+            107,
+            108,
+            105
+          ],
+          "done": false
+        },
+        "message": "比较溢出记录 105 / compare an overflow record",
+        "line": 220,
+        "variables": {
+          "command": "insert",
+          "targetKey": 105,
+          "mainBlocks": 4,
+          "overflowNodes": 1,
+          "indexBlockReads": 1,
+          "mainBlockReads": 1,
+          "overflowBlockReads": 1,
+          "result": "pending"
+        },
+        "lessonStepId": "compare",
+        "structure": {
+          "kind": "isam",
+          "preset": "find-overflow",
+          "command": "insert",
+          "operation": "compare",
+          "blockCapacity": 2,
+          "targetKey": 105,
+          "records": [
+            {
+              "key": 101,
+              "label": "A",
+              "id": "R1"
+            },
+            {
+              "key": 102,
+              "label": "B",
+              "id": "R2"
+            },
+            {
+              "key": 103,
+              "label": "C",
+              "id": "R3"
+            },
+            {
+              "key": 104,
+              "label": "D",
+              "id": "R4"
+            },
+            {
+              "key": 106,
+              "label": "F",
+              "id": "R5"
+            },
+            {
+              "key": 107,
+              "label": "G",
+              "id": "R6"
+            },
+            {
+              "key": 108,
+              "label": "H",
+              "id": "R7"
+            },
+            {
+              "id": "R8",
+              "key": 105,
+              "label": "I"
+            }
+          ],
+          "blocks": [
+            {
+              "id": "B0",
+              "indexKey": 102,
+              "recordIds": [
+                "R1",
+                "R2"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B1",
+              "indexKey": 104,
+              "recordIds": [
+                "R3",
+                "R4"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B2",
+              "indexKey": 107,
+              "recordIds": [
+                "R5",
+                "R6"
+              ],
+              "overflowHead": "O0"
+            },
+            {
+              "id": "B3",
+              "indexKey": 108,
+              "recordIds": [
+                "R7"
+              ],
+              "overflowHead": null
+            }
+          ],
+          "indexEntries": [
+            {
+              "key": 102,
+              "blockId": "B0"
+            },
+            {
+              "key": 104,
+              "blockId": "B1"
+            },
+            {
+              "key": 107,
+              "blockId": "B2"
+            },
+            {
+              "key": 108,
+              "blockId": "B3"
+            }
+          ],
+          "overflowNodes": [
+            {
+              "id": "O0",
+              "blockId": "B2",
+              "recordIds": [
+                "R8"
+              ],
+              "nextId": null
+            }
+          ],
+          "currentIndexIndex": 2,
+          "selectedBlockId": "B2",
+          "currentBlockId": "B2",
+          "currentOverflowId": "O0",
+          "compareId": "R8",
+          "foundId": null,
+          "insertedId": "R8",
+          "indexBlockReads": 1,
+          "mainBlockReads": 1,
+          "overflowBlockReads": 1,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            101,
+            102,
+            103,
+            104,
+            106,
+            107,
+            108,
+            105
+          ],
+          "done": false
+        },
+        "message": "在溢出区命中 R8 / record found",
+        "line": 234,
+        "variables": {
+          "command": "insert",
+          "targetKey": 105,
+          "mainBlocks": 4,
+          "overflowNodes": 1,
+          "indexBlockReads": 1,
+          "mainBlockReads": 1,
+          "overflowBlockReads": 1,
+          "result": "pending"
+        },
+        "lessonStepId": "found",
+        "structure": {
+          "kind": "isam",
+          "preset": "find-overflow",
+          "command": "insert",
+          "operation": "found",
+          "blockCapacity": 2,
+          "targetKey": 105,
+          "records": [
+            {
+              "key": 101,
+              "label": "A",
+              "id": "R1"
+            },
+            {
+              "key": 102,
+              "label": "B",
+              "id": "R2"
+            },
+            {
+              "key": 103,
+              "label": "C",
+              "id": "R3"
+            },
+            {
+              "key": 104,
+              "label": "D",
+              "id": "R4"
+            },
+            {
+              "key": 106,
+              "label": "F",
+              "id": "R5"
+            },
+            {
+              "key": 107,
+              "label": "G",
+              "id": "R6"
+            },
+            {
+              "key": 108,
+              "label": "H",
+              "id": "R7"
+            },
+            {
+              "id": "R8",
+              "key": 105,
+              "label": "I"
+            }
+          ],
+          "blocks": [
+            {
+              "id": "B0",
+              "indexKey": 102,
+              "recordIds": [
+                "R1",
+                "R2"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B1",
+              "indexKey": 104,
+              "recordIds": [
+                "R3",
+                "R4"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B2",
+              "indexKey": 107,
+              "recordIds": [
+                "R5",
+                "R6"
+              ],
+              "overflowHead": "O0"
+            },
+            {
+              "id": "B3",
+              "indexKey": 108,
+              "recordIds": [
+                "R7"
+              ],
+              "overflowHead": null
+            }
+          ],
+          "indexEntries": [
+            {
+              "key": 102,
+              "blockId": "B0"
+            },
+            {
+              "key": 104,
+              "blockId": "B1"
+            },
+            {
+              "key": 107,
+              "blockId": "B2"
+            },
+            {
+              "key": 108,
+              "blockId": "B3"
+            }
+          ],
+          "overflowNodes": [
+            {
+              "id": "O0",
+              "blockId": "B2",
+              "recordIds": [
+                "R8"
+              ],
+              "nextId": null
+            }
+          ],
+          "currentIndexIndex": 2,
+          "selectedBlockId": "B2",
+          "currentBlockId": "B2",
+          "currentOverflowId": null,
+          "compareId": null,
+          "foundId": "R8",
+          "insertedId": "R8",
+          "indexBlockReads": 1,
+          "mainBlockReads": 1,
+          "overflowBlockReads": 1,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            101,
+            102,
+            103,
+            104,
+            106,
+            107,
+            108,
+            105
+          ],
+          "done": true
+        },
+        "message": "插入后重新查找成功 / ISAM operation complete",
+        "line": 325,
+        "variables": {
+          "command": "insert",
+          "targetKey": 105,
+          "mainBlocks": 4,
+          "overflowNodes": 1,
+          "indexBlockReads": 1,
+          "mainBlockReads": 1,
+          "overflowBlockReads": 1,
+          "result": "inserted"
+        },
+        "lessonStepId": "done",
+        "structure": {
+          "kind": "isam",
+          "preset": "find-overflow",
+          "command": "insert",
+          "operation": "done",
+          "blockCapacity": 2,
+          "targetKey": 105,
+          "records": [
+            {
+              "key": 101,
+              "label": "A",
+              "id": "R1"
+            },
+            {
+              "key": 102,
+              "label": "B",
+              "id": "R2"
+            },
+            {
+              "key": 103,
+              "label": "C",
+              "id": "R3"
+            },
+            {
+              "key": 104,
+              "label": "D",
+              "id": "R4"
+            },
+            {
+              "key": 106,
+              "label": "F",
+              "id": "R5"
+            },
+            {
+              "key": 107,
+              "label": "G",
+              "id": "R6"
+            },
+            {
+              "key": 108,
+              "label": "H",
+              "id": "R7"
+            },
+            {
+              "id": "R8",
+              "key": 105,
+              "label": "I"
+            }
+          ],
+          "blocks": [
+            {
+              "id": "B0",
+              "indexKey": 102,
+              "recordIds": [
+                "R1",
+                "R2"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B1",
+              "indexKey": 104,
+              "recordIds": [
+                "R3",
+                "R4"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B2",
+              "indexKey": 107,
+              "recordIds": [
+                "R5",
+                "R6"
+              ],
+              "overflowHead": "O0"
+            },
+            {
+              "id": "B3",
+              "indexKey": 108,
+              "recordIds": [
+                "R7"
+              ],
+              "overflowHead": null
+            }
+          ],
+          "indexEntries": [
+            {
+              "key": 102,
+              "blockId": "B0"
+            },
+            {
+              "key": 104,
+              "blockId": "B1"
+            },
+            {
+              "key": 107,
+              "blockId": "B2"
+            },
+            {
+              "key": 108,
+              "blockId": "B3"
+            }
+          ],
+          "overflowNodes": [
+            {
+              "id": "O0",
+              "blockId": "B2",
+              "recordIds": [
+                "R8"
+              ],
+              "nextId": null
+            }
+          ],
+          "currentIndexIndex": 2,
+          "selectedBlockId": "B2",
+          "currentBlockId": "B2",
+          "currentOverflowId": null,
+          "compareId": null,
+          "foundId": "R8",
+          "insertedId": "R8",
+          "indexBlockReads": 1,
+          "mainBlockReads": 1,
+          "overflowBlockReads": 1,
+          "result": "inserted"
+        }
+      }
+    ]
+  },
+  "find-miss": {
+    "input": {
+      "preset": "find-miss",
+      "command": "find",
+      "blockCapacity": 2,
+      "targetKey": 109,
+      "records": [
+        {
+          "key": 101,
+          "label": "A"
+        },
+        {
+          "key": 102,
+          "label": "B"
+        },
+        {
+          "key": 103,
+          "label": "C"
+        },
+        {
+          "key": 104,
+          "label": "D"
+        },
+        {
+          "key": 105,
+          "label": "E"
+        },
+        {
+          "key": 106,
+          "label": "F"
+        },
+        {
+          "key": 107,
+          "label": "G"
+        },
+        {
+          "key": 108,
+          "label": "H"
+        }
+      ]
+    },
+    "frames": [
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            101,
+            102,
+            103,
+            104,
+            105,
+            106,
+            107,
+            108
+          ],
+          "done": false
+        },
+        "message": "建立主数据区、每块索引上界与空溢出链 / build main blocks, index bounds and empty chains",
+        "line": 262,
+        "variables": {
+          "command": "find",
+          "targetKey": 109,
+          "mainBlocks": 4,
+          "overflowNodes": 0,
+          "indexBlockReads": 1,
+          "mainBlockReads": 0,
+          "overflowBlockReads": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "init",
+        "structure": {
+          "kind": "isam",
+          "preset": "find-miss",
+          "command": "find",
+          "operation": "init",
+          "blockCapacity": 2,
+          "targetKey": 109,
+          "records": [
+            {
+              "key": 101,
+              "label": "A",
+              "id": "R1"
+            },
+            {
+              "key": 102,
+              "label": "B",
+              "id": "R2"
+            },
+            {
+              "key": 103,
+              "label": "C",
+              "id": "R3"
+            },
+            {
+              "key": 104,
+              "label": "D",
+              "id": "R4"
+            },
+            {
+              "key": 105,
+              "label": "E",
+              "id": "R5"
+            },
+            {
+              "key": 106,
+              "label": "F",
+              "id": "R6"
+            },
+            {
+              "key": 107,
+              "label": "G",
+              "id": "R7"
+            },
+            {
+              "key": 108,
+              "label": "H",
+              "id": "R8"
+            }
+          ],
+          "blocks": [
+            {
+              "id": "B0",
+              "indexKey": 102,
+              "recordIds": [
+                "R1",
+                "R2"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B1",
+              "indexKey": 104,
+              "recordIds": [
+                "R3",
+                "R4"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B2",
+              "indexKey": 106,
+              "recordIds": [
+                "R5",
+                "R6"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B3",
+              "indexKey": 108,
+              "recordIds": [
+                "R7",
+                "R8"
+              ],
+              "overflowHead": null
+            }
+          ],
+          "indexEntries": [
+            {
+              "key": 102,
+              "blockId": "B0"
+            },
+            {
+              "key": 104,
+              "blockId": "B1"
+            },
+            {
+              "key": 106,
+              "blockId": "B2"
+            },
+            {
+              "key": 108,
+              "blockId": "B3"
+            }
+          ],
+          "overflowNodes": [],
+          "currentIndexIndex": null,
+          "selectedBlockId": null,
+          "currentBlockId": null,
+          "currentOverflowId": null,
+          "compareId": null,
+          "foundId": null,
+          "insertedId": null,
+          "indexBlockReads": 1,
+          "mainBlockReads": 0,
+          "overflowBlockReads": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            101,
+            102,
+            103,
+            104,
+            105,
+            106,
+            107,
+            108
+          ],
+          "done": false
+        },
+        "message": "索引上界选中主块 B3 / choose a main block by its upper bound",
+        "line": 184,
+        "variables": {
+          "command": "find",
+          "targetKey": 109,
+          "mainBlocks": 4,
+          "overflowNodes": 0,
+          "indexBlockReads": 1,
+          "mainBlockReads": 0,
+          "overflowBlockReads": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "index-probe",
+        "structure": {
+          "kind": "isam",
+          "preset": "find-miss",
+          "command": "find",
+          "operation": "index-probe",
+          "blockCapacity": 2,
+          "targetKey": 109,
+          "records": [
+            {
+              "key": 101,
+              "label": "A",
+              "id": "R1"
+            },
+            {
+              "key": 102,
+              "label": "B",
+              "id": "R2"
+            },
+            {
+              "key": 103,
+              "label": "C",
+              "id": "R3"
+            },
+            {
+              "key": 104,
+              "label": "D",
+              "id": "R4"
+            },
+            {
+              "key": 105,
+              "label": "E",
+              "id": "R5"
+            },
+            {
+              "key": 106,
+              "label": "F",
+              "id": "R6"
+            },
+            {
+              "key": 107,
+              "label": "G",
+              "id": "R7"
+            },
+            {
+              "key": 108,
+              "label": "H",
+              "id": "R8"
+            }
+          ],
+          "blocks": [
+            {
+              "id": "B0",
+              "indexKey": 102,
+              "recordIds": [
+                "R1",
+                "R2"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B1",
+              "indexKey": 104,
+              "recordIds": [
+                "R3",
+                "R4"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B2",
+              "indexKey": 106,
+              "recordIds": [
+                "R5",
+                "R6"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B3",
+              "indexKey": 108,
+              "recordIds": [
+                "R7",
+                "R8"
+              ],
+              "overflowHead": null
+            }
+          ],
+          "indexEntries": [
+            {
+              "key": 102,
+              "blockId": "B0"
+            },
+            {
+              "key": 104,
+              "blockId": "B1"
+            },
+            {
+              "key": 106,
+              "blockId": "B2"
+            },
+            {
+              "key": 108,
+              "blockId": "B3"
+            }
+          ],
+          "overflowNodes": [],
+          "currentIndexIndex": 3,
+          "selectedBlockId": "B3",
+          "currentBlockId": null,
+          "currentOverflowId": null,
+          "compareId": null,
+          "foundId": null,
+          "insertedId": null,
+          "indexBlockReads": 1,
+          "mainBlockReads": 0,
+          "overflowBlockReads": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            101,
+            102,
+            103,
+            104,
+            105,
+            106,
+            107,
+            108
+          ],
+          "done": false
+        },
+        "message": "读入主区 B3 并检查块内记录 / read and scan the main block",
+        "line": 192,
+        "variables": {
+          "command": "find",
+          "targetKey": 109,
+          "mainBlocks": 4,
+          "overflowNodes": 0,
+          "indexBlockReads": 1,
+          "mainBlockReads": 1,
+          "overflowBlockReads": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "read-main",
+        "structure": {
+          "kind": "isam",
+          "preset": "find-miss",
+          "command": "find",
+          "operation": "read-main",
+          "blockCapacity": 2,
+          "targetKey": 109,
+          "records": [
+            {
+              "key": 101,
+              "label": "A",
+              "id": "R1"
+            },
+            {
+              "key": 102,
+              "label": "B",
+              "id": "R2"
+            },
+            {
+              "key": 103,
+              "label": "C",
+              "id": "R3"
+            },
+            {
+              "key": 104,
+              "label": "D",
+              "id": "R4"
+            },
+            {
+              "key": 105,
+              "label": "E",
+              "id": "R5"
+            },
+            {
+              "key": 106,
+              "label": "F",
+              "id": "R6"
+            },
+            {
+              "key": 107,
+              "label": "G",
+              "id": "R7"
+            },
+            {
+              "key": 108,
+              "label": "H",
+              "id": "R8"
+            }
+          ],
+          "blocks": [
+            {
+              "id": "B0",
+              "indexKey": 102,
+              "recordIds": [
+                "R1",
+                "R2"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B1",
+              "indexKey": 104,
+              "recordIds": [
+                "R3",
+                "R4"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B2",
+              "indexKey": 106,
+              "recordIds": [
+                "R5",
+                "R6"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B3",
+              "indexKey": 108,
+              "recordIds": [
+                "R7",
+                "R8"
+              ],
+              "overflowHead": null
+            }
+          ],
+          "indexEntries": [
+            {
+              "key": 102,
+              "blockId": "B0"
+            },
+            {
+              "key": 104,
+              "blockId": "B1"
+            },
+            {
+              "key": 106,
+              "blockId": "B2"
+            },
+            {
+              "key": 108,
+              "blockId": "B3"
+            }
+          ],
+          "overflowNodes": [],
+          "currentIndexIndex": 3,
+          "selectedBlockId": "B3",
+          "currentBlockId": "B3",
+          "currentOverflowId": null,
+          "compareId": null,
+          "foundId": null,
+          "insertedId": null,
+          "indexBlockReads": 1,
+          "mainBlockReads": 1,
+          "overflowBlockReads": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            101,
+            102,
+            103,
+            104,
+            105,
+            106,
+            107,
+            108
+          ],
+          "done": false
+        },
+        "message": "比较主块记录 107 / compare a main-block record",
+        "line": 199,
+        "variables": {
+          "command": "find",
+          "targetKey": 109,
+          "mainBlocks": 4,
+          "overflowNodes": 0,
+          "indexBlockReads": 1,
+          "mainBlockReads": 1,
+          "overflowBlockReads": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "compare",
+        "structure": {
+          "kind": "isam",
+          "preset": "find-miss",
+          "command": "find",
+          "operation": "compare",
+          "blockCapacity": 2,
+          "targetKey": 109,
+          "records": [
+            {
+              "key": 101,
+              "label": "A",
+              "id": "R1"
+            },
+            {
+              "key": 102,
+              "label": "B",
+              "id": "R2"
+            },
+            {
+              "key": 103,
+              "label": "C",
+              "id": "R3"
+            },
+            {
+              "key": 104,
+              "label": "D",
+              "id": "R4"
+            },
+            {
+              "key": 105,
+              "label": "E",
+              "id": "R5"
+            },
+            {
+              "key": 106,
+              "label": "F",
+              "id": "R6"
+            },
+            {
+              "key": 107,
+              "label": "G",
+              "id": "R7"
+            },
+            {
+              "key": 108,
+              "label": "H",
+              "id": "R8"
+            }
+          ],
+          "blocks": [
+            {
+              "id": "B0",
+              "indexKey": 102,
+              "recordIds": [
+                "R1",
+                "R2"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B1",
+              "indexKey": 104,
+              "recordIds": [
+                "R3",
+                "R4"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B2",
+              "indexKey": 106,
+              "recordIds": [
+                "R5",
+                "R6"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B3",
+              "indexKey": 108,
+              "recordIds": [
+                "R7",
+                "R8"
+              ],
+              "overflowHead": null
+            }
+          ],
+          "indexEntries": [
+            {
+              "key": 102,
+              "blockId": "B0"
+            },
+            {
+              "key": 104,
+              "blockId": "B1"
+            },
+            {
+              "key": 106,
+              "blockId": "B2"
+            },
+            {
+              "key": 108,
+              "blockId": "B3"
+            }
+          ],
+          "overflowNodes": [],
+          "currentIndexIndex": 3,
+          "selectedBlockId": "B3",
+          "currentBlockId": "B3",
+          "currentOverflowId": null,
+          "compareId": "R7",
+          "foundId": null,
+          "insertedId": null,
+          "indexBlockReads": 1,
+          "mainBlockReads": 1,
+          "overflowBlockReads": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            101,
+            102,
+            103,
+            104,
+            105,
+            106,
+            107,
+            108
+          ],
+          "done": false
+        },
+        "message": "比较主块记录 108 / compare a main-block record",
+        "line": 199,
+        "variables": {
+          "command": "find",
+          "targetKey": 109,
+          "mainBlocks": 4,
+          "overflowNodes": 0,
+          "indexBlockReads": 1,
+          "mainBlockReads": 1,
+          "overflowBlockReads": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "compare",
+        "structure": {
+          "kind": "isam",
+          "preset": "find-miss",
+          "command": "find",
+          "operation": "compare",
+          "blockCapacity": 2,
+          "targetKey": 109,
+          "records": [
+            {
+              "key": 101,
+              "label": "A",
+              "id": "R1"
+            },
+            {
+              "key": 102,
+              "label": "B",
+              "id": "R2"
+            },
+            {
+              "key": 103,
+              "label": "C",
+              "id": "R3"
+            },
+            {
+              "key": 104,
+              "label": "D",
+              "id": "R4"
+            },
+            {
+              "key": 105,
+              "label": "E",
+              "id": "R5"
+            },
+            {
+              "key": 106,
+              "label": "F",
+              "id": "R6"
+            },
+            {
+              "key": 107,
+              "label": "G",
+              "id": "R7"
+            },
+            {
+              "key": 108,
+              "label": "H",
+              "id": "R8"
+            }
+          ],
+          "blocks": [
+            {
+              "id": "B0",
+              "indexKey": 102,
+              "recordIds": [
+                "R1",
+                "R2"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B1",
+              "indexKey": 104,
+              "recordIds": [
+                "R3",
+                "R4"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B2",
+              "indexKey": 106,
+              "recordIds": [
+                "R5",
+                "R6"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B3",
+              "indexKey": 108,
+              "recordIds": [
+                "R7",
+                "R8"
+              ],
+              "overflowHead": null
+            }
+          ],
+          "indexEntries": [
+            {
+              "key": 102,
+              "blockId": "B0"
+            },
+            {
+              "key": 104,
+              "blockId": "B1"
+            },
+            {
+              "key": 106,
+              "blockId": "B2"
+            },
+            {
+              "key": 108,
+              "blockId": "B3"
+            }
+          ],
+          "overflowNodes": [],
+          "currentIndexIndex": 3,
+          "selectedBlockId": "B3",
+          "currentBlockId": "B3",
+          "currentOverflowId": null,
+          "compareId": "R8",
+          "foundId": null,
+          "insertedId": null,
+          "indexBlockReads": 1,
+          "mainBlockReads": 1,
+          "overflowBlockReads": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            101,
+            102,
+            103,
+            104,
+            105,
+            106,
+            107,
+            108
+          ],
+          "done": false
+        },
+        "message": "主块与溢出链均未命中 / the main block and overflow chain miss the key",
+        "line": 240,
+        "variables": {
+          "command": "find",
+          "targetKey": 109,
+          "mainBlocks": 4,
+          "overflowNodes": 0,
+          "indexBlockReads": 1,
+          "mainBlockReads": 1,
+          "overflowBlockReads": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "not-found",
+        "structure": {
+          "kind": "isam",
+          "preset": "find-miss",
+          "command": "find",
+          "operation": "not-found",
+          "blockCapacity": 2,
+          "targetKey": 109,
+          "records": [
+            {
+              "key": 101,
+              "label": "A",
+              "id": "R1"
+            },
+            {
+              "key": 102,
+              "label": "B",
+              "id": "R2"
+            },
+            {
+              "key": 103,
+              "label": "C",
+              "id": "R3"
+            },
+            {
+              "key": 104,
+              "label": "D",
+              "id": "R4"
+            },
+            {
+              "key": 105,
+              "label": "E",
+              "id": "R5"
+            },
+            {
+              "key": 106,
+              "label": "F",
+              "id": "R6"
+            },
+            {
+              "key": 107,
+              "label": "G",
+              "id": "R7"
+            },
+            {
+              "key": 108,
+              "label": "H",
+              "id": "R8"
+            }
+          ],
+          "blocks": [
+            {
+              "id": "B0",
+              "indexKey": 102,
+              "recordIds": [
+                "R1",
+                "R2"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B1",
+              "indexKey": 104,
+              "recordIds": [
+                "R3",
+                "R4"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B2",
+              "indexKey": 106,
+              "recordIds": [
+                "R5",
+                "R6"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B3",
+              "indexKey": 108,
+              "recordIds": [
+                "R7",
+                "R8"
+              ],
+              "overflowHead": null
+            }
+          ],
+          "indexEntries": [
+            {
+              "key": 102,
+              "blockId": "B0"
+            },
+            {
+              "key": 104,
+              "blockId": "B1"
+            },
+            {
+              "key": 106,
+              "blockId": "B2"
+            },
+            {
+              "key": 108,
+              "blockId": "B3"
+            }
+          ],
+          "overflowNodes": [],
+          "currentIndexIndex": 3,
+          "selectedBlockId": "B3",
+          "currentBlockId": "B3",
+          "currentOverflowId": null,
+          "compareId": null,
+          "foundId": null,
+          "insertedId": null,
+          "indexBlockReads": 1,
+          "mainBlockReads": 1,
+          "overflowBlockReads": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            101,
+            102,
+            103,
+            104,
+            105,
+            106,
+            107,
+            108
+          ],
+          "done": true
+        },
+        "message": "查找结束 / ISAM operation complete",
+        "line": 325,
+        "variables": {
+          "command": "find",
+          "targetKey": 109,
+          "mainBlocks": 4,
+          "overflowNodes": 0,
+          "indexBlockReads": 1,
+          "mainBlockReads": 1,
+          "overflowBlockReads": 0,
+          "result": "not-found"
+        },
+        "lessonStepId": "done",
+        "structure": {
+          "kind": "isam",
+          "preset": "find-miss",
+          "command": "find",
+          "operation": "done",
+          "blockCapacity": 2,
+          "targetKey": 109,
+          "records": [
+            {
+              "key": 101,
+              "label": "A",
+              "id": "R1"
+            },
+            {
+              "key": 102,
+              "label": "B",
+              "id": "R2"
+            },
+            {
+              "key": 103,
+              "label": "C",
+              "id": "R3"
+            },
+            {
+              "key": 104,
+              "label": "D",
+              "id": "R4"
+            },
+            {
+              "key": 105,
+              "label": "E",
+              "id": "R5"
+            },
+            {
+              "key": 106,
+              "label": "F",
+              "id": "R6"
+            },
+            {
+              "key": 107,
+              "label": "G",
+              "id": "R7"
+            },
+            {
+              "key": 108,
+              "label": "H",
+              "id": "R8"
+            }
+          ],
+          "blocks": [
+            {
+              "id": "B0",
+              "indexKey": 102,
+              "recordIds": [
+                "R1",
+                "R2"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B1",
+              "indexKey": 104,
+              "recordIds": [
+                "R3",
+                "R4"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B2",
+              "indexKey": 106,
+              "recordIds": [
+                "R5",
+                "R6"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B3",
+              "indexKey": 108,
+              "recordIds": [
+                "R7",
+                "R8"
+              ],
+              "overflowHead": null
+            }
+          ],
+          "indexEntries": [
+            {
+              "key": 102,
+              "blockId": "B0"
+            },
+            {
+              "key": 104,
+              "blockId": "B1"
+            },
+            {
+              "key": 106,
+              "blockId": "B2"
+            },
+            {
+              "key": 108,
+              "blockId": "B3"
+            }
+          ],
+          "overflowNodes": [],
+          "currentIndexIndex": 3,
+          "selectedBlockId": "B3",
+          "currentBlockId": "B3",
+          "currentOverflowId": null,
+          "compareId": null,
+          "foundId": null,
+          "insertedId": null,
+          "indexBlockReads": 1,
+          "mainBlockReads": 1,
+          "overflowBlockReads": 0,
+          "result": "not-found"
+        }
+      }
+    ]
+  },
+  "insert-main": {
+    "input": {
+      "preset": "insert-main",
+      "command": "insert",
+      "blockCapacity": 3,
+      "targetKey": 108,
+      "newLabel": "I",
+      "records": [
+        {
+          "key": 101,
+          "label": "A"
+        },
+        {
+          "key": 102,
+          "label": "B"
+        },
+        {
+          "key": 103,
+          "label": "C"
+        },
+        {
+          "key": 104,
+          "label": "D"
+        },
+        {
+          "key": 105,
+          "label": "E"
+        },
+        {
+          "key": 106,
+          "label": "F"
+        },
+        {
+          "key": 107,
+          "label": "G"
+        }
+      ]
+    },
+    "frames": [
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            101,
+            102,
+            103,
+            104,
+            105,
+            106,
+            107
+          ],
+          "done": false
+        },
+        "message": "建立主数据区、每块索引上界与空溢出链 / build main blocks, index bounds and empty chains",
+        "line": 262,
+        "variables": {
+          "command": "insert",
+          "targetKey": 108,
+          "mainBlocks": 3,
+          "overflowNodes": 0,
+          "indexBlockReads": 1,
+          "mainBlockReads": 0,
+          "overflowBlockReads": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "init",
+        "structure": {
+          "kind": "isam",
+          "preset": "insert-main",
+          "command": "insert",
+          "operation": "init",
+          "blockCapacity": 3,
+          "targetKey": 108,
+          "records": [
+            {
+              "key": 101,
+              "label": "A",
+              "id": "R1"
+            },
+            {
+              "key": 102,
+              "label": "B",
+              "id": "R2"
+            },
+            {
+              "key": 103,
+              "label": "C",
+              "id": "R3"
+            },
+            {
+              "key": 104,
+              "label": "D",
+              "id": "R4"
+            },
+            {
+              "key": 105,
+              "label": "E",
+              "id": "R5"
+            },
+            {
+              "key": 106,
+              "label": "F",
+              "id": "R6"
+            },
+            {
+              "key": 107,
+              "label": "G",
+              "id": "R7"
+            }
+          ],
+          "blocks": [
+            {
+              "id": "B0",
+              "indexKey": 103,
+              "recordIds": [
+                "R1",
+                "R2",
+                "R3"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B1",
+              "indexKey": 106,
+              "recordIds": [
+                "R4",
+                "R5",
+                "R6"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B2",
+              "indexKey": 107,
+              "recordIds": [
+                "R7"
+              ],
+              "overflowHead": null
+            }
+          ],
+          "indexEntries": [
+            {
+              "key": 103,
+              "blockId": "B0"
+            },
+            {
+              "key": 106,
+              "blockId": "B1"
+            },
+            {
+              "key": 107,
+              "blockId": "B2"
+            }
+          ],
+          "overflowNodes": [],
+          "currentIndexIndex": null,
+          "selectedBlockId": null,
+          "currentBlockId": null,
+          "currentOverflowId": null,
+          "compareId": null,
+          "foundId": null,
+          "insertedId": null,
+          "indexBlockReads": 1,
+          "mainBlockReads": 0,
+          "overflowBlockReads": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            101,
+            102,
+            103,
+            104,
+            105,
+            106,
+            107
+          ],
+          "done": false
+        },
+        "message": "按新关键字选择主块 B2 / choose a block for insertion",
+        "line": 270,
+        "variables": {
+          "command": "insert",
+          "targetKey": 108,
+          "mainBlocks": 3,
+          "overflowNodes": 0,
+          "indexBlockReads": 1,
+          "mainBlockReads": 0,
+          "overflowBlockReads": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "index-probe",
+        "structure": {
+          "kind": "isam",
+          "preset": "insert-main",
+          "command": "insert",
+          "operation": "index-probe",
+          "blockCapacity": 3,
+          "targetKey": 108,
+          "records": [
+            {
+              "key": 101,
+              "label": "A",
+              "id": "R1"
+            },
+            {
+              "key": 102,
+              "label": "B",
+              "id": "R2"
+            },
+            {
+              "key": 103,
+              "label": "C",
+              "id": "R3"
+            },
+            {
+              "key": 104,
+              "label": "D",
+              "id": "R4"
+            },
+            {
+              "key": 105,
+              "label": "E",
+              "id": "R5"
+            },
+            {
+              "key": 106,
+              "label": "F",
+              "id": "R6"
+            },
+            {
+              "key": 107,
+              "label": "G",
+              "id": "R7"
+            }
+          ],
+          "blocks": [
+            {
+              "id": "B0",
+              "indexKey": 103,
+              "recordIds": [
+                "R1",
+                "R2",
+                "R3"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B1",
+              "indexKey": 106,
+              "recordIds": [
+                "R4",
+                "R5",
+                "R6"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B2",
+              "indexKey": 107,
+              "recordIds": [
+                "R7"
+              ],
+              "overflowHead": null
+            }
+          ],
+          "indexEntries": [
+            {
+              "key": 103,
+              "blockId": "B0"
+            },
+            {
+              "key": 106,
+              "blockId": "B1"
+            },
+            {
+              "key": 107,
+              "blockId": "B2"
+            }
+          ],
+          "overflowNodes": [],
+          "currentIndexIndex": 2,
+          "selectedBlockId": "B2",
+          "currentBlockId": null,
+          "currentOverflowId": null,
+          "compareId": null,
+          "foundId": null,
+          "insertedId": null,
+          "indexBlockReads": 1,
+          "mainBlockReads": 0,
+          "overflowBlockReads": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            101,
+            102,
+            103,
+            104,
+            105,
+            106,
+            107,
+            108
+          ],
+          "done": false
+        },
+        "message": "主块仍有空间，记录 R8 插入主区 / insert into the main block",
+        "line": 287,
+        "variables": {
+          "command": "insert",
+          "targetKey": 108,
+          "mainBlocks": 3,
+          "overflowNodes": 0,
+          "indexBlockReads": 1,
+          "mainBlockReads": 0,
+          "overflowBlockReads": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "insert-main",
+        "structure": {
+          "kind": "isam",
+          "preset": "insert-main",
+          "command": "insert",
+          "operation": "insert-main",
+          "blockCapacity": 3,
+          "targetKey": 108,
+          "records": [
+            {
+              "key": 101,
+              "label": "A",
+              "id": "R1"
+            },
+            {
+              "key": 102,
+              "label": "B",
+              "id": "R2"
+            },
+            {
+              "key": 103,
+              "label": "C",
+              "id": "R3"
+            },
+            {
+              "key": 104,
+              "label": "D",
+              "id": "R4"
+            },
+            {
+              "key": 105,
+              "label": "E",
+              "id": "R5"
+            },
+            {
+              "key": 106,
+              "label": "F",
+              "id": "R6"
+            },
+            {
+              "key": 107,
+              "label": "G",
+              "id": "R7"
+            },
+            {
+              "id": "R8",
+              "key": 108,
+              "label": "I"
+            }
+          ],
+          "blocks": [
+            {
+              "id": "B0",
+              "indexKey": 103,
+              "recordIds": [
+                "R1",
+                "R2",
+                "R3"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B1",
+              "indexKey": 106,
+              "recordIds": [
+                "R4",
+                "R5",
+                "R6"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B2",
+              "indexKey": 108,
+              "recordIds": [
+                "R7",
+                "R8"
+              ],
+              "overflowHead": null
+            }
+          ],
+          "indexEntries": [
+            {
+              "key": 103,
+              "blockId": "B0"
+            },
+            {
+              "key": 106,
+              "blockId": "B1"
+            },
+            {
+              "key": 108,
+              "blockId": "B2"
+            }
+          ],
+          "overflowNodes": [],
+          "currentIndexIndex": 2,
+          "selectedBlockId": "B2",
+          "currentBlockId": "B2",
+          "currentOverflowId": null,
+          "compareId": null,
+          "foundId": null,
+          "insertedId": "R8",
+          "indexBlockReads": 1,
+          "mainBlockReads": 0,
+          "overflowBlockReads": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            101,
+            102,
+            103,
+            104,
+            105,
+            106,
+            107,
+            108
+          ],
+          "done": false
+        },
+        "message": "主块最大键变化，刷新索引上界 / refresh the index upper bound",
+        "line": 293,
+        "variables": {
+          "command": "insert",
+          "targetKey": 108,
+          "mainBlocks": 3,
+          "overflowNodes": 0,
+          "indexBlockReads": 1,
+          "mainBlockReads": 0,
+          "overflowBlockReads": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "index-update",
+        "structure": {
+          "kind": "isam",
+          "preset": "insert-main",
+          "command": "insert",
+          "operation": "index-update",
+          "blockCapacity": 3,
+          "targetKey": 108,
+          "records": [
+            {
+              "key": 101,
+              "label": "A",
+              "id": "R1"
+            },
+            {
+              "key": 102,
+              "label": "B",
+              "id": "R2"
+            },
+            {
+              "key": 103,
+              "label": "C",
+              "id": "R3"
+            },
+            {
+              "key": 104,
+              "label": "D",
+              "id": "R4"
+            },
+            {
+              "key": 105,
+              "label": "E",
+              "id": "R5"
+            },
+            {
+              "key": 106,
+              "label": "F",
+              "id": "R6"
+            },
+            {
+              "key": 107,
+              "label": "G",
+              "id": "R7"
+            },
+            {
+              "id": "R8",
+              "key": 108,
+              "label": "I"
+            }
+          ],
+          "blocks": [
+            {
+              "id": "B0",
+              "indexKey": 103,
+              "recordIds": [
+                "R1",
+                "R2",
+                "R3"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B1",
+              "indexKey": 106,
+              "recordIds": [
+                "R4",
+                "R5",
+                "R6"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B2",
+              "indexKey": 108,
+              "recordIds": [
+                "R7",
+                "R8"
+              ],
+              "overflowHead": null
+            }
+          ],
+          "indexEntries": [
+            {
+              "key": 103,
+              "blockId": "B0"
+            },
+            {
+              "key": 106,
+              "blockId": "B1"
+            },
+            {
+              "key": 108,
+              "blockId": "B2"
+            }
+          ],
+          "overflowNodes": [],
+          "currentIndexIndex": 2,
+          "selectedBlockId": "B2",
+          "currentBlockId": "B2",
+          "currentOverflowId": null,
+          "compareId": null,
+          "foundId": null,
+          "insertedId": "R8",
+          "indexBlockReads": 1,
+          "mainBlockReads": 0,
+          "overflowBlockReads": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            101,
+            102,
+            103,
+            104,
+            105,
+            106,
+            107,
+            108
+          ],
+          "done": false
+        },
+        "message": "索引上界选中主块 B2 / choose a main block by its upper bound",
+        "line": 184,
+        "variables": {
+          "command": "insert",
+          "targetKey": 108,
+          "mainBlocks": 3,
+          "overflowNodes": 0,
+          "indexBlockReads": 1,
+          "mainBlockReads": 0,
+          "overflowBlockReads": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "index-probe",
+        "structure": {
+          "kind": "isam",
+          "preset": "insert-main",
+          "command": "insert",
+          "operation": "index-probe",
+          "blockCapacity": 3,
+          "targetKey": 108,
+          "records": [
+            {
+              "key": 101,
+              "label": "A",
+              "id": "R1"
+            },
+            {
+              "key": 102,
+              "label": "B",
+              "id": "R2"
+            },
+            {
+              "key": 103,
+              "label": "C",
+              "id": "R3"
+            },
+            {
+              "key": 104,
+              "label": "D",
+              "id": "R4"
+            },
+            {
+              "key": 105,
+              "label": "E",
+              "id": "R5"
+            },
+            {
+              "key": 106,
+              "label": "F",
+              "id": "R6"
+            },
+            {
+              "key": 107,
+              "label": "G",
+              "id": "R7"
+            },
+            {
+              "id": "R8",
+              "key": 108,
+              "label": "I"
+            }
+          ],
+          "blocks": [
+            {
+              "id": "B0",
+              "indexKey": 103,
+              "recordIds": [
+                "R1",
+                "R2",
+                "R3"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B1",
+              "indexKey": 106,
+              "recordIds": [
+                "R4",
+                "R5",
+                "R6"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B2",
+              "indexKey": 108,
+              "recordIds": [
+                "R7",
+                "R8"
+              ],
+              "overflowHead": null
+            }
+          ],
+          "indexEntries": [
+            {
+              "key": 103,
+              "blockId": "B0"
+            },
+            {
+              "key": 106,
+              "blockId": "B1"
+            },
+            {
+              "key": 108,
+              "blockId": "B2"
+            }
+          ],
+          "overflowNodes": [],
+          "currentIndexIndex": 2,
+          "selectedBlockId": "B2",
+          "currentBlockId": "B2",
+          "currentOverflowId": null,
+          "compareId": null,
+          "foundId": null,
+          "insertedId": "R8",
+          "indexBlockReads": 1,
+          "mainBlockReads": 0,
+          "overflowBlockReads": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            101,
+            102,
+            103,
+            104,
+            105,
+            106,
+            107,
+            108
+          ],
+          "done": false
+        },
+        "message": "读入主区 B2 并检查块内记录 / read and scan the main block",
+        "line": 192,
+        "variables": {
+          "command": "insert",
+          "targetKey": 108,
+          "mainBlocks": 3,
+          "overflowNodes": 0,
+          "indexBlockReads": 1,
+          "mainBlockReads": 1,
+          "overflowBlockReads": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "read-main",
+        "structure": {
+          "kind": "isam",
+          "preset": "insert-main",
+          "command": "insert",
+          "operation": "read-main",
+          "blockCapacity": 3,
+          "targetKey": 108,
+          "records": [
+            {
+              "key": 101,
+              "label": "A",
+              "id": "R1"
+            },
+            {
+              "key": 102,
+              "label": "B",
+              "id": "R2"
+            },
+            {
+              "key": 103,
+              "label": "C",
+              "id": "R3"
+            },
+            {
+              "key": 104,
+              "label": "D",
+              "id": "R4"
+            },
+            {
+              "key": 105,
+              "label": "E",
+              "id": "R5"
+            },
+            {
+              "key": 106,
+              "label": "F",
+              "id": "R6"
+            },
+            {
+              "key": 107,
+              "label": "G",
+              "id": "R7"
+            },
+            {
+              "id": "R8",
+              "key": 108,
+              "label": "I"
+            }
+          ],
+          "blocks": [
+            {
+              "id": "B0",
+              "indexKey": 103,
+              "recordIds": [
+                "R1",
+                "R2",
+                "R3"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B1",
+              "indexKey": 106,
+              "recordIds": [
+                "R4",
+                "R5",
+                "R6"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B2",
+              "indexKey": 108,
+              "recordIds": [
+                "R7",
+                "R8"
+              ],
+              "overflowHead": null
+            }
+          ],
+          "indexEntries": [
+            {
+              "key": 103,
+              "blockId": "B0"
+            },
+            {
+              "key": 106,
+              "blockId": "B1"
+            },
+            {
+              "key": 108,
+              "blockId": "B2"
+            }
+          ],
+          "overflowNodes": [],
+          "currentIndexIndex": 2,
+          "selectedBlockId": "B2",
+          "currentBlockId": "B2",
+          "currentOverflowId": null,
+          "compareId": null,
+          "foundId": null,
+          "insertedId": "R8",
+          "indexBlockReads": 1,
+          "mainBlockReads": 1,
+          "overflowBlockReads": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            101,
+            102,
+            103,
+            104,
+            105,
+            106,
+            107,
+            108
+          ],
+          "done": false
+        },
+        "message": "比较主块记录 107 / compare a main-block record",
+        "line": 199,
+        "variables": {
+          "command": "insert",
+          "targetKey": 108,
+          "mainBlocks": 3,
+          "overflowNodes": 0,
+          "indexBlockReads": 1,
+          "mainBlockReads": 1,
+          "overflowBlockReads": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "compare",
+        "structure": {
+          "kind": "isam",
+          "preset": "insert-main",
+          "command": "insert",
+          "operation": "compare",
+          "blockCapacity": 3,
+          "targetKey": 108,
+          "records": [
+            {
+              "key": 101,
+              "label": "A",
+              "id": "R1"
+            },
+            {
+              "key": 102,
+              "label": "B",
+              "id": "R2"
+            },
+            {
+              "key": 103,
+              "label": "C",
+              "id": "R3"
+            },
+            {
+              "key": 104,
+              "label": "D",
+              "id": "R4"
+            },
+            {
+              "key": 105,
+              "label": "E",
+              "id": "R5"
+            },
+            {
+              "key": 106,
+              "label": "F",
+              "id": "R6"
+            },
+            {
+              "key": 107,
+              "label": "G",
+              "id": "R7"
+            },
+            {
+              "id": "R8",
+              "key": 108,
+              "label": "I"
+            }
+          ],
+          "blocks": [
+            {
+              "id": "B0",
+              "indexKey": 103,
+              "recordIds": [
+                "R1",
+                "R2",
+                "R3"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B1",
+              "indexKey": 106,
+              "recordIds": [
+                "R4",
+                "R5",
+                "R6"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B2",
+              "indexKey": 108,
+              "recordIds": [
+                "R7",
+                "R8"
+              ],
+              "overflowHead": null
+            }
+          ],
+          "indexEntries": [
+            {
+              "key": 103,
+              "blockId": "B0"
+            },
+            {
+              "key": 106,
+              "blockId": "B1"
+            },
+            {
+              "key": 108,
+              "blockId": "B2"
+            }
+          ],
+          "overflowNodes": [],
+          "currentIndexIndex": 2,
+          "selectedBlockId": "B2",
+          "currentBlockId": "B2",
+          "currentOverflowId": null,
+          "compareId": "R7",
+          "foundId": null,
+          "insertedId": "R8",
+          "indexBlockReads": 1,
+          "mainBlockReads": 1,
+          "overflowBlockReads": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            101,
+            102,
+            103,
+            104,
+            105,
+            106,
+            107,
+            108
+          ],
+          "done": false
+        },
+        "message": "比较主块记录 108 / compare a main-block record",
+        "line": 199,
+        "variables": {
+          "command": "insert",
+          "targetKey": 108,
+          "mainBlocks": 3,
+          "overflowNodes": 0,
+          "indexBlockReads": 1,
+          "mainBlockReads": 1,
+          "overflowBlockReads": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "compare",
+        "structure": {
+          "kind": "isam",
+          "preset": "insert-main",
+          "command": "insert",
+          "operation": "compare",
+          "blockCapacity": 3,
+          "targetKey": 108,
+          "records": [
+            {
+              "key": 101,
+              "label": "A",
+              "id": "R1"
+            },
+            {
+              "key": 102,
+              "label": "B",
+              "id": "R2"
+            },
+            {
+              "key": 103,
+              "label": "C",
+              "id": "R3"
+            },
+            {
+              "key": 104,
+              "label": "D",
+              "id": "R4"
+            },
+            {
+              "key": 105,
+              "label": "E",
+              "id": "R5"
+            },
+            {
+              "key": 106,
+              "label": "F",
+              "id": "R6"
+            },
+            {
+              "key": 107,
+              "label": "G",
+              "id": "R7"
+            },
+            {
+              "id": "R8",
+              "key": 108,
+              "label": "I"
+            }
+          ],
+          "blocks": [
+            {
+              "id": "B0",
+              "indexKey": 103,
+              "recordIds": [
+                "R1",
+                "R2",
+                "R3"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B1",
+              "indexKey": 106,
+              "recordIds": [
+                "R4",
+                "R5",
+                "R6"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B2",
+              "indexKey": 108,
+              "recordIds": [
+                "R7",
+                "R8"
+              ],
+              "overflowHead": null
+            }
+          ],
+          "indexEntries": [
+            {
+              "key": 103,
+              "blockId": "B0"
+            },
+            {
+              "key": 106,
+              "blockId": "B1"
+            },
+            {
+              "key": 108,
+              "blockId": "B2"
+            }
+          ],
+          "overflowNodes": [],
+          "currentIndexIndex": 2,
+          "selectedBlockId": "B2",
+          "currentBlockId": "B2",
+          "currentOverflowId": null,
+          "compareId": "R8",
+          "foundId": null,
+          "insertedId": "R8",
+          "indexBlockReads": 1,
+          "mainBlockReads": 1,
+          "overflowBlockReads": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            101,
+            102,
+            103,
+            104,
+            105,
+            106,
+            107,
+            108
+          ],
+          "done": false
+        },
+        "message": "在主区命中 R8 / record found",
+        "line": 234,
+        "variables": {
+          "command": "insert",
+          "targetKey": 108,
+          "mainBlocks": 3,
+          "overflowNodes": 0,
+          "indexBlockReads": 1,
+          "mainBlockReads": 1,
+          "overflowBlockReads": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "found",
+        "structure": {
+          "kind": "isam",
+          "preset": "insert-main",
+          "command": "insert",
+          "operation": "found",
+          "blockCapacity": 3,
+          "targetKey": 108,
+          "records": [
+            {
+              "key": 101,
+              "label": "A",
+              "id": "R1"
+            },
+            {
+              "key": 102,
+              "label": "B",
+              "id": "R2"
+            },
+            {
+              "key": 103,
+              "label": "C",
+              "id": "R3"
+            },
+            {
+              "key": 104,
+              "label": "D",
+              "id": "R4"
+            },
+            {
+              "key": 105,
+              "label": "E",
+              "id": "R5"
+            },
+            {
+              "key": 106,
+              "label": "F",
+              "id": "R6"
+            },
+            {
+              "key": 107,
+              "label": "G",
+              "id": "R7"
+            },
+            {
+              "id": "R8",
+              "key": 108,
+              "label": "I"
+            }
+          ],
+          "blocks": [
+            {
+              "id": "B0",
+              "indexKey": 103,
+              "recordIds": [
+                "R1",
+                "R2",
+                "R3"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B1",
+              "indexKey": 106,
+              "recordIds": [
+                "R4",
+                "R5",
+                "R6"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B2",
+              "indexKey": 108,
+              "recordIds": [
+                "R7",
+                "R8"
+              ],
+              "overflowHead": null
+            }
+          ],
+          "indexEntries": [
+            {
+              "key": 103,
+              "blockId": "B0"
+            },
+            {
+              "key": 106,
+              "blockId": "B1"
+            },
+            {
+              "key": 108,
+              "blockId": "B2"
+            }
+          ],
+          "overflowNodes": [],
+          "currentIndexIndex": 2,
+          "selectedBlockId": "B2",
+          "currentBlockId": "B2",
+          "currentOverflowId": null,
+          "compareId": null,
+          "foundId": "R8",
+          "insertedId": "R8",
+          "indexBlockReads": 1,
+          "mainBlockReads": 1,
+          "overflowBlockReads": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            101,
+            102,
+            103,
+            104,
+            105,
+            106,
+            107,
+            108
+          ],
+          "done": true
+        },
+        "message": "插入后重新查找成功 / ISAM operation complete",
+        "line": 325,
+        "variables": {
+          "command": "insert",
+          "targetKey": 108,
+          "mainBlocks": 3,
+          "overflowNodes": 0,
+          "indexBlockReads": 1,
+          "mainBlockReads": 1,
+          "overflowBlockReads": 0,
+          "result": "inserted"
+        },
+        "lessonStepId": "done",
+        "structure": {
+          "kind": "isam",
+          "preset": "insert-main",
+          "command": "insert",
+          "operation": "done",
+          "blockCapacity": 3,
+          "targetKey": 108,
+          "records": [
+            {
+              "key": 101,
+              "label": "A",
+              "id": "R1"
+            },
+            {
+              "key": 102,
+              "label": "B",
+              "id": "R2"
+            },
+            {
+              "key": 103,
+              "label": "C",
+              "id": "R3"
+            },
+            {
+              "key": 104,
+              "label": "D",
+              "id": "R4"
+            },
+            {
+              "key": 105,
+              "label": "E",
+              "id": "R5"
+            },
+            {
+              "key": 106,
+              "label": "F",
+              "id": "R6"
+            },
+            {
+              "key": 107,
+              "label": "G",
+              "id": "R7"
+            },
+            {
+              "id": "R8",
+              "key": 108,
+              "label": "I"
+            }
+          ],
+          "blocks": [
+            {
+              "id": "B0",
+              "indexKey": 103,
+              "recordIds": [
+                "R1",
+                "R2",
+                "R3"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B1",
+              "indexKey": 106,
+              "recordIds": [
+                "R4",
+                "R5",
+                "R6"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B2",
+              "indexKey": 108,
+              "recordIds": [
+                "R7",
+                "R8"
+              ],
+              "overflowHead": null
+            }
+          ],
+          "indexEntries": [
+            {
+              "key": 103,
+              "blockId": "B0"
+            },
+            {
+              "key": 106,
+              "blockId": "B1"
+            },
+            {
+              "key": 108,
+              "blockId": "B2"
+            }
+          ],
+          "overflowNodes": [],
+          "currentIndexIndex": 2,
+          "selectedBlockId": "B2",
+          "currentBlockId": "B2",
+          "currentOverflowId": null,
+          "compareId": null,
+          "foundId": "R8",
+          "insertedId": "R8",
+          "indexBlockReads": 1,
+          "mainBlockReads": 1,
+          "overflowBlockReads": 0,
+          "result": "inserted"
+        }
+      }
+    ]
+  },
+  "insert-overflow": {
+    "input": {
+      "preset": "insert-overflow",
+      "command": "insert",
+      "blockCapacity": 3,
+      "targetKey": 105,
+      "newLabel": "I",
+      "records": [
+        {
+          "key": 101,
+          "label": "A"
+        },
+        {
+          "key": 102,
+          "label": "B"
+        },
+        {
+          "key": 103,
+          "label": "C"
+        },
+        {
+          "key": 104,
+          "label": "D"
+        },
+        {
+          "key": 106,
+          "label": "F"
+        },
+        {
+          "key": 107,
+          "label": "G"
+        },
+        {
+          "key": 108,
+          "label": "H"
+        }
+      ]
+    },
+    "frames": [
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            101,
+            102,
+            103,
+            104,
+            106,
+            107,
+            108
+          ],
+          "done": false
+        },
+        "message": "建立主数据区、每块索引上界与空溢出链 / build main blocks, index bounds and empty chains",
+        "line": 262,
+        "variables": {
+          "command": "insert",
+          "targetKey": 105,
+          "mainBlocks": 3,
+          "overflowNodes": 0,
+          "indexBlockReads": 1,
+          "mainBlockReads": 0,
+          "overflowBlockReads": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "init",
+        "structure": {
+          "kind": "isam",
+          "preset": "insert-overflow",
+          "command": "insert",
+          "operation": "init",
+          "blockCapacity": 3,
+          "targetKey": 105,
+          "records": [
+            {
+              "key": 101,
+              "label": "A",
+              "id": "R1"
+            },
+            {
+              "key": 102,
+              "label": "B",
+              "id": "R2"
+            },
+            {
+              "key": 103,
+              "label": "C",
+              "id": "R3"
+            },
+            {
+              "key": 104,
+              "label": "D",
+              "id": "R4"
+            },
+            {
+              "key": 106,
+              "label": "F",
+              "id": "R5"
+            },
+            {
+              "key": 107,
+              "label": "G",
+              "id": "R6"
+            },
+            {
+              "key": 108,
+              "label": "H",
+              "id": "R7"
+            }
+          ],
+          "blocks": [
+            {
+              "id": "B0",
+              "indexKey": 103,
+              "recordIds": [
+                "R1",
+                "R2",
+                "R3"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B1",
+              "indexKey": 107,
+              "recordIds": [
+                "R4",
+                "R5",
+                "R6"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B2",
+              "indexKey": 108,
+              "recordIds": [
+                "R7"
+              ],
+              "overflowHead": null
+            }
+          ],
+          "indexEntries": [
+            {
+              "key": 103,
+              "blockId": "B0"
+            },
+            {
+              "key": 107,
+              "blockId": "B1"
+            },
+            {
+              "key": 108,
+              "blockId": "B2"
+            }
+          ],
+          "overflowNodes": [],
+          "currentIndexIndex": null,
+          "selectedBlockId": null,
+          "currentBlockId": null,
+          "currentOverflowId": null,
+          "compareId": null,
+          "foundId": null,
+          "insertedId": null,
+          "indexBlockReads": 1,
+          "mainBlockReads": 0,
+          "overflowBlockReads": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            101,
+            102,
+            103,
+            104,
+            106,
+            107,
+            108
+          ],
+          "done": false
+        },
+        "message": "按新关键字选择主块 B1 / choose a block for insertion",
+        "line": 270,
+        "variables": {
+          "command": "insert",
+          "targetKey": 105,
+          "mainBlocks": 3,
+          "overflowNodes": 0,
+          "indexBlockReads": 1,
+          "mainBlockReads": 0,
+          "overflowBlockReads": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "index-probe",
+        "structure": {
+          "kind": "isam",
+          "preset": "insert-overflow",
+          "command": "insert",
+          "operation": "index-probe",
+          "blockCapacity": 3,
+          "targetKey": 105,
+          "records": [
+            {
+              "key": 101,
+              "label": "A",
+              "id": "R1"
+            },
+            {
+              "key": 102,
+              "label": "B",
+              "id": "R2"
+            },
+            {
+              "key": 103,
+              "label": "C",
+              "id": "R3"
+            },
+            {
+              "key": 104,
+              "label": "D",
+              "id": "R4"
+            },
+            {
+              "key": 106,
+              "label": "F",
+              "id": "R5"
+            },
+            {
+              "key": 107,
+              "label": "G",
+              "id": "R6"
+            },
+            {
+              "key": 108,
+              "label": "H",
+              "id": "R7"
+            }
+          ],
+          "blocks": [
+            {
+              "id": "B0",
+              "indexKey": 103,
+              "recordIds": [
+                "R1",
+                "R2",
+                "R3"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B1",
+              "indexKey": 107,
+              "recordIds": [
+                "R4",
+                "R5",
+                "R6"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B2",
+              "indexKey": 108,
+              "recordIds": [
+                "R7"
+              ],
+              "overflowHead": null
+            }
+          ],
+          "indexEntries": [
+            {
+              "key": 103,
+              "blockId": "B0"
+            },
+            {
+              "key": 107,
+              "blockId": "B1"
+            },
+            {
+              "key": 108,
+              "blockId": "B2"
+            }
+          ],
+          "overflowNodes": [],
+          "currentIndexIndex": 1,
+          "selectedBlockId": "B1",
+          "currentBlockId": null,
+          "currentOverflowId": null,
+          "compareId": null,
+          "foundId": null,
+          "insertedId": null,
+          "indexBlockReads": 1,
+          "mainBlockReads": 0,
+          "overflowBlockReads": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            101,
+            102,
+            103,
+            104,
+            106,
+            107,
+            108,
+            105
+          ],
+          "done": false
+        },
+        "message": "主块已满，记录 R8 进入溢出链 / append the record to overflow",
+        "line": 304,
+        "variables": {
+          "command": "insert",
+          "targetKey": 105,
+          "mainBlocks": 3,
+          "overflowNodes": 1,
+          "indexBlockReads": 1,
+          "mainBlockReads": 0,
+          "overflowBlockReads": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "insert-overflow",
+        "structure": {
+          "kind": "isam",
+          "preset": "insert-overflow",
+          "command": "insert",
+          "operation": "insert-overflow",
+          "blockCapacity": 3,
+          "targetKey": 105,
+          "records": [
+            {
+              "key": 101,
+              "label": "A",
+              "id": "R1"
+            },
+            {
+              "key": 102,
+              "label": "B",
+              "id": "R2"
+            },
+            {
+              "key": 103,
+              "label": "C",
+              "id": "R3"
+            },
+            {
+              "key": 104,
+              "label": "D",
+              "id": "R4"
+            },
+            {
+              "key": 106,
+              "label": "F",
+              "id": "R5"
+            },
+            {
+              "key": 107,
+              "label": "G",
+              "id": "R6"
+            },
+            {
+              "key": 108,
+              "label": "H",
+              "id": "R7"
+            },
+            {
+              "id": "R8",
+              "key": 105,
+              "label": "I"
+            }
+          ],
+          "blocks": [
+            {
+              "id": "B0",
+              "indexKey": 103,
+              "recordIds": [
+                "R1",
+                "R2",
+                "R3"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B1",
+              "indexKey": 107,
+              "recordIds": [
+                "R4",
+                "R5",
+                "R6"
+              ],
+              "overflowHead": "O0"
+            },
+            {
+              "id": "B2",
+              "indexKey": 108,
+              "recordIds": [
+                "R7"
+              ],
+              "overflowHead": null
+            }
+          ],
+          "indexEntries": [
+            {
+              "key": 103,
+              "blockId": "B0"
+            },
+            {
+              "key": 107,
+              "blockId": "B1"
+            },
+            {
+              "key": 108,
+              "blockId": "B2"
+            }
+          ],
+          "overflowNodes": [
+            {
+              "id": "O0",
+              "blockId": "B1",
+              "recordIds": [
+                "R8"
+              ],
+              "nextId": null
+            }
+          ],
+          "currentIndexIndex": 1,
+          "selectedBlockId": "B1",
+          "currentBlockId": "B1",
+          "currentOverflowId": "O0",
+          "compareId": null,
+          "foundId": null,
+          "insertedId": "R8",
+          "indexBlockReads": 1,
+          "mainBlockReads": 0,
+          "overflowBlockReads": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            101,
+            102,
+            103,
+            104,
+            106,
+            107,
+            108,
+            105
+          ],
+          "done": false
+        },
+        "message": "新溢出节点已链接到 B1 / link the new overflow node",
+        "line": 310,
+        "variables": {
+          "command": "insert",
+          "targetKey": 105,
+          "mainBlocks": 3,
+          "overflowNodes": 1,
+          "indexBlockReads": 1,
+          "mainBlockReads": 0,
+          "overflowBlockReads": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "link-overflow",
+        "structure": {
+          "kind": "isam",
+          "preset": "insert-overflow",
+          "command": "insert",
+          "operation": "link-overflow",
+          "blockCapacity": 3,
+          "targetKey": 105,
+          "records": [
+            {
+              "key": 101,
+              "label": "A",
+              "id": "R1"
+            },
+            {
+              "key": 102,
+              "label": "B",
+              "id": "R2"
+            },
+            {
+              "key": 103,
+              "label": "C",
+              "id": "R3"
+            },
+            {
+              "key": 104,
+              "label": "D",
+              "id": "R4"
+            },
+            {
+              "key": 106,
+              "label": "F",
+              "id": "R5"
+            },
+            {
+              "key": 107,
+              "label": "G",
+              "id": "R6"
+            },
+            {
+              "key": 108,
+              "label": "H",
+              "id": "R7"
+            },
+            {
+              "id": "R8",
+              "key": 105,
+              "label": "I"
+            }
+          ],
+          "blocks": [
+            {
+              "id": "B0",
+              "indexKey": 103,
+              "recordIds": [
+                "R1",
+                "R2",
+                "R3"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B1",
+              "indexKey": 107,
+              "recordIds": [
+                "R4",
+                "R5",
+                "R6"
+              ],
+              "overflowHead": "O0"
+            },
+            {
+              "id": "B2",
+              "indexKey": 108,
+              "recordIds": [
+                "R7"
+              ],
+              "overflowHead": null
+            }
+          ],
+          "indexEntries": [
+            {
+              "key": 103,
+              "blockId": "B0"
+            },
+            {
+              "key": 107,
+              "blockId": "B1"
+            },
+            {
+              "key": 108,
+              "blockId": "B2"
+            }
+          ],
+          "overflowNodes": [
+            {
+              "id": "O0",
+              "blockId": "B1",
+              "recordIds": [
+                "R8"
+              ],
+              "nextId": null
+            }
+          ],
+          "currentIndexIndex": 1,
+          "selectedBlockId": "B1",
+          "currentBlockId": "B1",
+          "currentOverflowId": "O0",
+          "compareId": null,
+          "foundId": null,
+          "insertedId": "R8",
+          "indexBlockReads": 1,
+          "mainBlockReads": 0,
+          "overflowBlockReads": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            101,
+            102,
+            103,
+            104,
+            106,
+            107,
+            108,
+            105
+          ],
+          "done": false
+        },
+        "message": "索引上界选中主块 B1 / choose a main block by its upper bound",
+        "line": 184,
+        "variables": {
+          "command": "insert",
+          "targetKey": 105,
+          "mainBlocks": 3,
+          "overflowNodes": 1,
+          "indexBlockReads": 1,
+          "mainBlockReads": 0,
+          "overflowBlockReads": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "index-probe",
+        "structure": {
+          "kind": "isam",
+          "preset": "insert-overflow",
+          "command": "insert",
+          "operation": "index-probe",
+          "blockCapacity": 3,
+          "targetKey": 105,
+          "records": [
+            {
+              "key": 101,
+              "label": "A",
+              "id": "R1"
+            },
+            {
+              "key": 102,
+              "label": "B",
+              "id": "R2"
+            },
+            {
+              "key": 103,
+              "label": "C",
+              "id": "R3"
+            },
+            {
+              "key": 104,
+              "label": "D",
+              "id": "R4"
+            },
+            {
+              "key": 106,
+              "label": "F",
+              "id": "R5"
+            },
+            {
+              "key": 107,
+              "label": "G",
+              "id": "R6"
+            },
+            {
+              "key": 108,
+              "label": "H",
+              "id": "R7"
+            },
+            {
+              "id": "R8",
+              "key": 105,
+              "label": "I"
+            }
+          ],
+          "blocks": [
+            {
+              "id": "B0",
+              "indexKey": 103,
+              "recordIds": [
+                "R1",
+                "R2",
+                "R3"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B1",
+              "indexKey": 107,
+              "recordIds": [
+                "R4",
+                "R5",
+                "R6"
+              ],
+              "overflowHead": "O0"
+            },
+            {
+              "id": "B2",
+              "indexKey": 108,
+              "recordIds": [
+                "R7"
+              ],
+              "overflowHead": null
+            }
+          ],
+          "indexEntries": [
+            {
+              "key": 103,
+              "blockId": "B0"
+            },
+            {
+              "key": 107,
+              "blockId": "B1"
+            },
+            {
+              "key": 108,
+              "blockId": "B2"
+            }
+          ],
+          "overflowNodes": [
+            {
+              "id": "O0",
+              "blockId": "B1",
+              "recordIds": [
+                "R8"
+              ],
+              "nextId": null
+            }
+          ],
+          "currentIndexIndex": 1,
+          "selectedBlockId": "B1",
+          "currentBlockId": "B1",
+          "currentOverflowId": null,
+          "compareId": null,
+          "foundId": null,
+          "insertedId": "R8",
+          "indexBlockReads": 1,
+          "mainBlockReads": 0,
+          "overflowBlockReads": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            101,
+            102,
+            103,
+            104,
+            106,
+            107,
+            108,
+            105
+          ],
+          "done": false
+        },
+        "message": "读入主区 B1 并检查块内记录 / read and scan the main block",
+        "line": 192,
+        "variables": {
+          "command": "insert",
+          "targetKey": 105,
+          "mainBlocks": 3,
+          "overflowNodes": 1,
+          "indexBlockReads": 1,
+          "mainBlockReads": 1,
+          "overflowBlockReads": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "read-main",
+        "structure": {
+          "kind": "isam",
+          "preset": "insert-overflow",
+          "command": "insert",
+          "operation": "read-main",
+          "blockCapacity": 3,
+          "targetKey": 105,
+          "records": [
+            {
+              "key": 101,
+              "label": "A",
+              "id": "R1"
+            },
+            {
+              "key": 102,
+              "label": "B",
+              "id": "R2"
+            },
+            {
+              "key": 103,
+              "label": "C",
+              "id": "R3"
+            },
+            {
+              "key": 104,
+              "label": "D",
+              "id": "R4"
+            },
+            {
+              "key": 106,
+              "label": "F",
+              "id": "R5"
+            },
+            {
+              "key": 107,
+              "label": "G",
+              "id": "R6"
+            },
+            {
+              "key": 108,
+              "label": "H",
+              "id": "R7"
+            },
+            {
+              "id": "R8",
+              "key": 105,
+              "label": "I"
+            }
+          ],
+          "blocks": [
+            {
+              "id": "B0",
+              "indexKey": 103,
+              "recordIds": [
+                "R1",
+                "R2",
+                "R3"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B1",
+              "indexKey": 107,
+              "recordIds": [
+                "R4",
+                "R5",
+                "R6"
+              ],
+              "overflowHead": "O0"
+            },
+            {
+              "id": "B2",
+              "indexKey": 108,
+              "recordIds": [
+                "R7"
+              ],
+              "overflowHead": null
+            }
+          ],
+          "indexEntries": [
+            {
+              "key": 103,
+              "blockId": "B0"
+            },
+            {
+              "key": 107,
+              "blockId": "B1"
+            },
+            {
+              "key": 108,
+              "blockId": "B2"
+            }
+          ],
+          "overflowNodes": [
+            {
+              "id": "O0",
+              "blockId": "B1",
+              "recordIds": [
+                "R8"
+              ],
+              "nextId": null
+            }
+          ],
+          "currentIndexIndex": 1,
+          "selectedBlockId": "B1",
+          "currentBlockId": "B1",
+          "currentOverflowId": null,
+          "compareId": null,
+          "foundId": null,
+          "insertedId": "R8",
+          "indexBlockReads": 1,
+          "mainBlockReads": 1,
+          "overflowBlockReads": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            101,
+            102,
+            103,
+            104,
+            106,
+            107,
+            108,
+            105
+          ],
+          "done": false
+        },
+        "message": "比较主块记录 104 / compare a main-block record",
+        "line": 199,
+        "variables": {
+          "command": "insert",
+          "targetKey": 105,
+          "mainBlocks": 3,
+          "overflowNodes": 1,
+          "indexBlockReads": 1,
+          "mainBlockReads": 1,
+          "overflowBlockReads": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "compare",
+        "structure": {
+          "kind": "isam",
+          "preset": "insert-overflow",
+          "command": "insert",
+          "operation": "compare",
+          "blockCapacity": 3,
+          "targetKey": 105,
+          "records": [
+            {
+              "key": 101,
+              "label": "A",
+              "id": "R1"
+            },
+            {
+              "key": 102,
+              "label": "B",
+              "id": "R2"
+            },
+            {
+              "key": 103,
+              "label": "C",
+              "id": "R3"
+            },
+            {
+              "key": 104,
+              "label": "D",
+              "id": "R4"
+            },
+            {
+              "key": 106,
+              "label": "F",
+              "id": "R5"
+            },
+            {
+              "key": 107,
+              "label": "G",
+              "id": "R6"
+            },
+            {
+              "key": 108,
+              "label": "H",
+              "id": "R7"
+            },
+            {
+              "id": "R8",
+              "key": 105,
+              "label": "I"
+            }
+          ],
+          "blocks": [
+            {
+              "id": "B0",
+              "indexKey": 103,
+              "recordIds": [
+                "R1",
+                "R2",
+                "R3"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B1",
+              "indexKey": 107,
+              "recordIds": [
+                "R4",
+                "R5",
+                "R6"
+              ],
+              "overflowHead": "O0"
+            },
+            {
+              "id": "B2",
+              "indexKey": 108,
+              "recordIds": [
+                "R7"
+              ],
+              "overflowHead": null
+            }
+          ],
+          "indexEntries": [
+            {
+              "key": 103,
+              "blockId": "B0"
+            },
+            {
+              "key": 107,
+              "blockId": "B1"
+            },
+            {
+              "key": 108,
+              "blockId": "B2"
+            }
+          ],
+          "overflowNodes": [
+            {
+              "id": "O0",
+              "blockId": "B1",
+              "recordIds": [
+                "R8"
+              ],
+              "nextId": null
+            }
+          ],
+          "currentIndexIndex": 1,
+          "selectedBlockId": "B1",
+          "currentBlockId": "B1",
+          "currentOverflowId": null,
+          "compareId": "R4",
+          "foundId": null,
+          "insertedId": "R8",
+          "indexBlockReads": 1,
+          "mainBlockReads": 1,
+          "overflowBlockReads": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            101,
+            102,
+            103,
+            104,
+            106,
+            107,
+            108,
+            105
+          ],
+          "done": false
+        },
+        "message": "比较主块记录 106 / compare a main-block record",
+        "line": 199,
+        "variables": {
+          "command": "insert",
+          "targetKey": 105,
+          "mainBlocks": 3,
+          "overflowNodes": 1,
+          "indexBlockReads": 1,
+          "mainBlockReads": 1,
+          "overflowBlockReads": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "compare",
+        "structure": {
+          "kind": "isam",
+          "preset": "insert-overflow",
+          "command": "insert",
+          "operation": "compare",
+          "blockCapacity": 3,
+          "targetKey": 105,
+          "records": [
+            {
+              "key": 101,
+              "label": "A",
+              "id": "R1"
+            },
+            {
+              "key": 102,
+              "label": "B",
+              "id": "R2"
+            },
+            {
+              "key": 103,
+              "label": "C",
+              "id": "R3"
+            },
+            {
+              "key": 104,
+              "label": "D",
+              "id": "R4"
+            },
+            {
+              "key": 106,
+              "label": "F",
+              "id": "R5"
+            },
+            {
+              "key": 107,
+              "label": "G",
+              "id": "R6"
+            },
+            {
+              "key": 108,
+              "label": "H",
+              "id": "R7"
+            },
+            {
+              "id": "R8",
+              "key": 105,
+              "label": "I"
+            }
+          ],
+          "blocks": [
+            {
+              "id": "B0",
+              "indexKey": 103,
+              "recordIds": [
+                "R1",
+                "R2",
+                "R3"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B1",
+              "indexKey": 107,
+              "recordIds": [
+                "R4",
+                "R5",
+                "R6"
+              ],
+              "overflowHead": "O0"
+            },
+            {
+              "id": "B2",
+              "indexKey": 108,
+              "recordIds": [
+                "R7"
+              ],
+              "overflowHead": null
+            }
+          ],
+          "indexEntries": [
+            {
+              "key": 103,
+              "blockId": "B0"
+            },
+            {
+              "key": 107,
+              "blockId": "B1"
+            },
+            {
+              "key": 108,
+              "blockId": "B2"
+            }
+          ],
+          "overflowNodes": [
+            {
+              "id": "O0",
+              "blockId": "B1",
+              "recordIds": [
+                "R8"
+              ],
+              "nextId": null
+            }
+          ],
+          "currentIndexIndex": 1,
+          "selectedBlockId": "B1",
+          "currentBlockId": "B1",
+          "currentOverflowId": null,
+          "compareId": "R5",
+          "foundId": null,
+          "insertedId": "R8",
+          "indexBlockReads": 1,
+          "mainBlockReads": 1,
+          "overflowBlockReads": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            101,
+            102,
+            103,
+            104,
+            106,
+            107,
+            108,
+            105
+          ],
+          "done": false
+        },
+        "message": "比较主块记录 107 / compare a main-block record",
+        "line": 199,
+        "variables": {
+          "command": "insert",
+          "targetKey": 105,
+          "mainBlocks": 3,
+          "overflowNodes": 1,
+          "indexBlockReads": 1,
+          "mainBlockReads": 1,
+          "overflowBlockReads": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "compare",
+        "structure": {
+          "kind": "isam",
+          "preset": "insert-overflow",
+          "command": "insert",
+          "operation": "compare",
+          "blockCapacity": 3,
+          "targetKey": 105,
+          "records": [
+            {
+              "key": 101,
+              "label": "A",
+              "id": "R1"
+            },
+            {
+              "key": 102,
+              "label": "B",
+              "id": "R2"
+            },
+            {
+              "key": 103,
+              "label": "C",
+              "id": "R3"
+            },
+            {
+              "key": 104,
+              "label": "D",
+              "id": "R4"
+            },
+            {
+              "key": 106,
+              "label": "F",
+              "id": "R5"
+            },
+            {
+              "key": 107,
+              "label": "G",
+              "id": "R6"
+            },
+            {
+              "key": 108,
+              "label": "H",
+              "id": "R7"
+            },
+            {
+              "id": "R8",
+              "key": 105,
+              "label": "I"
+            }
+          ],
+          "blocks": [
+            {
+              "id": "B0",
+              "indexKey": 103,
+              "recordIds": [
+                "R1",
+                "R2",
+                "R3"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B1",
+              "indexKey": 107,
+              "recordIds": [
+                "R4",
+                "R5",
+                "R6"
+              ],
+              "overflowHead": "O0"
+            },
+            {
+              "id": "B2",
+              "indexKey": 108,
+              "recordIds": [
+                "R7"
+              ],
+              "overflowHead": null
+            }
+          ],
+          "indexEntries": [
+            {
+              "key": 103,
+              "blockId": "B0"
+            },
+            {
+              "key": 107,
+              "blockId": "B1"
+            },
+            {
+              "key": 108,
+              "blockId": "B2"
+            }
+          ],
+          "overflowNodes": [
+            {
+              "id": "O0",
+              "blockId": "B1",
+              "recordIds": [
+                "R8"
+              ],
+              "nextId": null
+            }
+          ],
+          "currentIndexIndex": 1,
+          "selectedBlockId": "B1",
+          "currentBlockId": "B1",
+          "currentOverflowId": null,
+          "compareId": "R6",
+          "foundId": null,
+          "insertedId": "R8",
+          "indexBlockReads": 1,
+          "mainBlockReads": 1,
+          "overflowBlockReads": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            101,
+            102,
+            103,
+            104,
+            106,
+            107,
+            108,
+            105
+          ],
+          "done": false
+        },
+        "message": "继续读溢出节点 O0 / read the linked overflow node",
+        "line": 213,
+        "variables": {
+          "command": "insert",
+          "targetKey": 105,
+          "mainBlocks": 3,
+          "overflowNodes": 1,
+          "indexBlockReads": 1,
+          "mainBlockReads": 1,
+          "overflowBlockReads": 1,
+          "result": "pending"
+        },
+        "lessonStepId": "read-overflow",
+        "structure": {
+          "kind": "isam",
+          "preset": "insert-overflow",
+          "command": "insert",
+          "operation": "read-overflow",
+          "blockCapacity": 3,
+          "targetKey": 105,
+          "records": [
+            {
+              "key": 101,
+              "label": "A",
+              "id": "R1"
+            },
+            {
+              "key": 102,
+              "label": "B",
+              "id": "R2"
+            },
+            {
+              "key": 103,
+              "label": "C",
+              "id": "R3"
+            },
+            {
+              "key": 104,
+              "label": "D",
+              "id": "R4"
+            },
+            {
+              "key": 106,
+              "label": "F",
+              "id": "R5"
+            },
+            {
+              "key": 107,
+              "label": "G",
+              "id": "R6"
+            },
+            {
+              "key": 108,
+              "label": "H",
+              "id": "R7"
+            },
+            {
+              "id": "R8",
+              "key": 105,
+              "label": "I"
+            }
+          ],
+          "blocks": [
+            {
+              "id": "B0",
+              "indexKey": 103,
+              "recordIds": [
+                "R1",
+                "R2",
+                "R3"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B1",
+              "indexKey": 107,
+              "recordIds": [
+                "R4",
+                "R5",
+                "R6"
+              ],
+              "overflowHead": "O0"
+            },
+            {
+              "id": "B2",
+              "indexKey": 108,
+              "recordIds": [
+                "R7"
+              ],
+              "overflowHead": null
+            }
+          ],
+          "indexEntries": [
+            {
+              "key": 103,
+              "blockId": "B0"
+            },
+            {
+              "key": 107,
+              "blockId": "B1"
+            },
+            {
+              "key": 108,
+              "blockId": "B2"
+            }
+          ],
+          "overflowNodes": [
+            {
+              "id": "O0",
+              "blockId": "B1",
+              "recordIds": [
+                "R8"
+              ],
+              "nextId": null
+            }
+          ],
+          "currentIndexIndex": 1,
+          "selectedBlockId": "B1",
+          "currentBlockId": "B1",
+          "currentOverflowId": "O0",
+          "compareId": "R6",
+          "foundId": null,
+          "insertedId": "R8",
+          "indexBlockReads": 1,
+          "mainBlockReads": 1,
+          "overflowBlockReads": 1,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            101,
+            102,
+            103,
+            104,
+            106,
+            107,
+            108,
+            105
+          ],
+          "done": false
+        },
+        "message": "比较溢出记录 105 / compare an overflow record",
+        "line": 220,
+        "variables": {
+          "command": "insert",
+          "targetKey": 105,
+          "mainBlocks": 3,
+          "overflowNodes": 1,
+          "indexBlockReads": 1,
+          "mainBlockReads": 1,
+          "overflowBlockReads": 1,
+          "result": "pending"
+        },
+        "lessonStepId": "compare",
+        "structure": {
+          "kind": "isam",
+          "preset": "insert-overflow",
+          "command": "insert",
+          "operation": "compare",
+          "blockCapacity": 3,
+          "targetKey": 105,
+          "records": [
+            {
+              "key": 101,
+              "label": "A",
+              "id": "R1"
+            },
+            {
+              "key": 102,
+              "label": "B",
+              "id": "R2"
+            },
+            {
+              "key": 103,
+              "label": "C",
+              "id": "R3"
+            },
+            {
+              "key": 104,
+              "label": "D",
+              "id": "R4"
+            },
+            {
+              "key": 106,
+              "label": "F",
+              "id": "R5"
+            },
+            {
+              "key": 107,
+              "label": "G",
+              "id": "R6"
+            },
+            {
+              "key": 108,
+              "label": "H",
+              "id": "R7"
+            },
+            {
+              "id": "R8",
+              "key": 105,
+              "label": "I"
+            }
+          ],
+          "blocks": [
+            {
+              "id": "B0",
+              "indexKey": 103,
+              "recordIds": [
+                "R1",
+                "R2",
+                "R3"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B1",
+              "indexKey": 107,
+              "recordIds": [
+                "R4",
+                "R5",
+                "R6"
+              ],
+              "overflowHead": "O0"
+            },
+            {
+              "id": "B2",
+              "indexKey": 108,
+              "recordIds": [
+                "R7"
+              ],
+              "overflowHead": null
+            }
+          ],
+          "indexEntries": [
+            {
+              "key": 103,
+              "blockId": "B0"
+            },
+            {
+              "key": 107,
+              "blockId": "B1"
+            },
+            {
+              "key": 108,
+              "blockId": "B2"
+            }
+          ],
+          "overflowNodes": [
+            {
+              "id": "O0",
+              "blockId": "B1",
+              "recordIds": [
+                "R8"
+              ],
+              "nextId": null
+            }
+          ],
+          "currentIndexIndex": 1,
+          "selectedBlockId": "B1",
+          "currentBlockId": "B1",
+          "currentOverflowId": "O0",
+          "compareId": "R8",
+          "foundId": null,
+          "insertedId": "R8",
+          "indexBlockReads": 1,
+          "mainBlockReads": 1,
+          "overflowBlockReads": 1,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            101,
+            102,
+            103,
+            104,
+            106,
+            107,
+            108,
+            105
+          ],
+          "done": false
+        },
+        "message": "在溢出区命中 R8 / record found",
+        "line": 234,
+        "variables": {
+          "command": "insert",
+          "targetKey": 105,
+          "mainBlocks": 3,
+          "overflowNodes": 1,
+          "indexBlockReads": 1,
+          "mainBlockReads": 1,
+          "overflowBlockReads": 1,
+          "result": "pending"
+        },
+        "lessonStepId": "found",
+        "structure": {
+          "kind": "isam",
+          "preset": "insert-overflow",
+          "command": "insert",
+          "operation": "found",
+          "blockCapacity": 3,
+          "targetKey": 105,
+          "records": [
+            {
+              "key": 101,
+              "label": "A",
+              "id": "R1"
+            },
+            {
+              "key": 102,
+              "label": "B",
+              "id": "R2"
+            },
+            {
+              "key": 103,
+              "label": "C",
+              "id": "R3"
+            },
+            {
+              "key": 104,
+              "label": "D",
+              "id": "R4"
+            },
+            {
+              "key": 106,
+              "label": "F",
+              "id": "R5"
+            },
+            {
+              "key": 107,
+              "label": "G",
+              "id": "R6"
+            },
+            {
+              "key": 108,
+              "label": "H",
+              "id": "R7"
+            },
+            {
+              "id": "R8",
+              "key": 105,
+              "label": "I"
+            }
+          ],
+          "blocks": [
+            {
+              "id": "B0",
+              "indexKey": 103,
+              "recordIds": [
+                "R1",
+                "R2",
+                "R3"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B1",
+              "indexKey": 107,
+              "recordIds": [
+                "R4",
+                "R5",
+                "R6"
+              ],
+              "overflowHead": "O0"
+            },
+            {
+              "id": "B2",
+              "indexKey": 108,
+              "recordIds": [
+                "R7"
+              ],
+              "overflowHead": null
+            }
+          ],
+          "indexEntries": [
+            {
+              "key": 103,
+              "blockId": "B0"
+            },
+            {
+              "key": 107,
+              "blockId": "B1"
+            },
+            {
+              "key": 108,
+              "blockId": "B2"
+            }
+          ],
+          "overflowNodes": [
+            {
+              "id": "O0",
+              "blockId": "B1",
+              "recordIds": [
+                "R8"
+              ],
+              "nextId": null
+            }
+          ],
+          "currentIndexIndex": 1,
+          "selectedBlockId": "B1",
+          "currentBlockId": "B1",
+          "currentOverflowId": null,
+          "compareId": null,
+          "foundId": "R8",
+          "insertedId": "R8",
+          "indexBlockReads": 1,
+          "mainBlockReads": 1,
+          "overflowBlockReads": 1,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            101,
+            102,
+            103,
+            104,
+            106,
+            107,
+            108,
+            105
+          ],
+          "done": true
+        },
+        "message": "插入后重新查找成功 / ISAM operation complete",
+        "line": 325,
+        "variables": {
+          "command": "insert",
+          "targetKey": 105,
+          "mainBlocks": 3,
+          "overflowNodes": 1,
+          "indexBlockReads": 1,
+          "mainBlockReads": 1,
+          "overflowBlockReads": 1,
+          "result": "inserted"
+        },
+        "lessonStepId": "done",
+        "structure": {
+          "kind": "isam",
+          "preset": "insert-overflow",
+          "command": "insert",
+          "operation": "done",
+          "blockCapacity": 3,
+          "targetKey": 105,
+          "records": [
+            {
+              "key": 101,
+              "label": "A",
+              "id": "R1"
+            },
+            {
+              "key": 102,
+              "label": "B",
+              "id": "R2"
+            },
+            {
+              "key": 103,
+              "label": "C",
+              "id": "R3"
+            },
+            {
+              "key": 104,
+              "label": "D",
+              "id": "R4"
+            },
+            {
+              "key": 106,
+              "label": "F",
+              "id": "R5"
+            },
+            {
+              "key": 107,
+              "label": "G",
+              "id": "R6"
+            },
+            {
+              "key": 108,
+              "label": "H",
+              "id": "R7"
+            },
+            {
+              "id": "R8",
+              "key": 105,
+              "label": "I"
+            }
+          ],
+          "blocks": [
+            {
+              "id": "B0",
+              "indexKey": 103,
+              "recordIds": [
+                "R1",
+                "R2",
+                "R3"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B1",
+              "indexKey": 107,
+              "recordIds": [
+                "R4",
+                "R5",
+                "R6"
+              ],
+              "overflowHead": "O0"
+            },
+            {
+              "id": "B2",
+              "indexKey": 108,
+              "recordIds": [
+                "R7"
+              ],
+              "overflowHead": null
+            }
+          ],
+          "indexEntries": [
+            {
+              "key": 103,
+              "blockId": "B0"
+            },
+            {
+              "key": 107,
+              "blockId": "B1"
+            },
+            {
+              "key": 108,
+              "blockId": "B2"
+            }
+          ],
+          "overflowNodes": [
+            {
+              "id": "O0",
+              "blockId": "B1",
+              "recordIds": [
+                "R8"
+              ],
+              "nextId": null
+            }
+          ],
+          "currentIndexIndex": 1,
+          "selectedBlockId": "B1",
+          "currentBlockId": "B1",
+          "currentOverflowId": null,
+          "compareId": null,
+          "foundId": "R8",
+          "insertedId": "R8",
+          "indexBlockReads": 1,
+          "mainBlockReads": 1,
+          "overflowBlockReads": 1,
+          "result": "inserted"
+        }
+      }
+    ]
+  },
+  "small-blocks": {
+    "input": {
+      "preset": "small-blocks",
+      "command": "find",
+      "blockCapacity": 2,
+      "targetKey": 107,
+      "records": [
+        {
+          "key": 101,
+          "label": "A"
+        },
+        {
+          "key": 102,
+          "label": "B"
+        },
+        {
+          "key": 103,
+          "label": "C"
+        },
+        {
+          "key": 104,
+          "label": "D"
+        },
+        {
+          "key": 105,
+          "label": "E"
+        },
+        {
+          "key": 106,
+          "label": "F"
+        },
+        {
+          "key": 107,
+          "label": "G"
+        },
+        {
+          "key": 108,
+          "label": "H"
+        }
+      ]
+    },
+    "frames": [
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            101,
+            102,
+            103,
+            104,
+            105,
+            106,
+            107,
+            108
+          ],
+          "done": false
+        },
+        "message": "建立主数据区、每块索引上界与空溢出链 / build main blocks, index bounds and empty chains",
+        "line": 262,
+        "variables": {
+          "command": "find",
+          "targetKey": 107,
+          "mainBlocks": 4,
+          "overflowNodes": 0,
+          "indexBlockReads": 1,
+          "mainBlockReads": 0,
+          "overflowBlockReads": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "init",
+        "structure": {
+          "kind": "isam",
+          "preset": "small-blocks",
+          "command": "find",
+          "operation": "init",
+          "blockCapacity": 2,
+          "targetKey": 107,
+          "records": [
+            {
+              "key": 101,
+              "label": "A",
+              "id": "R1"
+            },
+            {
+              "key": 102,
+              "label": "B",
+              "id": "R2"
+            },
+            {
+              "key": 103,
+              "label": "C",
+              "id": "R3"
+            },
+            {
+              "key": 104,
+              "label": "D",
+              "id": "R4"
+            },
+            {
+              "key": 105,
+              "label": "E",
+              "id": "R5"
+            },
+            {
+              "key": 106,
+              "label": "F",
+              "id": "R6"
+            },
+            {
+              "key": 107,
+              "label": "G",
+              "id": "R7"
+            },
+            {
+              "key": 108,
+              "label": "H",
+              "id": "R8"
+            }
+          ],
+          "blocks": [
+            {
+              "id": "B0",
+              "indexKey": 102,
+              "recordIds": [
+                "R1",
+                "R2"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B1",
+              "indexKey": 104,
+              "recordIds": [
+                "R3",
+                "R4"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B2",
+              "indexKey": 106,
+              "recordIds": [
+                "R5",
+                "R6"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B3",
+              "indexKey": 108,
+              "recordIds": [
+                "R7",
+                "R8"
+              ],
+              "overflowHead": null
+            }
+          ],
+          "indexEntries": [
+            {
+              "key": 102,
+              "blockId": "B0"
+            },
+            {
+              "key": 104,
+              "blockId": "B1"
+            },
+            {
+              "key": 106,
+              "blockId": "B2"
+            },
+            {
+              "key": 108,
+              "blockId": "B3"
+            }
+          ],
+          "overflowNodes": [],
+          "currentIndexIndex": null,
+          "selectedBlockId": null,
+          "currentBlockId": null,
+          "currentOverflowId": null,
+          "compareId": null,
+          "foundId": null,
+          "insertedId": null,
+          "indexBlockReads": 1,
+          "mainBlockReads": 0,
+          "overflowBlockReads": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            101,
+            102,
+            103,
+            104,
+            105,
+            106,
+            107,
+            108
+          ],
+          "done": false
+        },
+        "message": "索引上界选中主块 B3 / choose a main block by its upper bound",
+        "line": 184,
+        "variables": {
+          "command": "find",
+          "targetKey": 107,
+          "mainBlocks": 4,
+          "overflowNodes": 0,
+          "indexBlockReads": 1,
+          "mainBlockReads": 0,
+          "overflowBlockReads": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "index-probe",
+        "structure": {
+          "kind": "isam",
+          "preset": "small-blocks",
+          "command": "find",
+          "operation": "index-probe",
+          "blockCapacity": 2,
+          "targetKey": 107,
+          "records": [
+            {
+              "key": 101,
+              "label": "A",
+              "id": "R1"
+            },
+            {
+              "key": 102,
+              "label": "B",
+              "id": "R2"
+            },
+            {
+              "key": 103,
+              "label": "C",
+              "id": "R3"
+            },
+            {
+              "key": 104,
+              "label": "D",
+              "id": "R4"
+            },
+            {
+              "key": 105,
+              "label": "E",
+              "id": "R5"
+            },
+            {
+              "key": 106,
+              "label": "F",
+              "id": "R6"
+            },
+            {
+              "key": 107,
+              "label": "G",
+              "id": "R7"
+            },
+            {
+              "key": 108,
+              "label": "H",
+              "id": "R8"
+            }
+          ],
+          "blocks": [
+            {
+              "id": "B0",
+              "indexKey": 102,
+              "recordIds": [
+                "R1",
+                "R2"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B1",
+              "indexKey": 104,
+              "recordIds": [
+                "R3",
+                "R4"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B2",
+              "indexKey": 106,
+              "recordIds": [
+                "R5",
+                "R6"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B3",
+              "indexKey": 108,
+              "recordIds": [
+                "R7",
+                "R8"
+              ],
+              "overflowHead": null
+            }
+          ],
+          "indexEntries": [
+            {
+              "key": 102,
+              "blockId": "B0"
+            },
+            {
+              "key": 104,
+              "blockId": "B1"
+            },
+            {
+              "key": 106,
+              "blockId": "B2"
+            },
+            {
+              "key": 108,
+              "blockId": "B3"
+            }
+          ],
+          "overflowNodes": [],
+          "currentIndexIndex": 3,
+          "selectedBlockId": "B3",
+          "currentBlockId": null,
+          "currentOverflowId": null,
+          "compareId": null,
+          "foundId": null,
+          "insertedId": null,
+          "indexBlockReads": 1,
+          "mainBlockReads": 0,
+          "overflowBlockReads": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            101,
+            102,
+            103,
+            104,
+            105,
+            106,
+            107,
+            108
+          ],
+          "done": false
+        },
+        "message": "读入主区 B3 并检查块内记录 / read and scan the main block",
+        "line": 192,
+        "variables": {
+          "command": "find",
+          "targetKey": 107,
+          "mainBlocks": 4,
+          "overflowNodes": 0,
+          "indexBlockReads": 1,
+          "mainBlockReads": 1,
+          "overflowBlockReads": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "read-main",
+        "structure": {
+          "kind": "isam",
+          "preset": "small-blocks",
+          "command": "find",
+          "operation": "read-main",
+          "blockCapacity": 2,
+          "targetKey": 107,
+          "records": [
+            {
+              "key": 101,
+              "label": "A",
+              "id": "R1"
+            },
+            {
+              "key": 102,
+              "label": "B",
+              "id": "R2"
+            },
+            {
+              "key": 103,
+              "label": "C",
+              "id": "R3"
+            },
+            {
+              "key": 104,
+              "label": "D",
+              "id": "R4"
+            },
+            {
+              "key": 105,
+              "label": "E",
+              "id": "R5"
+            },
+            {
+              "key": 106,
+              "label": "F",
+              "id": "R6"
+            },
+            {
+              "key": 107,
+              "label": "G",
+              "id": "R7"
+            },
+            {
+              "key": 108,
+              "label": "H",
+              "id": "R8"
+            }
+          ],
+          "blocks": [
+            {
+              "id": "B0",
+              "indexKey": 102,
+              "recordIds": [
+                "R1",
+                "R2"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B1",
+              "indexKey": 104,
+              "recordIds": [
+                "R3",
+                "R4"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B2",
+              "indexKey": 106,
+              "recordIds": [
+                "R5",
+                "R6"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B3",
+              "indexKey": 108,
+              "recordIds": [
+                "R7",
+                "R8"
+              ],
+              "overflowHead": null
+            }
+          ],
+          "indexEntries": [
+            {
+              "key": 102,
+              "blockId": "B0"
+            },
+            {
+              "key": 104,
+              "blockId": "B1"
+            },
+            {
+              "key": 106,
+              "blockId": "B2"
+            },
+            {
+              "key": 108,
+              "blockId": "B3"
+            }
+          ],
+          "overflowNodes": [],
+          "currentIndexIndex": 3,
+          "selectedBlockId": "B3",
+          "currentBlockId": "B3",
+          "currentOverflowId": null,
+          "compareId": null,
+          "foundId": null,
+          "insertedId": null,
+          "indexBlockReads": 1,
+          "mainBlockReads": 1,
+          "overflowBlockReads": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            101,
+            102,
+            103,
+            104,
+            105,
+            106,
+            107,
+            108
+          ],
+          "done": false
+        },
+        "message": "比较主块记录 107 / compare a main-block record",
+        "line": 199,
+        "variables": {
+          "command": "find",
+          "targetKey": 107,
+          "mainBlocks": 4,
+          "overflowNodes": 0,
+          "indexBlockReads": 1,
+          "mainBlockReads": 1,
+          "overflowBlockReads": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "compare",
+        "structure": {
+          "kind": "isam",
+          "preset": "small-blocks",
+          "command": "find",
+          "operation": "compare",
+          "blockCapacity": 2,
+          "targetKey": 107,
+          "records": [
+            {
+              "key": 101,
+              "label": "A",
+              "id": "R1"
+            },
+            {
+              "key": 102,
+              "label": "B",
+              "id": "R2"
+            },
+            {
+              "key": 103,
+              "label": "C",
+              "id": "R3"
+            },
+            {
+              "key": 104,
+              "label": "D",
+              "id": "R4"
+            },
+            {
+              "key": 105,
+              "label": "E",
+              "id": "R5"
+            },
+            {
+              "key": 106,
+              "label": "F",
+              "id": "R6"
+            },
+            {
+              "key": 107,
+              "label": "G",
+              "id": "R7"
+            },
+            {
+              "key": 108,
+              "label": "H",
+              "id": "R8"
+            }
+          ],
+          "blocks": [
+            {
+              "id": "B0",
+              "indexKey": 102,
+              "recordIds": [
+                "R1",
+                "R2"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B1",
+              "indexKey": 104,
+              "recordIds": [
+                "R3",
+                "R4"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B2",
+              "indexKey": 106,
+              "recordIds": [
+                "R5",
+                "R6"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B3",
+              "indexKey": 108,
+              "recordIds": [
+                "R7",
+                "R8"
+              ],
+              "overflowHead": null
+            }
+          ],
+          "indexEntries": [
+            {
+              "key": 102,
+              "blockId": "B0"
+            },
+            {
+              "key": 104,
+              "blockId": "B1"
+            },
+            {
+              "key": 106,
+              "blockId": "B2"
+            },
+            {
+              "key": 108,
+              "blockId": "B3"
+            }
+          ],
+          "overflowNodes": [],
+          "currentIndexIndex": 3,
+          "selectedBlockId": "B3",
+          "currentBlockId": "B3",
+          "currentOverflowId": null,
+          "compareId": "R7",
+          "foundId": null,
+          "insertedId": null,
+          "indexBlockReads": 1,
+          "mainBlockReads": 1,
+          "overflowBlockReads": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            101,
+            102,
+            103,
+            104,
+            105,
+            106,
+            107,
+            108
+          ],
+          "done": false
+        },
+        "message": "在主区命中 R7 / record found",
+        "line": 234,
+        "variables": {
+          "command": "find",
+          "targetKey": 107,
+          "mainBlocks": 4,
+          "overflowNodes": 0,
+          "indexBlockReads": 1,
+          "mainBlockReads": 1,
+          "overflowBlockReads": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "found",
+        "structure": {
+          "kind": "isam",
+          "preset": "small-blocks",
+          "command": "find",
+          "operation": "found",
+          "blockCapacity": 2,
+          "targetKey": 107,
+          "records": [
+            {
+              "key": 101,
+              "label": "A",
+              "id": "R1"
+            },
+            {
+              "key": 102,
+              "label": "B",
+              "id": "R2"
+            },
+            {
+              "key": 103,
+              "label": "C",
+              "id": "R3"
+            },
+            {
+              "key": 104,
+              "label": "D",
+              "id": "R4"
+            },
+            {
+              "key": 105,
+              "label": "E",
+              "id": "R5"
+            },
+            {
+              "key": 106,
+              "label": "F",
+              "id": "R6"
+            },
+            {
+              "key": 107,
+              "label": "G",
+              "id": "R7"
+            },
+            {
+              "key": 108,
+              "label": "H",
+              "id": "R8"
+            }
+          ],
+          "blocks": [
+            {
+              "id": "B0",
+              "indexKey": 102,
+              "recordIds": [
+                "R1",
+                "R2"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B1",
+              "indexKey": 104,
+              "recordIds": [
+                "R3",
+                "R4"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B2",
+              "indexKey": 106,
+              "recordIds": [
+                "R5",
+                "R6"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B3",
+              "indexKey": 108,
+              "recordIds": [
+                "R7",
+                "R8"
+              ],
+              "overflowHead": null
+            }
+          ],
+          "indexEntries": [
+            {
+              "key": 102,
+              "blockId": "B0"
+            },
+            {
+              "key": 104,
+              "blockId": "B1"
+            },
+            {
+              "key": 106,
+              "blockId": "B2"
+            },
+            {
+              "key": 108,
+              "blockId": "B3"
+            }
+          ],
+          "overflowNodes": [],
+          "currentIndexIndex": 3,
+          "selectedBlockId": "B3",
+          "currentBlockId": "B3",
+          "currentOverflowId": null,
+          "compareId": null,
+          "foundId": "R7",
+          "insertedId": null,
+          "indexBlockReads": 1,
+          "mainBlockReads": 1,
+          "overflowBlockReads": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            101,
+            102,
+            103,
+            104,
+            105,
+            106,
+            107,
+            108
+          ],
+          "done": true
+        },
+        "message": "查找结束 / ISAM operation complete",
+        "line": 325,
+        "variables": {
+          "command": "find",
+          "targetKey": 107,
+          "mainBlocks": 4,
+          "overflowNodes": 0,
+          "indexBlockReads": 1,
+          "mainBlockReads": 1,
+          "overflowBlockReads": 0,
+          "result": "found"
+        },
+        "lessonStepId": "done",
+        "structure": {
+          "kind": "isam",
+          "preset": "small-blocks",
+          "command": "find",
+          "operation": "done",
+          "blockCapacity": 2,
+          "targetKey": 107,
+          "records": [
+            {
+              "key": 101,
+              "label": "A",
+              "id": "R1"
+            },
+            {
+              "key": 102,
+              "label": "B",
+              "id": "R2"
+            },
+            {
+              "key": 103,
+              "label": "C",
+              "id": "R3"
+            },
+            {
+              "key": 104,
+              "label": "D",
+              "id": "R4"
+            },
+            {
+              "key": 105,
+              "label": "E",
+              "id": "R5"
+            },
+            {
+              "key": 106,
+              "label": "F",
+              "id": "R6"
+            },
+            {
+              "key": 107,
+              "label": "G",
+              "id": "R7"
+            },
+            {
+              "key": 108,
+              "label": "H",
+              "id": "R8"
+            }
+          ],
+          "blocks": [
+            {
+              "id": "B0",
+              "indexKey": 102,
+              "recordIds": [
+                "R1",
+                "R2"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B1",
+              "indexKey": 104,
+              "recordIds": [
+                "R3",
+                "R4"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B2",
+              "indexKey": 106,
+              "recordIds": [
+                "R5",
+                "R6"
+              ],
+              "overflowHead": null
+            },
+            {
+              "id": "B3",
+              "indexKey": 108,
+              "recordIds": [
+                "R7",
+                "R8"
+              ],
+              "overflowHead": null
+            }
+          ],
+          "indexEntries": [
+            {
+              "key": 102,
+              "blockId": "B0"
+            },
+            {
+              "key": 104,
+              "blockId": "B1"
+            },
+            {
+              "key": 106,
+              "blockId": "B2"
+            },
+            {
+              "key": 108,
+              "blockId": "B3"
+            }
+          ],
+          "overflowNodes": [],
+          "currentIndexIndex": 3,
+          "selectedBlockId": "B3",
+          "currentBlockId": "B3",
+          "currentOverflowId": null,
+          "compareId": null,
+          "foundId": "R7",
+          "insertedId": null,
+          "indexBlockReads": 1,
+          "mainBlockReads": 1,
+          "overflowBlockReads": 0,
+          "result": "found"
+        }
+      }
+    ]
+  }
+}

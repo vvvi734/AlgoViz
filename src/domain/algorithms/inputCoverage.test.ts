@@ -14,7 +14,7 @@ import {
  * RECUR-01 coverage lock.
  *
  * The registry is the source of truth; theory pages are not dynamic algorithms
- * and are deliberately absent. All 39 dynamic algorithms now have official,
+ * and are deliberately absent. All 60 dynamic algorithms now have official,
  * custom and random guided inputs; no algorithm is frozen.
  */
 function seeded(seed: number): () => number {
@@ -29,13 +29,13 @@ describe('RECUR-01 dynamic algorithm input coverage', () => {
   it('registers every dynamic algorithm exactly once as guided input', () => {
     const ids = algorithmIds();
     const guided = new Set<string>(GUIDED_INPUT_ALGORITHMS);
-    expect(ids).toHaveLength(57);
+    expect(ids).toHaveLength(60);
     expect(guided.size).toBe(GUIDED_INPUT_ALGORITHMS.length);
-    expect(guided.size).toBe(57);
+    expect(guided.size).toBe(60);
     for (const id of ids) expect(guided.has(id), id).toBe(true);
   });
 
-  it('provides official, custom and random support for all 57 ids', () => {
+  it('provides official, custom and random support for all 60 ids', () => {
     for (const id of GUIDED_INPUT_ALGORITHMS) {
       expect(algorithmIds()).toContain(id);
       expect(isGuidedInputAlgorithm(id)).toBe(true);

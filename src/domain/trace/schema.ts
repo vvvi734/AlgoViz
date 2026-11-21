@@ -28,6 +28,9 @@ import { radixSnapshotSchema } from './radixSchema';
 import { multiwaySnapshotSchema } from './multiwaySchema';
 import { replacementSnapshotSchema } from './replacementSchema';
 import { optimalSnapshotSchema } from './optimalMergeSchema';
+import { fileIndexSnapshotSchema } from './fileIndexSchema';
+import { isamSnapshotSchema } from './isamSchema';
+import { invertedSnapshotSchema } from './invertedIndexSchema';
 import { blockSearchSnapshotSchema } from './blockSearchSchema';
 import { bplusSnapshotSchema } from './bplusSchema';
 import { keyTreeSnapshotSchema } from './keyTreeSchema';
@@ -8357,6 +8360,9 @@ export const structureSchema = z.union([
   multiwaySnapshotSchema,
   replacementSnapshotSchema,
   optimalSnapshotSchema,
+  fileIndexSnapshotSchema,
+  isamSnapshotSchema,
+  invertedSnapshotSchema,
 ]);
 export type AnyStructureSnapshot = z.infer<typeof structureSchema>;
 

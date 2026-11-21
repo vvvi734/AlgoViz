@@ -66,6 +66,21 @@ import {
   OPTIMAL_MERGE_DEFAULT_INPUT,
   OPTIMAL_MERGE_PYTHON,
 } from './optimalMergeExamples';
+import {
+  FILE_INDEX_ENTRY,
+  FILE_INDEX_DEFAULT_INPUT,
+  FILE_INDEX_PYTHON,
+} from './fileIndexExamples';
+import {
+  ISAM_ENTRY,
+  ISAM_DEFAULT_INPUT,
+  ISAM_PYTHON,
+} from './isamExamples';
+import {
+  INVERTED_INDEX_ENTRY,
+  INVERTED_INDEX_DEFAULT_INPUT,
+  INVERTED_INDEX_PYTHON,
+} from './invertedIndexExamples';
 import { structureDefaultInput, structurePythonExample } from './structureExamples';
 import {
   INFIX_TO_POSTFIX_ENTRY,
@@ -99,6 +114,9 @@ export const catalog: AlgorithmCatalog = {
   multiway: { ...MULTIWAY_ENTRY, input: MULTIWAY_DEFAULT_INPUT },
   replacement: { ...REPLACEMENT_ENTRY, input: REPLACEMENT_DEFAULT_INPUT },
   'optimal-merge': { ...OPTIMAL_MERGE_ENTRY, input: OPTIMAL_MERGE_DEFAULT_INPUT },
+  'file-index': { ...FILE_INDEX_ENTRY, input: FILE_INDEX_DEFAULT_INPUT },
+  isam: { ...ISAM_ENTRY, input: ISAM_DEFAULT_INPUT },
+  'inverted-index': { ...INVERTED_INDEX_ENTRY, input: INVERTED_INDEX_DEFAULT_INPUT },
 };
 
 export const algorithmIds = (): string[] => Object.keys(catalog);
@@ -160,6 +178,14 @@ export function externalSortPythonExample(algoId: string): string | null {
   return null;
 }
 
+/** Python presets authored for the three TEXTBOOK-12 file-structure courses. */
+export function fileStructurePythonExample(algoId: string): string | null {
+  if (algoId === 'file-index') return FILE_INDEX_PYTHON;
+  if (algoId === 'isam') return ISAM_PYTHON;
+  if (algoId === 'inverted-index') return INVERTED_INDEX_PYTHON;
+  return null;
+}
+
 /** Returns the preset source for an algorithm in a given teaching language. */
 export function exampleFor(algoId: string, language: CodeLanguage): string {
   const entry = catalog[algoId];
@@ -176,6 +202,8 @@ export function exampleFor(algoId: string, language: CodeLanguage): string {
   if (sortingPreset) return sortingPreset;
   const externalPreset = externalSortPythonExample(algoId);
   if (externalPreset) return externalPreset;
+  const filePreset = fileStructurePythonExample(algoId);
+  if (filePreset) return filePreset;
   const preset = LANGUAGE_EXAMPLES[language]?.[algoId];
   if (preset) return preset;
   const name = entry?.name[1] ?? algoId;

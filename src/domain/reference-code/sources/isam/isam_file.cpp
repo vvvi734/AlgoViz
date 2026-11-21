@@ -1,0 +1,204 @@
+/*
+ * 中文导读：ISAM 主区按关键字有序分块，索引项保存每块与溢出链的真实最大键。
+ * 查找先用上界选块，扫主块，再沿专属链继续；插入块满时创建/追加溢出节点并刷新上界。
+ * 易错点：上界选错块；主块命中还读链；新节点没有前驱链接；插入后不重查。
+ * 复杂度：索引 O(E)、主块 O(B)、溢出链 O(C)；I/O 是模拟事件。
+ * 输入/输出：6 条记录、块容量 2，插入 105 到 B2 溢出链后重新查找。
+ */
+
+/*
+ * ISAM file in C++17 with ordered main blocks and per-block overflow chains.
+ * The index stores each block's true maximum, including its chain.
+ */
+
+#include <algorithm>
+#include <iostream>
+#include <string>
+#include <vector>
+
+struct Record
+{
+    int key;
+    std::string label;
+};
+
+struct OverflowNode
+{
+    std::vector<Record> records;
+    int next = -1;
+};
+
+struct MainBlock
+{
+    std::vector<Record> records;
+    int overflowHead = -1;
+};
+
+class IsamFile
+{
+  public:
+    std::vector<MainBlock> blocks;
+    std::vector<OverflowNode> overflow;
+    std::vector<int> bounds;
+    int capacity = 2;
+    int mainReads = 0;
+    int overflowReads = 0;
+
+    // 作用：计算主块与全部溢出节点的真实最大键。
+    int BlockMaximum(int blockIndex) const
+    {
+        int maximum = blocks[blockIndex].records.back().key;
+        int node = blocks[blockIndex].overflowHead;
+        while (node >= 0)
+        {
+            for (const Record &record : overflow[node].records)
+            {
+                maximum = std::max(maximum, record.key);
+            }
+            node = overflow[node].next;
+        }
+        return maximum;
+    }
+
+    // 作用：刷新每个块的上界，索引必须跟随真实记录。
+    void RefreshBounds()
+    {
+        bounds.clear();
+        for (std::size_t block = 0; block < blocks.size(); block += 1)
+        {
+            bounds.push_back(BlockMaximum(static_cast<int>(block)));
+        }
+    }
+
+    // 作用：选第一个上界不小于目标的主块；目标超过全部上界时选最后一块。
+    int ChooseBlock(int target) const
+    {
+        for (std::size_t block = 0; block < bounds.size(); block += 1)
+        {
+            if (bounds[block] >= target)
+            {
+                return static_cast<int>(block);
+            }
+        }
+        return static_cast<int>(bounds.size()) - 1;
+    }
+
+    // 作用：主块有空间按序插入；块满则追加到该块专属溢出链。
+    void Insert(Record record)
+    {
+        int blockIndex = ChooseBlock(record.key);
+        MainBlock &block = blocks[static_cast<std::size_t>(blockIndex)];
+        if (static_cast<int>(block.records.size()) < capacity)
+        {
+            auto position = std::lower_bound(
+                block.records.begin(), block.records.end(), record.key,
+                [](const Record &left, int key)
+                { return left.key < key; });
+            block.records.insert(position, record);
+            std::cout << "insert " << record.key << " into main B" << blockIndex << "\n";
+            RefreshBounds();
+            return;
+        }
+
+        std::cout << "B" << blockIndex << " full: append "
+                  << record.key << " to overflow\n";
+        if (block.overflowHead < 0)
+        {
+            block.overflowHead = static_cast<int>(overflow.size());
+            overflow.push_back({});
+            std::cout << "set B" << blockIndex << " overflowHead = O"
+                      << block.overflowHead << "\n";
+        }
+
+        int node = block.overflowHead;
+        while (overflow[static_cast<std::size_t>(node)].next >= 0)
+        {
+            node = overflow[static_cast<std::size_t>(node)].next;
+        }
+        OverflowNode &tail = overflow[static_cast<std::size_t>(node)];
+        if (static_cast<int>(tail.records.size()) >= capacity)
+        {
+            int newNode = static_cast<int>(overflow.size());
+            overflow.push_back({});
+            tail.next = newNode;
+            std::cout << "link O" << node << " -> O" << newNode << "\n";
+            node = newNode;
+        }
+        auto &records = overflow[static_cast<std::size_t>(node)].records;
+        auto position = std::lower_bound(
+            records.begin(), records.end(), record.key,
+            [](const Record &left, int key)
+            { return left.key < key; });
+        records.insert(position, record);
+        RefreshBounds();
+    }
+
+    // 作用：查主块与专属溢出链，分别统计两类读取。
+    int Lookup(int target, bool &fromOverflow)
+    {
+        int blockIndex = ChooseBlock(target);
+        mainReads += 1;
+        std::cout << "bound " << bounds[blockIndex]
+                  << " selects B" << blockIndex << "\n";
+        const MainBlock &block = blocks[static_cast<std::size_t>(blockIndex)];
+        for (std::size_t offset = 0; offset < block.records.size(); offset += 1)
+        {
+            std::cout << "  compare main " << block.records[offset].key << "\n";
+            if (block.records[offset].key == target)
+            {
+                fromOverflow = false;
+                return blockIndex * capacity + static_cast<int>(offset);
+            }
+        }
+
+        int node = block.overflowHead;
+        while (node >= 0)
+        {
+            overflowReads += 1;
+            std::cout << "  read overflow O" << node << "\n";
+            const OverflowNode &current = overflow[static_cast<std::size_t>(node)];
+            for (std::size_t offset = 0; offset < current.records.size(); offset += 1)
+            {
+                std::cout << "    compare overflow " << current.records[offset].key << "\n";
+                if (current.records[offset].key == target)
+                {
+                    fromOverflow = true;
+                    return node * capacity + static_cast<int>(offset);
+                }
+            }
+            node = current.next;
+        }
+        fromOverflow = false;
+        return -1;
+    }
+};
+
+int main()
+{
+    std::vector<Record> input = {
+        {101, "A"}, {102, "B"}, {103, "C"},
+        {104, "D"}, {106, "F"}, {108, "H"}};
+    std::stable_sort(input.begin(), input.end(),
+                     [](const Record &left, const Record &right)
+                     { return left.key < right.key; });
+
+    IsamFile file;
+    for (std::size_t start = 0; start < input.size(); start += 2)
+    {
+        MainBlock block;
+        std::size_t end = std::min(input.size(), start + 2);
+        block.records.assign(input.begin() + static_cast<std::ptrdiff_t>(start),
+                             input.begin() + static_cast<std::ptrdiff_t>(end));
+        file.blocks.push_back(block);
+    }
+    file.RefreshBounds();
+
+    file.Insert({105, "E"});
+    bool fromOverflow = false;
+    int found = file.Lookup(105, fromOverflow);
+    std::cout << "lookup 105: " << (found >= 0 ? "hit" : "miss")
+              << " in " << (fromOverflow ? "overflow" : "main area")
+              << ", main reads=" << file.mainReads
+              << ", overflow reads=" << file.overflowReads << "\n";
+    return 0;
+}

@@ -31,10 +31,10 @@ function renderApp(initialConcept?: string | null) {
 }
 
 describe('App UI regression (Phase 1)', () => {
-  it('renders all 57 presets and loads a timeline on startup', async () => {
+  it('renders all 60 presets and loads a timeline on startup', async () => {
     renderApp(null);
     await waitFor(() => expect(screen.getByTestId('progress').textContent).toBe('1 / 3'));
-    expect(screen.getAllByTestId(/^algo-/)).toHaveLength(57);
+    expect(screen.getAllByTestId(/^algo-/)).toHaveLength(60);
     expect(screen.getByTestId('algo-kmp')).toBeTruthy();
     expect(screen.getByTestId('algo-bst')).toBeTruthy();
     expect(screen.getByTestId('algo-btree')).toBeTruthy();
@@ -104,3 +104,4 @@ describe('App UI regression (Phase 1)', () => {
     expect(screen.getByTestId('concept-title').textContent).toBe('Basic concepts of data structures');
   });
 });
+

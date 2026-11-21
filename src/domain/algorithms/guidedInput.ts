@@ -143,6 +143,15 @@ import {
   isExternalSortGuidedInputAlgorithm,
   randomExternalDraft,
 } from './externalSortInput';
+import {
+  FILE_STRUCTURE_GUIDED_INPUT_ALGORITHMS,
+  FILE_STRUCTURE_RANDOM_SCENARIOS,
+  buildFileStructureInput,
+  fileDraftFromInput,
+  isFileStructureGuidedInputAlgorithm,
+  randomFileDraft,
+  type FileStructureInputFields,
+} from './fileStructureInput';
 
 export { isStructureGuidedInputAlgorithm } from './structureInput';
 export { isSparseGuidedInputAlgorithm } from './sparseInput';
@@ -151,8 +160,10 @@ export { isExpressionGuidedInputAlgorithm } from './expressionInput';
 export { isGeneralizedListGuidedInputAlgorithm } from './generalizedListInput';
 export { isSearchGuidedInputAlgorithm } from './searchInput';
 export { isExternalSortGuidedInputAlgorithm } from './externalSortInput';
+export { isFileStructureGuidedInputAlgorithm } from './fileStructureInput';
 export type { SearchGuidedInputAlgorithm } from './searchInput';
 export type { ExternalSortGuidedInputAlgorithm, ExternalSortInputFields } from './externalSortInput';
+export type { FileStructureGuidedInputAlgorithm, FileStructureInputFields } from './fileStructureInput';
 export type { ExpressionGuidedInputAlgorithm } from './expressionInput';
 export type {
   GeneralizedListGuidedInputAlgorithm,
@@ -231,6 +242,7 @@ export const GUIDED_INPUT_ALGORITHMS = [
   GARBAGE_COLLECTION_GUIDED_INPUT,
   ...SEARCH_GUIDED_INPUT_ALGORITHMS,
   ...EXTERNAL_SORT_GUIDED_INPUT_ALGORITHMS,
+  ...FILE_STRUCTURE_GUIDED_INPUT_ALGORITHMS,
 ] as const;
 export type GuidedInputAlgorithm = (typeof GUIDED_INPUT_ALGORITHMS)[number];
 
@@ -322,6 +334,9 @@ export const GUIDED_INPUT_LANGUAGE: Record<GuidedInputAlgorithm, CodeLanguage> =
   multiway: 'python',
   replacement: 'python',
   'optimal-merge': 'python',
+  'file-index': 'python',
+  isam: 'python',
+  'inverted-index': 'python',
 };
 
 export interface GuidedInputDraft {
@@ -379,6 +394,8 @@ export interface GuidedInputDraft {
     weights: string;
     workspaceCapacity: string;
   };
+  /** TEXTBOOK-12 file records, index kind, ISAM command and inverted query. */
+  file?: FileStructureInputFields;
 }
 
 export interface GuidedInputError {
@@ -544,6 +561,7 @@ const RANDOM_SCENARIOS: Record<GuidedInputAlgorithm, readonly GuidedRandomScenar
   'garbage-collection': GARBAGE_RANDOM_SCENARIOS,
   ...SEARCH_RANDOM_SCENARIOS,
   ...EXTERNAL_SORT_RANDOM_SCENARIOS,
+  ...FILE_STRUCTURE_RANDOM_SCENARIOS,
 };
 
 export function isGuidedInputAlgorithm(id: string): id is GuidedInputAlgorithm {
@@ -738,6 +756,9 @@ export function guidedDraftFromInput(id: GuidedInputAlgorithm, input: unknown): 
   if (isExternalSortGuidedInputAlgorithm(id)) {
     return externalDraftFromInput(id, input);
   }
+  if (isFileStructureGuidedInputAlgorithm(id)) {
+    return fileDraftFromInput(id, input);
+  }
   if (isExpressionGuidedInputAlgorithm(id)) {
     return { ...EMPTY_DRAFT, text: expressionDraftFromInput(input) };
   }
@@ -825,6 +846,9 @@ export function guidedDraftFromInput(id: GuidedInputAlgorithm, input: unknown): 
 export function buildGuidedInput(id: GuidedInputAlgorithm, draft: GuidedInputDraft): GuidedBuildResult {
   if (isExternalSortGuidedInputAlgorithm(id)) {
     return buildExternalSortInput(id, draft);
+  }
+  if (isFileStructureGuidedInputAlgorithm(id)) {
+    return buildFileStructureInput(id, draft);
   }
   if (isExpressionGuidedInputAlgorithm(id)) {
     return buildExpressionInput(id, draft.text);
@@ -1285,6 +1309,9 @@ export function randomGuidedDraft(
 ): GuidedInputDraft {
   if (isExternalSortGuidedInputAlgorithm(id)) {
     return randomExternalDraft(id, scenario, random);
+  }
+  if (isFileStructureGuidedInputAlgorithm(id)) {
+    return randomFileDraft(id, scenario);
   }
   if (isExpressionGuidedInputAlgorithm(id)) {
     return { ...EMPTY_DRAFT, text: randomExpressionDraft(id, scenario, random) };

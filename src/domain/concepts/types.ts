@@ -48,7 +48,15 @@ export type ConceptDiagramKind =
   | 'storage-compaction'
   | 'external-sort'
   | 'external-runs'
-  | 'external-comparison';
+  | 'external-comparison'
+  | 'file-basics'
+  | 'sequential-file'
+  | 'indexed-file'
+  | 'isam-vsam'
+  | 'hashed-file'
+  | 'multi-table-file'
+  | 'inverted-file'
+  | 'file-comparison';
 
 export interface ConceptDefinition {
   term: Bilingual;
