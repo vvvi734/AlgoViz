@@ -1034,4 +1034,58 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
       zh: "第一次弹出的是右操作数，必须按“左操作数 运算符 右操作数”的顺序计算。",
     },
   ],
+  "free_list.c": [
+    {
+      en: "A block owns the half-open interval [start, start + size).",
+      zh: "一个块拥有半开区间 [start, start + size)；右端点不包含在块内。",
+    },
+  ],
+  "free_list.cpp": [
+    {
+      en: "A block owns the half-open interval [start, start + size).",
+      zh: "一个块拥有半开区间 [start, start + size)；右端点不包含在块内。",
+    },
+  ],
+  "free_list.py": [
+    {
+      en: "A block owns the half-open interval [start, start + size).",
+      zh: "一个块拥有半开区间 [start, start + size)；右端点不包含在块内。",
+    },
+  ],
+  "buddy_system.c": [
+    {
+      en: "The merged block starts at the smaller address and doubles its size.",
+      zh: "合并后的块从较小的地址开始，大小翻倍并提升一级。",
+    },
+  ],
+  "buddy_system.cpp": [
+    {
+      en: "The merged block starts at the smaller address and doubles its size.",
+      zh: "合并后的块从较小的地址开始，大小翻倍并提升一级。",
+    },
+  ],
+  "buddy_system.py": [
+    {
+      en: "The merged block starts at the smaller address and doubles its size.",
+      zh: "合并后的块从较小的地址开始，大小翻倍并提升一级。",
+    },
+  ],
+  "garbage_collection.c": [
+    {
+      en: "Every reference stores an address, so all endpoints must be refreshed.",
+      zh: "引用中保存了地址，因此移动对象后所有相关端点都必须刷新。",
+    },
+  ],
+  "garbage_collection.cpp": [
+    {
+      en: "Every reference stores an address, so all endpoints must be refreshed.",
+      zh: "引用中保存了地址，因此移动对象后所有相关端点都必须刷新。",
+    },
+  ],
+  "garbage_collection.py": [
+    {
+      en: "Every reference stores an address, so all endpoints must be refreshed.",
+      zh: "引用中保存了地址，因此移动对象后所有相关端点都必须刷新。",
+    },
+  ],
 };

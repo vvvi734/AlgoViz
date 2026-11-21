@@ -1,0 +1,730 @@
+/* TEXTBOOK-08 — dynamic storage memory bands, buddy tree and object graph. */
+.mem-stage,
+.buddy-stage,
+.gc-stage {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  min-width: 0;
+}
+
+.mem-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 18px;
+  padding: 2px 2px 0;
+}
+
+.mem-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 3px 10px;
+  border: 1px solid var(--mem-used-edge);
+  border-radius: 999px;
+  background: var(--mem-used);
+  color: var(--mem-used-fg);
+  font-size: var(--font-ui);
+  font-weight: 700;
+}
+
+.mem-metric,
+.mem-decision {
+  color: var(--mem-muted);
+  font-size: var(--font-ui);
+  line-height: 1.5;
+}
+
+.mem-metric b,
+.mem-decision b {
+  color: var(--mem-text);
+  font-variant-numeric: tabular-nums;
+}
+
+.mem-decision {
+  min-width: 0;
+}
+
+.mem-strip {
+  width: 100%;
+  min-height: 150px;
+  display: block;
+}
+
+.mem-strip-track {
+  fill: var(--mem-track);
+  stroke: var(--mem-track-edge);
+  stroke-width: 1;
+}
+
+.mem-segment {
+  fill: var(--mem-free);
+  stroke: var(--mem-free-edge);
+  stroke-width: 1;
+  transition: fill 160ms ease, stroke 160ms ease;
+}
+
+.mem-segment.is-allocated {
+  fill: var(--mem-used);
+  stroke: var(--mem-used-edge);
+}
+
+.mem-segment.is-current {
+  fill: var(--mem-check);
+  stroke: var(--mem-check-edge);
+  stroke-width: 3;
+}
+
+.mem-segment.is-candidate {
+  fill: var(--mem-select);
+  stroke: var(--mem-select-edge);
+  stroke-width: 2;
+}
+
+.mem-segment.is-selected {
+  fill: var(--mem-select);
+  stroke: var(--mem-select-edge);
+  stroke-width: 3;
+}
+
+.mem-segment.is-buddy {
+  fill: var(--mem-buddy);
+  stroke: var(--mem-buddy-edge);
+  stroke-width: 2;
+}
+
+.mem-segment.is-merging {
+  fill: var(--mem-merging);
+  stroke: var(--mem-merging-edge);
+  stroke-width: 3;
+}
+
+.mem-segment-label {
+  fill: var(--mem-text);
+  font-size: var(--font-ui);
+  font-weight: 700;
+  pointer-events: none;
+}
+
+.mem-segment-sub {
+  fill: var(--mem-muted);
+  font-size: 12px;
+  pointer-events: none;
+}
+
+.mem-boundary {
+  fill: var(--mem-muted);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}
+
+.mem-tick {
+  stroke: var(--mem-track-edge);
+  stroke-width: 1;
+}
+
+.mem-address {
+  fill: var(--mem-muted);
+  font-size: var(--font-ui);
+  font-variant-numeric: tabular-nums;
+}
+
+.mem-axis-label {
+  fill: var(--mem-muted);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.mem-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  color: var(--mem-muted);
+  font-size: var(--font-ui);
+}
+
+.mem-legend > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mem-swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  border: 1px solid var(--mem-free-edge);
+  background: var(--mem-free);
+  display: inline-block;
+}
+
+.mem-swatch.is-allocated {
+  border-color: var(--mem-used-edge);
+  background: var(--mem-used);
+}
+
+.mem-swatch.is-selected {
+  border-color: var(--mem-select-edge);
+  background: var(--mem-select);
+}
+
+.mem-swatch.is-current {
+  border-color: var(--mem-check-edge);
+  background: var(--mem-check);
+}
+
+.mem-swatch.is-buddy {
+  border-color: var(--mem-buddy-edge);
+  background: var(--mem-buddy);
+}
+
+.mem-lower {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: start;
+}
+
+.mem-table {
+  min-width: 0;
+  border: 1px solid var(--mem-track-edge);
+  border-radius: 8px;
+  background: var(--mem-track);
+  padding: 10px 12px;
+}
+
+.mem-table-title {
+  color: var(--mem-text);
+  font-size: var(--font-ui);
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.mem-table-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(64px, 1fr));
+  gap: 4px 12px;
+  font-size: var(--font-ui);
+}
+
+.mem-th {
+  color: var(--mem-muted);
+  font-size: var(--font-ui);
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--mem-track-edge);
+}
+
+.mem-tr {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: repeat(3, minmax(64px, 1fr));
+  gap: 12px;
+  padding: 3px 0;
+  color: var(--mem-text);
+  font-variant-numeric: tabular-nums;
+  border-bottom: 1px solid var(--mem-track-edge);
+}
+
+.mem-tr:last-child {
+  border-bottom: 0;
+}
+
+.mem-stats,
+.buddy-state,
+.gc-set-row,
+.gc-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  padding: 9px 12px;
+  border: 1px solid var(--mem-track-edge);
+  border-radius: 8px;
+  background: var(--mem-track);
+  color: var(--mem-muted);
+  font-size: var(--font-ui);
+  line-height: 1.5;
+}
+
+.mem-stats b,
+.buddy-state b,
+.gc-set-row b,
+.gc-stats b {
+  color: var(--mem-text);
+  font-variant-numeric: tabular-nums;
+}
+
+.mem-stats {
+  flex-direction: column;
+  gap: 4px;
+  min-width: 180px;
+}
+
+/* Buddy system: memory band plus the corresponding split tree. */
+.buddy-tree {
+  width: 100%;
+  min-height: 280px;
+  display: block;
+}
+
+.buddy-edge {
+  stroke: var(--mem-line);
+  stroke-width: 1.5;
+}
+
+.buddy-edge.is-current {
+  stroke: var(--mem-check-edge);
+  stroke-width: 2.5;
+}
+
+.buddy-node rect {
+  fill: var(--mem-node-bg);
+  stroke: var(--mem-node-edge);
+  stroke-width: 1;
+}
+
+.buddy-node.is-internal rect {
+  fill: var(--mem-internal);
+  stroke: var(--mem-internal-edge);
+  stroke-dasharray: 3 3;
+}
+
+.buddy-node.is-free rect {
+  fill: var(--mem-free);
+  stroke: var(--mem-free-edge);
+}
+
+.buddy-node.is-allocated rect {
+  fill: var(--mem-used);
+  stroke: var(--mem-used-edge);
+}
+
+.buddy-node.is-current rect {
+  stroke: var(--mem-check-edge);
+  stroke-width: 2.5;
+}
+
+.buddy-node.is-selected rect {
+  fill: var(--mem-select);
+  stroke: var(--mem-select-edge);
+  stroke-width: 2.5;
+}
+
+.buddy-node.is-buddy rect {
+  fill: var(--mem-buddy);
+  stroke: var(--mem-buddy-edge);
+  stroke-width: 2.5;
+}
+
+.buddy-node-main {
+  fill: var(--mem-text);
+  font-size: 13px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.buddy-node-sub {
+  fill: var(--mem-muted);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Garbage collection: object graph, live/dead refs and memory spans. */
+.gc-graph-svg {
+  width: 100%;
+  min-height: 260px;
+  display: block;
+  overflow: visible;
+}
+
+.gc-ref-line {
+  stroke: var(--mem-line);
+  stroke-width: 1.6;
+  fill: none;
+}
+
+.gc-ref.is-live .gc-ref-line {
+  stroke: var(--mem-line);
+}
+
+.gc-ref.is-dead .gc-ref-line {
+  stroke: var(--mem-dead-edge);
+  stroke-dasharray: 4 4;
+}
+
+.gc-ref.is-updated .gc-ref-line {
+  stroke: var(--mem-select-edge);
+  stroke-width: 2.5;
+}
+
+.gc-arrow {
+  fill: var(--mem-line);
+}
+
+.gc-node .gc-node-dot {
+  fill: var(--mem-node-bg);
+  stroke: var(--mem-node-edge);
+  stroke-width: 1.5;
+}
+
+.gc-node.is-marked .gc-node-dot {
+  fill: var(--mem-used);
+  stroke: var(--mem-used-edge);
+  stroke-width: 2;
+}
+
+.gc-node.is-root .gc-node-dot {
+  stroke: var(--mem-select-edge);
+  stroke-width: 3;
+}
+
+.gc-node.is-free .gc-node-dot {
+  fill: var(--mem-dead);
+  stroke: var(--mem-dead-edge);
+}
+
+.gc-node.is-current .gc-node-dot {
+  stroke: var(--mem-check-edge);
+  stroke-width: 3;
+}
+
+.gc-node.is-target .gc-node-dot {
+  stroke: var(--mem-select-edge);
+  stroke-width: 3;
+}
+
+.gc-node-id {
+  fill: var(--mem-text);
+  font-size: var(--font-ui);
+  font-weight: 700;
+  pointer-events: none;
+}
+
+.gc-node.is-free .gc-node-id {
+  fill: var(--mem-dead-fg);
+}
+
+.gc-node-meta {
+  fill: var(--mem-muted);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}
+
+.gc-root-badge {
+  fill: var(--mem-select-edge);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.gc-node-moved {
+  fill: var(--mem-select-fg);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.gc-set-row {
+  align-items: flex-start;
+}
+
+/* Structured editors shared by free-list, buddy and GC. */
+.memory-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.memory-field-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  align-items: flex-end;
+}
+
+.memory-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 140px;
+  color: var(--muted);
+  font-size: var(--font-ui);
+}
+
+.memory-field-wide {
+  flex: 1 1 220px;
+}
+
+.memory-field .input {
+  min-height: 34px;
+}
+
+.memory-capacity {
+  max-width: 150px;
+}
+
+.memory-field-note {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--font-ui);
+  line-height: 1.5;
+}
+
+.memory-editor-block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 1px solid var(--mem-track-edge);
+  border-radius: 8px;
+  background: var(--mem-track);
+}
+
+.memory-editor-title {
+  color: var(--mem-text);
+  font-size: var(--font-ui);
+  font-weight: 700;
+}
+
+.memory-op-table {
+  display: grid;
+  grid-template-columns: 28px 112px minmax(80px, 1fr) minmax(90px, 1fr) 34px;
+  gap: 6px 10px;
+  align-items: center;
+}
+
+.memory-op-head {
+  color: var(--mem-muted);
+  font-size: var(--font-ui);
+  padding-bottom: 2px;
+}
+
+.memory-op-row {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: 28px 112px minmax(80px, 1fr) minmax(90px, 1fr) 34px;
+  gap: 10px;
+  align-items: center;
+}
+
+.memory-op-index {
+  color: var(--mem-muted);
+  font-size: var(--font-ui);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.memory-op-select,
+.memory-op-size,
+.memory-op-id {
+  min-height: 34px;
+}
+
+.memory-op-remove {
+  min-width: 30px;
+  padding-inline: 0;
+  justify-content: center;
+  border-color: var(--mem-track-edge);
+  color: var(--mem-muted);
+}
+
+.memory-add-row {
+  align-self: flex-start;
+}
+
+.gc-object-table {
+  display: grid;
+  grid-template-columns: minmax(70px, 0.6fr) minmax(70px, 0.6fr) minmax(160px, 2fr) 34px;
+  gap: 6px 10px;
+  align-items: center;
+}
+
+.gc-object-row {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: minmax(70px, 0.6fr) minmax(70px, 0.6fr) minmax(160px, 2fr) 34px;
+  gap: 10px;
+  align-items: center;
+}
+
+/* Static theory diagrams: fragmentation, boundary tags, compaction. */
+.ds-diagram {
+  width: 100%;
+  min-height: 360px;
+  display: block;
+}
+
+.ds-track {
+  fill: var(--mem-track);
+  stroke: var(--mem-track-edge);
+  stroke-width: 1;
+}
+
+.ds-segment {
+  fill: var(--mem-free);
+  stroke: var(--mem-free-edge);
+  stroke-width: 1;
+}
+
+.ds-segment.is-used {
+  fill: var(--mem-used);
+  stroke: var(--mem-used-edge);
+}
+
+.ds-segment.is-free {
+  fill: var(--mem-free);
+  stroke: var(--mem-free-edge);
+}
+
+.ds-block-label {
+  fill: var(--mem-text);
+  font-size: var(--font-ui);
+  font-weight: 700;
+}
+
+.ds-block-sub,
+.ds-address,
+.ds-tag,
+.ds-case-result,
+.ds-case-title,
+.ds-case-arrow,
+.ds-mini-label,
+.ds-ref-line {
+  fill: var(--mem-text);
+  font-size: var(--font-ui);
+}
+
+.ds-block-sub,
+.ds-address,
+.ds-tag {
+  fill: var(--mem-muted);
+}
+
+.ds-title {
+  fill: var(--mem-text);
+  font-size: var(--font-title);
+  font-weight: 700;
+}
+
+.ds-caption,
+.ds-footnote,
+.ds-tick,
+.ds-ref-title {
+  fill: var(--mem-muted);
+  font-size: var(--font-ui);
+}
+
+.ds-footnote,
+.ds-ref-title {
+  font-weight: 600;
+}
+
+.ds-hatch-base {
+  fill: var(--mem-used);
+}
+
+.ds-hatch-line {
+  stroke: var(--mem-select-edge);
+  stroke-width: 1.5;
+}
+
+.ds-waste-label {
+  fill: var(--mem-select-edge);
+  font-size: var(--font-ui);
+  font-weight: 700;
+}
+
+.ds-divider {
+  stroke: var(--mem-track-edge);
+  stroke-width: 1;
+}
+
+.ds-request {
+  fill: var(--mem-select);
+  stroke: var(--mem-select-edge);
+  stroke-width: 2;
+}
+
+.ds-request-label {
+  fill: var(--mem-select-fg);
+  font-size: var(--font-ui);
+  font-weight: 700;
+}
+
+.ds-tag-line {
+  stroke: var(--mem-track-edge);
+  stroke-width: 1;
+}
+
+.ds-mini {
+  fill: var(--mem-free);
+  stroke: var(--mem-free-edge);
+  stroke-width: 1;
+}
+
+.ds-mini.is-used {
+  fill: var(--mem-used);
+  stroke: var(--mem-used-edge);
+}
+
+.ds-mini.is-free {
+  fill: var(--mem-free);
+  stroke: var(--mem-free-edge);
+}
+
+.ds-mini.is-target {
+  fill: var(--mem-select);
+  stroke: var(--mem-select-edge);
+  stroke-width: 2;
+}
+
+.ds-case-title {
+  font-weight: 700;
+  fill: var(--mem-muted);
+}
+
+.ds-case-arrow {
+  fill: var(--mem-select-edge);
+  font-weight: 700;
+}
+
+.ds-ref-box {
+  fill: var(--mem-track);
+  stroke: var(--mem-track-edge);
+  stroke-width: 1;
+}
+
+.ds-ref-title {
+  fill: var(--mem-text);
+}
+
+.ds-ref-line {
+  fill: var(--mem-used-fg);
+}
+
+
+.gc-editor .memory-field-row {
+  align-items: flex-end;
+}
+
+@media (max-width: 760px) {
+  .mem-lower {
+    grid-template-columns: 1fr;
+  }
+
+  .mem-stats {
+    flex-direction: row;
+  }
+
+  .memory-op-table,
+  .memory-op-row {
+    grid-template-columns: 26px 92px minmax(64px, 1fr) minmax(64px, 1fr) 30px;
+  }
+
+  .gc-object-table,
+  .gc-object-row {
+    grid-template-columns: minmax(58px, 0.7fr) minmax(58px, 0.7fr) minmax(120px, 1.6fr) 30px;
+  }
+}
+

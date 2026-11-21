@@ -97,6 +97,34 @@
   --nameinput-fg: #ffffff;
   --prompt-bg: #0a1526;
   --focus-ring: #5cbaae;
+  /* Chapter 8 dynamic storage: one stable colour per semantic role. */
+  --mem-track: #0b1626;
+  --mem-track-edge: #2b3c52;
+  --mem-free: #253648;
+  --mem-free-edge: #506783;
+  --mem-free-fg: #b5c7dc;
+  --mem-used: #1f574f;
+  --mem-used-edge: #3f9b8f;
+  --mem-used-fg: #a9f0db;
+  --mem-check: #233f5c;
+  --mem-check-edge: #5f9fd2;
+  --mem-select: #4b3d22;
+  --mem-select-edge: #e1b563;
+  --mem-select-fg: #ffe0a8;
+  --mem-buddy: #2c365c;
+  --mem-buddy-edge: #7e91d8;
+  --mem-merging: #4a2b3a;
+  --mem-merging-edge: #d9829b;
+  --mem-dead: #2c2f38;
+  --mem-dead-edge: #5c6370;
+  --mem-dead-fg: #9ba3b2;
+  --mem-text: #e8effb;
+  --mem-muted: #94a4bf;
+  --mem-line: #6381a8;
+  --mem-node-bg: #162239;
+  --mem-node-edge: #45597a;
+  --mem-internal: #141d2d;
+  --mem-internal-edge: #33445f;
 }
 
 :root[data-theme='light'] {
@@ -190,4 +218,32 @@
   --nameinput-fg: #182537;
   --prompt-bg: #ffffff;
   --focus-ring: #087a69;
+  /* Chapter 8 dynamic storage: light equivalents of the same semantic roles. */
+  --mem-track: #f1f5fb;
+  --mem-track-edge: #c9d7e7;
+  --mem-free: #e2e9f3;
+  --mem-free-edge: #a9bad0;
+  --mem-free-fg: #3d526d;
+  --mem-used: #c9eee4;
+  --mem-used-edge: #138577;
+  --mem-used-fg: #075b50;
+  --mem-check: #d6e7f7;
+  --mem-check-edge: #2b6fa5;
+  --mem-select: #fbe8c4;
+  --mem-select-edge: #a56d10;
+  --mem-select-fg: #6c4600;
+  --mem-buddy: #e1e6fb;
+  --mem-buddy-edge: #5268b0;
+  --mem-merging: #f8e2e9;
+  --mem-merging-edge: #b33e60;
+  --mem-dead: #eceff3;
+  --mem-dead-edge: #a8b0bd;
+  --mem-dead-fg: #606b7c;
+  --mem-text: #182537;
+  --mem-muted: #31465f;
+  --mem-line: #7897bd;
+  --mem-node-bg: #ffffff;
+  --mem-node-edge: #b3c4d8;
+  --mem-internal: #f7f9fc;
+  --mem-internal-edge: #d3dce8;
 }

@@ -20,7 +20,13 @@ import { sparseTransposeSnapshotSchema } from './sparseTransposeSchema';
 import { expressionSnapshotSchema } from './expressionSchema';
 import { generalizedListSnapshotSchema } from './generalizedListSchema';
 import { threadedTreeSnapshotSchema } from './threadedTreeSchema';
+import { freeListSnapshotSchema } from './freeListSchema';
+import { buddySnapshotSchema } from './buddySchema';
+import { gcSnapshotSchema } from './gcSchema';
 export type { BfSnapshot, BfOperation } from './bfSchema';
+export type { FreeListSnapshot, FreeListPolicy, FreeListOperation } from './freeListSchema';
+export type { BuddySnapshot, BuddyOperation } from './buddySchema';
+export type { GcSnapshot, GcMode, GcOperation } from './gcSchema';
 export type {
   ThreadedTreeSnapshot,
   ThreadedTreeOperation,
@@ -8220,6 +8226,9 @@ export const structureSchema = z.union([
   connectedComponentsSnapshotSchema,
   kosarajuSnapshotSchema,
   articulationSnapshotSchema,
+  freeListSnapshotSchema,
+  buddySnapshotSchema,
+  gcSnapshotSchema,
 ]);
 export type AnyStructureSnapshot = z.infer<typeof structureSchema>;
 

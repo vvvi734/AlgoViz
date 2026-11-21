@@ -11,6 +11,21 @@ import { SPARSE_TRANSPOSE_ENTRY } from './sparseTransposeExamples';
 import { POLYNOMIAL_ADD_ENTRY, STATIC_LINKED_ENTRY } from './chapter2Examples';
 import { THREADED_INORDER_ENTRY } from './threadedTreeExamples';
 import { ARTICULATION_ENTRY } from './articulationExamples';
+import {
+  FREE_LIST_ENTRY,
+  FREE_LIST_DEFAULT_INPUT,
+  FREE_LIST_PYTHON,
+} from './freeListExamples';
+import {
+  BUDDY_ENTRY,
+  BUDDY_DEFAULT_INPUT,
+  BUDDY_PYTHON,
+} from './buddyExamples';
+import {
+  GARBAGE_COLLECTION_ENTRY,
+  GARBAGE_COLLECTION_DEFAULT_INPUT,
+  GARBAGE_COLLECTION_PYTHON,
+} from './garbageCollectionExamples';
 import { structureDefaultInput, structurePythonExample } from './structureExamples';
 import {
   INFIX_TO_POSTFIX_ENTRY,
@@ -33,6 +48,9 @@ export const catalog: AlgorithmCatalog = {
   'infix-to-postfix': INFIX_TO_POSTFIX_ENTRY,
   'postfix-eval': POSTFIX_EVAL_ENTRY,
   articulation: ARTICULATION_ENTRY,
+  'free-list': { ...FREE_LIST_ENTRY, input: FREE_LIST_DEFAULT_INPUT },
+  'buddy-system': { ...BUDDY_ENTRY, input: BUDDY_DEFAULT_INPUT },
+  'garbage-collection': { ...GARBAGE_COLLECTION_ENTRY, input: GARBAGE_COLLECTION_DEFAULT_INPUT },
 };
 
 export const algorithmIds = (): string[] => Object.keys(catalog);
@@ -63,6 +81,14 @@ export function groupLabel(group: AlgorithmGroup | string, lang: Lang): string {
 
 export const groups: Array<[AlgorithmGroup, string]> = ALGORITHM_GROUPS as Array<[AlgorithmGroup, string]>;
 
+/** Python presets authored for the three dynamic-storage modules. */
+export function memoryPythonExample(algoId: string): string | null {
+  if (algoId === 'free-list') return FREE_LIST_PYTHON;
+  if (algoId === 'buddy-system') return BUDDY_PYTHON;
+  if (algoId === 'garbage-collection') return GARBAGE_COLLECTION_PYTHON;
+  return null;
+}
+
 /** Returns the preset source for an algorithm in a given teaching language. */
 export function exampleFor(algoId: string, language: CodeLanguage): string {
   const entry = catalog[algoId];
@@ -71,6 +97,8 @@ export function exampleFor(algoId: string, language: CodeLanguage): string {
   if (expressionPreset) return expressionPreset;
   const structurePreset = structurePythonExample(algoId);
   if (structurePreset) return structurePreset;
+  const memoryPreset = memoryPythonExample(algoId);
+  if (memoryPreset) return memoryPreset;
   const preset = LANGUAGE_EXAMPLES[language]?.[algoId];
   if (preset) return preset;
   const name = entry?.name[1] ?? algoId;

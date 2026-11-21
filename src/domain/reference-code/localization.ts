@@ -193,6 +193,18 @@ const REFERENCE_LEARNING_NOTES: Record<string, LocalizedText> = {
     zh: '两条按指数降序的链表用双指针合并：指数相等时系数相加，和为 0 不建结点；否则取指数较大项并只移动对应指针；一方耗尽后直接追加剩余段。O(m+n)。',
     en: 'Merge two exponent-descending chains with two cursors: equal exponents add coefficients and a zero sum creates no node; otherwise take the larger exponent and advance only that cursor; append the remaining segment once one side is exhausted. O(m+n).',
   },
+  'free-list': {
+    zh: '空闲块与已分配块按地址铺满整条内存。首次适应取地址顺序中第一个足够大的块；最佳适应取满足请求后剩余最小的块，平局保留较早地址。释放先检查左右邻，再按实际邻接合并。O(M·F)。',
+    en: 'Free and allocated blocks tile the whole address range. First Fit takes the first adequate block in address order; Best Fit takes the least remainder, keeping the earlier address on ties. Release inspects both neighbours before coalescing. O(M·F).',
+  },
+  'buddy-system': {
+    zh: '容量是 2 的幂。请求向上取整到块等级，从该等级向上找最小可用块，再逐层平分到目标等级。释放时用 start XOR size 求伙伴，只有同大小、同等级且空闲的真伙伴才能逐级合并。O(M·L)。',
+    en: 'Capacity is a power of two. Round the request up to a level, find the smallest adequate block at or above it, then halve repeatedly to the target level. Release computes the buddy with start XOR size; only a free true buddy of the same level may merge upward. O(M·L).',
+  },
+  'garbage-collection': {
+    zh: '从根集合迭代标记可达对象，并用已标记/在栈集合阻止环无限重复。清除回收所有未标记对象；紧缩再把存活对象按地址前移，并重写每条引用的源/目标地址。标记 O(N+E)，清除 O(N)，紧缩另加存活字节。',
+    en: 'Mark reachable objects iteratively from roots, using marked/queued sets to stop cycles. Sweep reclaims every unmarked object; compaction then packs live objects and rewrites every reference endpoint. Marking O(N+E), sweeping O(N), compaction plus live bytes.',
+  },
 };
 
 const LANGUAGE_NAME: Record<ReferenceLanguage, { zh: string; en: string }> = {

@@ -38,7 +38,10 @@ export type ConceptDiagramKind =
   | 'string-storage'
   | 'tree-storage'
   | 'forest-conversion'
-  | 'threaded-binary-tree';
+  | 'threaded-binary-tree'
+  | 'dynamic-storage'
+  | 'boundary-tag-method'
+  | 'storage-compaction';
 
 export interface ConceptDefinition {
   term: Bilingual;

@@ -61,6 +61,10 @@ import type { AvlVisualModel } from '../../domain/visualization/avlModel';
 import type { BTreeVisualModel } from '../../domain/visualization/btreeModel';
 import { RecursionVisual } from './RecursionVisual';
 import { buildRecursionModel } from '../../domain/visualization/recursionModel';
+import { BuddyVisual, FreeListVisual, GarbageCollectionVisual } from './MemoryVisuals';
+import type { BuddyVisualModel } from '../../domain/visualization/buddyModel';
+import type { GcVisualModel } from '../../domain/visualization/gcModel';
+import type { FreeListVisualModel } from '../../domain/visualization/freeListModel';
 
 const GRAPH_OPERATION_KEYS: Record<GraphOperation, string> = {
   init: 'graphOpInit',
@@ -547,6 +551,15 @@ export function VisualStage({
         />
       );
       break;
+    case 'free-list':
+      content = <FreeListVisual model={model as FreeListVisualModel} />;
+      break;
+    case 'buddy-system':
+      content = <BuddyVisual model={model as BuddyVisualModel} />;
+      break;
+    case 'garbage-collection':
+      content = <GarbageCollectionVisual model={model as GcVisualModel} />;
+      break;
     case 'graph-traversal': {
       const operationText = graphOperationText(model, t);
       if (model.algorithm === 'dijkstra') {
@@ -686,7 +699,10 @@ export function VisualStage({
     model.kind === 'topological-sort' ||
     model.kind === 'critical-path' ||
     model.kind === 'connected-components' ||
-    model.kind === 'kosaraju';
+    model.kind === 'kosaraju' ||
+    model.kind === 'free-list' ||
+    model.kind === 'buddy-system' ||
+    model.kind === 'garbage-collection';
   return (
     <div
       className={`stage${structured ? ' has-structure' : ''}`}

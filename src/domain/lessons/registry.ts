@@ -49,6 +49,7 @@ import { glDepthLesson, glCopyLesson } from './generalizedListLessons';
 import { staticLinkedListLesson } from './staticLinkedList';
 import { polynomialAddLesson } from './polynomialAdd';
 import { infixToPostfixLesson, postfixEvalLesson } from './expressionLessons';
+import { MEMORY_LESSONS } from './memoryLessons';
 import { validateLessonSet } from './schema';
 import type { Lesson, LessonValidationResult } from './types';
 
@@ -128,6 +129,7 @@ const BUNDLED: unknown[] = [
   polynomialAddLesson,
   infixToPostfixLesson,
   postfixEvalLesson,
+  ...MEMORY_LESSONS,
 ];
 
 /** Courses shipped with the app itself (bubble, factorial, stack, queue, linked-list, binary-tree). */

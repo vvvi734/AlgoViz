@@ -17,7 +17,10 @@ import {
   guidedGraphSpec,
   guidedRandomScenarios,
   isArrayGuidedInputAlgorithm,
+  isBuddyGuidedInputAlgorithm,
   isExpressionGuidedInputAlgorithm,
+  isFreeListGuidedInputAlgorithm,
+  isGarbageCollectionGuidedInputAlgorithm,
   isGeneralizedListGuidedInputAlgorithm,
   isGraphAlgorithmGuidedInput,
   isHashGuidedInputAlgorithm,
@@ -62,6 +65,14 @@ import { RecursionInputEditor } from './RecursionInputEditor';
 import { StaticLinkedInputEditor } from './StaticLinkedInputEditor';
 import { PolynomialInputEditor } from './PolynomialInputEditor';
 import { GeneralizedListInputEditor } from './GeneralizedListInputEditor';
+import {
+  BuddyInputEditor,
+  FreeListInputEditor,
+  GarbageCollectionInputEditor,
+} from './MemoryInputEditors';
+import type { FreeListInputDraft } from '../../domain/algorithms/freeListInput';
+import type { BuddyInputDraft } from '../../domain/algorithms/buddyInput';
+import type { GarbageInputDraft } from '../../domain/algorithms/garbageInput';
 import type { RecursionGuidedInputAlgorithm } from '../../domain/algorithms/recursionInput';
 import type { LabController } from './useLabController';
 
@@ -105,6 +116,9 @@ const GRAPH_HINT_KEYS: Record<GraphGuidedInputAlgorithm, string> = {
 };
 
 function hintKeyFor(id: GuidedInputAlgorithm): string {
+  if (isFreeListGuidedInputAlgorithm(id)) return 'guidedMemoryHint';
+  if (isBuddyGuidedInputAlgorithm(id)) return 'guidedBuddyHint';
+  if (isGarbageCollectionGuidedInputAlgorithm(id)) return 'guidedGcHint';
   if (isExpressionGuidedInputAlgorithm(id)) {
     return id === 'infix-to-postfix' ? 'expressionHintInfix' : 'expressionHintPostfix';
   }
@@ -274,6 +288,27 @@ export function GuidedInputPanel({ lab }: { lab: LabController }) {
 
   const setPolynomial = (a: PolynomialTermRow[], b: PolynomialTermRow[]) => {
     setDraft((current) => ({ ...current, polynomialA: a, polynomialB: b }));
+    setMode('custom');
+    setIssue(null);
+    setRandomFilled(false);
+  };
+
+  const setFreeList = (freeList: FreeListInputDraft) => {
+    setDraft((current) => ({ ...current, freeList }));
+    setMode('custom');
+    setIssue(null);
+    setRandomFilled(false);
+  };
+
+  const setBuddy = (buddy: BuddyInputDraft) => {
+    setDraft((current) => ({ ...current, buddy }));
+    setMode('custom');
+    setIssue(null);
+    setRandomFilled(false);
+  };
+
+  const setGarbage = (garbage: GarbageInputDraft) => {
+    setDraft((current) => ({ ...current, garbage }));
     setMode('custom');
     setIssue(null);
     setRandomFilled(false);
@@ -491,6 +526,34 @@ export function GuidedInputPanel({ lab }: { lab: LabController }) {
           a={draft.polynomialA ?? []}
           b={draft.polynomialB ?? []}
           onChange={setPolynomial}
+        />
+      ) : null}
+
+      {isFreeListGuidedInputAlgorithm(id) ? (
+        <FreeListInputEditor
+          draft={draft.freeList ?? { capacity: '64', policy: 'first-fit', rows: [] }}
+          onChange={setFreeList}
+        />
+      ) : null}
+
+      {isBuddyGuidedInputAlgorithm(id) ? (
+        <BuddyInputEditor
+          draft={draft.buddy ?? { capacity: '32', rows: [] }}
+          onChange={setBuddy}
+        />
+      ) : null}
+
+      {isGarbageCollectionGuidedInputAlgorithm(id) ? (
+        <GarbageCollectionInputEditor
+          draft={
+            draft.garbage ?? {
+              mode: 'mark-sweep',
+              capacity: '96',
+              roots: 'A',
+              objects: [],
+            }
+          }
+          onChange={setGarbage}
         />
       ) : null}
 

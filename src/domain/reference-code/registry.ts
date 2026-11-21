@@ -506,6 +506,27 @@ export const REFERENCE_CODE: Record<string, ReferenceEntry> = {
       python: { fileName: 'gl_copy.py' },
     },
   },
+  'free-list': {
+    files: {
+      c: { fileName: 'free_list.c' },
+      cpp: { fileName: 'free_list.cpp' },
+      python: { fileName: 'free_list.py' },
+    },
+  },
+  'buddy-system': {
+    files: {
+      c: { fileName: 'buddy_system.c' },
+      cpp: { fileName: 'buddy_system.cpp' },
+      python: { fileName: 'buddy_system.py' },
+    },
+  },
+  'garbage-collection': {
+    files: {
+      c: { fileName: 'garbage_collection.c' },
+      cpp: { fileName: 'garbage_collection.cpp' },
+      python: { fileName: 'garbage_collection.py' },
+    },
+  },
 };
 
 /** All formal courses are covered by verified reference code. */

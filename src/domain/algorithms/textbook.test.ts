@@ -56,7 +56,7 @@ describe('textbook directory after TEXTBOOK-01', () => {
 
   it('preserves every existing algorithm exactly once in its new primary home', () => {
     const ids = textbookAlgorithmIds(nav);
-    expect(ids).toHaveLength(46);
+    expect(ids).toHaveLength(49);
     expect(new Set(ids).size).toBe(ids.length);
     expect(new Set(ids)).toEqual(new Set(Object.keys(catalog)));
   });
@@ -73,7 +73,7 @@ describe('textbook directory after TEXTBOOK-01', () => {
       ]),
     );
     const conceptRows = rows.filter(({ row }) => row.conceptId);
-    expect(CONCEPT_PAGES).toHaveLength(37);
+    expect(CONCEPT_PAGES).toHaveLength(40);
     expect(conceptRows.map(({ row }) => row.conceptId).sort()).toEqual(
       CONCEPT_PAGES.map((page) => page.id).sort(),
     );
@@ -161,8 +161,63 @@ describe('textbook directory after TEXTBOOK-01', () => {
     expect(examples.children.every((child) => child.algorithms[0].extension === true)).toBe(true);
   });
 
-  it('keeps chapter 8, 11 and 12 visible as planned knowledge even without algorithms', () => {
-    for (const id of ['ch8-dynamic-storage', 'ch11-external-sort', 'ch12-files']) {
+  it('completes chapter 8 with three dynamic modules and two nested theory pages', () => {
+    const chapter = nav.find((entry) => entry.id === 'ch8-dynamic-storage')!;
+    expect(chapter.algorithmCount).toBe(3);
+    expect(chapter.topics.map((topic) => topic.id)).toEqual([
+      'dynamic-storage-overview',
+      'free-space-group',
+      'buddy-system',
+      'garbage-collection-group',
+    ]);
+
+    const fundamentals = chapter.topics[0];
+    expect(fundamentals.category).toBe('theory');
+    expect(fundamentals.conceptId).toBe('dynamic-storage-overview');
+
+    const freeSpace = chapter.topics.find((topic) => topic.id === 'free-space-group')!;
+    expect(freeSpace.kind).toBe('group');
+    expect(freeSpace.children.map((child) => child.id)).toEqual([
+      'free-space-list',
+      'boundary-tag',
+    ]);
+    expect(freeSpace.children[0].algorithms.map((algorithm) => algorithm.id)).toEqual([
+      'free-list',
+    ]);
+    expect(freeSpace.children[1].conceptId).toBe('boundary-tag-method');
+    expect(freeSpace.children[1].category).toBe('theory');
+
+    const buddy = chapter.topics.find((topic) => topic.id === 'buddy-system')!;
+    expect(buddy.algorithms.map((algorithm) => algorithm.id)).toEqual(['buddy-system']);
+    expect(buddy.category).toBe('visual');
+
+    const collection = chapter.topics.find((topic) => topic.id === 'garbage-collection-group')!;
+    expect(collection.kind).toBe('group');
+    expect(collection.children.map((child) => child.id)).toEqual([
+      'garbage-collection',
+      'storage-compaction',
+    ]);
+    expect(collection.children[0].algorithms.map((algorithm) => algorithm.id)).toEqual([
+      'garbage-collection',
+    ]);
+    expect(collection.children[1].conceptId).toBe('storage-compaction');
+    expect(collection.children[1].category).toBe('theory');
+
+    for (const id of ['free-list', 'buddy-system', 'garbage-collection']) {
+      expect(textbookPathFor(catalog, id)?.chapterId).toBe('ch8-dynamic-storage');
+    }
+    expect(findConceptPath(nav, 'boundary-tag-method')).toEqual({
+      chapterId: 'ch8-dynamic-storage',
+      topicId: 'free-space-group',
+    });
+    expect(findConceptPath(nav, 'storage-compaction')).toEqual({
+      chapterId: 'ch8-dynamic-storage',
+      topicId: 'garbage-collection-group',
+    });
+  });
+
+  it('keeps chapters 11 and 12 visible as planned knowledge without algorithms', () => {
+    for (const id of ['ch11-external-sort', 'ch12-files']) {
       const chapter = nav.find((entry) => entry.id === id)!;
       expect(chapter.algorithmCount).toBe(0);
       expect(chapter.topics.length).toBeGreaterThan(0);

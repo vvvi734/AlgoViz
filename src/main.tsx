@@ -34,6 +34,7 @@ import './styles/recur01.css';
 import './styles/typography.css';
 import './styles/global-scroll.css';
 import './styles/textbook02.css';
+import './styles/memory08.css';
 
 const container = document.getElementById('root');
 if (!container) throw new Error('Missing #root element');

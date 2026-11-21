@@ -48,6 +48,9 @@ import {
 } from './staticLinkedListModel';
 import { buildPolynomialModel, type PolynomialVisualModel } from './polynomialModel';
 import { buildExpressionModel, type ExpressionVisualModel } from './expressionModel';
+import { buildFreeListVisualModel, type FreeListVisualModel } from './freeListModel';
+import { buildBuddyVisualModel, type BuddyVisualModel } from './buddyModel';
+import { buildGcVisualModel, type GcVisualModel } from './gcModel';
 
 /**
  * Pure mapping from a trace state to a renderable model. React components only
@@ -168,6 +171,9 @@ export type VisualModel =
   | ConnectedComponentsVisualModel
   | SccVisualModel
   | ArticulationVisualModel
+  | FreeListVisualModel
+  | BuddyVisualModel
+  | GcVisualModel
   | { kind: 'graph'; edges: Array<[number, number]>; nodes: GraphNodeModel[]; isTree: boolean }
   | { kind: 'raw'; text: string };
 
@@ -339,6 +345,21 @@ export function buildVisualModel(
   const s = state as TraceState;
   const kind = s.type || 'array';
   const focus = asFocusSet(s);
+
+  if (structure !== undefined && structure.kind === 'free-list') {
+    if (kind !== 'array') return { kind: 'raw', text: labels.invalid };
+    return buildFreeListVisualModel(structure);
+  }
+
+  if (structure !== undefined && structure.kind === 'buddy-system') {
+    if (kind !== 'tree') return { kind: 'raw', text: labels.invalid };
+    return buildBuddyVisualModel(structure);
+  }
+
+  if (structure !== undefined && structure.kind === 'garbage-collection') {
+    if (kind !== 'graph') return { kind: 'raw', text: labels.invalid };
+    return buildGcVisualModel(structure);
+  }
 
   if (structure !== undefined && structure.kind === 'generalized-list') {
     return buildGeneralizedListModel(structure);

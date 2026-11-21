@@ -1232,6 +1232,116 @@ export const COURSE_GUIDES: Record<string, CourseGuide> = {
       ],
     ),
   },
+  'free-list': {
+    intro: text(
+      '顺序分配要求一次拿到一整段连续内存，但申请和释放交错发生，空闲区会变多、变碎。若每次都从地址 0 重新扫描并搬动已分配块，代价高且会破坏持有者的地址。可利用空间表把“哪些区间还空着”单独记下来，分配时只选一块、必要时分裂；释放时把邻近空闲区合并。首次适应和最佳适应是同一套地址带与合并逻辑上的两种选块策略，比较它们能让学生看清“策略只影响选择，不影响合法性”。',
+      'Sequential allocation needs one contiguous run per request, but interleaved allocation and release leave many small free regions. Rescanning from address 0 and moving allocated blocks would be expensive and would invalidate owners’ addresses. A free-space list records which intervals are free, selects one block and splits it on allocation, then coalesces neighbours on release. First Fit and Best Fit are two selection policies over the same band and merge logic, which makes clear that policy affects selection, not validity.',
+    ),
+    definition: text(
+      '可利用空间表保存每个空闲块的起始地址与大小。首次适应按地址顺序选择第一个大小足够的块；最佳适应选择装下请求后剩余最小的块，剩余相同时取更早地址。若块严格大于请求，则在 start + request 处分裂；释放时依据左右邻状态执行 isolated、left-free、right-free 或 both-free 分支并合并。',
+      'The free-space list stores the start and size of every free block. First Fit selects the first adequate block in address order; Best Fit selects the block with the smallest remainder, keeping the earlier address on a tie. If the block is strictly larger, split at start + request; on release, use the left/right neighbour states to run the isolated, left-free, right-free or both-free branch and coalesce.',
+    ),
+    ...operations(
+      step('初始化整块空闲', 'Initialise one free block', '容量整段从地址 0 开始，空闲表只有一项。', 'The whole capacity starts at 0 and the free list has one entry.'),
+      step('按地址扫描空闲块', 'Scan free blocks by address', '首次适应命中第一个候选就停止；最佳适应继续找剩余最小者。', 'First Fit stops at the first candidate; Best Fit keeps looking for the smallest remainder.'),
+      step('选择、分裂并登记', 'Select, split and record', '剩余空间成为新的空闲块，两块必须无缝相接。', 'The remainder becomes a new free block; the two blocks must touch exactly.'),
+      step('释放并读取左右邻', 'Release and read both neighbours', '先确认块仍已分配，再把四种邻接情形交给真实分支。', 'Confirm the block is still allocated, then route one of four adjacency cases through the real branches.'),
+      step('按情形合并并更新表', 'Coalesce and update the table', '双侧合并减少两个表项；失败申请绝不移动已分配块。', 'A two-sided merge removes two entries; a failed request never moves allocated blocks.'),
+    ),
+    conditions: list(
+      [
+        '地址区间统一为 [start, start + size)；已分配块与空闲块必须无缝、无重叠地覆盖容量。',
+        '申请大小必须是正整数；释放只能针对仍存活的块，重复释放必须拒绝。',
+        '分裂位置只能是 start + request，剩余大小必须是原大小减请求量。',
+        '首次适应取地址最小者；最佳适应取剩余最小者，平局取更早地址。',
+        '总空闲足够但最大连续空闲不足时必须失败，不能搬动已分配块。',
+        '时间最坏 O(M · F)，空间 O(F + B)；M 操作数、F 空闲块数、B 总块数。',
+      ],
+      [
+        'Use [start, start + size) for every interval; allocated and free blocks must tile capacity without gaps or overlap.',
+        'A request is a positive integer; release only a still-live block and reject double release.',
+        'Split only at start + request, leaving oldSize − request bytes.',
+        'First Fit takes the lowest address; Best Fit takes the smallest remainder and the earlier address on a tie.',
+        'Fail when total free is enough but the largest run is not; never move allocated blocks.',
+        'Worst-case time O(M · F), space O(F + B); M operations, F free blocks, B blocks.',
+      ],
+    ),
+  },
+
+  'buddy-system': {
+    intro: text(
+      '固定分级的空闲表可以快速定位，但任意大小请求会跨级；普通相邻合并又只认地址，不认“同一次分裂”。伙伴系统把容量限制为 2 的幂，每次只把块对半切开，于是每个块都有唯一伙伴：大小相同、地址只差决定左右半边的那一位。申请先向上取整到等级，再向上找最小可用块、逐层分裂；释放时用 start XOR size 找伙伴，只有伙伴空闲才逐级合并。它牺牲内部碎片，换取可预测的分裂/合并和 O(log capacity) 的定位。',
+      'Fixed-size free lists locate blocks quickly, but arbitrary requests cross levels, and ordinary adjacent merging knows only addresses, not “the same split”. The buddy system restricts capacity to a power of two and always halves a block, so every block has one unique buddy: same size, with addresses differing only in the bit that chooses the left or right half. A request rounds up to a level, searches upward for the smallest adequate block and splits down; on release, start XOR size finds the buddy and merges only if it is free. It trades internal fragmentation for predictable splits/merges and O(log capacity) location.',
+    ),
+    definition: text(
+      '伙伴系统把容量 2^L 看成一棵完全二叉树。等级 k 的块大小为 2^k、起始地址按 2^k 对齐；它的两个等级 k−1 伙伴分别从 start 和 start + 2^(k−1) 开始。等级 k 块的伙伴地址恒为 start XOR 2^k。申请取最小 2^k ≥ request 为目标等级，从该等级向上找第一个空闲块，再逐层平分；释放后若伙伴同等级、在容量内且空闲，就合并并继续向上一层。',
+      'The buddy system views capacity 2^L as a complete binary tree. A level-k block has size 2^k and is aligned to 2^k; its two level-(k−1) buddies start at start and start + 2^(k−1). A level-k block’s buddy is always at start XOR 2^k. A request chooses the smallest 2^k ≥ request as the target level, searches upward for the first free block, then halves down. After release, merge if the buddy shares the level, lies in capacity and is free, then continue at the parent level.',
+    ),
+    ...operations(
+      step('校验容量并取整请求', 'Validate capacity and round the request', '容量必须是 8–128 的 2 的幂；目标等级由最小 2^k ≥ request 决定。', 'Capacity is a power of two from 8 to 128; the target level is the smallest 2^k ≥ request.'),
+      step('向上寻找最小可用块', 'Search upward for the smallest adequate block', '先看目标等级，没有再逐级向上；根也找不到就失败。', 'Check the target level, then move upward; failing at the root means failure.'),
+      step('逐层平分到目标等级', 'Halve down to the target level', '右伙伴起点是 start + size/2；分裂后空闲块数加一。', 'The right buddy starts at start + size/2; each split adds one free block.'),
+      step('分配并记录内部碎片', 'Allocate and record internal fragmentation', '实际块大小 2^k 可能大于请求，差额记作内部碎片。', 'The actual block 2^k may exceed the request; the difference is internal fragmentation.'),
+      step('释放、XOR 找伙伴并逐级合并', 'Release, XOR the buddy and merge upward', '地址相邻不等于伙伴；伙伴已分配时保持分离。', 'Adjacency does not imply a buddy; an allocated buddy keeps the blocks separate.'),
+    ),
+    conditions: list(
+      [
+        'capacity 必须是 2 的幂；maxLevel = log₂(capacity)。',
+        '每个块大小必须是 2 的幂，start 必须按该大小对齐，level = log₂(size)。',
+        '目标等级由向上取整决定；必须在目标等级或更高等级找块。',
+        '伙伴地址 = start XOR size；必须同等级、在容量内且空闲才能合并。',
+        '分配失败不能改变已有块；内部碎片 = blockSize − requestedSize。',
+        '查找/分裂/合并链 O(L)，L = log₂(capacity)；当前块存储 O(B)。',
+      ],
+      [
+        'Capacity must be a power of two; maxLevel = log₂(capacity).',
+        'Every block size must be a power of two, start aligned to it, and level = log₂(size).',
+        'The target level comes from rounding up; search at that level or above.',
+        'Buddy address = start XOR size; merge only when the same level, inside capacity and free.',
+        'A failed allocation changes nothing; internal fragmentation = blockSize − requestedSize.',
+        'Search/split/merge chains cost O(L) with L = log₂(capacity); current blocks need O(B).',
+      ],
+    ),
+  },
+
+  'garbage-collection': {
+    intro: text(
+      '引用计数能立刻发现入度归零的对象，但环形结构即使整体不可达，成员之间仍互相持有计数，于是永远回收不了；此外每次指针改写都要维护计数。标记—清除换一个判据：从根集合出发，沿引用能到达的对象才存活；标记完再扫一遍全部已分配对象，回收未标记者。这个判据能正确处理孤立对象、多个根和环。清除后空洞可能仍分散，因此存储紧缩是另一个阶段：把存活对象前移成连续区，并改写所有指向它们的地址。',
+      'Reference counting notices an object immediately when its in-degree reaches zero, but a cyclic structure keeps every member’s count positive even when the whole cycle is unreachable, so it is never reclaimed; every pointer write also has to update counts. Mark-Sweep changes the criterion: starting from roots, only objects reachable through references are live; after marking, scan every allocated object and reclaim the unmarked. This handles isolated objects, multiple roots and cycles. Holes may still be scattered, so compaction is a separate phase: move survivors into a contiguous region and rewrite every address that points at them.',
+    ),
+    definition: text(
+      '标记—清除分两阶段。标记从根集合入栈开始，对当前对象的每条出边，如果目标未标记就标记并入栈；visited 集合让环形引用终止。待访问集合为空后，清扫按地址扫描全部已分配对象，未标记者转为空闲。存储紧缩则按地址顺序处理存活对象：维护 next，令新地址 = next，移动后 next += size；最后遍历所有引用，把指向被移动对象的目标地址改为新地址。',
+      'Mark-Sweep has two phases. Marking starts by pushing roots; for every outgoing edge, mark and enqueue an unmarked target. The visited set terminates cycles. When pending is empty, sweeping scans every allocated object in address order and frees the unmarked. Compaction processes live objects in address order: keep next, set newAddress = next, move, then next += size; finally walk every reference and rewrite targets that point at moved objects.',
+    ),
+    ...algorithm(
+      step('建立对象图、引用与根集合', 'Build the object graph, references and roots', '引用只写 fromId/toId，地址由程序分配；可以有多个根。', 'References store only fromId/toId and addresses are assigned by the program; roots may be multiple.'),
+      step('从根出发标记可达对象', 'Mark reachable objects from roots', '只沿出边；已标记或已在集合中的目标跳过。', 'Follow outgoing edges only; skip targets already marked or pending.'),
+      step('环形引用靠 visited 终止', 'The visited set terminates cycles', 'A→B→A 第二次遇到 A 时跳过，不会无限入栈。', 'In A→B→A the second A is skipped, so the stack cannot grow forever.'),
+      step('清扫全部已分配对象', 'Sweep every allocated object', '未标记即垃圾，即使它被另一个垃圾对象引用。', 'Unmarked means garbage, even when another garbage object references it.'),
+      step('紧缩：计算新地址并移动存活对象', 'Compact: compute new addresses and move survivors', '按原地址顺序前移，尾部形成一整块连续空闲区。', 'Move left in original address order, leaving one contiguous free run at the tail.'),
+      step('改写全部引用并结束', 'Rewrite every reference and finish', '旧地址立即失效；根引用也必须更新。', 'Old addresses are stale immediately; root references must update too.'),
+    ),
+    conditions: list(
+      [
+        '垃圾的定义是“从根集合不可达”，不是“没有入边”；环形垃圾必须被回收。',
+        '标记必须使用 visited/已标记集合，否则环会导致无限循环。',
+        '支持多个根；每个根都要入栈，不能只从第一个根开始。',
+        '清扫扫描全部已分配对象；保留已标记对象，只回收未标记对象。',
+        '紧缩只移动存活对象；每个被移动对象必须记录 old→new。',
+        '所有指向被移动对象的引用（含根）必须改为新地址；旧地址不能继续有效。',
+        '标记 O(N + E)、清扫 O(N)、紧缩 O(N + E + 存活字节)；N 对象数、E 引用数。',
+      ],
+      [
+        'Garbage means unreachable from every root, not “has no in-edge”; cyclic garbage must be reclaimed.',
+        'Marking needs a visited/marked set, or a cycle loops forever.',
+        'Support multiple roots; enqueue every root, never start from only the first.',
+        'Sweep scans every allocated object; keep marked objects and reclaim only unmarked ones.',
+        'Compact only live objects; record old→new for every moved object.',
+        'Every reference to a moved object, including roots, must use the new address; no stale address may remain valid.',
+        'Mark O(N + E), sweep O(N), compaction O(N + E + live bytes); N objects, E references.',
+      ],
+    ),
+  },
 };
 
 export type CourseGuideId = keyof typeof COURSE_GUIDES;

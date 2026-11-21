@@ -250,11 +250,12 @@ export function useLabController(): LabController {
     // Stack/queue/linked-list/binary-tree only emit structured frames from the
     // real Python presets. Default those courses to Python; bubble keeps its
     // established JavaScript classroom example, while the remaining simple
-    // array courses keep the language already selected.
+    // array courses keep the language already selected. The three dynamic
+    // storage courses also emit only structured frames from Python.
     const preferredLang: CodeLanguage =
       id === 'bubble'
         ? 'js'
-        : id === 'stack' || id === 'queue' || id === 'linked' || id === 'doubly' || id === 'circular' || id === 'seqlist' || id === 'inorder' || id === 'threaded-inorder' || id === 'bst' || id === 'avl' || id === 'btree' || id === 'heap' || id === 'huffman' || id === 'selection' || id === 'insertion' || id === 'shell' || id === 'quick' || id === 'merge' || id === 'linear' || id === 'binary' || id === 'hash-chain' || id === 'hash-probe' || id === 'kmp' || id === 'bf' || id === 'gl-depth' || id === 'gl-copy' || id === 'sparse-transpose' || id === 'static-linked-list' || id === 'polynomial-add' || id === 'factorial' || id === 'fib' || isGraphAlgorithm(id)
+        : id === 'stack' || id === 'queue' || id === 'linked' || id === 'doubly' || id === 'circular' || id === 'seqlist' || id === 'inorder' || id === 'threaded-inorder' || id === 'bst' || id === 'avl' || id === 'btree' || id === 'heap' || id === 'huffman' || id === 'selection' || id === 'insertion' || id === 'shell' || id === 'quick' || id === 'merge' || id === 'linear' || id === 'binary' || id === 'hash-chain' || id === 'hash-probe' || id === 'kmp' || id === 'bf' || id === 'gl-depth' || id === 'gl-copy' || id === 'sparse-transpose' || id === 'static-linked-list' || id === 'polynomial-add' || id === 'factorial' || id === 'fib' || id === 'free-list' || id === 'buddy-system' || id === 'garbage-collection' || isGraphAlgorithm(id)
           ? 'python'
           : codeLang;
     if (preferredLang !== codeLang) {

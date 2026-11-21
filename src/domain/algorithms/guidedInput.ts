@@ -100,6 +100,33 @@ import {
   randomGeneralizedListDraft,
   type GeneralizedListInputFields,
 } from './generalizedListInput';
+import {
+  FREE_LIST_GUIDED_INPUT,
+  FREE_LIST_RANDOM_SCENARIOS,
+  buildFreeListInput,
+  emptyFreeListDraft,
+  freeListDraftFromInput,
+  randomFreeListDraft,
+  type FreeListInputDraft,
+} from './freeListInput';
+import {
+  BUDDY_GUIDED_INPUT,
+  BUDDY_RANDOM_SCENARIOS,
+  buildBuddyInput,
+  buddyDraftFromInput,
+  emptyBuddyDraft,
+  randomBuddyDraft,
+  type BuddyInputDraft,
+} from './buddyInput';
+import {
+  GARBAGE_COLLECTION_GUIDED_INPUT,
+  GARBAGE_RANDOM_SCENARIOS,
+  buildGarbageInput,
+  emptyGarbageDraft,
+  garbageDraftFromInput,
+  randomGarbageDraft,
+  type GarbageInputDraft,
+} from './garbageInput';
 
 export { isStructureGuidedInputAlgorithm } from './structureInput';
 export { isSparseGuidedInputAlgorithm } from './sparseInput';
@@ -124,6 +151,9 @@ export type {
   StaticLinkedInputFields,
   StaticLinkedOperationRow,
 } from './chapter2Input';
+export type { FreeListInputDraft, FreeListOperationRow } from './freeListInput';
+export type { BuddyInputDraft, BuddyOperationRow } from './buddyInput';
+export type { GarbageInputDraft, GarbageObjectRow } from './garbageInput';
 
 export const STATIC_LINKED_GUIDED_INPUT = 'static-linked-list' as const;
 export const POLYNOMIAL_GUIDED_INPUT = 'polynomial-add' as const;
@@ -136,6 +166,18 @@ export function isStaticLinkedGuidedInputAlgorithm(id: string): id is StaticLink
 
 export function isPolynomialGuidedInputAlgorithm(id: string): id is PolynomialGuidedInputAlgorithm {
   return id === POLYNOMIAL_GUIDED_INPUT;
+}
+
+export function isFreeListGuidedInputAlgorithm(id: string): id is typeof FREE_LIST_GUIDED_INPUT {
+  return id === FREE_LIST_GUIDED_INPUT;
+}
+
+export function isBuddyGuidedInputAlgorithm(id: string): id is typeof BUDDY_GUIDED_INPUT {
+  return id === BUDDY_GUIDED_INPUT;
+}
+
+export function isGarbageCollectionGuidedInputAlgorithm(id: string): id is typeof GARBAGE_COLLECTION_GUIDED_INPUT {
+  return id === GARBAGE_COLLECTION_GUIDED_INPUT;
 }
 
 export const GUIDED_INPUT_ALGORITHMS = [
@@ -162,6 +204,9 @@ export const GUIDED_INPUT_ALGORITHMS = [
   POLYNOMIAL_GUIDED_INPUT,
   ...EXPRESSION_GUIDED_INPUT_ALGORITHMS,
   ...GENERALIZED_LIST_GUIDED_INPUT_ALGORITHMS,
+  FREE_LIST_GUIDED_INPUT,
+  BUDDY_GUIDED_INPUT,
+  GARBAGE_COLLECTION_GUIDED_INPUT,
 ] as const;
 export type GuidedInputAlgorithm = (typeof GUIDED_INPUT_ALGORITHMS)[number];
 
@@ -240,6 +285,9 @@ export const GUIDED_INPUT_LANGUAGE: Record<GuidedInputAlgorithm, CodeLanguage> =
   'postfix-eval': 'python',
   'gl-depth': 'python',
   'gl-copy': 'python',
+  'free-list': 'python',
+  'buddy-system': 'python',
+  'garbage-collection': 'python',
 };
 
 export interface GuidedInputDraft {
@@ -278,6 +326,12 @@ export interface GuidedInputDraft {
   polynomialB?: PolynomialTermRow[];
   /** TEXTBOOK-05 generalized list: one bracketed expression. */
   generalized?: GeneralizedListInputFields;
+  /** TEXTBOOK-08 free-space list: capacity, policy and alloc/free rows. */
+  freeList?: FreeListInputDraft;
+  /** TEXTBOOK-08 buddy system: power-of-two capacity and operation rows. */
+  buddy?: BuddyInputDraft;
+  /** TEXTBOOK-08 mark-sweep / compaction object graph. */
+  garbage?: GarbageInputDraft;
 }
 
 export interface GuidedInputError {
@@ -336,6 +390,9 @@ const EMPTY_DRAFT: GuidedInputDraft = {
   staticOperations: emptyStaticLinkedDraft().operations,
   polynomialA: emptyPolynomialDraft().a,
   polynomialB: emptyPolynomialDraft().b,
+  freeList: emptyFreeListDraft(),
+  buddy: emptyBuddyDraft(),
+  garbage: emptyGarbageDraft(),
 };
 
 const SORTING_SCENARIOS: readonly GuidedRandomScenario[] = [
@@ -412,6 +469,9 @@ const RANDOM_SCENARIOS: Record<GuidedInputAlgorithm, readonly GuidedRandomScenar
   'postfix-eval': EXPRESSION_RANDOM_SCENARIOS,
   'gl-depth': GENERALIZED_LIST_RANDOM_SCENARIOS,
   'gl-copy': GENERALIZED_LIST_RANDOM_SCENARIOS,
+  'free-list': FREE_LIST_RANDOM_SCENARIOS,
+  'buddy-system': BUDDY_RANDOM_SCENARIOS,
+  'garbage-collection': GARBAGE_RANDOM_SCENARIOS,
 };
 
 export function isGuidedInputAlgorithm(id: string): id is GuidedInputAlgorithm {
@@ -626,6 +686,15 @@ export function guidedDraftFromInput(id: GuidedInputAlgorithm, input: unknown): 
       polynomialB: parts.b,
     };
   }
+  if (isFreeListGuidedInputAlgorithm(id)) {
+    return { ...EMPTY_DRAFT, freeList: freeListDraftFromInput(input) };
+  }
+  if (isBuddyGuidedInputAlgorithm(id)) {
+    return { ...EMPTY_DRAFT, buddy: buddyDraftFromInput(input) };
+  }
+  if (isGarbageCollectionGuidedInputAlgorithm(id)) {
+    return { ...EMPTY_DRAFT, garbage: garbageDraftFromInput(input) };
+  }
   if (isRecursionGuidedInputAlgorithm(id)) {
     return { ...EMPTY_DRAFT, n: recursionDraftFromInput(input) };
   }
@@ -693,6 +762,15 @@ export function buildGuidedInput(id: GuidedInputAlgorithm, draft: GuidedInputDra
   }
   if (isPolynomialGuidedInputAlgorithm(id)) {
     return buildPolynomialInput({ a: draft.polynomialA ?? [], b: draft.polynomialB ?? [] });
+  }
+  if (isFreeListGuidedInputAlgorithm(id)) {
+    return buildFreeListInput(draft.freeList ?? emptyFreeListDraft());
+  }
+  if (isBuddyGuidedInputAlgorithm(id)) {
+    return buildBuddyInput(draft.buddy ?? emptyBuddyDraft());
+  }
+  if (isGarbageCollectionGuidedInputAlgorithm(id)) {
+    return buildGarbageInput(draft.garbage ?? emptyGarbageDraft());
   }
   if (isRecursionGuidedInputAlgorithm(id)) {
     return buildRecursionInput(id, draft.n);
@@ -1053,6 +1131,15 @@ export function randomGuidedDraft(
   if (isPolynomialGuidedInputAlgorithm(id)) {
     const fields = randomPolynomialDraft(scenario, random);
     return { ...EMPTY_DRAFT, polynomialA: fields.a, polynomialB: fields.b };
+  }
+  if (isFreeListGuidedInputAlgorithm(id)) {
+    return { ...EMPTY_DRAFT, freeList: randomFreeListDraft(scenario, random) };
+  }
+  if (isBuddyGuidedInputAlgorithm(id)) {
+    return { ...EMPTY_DRAFT, buddy: randomBuddyDraft(scenario, random) };
+  }
+  if (isGarbageCollectionGuidedInputAlgorithm(id)) {
+    return { ...EMPTY_DRAFT, garbage: randomGarbageDraft(scenario, random) };
   }
   if (isRecursionGuidedInputAlgorithm(id)) {
     return { ...EMPTY_DRAFT, n: String(randomRecursionN(id as RecursionGuidedInputAlgorithm, scenario, random)) };
