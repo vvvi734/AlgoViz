@@ -11,6 +11,7 @@ import {
   isArrayGuidedInputAlgorithm,
   isHashGuidedInputAlgorithm,
   isNumsTargetGuidedInputAlgorithm,
+  isStructureGuidedInputAlgorithm,
   randomGuidedDraft,
   type GuidedInputAlgorithm,
   type GuidedInputDraft,
@@ -18,6 +19,11 @@ import {
   type GuidedInputMode,
   type GuidedRandomScenario,
 } from '../../domain/algorithms/guidedInput';
+import type {
+  StructureGuidedInputAlgorithm,
+  StructureOperationDraft,
+} from '../../domain/algorithms/structureInput';
+import { StructureOperationEditor } from './StructureOperationEditor';
 import type { LabController } from './useLabController';
 
 function parseInput(raw: string): unknown {
@@ -31,6 +37,15 @@ function parseInput(raw: string): unknown {
 function fieldDraft(id: GuidedInputAlgorithm, input: unknown): GuidedInputDraft {
   return guidedDraftFromInput(id, input);
 }
+
+const STRUCTURE_HINT_KEYS: Record<StructureGuidedInputAlgorithm, string> = {
+  linked: 'structureHintLinked',
+  doubly: 'structureHintDoubly',
+  circular: 'structureHintCircular',
+  seqlist: 'structureHintSeqlist',
+  stack: 'structureHintStack',
+  queue: 'structureHintQueue',
+};
 
 /**
  * INPUT-01/02: one compact input surface shared by the guided algorithms.
@@ -58,12 +73,18 @@ export function GuidedInputPanel({ lab }: { lab: LabController }) {
     // official preset must put the panel back into Official mode; custom sort
     // objects have preset=null and therefore never trigger this path.
     const heapPresetSelected = id === 'heap' && heapPresetFromInput(parseInput(lab.inputJson)) !== null;
+    const seqlistPreset = id === 'seqlist' ? parseInput(lab.inputJson) : null;
+    const seqlistPresetSelected =
+      id === 'seqlist' &&
+      typeof seqlistPreset === 'object' &&
+      seqlistPreset !== null &&
+      typeof (seqlistPreset as { preset?: unknown }).preset === 'string';
     previousAlgo.current = id;
     previousInput.current = lab.inputJson;
     setDraft(fieldDraft(id, parseInput(lab.inputJson)));
     setIssue(null);
     setRandomFilled(false);
-    if (algorithmChanged || heapPresetSelected) {
+    if (algorithmChanged || heapPresetSelected || seqlistPresetSelected) {
       setMode('official');
       if (algorithmChanged) setScenario(defaultGuidedScenario(id));
     }
@@ -73,6 +94,13 @@ export function GuidedInputPanel({ lab }: { lab: LabController }) {
 
   const setField = (key: keyof GuidedInputDraft, value: string) => {
     setDraft((current) => ({ ...current, [key]: value }));
+    setMode('custom');
+    setIssue(null);
+    setRandomFilled(false);
+  };
+
+  const setStructureRows = (rows: StructureOperationDraft[]) => {
+    setDraft((current) => ({ ...current, rows }));
     setMode('custom');
     setIssue(null);
     setRandomFilled(false);
@@ -95,15 +123,22 @@ export function GuidedInputPanel({ lab }: { lab: LabController }) {
     setRandomFilled(false);
   };
 
-  const errorText = (error: GuidedInputError) =>
-    t(error.key).replace('{max}', String(error.max ?? ''));
+  const errorText = (error: GuidedInputError) => {
+    const text = t(error.key).replace('{max}', String(error.max ?? ''));
+    return error.row === undefined
+      ? text
+      : `${t('structureRowError').replace('{row}', String(error.row))} ${text}`;
+  };
 
   const generate = () => {
     let input: unknown;
     if (mode === 'official') {
-      // HeapPicker writes the selected official preset into inputJson. Other
-      // official examples come straight from the algorithm's default contract.
-      input = id === 'heap' ? (parseInput(lab.inputJson) ?? defaultInputFor(id)) : defaultInputFor(id);
+      // Seqlist's official picker writes a selected preset into inputJson,
+      // exactly like the heap picker. Official mode must run that selection,
+      // while custom sequences never carry a preset id.
+      input = id === 'heap' || id === 'seqlist'
+        ? (parseInput(lab.inputJson) ?? defaultInputFor(id))
+        : defaultInputFor(id);
     } else {
       const built = buildGuidedInput(id, draft);
       if (!built.ok) {
@@ -176,6 +211,16 @@ export function GuidedInputPanel({ lab }: { lab: LabController }) {
           </label>
         ) : null}
       </div>
+
+      {isStructureGuidedInputAlgorithm(id) ? (
+        <StructureOperationEditor
+          algorithm={id as StructureGuidedInputAlgorithm}
+          rows={draft.rows}
+          initialValues={draft.values}
+          onChangeRows={setStructureRows}
+          onChangeInitialValues={(value) => setField('values', value)}
+        />
+      ) : null}
 
       {isArrayGuidedInputAlgorithm(id) ? (
         <div className="guided-field-row">
@@ -288,7 +333,9 @@ export function GuidedInputPanel({ lab }: { lab: LabController }) {
               ? id === 'hash-chain'
                 ? t('guidedChainHint')
                 : t('guidedProbeHint')
-              : t('guidedKmpHint')}
+              : isStructureGuidedInputAlgorithm(id)
+                ? t(STRUCTURE_HINT_KEYS[id as StructureGuidedInputAlgorithm])
+                : t('guidedKmpHint')}
         {mode === 'official' ? ` ${t('guidedOfficialHint')}` : mode === 'random' ? ` ${t('guidedRandomHint')}` : ''}
       </p>
 

@@ -19,6 +19,7 @@ function draft(overrides: Partial<GuidedInputDraft>): GuidedInputDraft {
     text: '',
     pattern: '',
     operations: '',
+    rows: [],
     ...overrides,
   };
 }

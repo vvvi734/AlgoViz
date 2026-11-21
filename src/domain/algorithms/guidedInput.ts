@@ -8,6 +8,18 @@
  * algorithm's prerequisites.
  */
 import type { CodeLanguage } from './types';
+import {
+  STRUCTURE_GUIDED_INPUT_ALGORITHMS,
+  STRUCTURE_RANDOM_SCENARIOS,
+  buildStructureInput,
+  isStructureGuidedInputAlgorithm,
+  randomStructureDraft,
+  structureDraftFromInput,
+  type StructureOperationDraft,
+} from './structureInput';
+
+export { isStructureGuidedInputAlgorithm } from './structureInput';
+export type { StructureOperationDraft, StructureOperationSpec } from './structureInput';
 
 export const GUIDED_INPUT_ALGORITHMS = [
   'bubble',
@@ -22,6 +34,7 @@ export const GUIDED_INPUT_ALGORITHMS = [
   'kmp',
   'hash-chain',
   'hash-probe',
+  ...STRUCTURE_GUIDED_INPUT_ALGORITHMS,
 ] as const;
 export type GuidedInputAlgorithm = (typeof GUIDED_INPUT_ALGORITHMS)[number];
 
@@ -63,6 +76,12 @@ export const GUIDED_INPUT_LANGUAGE: Record<GuidedInputAlgorithm, CodeLanguage> =
   kmp: 'python',
   'hash-chain': 'python',
   'hash-probe': 'python',
+  linked: 'python',
+  doubly: 'python',
+  circular: 'python',
+  seqlist: 'python',
+  stack: 'python',
+  queue: 'python',
 };
 
 export interface GuidedInputDraft {
@@ -78,11 +97,15 @@ export interface GuidedInputDraft {
   pattern: string;
   /** Hash operation sequence, one `insert/find/delete key` per line. */
   operations: string;
+  /** INPUT-04 structured rows for the linear-structure operation editor. */
+  rows: StructureOperationDraft[];
 }
 
 export interface GuidedInputError {
   key: string;
   max?: number;
+  /** 1-based operation row for the structured editor. */
+  row?: number;
 }
 
 export type GuidedBuildResult =
@@ -117,6 +140,7 @@ const EMPTY_DRAFT: GuidedInputDraft = {
   text: '',
   pattern: '',
   operations: '',
+  rows: [],
 };
 
 const SORTING_SCENARIOS: readonly GuidedRandomScenario[] = [
@@ -172,6 +196,7 @@ const RANDOM_SCENARIOS: Record<GuidedInputAlgorithm, readonly GuidedRandomScenar
   ],
   'hash-chain': CHAIN_SCENARIOS,
   'hash-probe': PROBE_SCENARIOS,
+  ...STRUCTURE_RANDOM_SCENARIOS,
 };
 
 export function isGuidedInputAlgorithm(id: string): id is GuidedInputAlgorithm {
@@ -339,6 +364,10 @@ function formatHashOperations(input: unknown): string {
 }
 
 export function guidedDraftFromInput(id: GuidedInputAlgorithm, input: unknown): GuidedInputDraft {
+  if (isStructureGuidedInputAlgorithm(id)) {
+    const parts = structureDraftFromInput(id, input);
+    return { ...EMPTY_DRAFT, values: parts.values, rows: parts.rows };
+  }
   if (isArrayGuidedInputAlgorithm(id)) {
     const values =
       id === 'heap'
@@ -372,6 +401,9 @@ export function guidedDraftFromInput(id: GuidedInputAlgorithm, input: unknown): 
 }
 
 export function buildGuidedInput(id: GuidedInputAlgorithm, draft: GuidedInputDraft): GuidedBuildResult {
+  if (isStructureGuidedInputAlgorithm(id)) {
+    return buildStructureInput(id, draft);
+  }
   if (isArrayGuidedInputAlgorithm(id)) {
     const parsed = parseIntegerList(draft.values);
     if (!parsed.ok) return { ok: false, error: { key: 'guidedErrorIntegerList' } };
@@ -661,6 +693,9 @@ export function randomGuidedDraft(
   scenario: string,
   random: () => number = Math.random,
 ): GuidedInputDraft {
+  if (isStructureGuidedInputAlgorithm(id)) {
+    return randomStructureDraft(id, scenario, random);
+  }
   if (isArrayGuidedInputAlgorithm(id)) {
     return { ...EMPTY_DRAFT, values: randomArrayValues(scenario, random).join(', ') };
   }
