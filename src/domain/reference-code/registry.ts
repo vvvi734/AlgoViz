@@ -430,6 +430,13 @@ export const REFERENCE_CODE: Record<string, ReferenceEntry> = {
       python: { fileName: 'hash_probe_builtin.py' },
     },
   },
+  bf: {
+    files: {
+      c: { fileName: 'bf.c' },
+      cpp: { fileName: 'bf.cpp' },
+      python: { fileName: 'bf.py' },
+    },
+  },
   kmp: {
     files: {
       c: { fileName: 'kmp.c' },

@@ -212,105 +212,144 @@ export function StorageConceptDiagram({
   return (
     <svg
       className="concept-svg concept-svg-wide"
-      viewBox="0 0 900 470"
+      viewBox="0 0 900 630"
       role="img"
       aria-label={L('定长顺序、堆分配与块链三种串存储结构', 'Fixed, heap-allocated and block-chain string storage')}
     >
       <text className="diagram-label diagram-label-strong" x="34" y="30">
-        {L('字符串的三种存放方式：容量与串长必须分开记录', 'Three ways to store a string: keep capacity and length separate')}
+        {L('字符串的三种存放方式：容量、串长和结束约定必须分清', 'Three ways to store a string: keep capacity, length and termination distinct')}
       </text>
 
-      <text className="diagram-label diagram-label-strong" x="34" y="70">
+      <text className="diagram-label diagram-label-strong" x="34" y="62">
         {L('① 定长顺序存储', '① Fixed sequential storage')}
       </text>
-      <text className="diagram-note" x="34" y="92">
-        {L('字符数组 + length；超出 MAXLEN 只能截断或报错', 'Character array + length; beyond MAXLEN, truncate or fail')}
+      <text className="diagram-note" x="34" y="84">
+        {L('字符数组 + 固定容量 MAXLEN；容量不够只能截断或报错', 'Character array + fixed MAXLEN; overflow must truncate or fail')}
       </text>
-      {['H', 'E', 'L', 'L', 'O', '', '', ''].map((char, index) => (
+      {['H', 'E', 'L', 'L', 'O', '\\0', '—', '—'].map((char, index) => (
         <g key={`fixed-${index}`}>
           <rect
-            className={`diagram-cell ${index >= 5 ? 'diagram-cell-free' : ''}`}
-            x={150 + index * 54}
-            y="104"
-            width="50"
-            height="40"
+            className={`diagram-cell ${index >= 6 ? 'diagram-cell-free' : index === 5 ? 'diagram-accent' : ''}`}
+            x={180 + index * 56}
+            y="96"
+            width="52"
+            height="46"
             rx="3"
           />
-          <text className="diagram-label" x={175 + index * 54} y="130" textAnchor="middle">
-            {char || '—'}
+          <text className="diagram-label" x={206 + index * 56} y="124" textAnchor="middle">
+            {char}
+          </text>
+          <text className="diagram-note" x={206 + index * 56} y="156" textAnchor="middle">
+            {index}
           </text>
         </g>
       ))}
-      <text className="diagram-note" x="150" y="162">
-        {L('MAXLEN = 8，length = 5；虚线仍属容量，不是有效字符', 'MAXLEN = 8, length = 5; dashed cells are capacity, not characters')}
+      <text className="diagram-label" x="34" y="118">
+        {L('MAXLEN = 8', 'MAXLEN = 8')}
+      </text>
+      <text className="diagram-label" x="180" y="86">
+        {L("C 字符串：ch[5] = '\\0'", "C string: ch[5] = '\\0'")}
+      </text>
+      <text className="diagram-note" x="180" y="176">
+        {L('教材串 ADT：S.length = 5，第 5 格及以后仍算容量', 'String ADT: S.length = 5; slot 5 and later remain capacity')}
+      </text>
+      <text className="diagram-note" x="180" y="200">
+        {L("C 字符串没有 length 字段，靠 '\\0' 判断结束，strlen 需要扫描", "A C string has no length field; '\\0' ends it and strlen scans for it")}
       </text>
 
-      <text className="diagram-label diagram-label-strong" x="34" y="204">
+      <text className="diagram-label diagram-label-strong" x="34" y="238">
         {L('② 堆分配存储', '② Heap-allocated storage')}
       </text>
-      <text className="diagram-note" x="34" y="226">
-        {L('base 指向连续堆块，length 记录实际长度；扩容需申请新块并复制', 'base points at one heap block; length records the text; growth allocates and copies')}
+      <text className="diagram-note" x="34" y="260">
+        {L('base 指向连续堆块，length 记录有效字符，capacity 记录可写槽位', 'base points at a contiguous heap block; length counts valid characters and capacity counts writable slots')}
       </text>
-      <rect className="diagram-box diagram-accent" x="150" y="238" width="82" height="40" rx="6" />
-      <text className="diagram-label" x="191" y="263" textAnchor="middle">
+      <rect className="diagram-box diagram-accent" x="150" y="274" width="96" height="42" rx="6" />
+      <text className="diagram-label" x="198" y="300" textAnchor="middle">
         base
       </text>
-      <line className="diagram-line" x1="232" y1="258" x2="268" y2="258" />
-      <polygon className="diagram-arrow" points="276,258 267,253 267,263" />
-      {['A', 'L', 'G', 'O', 'V', 'I', 'Z'].map((char, index) => (
-        <g key={`heap-${index}`}>
-          <rect className="diagram-cell" x={280 + index * 48} y="238" width="44" height="40" rx="3" />
-          <text className="diagram-label" x={302 + index * 48} y="264" textAnchor="middle">
+      <line className="diagram-line" x1="246" y1="295" x2="286" y2="295" />
+      <polygon className="diagram-arrow" points="294,295 285,290 285,300" />
+      {['A', 'L', 'G', 'O', 'V', 'I', 'Z', '—', '—'].map((char, index) => (
+        <g key={`heap-${index}`} >
+          <rect
+            className={`diagram-cell ${index >= 7 ? 'diagram-cell-free' : ''}`}
+            x={300 + index * 46}
+            y="274"
+            width="42"
+            height="42"
+            rx="3"
+          />
+          <text className="diagram-label" x={321 + index * 46} y="300" textAnchor="middle">
             {char}
           </text>
         </g>
       ))}
-      <text className="diagram-note" x="630" y="264">
-        {L('length = 7', 'length = 7')}
+      <text className="diagram-note" x="34" y="326">
+        {L('S.length = 7，S.capacity = 9；有效字符只到下标 6', 'S.length = 7, S.capacity = 9; valid characters stop at index 6')}
+      </text>
+      <text className="diagram-note" x="34" y="350">
+        {L('扩容：申请新块 → 复制旧字符 → 释放旧块 → 更新 base；realloc 可能搬动地址', 'Grow: allocate → copy → free old → update base; realloc may move the block')}
       </text>
 
-      <text className="diagram-label diagram-label-strong" x="34" y="326">
+      <text className="diagram-label diagram-label-strong" x="34" y="386">
         {L('③ 块链存储', '③ Block-chain storage')}
       </text>
-      <text className="diagram-note" x="34" y="348">
+      <text className="diagram-note" x="34" y="408">
         {L('每块存固定个字符，next 串起下一块；最后一块可以不满', 'Each block stores a fixed number of characters; next links blocks; the last block may be partial')}
       </text>
       {[0, 1, 2].map((block) => {
-        const x = 150 + block * 220;
-        const chars = block === 0 ? ['D', 'A', 'T', 'A'] : block === 1 ? ['S', 'T', 'R', 'U'] : ['C', 'T', '', ''];
+        const x = 100 + block * 270;
+        const chars = block === 0 ? ['D', 'A', 'T', 'A'] : block === 1 ? ['S', 'T', 'R', 'U'] : ['C', 'T', '—', '—'];
         return (
           <g key={`block-${block}`}>
-            <rect className="diagram-box" x={x} y="360" width="172" height="54" rx="7" />
+            <rect className="diagram-box" x={x} y="418" width="228" height="92" rx="7" />
+            <text className="diagram-note" x={x + 10} y="440">
+              {L(`结点 ${block + 1} · 容量 4`, `Block ${block + 1} · capacity 4`)}
+            </text>
             {chars.map((char, index) => (
               <g key={`block-${block}-${index}`}>
                 <rect
-                  className={`diagram-cell ${char ? '' : 'diagram-cell-free'}`}
-                  x={x + 8 + index * 39}
-                  y="368"
-                  width="35"
-                  height="34"
+                  className={`diagram-cell ${char === '—' ? 'diagram-cell-free' : ''}`}
+                  x={x + 10 + index * 43}
+                  y="448"
+                  width="39"
+                  height="32"
                   rx="3"
                 />
-                <text className="diagram-label" x={x + 25 + index * 39} y="390" textAnchor="middle">
-                  {char || '—'}
+                <text className="diagram-label" x={x + 29.5 + index * 43} y="470" textAnchor="middle">
+                  {char}
                 </text>
               </g>
             ))}
             {block < 2 ? (
               <>
-                <line className="diagram-line" x1={x + 172} y1="387" x2={x + 208} y2="387" />
-                <polygon className="diagram-arrow" points={`${x + 214},387 ${x + 205},382 ${x + 205},392`} />
+                <text className="diagram-note" x={x + 180} y="482">
+                  next
+                </text>
+                <line className="diagram-line" x1={x + 228} y1="476" x2={x + 252} y2="476" />
+                <polygon className="diagram-arrow" points={`${x + 260},476 ${x + 251},471 ${x + 251},481`} />
               </>
             ) : (
-              <text className="diagram-note" x={x + 186} y="390">
+              <text className="diagram-note" x={x + 180} y="482">
                 next = NULL
               </text>
             )}
+            <text className="diagram-note" x={x + 10} y="504">
+              {L('块内字符数组', 'in-block character array')}
+            </text>
           </g>
         );
       })}
-      <text className="diagram-note" x="150" y="430">
+      <text className="diagram-note" x="100" y="538">
         {L('length = 10；第三块只有 2 个有效字符，遍历到 length 就停止', 'length = 10; the third block has only 2 valid characters, so traversal stops at length')}
+      </text>
+      <text className="diagram-note" x="100" y="562">
+        {L('存储密度 = 有效字符空间 / 全部结点空间；next 指针与末块空位都会降低密度', 'Storage density = valid-character space / total node space; next pointers and final-block gaps reduce it')}
+      </text>
+
+      <rect className="diagram-band" x="34" y="582" width="832" height="34" rx="8" />
+      <text className="diagram-label" x="450" y="604" textAnchor="middle">
+        {L('定长：容量固定 · 堆分配：连续可扩 · 块链：按块拼接，指针开销换灵活连接', 'Fixed: bounded capacity · Heap: contiguous and growable · Block chain: link blocks, trading pointer overhead for flexible joins')}
       </text>
     </svg>
   );

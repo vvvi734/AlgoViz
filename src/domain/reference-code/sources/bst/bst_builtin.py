@@ -12,12 +12,19 @@ Reading guide:
 Complexity: O(log n) search, O(n) insertion due to shifting; extra space O(n).
 Convention: Unique keys in ascending order; duplicates are ignored before insertion.
 """
+# 中文导读：用 Python 的 bisect 维护有序列表，演示与 BST 中序查找等价的语义。
+# 阅读顺序：先看 insort 的插入位置，再看 bisect_left 的成员判断。
+# 输入/输出：输入整数键序列；输出有序列表与查找结果。
+# 不变量：列表始终保持升序；bisect_left 返回第一个不小于 key 的位置。
+# 易错点：把 bisect 的 O(log n) 比较误当成整体 O(log n)；忽略 insort 的 O(n) 搬移。
+# 复杂度：查找 O(log n) 比较，插入 O(n) 搬移，额外空间 O(n)。
 
 from __future__ import annotations
 
 from bisect import bisect_left, insort
 
 
+# 作用：构造有序列表并演示插入、查找和删除。
 def main() -> None:
     tree: list[int] = []
     for key in [5, 2, 7, 1, 4, 6, 8, 3]:

@@ -11,6 +11,12 @@ Reading guide:
 Complexity: O(n) time; extra space O(w), where w is the maximum level width
 (O(n) worst case). Convention: None is an empty subtree.
 """
+# 中文导读：用 deque 作为 FIFO 队列实现层序遍历，按层输出结点。
+# 阅读顺序：先看根入队，再看出队后左右孩子入队的顺序。
+# 输入/输出：输入二叉树根；返回层序列表。
+# 不变量：队列中结点的入队顺序就是它们的层序。
+# 易错点：用 list.pop(0) 导致 O(n) 搬移；空树未返回空列表。
+# 复杂度：O(n)，额外空间 O(w)，w 为最大层宽。
 
 from __future__ import annotations
 
@@ -26,6 +32,7 @@ class Node:
 
 
 # `deque.popleft()` is O(1); a list pop(0) would shift every remaining element.
+# 作用：返回层序遍历结果；空树返回空列表。
 def level_order(root: Node | None) -> list[int]:
     if root is None:
         return []
@@ -44,6 +51,7 @@ def level_order(root: Node | None) -> list[int]:
     return output
 
 
+# 作用：构造演示树并打印层序序列。
 def main() -> None:
     root = Node(
         4,

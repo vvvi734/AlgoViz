@@ -6,7 +6,9 @@
  * 复杂度：push/pop/peek O(1)，空间 O(capacity)。
  * 本文件是标准库对照版：重点看“库函数调用”与手写算法在接口、稳定性、边界上的差异。
  * This is the standard-library comparison file: focus on interface, stability and boundary differences from the hand-written algorithm.
- */
+ * 输入/输出：输入 main 内置的演示操作序列；压栈/弹栈返回成功或栈顶；main 打印出栈顺序。
+ * 函数地图：先读 main 的调用顺序，再按需查看被调用的静态函数；每个函数前的“作用”注释给出职责、输入和返回。
+*/
 
 // AlgoViz convenience implementation: stack with std::stack (C++17).
 // std::stack is an adapter; its default container is std::deque.

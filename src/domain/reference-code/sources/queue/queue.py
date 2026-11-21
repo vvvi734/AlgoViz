@@ -2,6 +2,13 @@
 
 A fixed-capacity ring buffer that reserves one slot to distinguish empty/full.
 
+中文导读：用环形数组和 front/rear 两个下标实现 FIFO 队列，并刻意空出一个槽来区分队空与队满。
+阅读顺序：先看 front/rear 的定义，再看队空与队满的判定，最后看入队/出队为何都要对 capacity 取模。
+输入/输出：enqueue 接收一个整数并返回是否成功；dequeue/front 返回队头整数，空队列返回 None。
+不变量：front 指向当前队头，rear 指向下一个可写槽；元素个数为 (rear - front + capacity) % capacity。
+易错点：把 rear 直接自增而不取模；用 front == rear 同时表示空和满；忘记保留一个空槽导致满/空无法区分。
+复杂度：enqueue/dequeue/front 均为 O(1)，额外空间 O(capacity)。
+
 Reading guide:
 1. `front` indexes the first live item; `rear` indexes the next free slot.
 2. `front == rear` means empty.

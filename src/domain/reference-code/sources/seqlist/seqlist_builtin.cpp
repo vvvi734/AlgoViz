@@ -6,7 +6,9 @@
  * 复杂度：访问 O(1)，按位置插删 O(n)，空间 O(capacity)。
  * 本文件是标准库对照版：重点看“库函数调用”与手写算法在接口、稳定性、边界上的差异。
  * This is the standard-library comparison file: focus on interface, stability and boundary differences from the hand-written algorithm.
- */
+ * 输入/输出：输入容量与演示操作序列；插入/删除返回成功，查找返回下标；main 打印表内容。
+ * 函数地图：先读 main 的调用顺序，再按需查看被调用的静态函数；每个函数前的“作用”注释给出职责、输入和返回。
+*/
 
 // AlgoViz convenience implementation: sequential list with std::vector.
 // vector::insert and vector::erase perform the same shifting internally.

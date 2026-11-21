@@ -12,6 +12,12 @@ Complexity: O(V + E) for adjacency lists, O(V^2) when scanning an adjacency matr
   extra space O(V).
 Convention: Vertices are 0-based; each undirected edge is stored in both directions.
 """
+# 中文导读：用队列按层访问图，顶点入队时立即标记，保证每个顶点只入队一次。
+# 阅读顺序：先看 visited 的置位时机，再看邻居入队顺序。
+# 输入/输出：输入邻接表与起点；返回从起点可达顶点的访问顺序；起点越界由调用方保证合法。
+# 不变量：队列中的顶点都已经标记；出队顺序按层非降。
+# 易错点：出队后才标记导致重复入队；忘记处理不连通图。
+# 复杂度：O(V+E)，额外空间 O(V)。
 
 from __future__ import annotations
 
@@ -20,6 +26,7 @@ from collections import deque
 
 # Mark a neighbour before enqueueing it; the FIFO frontier then visits level by level.
 # Mark a vertex when it enters the queue, not when it leaves, so it cannot be enqueued twice.
+# 作用：返回从 start 可达顶点的 BFS 顺序；不修改 graph。
 def bfs(graph: list[list[int]], start: int) -> list[int]:
     visited = [False] * len(graph)
     visited[start] = True
@@ -36,6 +43,7 @@ def bfs(graph: list[list[int]], start: int) -> list[int]:
     return order
 
 
+# 作用：构造演示图并打印 BFS 序列。
 def main() -> None:
     graph: list[list[int]] = [[] for _ in range(6)]
 

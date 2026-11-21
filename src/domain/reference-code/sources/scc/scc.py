@@ -14,12 +14,19 @@ Complexity: O(V + E) for adjacency lists, O(V^2) for adjacency matrices; extra s
 Convention: Directed graph with 0-based vertices; components are emitted in Kosaraju
   order.
 """
+# 中文导读：Kosaraju 两遍 DFS：第一遍记录完成顺序，第二遍在反向图上按完成顺序逆序收集 SCC。
+# 阅读顺序：先看 first_pass 的后序追加，再看 collect 在反向图上的标记。
+# 输入/输出：输入有向图邻接表；返回每个强连通分量的顶点列表。
+# 不变量：第一遍的 order 是完成顺序；第二遍从最后完成的顶点开始。
+# 易错点：第二遍仍在原图上搜索；完成顺序未逆序使用。
+# 复杂度：O(V+E)，额外空间 O(V+E)。
 
 from __future__ import annotations
 
 
 # First pass appends a vertex only after all its outgoing neighbours are finished.
 # First pass records finish order; the reverse graph is then explored in decreasing finish order to isolate SCCs.
+# 作用：在原图上 DFS，把完成顶点追加到 order。
 def first_pass(graph: list[list[int]], vertex: int, visited: list[bool], order: list[int]) -> None:
     visited[vertex] = True
     for neighbor in graph[vertex]:
@@ -28,6 +35,7 @@ def first_pass(graph: list[list[int]], vertex: int, visited: list[bool], order: 
     order.append(vertex)
 
 
+# 作用：在反向图上从 vertex 收集一个 SCC，并追加到 component。
 def collect(reverse_graph: list[list[int]], vertex: int, visited: list[bool], component: list[int]) -> None:
     visited[vertex] = True
     component.append(vertex)
@@ -36,6 +44,7 @@ def collect(reverse_graph: list[list[int]], vertex: int, visited: list[bool], co
             collect(reverse_graph, neighbor, visited, component)
 
 
+# 作用：构造演示有向图并打印 SCC。
 def main() -> None:
     edges = [(0, 1), (1, 2), (2, 0), (2, 3), (3, 4), (4, 5), (5, 3)]
     graph: list[list[int]] = [[] for _ in range(6)]

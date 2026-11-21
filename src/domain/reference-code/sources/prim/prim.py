@@ -14,6 +14,12 @@ Complexity: O(V^2) with dense scanning, O(E log V) with a heap; extra space O(V^
 Convention: Undirected weighted graph; 0-based vertices; equal weights may produce
   different but valid MSTs.
 """
+# 中文导读：从顶点 0 开始扩展生成树，每次从候选边中取最轻的一条横切边。
+# 阅读顺序：先看 candidates 堆，再看 selected 如何跳过过期候选。
+# 输入/输出：输入无向带权图；输出选中边和总权值。
+# 不变量：已选顶点集合始终连通；候选边恰有一个端点在集合内。
+# 易错点：把已选顶点当未选重复加入；忘记跳过过期堆条目。
+# 复杂度：堆实现 O(E log V)，额外空间 O(V+E)。
 
 from __future__ import annotations
 
@@ -21,6 +27,7 @@ import heapq
 
 
 # This implementation grows the tree by popping the lightest cut edge from `candidates`; selected vertices are skipped as stale.
+# 作用：构造演示图，用 Prim 选边并打印总权值。
 def main() -> None:
     graph: list[list[tuple[int, int]]] = [[] for _ in range(5)]
 

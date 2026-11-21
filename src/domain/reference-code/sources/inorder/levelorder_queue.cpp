@@ -4,7 +4,9 @@
  * 关键不变量：递归栈保存的是尚未访问完的祖先；中序输出始终按左—根—右。
  * 易错点：前/中/后序访问语句位置放错；显式栈弹栈后忘记右子树；层序不记录每层 size 导致分层错误；空树边界。
  * 复杂度：O(n) 时间，递归 O(h) 栈 / 层序 O(width) 队列。
- */
+ * 输入/输出：输入 main 内置的二叉树；中序/层序遍历把键写入输出数组；main 打印序列。
+ * 函数地图：先读 main 的调用顺序，再按需查看被调用的静态函数；每个函数前的“作用”注释给出职责、输入和返回。
+*/
 
 // AlgoViz reference implementation: level-order traversal with std::queue (C++17).
 // This convenience file adds a fourth traversal alongside the recursive

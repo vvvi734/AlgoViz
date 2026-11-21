@@ -4,7 +4,9 @@
  * 关键不变量：已选边始终构成森林；加入一条边前，它的两个端点必须属于不同集合。
  * 易错点：忘记路径压缩/按秩合并；边数不足 V-1 仍当成功；并查集父数组未初始化；有向边误用。
  * 复杂度：O(E log E) 排序 + 近似 O(E α(V)) 并查集，空间 O(V+E)。
- */
+ * 输入/输出：输入无向带权边表；返回选中的 V-1 条边与总权值；main 打印 MST。
+ * 函数地图：先读 main 的调用顺序，再按需查看被调用的静态函数；每个函数前的“作用”注释给出职责、输入和返回。
+*/
 
 // AlgoViz reference implementation: Kruskal's minimum spanning tree (C++17).
 // Sorts all edges by weight and adds an edge only when its endpoints are

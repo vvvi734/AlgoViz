@@ -134,6 +134,7 @@ export const GUIDED_INPUT_ALGORITHMS = [
   'heap',
   'binary',
   'linear',
+  'bf',
   'kmp',
   'hash-chain',
   'hash-probe',
@@ -164,6 +165,10 @@ export type ArrayGuidedInputAlgorithm = (typeof ARRAY_GUIDED_INPUT_ALGORITHMS)[n
 export const NUMS_TARGET_GUIDED_INPUT_ALGORITHMS = ['binary', 'linear'] as const;
 export type NumsTargetGuidedInputAlgorithm = (typeof NUMS_TARGET_GUIDED_INPUT_ALGORITHMS)[number];
 
+/** BF and KMP share the same text+pattern input contract. */
+export const STRING_PAIR_GUIDED_INPUT_ALGORITHMS = ['bf', 'kmp'] as const;
+export type StringPairGuidedInputAlgorithm = (typeof STRING_PAIR_GUIDED_INPUT_ALGORITHMS)[number];
+
 /** Hash tables consume a simple insert/find/delete operation sequence. */
 export const HASH_GUIDED_INPUT_ALGORITHMS = ['hash-chain', 'hash-probe'] as const;
 export type HashGuidedInputAlgorithm = (typeof HASH_GUIDED_INPUT_ALGORITHMS)[number];
@@ -183,6 +188,7 @@ export const GUIDED_INPUT_LANGUAGE: Record<GuidedInputAlgorithm, CodeLanguage> =
   heap: 'python',
   binary: 'python',
   linear: 'python',
+  bf: 'python',
   kmp: 'python',
   'hash-chain': 'python',
   'hash-probe': 'python',
@@ -226,9 +232,9 @@ export interface GuidedInputDraft {
   target: string;
   /** RECUR-01: the single non-negative argument n for factorial / fib. */
   n: string;
-  /** KMP text. */
+  /** BF / KMP text. */
   text: string;
-  /** KMP pattern. */
+  /** BF / KMP pattern. */
   pattern: string;
   /** Hash operation sequence, one `insert/find/delete key` per line. */
   operations: string;
@@ -355,6 +361,15 @@ const RANDOM_SCENARIOS: Record<GuidedInputAlgorithm, readonly GuidedRandomScenar
     { id: 'not-found', label: ['一定找不到', 'Never found'] },
   ],
   linear: LINEAR_SCENARIOS,
+  bf: [
+    { id: 'first-hit', label: ['第一次对齐即匹配', 'Match at the first alignment'] },
+    { id: 'fallback', label: ['多次失配后找到', 'Found after several mismatches'] },
+    { id: 'failure', label: ['完全找不到', 'No match at all'] },
+    { id: 'prefix', label: ['重复前后缀', 'Repeated prefix/suffix'] },
+    { id: 'overlap', label: ['多个 / 重叠匹配', 'Multiple / overlapping'] },
+    { id: 'text-shorter', label: ['主串短于模式串', 'Text shorter than pattern'] },
+    { id: 'empty-text', label: ['空主串', 'Empty text'] },
+  ],
   kmp: [
     { id: 'success', label: ['成功匹配', 'Successful match'] },
     { id: 'failure', label: ['匹配失败', 'No match'] },
@@ -390,6 +405,10 @@ export function isNumsTargetGuidedInputAlgorithm(id: string): id is NumsTargetGu
 
 export function isHashGuidedInputAlgorithm(id: string): id is HashGuidedInputAlgorithm {
   return (HASH_GUIDED_INPUT_ALGORITHMS as readonly string[]).includes(id);
+}
+
+export function isStringPairGuidedInputAlgorithm(id: string): id is StringPairGuidedInputAlgorithm {
+  return (STRING_PAIR_GUIDED_INPUT_ALGORITHMS as readonly string[]).includes(id);
 }
 
 export function isTreeGuidedInputAlgorithm(id: string): id is TreeGuidedInputAlgorithm {
@@ -748,6 +767,9 @@ export function buildGuidedInput(id: GuidedInputAlgorithm, draft: GuidedInputDra
     };
   }
 
+  // BF and KMP share this text+pattern contract. Empty text is a legal
+  // boundary case: there is simply no candidate start and the result is [].
+  // Empty pattern is rejected because it would match every position.
   let text = draft.text;
   let pattern = draft.pattern;
   const object = parseObject(text);
@@ -755,7 +777,6 @@ export function buildGuidedInput(id: GuidedInputAlgorithm, draft: GuidedInputDra
     if (typeof object.text === 'string') text = object.text;
     if (typeof object.pattern === 'string') pattern = object.pattern;
   }
-  if (text.length === 0) return { ok: false, error: { key: 'guidedErrorKmpText' } };
   if (text.length > GUIDED_INPUT_LIMITS.KMP_TEXT_MAX) {
     return { ok: false, error: { key: 'guidedErrorKmpTextLength', max: GUIDED_INPUT_LIMITS.KMP_TEXT_MAX } };
   }
@@ -921,6 +942,35 @@ function randomWord(random: () => number, alphabet: string, length: number): str
   return Array.from({ length }, () => alphabet[randInt(random, 0, alphabet.length - 1)]!).join('');
 }
 
+function randomBfValues(scenario: string, random: () => number): { text: string; pattern: string } {
+  if (scenario === 'first-hit') {
+    const pattern = ['ABABC', 'AABA', 'ABCAB'][randInt(random, 0, 2)]!;
+    const suffix = randomWord(random, 'ABC', randInt(random, 2, 5));
+    return { text: `${pattern}${suffix}`, pattern };
+  }
+  if (scenario === 'failure') {
+    return { text: randomWord(random, 'BC', randInt(random, 10, 16)), pattern: 'ABA' };
+  }
+  if (scenario === 'prefix') {
+    const pattern = 'AABAAB';
+    const middle = randomWord(random, 'AB', randInt(random, 1, 4));
+    return { text: `${pattern}${middle}${pattern}`, pattern };
+  }
+  if (scenario === 'overlap') {
+    const length = randInt(random, 8, 12);
+    return { text: `${'A'.repeat(length)}B`, pattern: 'AAA' };
+  }
+  if (scenario === 'text-shorter') {
+    const text = randomWord(random, 'ABC', randInt(random, 2, 5));
+    return { text, pattern: `${text}${randomWord(random, 'ABC', randInt(random, 2, 4))}` };
+  }
+  if (scenario === 'empty-text') {
+    return { text: '', pattern: ['A', 'AB', 'ABC'][randInt(random, 0, 2)]! };
+  }
+  // Inner comparisons succeed repeatedly, then fail near the pattern's end.
+  return { text: 'ABABABCABABABC', pattern: 'ABABC' };
+}
+
 function randomKmpValues(scenario: string, random: () => number): { text: string; pattern: string } {
   if (scenario === 'failure') {
     // No "A" occurs in the text, while the pattern needs one.
@@ -1014,6 +1064,6 @@ export function randomGuidedDraft(
     const generated = randomBinaryValues(scenario, random);
     return { ...EMPTY_DRAFT, nums: generated.nums.join(', '), target: String(generated.target) };
   }
-  const generated = randomKmpValues(scenario, random);
+  const generated = id === 'bf' ? randomBfValues(scenario, random) : randomKmpValues(scenario, random);
   return { ...EMPTY_DRAFT, text: generated.text, pattern: generated.pattern };
 }

@@ -16,10 +16,17 @@ Complexity: O(n log n) worst, O(n) best for nearly sorted input; extra space O(n
   worst.
 Convention: 0-based list indices; both routes are stable.
 """
+# 中文导读：用 sorted 演示 Timsort 的稳定排序结果。
+# 阅读顺序：先看排序键，再看相等元素的相对次序。
+# 输入/输出：输入整数数组；返回新的有序列表，输入不变。
+# 不变量：sorted 是稳定排序，相等元素保持原相对顺序。
+# 易错点：把 sorted 当成原地修改；忽略额外空间。
+# 复杂度：O(n log n) 最坏，额外空间 O(n)。
 
 from __future__ import annotations
 
 
+# 作用：用 sorted 演示稳定排序。
 def main() -> None:
     values = [5, 1, 4, 2, 8, 0, 3, 7, 6, 9]
 

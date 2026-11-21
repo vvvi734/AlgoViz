@@ -13,6 +13,12 @@ Complexity: O(V^2) with a matrix, O((V + E) log V) with a binary heap; extra spa
 Convention: Non-negative weights only; 0-based vertices; unreachable distances stay
   infinity.
 """
+# 中文导读：每次从未确定顶点中取出距离最小者，松弛它的非负权出边。
+# 阅读顺序：先看优先队列的 (distance, vertex) 元组，再看已确定顶点的跳过，最后看 path_to 的回溯。
+# 输入/输出：输入带非负权的邻接表与源点；返回最短距离表和前驱表。
+# 不变量：已确定顶点的距离不再改变；堆中可能留有旧距离的过期条目。
+# 易错点：负权边；把过期堆条目当成新候选；前驱表未在松弛时更新。
+# 复杂度：O((V+E) log V)，额外空间 O(V+E)。
 
 from __future__ import annotations
 
@@ -20,6 +26,7 @@ import heapq
 
 
 # Settle the nearest unsettled vertex, then relax its outgoing non-negative edges.
+# 作用：返回 (distances, previous)；要求边权非负，不修改 graph。
 def dijkstra(
     graph: dict[str, list[tuple[str, int]]],
     source: str,
@@ -50,6 +57,7 @@ def dijkstra(
     return distance, previous
 
 
+# 作用：沿 previous 从 target 回溯到源点，返回路径顶点列表。
 def path_to(previous: dict[str, str | None], target: str) -> list[str]:
     path: list[str] = []
     current: str | None = target
@@ -59,6 +67,7 @@ def path_to(previous: dict[str, str | None], target: str) -> list[str]:
     return list(reversed(path))
 
 
+# 作用：构造演示图并打印最短距离与一条路径。
 def main() -> None:
     graph = {
         "A": [("B", 4), ("C", 1)],

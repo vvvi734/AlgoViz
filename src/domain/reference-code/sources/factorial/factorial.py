@@ -11,11 +11,18 @@ Complexity: O(n) multiplications; extra space O(n) recursion depth.
 Convention: Input is a non-negative integer; the result uses the language's integer
   type.
 """
+# 中文导读：用递归定义 n! = n * (n-1)!，以 0! 和 1! 作为递归出口。
+# 阅读顺序：先看递归出口，再看回溯时的乘法。
+# 输入/输出：输入非负整数 n；返回 n!；负数抛 ValueError。
+# 不变量：每次递归都把问题规模减一，最终到达 0 或 1。
+# 易错点：缺少 n=0 的出口；负数未拒绝。
+# 复杂度：O(n) 次乘法，递归空间 O(n)。
 
 from __future__ import annotations
 
 
 # Base cases collapse to 1; the unwind multiplies n by the already-computed (n-1)!.
+# 作用：返回 n!；负数抛 ValueError，0! 和 1! 返回 1。
 def factorial(number: int) -> int:
     """Return number! for a non-negative integer."""
     if number < 0:
@@ -25,6 +32,7 @@ def factorial(number: int) -> int:
     return number * factorial(number - 1)
 
 
+# 作用：演示递归阶乘并打印结果。
 def main() -> None:
     assert factorial(0) == 1
     assert factorial(1) == 1

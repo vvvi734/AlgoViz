@@ -113,7 +113,7 @@ describe('reference code localization', () => {
   });
 
   it('has a reviewed teaching note for every registered algorithm', async () => {
-    expect(REFERENCE_CODE_ALGORITHMS).toHaveLength(41);
+    expect(REFERENCE_CODE_ALGORITHMS).toHaveLength(42);
     for (const algorithmId of REFERENCE_CODE_ALGORITHMS) {
       const source = await loadReferenceCode(algorithmId, 'cpp');
       expect(source, algorithmId).not.toBeNull();

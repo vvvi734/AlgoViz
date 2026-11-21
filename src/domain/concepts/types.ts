@@ -13,6 +13,7 @@ export type ConceptDiagramKind =
   | 'graph-storage'
   | 'sorting'
   | 'string'
+  | 'string-index'
   | 'array'
   | 'matrix-compression'
   | 'sparse-matrix'

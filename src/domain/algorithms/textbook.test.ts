@@ -56,7 +56,7 @@ describe('textbook directory after TEXTBOOK-01', () => {
 
   it('preserves every existing algorithm exactly once in its new primary home', () => {
     const ids = textbookAlgorithmIds(nav);
-    expect(ids).toHaveLength(41);
+    expect(ids).toHaveLength(42);
     expect(new Set(ids).size).toBe(ids.length);
     expect(new Set(ids)).toEqual(new Set(Object.keys(catalog)));
   });
@@ -99,8 +99,8 @@ describe('textbook directory after TEXTBOOK-01', () => {
       'string-basics',
       'string-storage',
       'naive-match',
+      'bf',
       'kmp',
-      'string-applications',
     ]);
     expect(strings.topics.find((topic) => topic.id === 'kmp')?.algorithms).toEqual([
       expect.objectContaining({ id: 'kmp' }),

@@ -283,21 +283,20 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
       },
       {
         id: 'naive-match',
-        title: { zh: '朴素的模式匹配算法', en: 'Naive pattern matching' },
+        title: { zh: '朴素模式匹配：逐起点比较', en: 'Naive pattern matching: every start' },
         algorithms: [],
         concept: true,
         conceptId: 'naive-matching',
       },
       {
+        id: 'bf',
+        title: { zh: '朴素匹配动画（BF）', en: 'Naive matching visual (BF)' },
+        algorithms: [{ id: 'bf' }],
+      },
+      {
         id: 'kmp',
         title: { zh: 'KMP 模式匹配算法', en: 'KMP pattern matching' },
         algorithms: [{ id: 'kmp' }],
-      },
-      {
-        id: 'string-applications',
-        title: { zh: '串操作应用举例', en: 'String applications' },
-        algorithms: [],
-        planned: true,
       },
     ],
   },

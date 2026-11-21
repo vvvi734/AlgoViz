@@ -9,6 +9,12 @@ Reading guide:
 
 Complexity: O(n) time, O(n) space.
 """
+# 中文导读：从左到右扫描后缀表达式，遇操作数入栈，遇运算符弹出两个操作数计算。
+# 阅读顺序：先看操作数识别，再看二元运算符的弹出顺序。
+# 输入/输出：输入空格分隔的后缀 token；返回整数结果。
+# 不变量：栈中始终保存尚未参与运算的操作数；先弹出的是右操作数。
+# 易错点：减法/除法左右操作数颠倒；操作数不足仍继续弹栈。
+# 复杂度：O(n)，额外空间 O(n)。
 
 from __future__ import annotations
 
@@ -17,6 +23,7 @@ class PostfixError(ValueError):
     """Raised for operand shortage/surplus, invalid tokens or division by zero."""
 
 
+# 作用：计算后缀表达式并返回整数结果；非法表达式由调用方保证。
 def evaluate(tokens: list[str]) -> int:
     """Evaluate a tokenised postfix expression or raise PostfixError."""
     stack: list[int] = []
@@ -54,6 +61,7 @@ def evaluate(tokens: list[str]) -> int:
     return stack[0]
 
 
+# 作用：演示 3 4 + 2 * 的求值。
 def main() -> None:
     expression = "3 4 + 2 *"
     print("postfix:", expression)

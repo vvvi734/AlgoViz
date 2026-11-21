@@ -4,7 +4,9 @@
  * 关键不变量：查找路径上若目标存在，一定在第一个 EMPTY 之前被看到；DELETED 不能被当成空位截断查找。
  * 易错点：删除直接置 EMPTY 截断后续查找；表满死循环；负载因子过高；负哈希下标。
  * 复杂度：平均 O(1)，最坏 O(n)；空间 O(capacity)。
- */
+ * 输入/输出：输入非负整数 key 的插入/查找序列；操作返回布尔；main 打印槽的空/占用状态。
+ * 函数地图：先读 main 的调用顺序，再按需查看被调用的静态函数；每个函数前的“作用”注释给出职责、输入和返回。
+*/
 
 // AlgoViz reference implementation: linear probing hash table (C++17).
 // -1 marks an empty slot; insert and search probe forward with wraparound.

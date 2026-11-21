@@ -4,7 +4,9 @@
  * 关键不变量：front == rear 为空，(rear + 1) % capacity == front 为满；有效元素最多 capacity - 1 个。
  * 易错点：把 rear 当成最后一个元素；混用 count 与牺牲单元两套规则；自增后忘记取模；空队列仍读 front。
  * 复杂度：enqueue/dequeue/front O(1)，空间 O(capacity)。
- */
+ * 输入/输出：输入 main 内置的演示操作序列；入队/出队返回成功或队头；main 打印出队顺序。
+ * 函数地图：先读 main 的调用顺序，再按需查看被调用的静态函数；每个函数前的“作用”注释给出职责、输入和返回。
+*/
 
 /*
  * Circular queue in C11.

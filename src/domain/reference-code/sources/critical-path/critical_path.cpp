@@ -4,7 +4,9 @@
  * 关键不变量：ve 只能由所有前驱完成后确定；vl 必须由所有后继的最迟时间倒推。
  * 易错点：把边权当成点权；入度/出度更新不对称；多个终点时没有统一汇点；e/l 公式记反。
  * 复杂度：O(V+E) 时间，O(V+E) 空间。
- */
+ * 输入/输出：输入 AOE 网的活动边与持续时间；输出最早/最迟开始时间、时间余量与关键活动。
+ * 函数地图：先读 main 的调用顺序，再按需查看被调用的静态函数；每个函数前的“作用”注释给出职责、输入和返回。
+*/
 
 // AlgoViz reference implementation: critical path on an AOE network (C++17).
 // A forward topological pass computes earliest start times; a reverse pass

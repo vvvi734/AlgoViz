@@ -13,6 +13,12 @@ Reading guide:
 Complexity: O(V^3); extra space O(V^2) for the distance matrix.
 Convention: 0-based vertices; INF means no edge/path; the diagonal starts at 0.
 """
+# 中文导读：以每个顶点依次作为中间点，动态规划求出所有点对的最短距离。
+# 阅读顺序：先看 dist 矩阵初始化，再看最外层 k 必须放在最外层的理由。
+# 输入/输出：输入邻接矩阵 dist；原地更新为全源最短路径，无返回值。
+# 不变量：第 k 轮后，dist[i][j] 只允许经过 {0..k} 中的中间点。
+# 易错点：把 k 循环放到内层；INF 相加溢出；负环未检测。
+# 复杂度：O(V^3)，额外空间 O(1)（不计输入矩阵）。
 
 from __future__ import annotations
 
@@ -21,6 +27,7 @@ INF = float("inf")
 
 # Outer loop fixes the only allowed intermediate vertex k; relax i -> j through k.
 # The outer loop must be the intermediate vertex k; relaxing k before it is allowed would use incomplete paths.
+# 作用：原地把 dist 更新为全源最短路径；不返回新矩阵。
 def floyd_warshall(dist: list[list[float]]) -> None:
     size = len(dist)
     for middle in range(size):
@@ -35,6 +42,7 @@ def floyd_warshall(dist: list[list[float]]) -> None:
                     dist[source][target] = candidate
 
 
+# 作用：构造演示矩阵并打印最终距离。
 def main() -> None:
     dist = [
         [0, 3, INF, 7],

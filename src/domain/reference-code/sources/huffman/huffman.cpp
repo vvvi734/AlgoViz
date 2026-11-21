@@ -4,7 +4,9 @@
  * 关键不变量：每次合并后森林结点数减一；任何字符编码都不是另一个编码的前缀。
  * 易错点：合并顺序不稳定导致同权树形不同；叶子权值当频率用错；只支持单字符；释放树时递归断链。
  * 复杂度：O(n log n) 时间（堆），O(n) 空间；编码长度取决于频率分布。
- */
+ * 输入/输出：输入字符及其权值；构造哈夫曼树后输出每个字符的 0/1 编码；main 打印编码表。
+ * 函数地图：先读 main 的调用顺序，再按需查看被调用的静态函数；每个函数前的“作用”注释给出职责、输入和返回。
+*/
 
 // AlgoViz reference implementation: Huffman coding (C++17).
 // Builds a min-heap of nodes, repeatedly merges the two lightest nodes,

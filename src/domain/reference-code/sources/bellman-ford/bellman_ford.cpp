@@ -4,7 +4,9 @@
  * 关键不变量：第 k 轮结束后，dist[v] 已经不超过“最多用 k 条边”的最短路径长度。
  * 易错点：把 INF 加上负权后仍当普通数比较；负环不可达也报错；忘记无向图一条边要当两条有向边。
  * 复杂度：O(VE) 时间，O(V) 额外空间。
- */
+ * 输入/输出：输入顶点数、带权边表与源点；返回最短距离数组；存在可达负环时返回失败标记。
+ * 函数地图：先读 main 的调用顺序，再按需查看被调用的静态函数；每个函数前的“作用”注释给出职责、输入和返回。
+*/
 
 // AlgoViz reference implementation: Bellman-Ford (C++17).
 // Relaxes every edge V - 1 times; an extra successful relaxation means a

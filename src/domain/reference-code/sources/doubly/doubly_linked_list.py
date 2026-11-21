@@ -12,6 +12,12 @@ Reading guide:
 Complexity: O(1) splice at a known node, O(n) search; extra space O(n).
 Convention: NULL/None marks both ends; prev and next must stay mutually consistent.
 """
+# 中文导读：用 prev/next 双向指针维护链表，删除已知结点时无需再找前驱。
+# 阅读顺序：先看插入时四条指针的赋值顺序，再看删除时两侧指针的接回。
+# 输入/输出：输入整数序列；输出正向和反向遍历结果。
+# 不变量：任意结点满足 node.next.prev == node（首尾除外）。
+# 易错点：先改 next 再保存后继导致断链；删除头/尾时未更新 head/tail。
+# 复杂度：插入/删除 O(1)，查找 O(n)，空间 O(n)。
 
 from __future__ import annotations
 
@@ -70,6 +76,7 @@ class DoublyList:
         return values
 
 
+# 作用：构造双向链表并演示插入、删除和双向遍历。
 def main() -> None:
     lst = DoublyList()
     lst.append(1)

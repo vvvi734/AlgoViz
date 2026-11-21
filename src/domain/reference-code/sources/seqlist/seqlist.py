@@ -11,6 +11,12 @@ Complexity: O(n) insert/erase, O(1) indexed access; extra space O(capacity).
 Convention: Valid element indices are 0..length-1; insertion also accepts index ==
   length; erasure returns the removed value.
 """
+# 中文导读：用定长数组和 length 字段实现顺序表，插入时从尾部依次后移。
+# 阅读顺序：先看 length 与 capacity 的区别，再看 insert 的后移方向和删除的前移方向。
+# 输入/输出：输入容量与操作序列；输出顺序表内容。
+# 不变量：0..length-1 是有效元素；length 等于容量时不能再插入。
+# 易错点：后移方向写反覆盖元素；删除后忘记递减 length。
+# 复杂度：访问 O(1)，插入/删除 O(n)，空间 O(capacity)。
 
 from __future__ import annotations
 
@@ -49,6 +55,7 @@ class SeqList:
         return self._items[: self._size]
 
 
+# 作用：构造顺序表并演示插入、删除和查找。
 def main() -> None:
     seq = SeqList()
     seq.insert(0, 1)

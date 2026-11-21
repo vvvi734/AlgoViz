@@ -1111,75 +1111,103 @@ const BASE_CONCEPT_PAGES: readonly ConceptPage[] = [
     title: ['串的定义与模式匹配基础', 'Strings and the foundations of pattern matching'],
     chapter: ['第 4 章 · 串', 'Chapter 4 · Strings'],
     summary: [
-      '串是由字符组成的有限序列；模式匹配要在一段主串中找出模式串的全部出现位置。朴素方法在失配后反复回到起点，KMP 则用前缀表复用已经比较过的信息。',
-      'A string is a finite sequence of characters; pattern matching finds every occurrence of a pattern inside a text. Naive matching restarts after each mismatch, while KMP reuses already-compared information through a prefix table.',
+      '串是由字符组成的有限有序序列，逻辑上属于线性结构，但每个元素只能是字符，操作也主要围绕整段字符序列展开。模式匹配先明确主串、模式串、子串位置和匹配是否允许重叠，再比较朴素方法与 KMP。',
+      'A string is a finite ordered sequence of characters. It is logically linear, but every element is a character and its operations act on whole sequences. Pattern matching first fixes the text, pattern, substring position and overlap convention, then compares naive matching with KMP.',
     ],
-    diagram: 'string',
+    diagram: 'string-index',
     definitions: [
       {
         term: ['串（字符串）', 'String'],
-        text: ['由零个或多个字符组成的有限序列，通常记作 S = "a₁a₂…aₙ"。', 'A finite sequence of zero or more characters, usually written S = "a₁a₂…aₙ".'],
+        text: ['由零个或多个字符组成的有限序列，通常记作 S = "a₁a₂…aₙ"。n 是串长；n = 0 时是空串。', 'A finite sequence of zero or more characters, usually written S = "a₁a₂…aₙ". n is the length; n = 0 gives the empty string.'],
       },
       {
         term: ['空串', 'Empty string'],
-        text: ['长度为 0 的串，记作 "" 或 ∅。空串不是空格串：空格也是一个字符。', 'The string of length 0, written "" or ∅. It is not a blank string: a space is a character.'],
+        text: ['长度为 0 的串，记作 ""。它不含任何字符，因此不是空格串。', 'The string of length 0, written "". It contains no character, so it is not a blank string.'],
       },
       {
-        term: ['子串', 'Substring'],
-        text: ['主串中连续一段字符构成的串；空串也是任何串的子串，不等于原串的子串称为真子串。', 'A contiguous segment of a text; the empty string is a substring of every string, and a substring different from the whole string is a proper substring.'],
+        term: ['空格串', 'Blank string'],
+        text: ['由一个或多个空格字符组成的串。一个空格的长度是 1，两个空格的长度是 2；空格是真实字符。', 'A string made of one or more space characters. One space has length 1 and two spaces have length 2; a space is a real character.'],
+      },
+      {
+        term: ['主串与子串', 'Text and substring'],
+        text: ['被搜索的串称为主串 T；T 中连续一段字符构成的串称为 T 的子串。子串必须连续，不能跳着取字符。', 'The searched string is the text T. A substring is a contiguous segment of T; characters cannot be skipped.'],
+      },
+      {
+        term: ['子串位置', 'Substring position'],
+        text: ['子串首字符在主串中的序号。教材常从 1 开始计数，代码通常从 0 开始；本课程动画统一报告 0 基起点，并在界面标注。', 'The ordinal of the substring’s first character in the text. Textbooks often count from 1 and code from 0; this course reports 0-based starts and labels the convention in the UI.'],
+      },
+      {
+        term: ['串相等', 'String equality'],
+        text: ['两个串长度相同，且对应位置上的每个字符都相同，才称为相等。"AB" 与 "A B" 长度不同，"" 与 " " 也不相等。', 'Two strings are equal only when they have the same length and identical characters at every position. "AB" and "A B" differ in length, and "" is not equal to " ".'],
       },
       {
         term: ['长度', 'Length'],
         text: ['串中字符的个数。比较的是字符个数，不是字节数，也不是肉眼看到的显示宽度。', 'The number of characters in the string, not the number of bytes and not the rendered width.'],
       },
-      {
-        term: ['位置', 'Position'],
-        text: ['字符或子串在串中的序号。教材常从 1 开始计数；本课程代码与动画从 0 开始，报告结果时会明确说明基准。', 'The ordinal of a character or substring. Textbooks often count from 1; this course’s code and animation count from 0 and always state the base explicitly.'],
-      },
     ],
     sections: [
       {
-        title: ['串的基本操作', 'Basic string operations'],
+        title: ['串与普通线性表：结构相同，操作不同', 'Strings versus ordinary linear lists'],
         body: [
-          '串是线性结构，但它的元素只能是字符，运算围绕整段序列展开。讨论复杂度时，要区分“读一个字符”和“复制一整段串”。',
-          'A string is linear, but its elements are characters and its operations act on whole sequences. When discussing cost, distinguish reading one character from copying an entire string.',
+          '串首先是一个线性结构：字符之间存在唯一的前驱和后继关系，可以按位置逐个访问，也可以顺序存储或链式存储。它与“元素类型任意的普通线性表”共享这套骨架，但元素类型固定为字符，操作通常以整段序列为单位，而不是只处理某个孤立元素。',
+          'A string is first a linear structure: characters have unique predecessor/successor relations, can be visited by position, and may be stored sequentially or by links. It shares that skeleton with a general linear list, but its element type is fixed to characters and its operations usually act on whole sequences rather than one isolated element.',
         ],
         points: [
-          ['赋值 StrAssign：用一段字符序列构造串。', 'Assign: build a string from a character sequence.'],
-          ['求长 StrLength：返回字符个数；空串长度为 0。', 'Length: return the character count; the empty string has length 0.'],
-          ['连接 Concat：把两个串首尾相接，结果长度是两个长度之和。', 'Concat: join two strings end to end; the result length is the sum.'],
-          ['求子串 SubString：按下标与长度取出连续一段。', 'SubString: extract a contiguous segment by position and length.'],
-          ['比较 StrCompare：按字典序逐字符比较，第一个不同字符决定大小。', 'Compare: compare lexicographically character by character; the first difference decides the order.'],
-          ['定位 Index：在主串中查找模式串，返回首个匹配位置或全部位置。', 'Index: search a pattern in a text and return the first or all match positions.'],
+          ['相同点：都有长度、空结构、前驱/后继、按位置访问和顺序/链式两种存储思路。', 'Shared: length, empty state, predecessor/successor, access by position, and sequential or linked storage.'],
+          ['不同点：串的元素只能是字符；普通线性表的元素可以是任意类型。', 'Difference: a string stores only characters; a general list may store arbitrary element types.'],
+          ['不同点：串的赋值、比较、连接、取子串、定位往往一次处理一整段字符，代价取决于复制或移动了多少字符。', 'Difference: assignment, comparison, concatenation, substring and search process whole runs of characters, so cost depends on how many characters are copied or moved.'],
+          ['下标要说明基准：教材位置从 1 开始，代码数组下标从 0 开始；同一个字符可能写成“第 3 个”或 T[2]。', 'Always state the index base: textbook positions start at 1 and code indices at 0, so the same character may be “position 3” or T[2].'],
         ],
-        formula: '串的操作对象是整段字符序列，不是单个孤立字符',
+        formula: '串 = 元素类型固定为字符的线性结构；操作对象常常是一段连续字符',
+        formulaEn: 'String = a linear structure whose element type is fixed to characters; operations often target a contiguous run',
+      },
+      {
+        title: ['串的抽象数据类型与基本操作', 'The string ADT and its basic operations'],
+        body: [
+          '串 ADT 把“数据对象是字符集合、元素之间是线性关系”和“允许哪些操作”分开描述。实现可以采用定长数组、堆分配数组或块链，但对外语义必须一致：长度、位置、比较规则和越界条件都要先约定清楚。',
+          'The string ADT separates “the data objects are characters with linear relations” from “which operations are allowed”. A fixed array, heap array or block chain may implement it, but the observable semantics must agree: length, positions, comparison order and out-of-range rules all need a convention.',
+        ],
+        points: [
+          ['赋值 StrAssign：用一段字符序列构造串；结果长度等于源序列长度。', 'Assign: build a string from a character sequence; its length equals the source length.'],
+          ['求长 StrLength：返回字符个数；空串返回 0。', 'Length: return the character count; the empty string returns 0.'],
+          ['比较 StrCompare：按字典序逐字符比较，第一个不同字符决定大小；全部相同且长度相同才相等。', 'Compare: compare lexicographically; the first difference decides order, and equality requires identical length and characters.'],
+          ['连接 Concat：把两个串首尾相接；结果长度为两串长度之和，通常需要复制字符。', 'Concat: join two strings end to end; the result length is the sum, normally requiring a copy.'],
+          ['取子串 SubString：给出起点和长度，复制连续一段；起点与长度必须落在合法区间。', 'SubString: copy a contiguous segment from a start and length; both must lie in the valid range.'],
+          ['定位 Index：在主串中查找模式串；可以返回首个位置，也可以返回全部位置，但必须在课程中明确。', 'Index: search a pattern in the text; it may return the first position or every position, but the course must state which.'],
+          ['插入 StrInsert 与删除 StrDelete：在指定位置插入或删除一段字符，后续字符要整体后移或前移。', 'Insert and delete: insert or remove a run at a given position, shifting later characters as a block.'],
+          ['销毁、清空等管理操作不属于“求值”本身，但会影响容量与后续操作的前置条件。', 'Destroy and clear are management operations rather than value computation, but they affect capacity and preconditions for later operations.'],
+        ],
+        formula: '常见 ADT：StrAssign、StrCompare、StrLength、Concat、SubString、Index、StrInsert、StrDelete',
+      },
+      {
+        title: ['空串、空格串与相等：不要被“看起来一样”骗了', 'Empty, blank and equal: do not trust appearance'],
+        body: [
+          '空串 "" 的长度是 0，一个字符也没有；空格串 " " 的长度是 1，字符是一个空格。两者长度不同，所以不相等，空串也不是空格串。判断串相等必须同时检查长度和每个位置的字符，不能只看“屏幕上都很空”。',
+          'The empty string "" has length 0 and no characters; the blank string " " has length 1 and its only character is a space. Different lengths make them unequal, and the empty string is not a blank string. Equality checks both length and every character, not just a blank-looking screen.',
+        ],
+        points: [
+          ['"" 是任何串的子串，长度 0；" " 只在主串含空格时出现。', '"" is a substring of every string with length 0; " " occurs only when the text contains a space.'],
+          ['"AB" 与 "A B" 长度分别为 2 和 3，不相等；"AB" 与 "ab" 大小写不同，也不相等。', '"AB" and "A B" have lengths 2 and 3, so they differ; "AB" and "ab" differ in case and are also unequal.'],
+          ['子串位置从 0 或 1 开始都可以，但同一份结果不能混用两套基准。', 'Substring positions may start at 0 or 1, but one result must not mix both bases.'],
+        ],
+        formula: '"" ≠ " "；长度不同或任一位置字符不同，就不相等',
+        formulaEn: '"" ≠ " "; different lengths or any differing character means unequal',
       },
       {
         title: ['主串、模式串与匹配位置', 'Text, pattern and match positions'],
         body: [
-          '被搜索的长串叫主串（文本）T，要查找的短串叫模式串 P。模式匹配要回答：P 在 T 中出现了哪些位置？这些位置能否重叠？',
-          'The longer string being searched is the text T; the shorter string to find is the pattern P. Pattern matching asks: where does P occur in T, and may those occurrences overlap?',
+          '被搜索的长串叫主串（文本）T，要查找的短串叫模式串 P。模式匹配要回答：P 在 T 中出现了哪些位置？这些位置能否重叠？空主串和空模式串分别如何处理？',
+          'The longer string being searched is the text T; the shorter string to find is the pattern P. Pattern matching asks: where does P occur in T, may occurrences overlap, and how are an empty text or an empty pattern handled?',
         ],
         points: [
-          ['一次对齐：把 P 的第 0 个字符放在 T 的某个起点 s 上，再逐字符比较。', 'One alignment places P[0] at some text start s and compares character by character.'],
-          ['匹配条件：P[j] = T[s+j] 对所有 j 都成立，起点就是 s。', 'A match requires P[j] = T[s+j] for every j, and then s is a match start.'],
-          ['多个匹配：同一模式串可能在主串中多次出现，结果是一个起点列表。', 'Multiple matches: the same pattern may occur many times, so the result is a list of starts.'],
-          ['重叠匹配：匹配完成后不把模式串直接清零，而是继续沿前缀表对齐，才能找出相邻或重叠的起点。', 'Overlapping matches: after a match the pattern is not reset to zero; realigning through the prefix table reveals adjacent or overlapping starts.'],
+          ['一次对齐：把 P[0] 放在 T 的某个起点 s 上，再逐字符比较 T[s+j] 与 P[j]。', 'One alignment places P[0] at some text start s and compares T[s+j] with P[j].'],
+          ['匹配条件：P[j] = T[s+j] 对所有 j 都成立，起点就是 s；合法起点满足 0 ≤ s ≤ n−m。', 'A match requires P[j] = T[s+j] for every j, and s is the start; valid starts satisfy 0 ≤ s ≤ n−m.'],
+          ['多个匹配：同一模式串可能多次出现，结果是一个严格递增的起点列表。', 'Multiple matches: the same pattern may occur many times, so the result is a strictly increasing list of starts.'],
+          ['重叠匹配：找到一次后仍继续检查后面的起点；BF 与 KMP 都按这一语义返回全部重叠起点。', 'Overlapping matches: keep checking later starts after a hit; both BF and KMP return every overlapping start under this convention.'],
+          ['空主串：长度 n = 0，合法起点不存在，结果为空列表，但算法仍正常结束。', 'Empty text: n = 0 leaves no valid start, so the result is an empty list and the algorithm still terminates normally.'],
+          ['空模式串：项目统一视为无效输入并在执行前拒绝；空模式串本身会匹配每个位置，容易产生无意义结果。', 'Empty pattern: the project treats it as invalid input and rejects it before execution; an empty pattern would match every position and produce meaningless results.'],
         ],
         formula: 'T = "ABABABCABABABC"，P = "ABABC" → 0 基匹配起点 2、9',
-      },
-      {
-        title: ['朴素匹配的完整入口', 'A dedicated naive-matching page'],
-        body: [
-          '逐起点比较、具体失配示例和最坏复杂度已整理到独立概念页“朴素模式匹配：逐起点比较”。该页复用本页的匹配定义，不新建播放器，也不重复维护同一段讲解。',
-          'The start-by-start comparison, a concrete mismatch and the worst-case bound now live on the dedicated Naive pattern matching page. It reuses the matching definitions here, adds no new player and avoids maintaining the same explanation twice.',
-        ],
-        points: [
-          ['本页保留模式匹配的公共定义以及朴素/KMP 对照，便于先建立整体框架。', 'This page keeps the shared matching definitions and the naive/KMP comparison so learners can build the overall framework first.'],
-          ['朴素页是 KMP 的基线：先理解“失配后丢弃信息”的代价，再看前缀表如何避免重扫。', 'The naive page is the baseline for KMP: see the cost of discarding information after a mismatch before learning how the prefix table avoids rescanning.'],
-        ],
-        formula: '朴素匹配的完整步骤与 O(nm) 分析见独立概念页',
-        formulaEn: 'Full naive-matching steps and the O(nm) analysis are on the dedicated concept page',
       },
       {
         title: ['KMP 要解决的核心问题', 'The core problem KMP solves'],
@@ -1226,6 +1254,11 @@ const BASE_CONCEPT_PAGES: readonly ConceptPage[] = [
           ['构造 lps，O(m)', 'Build lps, O(m)'],
         ],
         [
+          ['是否复用已匹配信息', 'Reuse matched information'],
+          ['不复用，换起点后从头比较', 'No; restart at every new start'],
+          ['复用最长相等前后缀', 'Reuse the longest equal border'],
+        ],
+        [
           ['失配后的主串指针', 'Text pointer after mismatch'],
           ['起点右移，已匹配段可能重扫', 'Start shifts; matched text may be rescanned'],
           ['i 不回退', 'i never rewinds'],
@@ -1250,9 +1283,14 @@ const BASE_CONCEPT_PAGES: readonly ConceptPage[] = [
           ['逐起点枚举', 'Enumerate each start'],
           ['匹配后 j = lps[m−1] 继续', 'After a match, j = lps[m−1]'],
         ],
+        [
+          ['实际选择', 'Practical choice'],
+          ['短文本、一次性查找、不想预处理时更直接', 'Direct for short or one-off searches without preprocessing'],
+          ['长文本或大量重复查找时通常更稳，但有小模式串的常数开销', 'Usually steadier for long texts or repeated searches, with constant overhead on tiny patterns'],
+        ],
       ],
     },
-    takeaway: ['朴素匹配丢弃已匹配信息；KMP 用 lps 把这段信息变成下一次对齐的起点，因此主串指针不必回头。', 'Naive matching discards confirmed information; KMP turns it into the next alignment through lps, so the text pointer never has to go back.'],
+    takeaway: ['朴素匹配丢弃已匹配信息；KMP 用 lps 把这段信息变成下一次对齐的起点，因此主串指针不必回头。但 KMP 有预处理成本，不能断言它在所有实际输入上都更快。', 'Naive matching discards confirmed information; KMP turns it into the next alignment through lps, so the text pointer never goes back. KMP still pays preprocessing cost, so it is not automatically faster on every practical input.'],
   },
   {
     id: 'naive-matching',

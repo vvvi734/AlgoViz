@@ -30,6 +30,7 @@ import { buildSortingModel, type SortingVisualModel } from './sortingModel';
 import { buildSearchModel, type SearchVisualModel } from './searchModel';
 import { buildHashModel, type HashVisualModel } from './hashModel';
 import { buildKmpModel, type KmpVisualModel } from './kmpModel';
+import { buildBfModel, type BfVisualModel } from './bfModel';
 import {
   buildSparseTransposeModel,
   type SparseTransposeVisualModel,
@@ -146,6 +147,7 @@ export type VisualModel =
   | SortingVisualModel
   | SearchVisualModel
   | HashVisualModel
+  | BfVisualModel
   | KmpVisualModel
   | SparseTransposeVisualModel
   | GraphVisualModel
@@ -354,6 +356,11 @@ export function buildVisualModel(
     const model = buildSearchModel(structure, s);
     if (!model) return { kind: 'raw', text: labels.invalid };
     return model;
+  }
+
+  if (structure !== undefined && structure.kind === 'bf') {
+    if (kind !== 'array') return { kind: 'raw', text: labels.invalid };
+    return buildBfModel(structure);
   }
 
   if (structure !== undefined && structure.kind === 'kmp') {

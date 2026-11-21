@@ -1,6 +1,7 @@
 import type { Lang } from '../../i18n/types';
 import type { ConceptDiagramKind } from '../../domain/concepts/types';
 import { StorageConceptDiagram } from './StorageConceptDiagram';
+import { StringIndexDiagram } from './StringIndexDiagram';
 
 /**
  * Large, static SVG diagrams for concept lessons. They never animate and never
@@ -8,6 +9,10 @@ import { StorageConceptDiagram } from './StorageConceptDiagram';
  */
 export function ConceptDiagram({ kind, lang }: { kind: ConceptDiagramKind; lang: Lang }) {
   const L = (zh: string, en: string) => (lang === 'zh' ? zh : en);
+
+  if (kind === 'string-index') {
+    return <StringIndexDiagram lang={lang} />;
+  }
 
   if (kind === 'algorithm-properties') {
     const properties = [

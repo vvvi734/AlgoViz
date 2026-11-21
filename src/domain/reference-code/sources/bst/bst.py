@@ -12,6 +12,12 @@ Complexity: O(h) per operation, O(log n) average and O(n) worst; extra space O(h
   recursion.
 Convention: Keys are unique integers; the inorder traversal is the sorted key sequence.
 """
+# 中文导读：实现不存重复键的二叉搜索树，插入、查找、删除都沿一条根到叶的路径完成。
+# 阅读顺序：先看 insert 的递归落点，再看 remove 对 0/1/2 个孩子的处理。
+# 输入/输出：输入整数键；输出中序升序序列；删除不存在的键时树不变。
+# 不变量：左子树键 < 根键 < 右子树键；重复键被拒绝。
+# 易错点：删除双孩子结点时直接断开；递归返回值没有接回父指针。
+# 复杂度：平均 O(log n)，最坏 O(n)，额外空间 O(h)。
 
 from __future__ import annotations
 
@@ -27,6 +33,7 @@ class Node:
 
 # Descend one branch by key comparison; duplicates are ignored by the insert contract.
 # BST invariant: left keys < root < right keys; duplicates are rejected, so search follows one path.
+# 作用：插入 value 并返回新的子树根；重复键原样返回。
 def insert(root: Node | None, value: int) -> Node:
     if root is None:
         return Node(value)
@@ -37,6 +44,7 @@ def insert(root: Node | None, value: int) -> Node:
     return root
 
 
+# 作用：判断 value 是否在树中；只读。
 def contains(root: Node | None, value: int) -> bool:
     node = root
     while node is not None:
@@ -46,12 +54,14 @@ def contains(root: Node | None, value: int) -> bool:
     return False
 
 
+# 作用：返回子树中最小键所在结点；调用方保证 node 非空。
 def minimum(node: Node) -> Node:
     while node.left is not None:
         node = node.left
     return node
 
 
+# 作用：删除 value 并返回新的子树根；不存在时原样返回。
 def remove(root: Node | None, value: int) -> Node | None:
     if root is None:
         return None
@@ -70,6 +80,7 @@ def remove(root: Node | None, value: int) -> Node | None:
     return root
 
 
+# 作用：中序遍历并追加到 output；只读。
 def inorder(root: Node | None, output: list[int]) -> None:
     if root is None:
         return
@@ -78,6 +89,7 @@ def inorder(root: Node | None, output: list[int]) -> None:
     inorder(root.right, output)
 
 
+# 作用：构造演示 BST 并打印中序、查找和删除结果。
 def main() -> None:
     root: Node | None = None
     for key in [5, 2, 7, 1, 4, 6, 8, 3]:

@@ -16,6 +16,12 @@ Reading guide:
 Complexity: O(t + c) time; extra space O(c) for num/cpot, plus O(t) for the result
   table.
 """
+# 中文导读：用 cpot 数组预计算每列在转置结果中的起始写入位置，实现 O(nnz) 快速转置。
+# 阅读顺序：先看列计数，再看 cpot 的前缀和，最后看写入后 cpot 自增。
+# 输入/输出：输入行数、列数和三元组；返回转置后的三元组。
+# 不变量：cpot[col] 是下一列 col 元素应写入的位置。
+# 易错点：cpot 未做前缀和；写入后忘记自增导致覆盖。
+# 复杂度：O(nnz + cols)，额外空间 O(cols + nnz)。
 
 from dataclasses import dataclass
 from typing import List, Tuple
@@ -29,6 +35,7 @@ class Triple:
 
 
 # `cpot[col]` is the next write position for that column; writing a triple increments it for the next entry.
+# 作用：返回 (行数, 列数, 转置三元组)；不修改输入 triples。
 def fast_transpose(rows: int, cols: int, triples: List[Triple]) -> Tuple[int, int, List[Triple]]:
     """Return (transposed_rows, transposed_cols, transposed_triplets)."""
     if rows < 0 or cols < 0:
@@ -71,6 +78,7 @@ def fast_transpose(rows: int, cols: int, triples: List[Triple]) -> Tuple[int, in
     return new_rows, new_cols, result
 
 
+# 作用：构造演示稀疏矩阵并打印快速转置结果。
 def main() -> None:
     rows, cols = 4, 5
     triples = [

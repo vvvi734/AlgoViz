@@ -4,7 +4,9 @@
  * 关键不变量：已选顶点集合始终连成一棵树；key[v] 是 v 到该树的最小边权。
  * 易错点：没有跳过已选点；非连通图仍报成功；key 初始化成 0 而非 INF；更新条件写成小于等于。
  * 复杂度：邻接矩阵 O(V²)，堆 O(E log V)，空间 O(V+E)。
- */
+ * 输入/输出：输入无向带权图；输出选中的 MST 边与总权值；main 打印结果。
+ * 函数地图：先读 main 的调用顺序，再按需查看被调用的静态函数；每个函数前的“作用”注释给出职责、输入和返回。
+*/
 
 // AlgoViz reference implementation: Prim's minimum spanning tree (C++17).
 // Grows one tree from vertex 0 using a min-heap of candidate edges.

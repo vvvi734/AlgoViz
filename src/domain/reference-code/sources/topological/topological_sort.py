@@ -12,6 +12,12 @@ Complexity: O(V + E) for adjacency lists, O(V^2) for an adjacency matrix; extra 
   O(V).
 Convention: Kahn's algorithm; 0-based vertices; zero-indegree ties follow queue order.
 """
+# 中文导读：统计入度，把入度为 0 的顶点入队，逐个删边并降低后继入度。
+# 阅读顺序：先看入度初始化，再看队列弹出和入度归零入队。
+# 输入/输出：输入有向无环图；返回拓扑序；输出顶点数不足 V 说明有环。
+# 不变量：队列中顶点入度均为 0；已输出顶点不再有未处理入边。
+# 易错点：入度统计漏掉重边；有环时仍返回部分序列而不报错。
+# 复杂度：O(V+E)，额外空间 O(V)。
 
 from __future__ import annotations
 
@@ -19,6 +25,7 @@ from collections import deque
 
 
 # A vertex enters the queue only when its indegree reaches zero; fewer than V emitted vertices means a directed cycle.
+# 作用：构造演示 DAG 并打印拓扑序。
 def main() -> None:
     edges = [(5, 2), (5, 0), (4, 0), (4, 1), (2, 3), (3, 1)]
     graph: list[list[int]] = [[] for _ in range(6)]

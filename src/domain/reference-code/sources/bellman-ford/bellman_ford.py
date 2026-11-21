@@ -13,6 +13,12 @@ Complexity: O(V * E); extra space O(V) for distances and predecessors.
 Convention: Edges are (u, v, weight) with 0-based endpoints; returns None/null on a
   negative cycle.
 """
+# 中文导读：对每条边做 V-1 轮松弛，求出单源最短路径，再用第 V 轮检测可达负环。
+# 阅读顺序：先看 dist 初始化，再看两重循环的松弛条件，最后看负环检测。
+# 输入/输出：输入顶点数、边 (u, v, weight) 与源点；返回距离数组；存在可达负环时返回 None。
+# 不变量：第 k 轮结束后，dist[v] 不超过“最多经过 k 条边”的最短距离。
+# 易错点：把 INF 当普通数相加；负环检测只看源点；边方向写反。
+# 复杂度：O(VE)，额外空间 O(V)。
 
 from __future__ import annotations
 
@@ -21,6 +27,7 @@ INF = float("inf")
 
 # V - 1 passes suffice because a shortest simple path uses at most V - 1 edges.
 # V-1 full passes settle every simple shortest path; one more pass that still relaxes proves a reachable negative cycle.
+# 作用：返回从 source 出发的最短距离；可达负环返回 None，不修改 edges。
 def bellman_ford(vertex_count: int, edges: list[tuple[int, int, int]], source: int) -> list[float] | None:
     dist: list[float] = [INF] * vertex_count
     dist[source] = 0
@@ -43,6 +50,7 @@ def bellman_ford(vertex_count: int, edges: list[tuple[int, int, int]], source: i
     return dist
 
 
+# 作用：构造含负权边的演示图并打印最短距离。
 def main() -> None:
     edges = [
         (0, 1, 6), (0, 2, 7), (1, 2, 8), (1, 3, 5), (1, 4, -4),

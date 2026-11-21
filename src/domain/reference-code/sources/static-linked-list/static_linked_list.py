@@ -9,6 +9,12 @@ versions reserve slot 0 as a header, so index 0 must not be assumed to mean
 
 Run: python3 static_linked_list.py
 """
+# 中文导读：用数组下标代替指针，data 存值、cur 存后继下标，空闲结点单独串成 free 链。
+# 阅读顺序：先看 head/free_head 两个入口，再看 insert 如何从 free 链借结点、delete 如何归还。
+# 输入/输出：输入容量与初始值；插入/删除返回是否成功，遍历返回逻辑顺序。
+# 不变量：head 链按逻辑顺序串接；free_head 链只包含空闲槽；两条链不交叉。
+# 易错点：把数组下标当逻辑位置；删除后忘记把槽还给 free 链；free 链断链。
+# 复杂度：插入/删除 O(n) 找前驱，空间 O(capacity)。
 
 from __future__ import annotations
 
@@ -49,6 +55,7 @@ class StaticList:
             previous = self.cur[previous]
         return previous
 
+    # 作用：在 1 基逻辑位置 position 插入 value；成功返回 True。
     def insert(self, position: int, value: int) -> bool:
         length = len(self._order())
         if position < 1 or position > length + 1:
@@ -72,6 +79,7 @@ class StaticList:
             self.cur[previous] = fresh
         return True
 
+    # 作用：删除 1 基逻辑位置 position 的结点并把槽归还 free 链。
     def delete(self, position: int) -> int | None:
         length = len(self._order())
         if position < 1 or position > length:
@@ -92,6 +100,7 @@ class StaticList:
         self.free_head = target
         return removed
 
+    # 作用：按 head 链返回逻辑顺序的元素列表。
     def traverse(self) -> list[int]:
         return [self.data[index] for index in self._order()]
 

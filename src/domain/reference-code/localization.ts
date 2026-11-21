@@ -162,6 +162,10 @@ const REFERENCE_LEARNING_NOTES: Record<string, LocalizedText> = {
     zh: '开放定址的线性探测：冲突时向后找下一个空槽，查找遇到空槽即可判定不存在；本教学版没有删除墓碑。平均 O(1/(1−α))。',
     en: 'Linear probing uses open addressing: on a collision it scans forward for the next empty slot, and search stops at an empty slot. This teaching version has no deletion tombstones; expected O(1/(1−α)).',
   },
+  bf: {
+    zh: '逐个枚举模式串的合法起点，内层从 P[0] 开始逐字符比较；失配就右移起点并清零 j，命中后仍继续以保留重叠。最坏 O(nm)，额外 O(1)。',
+    en: 'Enumerate every legal pattern start and compare from P[0] character by character; a mismatch shifts the start and resets j, while a hit still continues to keep overlaps. O(nm) worst case and O(1) extra space.',
+  },
   kmp: {
     zh: '先构造模式串的 lps 前缀表，失配时只回退模式指针 j=lps[j−1]，主串指针不回退；构造 O(m)，匹配 O(n)，总 O(n+m)。',
     en: 'Build the pattern lps table first; on a mismatch only the pattern pointer falls back to lps[j−1], while the text pointer never rewinds. Build O(m), match O(n), total O(n+m).',
@@ -378,6 +382,14 @@ function annotateBody(
 
   const bodyLines = [...strippedLines];
   const marker = language === 'python' ? '#' : '//';
+
+  // Sources may already carry reviewed Chinese line comments. Stripping removes
+  // every comment, so restore those lines before overlaying translated English
+  // annotations; otherwise the Chinese view would lose the richest explanations.
+  originalLines.forEach((line, index) => {
+    const text = annotationText(line, language);
+    if (text && /[\u3400-\u9fff]/.test(text)) bodyLines[index] = line;
+  });
 
   for (const annotation of annotations) {
     const sourceIndex = originalLines.findIndex(

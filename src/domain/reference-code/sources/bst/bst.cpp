@@ -4,7 +4,9 @@
  * 关键不变量：任意结点左子树所有键小于它，右子树所有键大于它；中序遍历得到升序。
  * 易错点：删除双子结点时只改值却忘记删除后继；重复键处理不一致；用引用/指针更新父结点时接错边。
  * 复杂度：平均 O(log n)，最坏 O(n)（退化成链）；额外空间 O(n)。
- */
+ * 输入/输出：输入整数键与待删除键；插入/删除原地修改树，中序输出升序键，查找返回是否存在。
+ * 函数地图：先读 main 的调用顺序，再按需查看被调用的静态函数；每个函数前的“作用”注释给出职责、输入和返回。
+*/
 
 // AlgoViz reference implementation: binary search tree (C++17).
 // Insert, search, remove and inorder traversal for unique integer keys.

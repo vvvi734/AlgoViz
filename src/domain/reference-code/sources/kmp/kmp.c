@@ -1,10 +1,12 @@
 /*
  * 中文导读：利用模式串自身的最长相等前后缀，匹配失败时不回退主串指针。
- * 阅读顺序：先看 next/prefix 数组每个位置的含义；再看构建时 j=next[j-1] 的回退；最后看匹配循环为何只前进 i。
- * 关键不变量：next[i] 是 pattern[0..i] 的最长相等前后缀长度；回退后已经匹配的前缀仍然成立。
- * 易错点：把 next 定义为“包含当前字符”还是“前一位”混用；回退条件写错；空模式串；下标从 0/1 混用。
+ * 阅读顺序：先看 next 表的 1 基约定；再看构建时 border=next[border] 的回退；最后看匹配循环为何只前进 i。
+ * 关键不变量：next[0]=-1；对 t>=1，next[t] 是 pattern[0..t-1] 的最长真 border 长度。失配位置 i 使用 next[i]。
+ * 易错点：把 next[t] 说成 pattern[0..t] 的 border；把“回退位置”和“长度”混用；空模式串按匹配处理；下标从 0/1 混用。
  * 复杂度：预处理 O(m)，匹配 O(n)，总 O(n+m)，空间 O(m)。
- */
+ * 输入/输出：输入主串与非空模式串；返回全部 0 基匹配起点或匹配次数；main 打印结果。
+ * 函数地图：先读 main 的调用顺序，再按需查看被调用的静态函数；每个函数前的“作用”注释给出职责、输入和返回。
+*/
 
 /*
  * KMP pattern matching in C11.
@@ -20,7 +22,13 @@
 #include <stdlib.h>
 #include <string.h>
 
-// 作用：构建 next 数组：next[i] 是 pattern[0..i] 的最长相等前后缀长度；失配时按它回退。
+/*
+ * 作用：构造 1 基失败表 next[0..m]。
+ * 参数：pattern 是以 '\0' 结尾的非空模式串；next 至少有 m+1 个 int 槽。
+ * 返回：无返回值。next[0] 固定为 -1；next[t] 对应前缀 pattern[0..t-1]。
+ * 副作用：只写 next，不修改 pattern。
+ * 不变量：position 是当前前缀长度，border 是该前缀的最长真 border 长度。
+ */
 void get_next(const char *pattern, int next[])
 {
     int position = 0;
@@ -42,7 +50,13 @@ void get_next(const char *pattern, int next[])
     }
 }
 
-// 作用：在 text 中查找 pattern；i 只前进，失配时用 next 回退模式串指针；返回首次匹配下标。
+/*
+ * 作用：统计 pattern 在 text 中出现的次数，包含重叠出现。
+ * 参数：text 可为空串；pattern 为空串或 malloc 失败时按 0 次处理。
+ * 返回：匹配次数，不是首个匹配下标。
+ * 副作用：临时分配并释放 next 表；不修改输入字符串。
+ * 不变量：text_index 只增不减；pattern_index 等于已匹配前缀长度，最大为 m。
+ */
 int KMP(const char *text, const char *pattern)
 {
     int text_length = (int)strlen(text);

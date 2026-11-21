@@ -11,6 +11,12 @@ Reading guide:
 Complexity: O(1) head insertion, O(n) search/delete; extra space O(n).
 Convention: NULL terminates the list; node positions are 0-based when printed.
 """
+# 中文导读：用 next 指针串联结点，演示头插、尾插、按值删除和遍历。
+# 阅读顺序：先看 head 的更新，再看删除时前驱的 next 如何跨过目标结点。
+# 输入/输出：输入整数序列；输出链表遍历结果。
+# 不变量：head 指向首结点；尾结点的 next 为 None。
+# 易错点：删除头结点时丢失 head；遍历时提前移动指针导致断链。
+# 复杂度：插入/删除 O(1)（已知位置），查找 O(n)，空间 O(n)。
 
 from __future__ import annotations
 
@@ -77,6 +83,7 @@ class SinglyLinkedList:
         return values
 
 
+# 作用：构造单链表并演示插入、删除和遍历。
 def main() -> None:
     linked = SinglyLinkedList()
     linked.insert_head(5)

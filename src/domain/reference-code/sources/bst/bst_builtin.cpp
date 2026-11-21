@@ -6,7 +6,9 @@
  * 复杂度：平均 O(log n)，最坏 O(n)（退化成链）；额外空间 O(n)。
  * 本文件是标准库对照版：重点看“库函数调用”与手写算法在接口、稳定性、边界上的差异。
  * This is the standard-library comparison file: focus on interface, stability and boundary differences from the hand-written algorithm.
- */
+ * 输入/输出：输入整数键与待删除键；插入/删除原地修改树，中序输出升序键，查找返回是否存在。
+ * 函数地图：先读 main 的调用顺序，再按需查看被调用的静态函数；每个函数前的“作用”注释给出职责、输入和返回。
+*/
 
 // AlgoViz convenience implementation: ordered set with std::set (C++17).
 // std::set is a balanced binary search tree; iteration is ascending.

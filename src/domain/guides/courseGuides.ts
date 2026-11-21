@@ -915,6 +915,63 @@ export const COURSE_GUIDES: Record<string, CourseGuide> = {
     ),
   },
 
+  'bf': {
+    intro: text(
+      'BF 把模式串依次对齐到每个合法起点，再从这个起点的第一个字符开始逐位比较。字符相同就继续，字符不同就说明当前起点作废：起点整体右移一格，模式串指针清零，从头再比。它不复用上一次对齐已经确认的前缀，所以同一段主串字符可能被多次比较，最坏时间为 O(nm)，但额外空间只需常数个指针与计数。',
+      'BF aligns the pattern with each legal start and compares character by character from that start. Equality continues; a mismatch invalidates the current start, shifts it right by one and resets the pattern pointer to zero. Nothing from the previous alignment is reused, so text characters may be compared repeatedly, giving O(nm) worst-case time but only constant extra space.',
+    ),
+    definition: text(
+      '朴素模式匹配（Brute Force）是一种直接枚举全部候选起点的串匹配算法：对每个 s∈[0,n−m]，令 j=0，依次比较 T[s+j] 与 P[j]；若全部 m 个字符都相等，记录起点 s；只要有一位不等，就令 s=s+1、j=0 重新开始。遍历结束后返回全部匹配起点，允许重叠。',
+      'Naive pattern matching (brute force) enumerates every candidate start: for each s in [0,n−m], set j=0 and compare T[s+j] with P[j]. If all m characters are equal, record s; on the first inequality set s=s+1 and j=0 and restart. At the end it returns every match start, overlaps included.',
+    ),
+    ...algorithm(
+      step(
+        '外层枚举候选起点',
+        'Outer loop over candidate starts',
+        's 从 0 走到 n−m；每个 s 表示模式串首字符对齐到主串的这个位置。',
+        's runs from 0 to n−m; each s aligns the pattern’s first character with that text position.',
+      ),
+      step(
+        '内层逐字符比较',
+        'Inner character comparison',
+        '进入每个起点时 j 重置为 0，比较 T[s+j] 与 P[j]；j 表示模式串内偏移，不是主串绝对下标。',
+        'j resets to 0 at each start and T[s+j] is compared with P[j]; j is a pattern offset, not an absolute text index.',
+      ),
+      step(
+        '相同则 j 前进',
+        'Advance j on equality',
+        '字符相同只让 j 加一，起点 s 不动；j 未到 m 就继续比较下一位。',
+        'On equality only j increases while s stays fixed; until j reaches m the next pair is compared.',
+      ),
+      step(
+        '失配则起点右移',
+        'Shift the start on a mismatch',
+        '只要有一位不同就放弃当前 s，令 s=s+1、j=0；刚刚比较过的主串字符可能在新对齐下再次被比较。',
+        'One inequality discards the current s and sets s=s+1, j=0; text characters just compared may be compared again under the new alignment.',
+      ),
+      step(
+        '记录全部匹配并结束',
+        'Record every match and finish',
+        'j 走到 m 时记录起点 s，然后仍继续 s+1，因此重叠匹配不会漏掉；s 超过 n−m 后返回全部结果。',
+        'When j reaches m, record s and still continue at s+1, so overlapping matches are kept; after s exceeds n−m, return every result.',
+      ),
+    ),
+    conditions: list(
+      [
+        '合法起点只有 0..n−m；若 n<m，一个候选起点也没有，结果为空。',
+        '空主串合法，返回空列表；空模式串没有定义好的匹配语义，本课直接拒绝。',
+        '返回全部匹配起点，允许重叠；例如 AAAAA 中查找 AAA 得到 0、1、2。',
+        '最坏时间 O(nm)，额外空间 O(1)；seen 计数只用于教学展示，不是算法必需。',
+      ],
+      [
+        'Legal starts are only 0..n−m; if n<m there is no candidate and the result is empty.',
+        'Empty text is legal and yields an empty list; an empty pattern has no well-defined meaning here and is rejected.',
+        'Every match start is returned, overlaps included: AAA in AAAAA yields 0, 1 and 2.',
+        'Worst-case time O(nm), extra space O(1); the seen counters are teaching aids, not algorithm state.',
+      ],
+    ),
+  },
+
   'kmp': {
     intro: text(
       '朴素模式匹配在每个起点重新开始：一旦失配，主串起点右移一格，刚刚已经确认相等的整段字符又会被重新比较，最坏 O(nm)。KMP 先对模式串求前缀表 lps，把“已匹配前缀的后缀同时也是模式串前缀”这一结构保存下来；失配时只把模式串指针 j 回退到 lps[j-1]，主串指针 i 持续前进，于是构造加扫描的总时间为 O(n+m)。',

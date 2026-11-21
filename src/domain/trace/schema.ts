@@ -14,9 +14,11 @@
  *  - callStack is *specified* here but is not animated yet (future recursion work)
  */
 import { z } from 'zod';
+import { bfSnapshotSchema } from './bfSchema';
 import { kmpSnapshotSchema } from './kmpSchema';
 import { sparseTransposeSnapshotSchema } from './sparseTransposeSchema';
 import { expressionSnapshotSchema } from './expressionSchema';
+export type { BfSnapshot, BfOperation } from './bfSchema';
 export type { KmpSnapshot, KmpOperation, KmpPhase } from './kmpSchema';
 export type {
   SparseTransposeSnapshot,
@@ -25,6 +27,7 @@ export type {
   SparseTriplet,
 } from './sparseTransposeSchema';
 export { KMP_MAX_PATTERN, KMP_MAX_TEXT, computeKmpLps, kmpSnapshotSchema } from './kmpSchema';
+export { BF_MAX_PATTERN, BF_MAX_TEXT, bfSnapshotSchema, computeBfMatches } from './bfSchema';
 export {
   SPARSE_MAX_COLS,
   SPARSE_MAX_ROWS,
@@ -7983,6 +7986,7 @@ export type PolynomialSnapshot = z.infer<typeof polynomialSnapshotSchema>;
 
 /** Stage 7B stack/queue + Stage 7C linked-list + L1A doubly/circular linked lists + L1B sequential list + Stage 7D binary-tree + T1 BST + T2 AVL + T3 max-heap + T4 Huffman + S1/S2 sorting + F1 search + F2 hash + Stage 7E/7F/G1/G2/G3/G4 graphs + TEXTBOOK-02 static list/polynomial. */
 export const structureSchema = z.union([
+  bfSnapshotSchema,
   kmpSnapshotSchema,
   sparseTransposeSnapshotSchema,
   expressionSnapshotSchema,

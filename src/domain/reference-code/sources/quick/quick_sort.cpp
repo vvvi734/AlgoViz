@@ -4,7 +4,9 @@
  * 关键不变量：partition 过程中，左区已 <= pivot，右区已 >= pivot，中间是未处理区。
  * 易错点：基准选择导致退化 O(n²)；相等元素处理不当死循环；递归区间包含基准；栈深度过大。
  * 复杂度：平均 O(n log n)，最坏 O(n²)，原地 O(1) 额外空间（递归栈 O(log n) 平均）。
- */
+ * 输入/输出：输入 main 内置的整数数组；排序函数原地升序重排，无返回值；main 打印排序结果。
+ * 函数地图：先读 main 的调用顺序，再按需查看被调用的静态函数；每个函数前的“作用”注释给出职责、输入和返回。
+*/
 
 // AlgoViz reference implementation: quicksort (C++17).
 // Lomuto partition: <= pivot goes left, > pivot goes right.

@@ -12,6 +12,12 @@ only nonzero terms and makes the ordered merge possible.
 
 Run: python3 polynomial_add.py
 """
+# 中文导读：两个按指数降序排列的稀疏多项式链表同步前进，指数相等时合并系数。
+# 阅读顺序：先看 PolyNode 的非零约束，再看 add_polynomials 的双游标分支。
+# 输入/输出：输入两个有序多项式；返回新的结果链表，输入保持不变。
+# 不变量：结果链表仍按指数严格降序；系数和为 0 的项不创建结点。
+# 易错点：系数和为 0 仍写入；指数相等时只前进一个游标；破坏输入链。
+# 复杂度：O(m+n)，额外空间 O(m+n)。
 
 from __future__ import annotations
 
@@ -44,6 +50,7 @@ class Polynomial:
             previous_exponent = exponent
             self.append(coefficient, exponent)
 
+    # 作用：在尾部追加一个非零项；调用方负责保持指数降序。
     def append(self, coefficient: int, exponent: int) -> None:
         """Append one term at the tail; the caller keeps the chain ordered."""
         node = PolyNode(coefficient, exponent)
@@ -60,6 +67,7 @@ class Polynomial:
             node = node.next
 
 
+# 作用：合并两个有序多项式，返回新链表；不修改 a、b。
 def add_polynomials(a: Polynomial, b: Polynomial) -> Polynomial:
     """Merge two ordered chains into a new result chain in O(m + n)."""
     result = Polynomial([])
@@ -92,6 +100,7 @@ def add_polynomials(a: Polynomial, b: Polynomial) -> Polynomial:
     return result
 
 
+# 作用：把多项式格式化为可读字符串。
 def format_polynomial(poly: Polynomial) -> str:
     pieces: list[str] = []
     for node in poly:
@@ -117,6 +126,7 @@ def format_polynomial(poly: Polynomial) -> str:
 SUPERSCRIPT = str.maketrans("0123456789", "⁰¹²³⁴⁵⁶⁷⁸⁹")
 
 
+# 作用：把整数指数转成上标字符，供输出使用。
 def superscript(value: int) -> str:
     return str(value).translate(SUPERSCRIPT)
 

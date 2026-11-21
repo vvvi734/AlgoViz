@@ -2,6 +2,7 @@ import type { Lang } from '../../i18n/types';
 import { ALGORITHM_CATALOG, ALGORITHM_GROUPS } from './catalog.generated';
 import { LANGUAGE_EXAMPLES } from './languageExamples.generated';
 import { KMP_ENTRY } from './kmpExamples';
+import { BF_ENTRY } from './bfExamples';
 import { SPARSE_TRANSPOSE_ENTRY } from './sparseTransposeExamples';
 import { POLYNOMIAL_ADD_ENTRY, STATIC_LINKED_ENTRY } from './chapter2Examples';
 import { structureDefaultInput, structurePythonExample } from './structureExamples';
@@ -15,6 +16,7 @@ import type { AlgorithmCatalog, AlgorithmGroup, CodeLanguage } from './types';
 
 export const catalog: AlgorithmCatalog = {
   ...ALGORITHM_CATALOG,
+  bf: BF_ENTRY,
   kmp: KMP_ENTRY,
   'sparse-transpose': SPARSE_TRANSPOSE_ENTRY,
   'static-linked-list': STATIC_LINKED_ENTRY,

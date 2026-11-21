@@ -11,6 +11,12 @@ Complexity: Expected time: O(1 + alpha) per operation, O(n) worst; extra space O
   table_size).
 Convention: Non-negative integer keys; table size is fixed at compile/construction time.
 """
+# 中文导读：每个桶挂一条链，冲突键追加到同一桶；查找只扫描目标桶。
+# 阅读顺序：先看 _index 取模，再看 insert 的重复检查和 contains 的桶内扫描。
+# 输入/输出：输入非负整数键；插入返回是否成功，查找返回布尔值。
+# 不变量：同一个键在表中至多出现一次；桶下标等于 key % 表长。
+# 易错点：重复键未拒绝；桶数改变后旧下标失效。
+# 复杂度：平均 O(1+α)，最坏 O(n)，额外空间 O(n+表长)。
 
 from __future__ import annotations
 
@@ -26,6 +32,7 @@ class HashTable:
 
     # Search the target bucket before appending; the chain holds only colliding keys.
     # Each bucket owns a chain; inserting at the bucket head is O(1), and duplicates are rejected before allocation.
+    # 作用：把 key 插入对应桶；已存在返回 False，否则追加并返回 True。
     def insert(self, key: int) -> bool:
         bucket = self._buckets[self._index(key)]
         if key in bucket:
@@ -33,9 +40,11 @@ class HashTable:
         bucket.append(key)
         return True
 
+    # 作用：判断 key 是否在目标桶中。
     def contains(self, key: int) -> bool:
         return key in self._buckets[self._index(key)]
 
+    # 作用：返回桶内容的副本，避免调用方直接改内部链。
     def buckets(self) -> list[list[int]]:
         return [list(bucket) for bucket in self._buckets]
 

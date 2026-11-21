@@ -41,6 +41,7 @@ import { binarySearchLesson } from './binarySearchLesson';
 import { hashChainingLesson } from './hashChainingLesson';
 import { hashProbingLesson } from './hashProbingLesson';
 import { kmpLesson } from './kmpLesson';
+import { bfLesson } from './bfLesson';
 import { sparseTransposeLesson } from './sparseTransposeLesson';
 import { staticLinkedListLesson } from './staticLinkedList';
 import { polynomialAddLesson } from './polynomialAdd';
@@ -113,6 +114,7 @@ const BUNDLED: unknown[] = [
   binarySearchLesson,
   hashChainingLesson,
   hashProbingLesson,
+  bfLesson,
   kmpLesson,
   sparseTransposeLesson,
   staticLinkedListLesson,

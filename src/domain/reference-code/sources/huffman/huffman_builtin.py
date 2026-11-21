@@ -11,6 +11,12 @@ Complexity: O(n log n); extra space O(n).
 Convention: Left edges are 0 and right edges are 1; the sequence field breaks frequency
   ties.
 """
+# 中文导读：用 heapq 合并最小权值结点，构造哈夫曼树后递归收集编码。
+# 阅读顺序：先看优先队列的合并顺序，再看 collect_codes 的左右分支。
+# 输入/输出：输入字符权值；输出每个字符的 0/1 编码。
+# 不变量：每次合并两个最小权值结点，树的带权路径长度最小。
+# 易错点：把 0/1 分支写反；只有一个字符时编码为空。
+# 复杂度：O(n log n)，额外空间 O(n)。
 
 from __future__ import annotations
 
@@ -26,6 +32,7 @@ class Node:
     right: "Node | None" = None
 
 
+# 作用：递归收集叶子编码；左分支补 0，右分支补 1。
 def collect_codes(node: Node, path: str, codes: dict[str, str]) -> None:
     if node.left is None and node.right is None:
         codes[node.symbol] = path or "(empty)"
@@ -36,6 +43,7 @@ def collect_codes(node: Node, path: str, codes: dict[str, str]) -> None:
         collect_codes(node.right, path + "1", codes)
 
 
+# 作用：构造演示权值集合并打印哈夫曼编码。
 def main() -> None:
     symbols = ["a", "b", "c", "d", "e", "f"]
     frequencies = [5, 9, 12, 13, 16, 45]

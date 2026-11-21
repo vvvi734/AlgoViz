@@ -40,6 +40,7 @@ import type { SortingVisualModel } from '../../domain/visualization/sortingModel
 import { SearchVisual } from './SearchVisual';
 import type { SearchVisualModel } from '../../domain/visualization/searchModel';
 import { KmpVisual } from './KmpVisual';
+import { BfVisual } from './BfVisual';
 import { SparseTransposeVisual } from './SparseTransposeVisual';
 import type { SparseTransposeVisualModel } from '../../domain/visualization/sparseTransposeModel';
 import { HashVisual } from './HashVisual';
@@ -444,6 +445,9 @@ export function VisualStage({
       break;
     case 'search':
       content = <SearchVisual model={model as SearchVisualModel} />;
+      break;
+    case 'bf':
+      content = <BfVisual model={model} />;
       break;
     case 'kmp':
       content = <KmpVisual model={model} />;

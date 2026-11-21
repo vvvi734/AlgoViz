@@ -11,14 +11,33 @@ Reading guide:
 3. Scan the text with the same fallback rule; every full pattern match is reported.
 4. After a match, fall back to lps[m - 1] so overlapping occurrences are found.
 
+Input/output: kmp_find_all returns every 0-based match start, in increasing
+order, and keeps overlapping occurrences. Empty text is legal and yields an
+empty list; an empty pattern raises ValueError.
+
 Complexity: O(n + m); extra space O(m) for the lps table.
-Convention: 0-based string indices; lps values are lengths, not positions; empty
-  patterns return no matches.
+Convention: 0-based string indices; lps values are lengths, not positions.
 """
+# 中文导读：先构造模式串的最长真前缀/后缀表，再在失配时按表回退，避免主串指针回退。
+# 阅读顺序：先看 build_lps 的 j 回退，再看 kmp_find_all 中 i 只前进的分支。
+# 输入/输出：输入主串与模式串；返回所有 0 基起点；空模式串抛 ValueError。
+# 不变量：lps[i] 是 pattern[0..i] 的最长真 border 长度；匹配失败时 j 回到 lps[j-1]。
+# 易错点：把 lps 当成位置表；失配后让 i 回退；空模式串未拒绝。
+# 复杂度：O(n+m)，额外空间 O(m)。
 
 
 # lps[i] is a length, not a position: on mismatch fall back to lps[j - 1].
+# 作用：返回模式串每个前缀的最长真 border 长度；空串返回 []。
 def build_lps(pattern: str) -> list[int]:
+    """Return the 0-based lps table for pattern.
+
+    lps[k] is the length of the longest proper prefix of pattern[0..k] that is
+    also its suffix. The function only reads pattern and allocates a new list;
+    an empty pattern returns [].
+
+    Invariant: before each iteration j is the length of the longest border of
+    pattern[0..i-1], and every lps[0..i-1] entry is final.
+    """
     m = len(pattern)
     if m == 0:
         return []
@@ -40,8 +59,24 @@ def build_lps(pattern: str) -> list[int]:
     return lps
 
 
+# 作用：返回全部 0 基起点；空模式串抛 ValueError，支持重叠。
 def kmp_find_all(text: str, pattern: str) -> list[int]:
-    """Return every match start, including overlapping occurrences."""
+    """Return every 0-based match start, including overlapping occurrences.
+
+    Parameters:
+        text: the haystack; an empty string is legal and returns an empty list.
+        pattern: the needle; it must be non-empty.
+
+    Returns:
+        Starts in increasing order. A match that ends at text index i is
+        reported as i - m, which is the start of the whole pattern.
+
+    Raises:
+        ValueError: pattern is empty. Empty patterns have no well-defined
+        border table and are rejected instead of matching every position.
+
+    Side effects: none; the inputs are not modified.
+    """
     if not pattern:
         raise ValueError("pattern must not be empty")
 

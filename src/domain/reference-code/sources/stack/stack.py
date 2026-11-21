@@ -2,6 +2,13 @@
 
 A fixed-capacity stack whose `top` is the index of the live top element.
 
+中文导读：用定长数组和 top 下标实现后进先出栈；top 指向当前栈顶而不是下一个空槽。
+阅读顺序：先看 top = -1 的空栈定义，再看 push 的容量检查与先加后写，最后看 pop 的先读后减。
+输入/输出：push 接收一个整数并返回是否成功；pop/peek 返回栈顶整数，空栈返回 None。
+不变量：0 <= top < capacity；data[0..top] 是当前全部元素，top 之上都是未使用槽。
+易错点：把 top 当成下一个空槽导致首元素写到 data[1]；空栈仍 pop；容量满时继续写越界。
+复杂度：push/pop/peek 均为 O(1)，额外空间 O(capacity)。
+
 Reading guide:
 1. `top = -1` means empty; the first push makes it 0.
 2. Push checks capacity, increments `top`, then writes `data[top]`.

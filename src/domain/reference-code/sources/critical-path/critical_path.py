@@ -14,6 +14,12 @@ Complexity: O(V + E) for adjacency-list processing, O(V^2) when scanning a matri
 Convention: Vertices are 0-based events; the project starts at event 0 and ends at the
   last event.
 """
+# 中文导读：在 AOE 网上做正推和逆推，得到每个活动的最早/最迟开始时间与时间余量。
+# 阅读顺序：先看拓扑序的正推，再看逆推的取最小，最后看余量为 0 的关键活动。
+# 输入/输出：输入活动边 (u, v, duration)；输出最早/最迟时间和关键活动列表。
+# 不变量：正推取前驱完成时间最大值；逆推取后继最迟开始时间最小值。
+# 易错点：逆推顺序不是拓扑逆序；把边权当顶点权；汇点不唯一。
+# 复杂度：O(V+E)，额外空间 O(V+E)。
 
 from __future__ import annotations
 
@@ -21,6 +27,7 @@ from collections import deque
 
 
 # Forward pass takes the maximum predecessor finish; backward pass the minimum successor start; activity slack is latest(head) - earliest(tail) - weight.
+# 作用：构造演示 AOE 网并打印关键路径信息。
 def main() -> None:
     activities = [
         (0, 1, 3), (0, 2, 2), (1, 2, 1), (1, 3, 2),

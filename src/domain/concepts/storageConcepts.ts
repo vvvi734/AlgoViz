@@ -377,30 +377,30 @@ export const STORAGE_CONCEPT_PAGES: readonly ConceptPage[] = [
     title: ['串的存储结构', 'String storage structures'],
     chapter: ['第 4 章 · 串', 'Chapter 4 · Strings'],
     summary: [
-      '串可以用定长数组、堆上的连续空间或块链保存。三者都记录串长，但容量、随机访问、连接操作和空间开销不同；选择存储结构要看串长是否可预知、是否频繁拼接。',
-      'A string can live in a fixed array, a heap allocation or a chain of blocks. All three record the length, but they differ in capacity, random access, concatenation cost and overhead. Choose according to whether the length is known and whether concatenation is frequent.',
+      '串可以用定长数组、堆上的连续空间或块链保存。三者都要把“容量”和“当前串长”分开，但容量来源、随机访问、插入删除与连接代价不同；还要区分 C 语言以 0 结尾的字符串和教材中带显式 length 的串 ADT。',
+      'A string can live in a fixed array, a heap allocation or a chain of blocks. All three separate capacity from current length, but differ in capacity source, indexed access, insertion/deletion and concatenation cost. Also distinguish a C string ended by 0 from the textbook string ADT with an explicit length.',
     ],
     diagram: 'string-storage',
     definitions: [
       {
         term: ['定长顺序存储', 'Fixed-length sequential storage'],
         text: [
-          '用固定大小的字符数组保存串，另设 length 记录实际长度；最大长度在编译或初始化时确定。',
-          'A fixed-size character array plus a length field; the maximum length is fixed at compile or initialization time.',
+          '用固定大小的字符数组保存串，另设 length 记录实际长度；最大长度在编译或初始化时确定，容量不能再增长。',
+          'A fixed-size character array plus a length field; the maximum is fixed at compile or initialization time, so capacity cannot grow.',
         ],
       },
       {
         term: ['堆分配存储', 'Heap-allocated storage'],
         text: [
-          '串仍连续存放，但空间在运行时从堆申请；用基址指针和 length 描述，容量可按实际需要确定。',
-          'Characters remain contiguous, but the space is allocated from the heap at run time; a base pointer and length describe it, and capacity can match the actual need.',
+          '串仍连续存放，但空间在运行时从堆申请；用基址指针、当前长度和容量描述，扩容时重新分配并复制字符。',
+          'Characters remain contiguous, but space is allocated from the heap at run time; a base pointer, current length and capacity describe it, and growth reallocates and copies characters.',
         ],
       },
       {
         term: ['块链存储', 'Block-chain storage'],
         text: [
-          '把串切成若干字符块，每块是一个结点，结点之间用 next 连接；最后一块可能没有装满。',
-          'The string is split into character blocks. Each block is a node linked by next; the final block may be partially filled.',
+          '把串切成若干字符块，每块是一个结点，结点内有固定容量的字符数组和 next 指针；最后一块可能没有装满。',
+          'The string is split into character blocks. Each node holds a fixed-capacity character array and a next pointer; the final block may be partially filled.',
         ],
       },
       {
@@ -410,43 +410,78 @@ export const STORAGE_CONCEPT_PAGES: readonly ConceptPage[] = [
           'The number of valid characters, excluding any terminator. It is distinct from array capacity and from the number of block nodes.',
         ],
       },
+      {
+        term: ['结束约定', 'Termination convention'],
+        text: [
+          '教材串 ADT 用 length 字段决定有效字符个数；C 语言字符串没有 length，改用字符 0（写作 \\0）标记结尾。两种约定不能混用。',
+          'The textbook string ADT uses a length field; a C string has no length field and uses the null character 0 (written \\0) as a terminator. The two conventions must not be mixed.',
+        ],
+      },
+      {
+        term: ['存储密度', 'Storage density'],
+        text: [
+          '块链串中有效字符所占空间与全部结点空间之比。块越大，指针开销占比越低；块越小，链接开销和块内空位浪费越明显。',
+          'For a block chain, the ratio of space holding valid characters to total node space. Larger blocks reduce pointer overhead; smaller blocks make link overhead and unused slots more visible.',
+        ],
+      },
     ],
     sections: [
       {
         title: ['定长顺序存储：简单但会截断', 'Fixed sequential storage: simple but bounded'],
         body: [
-          '定长顺序串的容量 MAXLEN 在定义时固定。赋值、连接等操作一旦超过容量，只能报错或截断；不能用“数组还有空位”来判断能否写入，必须同时检查 length。',
-          'A fixed sequential string has a compile-time MAXLEN. Assignment or concatenation beyond capacity must fail or truncate; “the array still has spare cells” is not enough—check length as well.',
+          '定长顺序串的容量 MAXLEN 在定义时固定。赋值、连接等操作一旦超过容量，只能报错或截断；不能用“数组还有空位”来判断能否写入，必须同时检查 length。字符连续存放使按下标访问为 O(1)，但插入、删除或连接往往要搬移整段后缀。',
+          'A fixed sequential string has a compile-time MAXLEN. Assignment or concatenation beyond capacity must fail or truncate; “the array still has spare cells” is not enough—check length as well. Contiguous characters give O(1) indexed access, but insertion, deletion or concatenation often shift a suffix.',
         ],
         points: [
           ['第 i 个字符可直接按下标访问，随机访问是 O(1)。', 'Character i is directly indexable, so random access is O(1).'],
-          ['插入/删除中间字符通常要搬移后缀，代价 O(n)。', 'Inserting or deleting in the middle usually shifts the suffix, costing O(n).'],
+          ['在位置 i 插入一段字符：先把 i 及其后的字符整体后移，再写入新字符；删除则把后缀整体前移。', 'Inserting at i shifts i and later characters right before writing; deletion shifts the suffix left.'],
+          ['连接两个定长串要检查结果长度是否超过 MAXLEN；超出时只能截断或报错，不能悄悄覆盖容量外的内存。', 'Concatenating fixed strings must check the result against MAXLEN; overflow must truncate or fail rather than write past capacity.'],
           ['容量浪费与溢出风险同时存在，适合长度短且可预知的串。', 'Wasted capacity and overflow coexist; suited to short strings of known bound.'],
         ],
       },
       {
-        title: ['堆分配存储：按实际长度申请', 'Heap allocation: size to the actual string'],
+        title: ['C 字符串的 0 结尾与教材串 ADT 的 length 字段', 'C string terminator versus the ADT length field'],
         body: [
-          '堆分配串在运行时申请一块连续空间，基址指针指向首字符，length 记录有效长度。它保留顺序存储的随机访问，又能让容量贴近实际长度；代价是申请/释放、复制和失败处理。',
-          'A heap string allocates one contiguous run at run time. A base pointer names the first character and length records the valid count. It keeps O(1) indexed access while sizing capacity to the text, at the cost of allocation, freeing, copying and failure handling.',
+          'C 语言字符串用字符 0（显示为 \\0）表示“有效字符到此为止”，函数通常靠扫描这个 0 求长度；教材串 ADT 则在结构里显式保存 length，字符数组只是容量。两者都能描述同一段字符，但判断结束、求长和越界检查的方式完全不同。',
+          'A C string uses the null character 0 (shown as \\0) to mark the end, and functions usually scan for it to find the length; the textbook string ADT stores length explicitly and treats the array as capacity. Both can describe the same characters, but end detection, length computation and bounds checks differ.',
         ],
         points: [
-          ['扩容通常要申请新块、复制旧字符、释放旧块，不能假定原块后面一定有空位。', 'Growing normally allocates a new block, copies the old characters and frees the old block; the old block is not guaranteed to have free space after it.'],
+          ['C 字符串：实际字符之后必须留一个 \\0； strlen 扫描到它为止，因此求长是 O(n)，且不能表示“内容中本来就含 0”的普通文本。', 'C string: one \\0 must follow the last character; strlen scans to it, so length is O(n), and ordinary text containing an embedded 0 cannot be represented.'],
+          ['串 ADT：length 是有效字符数，第 length 个槽位之后的内容不属于当前串；求长是 O(1)，但每次写入都必须同步维护 length。', 'String ADT: length is the valid character count; slots at and beyond length are outside the string. Length is O(1), but every write must maintain length.'],
+          ['把 C 字符串直接按 length 访问，或用 strlen 给 ADT 求长，都会把两套约定混在一起，是常见越界/错读来源。', 'Accessing a C string as if it had a length field, or calling strlen on an ADT, mixes the conventions and is a common source of out-of-bounds reads.'],
+          ['图示同时画出两种读法：数组第 5 格放 \\0 表示 C 字符串结束；ADT 则记 S.length = 5，第 5 格及以后仍是容量。', 'The diagram shows both readings: slot 5 holds \\0 for a C string, while the ADT records S.length = 5 and treats slot 5 onward as capacity.'],
+        ],
+        formula: 'C 字符串：ch[5] = \\0，长度由扫描得到；串 ADT：S.length = 5，长度直接读取',
+        formulaEn: 'C string: ch[5] = \\0, length found by scanning; string ADT: S.length = 5, length read directly',
+      },
+      {
+        title: ['堆分配存储：按实际长度申请', 'Heap allocation: size to the actual string'],
+        body: [
+          '堆分配串在运行时申请一块连续空间，基址指针指向首字符，length 记录有效长度，capacity 记录当前可写容量。它保留顺序存储的随机访问，又能让容量贴近实际长度；代价是申请/释放、复制和失败处理。',
+          'A heap string allocates one contiguous run at run time. A base pointer names the first character, length records valid characters and capacity records writable slots. It keeps O(1) indexed access while sizing capacity to the text, at the cost of allocation, freeing, copying and failure handling.',
+        ],
+        points: [
+          ['起始地址 base 只是堆块的入口；T[i] 对应 base[i]，不能把 base 当成字符本身。', 'The base address is only the entry to the heap block; T[i] maps to base[i], so base is not a character.'],
+          ['扩容通常经历“申请新块 → 复制旧字符 → 释放旧块 → 更新 base 与 capacity”；旧块后面不一定有可用空间，不能盲目原地延长。', 'Growth normally allocates a new block, copies old characters, frees the old block and updates base and capacity; the old block is not guaranteed to have room after it.'],
+          ['realloc 可能移动内存，因此扩容后旧指针可能失效；所有指向旧块的指针都要重新获取。', 'realloc may move memory, so old pointers can become invalid after growth; every pointer into the old block must be refreshed.'],
           ['浅拷贝只复制基址指针，会让两个串共享同一块字符空间；需要独立所有权时必须深拷贝。', 'A shallow copy duplicates only the base pointer, making two strings share storage; independent ownership requires a deep copy.'],
-          ['适合长度变化较大、需要连续字符序列的模式匹配。', 'Suited to variable lengths and pattern matching that needs a contiguous character sequence.'],
+          ['拷贝 n 个字符是 O(n)；若采用“容量翻倍”策略，连续追加的摊还代价仍为 O(1) 每次。', 'Copying n characters is O(n); with capacity doubling, repeated appends have O(1) amortized cost.'],
         ],
       },
       {
         title: ['块链存储：拼接灵活但访问不直接', 'Block chain: flexible concatenation, indirect access'],
         body: [
-          '块链串把字符分散在多个块结点中。连接两个串只需把前串尾块指向后串首块，通常不必复制全部字符；但要找第 i 个字符，必须从头块逐块跳转并在块内定位。',
-          'A block-chain string scatters characters across linked blocks. Concatenation can point the last block of one string at the first block of another without copying every character, but locating character i requires walking blocks from the head and then indexing inside the block.',
+          '块链串把字符分散在多个块结点中。每个结点通常包含一个固定容量的字符数组和一个 next 指针。连接两个串可以只把前串尾块指向后串首块，通常不必复制全部字符；但要找第 i 个字符，必须从头块逐块跳转并在块内定位。',
+          'A block-chain string scatters characters across linked nodes. Each node normally holds a fixed-capacity character array and a next pointer. Concatenation can point the last block of one string at the first block of another without copying every character, but locating character i requires walking blocks from the head and then indexing inside the block.',
         ],
         points: [
-          ['块大小是重要参数：块大则指针开销小、块内定位快；块小则拼接粒度细、碎片少。', 'Block size matters: larger blocks reduce pointer overhead and speed in-block access; smaller blocks give finer concatenation and less waste.'],
-          ['最后一块可能只填了一部分，遍历必须以 length 为准，不能把整块都当有效字符。', 'The last block may be partial; traversal must stop at length rather than treating the whole block as valid.'],
-          ['适合频繁连接、字符流式追加或不能保证大块连续空间的场景。', 'Suited to frequent concatenation, streaming appends, or settings without large contiguous space.'],
+          ['结点容量决定“每块最多几个字符”；串长仍单独记录，最后一块通常只填一部分。', 'Node capacity sets the maximum characters per block; string length is still separate, and the final block is usually partial.'],
+          ['存储密度 = 有效字符总空间 / 全部结点空间。块越小，next 指针与块内空位占比越大；块越大，单次拼接复制和空间浪费可能越大。', 'Storage density = space for valid characters / total node space. Smaller blocks increase pointer and unused-slot overhead; larger blocks can increase copy cost and waste on concatenation.'],
+          ['遍历到 length 就停止，不能因为当前块是最后一块就把所有槽位都当有效字符。', 'Traversal stops at length; do not treat every slot in the final block as valid.'],
+          ['块链适合频繁连接、字符流式追加或难以申请大块连续空间的场景；模式匹配通常仍偏好连续存储。', 'Block chains suit frequent concatenation, streaming appends or settings without large contiguous allocations; pattern matching usually still prefers contiguous storage.'],
         ],
+        formula: '存储密度 ≈ 有效字符数 / (结点数 × 结点容量)；还要计入 next 指针开销',
+        formulaEn: 'storage density ≈ valid characters / (nodes × node capacity), with next-pointer overhead added',
       },
       {
         title: ['怎样选择', 'Choosing a representation'],
@@ -471,6 +506,12 @@ export const STORAGE_CONCEPT_PAGES: readonly ConceptPage[] = [
       ],
       rows: [
         [
+          ['存储布局', 'Storage layout'],
+          ['一段连续数组，length 在结构内', 'One contiguous array with length inside the struct'],
+          ['堆上一段连续块，base + length + capacity', 'One contiguous heap block with base + length + capacity'],
+          ['多个结点，每结点含字符数组与 next', 'Several nodes, each with a character array and next'],
+        ],
+        [
           ['空间来源', 'Space source'],
           ['固定字符数组', 'A fixed character array'],
           ['运行时堆上的连续块', 'A contiguous heap block allocated at run time'],
@@ -483,6 +524,12 @@ export const STORAGE_CONCEPT_PAGES: readonly ConceptPage[] = [
           ['按块增加，最后一块可不满', 'Grows by blocks; the last block may be partial'],
         ],
         [
+          ['插入/删除主要代价', 'Cost of insert/delete'],
+          ['搬移位置之后的整段后缀，最坏 O(n)', 'Shift the suffix after the position, O(n) worst case'],
+          ['在连续块内搬移，扩容时还可能整体复制', 'Shift within the block; growth may copy the whole string'],
+          ['找到块后改 next；可能拆分/合并块，块内仍有搬移', 'Rewire next after locating the block; splitting/merging may still shift inside blocks'],
+        ],
+        [
           ['随机访问第 i 个字符', 'Random access to character i'],
           ['O(1)', 'O(1)'],
           ['O(1)', 'O(1)'],
@@ -493,6 +540,12 @@ export const STORAGE_CONCEPT_PAGES: readonly ConceptPage[] = [
           ['受容量限制，可能搬移/截断', 'Capacity-bound; may shift or truncate'],
           ['申请新块并复制两段字符', 'Allocate a new block and copy both parts'],
           ['改尾块 next，通常无需复制字符', 'Link the tail block; usually no character copy'],
+        ],
+        [
+          ['存储密度/额外开销', 'Storage density/overhead'],
+          ['高，除 length 外无链接开销，但容量可能闲置', 'High, only a length field, but spare capacity may sit idle'],
+          ['高，字符连续；需额外保存 base/capacity，扩容有复制峰值', 'High and contiguous; base/capacity add fields, and growth has a copy peak'],
+          ['较低，next 指针和末块空位占空间，块越小越明显', 'Lower: next pointers and final-block gaps cost space, worse with small blocks'],
         ],
         [
           ['典型场景', 'Typical use'],

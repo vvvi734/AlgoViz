@@ -12,10 +12,17 @@ Complexity: O(V + E) for adjacency lists, O(V^2) for an adjacency matrix; extra 
   O(V).
 Convention: Components are numbered in ascending order of their smallest vertex.
 """
+# 中文导读：对每个未访问顶点启动一次 DFS，一次 DFS 标记出的顶点就是一个连通分量。
+# 阅读顺序：先看外层扫描，再看 visit 的递归标记。
+# 输入/输出：输入无向图邻接表；返回每个连通分量的顶点列表。
+# 不变量：一次 visit 调用只进入同一连通分量；visited 一旦置位不再回退。
+# 易错点：在外层重复访问已标记顶点；把有向图当无向图统计。
+# 复杂度：O(V+E)，额外空间 O(V)。
 
 from __future__ import annotations
 
 
+# 作用：从 vertex 递归标记整个连通分量，并追加到 component。
 def visit(graph: list[list[int]], vertex: int, visited: list[bool], component: list[int]) -> None:
     visited[vertex] = True
     component.append(vertex)
@@ -26,6 +33,7 @@ def visit(graph: list[list[int]], vertex: int, visited: list[bool], component: l
 
 # Every unvisited start opens a new component; one DFS marks all vertices reachable from it.
 # The outer scan opens a new component only at an unvisited vertex; one DFS marks its whole component.
+# 作用：返回所有连通分量的顶点列表；不修改 graph。
 def count_components(graph: list[list[int]]) -> list[list[int]]:
     visited = [False] * len(graph)
     components: list[list[int]] = []
@@ -37,6 +45,7 @@ def count_components(graph: list[list[int]]) -> list[list[int]]:
     return components
 
 
+# 作用：构造含两个分量的演示图并打印结果。
 def main() -> None:
     graph: list[list[int]] = [[] for _ in range(7)]
 

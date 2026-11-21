@@ -14,6 +14,12 @@
 # Convention: integer keys are unique; no dict/set is used as a substitute for
 # a real B-tree.
 
+# 中文导读：实现 4 阶 B 树的查找与插入：满孩子先分裂，中位数上移到父结点。
+# 阅读顺序：先看 BTreeNode 的 keys/children 对应关系，再看 split_child 的切分，最后跟 btree_insert 的下行路径。
+# 输入/输出：输入唯一整数键；btree_search 返回是否命中，btree_insert 返回可能更新的根。
+# 不变量：k 个键对应 k+1 个孩子；所有叶子在同一层；分裂后中位数上升。
+# 易错点：先下降再分裂导致回溯；孩子区间切错；重复键未在修改前拒绝。
+# 复杂度：树高 O(log_4 n)，查找/插入访问 O(log n) 个结点，空间 O(n)。
 from collections import deque
 
 ORDER = 4
@@ -27,6 +33,7 @@ class BTreeNode:
         self.leaf = leaf
 
 
+# 作用：只读查找 target；命中返回 True，可选的 comparisons[0] 累计键比较次数。
 def btree_search(node, target, comparisons=None):
     """Read-only search. Returns True on a hit; counts key comparisons."""
     while node is not None:
@@ -45,6 +52,7 @@ def btree_search(node, target, comparisons=None):
     return False
 
 
+# 作用：切分 parent 的满孩子，把中位数提升到 parent，返回新右结点。
 def split_child(parent, index):
     """Split a full child; promote its median into parent. Returns the new right node."""
     left = parent.children[index]
@@ -63,6 +71,7 @@ def split_child(parent, index):
 
 
 # A full child is split before descending; its median moves into the parent, so insertion never needs to back up.
+# 作用：插入唯一键并返回可能更新的根；重复键在修改前拒绝。
 def btree_insert(root, value):
     """Insert one unique key; returns the possibly new root.
 
@@ -102,6 +111,7 @@ def btree_insert(root, value):
     return root
 
 
+# 作用：按层打印键列表，便于观察分裂结果。
 def print_tree(root):
     """Level-order print: every node shows its keys in one bracket."""
     if root is None:

@@ -61,6 +61,9 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
       zh: "V-1 轮完整松弛足以确定所有简单最短路；再扫一遍仍能松弛就说明存在可达负环。",
     },
   ],
+  "bf.c": [],
+  "bf.cpp": [],
+  "bf.py": [],
   "bfs.c": [
     {
       en: "Mark a vertex when it enters the queue, not when it leaves, so it cannot be enqueued twice.",

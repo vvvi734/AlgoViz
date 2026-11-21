@@ -4,7 +4,9 @@
  * 关键不变量：第一遍完成时间最晚的结点属于源分量；在反向图上从它出发只能到达同一强连通分量。
  * 易错点：忘记反向图；完成顺序存成进入顺序；递归深度溢出；把弱连通分量当强连通。
  * 复杂度：O(V+E) 时间，O(V+E) 空间。
- */
+ * 输入/输出：输入有向图邻接表；返回每个强连通分量的顶点集合；main 打印 SCC。
+ * 函数地图：先读 main 的调用顺序，再按需查看被调用的静态函数；每个函数前的“作用”注释给出职责、输入和返回。
+*/
 
 // AlgoViz reference implementation: strongly connected components (Kosaraju).
 // First pass records finish order on the original graph; second pass walks

@@ -13,6 +13,12 @@ Reading guide:
 Complexity: O(t log t); extra space O(t) for the copied list.
 Convention: 0-based coordinates; input must still be a valid sparse triplet table.
 """
+# 中文导读：先转置三元组并交换行列，再按行优先重新排序，得到转置矩阵的三元组。
+# 阅读顺序：先看三元组的行列交换，再看排序键 (row, col)。
+# 输入/输出：输入行数、列数和三元组；返回转置后的三元组。
+# 不变量：转置后每个非零元素的位置是 (原 col, 原 row)。
+# 易错点：忘记交换行列；排序键只按行不按列。
+# 复杂度：O(nnz log nnz)，额外空间 O(nnz)。
 
 from dataclasses import dataclass
 from typing import List, Tuple
@@ -25,12 +31,14 @@ class Triple:
     value: int
 
 
+# 作用：返回按行优先排序的转置三元组。
 def sort_transpose(triples: List[Triple]) -> List[Triple]:
     swapped = [Triple(item.col, item.row, item.value) for item in triples]
     # Swap row/col first, then sort by (row, col); this is O(t log t), not the course O(t+c) fast transpose.
     return sorted(swapped, key=lambda item: (item.row, item.col))
 
 
+# 作用：构造演示稀疏矩阵并打印转置结果。
 def main() -> None:
     triples = [
         Triple(0, 0, 3),

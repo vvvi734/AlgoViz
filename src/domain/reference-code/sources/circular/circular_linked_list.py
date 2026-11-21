@@ -12,6 +12,12 @@ Complexity: O(1) append, O(n) traversal; extra space O(n).
 Convention: There is no NULL terminator inside a non-empty list; emptiness is tail ==
   NULL.
 """
+# 中文导读：用尾指针维护循环单链表，使头尾插入都能 O(1) 完成。
+# 阅读顺序：先看 tail.next 指向头结点，再看插入/删除后尾指针的更新。
+# 输入/输出：输入整数序列；输出循环链表的遍历结果。
+# 不变量：tail 非空时 tail.next 是头结点；空表 tail 为 None。
+# 易错点：删除唯一结点后忘记把 tail 置空；遍历没有在回到头结点时停止。
+# 复杂度：插入/删除 O(1)，遍历 O(n)，空间 O(n)。
 
 from __future__ import annotations
 
@@ -54,6 +60,7 @@ class CircularList:
                 return values
 
 
+# 作用：构造循环链表并演示头插、尾插、删除和遍历。
 def main() -> None:
     lst = CircularList()
     lst.append(1)

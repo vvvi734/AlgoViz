@@ -13,6 +13,12 @@ Complexity: O(n log n) with a heap; extra space O(n) for tree and codes.
 Convention: Symbols are unique; ties are broken by insertion order where the heap
   supports it.
 """
+# 中文导读：自定义结点比较器让 heapq 按权值合并，递归生成哈夫曼编码。
+# 阅读顺序：先看 node_less 的平局规则，再看合并循环和 collect_codes。
+# 输入/输出：输入字符权值；输出编码表。
+# 不变量：优先队列中权值最小的两个结点先合并；叶子的编码由路径唯一确定。
+# 易错点：比较器不满足全序导致堆行为不稳定；单字符树编码为空。
+# 复杂度：O(n log n)，额外空间 O(n)。
 
 from __future__ import annotations
 
@@ -28,6 +34,7 @@ class Node:
     right: "Node | None" = None
 
 
+# 作用：为 heapq 提供按权值升序的比较；权值相同时按字符稳定排序。
 def node_less(a: Node, b: Node) -> bool:
     return (a.frequency, a.order) < (b.frequency, b.order)
 
@@ -74,6 +81,7 @@ class MinHeap:
         return top
 
 
+# 作用：递归收集叶子编码；左 0 右 1。
 def collect_codes(node: Node, path: str, codes: dict[str, str]) -> None:
     if node.left is None and node.right is None:
         codes[node.symbol] = path or "(empty)"
@@ -84,6 +92,7 @@ def collect_codes(node: Node, path: str, codes: dict[str, str]) -> None:
         collect_codes(node.right, path + "1", codes)
 
 
+# 作用：构造演示哈夫曼树并打印编码。
 def main() -> None:
     symbols = ["a", "b", "c", "d", "e", "f"]
     frequencies = [5, 9, 12, 13, 16, 45]

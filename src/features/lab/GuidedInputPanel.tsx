@@ -24,6 +24,7 @@ import {
   isHuffmanGuidedInputAlgorithm,
   isNumsTargetGuidedInputAlgorithm,
   isRecursionGuidedInputAlgorithm,
+  isStringPairGuidedInputAlgorithm,
   isStructureGuidedInputAlgorithm,
   isSparseGuidedInputAlgorithm,
   isTreeGuidedInputAlgorithm,
@@ -129,6 +130,7 @@ function hintKeyFor(id: GuidedInputAlgorithm): string {
   }
   if (isHeapGuidedInputAlgorithm(id)) return 'guidedHeapHint';
   if (isHuffmanGuidedInputAlgorithm(id)) return 'guidedHuffmanHint';
+  if (id === 'bf') return 'guidedBfHint';
   return 'guidedKmpHint';
 }
 
@@ -532,7 +534,7 @@ export function GuidedInputPanel({ lab }: { lab: LabController }) {
         </label>
       ) : null}
 
-      {id === 'kmp' ? (
+      {isStringPairGuidedInputAlgorithm(id) ? (
         <div className="guided-field-grid">
           <label className="guided-field">
             <span>{t('guidedKmpTextLabel')}</span>
@@ -550,9 +552,9 @@ export function GuidedInputPanel({ lab }: { lab: LabController }) {
           <label className="guided-field guided-field-pattern">
             <span>{t('guidedKmpPatternLabel')}</span>
             <input
-              id="kmp-pattern"
+              id={id === 'bf' ? 'bf-pattern' : 'kmp-pattern'}
               className="input code-dock-input"
-              data-testid="kmp-pattern"
+              data-testid={id === 'bf' ? 'bf-pattern' : 'kmp-pattern'}
               value={draft.pattern}
               onChange={(event) => setField('pattern', event.target.value)}
               placeholder="ABABC"

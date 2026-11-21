@@ -62,6 +62,7 @@ describe('Lesson registry (Stage 3B)', () => {
       'binary-search-basics',
       'hash-chaining-basics',
       'hash-probing-basics',
+      'bf-naive-pattern-matching',
       'kmp-pattern-matching',
       'sparse-transpose-fast',
       'static-linked-list-operations',
@@ -99,11 +100,11 @@ describe('Lesson registry (Stage 3B)', () => {
     expect(broken.errors.join(' ')).toContain('buble-sort');
   });
 
-  it('covers all 41 algorithms with a validated course', () => {
+  it('covers all 42 algorithms with a validated course', () => {
     const covered = lessonRegistry.lessons.map((lesson) => lesson.algorithmId);
     const uncovered = catalogIds.filter((id) => !covered.includes(id));
-    expect(catalogIds.length).toBe(41);
-    expect(lessonRegistry.lessons.length).toBe(41);
+    expect(catalogIds.length).toBe(42);
+    expect(lessonRegistry.lessons.length).toBe(42);
     expect(uncovered).toEqual([]);
   });
 });

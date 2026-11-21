@@ -4,7 +4,9 @@
  * 关键不变量：处理完 k 后，dist[i][j] 是只允许 0..k 作为中间点的最短路。
  * 易错点：把 k 放到内层；INF 相加溢出；无向边只填一个方向；负环仍当作有效结果。
  * 复杂度：O(V³) 时间，O(V²) 空间。
- */
+ * 输入/输出：输入邻接矩阵；原地更新为全源最短路径；main 打印最终矩阵。
+ * 函数地图：先读 main 的调用顺序，再按需查看被调用的静态函数；每个函数前的“作用”注释给出职责、输入和返回。
+*/
 
 // AlgoViz reference implementation: Floyd-Warshall (C++17).
 // Dynamic programming over allowed intermediate vertices; handles negative

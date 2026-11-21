@@ -1,0 +1,53 @@
+/* 第 4 章：BF 主图与串存储图解专用样式。 */
+.bf-visual .bf-cell {
+  position: relative;
+}
+
+.bf-seen-badge {
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  min-width: 18px;
+  padding: 0 3px;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--red) 18%, var(--panel));
+  color: var(--red);
+  font-size: 10px;
+  font-weight: 750;
+  line-height: 14px;
+  text-align: center;
+  pointer-events: none;
+}
+
+.bf-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 0;
+  padding: 8px 10px;
+  border-left: 3px solid var(--node-edge);
+  border-radius: 6px;
+  background: var(--note-bg);
+  color: var(--txt);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.bf-status.is-bad {
+  border-left-color: var(--red);
+  background: color-mix(in srgb, var(--red) 9%, var(--panel));
+}
+
+.bf-status.is-good {
+  border-left-color: var(--accent);
+  background: var(--tab-active-bg);
+}
+
+.bf-next {
+  padding: 1px 7px;
+  border: 1px solid var(--node-edge);
+  border-radius: 999px;
+  font-size: 13px;
+  white-space: nowrap;
+}
