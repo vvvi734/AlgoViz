@@ -30,6 +30,7 @@ function snapshot(overrides: Partial<BtreeSnapshot> = {}): BtreeSnapshot {
     childId: null,
     split: null,
     insertedKey: null,
+    deleteInfo: null,
     result: null,
     ...overrides,
   };

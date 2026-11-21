@@ -530,8 +530,8 @@ export const COURSE_GUIDES: Record<string, CourseGuide> = {
 
   btree: {
     intro: text(
-      '二叉搜索树每个节点只存一个关键字，树高约为 log₂ n；数据库按页读取，真正昂贵的是访问节点次数。B 树让一个节点存放多个有序关键字，用 k 个关键字分出 k+1 个子树，把分支因子提高到 m，树高降到约 log_m n。所有叶子等深保证查找路径长度稳定；插入通过“下降前分裂满节点”维持这一平衡。代价是节点内比较、分裂搬移和未装满的空间。',
-      'A binary search tree stores one key per node and has height about log₂ n; databases read whole pages, so node visits dominate. A B-tree stores several ordered keys per node and uses k keys to separate k+1 subtrees, raising the branching factor to m and lowering height to about log_m n. Equal leaf depth keeps every search path stable; insertion preserves balance by splitting full nodes before descending. The costs are in-node comparisons, split movement and partially filled nodes.',
+      '二叉搜索树每个节点只存一个关键字，树高约为 log₂ n；数据库按页读取，真正昂贵的是访问节点次数。B 树让一个节点存放多个有序关键字，用 k 个关键字分出 k+1 个子树，把分支因子提高到 m，树高降到约 log_m n。所有叶子等深保证查找路径长度稳定；插入通过“下降前分裂满节点”维持平衡，删除则先借后并、必要时让根收缩。代价是节点内比较、分裂/借位/合并搬移和未装满的空间。',
+      'A binary search tree stores one key per node and has height about log₂ n; databases read whole pages, so node visits dominate. A B-tree stores several ordered keys per node and uses k keys to separate k+1 subtrees, raising the branching factor to m and lowering height to about log_m n. Equal leaf depth keeps every search path stable; insertion preserves balance by splitting full nodes before descending, while deletion borrows first, then merges, and contracts the root when needed. The costs are in-node comparisons, split/borrow/merge movement and partially filled nodes.',
     ),
     definition: text(
       'm 阶 B 树是一棵多路平衡查找树：每个节点最多 m 个孩子、m−1 个关键字；含 k 个关键字的内节点恰有 k+1 个孩子，关键字严格递增且孩子按区间归属；除根外每个节点至少 ceil(m/2)−1 个关键字；所有叶子在同一深度。',
@@ -547,11 +547,16 @@ export const COURSE_GUIDES: Record<string, CourseGuide> = {
       step('分裂：中间关键字上升', 'Split: the median rises', '满节点 3 键分成左 1 键、上升 1 键、右 1 键，孩子随关键字一起分配。', 'A full three-key node becomes one key on the left, one promoted key and one on the right; children move with their keys.'),
       step('选择子树继续下降', 'Choose the subtree and continue'),
       step('到达叶子插入', 'Insert at the leaf', '目标叶子在下降前已确保有空格，写入后关键字仍有序。', 'The target leaf is guaranteed to have room before descent; after writing, keys stay ordered.'),
+      step('删除：先证明关键字存在', 'Delete: prove the key exists first', '不存在时只回放只读搜索，树完全不变。', 'An absent key only replays a read-only search and leaves the tree unchanged.'),
+      step('内部键用左子树最大前驱替换', 'Replace an internal key by its left-subtree predecessor'),
+      step('孩子不足时先向左右兄弟借', 'Borrow from a sibling before entering an underfull child', '父键下移、兄弟键上移；借位不改变树高。', 'The parent key moves down and a sibling key moves up; height stays the same.'),
+      step('兄弟都不够借则父键下移并合并', 'Merge through the parent when neither sibling can lend', '父键和两个孩子合成一个节点；不足可能继续向上传播。', 'The parent key and two children become one node; underflow may propagate upward.'),
+      step('根被抽空则唯一孩子成为新根', 'Contract an emptied root to its only child', '树高减一，所有叶子仍同深度。', 'Height drops by one while every leaf keeps the same depth.'),
       step('结束：恢复全部约束', 'Finish: restore every invariant', '检查关键字有序、区间对应、非根下限和叶子同深。', 'Check ordered keys, matching intervals, the non-root minimum and equal leaf depth.'),
     ),
     conditions: list(
-      ['本课固定 m=4：最多 4 个孩子、3 个关键字；非根至少 1 个关键字，根非叶时至少 2 个孩子。', '树高 h=O(log_m n)；查找与插入都只访问 O(log_m n) 个节点，层内比较另计。', '节点容量越大树越矮，但单页比较与数据量增加；真实 m 由页大小和关键字大小决定。'],
-      ['This course fixes m=4: at most four children and three keys; every non-root node keeps at least one key, and a non-leaf root has at least two children.', 'Height is h=O(log_m n); search and insertion visit O(log_m n) nodes, with in-node comparisons counted separately.', 'Larger node capacity lowers height but increases per-page comparisons and payload; real m follows page and key sizes.'],
+      ['本课固定 m=4：最多 4 个孩子、3 个关键字；非根至少 1 个关键字，根非叶时至少 2 个孩子。', '树高 h=O(log_m n)；查找、插入与删除都只访问 O(log_m n) 个节点，层内比较与借位/合并搬移另计。', '节点容量越大树越矮，但单页比较与数据量增加；真实 m 由页大小和关键字大小决定。'],
+      ['This course fixes m=4: at most four children and three keys; every non-root node keeps at least one key, and a non-leaf root has at least two children.', 'Height is h=O(log_m n); search, insertion and deletion visit O(log_m n) nodes, with in-node comparisons and borrow/merge movement counted separately.', 'Larger node capacity lowers height but increases per-page comparisons and payload; real m follows page and key sizes.'],
     ),
   },
 
@@ -1339,6 +1344,106 @@ export const COURSE_GUIDES: Record<string, CourseGuide> = {
         'Compact only live objects; record old→new for every moved object.',
         'Every reference to a moved object, including roots, must use the new address; no stale address may remain valid.',
         'Mark O(N + E), sweep O(N), compaction O(N + E + live bytes); N objects, E references.',
+      ],
+    ),
+  },
+
+  'block-search': {
+    intro: text(
+      '记录数量较大时，顺序查找要逐项扫描，二分查找又要求整个表有序。分块查找把记录切成连续块，每块只登记一个最大值：块间范围严格递增，块内保留原顺序。先用索引排除不可能的块，再只扫描候选块，用少量索引空间换掉了大部分无效比较。',
+      'With many records, linear search scans everything while binary search demands a fully sorted table. Block search cuts records into contiguous blocks and stores only one maximum per block: ranges increase across blocks while in-block order is preserved. The index eliminates impossible blocks before scanning one candidate, trading a small index for a large reduction in wasted comparisons.',
+    ),
+    definition: text(
+      '分块查找是一种索引顺序查找：块间关键字范围严格递增，块内可无序；先顺序比较索引最大值定位唯一候选块，再在块内顺序比较记录。',
+      'Block search is an indexed sequential search: key ranges strictly increase across blocks while blocks themselves may be unordered; index maxima are compared in order to locate the only candidate block, then records inside that block are scanned sequentially.',
+    ),
+    ...algorithm(
+      step('按块长切分记录', 'Cut records into blocks'),
+      step('为每块登记最大值', 'Record each block maximum'),
+      step('比较索引最大值', 'Compare index maxima'),
+      step('锁定唯一候选块', 'Lock the only candidate block', '索引最大值递增，因此首个覆盖目标的块就是唯一候选。', 'Because maxima increase, the first block covering the target is the only candidate.'),
+      step('块内顺序扫描', 'Scan inside the block'),
+      step('命中或整块失败', 'Return a hit or fail after the block'),
+    ),
+    conditions: list(
+      [
+        '块内可以无序，但后块最小值必须大于前块最大值，索引最大值严格递增。',
+        '定位只选一个块，块内必须顺序扫描，不能二分。',
+        '块长固定时最坏 O(n)；块长与块数都约为 √n 时比较次数约 2√n。',
+        '成功与失败 ASL 必须分别计算并说明概率假设。',
+      ],
+      [
+        'Blocks may be unordered, but every later block must start above the previous maximum and index maxima must strictly increase.',
+        'Exactly one block is selected; the block must be scanned sequentially, not binary-searched.',
+        'A fixed block length gives O(n) worst case; with both block count and length near √n, comparisons are about 2√n.',
+        'Successful and failed ASL are computed separately, each with an explicit probability model.',
+      ],
+    ),
+  },
+
+  'bplus-tree': {
+    intro: text(
+      'B 树把记录放在所有节点，点查找可能在内部层提前命中，但范围查询仍要跨层回溯。B+ 树把所有记录集中到同一层叶子，内部节点只保留分隔键副本，并给叶子加上顺序链接。点查找路径长度稳定，范围查询定位一次起点后即可沿叶链线性输出，因此更适合数据库索引与范围扫描。',
+      'A B-tree stores records in every node, so a point lookup may hit internally, yet a range query still has to move across levels. A B+ tree concentrates every record in one leaf layer, keeps only separator copies internally, and links leaves in order. Point paths have stable length, and a range query locates one start then outputs along the chain, making B+ trees better suited to database indexes and range scans.',
+    ),
+    definition: text(
+      'B+ 树是一种多路平衡索引树：内部节点只存分隔键与孩子指针，所有记录按关键字升序存放在同一深度的叶子，叶子之间用 next 顺序链接。',
+      'A B+ tree is a multiway balanced index tree: internal nodes hold only separators and child pointers, all records live in leaves at one depth in ascending key order, and leaves are linked by next.',
+    ),
+    ...algorithm(
+      step('内部层按分隔键选路', 'Route by internal separators'),
+      step('下降到叶层', 'Descend to the leaf layer'),
+      step('叶内确认记录', 'Confirm the record in the leaf'),
+      step('插入叶层并拒绝重复', 'Insert into the leaf layer, rejecting duplicates'),
+      step('叶分裂提升右叶首键', 'Split a leaf and promote its right first key'),
+      step('内部与根分裂', 'Split internal nodes and the root'),
+      step('沿叶链范围扫描', 'Scan a range along the leaf chain'),
+    ),
+    conditions: list(
+      [
+        '所有记录只在叶子；内部键等于右子树最小记录，只是副本。',
+        '点查找必须到达叶子，内部键相等不能提前返回。',
+        '所有叶子同深度，叶链按关键字升序，范围查询依赖 next 连续扫描。',
+        '本轮实现查找、插入、叶/内部/根分裂和范围查询，不实现删除。',
+      ],
+      [
+        'All records live in leaves; an internal key equals the right subtree minimum and is only a copy.',
+        'A point lookup must reach a leaf; an equal internal key never returns early.',
+        'All leaves share one depth and the leaf chain is ascending; range queries rely on next.',
+        'This round implements search, insertion, leaf/internal/root splits and range queries, not deletion.',
+      ],
+    ),
+  },
+
+  'key-tree': {
+    intro: text(
+      '普通 BST 用整键比较决定左右，关键字长度不直接影响树高。键树把关键字拆成字符，每一层只比较一个字符，相同前缀共用同一条路径。它因此天然支持前缀查询，空间也随共享前缀减少；代价是每个字符一个节点与孩子指针，字母表越大节点越宽。',
+      'A BST compares whole keys to choose left or right, so key length does not directly set height. A key tree splits keys into characters, compares one character per level, and shares one path for equal prefixes. It naturally supports prefix queries and saves space through sharing, at the cost of one node and child table per character; a larger alphabet widens every node.',
+    ),
+    definition: text(
+      '键树（Trie）是一棵按字符分层的查找树：根为哨兵，每条边对应一个字符，根到节点的路径拼出该前缀；只有带终止标记的节点才表示一个完整关键字。',
+      'A key tree (trie) is a character-layered search tree: the root is a sentinel, each edge carries one character, and the root-to-node path spells that prefix; only a terminal-marked node represents a complete key.',
+    ),
+    ...algorithm(
+      step('从哨兵根出发', 'Start at the sentinel root'),
+      step('逐字符选择孩子', 'Choose a child per character'),
+      step('路径末端检查终止标记', 'Check terminal at the path end'),
+      step('插入缺失后缀节点', 'Create nodes for the missing suffix'),
+      step('末端设置终止标记', 'Set terminal at the end'),
+      step('拒绝已存在的完整词', 'Reject an existing complete word'),
+    ),
+    conditions: list(
+      [
+        '路径存在不等于关键字存在；末端必须 terminal=true 才算命中。',
+        '共享前缀只保存一份，插入不能复制已有路径。',
+        '查找与插入时间 O(L)，L 为关键字长度；空间按所有关键字的字符总数计。',
+        '本轮只实现查找与插入，不扩展为自动补全或文本搜索引擎。',
+      ],
+      [
+        'An existing path is not an existing key; the end must have terminal=true.',
+        'A shared prefix is stored once; insertion must not copy an existing path.',
+        'Search and insertion are O(L) for key length L; space counts all characters of all keys.',
+        'This round implements search and insertion only, not autocomplete or a text search engine.',
       ],
     ),
   },

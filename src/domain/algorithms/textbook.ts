@@ -710,6 +710,13 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
     shortTitle: { zh: '查找', en: 'Searching' },
     topics: [
       {
+        id: 'search-basics',
+        title: { zh: '查找的基本概念', en: 'Search fundamentals' },
+        algorithms: [],
+        concept: true,
+        conceptId: 'search-basics',
+      },
+      {
         id: 'static-search',
         title: { zh: '静态查找表', en: 'Static search tables' },
         algorithms: [],
@@ -726,23 +733,35 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
           },
           {
             id: 'search-asl',
-            title: { zh: '平均查找长度与判定树', en: 'Average search length and decision trees' },
+            title: { zh: '折半查找判定树与 ASL', en: 'Binary-search decision tree and ASL' },
             algorithms: [],
             concept: true,
             conceptId: 'asl-decision-tree',
           },
           {
             id: 'indexed-search',
-            title: { zh: '索引顺序表的查找', en: 'Indexed sequential search' },
+            title: { zh: '索引顺序表（分块结构）', en: 'Indexed table (block structure)' },
             algorithms: [],
             concept: true,
             conceptId: 'indexed-search',
+          },
+          {
+            id: 'block-search',
+            title: { zh: '分块查找动态过程', en: 'Block search in action' },
+            algorithms: [{ id: 'block-search' }],
+          },
+          {
+            id: 'static-tree-table',
+            title: { zh: '静态树表与次优查找树', en: 'Static tree tables' },
+            algorithms: [],
+            concept: true,
+            conceptId: 'static-tree-table',
           },
         ],
       },
       {
         id: 'tree-search',
-        title: { zh: '树表查找', en: 'Tree-table search' },
+        title: { zh: '动态查找表', en: 'Dynamic search tables' },
         algorithms: [],
         children: [
           {
@@ -757,30 +776,47 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
           },
           {
             id: 'multiway-tree',
-            title: { zh: 'B 树', en: 'B-tree' },
+            title: { zh: 'B 树：定义与结构', en: 'B-tree: definition and structure' },
             algorithms: [],
             concept: true,
             conceptId: 'b-tree',
           },
           {
             id: 'bplus-tree',
-            title: { zh: 'B+ 树', en: 'B+ tree' },
+            title: { zh: 'B+ 树：定义与结构', en: 'B+ tree: definition and structure' },
             algorithms: [],
             concept: true,
             conceptId: 'b-plus-tree',
           },
           {
             id: 'btree-demo',
-            title: { zh: 'B 树查找与插入', en: 'B-tree search and insertion' },
+            title: { zh: 'B 树：查找、插入与删除', en: 'B-tree: search, insert and delete' },
             algorithms: [{ id: 'btree' }],
+          },
+          {
+            id: 'bplus-demo',
+            title: { zh: 'B+ 树：查找、插入与范围查询', en: 'B+ tree: search, insert and range' },
+            algorithms: [{ id: 'bplus-tree' }],
+          },
+          {
+            id: 'key-tree',
+            title: { zh: '键树（Trie）：查找与插入', en: 'Key tree (trie): search and insert' },
+            algorithms: [{ id: 'key-tree' }],
           },
         ],
       },
       {
         id: 'hash-search',
-        title: { zh: '哈希查找', en: 'Hashing' },
+        title: { zh: '哈希表', en: 'Hash tables' },
         algorithms: [],
         children: [
+          {
+            id: 'hashing-basics',
+            title: { zh: '哈希函数、冲突与装填因子', en: 'Hash functions, collisions and load factor' },
+            algorithms: [],
+            concept: true,
+            conceptId: 'hashing-basics',
+          },
           {
             id: 'hash-chain',
             title: { zh: '链地址法', en: 'Separate chaining' },
@@ -788,10 +824,17 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
           },
           {
             id: 'hash-probe',
-            title: { zh: '开放地址法', en: 'Open addressing' },
+            title: { zh: '开放定址法', en: 'Open addressing' },
             algorithms: [{ id: 'hash-probe' }],
           },
         ],
+      },
+      {
+        id: 'search-comparison',
+        title: { zh: '查找方法比较', en: 'Search method comparison' },
+        algorithms: [],
+        concept: true,
+        conceptId: 'search-comparison',
       },
     ],
   },

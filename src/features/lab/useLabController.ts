@@ -14,6 +14,7 @@ import { ExecutionError, formatDiagnostic, type ExecutionDiagnostic } from '../.
 import { runForLanguage, isVisualResult } from '../../runtime/execute';
 import { safeSet } from '../../runtime/storage';
 import { guidedLanguageFor } from '../../domain/algorithms/guidedInput';
+import { buildSearchInput, randomSearchDraft } from '../../domain/algorithms/searchInput';
 import { withTreeMode, type TreeMode } from '../../domain/algorithms/treeTraversalExamples';
 import {
   bstPresetInput,
@@ -27,6 +28,18 @@ import {
   btreePresetInput,
   type BtreePresetId,
 } from '../../domain/algorithms/btreeExamples';
+import {
+  blockSearchPresetInput,
+  type BlockSearchPresetId,
+} from '../../domain/algorithms/blockSearchExamples';
+import {
+  bplusTreePresetInput,
+  type BplusTreePresetId,
+} from '../../domain/algorithms/bplusExamples';
+import {
+  keyTreePresetInput,
+  type KeyTreePresetId,
+} from '../../domain/algorithms/keyTreeExamples';
 import {
   heapPresetInput,
   type HeapPresetId,
@@ -92,6 +105,9 @@ export interface LabController {
    * `{preset, operation, tree, target}` input. It never runs code.
    */
   selectBTreePreset: (preset: BtreePresetId) => void;
+  selectBlockSearchPreset: (preset: BlockSearchPresetId) => void;
+  selectBplusPreset: (preset: BplusTreePresetId) => void;
+  selectKeyTreePreset: (preset: KeyTreePresetId) => void;
   /**
    * T3: select one official max-heap example (build / push / extract / sort)
    * by rewriting the object input. It never runs code.
@@ -255,7 +271,7 @@ export function useLabController(): LabController {
     const preferredLang: CodeLanguage =
       id === 'bubble'
         ? 'js'
-        : id === 'stack' || id === 'queue' || id === 'linked' || id === 'doubly' || id === 'circular' || id === 'seqlist' || id === 'inorder' || id === 'threaded-inorder' || id === 'bst' || id === 'avl' || id === 'btree' || id === 'heap' || id === 'huffman' || id === 'selection' || id === 'insertion' || id === 'shell' || id === 'quick' || id === 'merge' || id === 'linear' || id === 'binary' || id === 'hash-chain' || id === 'hash-probe' || id === 'kmp' || id === 'bf' || id === 'gl-depth' || id === 'gl-copy' || id === 'sparse-transpose' || id === 'static-linked-list' || id === 'polynomial-add' || id === 'factorial' || id === 'fib' || id === 'free-list' || id === 'buddy-system' || id === 'garbage-collection' || isGraphAlgorithm(id)
+        : id === 'stack' || id === 'queue' || id === 'linked' || id === 'doubly' || id === 'circular' || id === 'seqlist' || id === 'inorder' || id === 'threaded-inorder' || id === 'bst' || id === 'avl' || id === 'btree' || id === 'block-search' || id === 'bplus-tree' || id === 'key-tree' || id === 'heap' || id === 'huffman' || id === 'selection' || id === 'insertion' || id === 'shell' || id === 'quick' || id === 'merge' || id === 'linear' || id === 'binary' || id === 'hash-chain' || id === 'hash-probe' || id === 'kmp' || id === 'bf' || id === 'gl-depth' || id === 'gl-copy' || id === 'sparse-transpose' || id === 'static-linked-list' || id === 'polynomial-add' || id === 'factorial' || id === 'fib' || id === 'free-list' || id === 'buddy-system' || id === 'garbage-collection' || isGraphAlgorithm(id)
           ? 'python'
           : codeLang;
     if (preferredLang !== codeLang) {
@@ -299,6 +315,24 @@ export function useLabController(): LabController {
   const selectBTreePreset = useCallback((preset: BtreePresetId) => {
     playback.stop();
     setInputJson(JSON.stringify(btreePresetInput(preset)));
+    setStatus({ text: '', error: false });
+  }, [playback]);
+
+  const selectBlockSearchPreset = useCallback((preset: BlockSearchPresetId) => {
+    playback.stop();
+    setInputJson(JSON.stringify(blockSearchPresetInput(preset)));
+    setStatus({ text: '', error: false });
+  }, [playback]);
+
+  const selectBplusPreset = useCallback((preset: BplusTreePresetId) => {
+    playback.stop();
+    setInputJson(JSON.stringify(bplusTreePresetInput(preset)));
+    setStatus({ text: '', error: false });
+  }, [playback]);
+
+  const selectKeyTreePreset = useCallback((preset: KeyTreePresetId) => {
+    playback.stop();
+    setInputJson(JSON.stringify(keyTreePresetInput(preset)));
     setStatus({ text: '', error: false });
   }, [playback]);
 
@@ -396,6 +430,10 @@ export function useLabController(): LabController {
       next = { rows, cols, triples };
     } else if (entry.group === 'sort') {
       next = Array.from({ length: 7 }, () => 1 + Math.floor(Math.random() * 15));
+    } else if (currentAlgo === 'block-search' || currentAlgo === 'bplus-tree' || currentAlgo === 'key-tree') {
+      const draft = randomSearchDraft(currentAlgo, '', Math.random);
+      const built = buildSearchInput(currentAlgo, draft);
+      next = built.ok ? built.input : defaultInputFor(currentAlgo);
     } else if (entry.group === 'search') {
       next = { nums: [1, 3, 5, 7, 9, 11, 13], target: [3, 5, 9, 13][Math.floor(Math.random() * 4)] };
     } else {
@@ -425,6 +463,9 @@ export function useLabController(): LabController {
     selectBstPreset,
     selectAvlPreset,
     selectBTreePreset,
+    selectBlockSearchPreset,
+    selectBplusPreset,
+    selectKeyTreePreset,
     selectHeapPreset,
     selectHuffmanPreset,
     selectSequentialListPreset,

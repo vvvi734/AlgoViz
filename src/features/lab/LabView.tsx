@@ -5,6 +5,10 @@ import { TreeTraversalPicker } from './TreeTraversalPicker';
 import { BstPicker } from './BstPicker';
 import { AvlPicker } from './AvlPicker';
 import { BTreePicker } from './BTreePicker';
+import { SearchPresetPickers } from './SearchPickers';
+import { blockSearchPresetFromInput } from '../../domain/algorithms/blockSearchExamples';
+import { bplusTreePresetFromInput } from '../../domain/algorithms/bplusExamples';
+import { keyTreePresetFromInput } from '../../domain/algorithms/keyTreeExamples';
 import { HeapPicker } from './HeapPicker';
 import { HuffmanPicker } from './HuffmanPicker';
 import { SequentialListPicker } from './SequentialListPicker';
@@ -73,6 +77,9 @@ export function LabView({
   const showBstPicker = lab.currentAlgo === 'bst' && lab.codeLang === 'python';
   const showAvlPicker = lab.currentAlgo === 'avl' && lab.codeLang === 'python';
   const showBTreePicker = lab.currentAlgo === 'btree' && lab.codeLang === 'python';
+  const showBlockSearchPicker = lab.currentAlgo === 'block-search' && lab.codeLang === 'python';
+  const showBplusPicker = lab.currentAlgo === 'bplus-tree' && lab.codeLang === 'python';
+  const showKeyTreePicker = lab.currentAlgo === 'key-tree' && lab.codeLang === 'python';
   const showHeapPicker = lab.currentAlgo === 'heap' && lab.codeLang === 'python';
   const showHuffmanPicker = lab.currentAlgo === 'huffman' && lab.codeLang === 'python';
   const showSequentialListPicker = lab.currentAlgo === 'seqlist' && lab.codeLang === 'python';
@@ -87,6 +94,18 @@ export function LabView({
   const actualBTreePreset =
     currentEvent?.structure?.kind === 'btree'
       ? btreePresetFromInput({ preset: currentEvent.structure.preset })
+      : null;
+  const actualBlockSearchPreset =
+    currentEvent?.structure?.kind === 'block-search'
+      ? blockSearchPresetFromInput({ preset: currentEvent.structure.preset })
+      : null;
+  const actualBplusPreset =
+    currentEvent?.structure?.kind === 'bplus-tree'
+      ? bplusTreePresetFromInput({ preset: currentEvent.structure.preset })
+      : null;
+  const actualKeyTreePreset =
+    currentEvent?.structure?.kind === 'key-tree'
+      ? keyTreePresetFromInput({ preset: currentEvent.structure.preset })
       : null;
   const actualHeapPreset =
     currentEvent?.structure?.kind === 'max-heap'
@@ -373,6 +392,17 @@ export function LabView({
                 inputJson={lab.inputJson}
                 actualPreset={actualBTreePreset}
                 onSelect={lab.selectBTreePreset}
+              />
+            ) : null}
+            {showBlockSearchPicker || showBplusPicker || showKeyTreePicker ? (
+              <SearchPresetPickers
+                inputJson={lab.inputJson}
+                blockActual={showBlockSearchPicker ? actualBlockSearchPreset : null}
+                bplusActual={showBplusPicker ? actualBplusPreset : null}
+                keyActual={showKeyTreePicker ? actualKeyTreePreset : null}
+                onSelectBlock={lab.selectBlockSearchPreset}
+                onSelectBplus={lab.selectBplusPreset}
+                onSelectKey={lab.selectKeyTreePreset}
               />
             ) : null}
             {showHeapPicker ? (

@@ -422,6 +422,27 @@ export const REFERENCE_CODE: Record<string, ReferenceEntry> = {
       python: { fileName: 'linear_search.py' },
     },
   },
+  'block-search': {
+    files: {
+      c: { fileName: 'block_search.c' },
+      cpp: { fileName: 'block_search.cpp' },
+      python: { fileName: 'block_search.py' },
+    },
+  },
+  'bplus-tree': {
+    files: {
+      c: { fileName: 'bplus_tree.c' },
+      cpp: { fileName: 'bplus_tree.cpp' },
+      python: { fileName: 'bplus_tree.py' },
+    },
+  },
+  'key-tree': {
+    files: {
+      c: { fileName: 'key_tree.c' },
+      cpp: { fileName: 'key_tree.cpp' },
+      python: { fileName: 'key_tree.py' },
+    },
+  },
   'hash-chain': {
     files: {
       c: { fileName: 'hash_chain.c' },

@@ -4,6 +4,9 @@ import { defaultInputFor } from '../../domain/algorithms/examples';
 import { bstPresetFromInput } from '../../domain/algorithms/bstExamples';
 import { avlPresetFromInput } from '../../domain/algorithms/avlExamples';
 import { btreePresetFromInput } from '../../domain/algorithms/btreeExamples';
+import { blockSearchPresetFromInput } from '../../domain/algorithms/blockSearchExamples';
+import { bplusTreePresetFromInput } from '../../domain/algorithms/bplusExamples';
+import { keyTreePresetFromInput } from '../../domain/algorithms/keyTreeExamples';
 import { heapPresetFromInput } from '../../domain/algorithms/heapExamples';
 import { huffmanPresetFromInput } from '../../domain/algorithms/huffmanExamples';
 import type { TreeGuidedInputAlgorithm } from '../../domain/algorithms/treeInput';
@@ -28,6 +31,7 @@ import {
   isHuffmanGuidedInputAlgorithm,
   isNumsTargetGuidedInputAlgorithm,
   isRecursionGuidedInputAlgorithm,
+  isSearchGuidedInputAlgorithm,
   isStringPairGuidedInputAlgorithm,
   isStructureGuidedInputAlgorithm,
   isSparseGuidedInputAlgorithm,
@@ -57,6 +61,7 @@ import type {
 } from '../../domain/algorithms/structureInput';
 import { StructureOperationEditor } from './StructureOperationEditor';
 import { TreeInputEditor } from './TreeInputEditor';
+import { SearchInputEditor } from './SearchInputEditor';
 import { HeapInputEditor } from './HeapInputEditor';
 import { HuffmanInputEditor } from './HuffmanInputEditor';
 import { GraphInputEditor } from './GraphInputEditor';
@@ -116,6 +121,11 @@ const GRAPH_HINT_KEYS: Record<GraphGuidedInputAlgorithm, string> = {
 };
 
 function hintKeyFor(id: GuidedInputAlgorithm): string {
+  if (isSearchGuidedInputAlgorithm(id)) {
+    if (id === 'block-search') return 'guidedBlockSearchHint';
+    if (id === 'bplus-tree') return 'guidedBplusHint';
+    return 'guidedKeyTreeHint';
+  }
   if (isFreeListGuidedInputAlgorithm(id)) return 'guidedMemoryHint';
   if (isBuddyGuidedInputAlgorithm(id)) return 'guidedBuddyHint';
   if (isGarbageCollectionGuidedInputAlgorithm(id)) return 'guidedGcHint';
@@ -193,6 +203,9 @@ export function GuidedInputPanel({ lab }: { lab: LabController }) {
       (id === 'bst' && bstPresetFromInput(parsed) !== null) ||
       (id === 'avl' && avlPresetFromInput(parsed) !== null) ||
       (id === 'btree' && btreePresetFromInput(parsed) !== null) ||
+      (id === 'block-search' && blockSearchPresetFromInput(parsed) !== null) ||
+      (id === 'bplus-tree' && bplusTreePresetFromInput(parsed) !== null) ||
+      (id === 'key-tree' && keyTreePresetFromInput(parsed) !== null) ||
       (id === 'huffman' && huffmanPresetFromInput(parsed) !== null);
     const seqlistPreset = id === 'seqlist' ? parsed : null;
     const seqlistPresetSelected =
@@ -358,7 +371,8 @@ export function GuidedInputPanel({ lab }: { lab: LabController }) {
       // Picker-backed official examples write their selection into inputJson.
       // Official mode must run that selection, not a stale default.
       input = id === 'heap' || id === 'seqlist' || id === 'inorder' || id === 'bst' || id === 'avl' ||
-        id === 'btree' || id === 'huffman' || isGraphAlgorithmGuidedInput(id) ||
+        id === 'btree' || id === 'huffman' || id === 'block-search' || id === 'bplus-tree' ||
+        id === 'key-tree' || isGraphAlgorithmGuidedInput(id) ||
         isSparseGuidedInputAlgorithm(id)
         ? (parseInput(lab.inputJson) ?? defaultInputFor(id))
         : defaultInputFor(id);
@@ -554,6 +568,14 @@ export function GuidedInputPanel({ lab }: { lab: LabController }) {
             }
           }
           onChange={setGarbage}
+        />
+      ) : null}
+
+      {isSearchGuidedInputAlgorithm(id) ? (
+        <SearchInputEditor
+          algorithm={id}
+          draft={draft}
+          onChange={setField}
         />
       ) : null}
 

@@ -1,0 +1,6119 @@
+{
+  "find-hit": {
+    "input": {
+      "preset": "find-hit",
+      "tree": [
+        5,
+        10,
+        15,
+        20,
+        25,
+        30,
+        35,
+        40
+      ],
+      "operation": "find",
+      "target": 25,
+      "end": 33
+    },
+    "frames": [
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40
+          ],
+          "done": false
+        },
+        "message": "4 阶 B+ 树：内部只存分隔键，所有记录在叶子 / order-4 B+ tree ready",
+        "line": 544,
+        "variables": {
+          "order": 4,
+          "target": 25,
+          "rangeEnd": 33,
+          "nodeCount": 5,
+          "treeHeight": 2,
+          "records": 8,
+          "currentKeys": [
+            15,
+            25,
+            35
+          ],
+          "result": "pending"
+        },
+        "lessonStepId": "init",
+        "structure": {
+          "kind": "bplus-tree",
+          "order": 4,
+          "preset": "find-hit",
+          "command": "find",
+          "operation": "init",
+          "targetValue": 25,
+          "rangeEnd": 33,
+          "rootId": "p3",
+          "nodes": [
+            {
+              "id": "p1",
+              "keys": [
+                5,
+                10
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p2"
+            },
+            {
+              "id": "p2",
+              "keys": [
+                15,
+                20
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p4"
+            },
+            {
+              "id": "p3",
+              "keys": [
+                15,
+                25,
+                35
+              ],
+              "children": [
+                "p1",
+                "p2",
+                "p4",
+                "p5"
+              ],
+              "leaf": false,
+              "next": null
+            },
+            {
+              "id": "p4",
+              "keys": [
+                25,
+                30
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p5"
+            },
+            {
+              "id": "p5",
+              "keys": [
+                35,
+                40
+              ],
+              "children": [],
+              "leaf": true,
+              "next": null
+            }
+          ],
+          "leafOrder": [
+            "p1",
+            "p2",
+            "p4",
+            "p5"
+          ],
+          "currentNodeId": "p3",
+          "pathIds": [
+            "p3"
+          ],
+          "compareIndex": null,
+          "compareKey": null,
+          "childSlot": null,
+          "childId": null,
+          "split": null,
+          "insertedKey": null,
+          "rangeKeys": [],
+          "rangeLeafIds": [],
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40
+          ],
+          "done": false
+        },
+        "message": "索引键 15：target ≥ 15，向右/向左 / route by separator",
+        "line": 179,
+        "variables": {
+          "order": 4,
+          "target": 25,
+          "rangeEnd": 33,
+          "nodeCount": 5,
+          "treeHeight": 2,
+          "records": 8,
+          "currentKeys": [
+            15,
+            25,
+            35
+          ],
+          "result": "pending"
+        },
+        "lessonStepId": "inspect-internal",
+        "structure": {
+          "kind": "bplus-tree",
+          "order": 4,
+          "preset": "find-hit",
+          "command": "find",
+          "operation": "inspect-internal",
+          "targetValue": 25,
+          "rangeEnd": 33,
+          "rootId": "p3",
+          "nodes": [
+            {
+              "id": "p1",
+              "keys": [
+                5,
+                10
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p2"
+            },
+            {
+              "id": "p2",
+              "keys": [
+                15,
+                20
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p4"
+            },
+            {
+              "id": "p3",
+              "keys": [
+                15,
+                25,
+                35
+              ],
+              "children": [
+                "p1",
+                "p2",
+                "p4",
+                "p5"
+              ],
+              "leaf": false,
+              "next": null
+            },
+            {
+              "id": "p4",
+              "keys": [
+                25,
+                30
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p5"
+            },
+            {
+              "id": "p5",
+              "keys": [
+                35,
+                40
+              ],
+              "children": [],
+              "leaf": true,
+              "next": null
+            }
+          ],
+          "leafOrder": [
+            "p1",
+            "p2",
+            "p4",
+            "p5"
+          ],
+          "currentNodeId": "p3",
+          "pathIds": [
+            "p3"
+          ],
+          "compareIndex": 0,
+          "compareKey": 15,
+          "childSlot": null,
+          "childId": null,
+          "split": null,
+          "insertedKey": null,
+          "rangeKeys": [],
+          "rangeLeafIds": [],
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40
+          ],
+          "done": false
+        },
+        "message": "索引键 25：target ≥ 25，向右/向左 / route by separator",
+        "line": 179,
+        "variables": {
+          "order": 4,
+          "target": 25,
+          "rangeEnd": 33,
+          "nodeCount": 5,
+          "treeHeight": 2,
+          "records": 8,
+          "currentKeys": [
+            15,
+            25,
+            35
+          ],
+          "result": "pending"
+        },
+        "lessonStepId": "inspect-internal",
+        "structure": {
+          "kind": "bplus-tree",
+          "order": 4,
+          "preset": "find-hit",
+          "command": "find",
+          "operation": "inspect-internal",
+          "targetValue": 25,
+          "rangeEnd": 33,
+          "rootId": "p3",
+          "nodes": [
+            {
+              "id": "p1",
+              "keys": [
+                5,
+                10
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p2"
+            },
+            {
+              "id": "p2",
+              "keys": [
+                15,
+                20
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p4"
+            },
+            {
+              "id": "p3",
+              "keys": [
+                15,
+                25,
+                35
+              ],
+              "children": [
+                "p1",
+                "p2",
+                "p4",
+                "p5"
+              ],
+              "leaf": false,
+              "next": null
+            },
+            {
+              "id": "p4",
+              "keys": [
+                25,
+                30
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p5"
+            },
+            {
+              "id": "p5",
+              "keys": [
+                35,
+                40
+              ],
+              "children": [],
+              "leaf": true,
+              "next": null
+            }
+          ],
+          "leafOrder": [
+            "p1",
+            "p2",
+            "p4",
+            "p5"
+          ],
+          "currentNodeId": "p3",
+          "pathIds": [
+            "p3"
+          ],
+          "compareIndex": 1,
+          "compareKey": 25,
+          "childSlot": null,
+          "childId": null,
+          "split": null,
+          "insertedKey": null,
+          "rangeKeys": [],
+          "rangeLeafIds": [],
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40
+          ],
+          "done": false
+        },
+        "message": "索引键 35：target < 35，向右/向左 / route by separator",
+        "line": 179,
+        "variables": {
+          "order": 4,
+          "target": 25,
+          "rangeEnd": 33,
+          "nodeCount": 5,
+          "treeHeight": 2,
+          "records": 8,
+          "currentKeys": [
+            15,
+            25,
+            35
+          ],
+          "result": "pending"
+        },
+        "lessonStepId": "inspect-internal",
+        "structure": {
+          "kind": "bplus-tree",
+          "order": 4,
+          "preset": "find-hit",
+          "command": "find",
+          "operation": "inspect-internal",
+          "targetValue": 25,
+          "rangeEnd": 33,
+          "rootId": "p3",
+          "nodes": [
+            {
+              "id": "p1",
+              "keys": [
+                5,
+                10
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p2"
+            },
+            {
+              "id": "p2",
+              "keys": [
+                15,
+                20
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p4"
+            },
+            {
+              "id": "p3",
+              "keys": [
+                15,
+                25,
+                35
+              ],
+              "children": [
+                "p1",
+                "p2",
+                "p4",
+                "p5"
+              ],
+              "leaf": false,
+              "next": null
+            },
+            {
+              "id": "p4",
+              "keys": [
+                25,
+                30
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p5"
+            },
+            {
+              "id": "p5",
+              "keys": [
+                35,
+                40
+              ],
+              "children": [],
+              "leaf": true,
+              "next": null
+            }
+          ],
+          "leafOrder": [
+            "p1",
+            "p2",
+            "p4",
+            "p5"
+          ],
+          "currentNodeId": "p3",
+          "pathIds": [
+            "p3"
+          ],
+          "compareIndex": 2,
+          "compareKey": 35,
+          "childSlot": null,
+          "childId": null,
+          "split": null,
+          "insertedKey": null,
+          "rangeKeys": [],
+          "rangeLeafIds": [],
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40
+          ],
+          "done": false
+        },
+        "message": "沿第 3 个孩子继续向下 / follow child 3",
+        "line": 192,
+        "variables": {
+          "order": 4,
+          "target": 25,
+          "rangeEnd": 33,
+          "nodeCount": 5,
+          "treeHeight": 2,
+          "records": 8,
+          "currentKeys": [
+            15,
+            25,
+            35
+          ],
+          "result": "pending"
+        },
+        "lessonStepId": "descend",
+        "structure": {
+          "kind": "bplus-tree",
+          "order": 4,
+          "preset": "find-hit",
+          "command": "find",
+          "operation": "descend",
+          "targetValue": 25,
+          "rangeEnd": 33,
+          "rootId": "p3",
+          "nodes": [
+            {
+              "id": "p1",
+              "keys": [
+                5,
+                10
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p2"
+            },
+            {
+              "id": "p2",
+              "keys": [
+                15,
+                20
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p4"
+            },
+            {
+              "id": "p3",
+              "keys": [
+                15,
+                25,
+                35
+              ],
+              "children": [
+                "p1",
+                "p2",
+                "p4",
+                "p5"
+              ],
+              "leaf": false,
+              "next": null
+            },
+            {
+              "id": "p4",
+              "keys": [
+                25,
+                30
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p5"
+            },
+            {
+              "id": "p5",
+              "keys": [
+                35,
+                40
+              ],
+              "children": [],
+              "leaf": true,
+              "next": null
+            }
+          ],
+          "leafOrder": [
+            "p1",
+            "p2",
+            "p4",
+            "p5"
+          ],
+          "currentNodeId": "p3",
+          "pathIds": [
+            "p3"
+          ],
+          "compareIndex": null,
+          "compareKey": null,
+          "childSlot": 2,
+          "childId": "p4",
+          "split": null,
+          "insertedKey": null,
+          "rangeKeys": [],
+          "rangeLeafIds": [],
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40
+          ],
+          "done": false
+        },
+        "message": "叶节点记录 25：与 25 比较 / compare record inside the leaf",
+        "line": 212,
+        "variables": {
+          "order": 4,
+          "target": 25,
+          "rangeEnd": 33,
+          "nodeCount": 5,
+          "treeHeight": 2,
+          "records": 8,
+          "currentKeys": [
+            25,
+            30
+          ],
+          "result": "pending"
+        },
+        "lessonStepId": "inspect-leaf",
+        "structure": {
+          "kind": "bplus-tree",
+          "order": 4,
+          "preset": "find-hit",
+          "command": "find",
+          "operation": "inspect-leaf",
+          "targetValue": 25,
+          "rangeEnd": 33,
+          "rootId": "p3",
+          "nodes": [
+            {
+              "id": "p1",
+              "keys": [
+                5,
+                10
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p2"
+            },
+            {
+              "id": "p2",
+              "keys": [
+                15,
+                20
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p4"
+            },
+            {
+              "id": "p3",
+              "keys": [
+                15,
+                25,
+                35
+              ],
+              "children": [
+                "p1",
+                "p2",
+                "p4",
+                "p5"
+              ],
+              "leaf": false,
+              "next": null
+            },
+            {
+              "id": "p4",
+              "keys": [
+                25,
+                30
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p5"
+            },
+            {
+              "id": "p5",
+              "keys": [
+                35,
+                40
+              ],
+              "children": [],
+              "leaf": true,
+              "next": null
+            }
+          ],
+          "leafOrder": [
+            "p1",
+            "p2",
+            "p4",
+            "p5"
+          ],
+          "currentNodeId": "p4",
+          "pathIds": [
+            "p3",
+            "p4"
+          ],
+          "compareIndex": 0,
+          "compareKey": 25,
+          "childSlot": null,
+          "childId": null,
+          "split": null,
+          "insertedKey": null,
+          "rangeKeys": [],
+          "rangeLeafIds": [],
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40
+          ],
+          "done": false
+        },
+        "message": "在叶子命中 25；B+ 树记录只在叶子 / hit in a leaf; B+ records live only there",
+        "line": 221,
+        "variables": {
+          "order": 4,
+          "target": 25,
+          "rangeEnd": 33,
+          "nodeCount": 5,
+          "treeHeight": 2,
+          "records": 8,
+          "currentKeys": [
+            25,
+            30
+          ],
+          "result": "found"
+        },
+        "lessonStepId": "found",
+        "structure": {
+          "kind": "bplus-tree",
+          "order": 4,
+          "preset": "find-hit",
+          "command": "find",
+          "operation": "found",
+          "targetValue": 25,
+          "rangeEnd": 33,
+          "rootId": "p3",
+          "nodes": [
+            {
+              "id": "p1",
+              "keys": [
+                5,
+                10
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p2"
+            },
+            {
+              "id": "p2",
+              "keys": [
+                15,
+                20
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p4"
+            },
+            {
+              "id": "p3",
+              "keys": [
+                15,
+                25,
+                35
+              ],
+              "children": [
+                "p1",
+                "p2",
+                "p4",
+                "p5"
+              ],
+              "leaf": false,
+              "next": null
+            },
+            {
+              "id": "p4",
+              "keys": [
+                25,
+                30
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p5"
+            },
+            {
+              "id": "p5",
+              "keys": [
+                35,
+                40
+              ],
+              "children": [],
+              "leaf": true,
+              "next": null
+            }
+          ],
+          "leafOrder": [
+            "p1",
+            "p2",
+            "p4",
+            "p5"
+          ],
+          "currentNodeId": "p4",
+          "pathIds": [
+            "p3",
+            "p4"
+          ],
+          "compareIndex": 0,
+          "compareKey": 25,
+          "childSlot": null,
+          "childId": null,
+          "split": null,
+          "insertedKey": null,
+          "rangeKeys": [],
+          "rangeLeafIds": [],
+          "result": "found"
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40
+          ],
+          "done": true
+        },
+        "message": "B+ 树操作完成 / operation complete",
+        "line": 561,
+        "variables": {
+          "order": 4,
+          "target": 25,
+          "rangeEnd": 33,
+          "nodeCount": 5,
+          "treeHeight": 2,
+          "records": 8,
+          "currentKeys": [],
+          "result": "found"
+        },
+        "lessonStepId": "done",
+        "structure": {
+          "kind": "bplus-tree",
+          "order": 4,
+          "preset": "find-hit",
+          "command": "find",
+          "operation": "done",
+          "targetValue": 25,
+          "rangeEnd": 33,
+          "rootId": "p3",
+          "nodes": [
+            {
+              "id": "p1",
+              "keys": [
+                5,
+                10
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p2"
+            },
+            {
+              "id": "p2",
+              "keys": [
+                15,
+                20
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p4"
+            },
+            {
+              "id": "p3",
+              "keys": [
+                15,
+                25,
+                35
+              ],
+              "children": [
+                "p1",
+                "p2",
+                "p4",
+                "p5"
+              ],
+              "leaf": false,
+              "next": null
+            },
+            {
+              "id": "p4",
+              "keys": [
+                25,
+                30
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p5"
+            },
+            {
+              "id": "p5",
+              "keys": [
+                35,
+                40
+              ],
+              "children": [],
+              "leaf": true,
+              "next": null
+            }
+          ],
+          "leafOrder": [
+            "p1",
+            "p2",
+            "p4",
+            "p5"
+          ],
+          "currentNodeId": null,
+          "pathIds": [],
+          "compareIndex": null,
+          "compareKey": null,
+          "childSlot": null,
+          "childId": null,
+          "split": null,
+          "insertedKey": null,
+          "rangeKeys": [],
+          "rangeLeafIds": [],
+          "result": "found"
+        }
+      }
+    ]
+  },
+  "find-miss": {
+    "input": {
+      "preset": "find-miss",
+      "tree": [
+        5,
+        10,
+        15,
+        20,
+        25,
+        30,
+        35,
+        40
+      ],
+      "operation": "find",
+      "target": 27,
+      "end": 33
+    },
+    "frames": [
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40
+          ],
+          "done": false
+        },
+        "message": "4 阶 B+ 树：内部只存分隔键，所有记录在叶子 / order-4 B+ tree ready",
+        "line": 544,
+        "variables": {
+          "order": 4,
+          "target": 27,
+          "rangeEnd": 33,
+          "nodeCount": 5,
+          "treeHeight": 2,
+          "records": 8,
+          "currentKeys": [
+            15,
+            25,
+            35
+          ],
+          "result": "pending"
+        },
+        "lessonStepId": "init",
+        "structure": {
+          "kind": "bplus-tree",
+          "order": 4,
+          "preset": "find-miss",
+          "command": "find",
+          "operation": "init",
+          "targetValue": 27,
+          "rangeEnd": 33,
+          "rootId": "p3",
+          "nodes": [
+            {
+              "id": "p1",
+              "keys": [
+                5,
+                10
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p2"
+            },
+            {
+              "id": "p2",
+              "keys": [
+                15,
+                20
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p4"
+            },
+            {
+              "id": "p3",
+              "keys": [
+                15,
+                25,
+                35
+              ],
+              "children": [
+                "p1",
+                "p2",
+                "p4",
+                "p5"
+              ],
+              "leaf": false,
+              "next": null
+            },
+            {
+              "id": "p4",
+              "keys": [
+                25,
+                30
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p5"
+            },
+            {
+              "id": "p5",
+              "keys": [
+                35,
+                40
+              ],
+              "children": [],
+              "leaf": true,
+              "next": null
+            }
+          ],
+          "leafOrder": [
+            "p1",
+            "p2",
+            "p4",
+            "p5"
+          ],
+          "currentNodeId": "p3",
+          "pathIds": [
+            "p3"
+          ],
+          "compareIndex": null,
+          "compareKey": null,
+          "childSlot": null,
+          "childId": null,
+          "split": null,
+          "insertedKey": null,
+          "rangeKeys": [],
+          "rangeLeafIds": [],
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40
+          ],
+          "done": false
+        },
+        "message": "索引键 15：target ≥ 15，向右/向左 / route by separator",
+        "line": 179,
+        "variables": {
+          "order": 4,
+          "target": 27,
+          "rangeEnd": 33,
+          "nodeCount": 5,
+          "treeHeight": 2,
+          "records": 8,
+          "currentKeys": [
+            15,
+            25,
+            35
+          ],
+          "result": "pending"
+        },
+        "lessonStepId": "inspect-internal",
+        "structure": {
+          "kind": "bplus-tree",
+          "order": 4,
+          "preset": "find-miss",
+          "command": "find",
+          "operation": "inspect-internal",
+          "targetValue": 27,
+          "rangeEnd": 33,
+          "rootId": "p3",
+          "nodes": [
+            {
+              "id": "p1",
+              "keys": [
+                5,
+                10
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p2"
+            },
+            {
+              "id": "p2",
+              "keys": [
+                15,
+                20
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p4"
+            },
+            {
+              "id": "p3",
+              "keys": [
+                15,
+                25,
+                35
+              ],
+              "children": [
+                "p1",
+                "p2",
+                "p4",
+                "p5"
+              ],
+              "leaf": false,
+              "next": null
+            },
+            {
+              "id": "p4",
+              "keys": [
+                25,
+                30
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p5"
+            },
+            {
+              "id": "p5",
+              "keys": [
+                35,
+                40
+              ],
+              "children": [],
+              "leaf": true,
+              "next": null
+            }
+          ],
+          "leafOrder": [
+            "p1",
+            "p2",
+            "p4",
+            "p5"
+          ],
+          "currentNodeId": "p3",
+          "pathIds": [
+            "p3"
+          ],
+          "compareIndex": 0,
+          "compareKey": 15,
+          "childSlot": null,
+          "childId": null,
+          "split": null,
+          "insertedKey": null,
+          "rangeKeys": [],
+          "rangeLeafIds": [],
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40
+          ],
+          "done": false
+        },
+        "message": "索引键 25：target ≥ 25，向右/向左 / route by separator",
+        "line": 179,
+        "variables": {
+          "order": 4,
+          "target": 27,
+          "rangeEnd": 33,
+          "nodeCount": 5,
+          "treeHeight": 2,
+          "records": 8,
+          "currentKeys": [
+            15,
+            25,
+            35
+          ],
+          "result": "pending"
+        },
+        "lessonStepId": "inspect-internal",
+        "structure": {
+          "kind": "bplus-tree",
+          "order": 4,
+          "preset": "find-miss",
+          "command": "find",
+          "operation": "inspect-internal",
+          "targetValue": 27,
+          "rangeEnd": 33,
+          "rootId": "p3",
+          "nodes": [
+            {
+              "id": "p1",
+              "keys": [
+                5,
+                10
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p2"
+            },
+            {
+              "id": "p2",
+              "keys": [
+                15,
+                20
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p4"
+            },
+            {
+              "id": "p3",
+              "keys": [
+                15,
+                25,
+                35
+              ],
+              "children": [
+                "p1",
+                "p2",
+                "p4",
+                "p5"
+              ],
+              "leaf": false,
+              "next": null
+            },
+            {
+              "id": "p4",
+              "keys": [
+                25,
+                30
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p5"
+            },
+            {
+              "id": "p5",
+              "keys": [
+                35,
+                40
+              ],
+              "children": [],
+              "leaf": true,
+              "next": null
+            }
+          ],
+          "leafOrder": [
+            "p1",
+            "p2",
+            "p4",
+            "p5"
+          ],
+          "currentNodeId": "p3",
+          "pathIds": [
+            "p3"
+          ],
+          "compareIndex": 1,
+          "compareKey": 25,
+          "childSlot": null,
+          "childId": null,
+          "split": null,
+          "insertedKey": null,
+          "rangeKeys": [],
+          "rangeLeafIds": [],
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40
+          ],
+          "done": false
+        },
+        "message": "索引键 35：target < 35，向右/向左 / route by separator",
+        "line": 179,
+        "variables": {
+          "order": 4,
+          "target": 27,
+          "rangeEnd": 33,
+          "nodeCount": 5,
+          "treeHeight": 2,
+          "records": 8,
+          "currentKeys": [
+            15,
+            25,
+            35
+          ],
+          "result": "pending"
+        },
+        "lessonStepId": "inspect-internal",
+        "structure": {
+          "kind": "bplus-tree",
+          "order": 4,
+          "preset": "find-miss",
+          "command": "find",
+          "operation": "inspect-internal",
+          "targetValue": 27,
+          "rangeEnd": 33,
+          "rootId": "p3",
+          "nodes": [
+            {
+              "id": "p1",
+              "keys": [
+                5,
+                10
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p2"
+            },
+            {
+              "id": "p2",
+              "keys": [
+                15,
+                20
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p4"
+            },
+            {
+              "id": "p3",
+              "keys": [
+                15,
+                25,
+                35
+              ],
+              "children": [
+                "p1",
+                "p2",
+                "p4",
+                "p5"
+              ],
+              "leaf": false,
+              "next": null
+            },
+            {
+              "id": "p4",
+              "keys": [
+                25,
+                30
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p5"
+            },
+            {
+              "id": "p5",
+              "keys": [
+                35,
+                40
+              ],
+              "children": [],
+              "leaf": true,
+              "next": null
+            }
+          ],
+          "leafOrder": [
+            "p1",
+            "p2",
+            "p4",
+            "p5"
+          ],
+          "currentNodeId": "p3",
+          "pathIds": [
+            "p3"
+          ],
+          "compareIndex": 2,
+          "compareKey": 35,
+          "childSlot": null,
+          "childId": null,
+          "split": null,
+          "insertedKey": null,
+          "rangeKeys": [],
+          "rangeLeafIds": [],
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40
+          ],
+          "done": false
+        },
+        "message": "沿第 3 个孩子继续向下 / follow child 3",
+        "line": 192,
+        "variables": {
+          "order": 4,
+          "target": 27,
+          "rangeEnd": 33,
+          "nodeCount": 5,
+          "treeHeight": 2,
+          "records": 8,
+          "currentKeys": [
+            15,
+            25,
+            35
+          ],
+          "result": "pending"
+        },
+        "lessonStepId": "descend",
+        "structure": {
+          "kind": "bplus-tree",
+          "order": 4,
+          "preset": "find-miss",
+          "command": "find",
+          "operation": "descend",
+          "targetValue": 27,
+          "rangeEnd": 33,
+          "rootId": "p3",
+          "nodes": [
+            {
+              "id": "p1",
+              "keys": [
+                5,
+                10
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p2"
+            },
+            {
+              "id": "p2",
+              "keys": [
+                15,
+                20
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p4"
+            },
+            {
+              "id": "p3",
+              "keys": [
+                15,
+                25,
+                35
+              ],
+              "children": [
+                "p1",
+                "p2",
+                "p4",
+                "p5"
+              ],
+              "leaf": false,
+              "next": null
+            },
+            {
+              "id": "p4",
+              "keys": [
+                25,
+                30
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p5"
+            },
+            {
+              "id": "p5",
+              "keys": [
+                35,
+                40
+              ],
+              "children": [],
+              "leaf": true,
+              "next": null
+            }
+          ],
+          "leafOrder": [
+            "p1",
+            "p2",
+            "p4",
+            "p5"
+          ],
+          "currentNodeId": "p3",
+          "pathIds": [
+            "p3"
+          ],
+          "compareIndex": null,
+          "compareKey": null,
+          "childSlot": 2,
+          "childId": "p4",
+          "split": null,
+          "insertedKey": null,
+          "rangeKeys": [],
+          "rangeLeafIds": [],
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40
+          ],
+          "done": false
+        },
+        "message": "叶节点记录 25：与 27 比较 / compare record inside the leaf",
+        "line": 212,
+        "variables": {
+          "order": 4,
+          "target": 27,
+          "rangeEnd": 33,
+          "nodeCount": 5,
+          "treeHeight": 2,
+          "records": 8,
+          "currentKeys": [
+            25,
+            30
+          ],
+          "result": "pending"
+        },
+        "lessonStepId": "inspect-leaf",
+        "structure": {
+          "kind": "bplus-tree",
+          "order": 4,
+          "preset": "find-miss",
+          "command": "find",
+          "operation": "inspect-leaf",
+          "targetValue": 27,
+          "rangeEnd": 33,
+          "rootId": "p3",
+          "nodes": [
+            {
+              "id": "p1",
+              "keys": [
+                5,
+                10
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p2"
+            },
+            {
+              "id": "p2",
+              "keys": [
+                15,
+                20
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p4"
+            },
+            {
+              "id": "p3",
+              "keys": [
+                15,
+                25,
+                35
+              ],
+              "children": [
+                "p1",
+                "p2",
+                "p4",
+                "p5"
+              ],
+              "leaf": false,
+              "next": null
+            },
+            {
+              "id": "p4",
+              "keys": [
+                25,
+                30
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p5"
+            },
+            {
+              "id": "p5",
+              "keys": [
+                35,
+                40
+              ],
+              "children": [],
+              "leaf": true,
+              "next": null
+            }
+          ],
+          "leafOrder": [
+            "p1",
+            "p2",
+            "p4",
+            "p5"
+          ],
+          "currentNodeId": "p4",
+          "pathIds": [
+            "p3",
+            "p4"
+          ],
+          "compareIndex": 0,
+          "compareKey": 25,
+          "childSlot": null,
+          "childId": null,
+          "split": null,
+          "insertedKey": null,
+          "rangeKeys": [],
+          "rangeLeafIds": [],
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40
+          ],
+          "done": false
+        },
+        "message": "叶节点记录 30：与 27 比较 / compare record inside the leaf",
+        "line": 212,
+        "variables": {
+          "order": 4,
+          "target": 27,
+          "rangeEnd": 33,
+          "nodeCount": 5,
+          "treeHeight": 2,
+          "records": 8,
+          "currentKeys": [
+            25,
+            30
+          ],
+          "result": "pending"
+        },
+        "lessonStepId": "inspect-leaf",
+        "structure": {
+          "kind": "bplus-tree",
+          "order": 4,
+          "preset": "find-miss",
+          "command": "find",
+          "operation": "inspect-leaf",
+          "targetValue": 27,
+          "rangeEnd": 33,
+          "rootId": "p3",
+          "nodes": [
+            {
+              "id": "p1",
+              "keys": [
+                5,
+                10
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p2"
+            },
+            {
+              "id": "p2",
+              "keys": [
+                15,
+                20
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p4"
+            },
+            {
+              "id": "p3",
+              "keys": [
+                15,
+                25,
+                35
+              ],
+              "children": [
+                "p1",
+                "p2",
+                "p4",
+                "p5"
+              ],
+              "leaf": false,
+              "next": null
+            },
+            {
+              "id": "p4",
+              "keys": [
+                25,
+                30
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p5"
+            },
+            {
+              "id": "p5",
+              "keys": [
+                35,
+                40
+              ],
+              "children": [],
+              "leaf": true,
+              "next": null
+            }
+          ],
+          "leafOrder": [
+            "p1",
+            "p2",
+            "p4",
+            "p5"
+          ],
+          "currentNodeId": "p4",
+          "pathIds": [
+            "p3",
+            "p4"
+          ],
+          "compareIndex": 1,
+          "compareKey": 30,
+          "childSlot": null,
+          "childId": null,
+          "split": null,
+          "insertedKey": null,
+          "rangeKeys": [],
+          "rangeLeafIds": [],
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40
+          ],
+          "done": false
+        },
+        "message": "叶子中没有 27：查找失败 / leaf does not contain the target",
+        "line": 233,
+        "variables": {
+          "order": 4,
+          "target": 27,
+          "rangeEnd": 33,
+          "nodeCount": 5,
+          "treeHeight": 2,
+          "records": 8,
+          "currentKeys": [
+            25,
+            30
+          ],
+          "result": "not-found"
+        },
+        "lessonStepId": "not-found",
+        "structure": {
+          "kind": "bplus-tree",
+          "order": 4,
+          "preset": "find-miss",
+          "command": "find",
+          "operation": "not-found",
+          "targetValue": 27,
+          "rangeEnd": 33,
+          "rootId": "p3",
+          "nodes": [
+            {
+              "id": "p1",
+              "keys": [
+                5,
+                10
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p2"
+            },
+            {
+              "id": "p2",
+              "keys": [
+                15,
+                20
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p4"
+            },
+            {
+              "id": "p3",
+              "keys": [
+                15,
+                25,
+                35
+              ],
+              "children": [
+                "p1",
+                "p2",
+                "p4",
+                "p5"
+              ],
+              "leaf": false,
+              "next": null
+            },
+            {
+              "id": "p4",
+              "keys": [
+                25,
+                30
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p5"
+            },
+            {
+              "id": "p5",
+              "keys": [
+                35,
+                40
+              ],
+              "children": [],
+              "leaf": true,
+              "next": null
+            }
+          ],
+          "leafOrder": [
+            "p1",
+            "p2",
+            "p4",
+            "p5"
+          ],
+          "currentNodeId": "p4",
+          "pathIds": [
+            "p3",
+            "p4"
+          ],
+          "compareIndex": null,
+          "compareKey": null,
+          "childSlot": null,
+          "childId": null,
+          "split": null,
+          "insertedKey": null,
+          "rangeKeys": [],
+          "rangeLeafIds": [],
+          "result": "not-found"
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40
+          ],
+          "done": true
+        },
+        "message": "B+ 树操作完成 / operation complete",
+        "line": 561,
+        "variables": {
+          "order": 4,
+          "target": 27,
+          "rangeEnd": 33,
+          "nodeCount": 5,
+          "treeHeight": 2,
+          "records": 8,
+          "currentKeys": [],
+          "result": "not-found"
+        },
+        "lessonStepId": "done",
+        "structure": {
+          "kind": "bplus-tree",
+          "order": 4,
+          "preset": "find-miss",
+          "command": "find",
+          "operation": "done",
+          "targetValue": 27,
+          "rangeEnd": 33,
+          "rootId": "p3",
+          "nodes": [
+            {
+              "id": "p1",
+              "keys": [
+                5,
+                10
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p2"
+            },
+            {
+              "id": "p2",
+              "keys": [
+                15,
+                20
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p4"
+            },
+            {
+              "id": "p3",
+              "keys": [
+                15,
+                25,
+                35
+              ],
+              "children": [
+                "p1",
+                "p2",
+                "p4",
+                "p5"
+              ],
+              "leaf": false,
+              "next": null
+            },
+            {
+              "id": "p4",
+              "keys": [
+                25,
+                30
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p5"
+            },
+            {
+              "id": "p5",
+              "keys": [
+                35,
+                40
+              ],
+              "children": [],
+              "leaf": true,
+              "next": null
+            }
+          ],
+          "leafOrder": [
+            "p1",
+            "p2",
+            "p4",
+            "p5"
+          ],
+          "currentNodeId": null,
+          "pathIds": [],
+          "compareIndex": null,
+          "compareKey": null,
+          "childSlot": null,
+          "childId": null,
+          "split": null,
+          "insertedKey": null,
+          "rangeKeys": [],
+          "rangeLeafIds": [],
+          "result": "not-found"
+        }
+      }
+    ]
+  },
+  "insert-leaf": {
+    "input": {
+      "preset": "insert-leaf",
+      "tree": [
+        5,
+        10,
+        15,
+        20,
+        25,
+        30,
+        35,
+        40
+      ],
+      "operation": "insert",
+      "target": 22,
+      "end": 33
+    },
+    "frames": [
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40
+          ],
+          "done": false
+        },
+        "message": "4 阶 B+ 树：内部只存分隔键，所有记录在叶子 / order-4 B+ tree ready",
+        "line": 544,
+        "variables": {
+          "order": 4,
+          "target": 22,
+          "rangeEnd": 33,
+          "nodeCount": 5,
+          "treeHeight": 2,
+          "records": 8,
+          "currentKeys": [
+            15,
+            25,
+            35
+          ],
+          "result": "pending"
+        },
+        "lessonStepId": "init",
+        "structure": {
+          "kind": "bplus-tree",
+          "order": 4,
+          "preset": "insert-leaf",
+          "command": "insert",
+          "operation": "init",
+          "targetValue": 22,
+          "rangeEnd": 33,
+          "rootId": "p3",
+          "nodes": [
+            {
+              "id": "p1",
+              "keys": [
+                5,
+                10
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p2"
+            },
+            {
+              "id": "p2",
+              "keys": [
+                15,
+                20
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p4"
+            },
+            {
+              "id": "p3",
+              "keys": [
+                15,
+                25,
+                35
+              ],
+              "children": [
+                "p1",
+                "p2",
+                "p4",
+                "p5"
+              ],
+              "leaf": false,
+              "next": null
+            },
+            {
+              "id": "p4",
+              "keys": [
+                25,
+                30
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p5"
+            },
+            {
+              "id": "p5",
+              "keys": [
+                35,
+                40
+              ],
+              "children": [],
+              "leaf": true,
+              "next": null
+            }
+          ],
+          "leafOrder": [
+            "p1",
+            "p2",
+            "p4",
+            "p5"
+          ],
+          "currentNodeId": "p3",
+          "pathIds": [
+            "p3"
+          ],
+          "compareIndex": null,
+          "compareKey": null,
+          "childSlot": null,
+          "childId": null,
+          "split": null,
+          "insertedKey": null,
+          "rangeKeys": [],
+          "rangeLeafIds": [],
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40
+          ],
+          "done": false
+        },
+        "message": "索引键 15：target ≥ 15，向右/向左 / route by separator",
+        "line": 179,
+        "variables": {
+          "order": 4,
+          "target": 22,
+          "rangeEnd": 33,
+          "nodeCount": 5,
+          "treeHeight": 2,
+          "records": 8,
+          "currentKeys": [
+            15,
+            25,
+            35
+          ],
+          "result": "pending"
+        },
+        "lessonStepId": "inspect-internal",
+        "structure": {
+          "kind": "bplus-tree",
+          "order": 4,
+          "preset": "insert-leaf",
+          "command": "insert",
+          "operation": "inspect-internal",
+          "targetValue": 22,
+          "rangeEnd": 33,
+          "rootId": "p3",
+          "nodes": [
+            {
+              "id": "p1",
+              "keys": [
+                5,
+                10
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p2"
+            },
+            {
+              "id": "p2",
+              "keys": [
+                15,
+                20
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p4"
+            },
+            {
+              "id": "p3",
+              "keys": [
+                15,
+                25,
+                35
+              ],
+              "children": [
+                "p1",
+                "p2",
+                "p4",
+                "p5"
+              ],
+              "leaf": false,
+              "next": null
+            },
+            {
+              "id": "p4",
+              "keys": [
+                25,
+                30
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p5"
+            },
+            {
+              "id": "p5",
+              "keys": [
+                35,
+                40
+              ],
+              "children": [],
+              "leaf": true,
+              "next": null
+            }
+          ],
+          "leafOrder": [
+            "p1",
+            "p2",
+            "p4",
+            "p5"
+          ],
+          "currentNodeId": "p3",
+          "pathIds": [
+            "p3"
+          ],
+          "compareIndex": 0,
+          "compareKey": 15,
+          "childSlot": null,
+          "childId": null,
+          "split": null,
+          "insertedKey": null,
+          "rangeKeys": [],
+          "rangeLeafIds": [],
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40
+          ],
+          "done": false
+        },
+        "message": "索引键 25：target < 25，向右/向左 / route by separator",
+        "line": 179,
+        "variables": {
+          "order": 4,
+          "target": 22,
+          "rangeEnd": 33,
+          "nodeCount": 5,
+          "treeHeight": 2,
+          "records": 8,
+          "currentKeys": [
+            15,
+            25,
+            35
+          ],
+          "result": "pending"
+        },
+        "lessonStepId": "inspect-internal",
+        "structure": {
+          "kind": "bplus-tree",
+          "order": 4,
+          "preset": "insert-leaf",
+          "command": "insert",
+          "operation": "inspect-internal",
+          "targetValue": 22,
+          "rangeEnd": 33,
+          "rootId": "p3",
+          "nodes": [
+            {
+              "id": "p1",
+              "keys": [
+                5,
+                10
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p2"
+            },
+            {
+              "id": "p2",
+              "keys": [
+                15,
+                20
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p4"
+            },
+            {
+              "id": "p3",
+              "keys": [
+                15,
+                25,
+                35
+              ],
+              "children": [
+                "p1",
+                "p2",
+                "p4",
+                "p5"
+              ],
+              "leaf": false,
+              "next": null
+            },
+            {
+              "id": "p4",
+              "keys": [
+                25,
+                30
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p5"
+            },
+            {
+              "id": "p5",
+              "keys": [
+                35,
+                40
+              ],
+              "children": [],
+              "leaf": true,
+              "next": null
+            }
+          ],
+          "leafOrder": [
+            "p1",
+            "p2",
+            "p4",
+            "p5"
+          ],
+          "currentNodeId": "p3",
+          "pathIds": [
+            "p3"
+          ],
+          "compareIndex": 1,
+          "compareKey": 25,
+          "childSlot": null,
+          "childId": null,
+          "split": null,
+          "insertedKey": null,
+          "rangeKeys": [],
+          "rangeLeafIds": [],
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40
+          ],
+          "done": false
+        },
+        "message": "沿第 2 个孩子继续向下 / follow child 2",
+        "line": 192,
+        "variables": {
+          "order": 4,
+          "target": 22,
+          "rangeEnd": 33,
+          "nodeCount": 5,
+          "treeHeight": 2,
+          "records": 8,
+          "currentKeys": [
+            15,
+            25,
+            35
+          ],
+          "result": "pending"
+        },
+        "lessonStepId": "descend",
+        "structure": {
+          "kind": "bplus-tree",
+          "order": 4,
+          "preset": "insert-leaf",
+          "command": "insert",
+          "operation": "descend",
+          "targetValue": 22,
+          "rangeEnd": 33,
+          "rootId": "p3",
+          "nodes": [
+            {
+              "id": "p1",
+              "keys": [
+                5,
+                10
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p2"
+            },
+            {
+              "id": "p2",
+              "keys": [
+                15,
+                20
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p4"
+            },
+            {
+              "id": "p3",
+              "keys": [
+                15,
+                25,
+                35
+              ],
+              "children": [
+                "p1",
+                "p2",
+                "p4",
+                "p5"
+              ],
+              "leaf": false,
+              "next": null
+            },
+            {
+              "id": "p4",
+              "keys": [
+                25,
+                30
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p5"
+            },
+            {
+              "id": "p5",
+              "keys": [
+                35,
+                40
+              ],
+              "children": [],
+              "leaf": true,
+              "next": null
+            }
+          ],
+          "leafOrder": [
+            "p1",
+            "p2",
+            "p4",
+            "p5"
+          ],
+          "currentNodeId": "p3",
+          "pathIds": [
+            "p3"
+          ],
+          "compareIndex": null,
+          "compareKey": null,
+          "childSlot": 1,
+          "childId": "p2",
+          "split": null,
+          "insertedKey": null,
+          "rangeKeys": [],
+          "rangeLeafIds": [],
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            5,
+            10,
+            15,
+            20,
+            22,
+            25,
+            30,
+            35,
+            40
+          ],
+          "done": false
+        },
+        "message": "插入完成：22 只写入叶子，叶链保持有序 / record inserted into the leaf layer",
+        "line": 416,
+        "variables": {
+          "order": 4,
+          "target": 22,
+          "rangeEnd": 33,
+          "nodeCount": 5,
+          "treeHeight": 2,
+          "records": 9,
+          "currentKeys": [
+            15,
+            20,
+            22
+          ],
+          "result": "inserted"
+        },
+        "lessonStepId": "insert-leaf",
+        "structure": {
+          "kind": "bplus-tree",
+          "order": 4,
+          "preset": "insert-leaf",
+          "command": "insert",
+          "operation": "insert-leaf",
+          "targetValue": 22,
+          "rangeEnd": 33,
+          "rootId": "p3",
+          "nodes": [
+            {
+              "id": "p1",
+              "keys": [
+                5,
+                10
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p2"
+            },
+            {
+              "id": "p2",
+              "keys": [
+                15,
+                20,
+                22
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p4"
+            },
+            {
+              "id": "p3",
+              "keys": [
+                15,
+                25,
+                35
+              ],
+              "children": [
+                "p1",
+                "p2",
+                "p4",
+                "p5"
+              ],
+              "leaf": false,
+              "next": null
+            },
+            {
+              "id": "p4",
+              "keys": [
+                25,
+                30
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p5"
+            },
+            {
+              "id": "p5",
+              "keys": [
+                35,
+                40
+              ],
+              "children": [],
+              "leaf": true,
+              "next": null
+            }
+          ],
+          "leafOrder": [
+            "p1",
+            "p2",
+            "p4",
+            "p5"
+          ],
+          "currentNodeId": "p2",
+          "pathIds": [
+            "p3",
+            "p2"
+          ],
+          "compareIndex": 2,
+          "compareKey": 22,
+          "childSlot": null,
+          "childId": null,
+          "split": null,
+          "insertedKey": 22,
+          "rangeKeys": [],
+          "rangeLeafIds": [],
+          "result": "inserted"
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            5,
+            10,
+            15,
+            20,
+            22,
+            25,
+            30,
+            35,
+            40
+          ],
+          "done": true
+        },
+        "message": "B+ 树操作完成 / operation complete",
+        "line": 561,
+        "variables": {
+          "order": 4,
+          "target": 22,
+          "rangeEnd": 33,
+          "nodeCount": 5,
+          "treeHeight": 2,
+          "records": 9,
+          "currentKeys": [],
+          "result": "inserted"
+        },
+        "lessonStepId": "done",
+        "structure": {
+          "kind": "bplus-tree",
+          "order": 4,
+          "preset": "insert-leaf",
+          "command": "insert",
+          "operation": "done",
+          "targetValue": 22,
+          "rangeEnd": 33,
+          "rootId": "p3",
+          "nodes": [
+            {
+              "id": "p1",
+              "keys": [
+                5,
+                10
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p2"
+            },
+            {
+              "id": "p2",
+              "keys": [
+                15,
+                20,
+                22
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p4"
+            },
+            {
+              "id": "p3",
+              "keys": [
+                15,
+                25,
+                35
+              ],
+              "children": [
+                "p1",
+                "p2",
+                "p4",
+                "p5"
+              ],
+              "leaf": false,
+              "next": null
+            },
+            {
+              "id": "p4",
+              "keys": [
+                25,
+                30
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p5"
+            },
+            {
+              "id": "p5",
+              "keys": [
+                35,
+                40
+              ],
+              "children": [],
+              "leaf": true,
+              "next": null
+            }
+          ],
+          "leafOrder": [
+            "p1",
+            "p2",
+            "p4",
+            "p5"
+          ],
+          "currentNodeId": null,
+          "pathIds": [],
+          "compareIndex": null,
+          "compareKey": null,
+          "childSlot": null,
+          "childId": null,
+          "split": null,
+          "insertedKey": null,
+          "rangeKeys": [],
+          "rangeLeafIds": [],
+          "result": "inserted"
+        }
+      }
+    ]
+  },
+  "insert-leaf-split": {
+    "input": {
+      "preset": "insert-leaf-split",
+      "tree": [
+        10,
+        20,
+        30,
+        40,
+        50,
+        60,
+        70
+      ],
+      "operation": "insert",
+      "target": 55,
+      "end": 33
+    },
+    "frames": [
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            10,
+            20,
+            30,
+            40,
+            50,
+            60,
+            70
+          ],
+          "done": false
+        },
+        "message": "4 阶 B+ 树：内部只存分隔键，所有记录在叶子 / order-4 B+ tree ready",
+        "line": 544,
+        "variables": {
+          "order": 4,
+          "target": 55,
+          "rangeEnd": 33,
+          "nodeCount": 4,
+          "treeHeight": 2,
+          "records": 7,
+          "currentKeys": [
+            30,
+            50
+          ],
+          "result": "pending"
+        },
+        "lessonStepId": "init",
+        "structure": {
+          "kind": "bplus-tree",
+          "order": 4,
+          "preset": "insert-leaf-split",
+          "command": "insert",
+          "operation": "init",
+          "targetValue": 55,
+          "rangeEnd": 33,
+          "rootId": "p3",
+          "nodes": [
+            {
+              "id": "p1",
+              "keys": [
+                10,
+                20
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p2"
+            },
+            {
+              "id": "p2",
+              "keys": [
+                30,
+                40
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p4"
+            },
+            {
+              "id": "p3",
+              "keys": [
+                30,
+                50
+              ],
+              "children": [
+                "p1",
+                "p2",
+                "p4"
+              ],
+              "leaf": false,
+              "next": null
+            },
+            {
+              "id": "p4",
+              "keys": [
+                50,
+                60,
+                70
+              ],
+              "children": [],
+              "leaf": true,
+              "next": null
+            }
+          ],
+          "leafOrder": [
+            "p1",
+            "p2",
+            "p4"
+          ],
+          "currentNodeId": "p3",
+          "pathIds": [
+            "p3"
+          ],
+          "compareIndex": null,
+          "compareKey": null,
+          "childSlot": null,
+          "childId": null,
+          "split": null,
+          "insertedKey": null,
+          "rangeKeys": [],
+          "rangeLeafIds": [],
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            10,
+            20,
+            30,
+            40,
+            50,
+            60,
+            70
+          ],
+          "done": false
+        },
+        "message": "索引键 30：target ≥ 30，向右/向左 / route by separator",
+        "line": 179,
+        "variables": {
+          "order": 4,
+          "target": 55,
+          "rangeEnd": 33,
+          "nodeCount": 4,
+          "treeHeight": 2,
+          "records": 7,
+          "currentKeys": [
+            30,
+            50
+          ],
+          "result": "pending"
+        },
+        "lessonStepId": "inspect-internal",
+        "structure": {
+          "kind": "bplus-tree",
+          "order": 4,
+          "preset": "insert-leaf-split",
+          "command": "insert",
+          "operation": "inspect-internal",
+          "targetValue": 55,
+          "rangeEnd": 33,
+          "rootId": "p3",
+          "nodes": [
+            {
+              "id": "p1",
+              "keys": [
+                10,
+                20
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p2"
+            },
+            {
+              "id": "p2",
+              "keys": [
+                30,
+                40
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p4"
+            },
+            {
+              "id": "p3",
+              "keys": [
+                30,
+                50
+              ],
+              "children": [
+                "p1",
+                "p2",
+                "p4"
+              ],
+              "leaf": false,
+              "next": null
+            },
+            {
+              "id": "p4",
+              "keys": [
+                50,
+                60,
+                70
+              ],
+              "children": [],
+              "leaf": true,
+              "next": null
+            }
+          ],
+          "leafOrder": [
+            "p1",
+            "p2",
+            "p4"
+          ],
+          "currentNodeId": "p3",
+          "pathIds": [
+            "p3"
+          ],
+          "compareIndex": 0,
+          "compareKey": 30,
+          "childSlot": null,
+          "childId": null,
+          "split": null,
+          "insertedKey": null,
+          "rangeKeys": [],
+          "rangeLeafIds": [],
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            10,
+            20,
+            30,
+            40,
+            50,
+            60,
+            70
+          ],
+          "done": false
+        },
+        "message": "索引键 50：target ≥ 50，向右/向左 / route by separator",
+        "line": 179,
+        "variables": {
+          "order": 4,
+          "target": 55,
+          "rangeEnd": 33,
+          "nodeCount": 4,
+          "treeHeight": 2,
+          "records": 7,
+          "currentKeys": [
+            30,
+            50
+          ],
+          "result": "pending"
+        },
+        "lessonStepId": "inspect-internal",
+        "structure": {
+          "kind": "bplus-tree",
+          "order": 4,
+          "preset": "insert-leaf-split",
+          "command": "insert",
+          "operation": "inspect-internal",
+          "targetValue": 55,
+          "rangeEnd": 33,
+          "rootId": "p3",
+          "nodes": [
+            {
+              "id": "p1",
+              "keys": [
+                10,
+                20
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p2"
+            },
+            {
+              "id": "p2",
+              "keys": [
+                30,
+                40
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p4"
+            },
+            {
+              "id": "p3",
+              "keys": [
+                30,
+                50
+              ],
+              "children": [
+                "p1",
+                "p2",
+                "p4"
+              ],
+              "leaf": false,
+              "next": null
+            },
+            {
+              "id": "p4",
+              "keys": [
+                50,
+                60,
+                70
+              ],
+              "children": [],
+              "leaf": true,
+              "next": null
+            }
+          ],
+          "leafOrder": [
+            "p1",
+            "p2",
+            "p4"
+          ],
+          "currentNodeId": "p3",
+          "pathIds": [
+            "p3"
+          ],
+          "compareIndex": 1,
+          "compareKey": 50,
+          "childSlot": null,
+          "childId": null,
+          "split": null,
+          "insertedKey": null,
+          "rangeKeys": [],
+          "rangeLeafIds": [],
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            10,
+            20,
+            30,
+            40,
+            50,
+            60,
+            70
+          ],
+          "done": false
+        },
+        "message": "沿第 3 个孩子继续向下 / follow child 3",
+        "line": 192,
+        "variables": {
+          "order": 4,
+          "target": 55,
+          "rangeEnd": 33,
+          "nodeCount": 4,
+          "treeHeight": 2,
+          "records": 7,
+          "currentKeys": [
+            30,
+            50
+          ],
+          "result": "pending"
+        },
+        "lessonStepId": "descend",
+        "structure": {
+          "kind": "bplus-tree",
+          "order": 4,
+          "preset": "insert-leaf-split",
+          "command": "insert",
+          "operation": "descend",
+          "targetValue": 55,
+          "rangeEnd": 33,
+          "rootId": "p3",
+          "nodes": [
+            {
+              "id": "p1",
+              "keys": [
+                10,
+                20
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p2"
+            },
+            {
+              "id": "p2",
+              "keys": [
+                30,
+                40
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p4"
+            },
+            {
+              "id": "p3",
+              "keys": [
+                30,
+                50
+              ],
+              "children": [
+                "p1",
+                "p2",
+                "p4"
+              ],
+              "leaf": false,
+              "next": null
+            },
+            {
+              "id": "p4",
+              "keys": [
+                50,
+                60,
+                70
+              ],
+              "children": [],
+              "leaf": true,
+              "next": null
+            }
+          ],
+          "leafOrder": [
+            "p1",
+            "p2",
+            "p4"
+          ],
+          "currentNodeId": "p3",
+          "pathIds": [
+            "p3"
+          ],
+          "compareIndex": null,
+          "compareKey": null,
+          "childSlot": 2,
+          "childId": "p4",
+          "split": null,
+          "insertedKey": null,
+          "rangeKeys": [],
+          "rangeLeafIds": [],
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            10,
+            20,
+            30,
+            40,
+            50,
+            55,
+            60,
+            70
+          ],
+          "done": false
+        },
+        "message": "叶节点分裂 / leaf split：60 上升为分隔键 / separator rises",
+        "line": 404,
+        "variables": {
+          "order": 4,
+          "target": 55,
+          "rangeEnd": 33,
+          "nodeCount": 5,
+          "treeHeight": 2,
+          "records": 8,
+          "currentKeys": [
+            50,
+            55
+          ],
+          "result": "pending"
+        },
+        "lessonStepId": "split-leaf",
+        "structure": {
+          "kind": "bplus-tree",
+          "order": 4,
+          "preset": "insert-leaf-split",
+          "command": "insert",
+          "operation": "split-leaf",
+          "targetValue": 55,
+          "rangeEnd": 33,
+          "rootId": "p3",
+          "nodes": [
+            {
+              "id": "p1",
+              "keys": [
+                10,
+                20
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p2"
+            },
+            {
+              "id": "p2",
+              "keys": [
+                30,
+                40
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p4"
+            },
+            {
+              "id": "p3",
+              "keys": [
+                30,
+                50,
+                60
+              ],
+              "children": [
+                "p1",
+                "p2",
+                "p4",
+                "p5"
+              ],
+              "leaf": false,
+              "next": null
+            },
+            {
+              "id": "p4",
+              "keys": [
+                50,
+                55
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p5"
+            },
+            {
+              "id": "p5",
+              "keys": [
+                60,
+                70
+              ],
+              "children": [],
+              "leaf": true,
+              "next": null
+            }
+          ],
+          "leafOrder": [
+            "p1",
+            "p2",
+            "p4",
+            "p5"
+          ],
+          "currentNodeId": "p4",
+          "pathIds": [
+            "p3",
+            "p4"
+          ],
+          "compareIndex": null,
+          "compareKey": null,
+          "childSlot": null,
+          "childId": null,
+          "split": {
+            "nodeId": "p4",
+            "phase": "after",
+            "leftId": "p4",
+            "rightId": "p5",
+            "promotedKey": 60,
+            "parentId": "p3",
+            "rootChanged": false
+          },
+          "insertedKey": null,
+          "rangeKeys": [],
+          "rangeLeafIds": [],
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            10,
+            20,
+            30,
+            40,
+            50,
+            55,
+            60,
+            70
+          ],
+          "done": false
+        },
+        "message": "插入完成：55 只写入叶子，叶链保持有序 / record inserted into the leaf layer",
+        "line": 416,
+        "variables": {
+          "order": 4,
+          "target": 55,
+          "rangeEnd": 33,
+          "nodeCount": 5,
+          "treeHeight": 2,
+          "records": 8,
+          "currentKeys": [
+            50,
+            55
+          ],
+          "result": "inserted"
+        },
+        "lessonStepId": "insert-leaf",
+        "structure": {
+          "kind": "bplus-tree",
+          "order": 4,
+          "preset": "insert-leaf-split",
+          "command": "insert",
+          "operation": "insert-leaf",
+          "targetValue": 55,
+          "rangeEnd": 33,
+          "rootId": "p3",
+          "nodes": [
+            {
+              "id": "p1",
+              "keys": [
+                10,
+                20
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p2"
+            },
+            {
+              "id": "p2",
+              "keys": [
+                30,
+                40
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p4"
+            },
+            {
+              "id": "p3",
+              "keys": [
+                30,
+                50,
+                60
+              ],
+              "children": [
+                "p1",
+                "p2",
+                "p4",
+                "p5"
+              ],
+              "leaf": false,
+              "next": null
+            },
+            {
+              "id": "p4",
+              "keys": [
+                50,
+                55
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p5"
+            },
+            {
+              "id": "p5",
+              "keys": [
+                60,
+                70
+              ],
+              "children": [],
+              "leaf": true,
+              "next": null
+            }
+          ],
+          "leafOrder": [
+            "p1",
+            "p2",
+            "p4",
+            "p5"
+          ],
+          "currentNodeId": "p4",
+          "pathIds": [
+            "p3",
+            "p4"
+          ],
+          "compareIndex": 1,
+          "compareKey": 55,
+          "childSlot": null,
+          "childId": null,
+          "split": null,
+          "insertedKey": 55,
+          "rangeKeys": [],
+          "rangeLeafIds": [],
+          "result": "inserted"
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            10,
+            20,
+            30,
+            40,
+            50,
+            55,
+            60,
+            70
+          ],
+          "done": true
+        },
+        "message": "B+ 树操作完成 / operation complete",
+        "line": 561,
+        "variables": {
+          "order": 4,
+          "target": 55,
+          "rangeEnd": 33,
+          "nodeCount": 5,
+          "treeHeight": 2,
+          "records": 8,
+          "currentKeys": [],
+          "result": "inserted"
+        },
+        "lessonStepId": "done",
+        "structure": {
+          "kind": "bplus-tree",
+          "order": 4,
+          "preset": "insert-leaf-split",
+          "command": "insert",
+          "operation": "done",
+          "targetValue": 55,
+          "rangeEnd": 33,
+          "rootId": "p3",
+          "nodes": [
+            {
+              "id": "p1",
+              "keys": [
+                10,
+                20
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p2"
+            },
+            {
+              "id": "p2",
+              "keys": [
+                30,
+                40
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p4"
+            },
+            {
+              "id": "p3",
+              "keys": [
+                30,
+                50,
+                60
+              ],
+              "children": [
+                "p1",
+                "p2",
+                "p4",
+                "p5"
+              ],
+              "leaf": false,
+              "next": null
+            },
+            {
+              "id": "p4",
+              "keys": [
+                50,
+                55
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p5"
+            },
+            {
+              "id": "p5",
+              "keys": [
+                60,
+                70
+              ],
+              "children": [],
+              "leaf": true,
+              "next": null
+            }
+          ],
+          "leafOrder": [
+            "p1",
+            "p2",
+            "p4",
+            "p5"
+          ],
+          "currentNodeId": null,
+          "pathIds": [],
+          "compareIndex": null,
+          "compareKey": null,
+          "childSlot": null,
+          "childId": null,
+          "split": null,
+          "insertedKey": null,
+          "rangeKeys": [],
+          "rangeLeafIds": [],
+          "result": "inserted"
+        }
+      }
+    ]
+  },
+  "insert-root-split": {
+    "input": {
+      "preset": "insert-root-split",
+      "tree": [
+        5,
+        10,
+        15,
+        20,
+        25,
+        30,
+        35,
+        40,
+        45
+      ],
+      "operation": "insert",
+      "target": 37,
+      "end": 33
+    },
+    "frames": [
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40,
+            45
+          ],
+          "done": false
+        },
+        "message": "4 阶 B+ 树：内部只存分隔键，所有记录在叶子 / order-4 B+ tree ready",
+        "line": 544,
+        "variables": {
+          "order": 4,
+          "target": 37,
+          "rangeEnd": 33,
+          "nodeCount": 5,
+          "treeHeight": 2,
+          "records": 9,
+          "currentKeys": [
+            15,
+            25,
+            35
+          ],
+          "result": "pending"
+        },
+        "lessonStepId": "init",
+        "structure": {
+          "kind": "bplus-tree",
+          "order": 4,
+          "preset": "insert-root-split",
+          "command": "insert",
+          "operation": "init",
+          "targetValue": 37,
+          "rangeEnd": 33,
+          "rootId": "p3",
+          "nodes": [
+            {
+              "id": "p1",
+              "keys": [
+                5,
+                10
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p2"
+            },
+            {
+              "id": "p2",
+              "keys": [
+                15,
+                20
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p4"
+            },
+            {
+              "id": "p3",
+              "keys": [
+                15,
+                25,
+                35
+              ],
+              "children": [
+                "p1",
+                "p2",
+                "p4",
+                "p5"
+              ],
+              "leaf": false,
+              "next": null
+            },
+            {
+              "id": "p4",
+              "keys": [
+                25,
+                30
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p5"
+            },
+            {
+              "id": "p5",
+              "keys": [
+                35,
+                40,
+                45
+              ],
+              "children": [],
+              "leaf": true,
+              "next": null
+            }
+          ],
+          "leafOrder": [
+            "p1",
+            "p2",
+            "p4",
+            "p5"
+          ],
+          "currentNodeId": "p3",
+          "pathIds": [
+            "p3"
+          ],
+          "compareIndex": null,
+          "compareKey": null,
+          "childSlot": null,
+          "childId": null,
+          "split": null,
+          "insertedKey": null,
+          "rangeKeys": [],
+          "rangeLeafIds": [],
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40,
+            45
+          ],
+          "done": false
+        },
+        "message": "索引键 15：target ≥ 15，向右/向左 / route by separator",
+        "line": 179,
+        "variables": {
+          "order": 4,
+          "target": 37,
+          "rangeEnd": 33,
+          "nodeCount": 5,
+          "treeHeight": 2,
+          "records": 9,
+          "currentKeys": [
+            15,
+            25,
+            35
+          ],
+          "result": "pending"
+        },
+        "lessonStepId": "inspect-internal",
+        "structure": {
+          "kind": "bplus-tree",
+          "order": 4,
+          "preset": "insert-root-split",
+          "command": "insert",
+          "operation": "inspect-internal",
+          "targetValue": 37,
+          "rangeEnd": 33,
+          "rootId": "p3",
+          "nodes": [
+            {
+              "id": "p1",
+              "keys": [
+                5,
+                10
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p2"
+            },
+            {
+              "id": "p2",
+              "keys": [
+                15,
+                20
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p4"
+            },
+            {
+              "id": "p3",
+              "keys": [
+                15,
+                25,
+                35
+              ],
+              "children": [
+                "p1",
+                "p2",
+                "p4",
+                "p5"
+              ],
+              "leaf": false,
+              "next": null
+            },
+            {
+              "id": "p4",
+              "keys": [
+                25,
+                30
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p5"
+            },
+            {
+              "id": "p5",
+              "keys": [
+                35,
+                40,
+                45
+              ],
+              "children": [],
+              "leaf": true,
+              "next": null
+            }
+          ],
+          "leafOrder": [
+            "p1",
+            "p2",
+            "p4",
+            "p5"
+          ],
+          "currentNodeId": "p3",
+          "pathIds": [
+            "p3"
+          ],
+          "compareIndex": 0,
+          "compareKey": 15,
+          "childSlot": null,
+          "childId": null,
+          "split": null,
+          "insertedKey": null,
+          "rangeKeys": [],
+          "rangeLeafIds": [],
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40,
+            45
+          ],
+          "done": false
+        },
+        "message": "索引键 25：target ≥ 25，向右/向左 / route by separator",
+        "line": 179,
+        "variables": {
+          "order": 4,
+          "target": 37,
+          "rangeEnd": 33,
+          "nodeCount": 5,
+          "treeHeight": 2,
+          "records": 9,
+          "currentKeys": [
+            15,
+            25,
+            35
+          ],
+          "result": "pending"
+        },
+        "lessonStepId": "inspect-internal",
+        "structure": {
+          "kind": "bplus-tree",
+          "order": 4,
+          "preset": "insert-root-split",
+          "command": "insert",
+          "operation": "inspect-internal",
+          "targetValue": 37,
+          "rangeEnd": 33,
+          "rootId": "p3",
+          "nodes": [
+            {
+              "id": "p1",
+              "keys": [
+                5,
+                10
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p2"
+            },
+            {
+              "id": "p2",
+              "keys": [
+                15,
+                20
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p4"
+            },
+            {
+              "id": "p3",
+              "keys": [
+                15,
+                25,
+                35
+              ],
+              "children": [
+                "p1",
+                "p2",
+                "p4",
+                "p5"
+              ],
+              "leaf": false,
+              "next": null
+            },
+            {
+              "id": "p4",
+              "keys": [
+                25,
+                30
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p5"
+            },
+            {
+              "id": "p5",
+              "keys": [
+                35,
+                40,
+                45
+              ],
+              "children": [],
+              "leaf": true,
+              "next": null
+            }
+          ],
+          "leafOrder": [
+            "p1",
+            "p2",
+            "p4",
+            "p5"
+          ],
+          "currentNodeId": "p3",
+          "pathIds": [
+            "p3"
+          ],
+          "compareIndex": 1,
+          "compareKey": 25,
+          "childSlot": null,
+          "childId": null,
+          "split": null,
+          "insertedKey": null,
+          "rangeKeys": [],
+          "rangeLeafIds": [],
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40,
+            45
+          ],
+          "done": false
+        },
+        "message": "索引键 35：target ≥ 35，向右/向左 / route by separator",
+        "line": 179,
+        "variables": {
+          "order": 4,
+          "target": 37,
+          "rangeEnd": 33,
+          "nodeCount": 5,
+          "treeHeight": 2,
+          "records": 9,
+          "currentKeys": [
+            15,
+            25,
+            35
+          ],
+          "result": "pending"
+        },
+        "lessonStepId": "inspect-internal",
+        "structure": {
+          "kind": "bplus-tree",
+          "order": 4,
+          "preset": "insert-root-split",
+          "command": "insert",
+          "operation": "inspect-internal",
+          "targetValue": 37,
+          "rangeEnd": 33,
+          "rootId": "p3",
+          "nodes": [
+            {
+              "id": "p1",
+              "keys": [
+                5,
+                10
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p2"
+            },
+            {
+              "id": "p2",
+              "keys": [
+                15,
+                20
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p4"
+            },
+            {
+              "id": "p3",
+              "keys": [
+                15,
+                25,
+                35
+              ],
+              "children": [
+                "p1",
+                "p2",
+                "p4",
+                "p5"
+              ],
+              "leaf": false,
+              "next": null
+            },
+            {
+              "id": "p4",
+              "keys": [
+                25,
+                30
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p5"
+            },
+            {
+              "id": "p5",
+              "keys": [
+                35,
+                40,
+                45
+              ],
+              "children": [],
+              "leaf": true,
+              "next": null
+            }
+          ],
+          "leafOrder": [
+            "p1",
+            "p2",
+            "p4",
+            "p5"
+          ],
+          "currentNodeId": "p3",
+          "pathIds": [
+            "p3"
+          ],
+          "compareIndex": 2,
+          "compareKey": 35,
+          "childSlot": null,
+          "childId": null,
+          "split": null,
+          "insertedKey": null,
+          "rangeKeys": [],
+          "rangeLeafIds": [],
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40,
+            45
+          ],
+          "done": false
+        },
+        "message": "沿第 4 个孩子继续向下 / follow child 4",
+        "line": 192,
+        "variables": {
+          "order": 4,
+          "target": 37,
+          "rangeEnd": 33,
+          "nodeCount": 5,
+          "treeHeight": 2,
+          "records": 9,
+          "currentKeys": [
+            15,
+            25,
+            35
+          ],
+          "result": "pending"
+        },
+        "lessonStepId": "descend",
+        "structure": {
+          "kind": "bplus-tree",
+          "order": 4,
+          "preset": "insert-root-split",
+          "command": "insert",
+          "operation": "descend",
+          "targetValue": 37,
+          "rangeEnd": 33,
+          "rootId": "p3",
+          "nodes": [
+            {
+              "id": "p1",
+              "keys": [
+                5,
+                10
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p2"
+            },
+            {
+              "id": "p2",
+              "keys": [
+                15,
+                20
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p4"
+            },
+            {
+              "id": "p3",
+              "keys": [
+                15,
+                25,
+                35
+              ],
+              "children": [
+                "p1",
+                "p2",
+                "p4",
+                "p5"
+              ],
+              "leaf": false,
+              "next": null
+            },
+            {
+              "id": "p4",
+              "keys": [
+                25,
+                30
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p5"
+            },
+            {
+              "id": "p5",
+              "keys": [
+                35,
+                40,
+                45
+              ],
+              "children": [],
+              "leaf": true,
+              "next": null
+            }
+          ],
+          "leafOrder": [
+            "p1",
+            "p2",
+            "p4",
+            "p5"
+          ],
+          "currentNodeId": "p3",
+          "pathIds": [
+            "p3"
+          ],
+          "compareIndex": null,
+          "compareKey": null,
+          "childSlot": 3,
+          "childId": "p5",
+          "split": null,
+          "insertedKey": null,
+          "rangeKeys": [],
+          "rangeLeafIds": [],
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            37,
+            40,
+            45
+          ],
+          "done": false
+        },
+        "message": "叶节点分裂 / leaf split：40 上升为分隔键 / separator rises",
+        "line": 404,
+        "variables": {
+          "order": 4,
+          "target": 37,
+          "rangeEnd": 33,
+          "nodeCount": 8,
+          "treeHeight": 3,
+          "records": 10,
+          "currentKeys": [
+            35,
+            37
+          ],
+          "result": "pending"
+        },
+        "lessonStepId": "split-leaf",
+        "structure": {
+          "kind": "bplus-tree",
+          "order": 4,
+          "preset": "insert-root-split",
+          "command": "insert",
+          "operation": "split-leaf",
+          "targetValue": 37,
+          "rangeEnd": 33,
+          "rootId": "p8",
+          "nodes": [
+            {
+              "id": "p1",
+              "keys": [
+                5,
+                10
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p2"
+            },
+            {
+              "id": "p2",
+              "keys": [
+                15,
+                20
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p4"
+            },
+            {
+              "id": "p3",
+              "keys": [
+                15,
+                25
+              ],
+              "children": [
+                "p1",
+                "p2",
+                "p4"
+              ],
+              "leaf": false,
+              "next": null
+            },
+            {
+              "id": "p4",
+              "keys": [
+                25,
+                30
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p5"
+            },
+            {
+              "id": "p5",
+              "keys": [
+                35,
+                37
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p6"
+            },
+            {
+              "id": "p6",
+              "keys": [
+                40,
+                45
+              ],
+              "children": [],
+              "leaf": true,
+              "next": null
+            },
+            {
+              "id": "p7",
+              "keys": [
+                40
+              ],
+              "children": [
+                "p5",
+                "p6"
+              ],
+              "leaf": false,
+              "next": null
+            },
+            {
+              "id": "p8",
+              "keys": [
+                35
+              ],
+              "children": [
+                "p3",
+                "p7"
+              ],
+              "leaf": false,
+              "next": null
+            }
+          ],
+          "leafOrder": [
+            "p1",
+            "p2",
+            "p4",
+            "p5",
+            "p6"
+          ],
+          "currentNodeId": "p5",
+          "pathIds": [
+            "p8",
+            "p7",
+            "p5"
+          ],
+          "compareIndex": null,
+          "compareKey": null,
+          "childSlot": null,
+          "childId": null,
+          "split": {
+            "nodeId": "p5",
+            "phase": "after",
+            "leftId": "p5",
+            "rightId": "p6",
+            "promotedKey": 40,
+            "parentId": "p7",
+            "rootChanged": false
+          },
+          "insertedKey": null,
+          "rangeKeys": [],
+          "rangeLeafIds": [],
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            37,
+            40,
+            45
+          ],
+          "done": false
+        },
+        "message": "根节点分裂 / root split：35 上升为分隔键 / separator rises",
+        "line": 404,
+        "variables": {
+          "order": 4,
+          "target": 37,
+          "rangeEnd": 33,
+          "nodeCount": 8,
+          "treeHeight": 3,
+          "records": 10,
+          "currentKeys": [
+            35,
+            37
+          ],
+          "result": "pending"
+        },
+        "lessonStepId": "split-root",
+        "structure": {
+          "kind": "bplus-tree",
+          "order": 4,
+          "preset": "insert-root-split",
+          "command": "insert",
+          "operation": "new-root",
+          "targetValue": 37,
+          "rangeEnd": 33,
+          "rootId": "p8",
+          "nodes": [
+            {
+              "id": "p1",
+              "keys": [
+                5,
+                10
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p2"
+            },
+            {
+              "id": "p2",
+              "keys": [
+                15,
+                20
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p4"
+            },
+            {
+              "id": "p3",
+              "keys": [
+                15,
+                25
+              ],
+              "children": [
+                "p1",
+                "p2",
+                "p4"
+              ],
+              "leaf": false,
+              "next": null
+            },
+            {
+              "id": "p4",
+              "keys": [
+                25,
+                30
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p5"
+            },
+            {
+              "id": "p5",
+              "keys": [
+                35,
+                37
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p6"
+            },
+            {
+              "id": "p6",
+              "keys": [
+                40,
+                45
+              ],
+              "children": [],
+              "leaf": true,
+              "next": null
+            },
+            {
+              "id": "p7",
+              "keys": [
+                40
+              ],
+              "children": [
+                "p5",
+                "p6"
+              ],
+              "leaf": false,
+              "next": null
+            },
+            {
+              "id": "p8",
+              "keys": [
+                35
+              ],
+              "children": [
+                "p3",
+                "p7"
+              ],
+              "leaf": false,
+              "next": null
+            }
+          ],
+          "leafOrder": [
+            "p1",
+            "p2",
+            "p4",
+            "p5",
+            "p6"
+          ],
+          "currentNodeId": "p5",
+          "pathIds": [
+            "p8",
+            "p7",
+            "p5"
+          ],
+          "compareIndex": null,
+          "compareKey": null,
+          "childSlot": null,
+          "childId": null,
+          "split": {
+            "nodeId": "p3",
+            "phase": "after",
+            "leftId": "p3",
+            "rightId": "p7",
+            "promotedKey": 35,
+            "parentId": "p8",
+            "rootChanged": true
+          },
+          "insertedKey": null,
+          "rangeKeys": [],
+          "rangeLeafIds": [],
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            37,
+            40,
+            45
+          ],
+          "done": false
+        },
+        "message": "插入完成：37 只写入叶子，叶链保持有序 / record inserted into the leaf layer",
+        "line": 416,
+        "variables": {
+          "order": 4,
+          "target": 37,
+          "rangeEnd": 33,
+          "nodeCount": 8,
+          "treeHeight": 3,
+          "records": 10,
+          "currentKeys": [
+            35,
+            37
+          ],
+          "result": "inserted"
+        },
+        "lessonStepId": "insert-leaf",
+        "structure": {
+          "kind": "bplus-tree",
+          "order": 4,
+          "preset": "insert-root-split",
+          "command": "insert",
+          "operation": "insert-leaf",
+          "targetValue": 37,
+          "rangeEnd": 33,
+          "rootId": "p8",
+          "nodes": [
+            {
+              "id": "p1",
+              "keys": [
+                5,
+                10
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p2"
+            },
+            {
+              "id": "p2",
+              "keys": [
+                15,
+                20
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p4"
+            },
+            {
+              "id": "p3",
+              "keys": [
+                15,
+                25
+              ],
+              "children": [
+                "p1",
+                "p2",
+                "p4"
+              ],
+              "leaf": false,
+              "next": null
+            },
+            {
+              "id": "p4",
+              "keys": [
+                25,
+                30
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p5"
+            },
+            {
+              "id": "p5",
+              "keys": [
+                35,
+                37
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p6"
+            },
+            {
+              "id": "p6",
+              "keys": [
+                40,
+                45
+              ],
+              "children": [],
+              "leaf": true,
+              "next": null
+            },
+            {
+              "id": "p7",
+              "keys": [
+                40
+              ],
+              "children": [
+                "p5",
+                "p6"
+              ],
+              "leaf": false,
+              "next": null
+            },
+            {
+              "id": "p8",
+              "keys": [
+                35
+              ],
+              "children": [
+                "p3",
+                "p7"
+              ],
+              "leaf": false,
+              "next": null
+            }
+          ],
+          "leafOrder": [
+            "p1",
+            "p2",
+            "p4",
+            "p5",
+            "p6"
+          ],
+          "currentNodeId": "p5",
+          "pathIds": [
+            "p8",
+            "p7",
+            "p5"
+          ],
+          "compareIndex": 1,
+          "compareKey": 37,
+          "childSlot": null,
+          "childId": null,
+          "split": null,
+          "insertedKey": 37,
+          "rangeKeys": [],
+          "rangeLeafIds": [],
+          "result": "inserted"
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            37,
+            40,
+            45
+          ],
+          "done": true
+        },
+        "message": "B+ 树操作完成 / operation complete",
+        "line": 561,
+        "variables": {
+          "order": 4,
+          "target": 37,
+          "rangeEnd": 33,
+          "nodeCount": 8,
+          "treeHeight": 3,
+          "records": 10,
+          "currentKeys": [],
+          "result": "inserted"
+        },
+        "lessonStepId": "done",
+        "structure": {
+          "kind": "bplus-tree",
+          "order": 4,
+          "preset": "insert-root-split",
+          "command": "insert",
+          "operation": "done",
+          "targetValue": 37,
+          "rangeEnd": 33,
+          "rootId": "p8",
+          "nodes": [
+            {
+              "id": "p1",
+              "keys": [
+                5,
+                10
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p2"
+            },
+            {
+              "id": "p2",
+              "keys": [
+                15,
+                20
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p4"
+            },
+            {
+              "id": "p3",
+              "keys": [
+                15,
+                25
+              ],
+              "children": [
+                "p1",
+                "p2",
+                "p4"
+              ],
+              "leaf": false,
+              "next": null
+            },
+            {
+              "id": "p4",
+              "keys": [
+                25,
+                30
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p5"
+            },
+            {
+              "id": "p5",
+              "keys": [
+                35,
+                37
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p6"
+            },
+            {
+              "id": "p6",
+              "keys": [
+                40,
+                45
+              ],
+              "children": [],
+              "leaf": true,
+              "next": null
+            },
+            {
+              "id": "p7",
+              "keys": [
+                40
+              ],
+              "children": [
+                "p5",
+                "p6"
+              ],
+              "leaf": false,
+              "next": null
+            },
+            {
+              "id": "p8",
+              "keys": [
+                35
+              ],
+              "children": [
+                "p3",
+                "p7"
+              ],
+              "leaf": false,
+              "next": null
+            }
+          ],
+          "leafOrder": [
+            "p1",
+            "p2",
+            "p4",
+            "p5",
+            "p6"
+          ],
+          "currentNodeId": null,
+          "pathIds": [],
+          "compareIndex": null,
+          "compareKey": null,
+          "childSlot": null,
+          "childId": null,
+          "split": null,
+          "insertedKey": null,
+          "rangeKeys": [],
+          "rangeLeafIds": [],
+          "result": "inserted"
+        }
+      }
+    ]
+  },
+  "range-query": {
+    "input": {
+      "preset": "range-query",
+      "tree": [
+        5,
+        10,
+        15,
+        20,
+        25,
+        30,
+        35,
+        40
+      ],
+      "operation": "range",
+      "target": 18,
+      "end": 33
+    },
+    "frames": [
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40
+          ],
+          "done": false
+        },
+        "message": "4 阶 B+ 树：内部只存分隔键，所有记录在叶子 / order-4 B+ tree ready",
+        "line": 544,
+        "variables": {
+          "order": 4,
+          "target": 18,
+          "rangeEnd": 33,
+          "nodeCount": 5,
+          "treeHeight": 2,
+          "records": 8,
+          "currentKeys": [
+            15,
+            25,
+            35
+          ],
+          "result": "pending"
+        },
+        "lessonStepId": "init",
+        "structure": {
+          "kind": "bplus-tree",
+          "order": 4,
+          "preset": "range-query",
+          "command": "range",
+          "operation": "init",
+          "targetValue": 18,
+          "rangeEnd": 33,
+          "rootId": "p3",
+          "nodes": [
+            {
+              "id": "p1",
+              "keys": [
+                5,
+                10
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p2"
+            },
+            {
+              "id": "p2",
+              "keys": [
+                15,
+                20
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p4"
+            },
+            {
+              "id": "p3",
+              "keys": [
+                15,
+                25,
+                35
+              ],
+              "children": [
+                "p1",
+                "p2",
+                "p4",
+                "p5"
+              ],
+              "leaf": false,
+              "next": null
+            },
+            {
+              "id": "p4",
+              "keys": [
+                25,
+                30
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p5"
+            },
+            {
+              "id": "p5",
+              "keys": [
+                35,
+                40
+              ],
+              "children": [],
+              "leaf": true,
+              "next": null
+            }
+          ],
+          "leafOrder": [
+            "p1",
+            "p2",
+            "p4",
+            "p5"
+          ],
+          "currentNodeId": "p3",
+          "pathIds": [
+            "p3"
+          ],
+          "compareIndex": null,
+          "compareKey": null,
+          "childSlot": null,
+          "childId": null,
+          "split": null,
+          "insertedKey": null,
+          "rangeKeys": [],
+          "rangeLeafIds": [],
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40
+          ],
+          "done": false
+        },
+        "message": "索引键 15：target ≥ 15，向右/向左 / route by separator",
+        "line": 179,
+        "variables": {
+          "order": 4,
+          "target": 18,
+          "rangeEnd": 33,
+          "nodeCount": 5,
+          "treeHeight": 2,
+          "records": 8,
+          "currentKeys": [
+            15,
+            25,
+            35
+          ],
+          "result": "pending"
+        },
+        "lessonStepId": "inspect-internal",
+        "structure": {
+          "kind": "bplus-tree",
+          "order": 4,
+          "preset": "range-query",
+          "command": "range",
+          "operation": "inspect-internal",
+          "targetValue": 18,
+          "rangeEnd": 33,
+          "rootId": "p3",
+          "nodes": [
+            {
+              "id": "p1",
+              "keys": [
+                5,
+                10
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p2"
+            },
+            {
+              "id": "p2",
+              "keys": [
+                15,
+                20
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p4"
+            },
+            {
+              "id": "p3",
+              "keys": [
+                15,
+                25,
+                35
+              ],
+              "children": [
+                "p1",
+                "p2",
+                "p4",
+                "p5"
+              ],
+              "leaf": false,
+              "next": null
+            },
+            {
+              "id": "p4",
+              "keys": [
+                25,
+                30
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p5"
+            },
+            {
+              "id": "p5",
+              "keys": [
+                35,
+                40
+              ],
+              "children": [],
+              "leaf": true,
+              "next": null
+            }
+          ],
+          "leafOrder": [
+            "p1",
+            "p2",
+            "p4",
+            "p5"
+          ],
+          "currentNodeId": "p3",
+          "pathIds": [
+            "p3"
+          ],
+          "compareIndex": 0,
+          "compareKey": 15,
+          "childSlot": null,
+          "childId": null,
+          "split": null,
+          "insertedKey": null,
+          "rangeKeys": [],
+          "rangeLeafIds": [],
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40
+          ],
+          "done": false
+        },
+        "message": "索引键 25：target < 25，向右/向左 / route by separator",
+        "line": 179,
+        "variables": {
+          "order": 4,
+          "target": 18,
+          "rangeEnd": 33,
+          "nodeCount": 5,
+          "treeHeight": 2,
+          "records": 8,
+          "currentKeys": [
+            15,
+            25,
+            35
+          ],
+          "result": "pending"
+        },
+        "lessonStepId": "inspect-internal",
+        "structure": {
+          "kind": "bplus-tree",
+          "order": 4,
+          "preset": "range-query",
+          "command": "range",
+          "operation": "inspect-internal",
+          "targetValue": 18,
+          "rangeEnd": 33,
+          "rootId": "p3",
+          "nodes": [
+            {
+              "id": "p1",
+              "keys": [
+                5,
+                10
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p2"
+            },
+            {
+              "id": "p2",
+              "keys": [
+                15,
+                20
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p4"
+            },
+            {
+              "id": "p3",
+              "keys": [
+                15,
+                25,
+                35
+              ],
+              "children": [
+                "p1",
+                "p2",
+                "p4",
+                "p5"
+              ],
+              "leaf": false,
+              "next": null
+            },
+            {
+              "id": "p4",
+              "keys": [
+                25,
+                30
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p5"
+            },
+            {
+              "id": "p5",
+              "keys": [
+                35,
+                40
+              ],
+              "children": [],
+              "leaf": true,
+              "next": null
+            }
+          ],
+          "leafOrder": [
+            "p1",
+            "p2",
+            "p4",
+            "p5"
+          ],
+          "currentNodeId": "p3",
+          "pathIds": [
+            "p3"
+          ],
+          "compareIndex": 1,
+          "compareKey": 25,
+          "childSlot": null,
+          "childId": null,
+          "split": null,
+          "insertedKey": null,
+          "rangeKeys": [],
+          "rangeLeafIds": [],
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40
+          ],
+          "done": false
+        },
+        "message": "沿第 2 个孩子继续向下 / follow child 2",
+        "line": 192,
+        "variables": {
+          "order": 4,
+          "target": 18,
+          "rangeEnd": 33,
+          "nodeCount": 5,
+          "treeHeight": 2,
+          "records": 8,
+          "currentKeys": [
+            15,
+            25,
+            35
+          ],
+          "result": "pending"
+        },
+        "lessonStepId": "descend",
+        "structure": {
+          "kind": "bplus-tree",
+          "order": 4,
+          "preset": "range-query",
+          "command": "range",
+          "operation": "descend",
+          "targetValue": 18,
+          "rangeEnd": 33,
+          "rootId": "p3",
+          "nodes": [
+            {
+              "id": "p1",
+              "keys": [
+                5,
+                10
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p2"
+            },
+            {
+              "id": "p2",
+              "keys": [
+                15,
+                20
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p4"
+            },
+            {
+              "id": "p3",
+              "keys": [
+                15,
+                25,
+                35
+              ],
+              "children": [
+                "p1",
+                "p2",
+                "p4",
+                "p5"
+              ],
+              "leaf": false,
+              "next": null
+            },
+            {
+              "id": "p4",
+              "keys": [
+                25,
+                30
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p5"
+            },
+            {
+              "id": "p5",
+              "keys": [
+                35,
+                40
+              ],
+              "children": [],
+              "leaf": true,
+              "next": null
+            }
+          ],
+          "leafOrder": [
+            "p1",
+            "p2",
+            "p4",
+            "p5"
+          ],
+          "currentNodeId": "p3",
+          "pathIds": [
+            "p3"
+          ],
+          "compareIndex": null,
+          "compareKey": null,
+          "childSlot": 1,
+          "childId": "p2",
+          "split": null,
+          "insertedKey": null,
+          "rangeKeys": [],
+          "rangeLeafIds": [],
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40
+          ],
+          "done": false
+        },
+        "message": "定位到起点叶子 [15, 20]：沿叶链向右扫描 / start at the lower-bound leaf and follow next",
+        "line": 472,
+        "variables": {
+          "order": 4,
+          "target": 18,
+          "rangeEnd": 33,
+          "nodeCount": 5,
+          "treeHeight": 2,
+          "records": 8,
+          "currentKeys": [
+            15,
+            20
+          ],
+          "result": "pending"
+        },
+        "lessonStepId": "range-start",
+        "structure": {
+          "kind": "bplus-tree",
+          "order": 4,
+          "preset": "range-query",
+          "command": "range",
+          "operation": "range-start",
+          "targetValue": 18,
+          "rangeEnd": 33,
+          "rootId": "p3",
+          "nodes": [
+            {
+              "id": "p1",
+              "keys": [
+                5,
+                10
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p2"
+            },
+            {
+              "id": "p2",
+              "keys": [
+                15,
+                20
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p4"
+            },
+            {
+              "id": "p3",
+              "keys": [
+                15,
+                25,
+                35
+              ],
+              "children": [
+                "p1",
+                "p2",
+                "p4",
+                "p5"
+              ],
+              "leaf": false,
+              "next": null
+            },
+            {
+              "id": "p4",
+              "keys": [
+                25,
+                30
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p5"
+            },
+            {
+              "id": "p5",
+              "keys": [
+                35,
+                40
+              ],
+              "children": [],
+              "leaf": true,
+              "next": null
+            }
+          ],
+          "leafOrder": [
+            "p1",
+            "p2",
+            "p4",
+            "p5"
+          ],
+          "currentNodeId": "p2",
+          "pathIds": [
+            "p3",
+            "p2"
+          ],
+          "compareIndex": null,
+          "compareKey": null,
+          "childSlot": null,
+          "childId": null,
+          "split": null,
+          "insertedKey": null,
+          "rangeKeys": [],
+          "rangeLeafIds": [
+            "p2"
+          ],
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40
+          ],
+          "done": false
+        },
+        "message": "收集 20；继续沿叶链 / collect 20 and continue",
+        "line": 508,
+        "variables": {
+          "order": 4,
+          "target": 18,
+          "rangeEnd": 33,
+          "nodeCount": 5,
+          "treeHeight": 2,
+          "records": 8,
+          "currentKeys": [
+            15,
+            20
+          ],
+          "result": "pending"
+        },
+        "lessonStepId": "range-scan",
+        "structure": {
+          "kind": "bplus-tree",
+          "order": 4,
+          "preset": "range-query",
+          "command": "range",
+          "operation": "range-scan",
+          "targetValue": 18,
+          "rangeEnd": 33,
+          "rootId": "p3",
+          "nodes": [
+            {
+              "id": "p1",
+              "keys": [
+                5,
+                10
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p2"
+            },
+            {
+              "id": "p2",
+              "keys": [
+                15,
+                20
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p4"
+            },
+            {
+              "id": "p3",
+              "keys": [
+                15,
+                25,
+                35
+              ],
+              "children": [
+                "p1",
+                "p2",
+                "p4",
+                "p5"
+              ],
+              "leaf": false,
+              "next": null
+            },
+            {
+              "id": "p4",
+              "keys": [
+                25,
+                30
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p5"
+            },
+            {
+              "id": "p5",
+              "keys": [
+                35,
+                40
+              ],
+              "children": [],
+              "leaf": true,
+              "next": null
+            }
+          ],
+          "leafOrder": [
+            "p1",
+            "p2",
+            "p4",
+            "p5"
+          ],
+          "currentNodeId": "p2",
+          "pathIds": [
+            "p3",
+            "p2"
+          ],
+          "compareIndex": 1,
+          "compareKey": 20,
+          "childSlot": null,
+          "childId": null,
+          "split": null,
+          "insertedKey": null,
+          "rangeKeys": [
+            20
+          ],
+          "rangeLeafIds": [
+            "p2"
+          ],
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40
+          ],
+          "done": false
+        },
+        "message": "收集 25；继续沿叶链 / collect 25 and continue",
+        "line": 508,
+        "variables": {
+          "order": 4,
+          "target": 18,
+          "rangeEnd": 33,
+          "nodeCount": 5,
+          "treeHeight": 2,
+          "records": 8,
+          "currentKeys": [
+            25,
+            30
+          ],
+          "result": "pending"
+        },
+        "lessonStepId": "range-scan",
+        "structure": {
+          "kind": "bplus-tree",
+          "order": 4,
+          "preset": "range-query",
+          "command": "range",
+          "operation": "range-scan",
+          "targetValue": 18,
+          "rangeEnd": 33,
+          "rootId": "p3",
+          "nodes": [
+            {
+              "id": "p1",
+              "keys": [
+                5,
+                10
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p2"
+            },
+            {
+              "id": "p2",
+              "keys": [
+                15,
+                20
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p4"
+            },
+            {
+              "id": "p3",
+              "keys": [
+                15,
+                25,
+                35
+              ],
+              "children": [
+                "p1",
+                "p2",
+                "p4",
+                "p5"
+              ],
+              "leaf": false,
+              "next": null
+            },
+            {
+              "id": "p4",
+              "keys": [
+                25,
+                30
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p5"
+            },
+            {
+              "id": "p5",
+              "keys": [
+                35,
+                40
+              ],
+              "children": [],
+              "leaf": true,
+              "next": null
+            }
+          ],
+          "leafOrder": [
+            "p1",
+            "p2",
+            "p4",
+            "p5"
+          ],
+          "currentNodeId": "p4",
+          "pathIds": [
+            "p3",
+            "p4"
+          ],
+          "compareIndex": 0,
+          "compareKey": 25,
+          "childSlot": null,
+          "childId": null,
+          "split": null,
+          "insertedKey": null,
+          "rangeKeys": [
+            20,
+            25
+          ],
+          "rangeLeafIds": [
+            "p2",
+            "p4"
+          ],
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40
+          ],
+          "done": false
+        },
+        "message": "收集 30；继续沿叶链 / collect 30 and continue",
+        "line": 508,
+        "variables": {
+          "order": 4,
+          "target": 18,
+          "rangeEnd": 33,
+          "nodeCount": 5,
+          "treeHeight": 2,
+          "records": 8,
+          "currentKeys": [
+            25,
+            30
+          ],
+          "result": "pending"
+        },
+        "lessonStepId": "range-scan",
+        "structure": {
+          "kind": "bplus-tree",
+          "order": 4,
+          "preset": "range-query",
+          "command": "range",
+          "operation": "range-scan",
+          "targetValue": 18,
+          "rangeEnd": 33,
+          "rootId": "p3",
+          "nodes": [
+            {
+              "id": "p1",
+              "keys": [
+                5,
+                10
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p2"
+            },
+            {
+              "id": "p2",
+              "keys": [
+                15,
+                20
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p4"
+            },
+            {
+              "id": "p3",
+              "keys": [
+                15,
+                25,
+                35
+              ],
+              "children": [
+                "p1",
+                "p2",
+                "p4",
+                "p5"
+              ],
+              "leaf": false,
+              "next": null
+            },
+            {
+              "id": "p4",
+              "keys": [
+                25,
+                30
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p5"
+            },
+            {
+              "id": "p5",
+              "keys": [
+                35,
+                40
+              ],
+              "children": [],
+              "leaf": true,
+              "next": null
+            }
+          ],
+          "leafOrder": [
+            "p1",
+            "p2",
+            "p4",
+            "p5"
+          ],
+          "currentNodeId": "p4",
+          "pathIds": [
+            "p3",
+            "p4"
+          ],
+          "compareIndex": 1,
+          "compareKey": 30,
+          "childSlot": null,
+          "childId": null,
+          "split": null,
+          "insertedKey": null,
+          "rangeKeys": [
+            20,
+            25,
+            30
+          ],
+          "rangeLeafIds": [
+            "p2",
+            "p4"
+          ],
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40
+          ],
+          "done": false
+        },
+        "message": "范围查询完成：3 条记录 / range complete",
+        "line": 526,
+        "variables": {
+          "order": 4,
+          "target": 18,
+          "rangeEnd": 33,
+          "nodeCount": 5,
+          "treeHeight": 2,
+          "records": 8,
+          "currentKeys": [],
+          "result": "range"
+        },
+        "lessonStepId": "range-end",
+        "structure": {
+          "kind": "bplus-tree",
+          "order": 4,
+          "preset": "range-query",
+          "command": "range",
+          "operation": "range-end",
+          "targetValue": 18,
+          "rangeEnd": 33,
+          "rootId": "p3",
+          "nodes": [
+            {
+              "id": "p1",
+              "keys": [
+                5,
+                10
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p2"
+            },
+            {
+              "id": "p2",
+              "keys": [
+                15,
+                20
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p4"
+            },
+            {
+              "id": "p3",
+              "keys": [
+                15,
+                25,
+                35
+              ],
+              "children": [
+                "p1",
+                "p2",
+                "p4",
+                "p5"
+              ],
+              "leaf": false,
+              "next": null
+            },
+            {
+              "id": "p4",
+              "keys": [
+                25,
+                30
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p5"
+            },
+            {
+              "id": "p5",
+              "keys": [
+                35,
+                40
+              ],
+              "children": [],
+              "leaf": true,
+              "next": null
+            }
+          ],
+          "leafOrder": [
+            "p1",
+            "p2",
+            "p4",
+            "p5"
+          ],
+          "currentNodeId": null,
+          "pathIds": [],
+          "compareIndex": null,
+          "compareKey": null,
+          "childSlot": null,
+          "childId": null,
+          "split": null,
+          "insertedKey": null,
+          "rangeKeys": [
+            20,
+            25,
+            30
+          ],
+          "rangeLeafIds": [
+            "p2",
+            "p4"
+          ],
+          "result": "range"
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40
+          ],
+          "done": true
+        },
+        "message": "B+ 树操作完成 / operation complete",
+        "line": 561,
+        "variables": {
+          "order": 4,
+          "target": 18,
+          "rangeEnd": 33,
+          "nodeCount": 5,
+          "treeHeight": 2,
+          "records": 8,
+          "currentKeys": [],
+          "result": "range"
+        },
+        "lessonStepId": "done",
+        "structure": {
+          "kind": "bplus-tree",
+          "order": 4,
+          "preset": "range-query",
+          "command": "range",
+          "operation": "done",
+          "targetValue": 18,
+          "rangeEnd": 33,
+          "rootId": "p3",
+          "nodes": [
+            {
+              "id": "p1",
+              "keys": [
+                5,
+                10
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p2"
+            },
+            {
+              "id": "p2",
+              "keys": [
+                15,
+                20
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p4"
+            },
+            {
+              "id": "p3",
+              "keys": [
+                15,
+                25,
+                35
+              ],
+              "children": [
+                "p1",
+                "p2",
+                "p4",
+                "p5"
+              ],
+              "leaf": false,
+              "next": null
+            },
+            {
+              "id": "p4",
+              "keys": [
+                25,
+                30
+              ],
+              "children": [],
+              "leaf": true,
+              "next": "p5"
+            },
+            {
+              "id": "p5",
+              "keys": [
+                35,
+                40
+              ],
+              "children": [],
+              "leaf": true,
+              "next": null
+            }
+          ],
+          "leafOrder": [
+            "p1",
+            "p2",
+            "p4",
+            "p5"
+          ],
+          "currentNodeId": null,
+          "pathIds": [],
+          "compareIndex": null,
+          "compareKey": null,
+          "childSlot": null,
+          "childId": null,
+          "split": null,
+          "insertedKey": null,
+          "rangeKeys": [
+            20,
+            25,
+            30
+          ],
+          "rangeLeafIds": [
+            "p2",
+            "p4"
+          ],
+          "result": "range"
+        }
+      }
+    ]
+  }
+}

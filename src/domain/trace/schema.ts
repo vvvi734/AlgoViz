@@ -23,6 +23,9 @@ import { threadedTreeSnapshotSchema } from './threadedTreeSchema';
 import { freeListSnapshotSchema } from './freeListSchema';
 import { buddySnapshotSchema } from './buddySchema';
 import { gcSnapshotSchema } from './gcSchema';
+import { blockSearchSnapshotSchema } from './blockSearchSchema';
+import { bplusSnapshotSchema } from './bplusSchema';
+import { keyTreeSnapshotSchema } from './keyTreeSchema';
 export type { BfSnapshot, BfOperation } from './bfSchema';
 export type { FreeListSnapshot, FreeListPolicy, FreeListOperation } from './freeListSchema';
 export type { BuddySnapshot, BuddyOperation } from './buddySchema';
@@ -1804,32 +1807,39 @@ export const bstSnapshotSchema = z
 export type BstSnapshot = z.infer<typeof bstSnapshotSchema>;
 
 /**
- * SEARCH-04: order-4 B-tree search and insertion.
+ * SEARCH-04 + TEXTBOOK-09: order-4 B-tree search, insertion and deletion.
  *
  * Every snapshot is the real attached tree after the named frame operation.
- * Insertion uses one fixed policy: split a full child BEFORE descending into it;
- * a full root is split first and grows a new root. Duplicate keys are rejected
- * before any structural change. A split is emitted as a before/after pair so the
- * full original node, the promoted median and the two resulting nodes are all
- * part of the recorded semantics rather than a visual-only effect.
+ * Insertion uses one fixed policy: split a full child BEFORE descending into it.
+ * Deletion uses the symmetric top-down policy: before descending into a minimum
+ * child, borrow from a richer sibling or merge, so a post-delete underflow never
+ * has to be repaired through an illegal intermediate tree. A split is emitted as
+ * a before/after pair; deletion operations are emitted only after the real
+ * borrow, merge or root contraction has restored every invariant.
  */
 export const BTREE_ORDER = 4 as const;
 export const BTREE_MAX_KEYS = BTREE_ORDER - 1;
 
-export const BTREE_COMMANDS = ['find', 'insert'] as const;
+export const BTREE_COMMANDS = ['find', 'insert', 'delete'] as const;
 export type BtreeCommand = (typeof BTREE_COMMANDS)[number];
 
 export const BTREE_OPERATIONS = [
   'init', 'inspect', 'descend', 'found', 'not-found', 'duplicate',
-  'split', 'insert', 'done',
+  'split', 'insert', 'locate', 'replace', 'delete-leaf',
+  'borrow-left', 'borrow-right', 'merge', 'root-shrink', 'done',
 ] as const;
 export type BtreeOperation = (typeof BTREE_OPERATIONS)[number];
 
-export const BTREE_RESULTS = ['found', 'not-found', 'inserted', 'duplicate'] as const;
+export const BTREE_RESULTS = ['found', 'not-found', 'inserted', 'duplicate', 'deleted'] as const;
 export type BtreeResult = (typeof BTREE_RESULTS)[number];
 
 export const BTREE_SPLIT_PHASES = ['before', 'after'] as const;
 export type BtreeSplitPhase = (typeof BTREE_SPLIT_PHASES)[number];
+
+export const BTREE_DELETE_ACTIONS = [
+  'locate', 'replace', 'delete-leaf', 'borrow-left', 'borrow-right', 'merge', 'root-shrink',
+] as const;
+export type BtreeDeleteAction = (typeof BTREE_DELETE_ACTIONS)[number];
 
 const BTREE_ID = z.string().min(1).max(LIMITS.MAX_NAME_CHARS);
 
@@ -1854,6 +1864,16 @@ export const btreeSplitSchema = z.object({
 });
 export type BtreeSplit = z.infer<typeof btreeSplitSchema>;
 
+export const btreeDeleteInfoSchema = z.object({
+  action: z.enum(BTREE_DELETE_ACTIONS),
+  key: z.number().finite().nullable(),
+  parentId: BTREE_ID.nullable(),
+  siblingId: BTREE_ID.nullable(),
+  separatorKey: z.number().finite().nullable(),
+  rootChanged: z.boolean(),
+});
+export type BtreeDeleteInfo = z.infer<typeof btreeDeleteInfoSchema>;
+
 export const btreeSnapshotSchema = z
   .object({
     kind: z.literal('btree'),
@@ -1872,6 +1892,7 @@ export const btreeSnapshotSchema = z
     childId: BTREE_ID.nullable(),
     split: btreeSplitSchema.nullable(),
     insertedKey: z.number().finite().nullable(),
+    deleteInfo: btreeDeleteInfoSchema.nullable().default(null),
     result: z.enum(BTREE_RESULTS).nullable(),
   })
   .superRefine((snapshot, ctx) => {
@@ -2023,6 +2044,10 @@ export const btreeSnapshotSchema = z
     const allowed: Record<BtreeCommand, BtreeOperation[]> = {
       find: ['init', 'inspect', 'descend', 'found', 'not-found', 'done'],
       insert: ['init', 'inspect', 'descend', 'duplicate', 'split', 'insert', 'done'],
+      delete: [
+        'init', 'inspect', 'descend', 'locate', 'replace', 'delete-leaf',
+        'borrow-left', 'borrow-right', 'merge', 'root-shrink', 'not-found', 'done',
+      ],
     };
     if (!allowed[snapshot.command].includes(snapshot.operation)) {
       add(['operation'], `${snapshot.operation} is not a ${snapshot.command} operation`);
@@ -2034,6 +2059,7 @@ export const btreeSnapshotSchema = z
       if (snapshot.childSlot !== null || snapshot.childId !== null) add(['childSlot'], 'init has no selected child');
       if (snapshot.split !== null) add(['split'], 'init has no split');
       if (snapshot.insertedKey !== null) add(['insertedKey'], 'init has no inserted key');
+      if (snapshot.deleteInfo !== null) add(['deleteInfo'], 'init has no deletion move');
     }
     if (snapshot.operation === 'inspect') {
       if (snapshot.currentNodeId === null) add(['currentNodeId'], 'inspect needs a current node');
@@ -2042,6 +2068,7 @@ export const btreeSnapshotSchema = z
       }
       if (snapshot.result !== null) add(['result'], 'inspect has no final result yet');
       if (snapshot.split !== null || snapshot.insertedKey !== null) add(['split'], 'inspect has no split or inserted key');
+      if (snapshot.deleteInfo !== null) add(['deleteInfo'], 'inspect performs no deletion move');
     }
     if (snapshot.operation === 'descend') {
       if (snapshot.currentNodeId === null) add(['currentNodeId'], 'descend needs a current node');
@@ -2051,19 +2078,25 @@ export const btreeSnapshotSchema = z
       if (snapshot.compareIndex !== null || snapshot.compareKey !== null) add(['compareIndex'], 'descend has no key comparison');
       if (snapshot.result !== null) add(['result'], 'descend has no final result yet');
       if (snapshot.split !== null || snapshot.insertedKey !== null) add(['split'], 'descend has no split or inserted key');
+      if (snapshot.deleteInfo !== null) add(['deleteInfo'], 'descend performs no deletion move');
     }
     if (snapshot.operation === 'found') {
       if (snapshot.currentNodeId === null) add(['currentNodeId'], 'found needs a current node');
       if (snapshot.compareKey !== snapshot.targetValue) add(['compareKey'], 'found must compare the target key');
       if (snapshot.result !== 'found') add(['result'], 'found must record success');
       if (snapshot.split !== null || snapshot.insertedKey !== null) add(['split'], 'found changes no structure');
+      if (snapshot.deleteInfo !== null) add(['deleteInfo'], 'found performs no deletion move');
     }
     if (snapshot.operation === 'not-found') {
-      if (snapshot.currentNodeId === null) add(['currentNodeId'], 'not-found must name the final leaf');
-      else if (!byId.get(snapshot.currentNodeId)?.leaf) add(['currentNodeId'], 'not-found must end at a leaf');
+      if (snapshot.currentNodeId === null) {
+        if (snapshot.nodes.length > 0) add(['currentNodeId'], 'not-found must name the final leaf');
+      } else if (!byId.get(snapshot.currentNodeId)?.leaf) {
+        add(['currentNodeId'], 'not-found must end at a leaf');
+      }
       if (snapshot.result !== 'not-found') add(['result'], 'not-found must record failure');
       if (snapshot.compareIndex !== null || snapshot.compareKey !== null) add(['compareIndex'], 'not-found has no key comparison');
       if (snapshot.split !== null || snapshot.insertedKey !== null) add(['split'], 'not-found changes no structure');
+      if (snapshot.deleteInfo !== null) add(['deleteInfo'], 'not-found performs no deletion move');
     }
     if (snapshot.operation === 'duplicate') {
       if (snapshot.currentNodeId === null) add(['currentNodeId'], 'duplicate needs the node that owns the key');
@@ -2074,6 +2107,7 @@ export const btreeSnapshotSchema = z
       if (snapshot.compareKey !== snapshot.targetValue) add(['compareKey'], 'duplicate must compare the target key');
       if (snapshot.result !== 'duplicate') add(['result'], 'duplicate must record rejection');
       if (snapshot.split !== null || snapshot.insertedKey !== null) add(['split'], 'duplicate changes no structure');
+      if (snapshot.deleteInfo !== null) add(['deleteInfo'], 'duplicate performs no deletion move');
     }
     if (snapshot.operation === 'insert') {
       if (snapshot.currentNodeId === null) add(['currentNodeId'], 'insert needs the target leaf');
@@ -2085,6 +2119,7 @@ export const btreeSnapshotSchema = z
       if (snapshot.insertedKey !== snapshot.targetValue) add(['insertedKey'], 'insertedKey must equal targetValue');
       if (snapshot.result !== 'inserted') add(['result'], 'insert must record insertion');
       if (snapshot.split !== null) add(['split'], 'insert is not itself a split frame');
+      if (snapshot.deleteInfo !== null) add(['deleteInfo'], 'insert performs no deletion move');
     }
     if (snapshot.operation === 'split') {
       if (snapshot.split === null) add(['split'], 'split must carry split details');
@@ -2092,6 +2127,83 @@ export const btreeSnapshotSchema = z
       if (snapshot.childSlot !== null || snapshot.childId !== null) add(['childSlot'], 'split has no selected child');
       if (snapshot.result !== null) add(['result'], 'split has no final result yet');
       if (snapshot.insertedKey !== null) add(['insertedKey'], 'split frame has no inserted key yet');
+      if (snapshot.deleteInfo !== null) add(['deleteInfo'], 'split performs no deletion move');
+    }
+    if (snapshot.operation === 'locate') {
+      if (snapshot.currentNodeId === null) add(['currentNodeId'], 'locate needs the node that owns the key');
+      const current = snapshot.currentNodeId === null ? undefined : byId.get(snapshot.currentNodeId);
+      if (!current || !current.keys.includes(snapshot.targetValue)) {
+        add(['targetValue'], 'locate requires the target key in the current node');
+      }
+      if (snapshot.compareKey !== snapshot.targetValue) add(['compareKey'], 'locate must compare the target');
+      if (snapshot.result !== null) add(['result'], 'locate is not terminal');
+      if (snapshot.split !== null || snapshot.insertedKey !== null) add(['split'], 'locate changes nothing');
+      if (snapshot.deleteInfo === null || snapshot.deleteInfo.action !== 'locate') {
+        add(['deleteInfo'], 'locate must carry deleteInfo action locate');
+      }
+    }
+    if (snapshot.operation === 'replace') {
+      if (snapshot.currentNodeId === null) add(['currentNodeId'], 'replace needs the internal node');
+      else if (byId.get(snapshot.currentNodeId)?.leaf) add(['currentNodeId'], 'replace happens inside an internal node');
+      const current = snapshot.currentNodeId === null ? undefined : byId.get(snapshot.currentNodeId);
+      if (current && current.keys.includes(snapshot.targetValue)) {
+        add(['targetValue'], 'the deleted key must be gone after replacement');
+      }
+      if (current && (snapshot.compareKey === null || !current.keys.includes(snapshot.compareKey))) {
+        add(['compareKey'], 'replace highlights the predecessor that replaced the target');
+      }
+      if (snapshot.result !== null) add(['result'], 'replace is not terminal');
+      if (snapshot.split !== null || snapshot.insertedKey !== null) add(['split'], 'replace is not an insertion');
+      if (snapshot.deleteInfo === null || snapshot.deleteInfo.action !== 'replace') {
+        add(['deleteInfo'], 'replace must carry deleteInfo action replace');
+      }
+    }
+    if (snapshot.operation === 'delete-leaf') {
+      if (snapshot.currentNodeId !== null && !byId.get(snapshot.currentNodeId)?.leaf) {
+        add(['currentNodeId'], 'delete-leaf must end at a leaf');
+      }
+      const current = snapshot.currentNodeId === null ? undefined : byId.get(snapshot.currentNodeId);
+      if (current && current.keys.includes(snapshot.targetValue)) {
+        add(['targetValue'], 'the deleted key is still present');
+      }
+      if (snapshot.compareIndex !== null || snapshot.compareKey !== null) add(['compareIndex'], 'delete-leaf has no key highlight');
+      if (snapshot.result !== null) add(['result'], 'delete-leaf is not terminal');
+      if (snapshot.split !== null || snapshot.insertedKey !== null) add(['split'], 'delete-leaf is not an insertion');
+      if (snapshot.deleteInfo === null || snapshot.deleteInfo.action !== 'delete-leaf') {
+        add(['deleteInfo'], 'delete-leaf must carry deleteInfo action delete-leaf');
+      }
+    }
+    if (snapshot.operation === 'borrow-left' || snapshot.operation === 'borrow-right') {
+      if (snapshot.currentNodeId === null) add(['currentNodeId'], 'a borrow frame needs the repaired node');
+      if (snapshot.compareIndex !== null || snapshot.compareKey !== null) add(['compareIndex'], 'a borrow has no key comparison');
+      if (snapshot.result !== null) add(['result'], 'a borrow is not terminal');
+      if (snapshot.split !== null || snapshot.insertedKey !== null) add(['split'], 'a borrow is not a split');
+      if (snapshot.deleteInfo === null || snapshot.deleteInfo.action !== snapshot.operation) {
+        add(['deleteInfo'], 'borrow frame needs matching deleteInfo action');
+      } else if (snapshot.deleteInfo.siblingId === null || !byId.has(snapshot.deleteInfo.siblingId)) {
+        add(['deleteInfo', 'siblingId'], 'borrowing sibling must still be attached');
+      }
+    }
+    if (snapshot.operation === 'merge') {
+      if (snapshot.currentNodeId === null) add(['currentNodeId'], 'merge frame needs the surviving node');
+      if (snapshot.compareIndex !== null || snapshot.compareKey !== null) add(['compareIndex'], 'merge has no key comparison');
+      if (snapshot.result !== null) add(['result'], 'merge is not terminal');
+      if (snapshot.split !== null || snapshot.insertedKey !== null) add(['split'], 'merge is not a split');
+      if (snapshot.deleteInfo === null || snapshot.deleteInfo.action !== 'merge') {
+        add(['deleteInfo'], 'merge must carry deleteInfo action merge');
+      }
+      if (snapshot.deleteInfo?.parentId !== null && snapshot.deleteInfo?.parentId !== undefined) {
+        if (!byId.has(snapshot.deleteInfo.parentId)) add(['deleteInfo', 'parentId'], 'merge parent must be attached');
+      }
+    }
+    if (snapshot.operation === 'root-shrink') {
+      if (snapshot.currentNodeId !== snapshot.rootId) add(['currentNodeId'], 'root-shrink ends at the new root');
+      if (snapshot.compareIndex !== null || snapshot.compareKey !== null) add(['compareIndex'], 'root-shrink has no comparison');
+      if (snapshot.result !== null) add(['result'], 'root-shrink is not terminal');
+      if (snapshot.split !== null || snapshot.insertedKey !== null) add(['split'], 'root-shrink is not a split');
+      if (snapshot.deleteInfo === null || snapshot.deleteInfo.action !== 'root-shrink') {
+        add(['deleteInfo'], 'root-shrink must carry deleteInfo action root-shrink');
+      }
     }
     if (snapshot.operation === 'done') {
       if (snapshot.currentNodeId !== null || snapshot.pathIds.length > 0) {
@@ -2100,10 +2212,13 @@ export const btreeSnapshotSchema = z
       if (snapshot.compareIndex !== null || snapshot.compareKey !== null) add(['compareIndex'], 'done has no comparison');
       if (snapshot.childSlot !== null || snapshot.childId !== null) add(['childSlot'], 'done has no selected child');
       if (snapshot.split !== null || snapshot.insertedKey !== null) add(['split'], 'done has no split or inserted key');
+      if (snapshot.deleteInfo !== null) add(['deleteInfo'], 'done has no deletion move');
       if (snapshot.result === null) add(['result'], 'done must record the final result');
       const allowedResults: BtreeResult[] = snapshot.command === 'find'
         ? ['found', 'not-found']
-        : ['inserted', 'duplicate'];
+        : snapshot.command === 'insert'
+          ? ['inserted', 'duplicate']
+          : ['deleted', 'not-found'];
       if (snapshot.result !== null && !allowedResults.includes(snapshot.result)) {
         add(['result'], `${snapshot.result} cannot finish a ${snapshot.command} run`);
       }
@@ -8229,6 +8344,9 @@ export const structureSchema = z.union([
   freeListSnapshotSchema,
   buddySnapshotSchema,
   gcSnapshotSchema,
+  blockSearchSnapshotSchema,
+  bplusSnapshotSchema,
+  keyTreeSnapshotSchema,
 ]);
 export type AnyStructureSnapshot = z.infer<typeof structureSchema>;
 

@@ -4,10 +4,10 @@ import { lessonRegistry } from './registry';
 import { COURSE_GUIDES } from '../guides/courseGuides';
 
 describe('SEARCH-04 B-tree course', () => {
-  it('registers exactly one course with the ten real trace step ids', () => {
+  it('registers exactly one course with the real trace step ids, including deletion', () => {
     expect(lessonRegistry.byAlgorithm('btree')).toBe(btreeLesson);
     expect(lessonRegistry.byId('b-tree-search-insert-split')).toBe(btreeLesson);
-    expect(btreeLesson.steps).toHaveLength(10);
+    expect(btreeLesson.steps).toHaveLength(17);
     expect(btreeLesson.steps.map((step) => step.stepId)).toEqual([
       'init',
       'inspect',
@@ -18,6 +18,13 @@ describe('SEARCH-04 B-tree course', () => {
       'split-before',
       'split-after',
       'insert',
+      'locate',
+      'replace',
+      'borrow-left',
+      'borrow-right',
+      'merge',
+      'root-shrink',
+      'delete-leaf',
       'done',
     ]);
     for (const step of btreeLesson.steps) {
@@ -45,6 +52,11 @@ describe('SEARCH-04 B-tree course', () => {
       '分裂：中间关键字上升',
       '选择子树继续下降',
       '到达叶子插入',
+      '删除：先证明关键字存在',
+      '内部键用左子树最大前驱替换',
+      '孩子不足时先向左右兄弟借',
+      '兄弟都不够借则父键下移并合并',
+      '根被抽空则唯一孩子成为新根',
       '结束：恢复全部约束',
     ]);
     expect(guide.stages[3]!.summary?.zh).toContain('回到');

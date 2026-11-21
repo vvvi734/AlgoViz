@@ -55,6 +55,10 @@ const COMPLEXITY_EN: Record<string, string> = {
   'O(n) 辅助空间（数组实现）': 'O(n) auxiliary space (array implementation)',
   'O(log_m n) 节点访问': 'O(log_m n) node visits',
   'O(log n) 节点访问': 'O(log n) node visits',
+  'O(√n) 次比较（块长约 √n 时）': 'O(√n) comparisons (with block length near √n)',
+  '点查找 O(log_m n)；范围查询 O(log_m n + k)': 'Point search O(log_m n); range query O(log_m n + k)',
+  '查找、插入 O(L)；L 为关键字长度': 'Search and insert O(L); L is key length',
+  'O(ΣL) 个字符节点': 'O(ΣL) character nodes',
   '递归栈平均 O(log n)；最坏 O(n)': 'Recursion stack average O(log n); worst O(n)',
   'O(m+n)（结果链新建结点）': 'O(m+n) (a new result chain is allocated)',
 };

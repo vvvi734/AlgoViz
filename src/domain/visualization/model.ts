@@ -51,6 +51,9 @@ import { buildExpressionModel, type ExpressionVisualModel } from './expressionMo
 import { buildFreeListVisualModel, type FreeListVisualModel } from './freeListModel';
 import { buildBuddyVisualModel, type BuddyVisualModel } from './buddyModel';
 import { buildGcVisualModel, type GcVisualModel } from './gcModel';
+import { buildBlockSearchModel, type BlockSearchVisualModel } from './blockSearchModel';
+import { buildBplusModel, type BplusVisualModel } from './bplusModel';
+import { buildKeyTreeModel, type KeyTreeVisualModel } from './keyTreeModel';
 
 /**
  * Pure mapping from a trace state to a renderable model. React components only
@@ -174,6 +177,9 @@ export type VisualModel =
   | FreeListVisualModel
   | BuddyVisualModel
   | GcVisualModel
+  | BlockSearchVisualModel
+  | BplusVisualModel
+  | KeyTreeVisualModel
   | { kind: 'graph'; edges: Array<[number, number]>; nodes: GraphNodeModel[]; isTree: boolean }
   | { kind: 'raw'; text: string };
 
@@ -359,6 +365,21 @@ export function buildVisualModel(
   if (structure !== undefined && structure.kind === 'garbage-collection') {
     if (kind !== 'graph') return { kind: 'raw', text: labels.invalid };
     return buildGcVisualModel(structure);
+  }
+
+  if (structure !== undefined && structure.kind === 'block-search') {
+    if (kind !== 'array') return { kind: 'raw', text: labels.invalid };
+    return buildBlockSearchModel(structure);
+  }
+
+  if (structure !== undefined && structure.kind === 'bplus-tree') {
+    if (kind !== 'array') return { kind: 'raw', text: labels.invalid };
+    return buildBplusModel(structure);
+  }
+
+  if (structure !== undefined && structure.kind === 'key-tree') {
+    if (kind !== 'array') return { kind: 'raw', text: labels.invalid };
+    return buildKeyTreeModel(structure);
   }
 
   if (structure !== undefined && structure.kind === 'generalized-list') {

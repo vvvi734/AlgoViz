@@ -1,0 +1,6240 @@
+{
+  "hit-middle": {
+    "input": {
+      "preset": "hit-middle",
+      "data": [
+        22,
+        8,
+        14,
+        35,
+        41,
+        57,
+        66,
+        38,
+        73,
+        81,
+        94,
+        69
+      ],
+      "blockSize": 4,
+      "target": 38
+    },
+    "frames": [
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "done": false
+        },
+        "message": "12 个记录、3 个块：索引表已按块最大值建好 / 12 records in 3 blocks",
+        "line": 231,
+        "variables": {
+          "n": 12,
+          "blockSize": 4,
+          "blocks": 3,
+          "target": 38,
+          "currentIndex": null,
+          "currentBlock": null,
+          "currentPos": null,
+          "indexComparisons": 0,
+          "blockComparisons": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "init",
+        "structure": {
+          "kind": "block-search",
+          "preset": "hit-middle",
+          "operation": "init",
+          "targetValue": 38,
+          "blockSize": 4,
+          "data": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "blocks": [
+            {
+              "index": 0,
+              "start": 0,
+              "length": 4,
+              "max": 35,
+              "values": [
+                22,
+                8,
+                14,
+                35
+              ]
+            },
+            {
+              "index": 1,
+              "start": 4,
+              "length": 4,
+              "max": 66,
+              "values": [
+                41,
+                57,
+                66,
+                38
+              ]
+            },
+            {
+              "index": 2,
+              "start": 8,
+              "length": 4,
+              "max": 94,
+              "values": [
+                73,
+                81,
+                94,
+                69
+              ]
+            }
+          ],
+          "indexEntries": [
+            {
+              "blockIndex": 0,
+              "max": 35,
+              "start": 0,
+              "length": 4
+            },
+            {
+              "blockIndex": 1,
+              "max": 66,
+              "start": 4,
+              "length": 4
+            },
+            {
+              "blockIndex": 2,
+              "max": 94,
+              "start": 8,
+              "length": 4
+            }
+          ],
+          "currentIndex": null,
+          "currentBlock": null,
+          "currentPos": null,
+          "compareValue": null,
+          "phase": "index",
+          "indexComparisons": 0,
+          "blockComparisons": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "done": false
+        },
+        "message": "索引项 1：比较 38 与块最大值 35 / compare target with block max",
+        "line": 143,
+        "variables": {
+          "n": 12,
+          "blockSize": 4,
+          "blocks": 3,
+          "target": 38,
+          "currentIndex": 0,
+          "currentBlock": null,
+          "currentPos": null,
+          "indexComparisons": 1,
+          "blockComparisons": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "index-compare",
+        "structure": {
+          "kind": "block-search",
+          "preset": "hit-middle",
+          "operation": "index-compare",
+          "targetValue": 38,
+          "blockSize": 4,
+          "data": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "blocks": [
+            {
+              "index": 0,
+              "start": 0,
+              "length": 4,
+              "max": 35,
+              "values": [
+                22,
+                8,
+                14,
+                35
+              ]
+            },
+            {
+              "index": 1,
+              "start": 4,
+              "length": 4,
+              "max": 66,
+              "values": [
+                41,
+                57,
+                66,
+                38
+              ]
+            },
+            {
+              "index": 2,
+              "start": 8,
+              "length": 4,
+              "max": 94,
+              "values": [
+                73,
+                81,
+                94,
+                69
+              ]
+            }
+          ],
+          "indexEntries": [
+            {
+              "blockIndex": 0,
+              "max": 35,
+              "start": 0,
+              "length": 4
+            },
+            {
+              "blockIndex": 1,
+              "max": 66,
+              "start": 4,
+              "length": 4
+            },
+            {
+              "blockIndex": 2,
+              "max": 94,
+              "start": 8,
+              "length": 4
+            }
+          ],
+          "currentIndex": 0,
+          "currentBlock": null,
+          "currentPos": null,
+          "compareValue": 35,
+          "phase": "index",
+          "indexComparisons": 1,
+          "blockComparisons": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "done": false
+        },
+        "message": "索引项 2：比较 38 与块最大值 66 / compare target with block max",
+        "line": 143,
+        "variables": {
+          "n": 12,
+          "blockSize": 4,
+          "blocks": 3,
+          "target": 38,
+          "currentIndex": 1,
+          "currentBlock": null,
+          "currentPos": null,
+          "indexComparisons": 2,
+          "blockComparisons": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "index-compare",
+        "structure": {
+          "kind": "block-search",
+          "preset": "hit-middle",
+          "operation": "index-compare",
+          "targetValue": 38,
+          "blockSize": 4,
+          "data": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "blocks": [
+            {
+              "index": 0,
+              "start": 0,
+              "length": 4,
+              "max": 35,
+              "values": [
+                22,
+                8,
+                14,
+                35
+              ]
+            },
+            {
+              "index": 1,
+              "start": 4,
+              "length": 4,
+              "max": 66,
+              "values": [
+                41,
+                57,
+                66,
+                38
+              ]
+            },
+            {
+              "index": 2,
+              "start": 8,
+              "length": 4,
+              "max": 94,
+              "values": [
+                73,
+                81,
+                94,
+                69
+              ]
+            }
+          ],
+          "indexEntries": [
+            {
+              "blockIndex": 0,
+              "max": 35,
+              "start": 0,
+              "length": 4
+            },
+            {
+              "blockIndex": 1,
+              "max": 66,
+              "start": 4,
+              "length": 4
+            },
+            {
+              "blockIndex": 2,
+              "max": 94,
+              "start": 8,
+              "length": 4
+            }
+          ],
+          "currentIndex": 1,
+          "currentBlock": null,
+          "currentPos": null,
+          "compareValue": 66,
+          "phase": "index",
+          "indexComparisons": 2,
+          "blockComparisons": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "done": false
+        },
+        "message": "第一个 max ≥ target 的块是第 2 块：进入块内扫描 / first block whose max is at least the target",
+        "line": 155,
+        "variables": {
+          "n": 12,
+          "blockSize": 4,
+          "blocks": 3,
+          "target": 38,
+          "currentIndex": 1,
+          "currentBlock": 1,
+          "currentPos": null,
+          "indexComparisons": 2,
+          "blockComparisons": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "index-select",
+        "structure": {
+          "kind": "block-search",
+          "preset": "hit-middle",
+          "operation": "index-select",
+          "targetValue": 38,
+          "blockSize": 4,
+          "data": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "blocks": [
+            {
+              "index": 0,
+              "start": 0,
+              "length": 4,
+              "max": 35,
+              "values": [
+                22,
+                8,
+                14,
+                35
+              ]
+            },
+            {
+              "index": 1,
+              "start": 4,
+              "length": 4,
+              "max": 66,
+              "values": [
+                41,
+                57,
+                66,
+                38
+              ]
+            },
+            {
+              "index": 2,
+              "start": 8,
+              "length": 4,
+              "max": 94,
+              "values": [
+                73,
+                81,
+                94,
+                69
+              ]
+            }
+          ],
+          "indexEntries": [
+            {
+              "blockIndex": 0,
+              "max": 35,
+              "start": 0,
+              "length": 4
+            },
+            {
+              "blockIndex": 1,
+              "max": 66,
+              "start": 4,
+              "length": 4
+            },
+            {
+              "blockIndex": 2,
+              "max": 94,
+              "start": 8,
+              "length": 4
+            }
+          ],
+          "currentIndex": 1,
+          "currentBlock": 1,
+          "currentPos": null,
+          "compareValue": 66,
+          "phase": "block",
+          "indexComparisons": 2,
+          "blockComparisons": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "done": false
+        },
+        "message": "块内第 1 项：比较 38 与 41 / compare inside the selected block",
+        "line": 185,
+        "variables": {
+          "n": 12,
+          "blockSize": 4,
+          "blocks": 3,
+          "target": 38,
+          "currentIndex": 1,
+          "currentBlock": 1,
+          "currentPos": 0,
+          "indexComparisons": 2,
+          "blockComparisons": 1,
+          "result": "pending"
+        },
+        "lessonStepId": "block-compare",
+        "structure": {
+          "kind": "block-search",
+          "preset": "hit-middle",
+          "operation": "block-compare",
+          "targetValue": 38,
+          "blockSize": 4,
+          "data": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "blocks": [
+            {
+              "index": 0,
+              "start": 0,
+              "length": 4,
+              "max": 35,
+              "values": [
+                22,
+                8,
+                14,
+                35
+              ]
+            },
+            {
+              "index": 1,
+              "start": 4,
+              "length": 4,
+              "max": 66,
+              "values": [
+                41,
+                57,
+                66,
+                38
+              ]
+            },
+            {
+              "index": 2,
+              "start": 8,
+              "length": 4,
+              "max": 94,
+              "values": [
+                73,
+                81,
+                94,
+                69
+              ]
+            }
+          ],
+          "indexEntries": [
+            {
+              "blockIndex": 0,
+              "max": 35,
+              "start": 0,
+              "length": 4
+            },
+            {
+              "blockIndex": 1,
+              "max": 66,
+              "start": 4,
+              "length": 4
+            },
+            {
+              "blockIndex": 2,
+              "max": 94,
+              "start": 8,
+              "length": 4
+            }
+          ],
+          "currentIndex": 1,
+          "currentBlock": 1,
+          "currentPos": 0,
+          "compareValue": 41,
+          "phase": "block",
+          "indexComparisons": 2,
+          "blockComparisons": 1,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "done": false
+        },
+        "message": "块内第 2 项：比较 38 与 57 / compare inside the selected block",
+        "line": 185,
+        "variables": {
+          "n": 12,
+          "blockSize": 4,
+          "blocks": 3,
+          "target": 38,
+          "currentIndex": 1,
+          "currentBlock": 1,
+          "currentPos": 1,
+          "indexComparisons": 2,
+          "blockComparisons": 2,
+          "result": "pending"
+        },
+        "lessonStepId": "block-compare",
+        "structure": {
+          "kind": "block-search",
+          "preset": "hit-middle",
+          "operation": "block-compare",
+          "targetValue": 38,
+          "blockSize": 4,
+          "data": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "blocks": [
+            {
+              "index": 0,
+              "start": 0,
+              "length": 4,
+              "max": 35,
+              "values": [
+                22,
+                8,
+                14,
+                35
+              ]
+            },
+            {
+              "index": 1,
+              "start": 4,
+              "length": 4,
+              "max": 66,
+              "values": [
+                41,
+                57,
+                66,
+                38
+              ]
+            },
+            {
+              "index": 2,
+              "start": 8,
+              "length": 4,
+              "max": 94,
+              "values": [
+                73,
+                81,
+                94,
+                69
+              ]
+            }
+          ],
+          "indexEntries": [
+            {
+              "blockIndex": 0,
+              "max": 35,
+              "start": 0,
+              "length": 4
+            },
+            {
+              "blockIndex": 1,
+              "max": 66,
+              "start": 4,
+              "length": 4
+            },
+            {
+              "blockIndex": 2,
+              "max": 94,
+              "start": 8,
+              "length": 4
+            }
+          ],
+          "currentIndex": 1,
+          "currentBlock": 1,
+          "currentPos": 1,
+          "compareValue": 57,
+          "phase": "block",
+          "indexComparisons": 2,
+          "blockComparisons": 2,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "done": false
+        },
+        "message": "块内第 3 项：比较 38 与 66 / compare inside the selected block",
+        "line": 185,
+        "variables": {
+          "n": 12,
+          "blockSize": 4,
+          "blocks": 3,
+          "target": 38,
+          "currentIndex": 1,
+          "currentBlock": 1,
+          "currentPos": 2,
+          "indexComparisons": 2,
+          "blockComparisons": 3,
+          "result": "pending"
+        },
+        "lessonStepId": "block-compare",
+        "structure": {
+          "kind": "block-search",
+          "preset": "hit-middle",
+          "operation": "block-compare",
+          "targetValue": 38,
+          "blockSize": 4,
+          "data": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "blocks": [
+            {
+              "index": 0,
+              "start": 0,
+              "length": 4,
+              "max": 35,
+              "values": [
+                22,
+                8,
+                14,
+                35
+              ]
+            },
+            {
+              "index": 1,
+              "start": 4,
+              "length": 4,
+              "max": 66,
+              "values": [
+                41,
+                57,
+                66,
+                38
+              ]
+            },
+            {
+              "index": 2,
+              "start": 8,
+              "length": 4,
+              "max": 94,
+              "values": [
+                73,
+                81,
+                94,
+                69
+              ]
+            }
+          ],
+          "indexEntries": [
+            {
+              "blockIndex": 0,
+              "max": 35,
+              "start": 0,
+              "length": 4
+            },
+            {
+              "blockIndex": 1,
+              "max": 66,
+              "start": 4,
+              "length": 4
+            },
+            {
+              "blockIndex": 2,
+              "max": 94,
+              "start": 8,
+              "length": 4
+            }
+          ],
+          "currentIndex": 1,
+          "currentBlock": 1,
+          "currentPos": 2,
+          "compareValue": 66,
+          "phase": "block",
+          "indexComparisons": 2,
+          "blockComparisons": 3,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "done": false
+        },
+        "message": "块内第 4 项：比较 38 与 38 / compare inside the selected block",
+        "line": 185,
+        "variables": {
+          "n": 12,
+          "blockSize": 4,
+          "blocks": 3,
+          "target": 38,
+          "currentIndex": 1,
+          "currentBlock": 1,
+          "currentPos": 3,
+          "indexComparisons": 2,
+          "blockComparisons": 4,
+          "result": "pending"
+        },
+        "lessonStepId": "block-compare",
+        "structure": {
+          "kind": "block-search",
+          "preset": "hit-middle",
+          "operation": "block-compare",
+          "targetValue": 38,
+          "blockSize": 4,
+          "data": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "blocks": [
+            {
+              "index": 0,
+              "start": 0,
+              "length": 4,
+              "max": 35,
+              "values": [
+                22,
+                8,
+                14,
+                35
+              ]
+            },
+            {
+              "index": 1,
+              "start": 4,
+              "length": 4,
+              "max": 66,
+              "values": [
+                41,
+                57,
+                66,
+                38
+              ]
+            },
+            {
+              "index": 2,
+              "start": 8,
+              "length": 4,
+              "max": 94,
+              "values": [
+                73,
+                81,
+                94,
+                69
+              ]
+            }
+          ],
+          "indexEntries": [
+            {
+              "blockIndex": 0,
+              "max": 35,
+              "start": 0,
+              "length": 4
+            },
+            {
+              "blockIndex": 1,
+              "max": 66,
+              "start": 4,
+              "length": 4
+            },
+            {
+              "blockIndex": 2,
+              "max": 94,
+              "start": 8,
+              "length": 4
+            }
+          ],
+          "currentIndex": 1,
+          "currentBlock": 1,
+          "currentPos": 3,
+          "compareValue": 38,
+          "phase": "block",
+          "indexComparisons": 2,
+          "blockComparisons": 4,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "done": true
+        },
+        "message": "命中 38：块内下标 3 / hit at block offset 3",
+        "line": 198,
+        "variables": {
+          "n": 12,
+          "blockSize": 4,
+          "blocks": 3,
+          "target": 38,
+          "currentIndex": 1,
+          "currentBlock": 1,
+          "currentPos": 3,
+          "indexComparisons": 2,
+          "blockComparisons": 4,
+          "result": "found"
+        },
+        "lessonStepId": "found",
+        "structure": {
+          "kind": "block-search",
+          "preset": "hit-middle",
+          "operation": "found",
+          "targetValue": 38,
+          "blockSize": 4,
+          "data": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "blocks": [
+            {
+              "index": 0,
+              "start": 0,
+              "length": 4,
+              "max": 35,
+              "values": [
+                22,
+                8,
+                14,
+                35
+              ]
+            },
+            {
+              "index": 1,
+              "start": 4,
+              "length": 4,
+              "max": 66,
+              "values": [
+                41,
+                57,
+                66,
+                38
+              ]
+            },
+            {
+              "index": 2,
+              "start": 8,
+              "length": 4,
+              "max": 94,
+              "values": [
+                73,
+                81,
+                94,
+                69
+              ]
+            }
+          ],
+          "indexEntries": [
+            {
+              "blockIndex": 0,
+              "max": 35,
+              "start": 0,
+              "length": 4
+            },
+            {
+              "blockIndex": 1,
+              "max": 66,
+              "start": 4,
+              "length": 4
+            },
+            {
+              "blockIndex": 2,
+              "max": 94,
+              "start": 8,
+              "length": 4
+            }
+          ],
+          "currentIndex": 1,
+          "currentBlock": 1,
+          "currentPos": 3,
+          "compareValue": 38,
+          "phase": "done",
+          "indexComparisons": 2,
+          "blockComparisons": 4,
+          "result": "found"
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "done": true
+        },
+        "message": "查找完成 / search complete",
+        "line": 240,
+        "variables": {
+          "n": 12,
+          "blockSize": 4,
+          "blocks": 3,
+          "target": 38,
+          "currentIndex": null,
+          "currentBlock": null,
+          "currentPos": null,
+          "indexComparisons": 2,
+          "blockComparisons": 4,
+          "result": "found"
+        },
+        "lessonStepId": "done",
+        "structure": {
+          "kind": "block-search",
+          "preset": "hit-middle",
+          "operation": "done",
+          "targetValue": 38,
+          "blockSize": 4,
+          "data": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "blocks": [
+            {
+              "index": 0,
+              "start": 0,
+              "length": 4,
+              "max": 35,
+              "values": [
+                22,
+                8,
+                14,
+                35
+              ]
+            },
+            {
+              "index": 1,
+              "start": 4,
+              "length": 4,
+              "max": 66,
+              "values": [
+                41,
+                57,
+                66,
+                38
+              ]
+            },
+            {
+              "index": 2,
+              "start": 8,
+              "length": 4,
+              "max": 94,
+              "values": [
+                73,
+                81,
+                94,
+                69
+              ]
+            }
+          ],
+          "indexEntries": [
+            {
+              "blockIndex": 0,
+              "max": 35,
+              "start": 0,
+              "length": 4
+            },
+            {
+              "blockIndex": 1,
+              "max": 66,
+              "start": 4,
+              "length": 4
+            },
+            {
+              "blockIndex": 2,
+              "max": 94,
+              "start": 8,
+              "length": 4
+            }
+          ],
+          "currentIndex": null,
+          "currentBlock": null,
+          "currentPos": null,
+          "compareValue": null,
+          "phase": "done",
+          "indexComparisons": 2,
+          "blockComparisons": 4,
+          "result": "found"
+        }
+      }
+    ]
+  },
+  "miss-between": {
+    "input": {
+      "preset": "miss-between",
+      "data": [
+        22,
+        8,
+        14,
+        35,
+        41,
+        57,
+        66,
+        38,
+        73,
+        81,
+        94,
+        69
+      ],
+      "blockSize": 4,
+      "target": 60
+    },
+    "frames": [
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "done": false
+        },
+        "message": "12 个记录、3 个块：索引表已按块最大值建好 / 12 records in 3 blocks",
+        "line": 231,
+        "variables": {
+          "n": 12,
+          "blockSize": 4,
+          "blocks": 3,
+          "target": 60,
+          "currentIndex": null,
+          "currentBlock": null,
+          "currentPos": null,
+          "indexComparisons": 0,
+          "blockComparisons": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "init",
+        "structure": {
+          "kind": "block-search",
+          "preset": "miss-between",
+          "operation": "init",
+          "targetValue": 60,
+          "blockSize": 4,
+          "data": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "blocks": [
+            {
+              "index": 0,
+              "start": 0,
+              "length": 4,
+              "max": 35,
+              "values": [
+                22,
+                8,
+                14,
+                35
+              ]
+            },
+            {
+              "index": 1,
+              "start": 4,
+              "length": 4,
+              "max": 66,
+              "values": [
+                41,
+                57,
+                66,
+                38
+              ]
+            },
+            {
+              "index": 2,
+              "start": 8,
+              "length": 4,
+              "max": 94,
+              "values": [
+                73,
+                81,
+                94,
+                69
+              ]
+            }
+          ],
+          "indexEntries": [
+            {
+              "blockIndex": 0,
+              "max": 35,
+              "start": 0,
+              "length": 4
+            },
+            {
+              "blockIndex": 1,
+              "max": 66,
+              "start": 4,
+              "length": 4
+            },
+            {
+              "blockIndex": 2,
+              "max": 94,
+              "start": 8,
+              "length": 4
+            }
+          ],
+          "currentIndex": null,
+          "currentBlock": null,
+          "currentPos": null,
+          "compareValue": null,
+          "phase": "index",
+          "indexComparisons": 0,
+          "blockComparisons": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "done": false
+        },
+        "message": "索引项 1：比较 60 与块最大值 35 / compare target with block max",
+        "line": 143,
+        "variables": {
+          "n": 12,
+          "blockSize": 4,
+          "blocks": 3,
+          "target": 60,
+          "currentIndex": 0,
+          "currentBlock": null,
+          "currentPos": null,
+          "indexComparisons": 1,
+          "blockComparisons": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "index-compare",
+        "structure": {
+          "kind": "block-search",
+          "preset": "miss-between",
+          "operation": "index-compare",
+          "targetValue": 60,
+          "blockSize": 4,
+          "data": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "blocks": [
+            {
+              "index": 0,
+              "start": 0,
+              "length": 4,
+              "max": 35,
+              "values": [
+                22,
+                8,
+                14,
+                35
+              ]
+            },
+            {
+              "index": 1,
+              "start": 4,
+              "length": 4,
+              "max": 66,
+              "values": [
+                41,
+                57,
+                66,
+                38
+              ]
+            },
+            {
+              "index": 2,
+              "start": 8,
+              "length": 4,
+              "max": 94,
+              "values": [
+                73,
+                81,
+                94,
+                69
+              ]
+            }
+          ],
+          "indexEntries": [
+            {
+              "blockIndex": 0,
+              "max": 35,
+              "start": 0,
+              "length": 4
+            },
+            {
+              "blockIndex": 1,
+              "max": 66,
+              "start": 4,
+              "length": 4
+            },
+            {
+              "blockIndex": 2,
+              "max": 94,
+              "start": 8,
+              "length": 4
+            }
+          ],
+          "currentIndex": 0,
+          "currentBlock": null,
+          "currentPos": null,
+          "compareValue": 35,
+          "phase": "index",
+          "indexComparisons": 1,
+          "blockComparisons": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "done": false
+        },
+        "message": "索引项 2：比较 60 与块最大值 66 / compare target with block max",
+        "line": 143,
+        "variables": {
+          "n": 12,
+          "blockSize": 4,
+          "blocks": 3,
+          "target": 60,
+          "currentIndex": 1,
+          "currentBlock": null,
+          "currentPos": null,
+          "indexComparisons": 2,
+          "blockComparisons": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "index-compare",
+        "structure": {
+          "kind": "block-search",
+          "preset": "miss-between",
+          "operation": "index-compare",
+          "targetValue": 60,
+          "blockSize": 4,
+          "data": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "blocks": [
+            {
+              "index": 0,
+              "start": 0,
+              "length": 4,
+              "max": 35,
+              "values": [
+                22,
+                8,
+                14,
+                35
+              ]
+            },
+            {
+              "index": 1,
+              "start": 4,
+              "length": 4,
+              "max": 66,
+              "values": [
+                41,
+                57,
+                66,
+                38
+              ]
+            },
+            {
+              "index": 2,
+              "start": 8,
+              "length": 4,
+              "max": 94,
+              "values": [
+                73,
+                81,
+                94,
+                69
+              ]
+            }
+          ],
+          "indexEntries": [
+            {
+              "blockIndex": 0,
+              "max": 35,
+              "start": 0,
+              "length": 4
+            },
+            {
+              "blockIndex": 1,
+              "max": 66,
+              "start": 4,
+              "length": 4
+            },
+            {
+              "blockIndex": 2,
+              "max": 94,
+              "start": 8,
+              "length": 4
+            }
+          ],
+          "currentIndex": 1,
+          "currentBlock": null,
+          "currentPos": null,
+          "compareValue": 66,
+          "phase": "index",
+          "indexComparisons": 2,
+          "blockComparisons": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "done": false
+        },
+        "message": "第一个 max ≥ target 的块是第 2 块：进入块内扫描 / first block whose max is at least the target",
+        "line": 155,
+        "variables": {
+          "n": 12,
+          "blockSize": 4,
+          "blocks": 3,
+          "target": 60,
+          "currentIndex": 1,
+          "currentBlock": 1,
+          "currentPos": null,
+          "indexComparisons": 2,
+          "blockComparisons": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "index-select",
+        "structure": {
+          "kind": "block-search",
+          "preset": "miss-between",
+          "operation": "index-select",
+          "targetValue": 60,
+          "blockSize": 4,
+          "data": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "blocks": [
+            {
+              "index": 0,
+              "start": 0,
+              "length": 4,
+              "max": 35,
+              "values": [
+                22,
+                8,
+                14,
+                35
+              ]
+            },
+            {
+              "index": 1,
+              "start": 4,
+              "length": 4,
+              "max": 66,
+              "values": [
+                41,
+                57,
+                66,
+                38
+              ]
+            },
+            {
+              "index": 2,
+              "start": 8,
+              "length": 4,
+              "max": 94,
+              "values": [
+                73,
+                81,
+                94,
+                69
+              ]
+            }
+          ],
+          "indexEntries": [
+            {
+              "blockIndex": 0,
+              "max": 35,
+              "start": 0,
+              "length": 4
+            },
+            {
+              "blockIndex": 1,
+              "max": 66,
+              "start": 4,
+              "length": 4
+            },
+            {
+              "blockIndex": 2,
+              "max": 94,
+              "start": 8,
+              "length": 4
+            }
+          ],
+          "currentIndex": 1,
+          "currentBlock": 1,
+          "currentPos": null,
+          "compareValue": 66,
+          "phase": "block",
+          "indexComparisons": 2,
+          "blockComparisons": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "done": false
+        },
+        "message": "块内第 1 项：比较 60 与 41 / compare inside the selected block",
+        "line": 185,
+        "variables": {
+          "n": 12,
+          "blockSize": 4,
+          "blocks": 3,
+          "target": 60,
+          "currentIndex": 1,
+          "currentBlock": 1,
+          "currentPos": 0,
+          "indexComparisons": 2,
+          "blockComparisons": 1,
+          "result": "pending"
+        },
+        "lessonStepId": "block-compare",
+        "structure": {
+          "kind": "block-search",
+          "preset": "miss-between",
+          "operation": "block-compare",
+          "targetValue": 60,
+          "blockSize": 4,
+          "data": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "blocks": [
+            {
+              "index": 0,
+              "start": 0,
+              "length": 4,
+              "max": 35,
+              "values": [
+                22,
+                8,
+                14,
+                35
+              ]
+            },
+            {
+              "index": 1,
+              "start": 4,
+              "length": 4,
+              "max": 66,
+              "values": [
+                41,
+                57,
+                66,
+                38
+              ]
+            },
+            {
+              "index": 2,
+              "start": 8,
+              "length": 4,
+              "max": 94,
+              "values": [
+                73,
+                81,
+                94,
+                69
+              ]
+            }
+          ],
+          "indexEntries": [
+            {
+              "blockIndex": 0,
+              "max": 35,
+              "start": 0,
+              "length": 4
+            },
+            {
+              "blockIndex": 1,
+              "max": 66,
+              "start": 4,
+              "length": 4
+            },
+            {
+              "blockIndex": 2,
+              "max": 94,
+              "start": 8,
+              "length": 4
+            }
+          ],
+          "currentIndex": 1,
+          "currentBlock": 1,
+          "currentPos": 0,
+          "compareValue": 41,
+          "phase": "block",
+          "indexComparisons": 2,
+          "blockComparisons": 1,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "done": false
+        },
+        "message": "块内第 2 项：比较 60 与 57 / compare inside the selected block",
+        "line": 185,
+        "variables": {
+          "n": 12,
+          "blockSize": 4,
+          "blocks": 3,
+          "target": 60,
+          "currentIndex": 1,
+          "currentBlock": 1,
+          "currentPos": 1,
+          "indexComparisons": 2,
+          "blockComparisons": 2,
+          "result": "pending"
+        },
+        "lessonStepId": "block-compare",
+        "structure": {
+          "kind": "block-search",
+          "preset": "miss-between",
+          "operation": "block-compare",
+          "targetValue": 60,
+          "blockSize": 4,
+          "data": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "blocks": [
+            {
+              "index": 0,
+              "start": 0,
+              "length": 4,
+              "max": 35,
+              "values": [
+                22,
+                8,
+                14,
+                35
+              ]
+            },
+            {
+              "index": 1,
+              "start": 4,
+              "length": 4,
+              "max": 66,
+              "values": [
+                41,
+                57,
+                66,
+                38
+              ]
+            },
+            {
+              "index": 2,
+              "start": 8,
+              "length": 4,
+              "max": 94,
+              "values": [
+                73,
+                81,
+                94,
+                69
+              ]
+            }
+          ],
+          "indexEntries": [
+            {
+              "blockIndex": 0,
+              "max": 35,
+              "start": 0,
+              "length": 4
+            },
+            {
+              "blockIndex": 1,
+              "max": 66,
+              "start": 4,
+              "length": 4
+            },
+            {
+              "blockIndex": 2,
+              "max": 94,
+              "start": 8,
+              "length": 4
+            }
+          ],
+          "currentIndex": 1,
+          "currentBlock": 1,
+          "currentPos": 1,
+          "compareValue": 57,
+          "phase": "block",
+          "indexComparisons": 2,
+          "blockComparisons": 2,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "done": false
+        },
+        "message": "块内第 3 项：比较 60 与 66 / compare inside the selected block",
+        "line": 185,
+        "variables": {
+          "n": 12,
+          "blockSize": 4,
+          "blocks": 3,
+          "target": 60,
+          "currentIndex": 1,
+          "currentBlock": 1,
+          "currentPos": 2,
+          "indexComparisons": 2,
+          "blockComparisons": 3,
+          "result": "pending"
+        },
+        "lessonStepId": "block-compare",
+        "structure": {
+          "kind": "block-search",
+          "preset": "miss-between",
+          "operation": "block-compare",
+          "targetValue": 60,
+          "blockSize": 4,
+          "data": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "blocks": [
+            {
+              "index": 0,
+              "start": 0,
+              "length": 4,
+              "max": 35,
+              "values": [
+                22,
+                8,
+                14,
+                35
+              ]
+            },
+            {
+              "index": 1,
+              "start": 4,
+              "length": 4,
+              "max": 66,
+              "values": [
+                41,
+                57,
+                66,
+                38
+              ]
+            },
+            {
+              "index": 2,
+              "start": 8,
+              "length": 4,
+              "max": 94,
+              "values": [
+                73,
+                81,
+                94,
+                69
+              ]
+            }
+          ],
+          "indexEntries": [
+            {
+              "blockIndex": 0,
+              "max": 35,
+              "start": 0,
+              "length": 4
+            },
+            {
+              "blockIndex": 1,
+              "max": 66,
+              "start": 4,
+              "length": 4
+            },
+            {
+              "blockIndex": 2,
+              "max": 94,
+              "start": 8,
+              "length": 4
+            }
+          ],
+          "currentIndex": 1,
+          "currentBlock": 1,
+          "currentPos": 2,
+          "compareValue": 66,
+          "phase": "block",
+          "indexComparisons": 2,
+          "blockComparisons": 3,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "done": false
+        },
+        "message": "块内第 4 项：比较 60 与 38 / compare inside the selected block",
+        "line": 185,
+        "variables": {
+          "n": 12,
+          "blockSize": 4,
+          "blocks": 3,
+          "target": 60,
+          "currentIndex": 1,
+          "currentBlock": 1,
+          "currentPos": 3,
+          "indexComparisons": 2,
+          "blockComparisons": 4,
+          "result": "pending"
+        },
+        "lessonStepId": "block-compare",
+        "structure": {
+          "kind": "block-search",
+          "preset": "miss-between",
+          "operation": "block-compare",
+          "targetValue": 60,
+          "blockSize": 4,
+          "data": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "blocks": [
+            {
+              "index": 0,
+              "start": 0,
+              "length": 4,
+              "max": 35,
+              "values": [
+                22,
+                8,
+                14,
+                35
+              ]
+            },
+            {
+              "index": 1,
+              "start": 4,
+              "length": 4,
+              "max": 66,
+              "values": [
+                41,
+                57,
+                66,
+                38
+              ]
+            },
+            {
+              "index": 2,
+              "start": 8,
+              "length": 4,
+              "max": 94,
+              "values": [
+                73,
+                81,
+                94,
+                69
+              ]
+            }
+          ],
+          "indexEntries": [
+            {
+              "blockIndex": 0,
+              "max": 35,
+              "start": 0,
+              "length": 4
+            },
+            {
+              "blockIndex": 1,
+              "max": 66,
+              "start": 4,
+              "length": 4
+            },
+            {
+              "blockIndex": 2,
+              "max": 94,
+              "start": 8,
+              "length": 4
+            }
+          ],
+          "currentIndex": 1,
+          "currentBlock": 1,
+          "currentPos": 3,
+          "compareValue": 38,
+          "phase": "block",
+          "indexComparisons": 2,
+          "blockComparisons": 4,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "done": true
+        },
+        "message": "第 2 块扫描完仍未命中：查找失败 / selected block scanned without a hit",
+        "line": 214,
+        "variables": {
+          "n": 12,
+          "blockSize": 4,
+          "blocks": 3,
+          "target": 60,
+          "currentIndex": 1,
+          "currentBlock": 1,
+          "currentPos": null,
+          "indexComparisons": 2,
+          "blockComparisons": 4,
+          "result": "not-found"
+        },
+        "lessonStepId": "not-found",
+        "structure": {
+          "kind": "block-search",
+          "preset": "miss-between",
+          "operation": "not-found",
+          "targetValue": 60,
+          "blockSize": 4,
+          "data": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "blocks": [
+            {
+              "index": 0,
+              "start": 0,
+              "length": 4,
+              "max": 35,
+              "values": [
+                22,
+                8,
+                14,
+                35
+              ]
+            },
+            {
+              "index": 1,
+              "start": 4,
+              "length": 4,
+              "max": 66,
+              "values": [
+                41,
+                57,
+                66,
+                38
+              ]
+            },
+            {
+              "index": 2,
+              "start": 8,
+              "length": 4,
+              "max": 94,
+              "values": [
+                73,
+                81,
+                94,
+                69
+              ]
+            }
+          ],
+          "indexEntries": [
+            {
+              "blockIndex": 0,
+              "max": 35,
+              "start": 0,
+              "length": 4
+            },
+            {
+              "blockIndex": 1,
+              "max": 66,
+              "start": 4,
+              "length": 4
+            },
+            {
+              "blockIndex": 2,
+              "max": 94,
+              "start": 8,
+              "length": 4
+            }
+          ],
+          "currentIndex": 1,
+          "currentBlock": 1,
+          "currentPos": null,
+          "compareValue": null,
+          "phase": "done",
+          "indexComparisons": 2,
+          "blockComparisons": 4,
+          "result": "not-found"
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "done": true
+        },
+        "message": "查找完成 / search complete",
+        "line": 240,
+        "variables": {
+          "n": 12,
+          "blockSize": 4,
+          "blocks": 3,
+          "target": 60,
+          "currentIndex": null,
+          "currentBlock": null,
+          "currentPos": null,
+          "indexComparisons": 2,
+          "blockComparisons": 4,
+          "result": "not-found"
+        },
+        "lessonStepId": "done",
+        "structure": {
+          "kind": "block-search",
+          "preset": "miss-between",
+          "operation": "done",
+          "targetValue": 60,
+          "blockSize": 4,
+          "data": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "blocks": [
+            {
+              "index": 0,
+              "start": 0,
+              "length": 4,
+              "max": 35,
+              "values": [
+                22,
+                8,
+                14,
+                35
+              ]
+            },
+            {
+              "index": 1,
+              "start": 4,
+              "length": 4,
+              "max": 66,
+              "values": [
+                41,
+                57,
+                66,
+                38
+              ]
+            },
+            {
+              "index": 2,
+              "start": 8,
+              "length": 4,
+              "max": 94,
+              "values": [
+                73,
+                81,
+                94,
+                69
+              ]
+            }
+          ],
+          "indexEntries": [
+            {
+              "blockIndex": 0,
+              "max": 35,
+              "start": 0,
+              "length": 4
+            },
+            {
+              "blockIndex": 1,
+              "max": 66,
+              "start": 4,
+              "length": 4
+            },
+            {
+              "blockIndex": 2,
+              "max": 94,
+              "start": 8,
+              "length": 4
+            }
+          ],
+          "currentIndex": null,
+          "currentBlock": null,
+          "currentPos": null,
+          "compareValue": null,
+          "phase": "done",
+          "indexComparisons": 2,
+          "blockComparisons": 4,
+          "result": "not-found"
+        }
+      }
+    ]
+  },
+  "hit-last-block": {
+    "input": {
+      "preset": "hit-last-block",
+      "data": [
+        22,
+        8,
+        14,
+        35,
+        41,
+        57,
+        66,
+        38,
+        73,
+        81,
+        94,
+        69
+      ],
+      "blockSize": 4,
+      "target": 73
+    },
+    "frames": [
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "done": false
+        },
+        "message": "12 个记录、3 个块：索引表已按块最大值建好 / 12 records in 3 blocks",
+        "line": 231,
+        "variables": {
+          "n": 12,
+          "blockSize": 4,
+          "blocks": 3,
+          "target": 73,
+          "currentIndex": null,
+          "currentBlock": null,
+          "currentPos": null,
+          "indexComparisons": 0,
+          "blockComparisons": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "init",
+        "structure": {
+          "kind": "block-search",
+          "preset": "hit-last-block",
+          "operation": "init",
+          "targetValue": 73,
+          "blockSize": 4,
+          "data": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "blocks": [
+            {
+              "index": 0,
+              "start": 0,
+              "length": 4,
+              "max": 35,
+              "values": [
+                22,
+                8,
+                14,
+                35
+              ]
+            },
+            {
+              "index": 1,
+              "start": 4,
+              "length": 4,
+              "max": 66,
+              "values": [
+                41,
+                57,
+                66,
+                38
+              ]
+            },
+            {
+              "index": 2,
+              "start": 8,
+              "length": 4,
+              "max": 94,
+              "values": [
+                73,
+                81,
+                94,
+                69
+              ]
+            }
+          ],
+          "indexEntries": [
+            {
+              "blockIndex": 0,
+              "max": 35,
+              "start": 0,
+              "length": 4
+            },
+            {
+              "blockIndex": 1,
+              "max": 66,
+              "start": 4,
+              "length": 4
+            },
+            {
+              "blockIndex": 2,
+              "max": 94,
+              "start": 8,
+              "length": 4
+            }
+          ],
+          "currentIndex": null,
+          "currentBlock": null,
+          "currentPos": null,
+          "compareValue": null,
+          "phase": "index",
+          "indexComparisons": 0,
+          "blockComparisons": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "done": false
+        },
+        "message": "索引项 1：比较 73 与块最大值 35 / compare target with block max",
+        "line": 143,
+        "variables": {
+          "n": 12,
+          "blockSize": 4,
+          "blocks": 3,
+          "target": 73,
+          "currentIndex": 0,
+          "currentBlock": null,
+          "currentPos": null,
+          "indexComparisons": 1,
+          "blockComparisons": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "index-compare",
+        "structure": {
+          "kind": "block-search",
+          "preset": "hit-last-block",
+          "operation": "index-compare",
+          "targetValue": 73,
+          "blockSize": 4,
+          "data": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "blocks": [
+            {
+              "index": 0,
+              "start": 0,
+              "length": 4,
+              "max": 35,
+              "values": [
+                22,
+                8,
+                14,
+                35
+              ]
+            },
+            {
+              "index": 1,
+              "start": 4,
+              "length": 4,
+              "max": 66,
+              "values": [
+                41,
+                57,
+                66,
+                38
+              ]
+            },
+            {
+              "index": 2,
+              "start": 8,
+              "length": 4,
+              "max": 94,
+              "values": [
+                73,
+                81,
+                94,
+                69
+              ]
+            }
+          ],
+          "indexEntries": [
+            {
+              "blockIndex": 0,
+              "max": 35,
+              "start": 0,
+              "length": 4
+            },
+            {
+              "blockIndex": 1,
+              "max": 66,
+              "start": 4,
+              "length": 4
+            },
+            {
+              "blockIndex": 2,
+              "max": 94,
+              "start": 8,
+              "length": 4
+            }
+          ],
+          "currentIndex": 0,
+          "currentBlock": null,
+          "currentPos": null,
+          "compareValue": 35,
+          "phase": "index",
+          "indexComparisons": 1,
+          "blockComparisons": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "done": false
+        },
+        "message": "索引项 2：比较 73 与块最大值 66 / compare target with block max",
+        "line": 143,
+        "variables": {
+          "n": 12,
+          "blockSize": 4,
+          "blocks": 3,
+          "target": 73,
+          "currentIndex": 1,
+          "currentBlock": null,
+          "currentPos": null,
+          "indexComparisons": 2,
+          "blockComparisons": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "index-compare",
+        "structure": {
+          "kind": "block-search",
+          "preset": "hit-last-block",
+          "operation": "index-compare",
+          "targetValue": 73,
+          "blockSize": 4,
+          "data": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "blocks": [
+            {
+              "index": 0,
+              "start": 0,
+              "length": 4,
+              "max": 35,
+              "values": [
+                22,
+                8,
+                14,
+                35
+              ]
+            },
+            {
+              "index": 1,
+              "start": 4,
+              "length": 4,
+              "max": 66,
+              "values": [
+                41,
+                57,
+                66,
+                38
+              ]
+            },
+            {
+              "index": 2,
+              "start": 8,
+              "length": 4,
+              "max": 94,
+              "values": [
+                73,
+                81,
+                94,
+                69
+              ]
+            }
+          ],
+          "indexEntries": [
+            {
+              "blockIndex": 0,
+              "max": 35,
+              "start": 0,
+              "length": 4
+            },
+            {
+              "blockIndex": 1,
+              "max": 66,
+              "start": 4,
+              "length": 4
+            },
+            {
+              "blockIndex": 2,
+              "max": 94,
+              "start": 8,
+              "length": 4
+            }
+          ],
+          "currentIndex": 1,
+          "currentBlock": null,
+          "currentPos": null,
+          "compareValue": 66,
+          "phase": "index",
+          "indexComparisons": 2,
+          "blockComparisons": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "done": false
+        },
+        "message": "索引项 3：比较 73 与块最大值 94 / compare target with block max",
+        "line": 143,
+        "variables": {
+          "n": 12,
+          "blockSize": 4,
+          "blocks": 3,
+          "target": 73,
+          "currentIndex": 2,
+          "currentBlock": null,
+          "currentPos": null,
+          "indexComparisons": 3,
+          "blockComparisons": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "index-compare",
+        "structure": {
+          "kind": "block-search",
+          "preset": "hit-last-block",
+          "operation": "index-compare",
+          "targetValue": 73,
+          "blockSize": 4,
+          "data": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "blocks": [
+            {
+              "index": 0,
+              "start": 0,
+              "length": 4,
+              "max": 35,
+              "values": [
+                22,
+                8,
+                14,
+                35
+              ]
+            },
+            {
+              "index": 1,
+              "start": 4,
+              "length": 4,
+              "max": 66,
+              "values": [
+                41,
+                57,
+                66,
+                38
+              ]
+            },
+            {
+              "index": 2,
+              "start": 8,
+              "length": 4,
+              "max": 94,
+              "values": [
+                73,
+                81,
+                94,
+                69
+              ]
+            }
+          ],
+          "indexEntries": [
+            {
+              "blockIndex": 0,
+              "max": 35,
+              "start": 0,
+              "length": 4
+            },
+            {
+              "blockIndex": 1,
+              "max": 66,
+              "start": 4,
+              "length": 4
+            },
+            {
+              "blockIndex": 2,
+              "max": 94,
+              "start": 8,
+              "length": 4
+            }
+          ],
+          "currentIndex": 2,
+          "currentBlock": null,
+          "currentPos": null,
+          "compareValue": 94,
+          "phase": "index",
+          "indexComparisons": 3,
+          "blockComparisons": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "done": false
+        },
+        "message": "第一个 max ≥ target 的块是第 3 块：进入块内扫描 / first block whose max is at least the target",
+        "line": 155,
+        "variables": {
+          "n": 12,
+          "blockSize": 4,
+          "blocks": 3,
+          "target": 73,
+          "currentIndex": 2,
+          "currentBlock": 2,
+          "currentPos": null,
+          "indexComparisons": 3,
+          "blockComparisons": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "index-select",
+        "structure": {
+          "kind": "block-search",
+          "preset": "hit-last-block",
+          "operation": "index-select",
+          "targetValue": 73,
+          "blockSize": 4,
+          "data": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "blocks": [
+            {
+              "index": 0,
+              "start": 0,
+              "length": 4,
+              "max": 35,
+              "values": [
+                22,
+                8,
+                14,
+                35
+              ]
+            },
+            {
+              "index": 1,
+              "start": 4,
+              "length": 4,
+              "max": 66,
+              "values": [
+                41,
+                57,
+                66,
+                38
+              ]
+            },
+            {
+              "index": 2,
+              "start": 8,
+              "length": 4,
+              "max": 94,
+              "values": [
+                73,
+                81,
+                94,
+                69
+              ]
+            }
+          ],
+          "indexEntries": [
+            {
+              "blockIndex": 0,
+              "max": 35,
+              "start": 0,
+              "length": 4
+            },
+            {
+              "blockIndex": 1,
+              "max": 66,
+              "start": 4,
+              "length": 4
+            },
+            {
+              "blockIndex": 2,
+              "max": 94,
+              "start": 8,
+              "length": 4
+            }
+          ],
+          "currentIndex": 2,
+          "currentBlock": 2,
+          "currentPos": null,
+          "compareValue": 94,
+          "phase": "block",
+          "indexComparisons": 3,
+          "blockComparisons": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "done": false
+        },
+        "message": "块内第 1 项：比较 73 与 73 / compare inside the selected block",
+        "line": 185,
+        "variables": {
+          "n": 12,
+          "blockSize": 4,
+          "blocks": 3,
+          "target": 73,
+          "currentIndex": 2,
+          "currentBlock": 2,
+          "currentPos": 0,
+          "indexComparisons": 3,
+          "blockComparisons": 1,
+          "result": "pending"
+        },
+        "lessonStepId": "block-compare",
+        "structure": {
+          "kind": "block-search",
+          "preset": "hit-last-block",
+          "operation": "block-compare",
+          "targetValue": 73,
+          "blockSize": 4,
+          "data": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "blocks": [
+            {
+              "index": 0,
+              "start": 0,
+              "length": 4,
+              "max": 35,
+              "values": [
+                22,
+                8,
+                14,
+                35
+              ]
+            },
+            {
+              "index": 1,
+              "start": 4,
+              "length": 4,
+              "max": 66,
+              "values": [
+                41,
+                57,
+                66,
+                38
+              ]
+            },
+            {
+              "index": 2,
+              "start": 8,
+              "length": 4,
+              "max": 94,
+              "values": [
+                73,
+                81,
+                94,
+                69
+              ]
+            }
+          ],
+          "indexEntries": [
+            {
+              "blockIndex": 0,
+              "max": 35,
+              "start": 0,
+              "length": 4
+            },
+            {
+              "blockIndex": 1,
+              "max": 66,
+              "start": 4,
+              "length": 4
+            },
+            {
+              "blockIndex": 2,
+              "max": 94,
+              "start": 8,
+              "length": 4
+            }
+          ],
+          "currentIndex": 2,
+          "currentBlock": 2,
+          "currentPos": 0,
+          "compareValue": 73,
+          "phase": "block",
+          "indexComparisons": 3,
+          "blockComparisons": 1,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "done": true
+        },
+        "message": "命中 73：块内下标 0 / hit at block offset 0",
+        "line": 198,
+        "variables": {
+          "n": 12,
+          "blockSize": 4,
+          "blocks": 3,
+          "target": 73,
+          "currentIndex": 2,
+          "currentBlock": 2,
+          "currentPos": 0,
+          "indexComparisons": 3,
+          "blockComparisons": 1,
+          "result": "found"
+        },
+        "lessonStepId": "found",
+        "structure": {
+          "kind": "block-search",
+          "preset": "hit-last-block",
+          "operation": "found",
+          "targetValue": 73,
+          "blockSize": 4,
+          "data": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "blocks": [
+            {
+              "index": 0,
+              "start": 0,
+              "length": 4,
+              "max": 35,
+              "values": [
+                22,
+                8,
+                14,
+                35
+              ]
+            },
+            {
+              "index": 1,
+              "start": 4,
+              "length": 4,
+              "max": 66,
+              "values": [
+                41,
+                57,
+                66,
+                38
+              ]
+            },
+            {
+              "index": 2,
+              "start": 8,
+              "length": 4,
+              "max": 94,
+              "values": [
+                73,
+                81,
+                94,
+                69
+              ]
+            }
+          ],
+          "indexEntries": [
+            {
+              "blockIndex": 0,
+              "max": 35,
+              "start": 0,
+              "length": 4
+            },
+            {
+              "blockIndex": 1,
+              "max": 66,
+              "start": 4,
+              "length": 4
+            },
+            {
+              "blockIndex": 2,
+              "max": 94,
+              "start": 8,
+              "length": 4
+            }
+          ],
+          "currentIndex": 2,
+          "currentBlock": 2,
+          "currentPos": 0,
+          "compareValue": 73,
+          "phase": "done",
+          "indexComparisons": 3,
+          "blockComparisons": 1,
+          "result": "found"
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "done": true
+        },
+        "message": "查找完成 / search complete",
+        "line": 240,
+        "variables": {
+          "n": 12,
+          "blockSize": 4,
+          "blocks": 3,
+          "target": 73,
+          "currentIndex": null,
+          "currentBlock": null,
+          "currentPos": null,
+          "indexComparisons": 3,
+          "blockComparisons": 1,
+          "result": "found"
+        },
+        "lessonStepId": "done",
+        "structure": {
+          "kind": "block-search",
+          "preset": "hit-last-block",
+          "operation": "done",
+          "targetValue": 73,
+          "blockSize": 4,
+          "data": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "blocks": [
+            {
+              "index": 0,
+              "start": 0,
+              "length": 4,
+              "max": 35,
+              "values": [
+                22,
+                8,
+                14,
+                35
+              ]
+            },
+            {
+              "index": 1,
+              "start": 4,
+              "length": 4,
+              "max": 66,
+              "values": [
+                41,
+                57,
+                66,
+                38
+              ]
+            },
+            {
+              "index": 2,
+              "start": 8,
+              "length": 4,
+              "max": 94,
+              "values": [
+                73,
+                81,
+                94,
+                69
+              ]
+            }
+          ],
+          "indexEntries": [
+            {
+              "blockIndex": 0,
+              "max": 35,
+              "start": 0,
+              "length": 4
+            },
+            {
+              "blockIndex": 1,
+              "max": 66,
+              "start": 4,
+              "length": 4
+            },
+            {
+              "blockIndex": 2,
+              "max": 94,
+              "start": 8,
+              "length": 4
+            }
+          ],
+          "currentIndex": null,
+          "currentBlock": null,
+          "currentPos": null,
+          "compareValue": null,
+          "phase": "done",
+          "indexComparisons": 3,
+          "blockComparisons": 1,
+          "result": "found"
+        }
+      }
+    ]
+  },
+  "hit-boundary": {
+    "input": {
+      "preset": "hit-boundary",
+      "data": [
+        22,
+        8,
+        14,
+        35,
+        41,
+        57,
+        66,
+        38,
+        73,
+        81,
+        94,
+        69
+      ],
+      "blockSize": 4,
+      "target": 35
+    },
+    "frames": [
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "done": false
+        },
+        "message": "12 个记录、3 个块：索引表已按块最大值建好 / 12 records in 3 blocks",
+        "line": 231,
+        "variables": {
+          "n": 12,
+          "blockSize": 4,
+          "blocks": 3,
+          "target": 35,
+          "currentIndex": null,
+          "currentBlock": null,
+          "currentPos": null,
+          "indexComparisons": 0,
+          "blockComparisons": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "init",
+        "structure": {
+          "kind": "block-search",
+          "preset": "hit-boundary",
+          "operation": "init",
+          "targetValue": 35,
+          "blockSize": 4,
+          "data": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "blocks": [
+            {
+              "index": 0,
+              "start": 0,
+              "length": 4,
+              "max": 35,
+              "values": [
+                22,
+                8,
+                14,
+                35
+              ]
+            },
+            {
+              "index": 1,
+              "start": 4,
+              "length": 4,
+              "max": 66,
+              "values": [
+                41,
+                57,
+                66,
+                38
+              ]
+            },
+            {
+              "index": 2,
+              "start": 8,
+              "length": 4,
+              "max": 94,
+              "values": [
+                73,
+                81,
+                94,
+                69
+              ]
+            }
+          ],
+          "indexEntries": [
+            {
+              "blockIndex": 0,
+              "max": 35,
+              "start": 0,
+              "length": 4
+            },
+            {
+              "blockIndex": 1,
+              "max": 66,
+              "start": 4,
+              "length": 4
+            },
+            {
+              "blockIndex": 2,
+              "max": 94,
+              "start": 8,
+              "length": 4
+            }
+          ],
+          "currentIndex": null,
+          "currentBlock": null,
+          "currentPos": null,
+          "compareValue": null,
+          "phase": "index",
+          "indexComparisons": 0,
+          "blockComparisons": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "done": false
+        },
+        "message": "索引项 1：比较 35 与块最大值 35 / compare target with block max",
+        "line": 143,
+        "variables": {
+          "n": 12,
+          "blockSize": 4,
+          "blocks": 3,
+          "target": 35,
+          "currentIndex": 0,
+          "currentBlock": null,
+          "currentPos": null,
+          "indexComparisons": 1,
+          "blockComparisons": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "index-compare",
+        "structure": {
+          "kind": "block-search",
+          "preset": "hit-boundary",
+          "operation": "index-compare",
+          "targetValue": 35,
+          "blockSize": 4,
+          "data": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "blocks": [
+            {
+              "index": 0,
+              "start": 0,
+              "length": 4,
+              "max": 35,
+              "values": [
+                22,
+                8,
+                14,
+                35
+              ]
+            },
+            {
+              "index": 1,
+              "start": 4,
+              "length": 4,
+              "max": 66,
+              "values": [
+                41,
+                57,
+                66,
+                38
+              ]
+            },
+            {
+              "index": 2,
+              "start": 8,
+              "length": 4,
+              "max": 94,
+              "values": [
+                73,
+                81,
+                94,
+                69
+              ]
+            }
+          ],
+          "indexEntries": [
+            {
+              "blockIndex": 0,
+              "max": 35,
+              "start": 0,
+              "length": 4
+            },
+            {
+              "blockIndex": 1,
+              "max": 66,
+              "start": 4,
+              "length": 4
+            },
+            {
+              "blockIndex": 2,
+              "max": 94,
+              "start": 8,
+              "length": 4
+            }
+          ],
+          "currentIndex": 0,
+          "currentBlock": null,
+          "currentPos": null,
+          "compareValue": 35,
+          "phase": "index",
+          "indexComparisons": 1,
+          "blockComparisons": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "done": false
+        },
+        "message": "第一个 max ≥ target 的块是第 1 块：进入块内扫描 / first block whose max is at least the target",
+        "line": 155,
+        "variables": {
+          "n": 12,
+          "blockSize": 4,
+          "blocks": 3,
+          "target": 35,
+          "currentIndex": 0,
+          "currentBlock": 0,
+          "currentPos": null,
+          "indexComparisons": 1,
+          "blockComparisons": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "index-select",
+        "structure": {
+          "kind": "block-search",
+          "preset": "hit-boundary",
+          "operation": "index-select",
+          "targetValue": 35,
+          "blockSize": 4,
+          "data": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "blocks": [
+            {
+              "index": 0,
+              "start": 0,
+              "length": 4,
+              "max": 35,
+              "values": [
+                22,
+                8,
+                14,
+                35
+              ]
+            },
+            {
+              "index": 1,
+              "start": 4,
+              "length": 4,
+              "max": 66,
+              "values": [
+                41,
+                57,
+                66,
+                38
+              ]
+            },
+            {
+              "index": 2,
+              "start": 8,
+              "length": 4,
+              "max": 94,
+              "values": [
+                73,
+                81,
+                94,
+                69
+              ]
+            }
+          ],
+          "indexEntries": [
+            {
+              "blockIndex": 0,
+              "max": 35,
+              "start": 0,
+              "length": 4
+            },
+            {
+              "blockIndex": 1,
+              "max": 66,
+              "start": 4,
+              "length": 4
+            },
+            {
+              "blockIndex": 2,
+              "max": 94,
+              "start": 8,
+              "length": 4
+            }
+          ],
+          "currentIndex": 0,
+          "currentBlock": 0,
+          "currentPos": null,
+          "compareValue": 35,
+          "phase": "block",
+          "indexComparisons": 1,
+          "blockComparisons": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "done": false
+        },
+        "message": "块内第 1 项：比较 35 与 22 / compare inside the selected block",
+        "line": 185,
+        "variables": {
+          "n": 12,
+          "blockSize": 4,
+          "blocks": 3,
+          "target": 35,
+          "currentIndex": 0,
+          "currentBlock": 0,
+          "currentPos": 0,
+          "indexComparisons": 1,
+          "blockComparisons": 1,
+          "result": "pending"
+        },
+        "lessonStepId": "block-compare",
+        "structure": {
+          "kind": "block-search",
+          "preset": "hit-boundary",
+          "operation": "block-compare",
+          "targetValue": 35,
+          "blockSize": 4,
+          "data": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "blocks": [
+            {
+              "index": 0,
+              "start": 0,
+              "length": 4,
+              "max": 35,
+              "values": [
+                22,
+                8,
+                14,
+                35
+              ]
+            },
+            {
+              "index": 1,
+              "start": 4,
+              "length": 4,
+              "max": 66,
+              "values": [
+                41,
+                57,
+                66,
+                38
+              ]
+            },
+            {
+              "index": 2,
+              "start": 8,
+              "length": 4,
+              "max": 94,
+              "values": [
+                73,
+                81,
+                94,
+                69
+              ]
+            }
+          ],
+          "indexEntries": [
+            {
+              "blockIndex": 0,
+              "max": 35,
+              "start": 0,
+              "length": 4
+            },
+            {
+              "blockIndex": 1,
+              "max": 66,
+              "start": 4,
+              "length": 4
+            },
+            {
+              "blockIndex": 2,
+              "max": 94,
+              "start": 8,
+              "length": 4
+            }
+          ],
+          "currentIndex": 0,
+          "currentBlock": 0,
+          "currentPos": 0,
+          "compareValue": 22,
+          "phase": "block",
+          "indexComparisons": 1,
+          "blockComparisons": 1,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "done": false
+        },
+        "message": "块内第 2 项：比较 35 与 8 / compare inside the selected block",
+        "line": 185,
+        "variables": {
+          "n": 12,
+          "blockSize": 4,
+          "blocks": 3,
+          "target": 35,
+          "currentIndex": 0,
+          "currentBlock": 0,
+          "currentPos": 1,
+          "indexComparisons": 1,
+          "blockComparisons": 2,
+          "result": "pending"
+        },
+        "lessonStepId": "block-compare",
+        "structure": {
+          "kind": "block-search",
+          "preset": "hit-boundary",
+          "operation": "block-compare",
+          "targetValue": 35,
+          "blockSize": 4,
+          "data": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "blocks": [
+            {
+              "index": 0,
+              "start": 0,
+              "length": 4,
+              "max": 35,
+              "values": [
+                22,
+                8,
+                14,
+                35
+              ]
+            },
+            {
+              "index": 1,
+              "start": 4,
+              "length": 4,
+              "max": 66,
+              "values": [
+                41,
+                57,
+                66,
+                38
+              ]
+            },
+            {
+              "index": 2,
+              "start": 8,
+              "length": 4,
+              "max": 94,
+              "values": [
+                73,
+                81,
+                94,
+                69
+              ]
+            }
+          ],
+          "indexEntries": [
+            {
+              "blockIndex": 0,
+              "max": 35,
+              "start": 0,
+              "length": 4
+            },
+            {
+              "blockIndex": 1,
+              "max": 66,
+              "start": 4,
+              "length": 4
+            },
+            {
+              "blockIndex": 2,
+              "max": 94,
+              "start": 8,
+              "length": 4
+            }
+          ],
+          "currentIndex": 0,
+          "currentBlock": 0,
+          "currentPos": 1,
+          "compareValue": 8,
+          "phase": "block",
+          "indexComparisons": 1,
+          "blockComparisons": 2,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "done": false
+        },
+        "message": "块内第 3 项：比较 35 与 14 / compare inside the selected block",
+        "line": 185,
+        "variables": {
+          "n": 12,
+          "blockSize": 4,
+          "blocks": 3,
+          "target": 35,
+          "currentIndex": 0,
+          "currentBlock": 0,
+          "currentPos": 2,
+          "indexComparisons": 1,
+          "blockComparisons": 3,
+          "result": "pending"
+        },
+        "lessonStepId": "block-compare",
+        "structure": {
+          "kind": "block-search",
+          "preset": "hit-boundary",
+          "operation": "block-compare",
+          "targetValue": 35,
+          "blockSize": 4,
+          "data": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "blocks": [
+            {
+              "index": 0,
+              "start": 0,
+              "length": 4,
+              "max": 35,
+              "values": [
+                22,
+                8,
+                14,
+                35
+              ]
+            },
+            {
+              "index": 1,
+              "start": 4,
+              "length": 4,
+              "max": 66,
+              "values": [
+                41,
+                57,
+                66,
+                38
+              ]
+            },
+            {
+              "index": 2,
+              "start": 8,
+              "length": 4,
+              "max": 94,
+              "values": [
+                73,
+                81,
+                94,
+                69
+              ]
+            }
+          ],
+          "indexEntries": [
+            {
+              "blockIndex": 0,
+              "max": 35,
+              "start": 0,
+              "length": 4
+            },
+            {
+              "blockIndex": 1,
+              "max": 66,
+              "start": 4,
+              "length": 4
+            },
+            {
+              "blockIndex": 2,
+              "max": 94,
+              "start": 8,
+              "length": 4
+            }
+          ],
+          "currentIndex": 0,
+          "currentBlock": 0,
+          "currentPos": 2,
+          "compareValue": 14,
+          "phase": "block",
+          "indexComparisons": 1,
+          "blockComparisons": 3,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "done": false
+        },
+        "message": "块内第 4 项：比较 35 与 35 / compare inside the selected block",
+        "line": 185,
+        "variables": {
+          "n": 12,
+          "blockSize": 4,
+          "blocks": 3,
+          "target": 35,
+          "currentIndex": 0,
+          "currentBlock": 0,
+          "currentPos": 3,
+          "indexComparisons": 1,
+          "blockComparisons": 4,
+          "result": "pending"
+        },
+        "lessonStepId": "block-compare",
+        "structure": {
+          "kind": "block-search",
+          "preset": "hit-boundary",
+          "operation": "block-compare",
+          "targetValue": 35,
+          "blockSize": 4,
+          "data": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "blocks": [
+            {
+              "index": 0,
+              "start": 0,
+              "length": 4,
+              "max": 35,
+              "values": [
+                22,
+                8,
+                14,
+                35
+              ]
+            },
+            {
+              "index": 1,
+              "start": 4,
+              "length": 4,
+              "max": 66,
+              "values": [
+                41,
+                57,
+                66,
+                38
+              ]
+            },
+            {
+              "index": 2,
+              "start": 8,
+              "length": 4,
+              "max": 94,
+              "values": [
+                73,
+                81,
+                94,
+                69
+              ]
+            }
+          ],
+          "indexEntries": [
+            {
+              "blockIndex": 0,
+              "max": 35,
+              "start": 0,
+              "length": 4
+            },
+            {
+              "blockIndex": 1,
+              "max": 66,
+              "start": 4,
+              "length": 4
+            },
+            {
+              "blockIndex": 2,
+              "max": 94,
+              "start": 8,
+              "length": 4
+            }
+          ],
+          "currentIndex": 0,
+          "currentBlock": 0,
+          "currentPos": 3,
+          "compareValue": 35,
+          "phase": "block",
+          "indexComparisons": 1,
+          "blockComparisons": 4,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "done": true
+        },
+        "message": "命中 35：块内下标 3 / hit at block offset 3",
+        "line": 198,
+        "variables": {
+          "n": 12,
+          "blockSize": 4,
+          "blocks": 3,
+          "target": 35,
+          "currentIndex": 0,
+          "currentBlock": 0,
+          "currentPos": 3,
+          "indexComparisons": 1,
+          "blockComparisons": 4,
+          "result": "found"
+        },
+        "lessonStepId": "found",
+        "structure": {
+          "kind": "block-search",
+          "preset": "hit-boundary",
+          "operation": "found",
+          "targetValue": 35,
+          "blockSize": 4,
+          "data": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "blocks": [
+            {
+              "index": 0,
+              "start": 0,
+              "length": 4,
+              "max": 35,
+              "values": [
+                22,
+                8,
+                14,
+                35
+              ]
+            },
+            {
+              "index": 1,
+              "start": 4,
+              "length": 4,
+              "max": 66,
+              "values": [
+                41,
+                57,
+                66,
+                38
+              ]
+            },
+            {
+              "index": 2,
+              "start": 8,
+              "length": 4,
+              "max": 94,
+              "values": [
+                73,
+                81,
+                94,
+                69
+              ]
+            }
+          ],
+          "indexEntries": [
+            {
+              "blockIndex": 0,
+              "max": 35,
+              "start": 0,
+              "length": 4
+            },
+            {
+              "blockIndex": 1,
+              "max": 66,
+              "start": 4,
+              "length": 4
+            },
+            {
+              "blockIndex": 2,
+              "max": 94,
+              "start": 8,
+              "length": 4
+            }
+          ],
+          "currentIndex": 0,
+          "currentBlock": 0,
+          "currentPos": 3,
+          "compareValue": 35,
+          "phase": "done",
+          "indexComparisons": 1,
+          "blockComparisons": 4,
+          "result": "found"
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "done": true
+        },
+        "message": "查找完成 / search complete",
+        "line": 240,
+        "variables": {
+          "n": 12,
+          "blockSize": 4,
+          "blocks": 3,
+          "target": 35,
+          "currentIndex": null,
+          "currentBlock": null,
+          "currentPos": null,
+          "indexComparisons": 1,
+          "blockComparisons": 4,
+          "result": "found"
+        },
+        "lessonStepId": "done",
+        "structure": {
+          "kind": "block-search",
+          "preset": "hit-boundary",
+          "operation": "done",
+          "targetValue": 35,
+          "blockSize": 4,
+          "data": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "blocks": [
+            {
+              "index": 0,
+              "start": 0,
+              "length": 4,
+              "max": 35,
+              "values": [
+                22,
+                8,
+                14,
+                35
+              ]
+            },
+            {
+              "index": 1,
+              "start": 4,
+              "length": 4,
+              "max": 66,
+              "values": [
+                41,
+                57,
+                66,
+                38
+              ]
+            },
+            {
+              "index": 2,
+              "start": 8,
+              "length": 4,
+              "max": 94,
+              "values": [
+                73,
+                81,
+                94,
+                69
+              ]
+            }
+          ],
+          "indexEntries": [
+            {
+              "blockIndex": 0,
+              "max": 35,
+              "start": 0,
+              "length": 4
+            },
+            {
+              "blockIndex": 1,
+              "max": 66,
+              "start": 4,
+              "length": 4
+            },
+            {
+              "blockIndex": 2,
+              "max": 94,
+              "start": 8,
+              "length": 4
+            }
+          ],
+          "currentIndex": null,
+          "currentBlock": null,
+          "currentPos": null,
+          "compareValue": null,
+          "phase": "done",
+          "indexComparisons": 1,
+          "blockComparisons": 4,
+          "result": "found"
+        }
+      }
+    ]
+  },
+  "hit-first-block": {
+    "input": {
+      "preset": "hit-first-block",
+      "data": [
+        22,
+        8,
+        14,
+        35,
+        41,
+        57,
+        66,
+        38,
+        73,
+        81,
+        94,
+        69
+      ],
+      "blockSize": 4,
+      "target": 8
+    },
+    "frames": [
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "done": false
+        },
+        "message": "12 个记录、3 个块：索引表已按块最大值建好 / 12 records in 3 blocks",
+        "line": 231,
+        "variables": {
+          "n": 12,
+          "blockSize": 4,
+          "blocks": 3,
+          "target": 8,
+          "currentIndex": null,
+          "currentBlock": null,
+          "currentPos": null,
+          "indexComparisons": 0,
+          "blockComparisons": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "init",
+        "structure": {
+          "kind": "block-search",
+          "preset": "hit-first-block",
+          "operation": "init",
+          "targetValue": 8,
+          "blockSize": 4,
+          "data": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "blocks": [
+            {
+              "index": 0,
+              "start": 0,
+              "length": 4,
+              "max": 35,
+              "values": [
+                22,
+                8,
+                14,
+                35
+              ]
+            },
+            {
+              "index": 1,
+              "start": 4,
+              "length": 4,
+              "max": 66,
+              "values": [
+                41,
+                57,
+                66,
+                38
+              ]
+            },
+            {
+              "index": 2,
+              "start": 8,
+              "length": 4,
+              "max": 94,
+              "values": [
+                73,
+                81,
+                94,
+                69
+              ]
+            }
+          ],
+          "indexEntries": [
+            {
+              "blockIndex": 0,
+              "max": 35,
+              "start": 0,
+              "length": 4
+            },
+            {
+              "blockIndex": 1,
+              "max": 66,
+              "start": 4,
+              "length": 4
+            },
+            {
+              "blockIndex": 2,
+              "max": 94,
+              "start": 8,
+              "length": 4
+            }
+          ],
+          "currentIndex": null,
+          "currentBlock": null,
+          "currentPos": null,
+          "compareValue": null,
+          "phase": "index",
+          "indexComparisons": 0,
+          "blockComparisons": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "done": false
+        },
+        "message": "索引项 1：比较 8 与块最大值 35 / compare target with block max",
+        "line": 143,
+        "variables": {
+          "n": 12,
+          "blockSize": 4,
+          "blocks": 3,
+          "target": 8,
+          "currentIndex": 0,
+          "currentBlock": null,
+          "currentPos": null,
+          "indexComparisons": 1,
+          "blockComparisons": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "index-compare",
+        "structure": {
+          "kind": "block-search",
+          "preset": "hit-first-block",
+          "operation": "index-compare",
+          "targetValue": 8,
+          "blockSize": 4,
+          "data": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "blocks": [
+            {
+              "index": 0,
+              "start": 0,
+              "length": 4,
+              "max": 35,
+              "values": [
+                22,
+                8,
+                14,
+                35
+              ]
+            },
+            {
+              "index": 1,
+              "start": 4,
+              "length": 4,
+              "max": 66,
+              "values": [
+                41,
+                57,
+                66,
+                38
+              ]
+            },
+            {
+              "index": 2,
+              "start": 8,
+              "length": 4,
+              "max": 94,
+              "values": [
+                73,
+                81,
+                94,
+                69
+              ]
+            }
+          ],
+          "indexEntries": [
+            {
+              "blockIndex": 0,
+              "max": 35,
+              "start": 0,
+              "length": 4
+            },
+            {
+              "blockIndex": 1,
+              "max": 66,
+              "start": 4,
+              "length": 4
+            },
+            {
+              "blockIndex": 2,
+              "max": 94,
+              "start": 8,
+              "length": 4
+            }
+          ],
+          "currentIndex": 0,
+          "currentBlock": null,
+          "currentPos": null,
+          "compareValue": 35,
+          "phase": "index",
+          "indexComparisons": 1,
+          "blockComparisons": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "done": false
+        },
+        "message": "第一个 max ≥ target 的块是第 1 块：进入块内扫描 / first block whose max is at least the target",
+        "line": 155,
+        "variables": {
+          "n": 12,
+          "blockSize": 4,
+          "blocks": 3,
+          "target": 8,
+          "currentIndex": 0,
+          "currentBlock": 0,
+          "currentPos": null,
+          "indexComparisons": 1,
+          "blockComparisons": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "index-select",
+        "structure": {
+          "kind": "block-search",
+          "preset": "hit-first-block",
+          "operation": "index-select",
+          "targetValue": 8,
+          "blockSize": 4,
+          "data": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "blocks": [
+            {
+              "index": 0,
+              "start": 0,
+              "length": 4,
+              "max": 35,
+              "values": [
+                22,
+                8,
+                14,
+                35
+              ]
+            },
+            {
+              "index": 1,
+              "start": 4,
+              "length": 4,
+              "max": 66,
+              "values": [
+                41,
+                57,
+                66,
+                38
+              ]
+            },
+            {
+              "index": 2,
+              "start": 8,
+              "length": 4,
+              "max": 94,
+              "values": [
+                73,
+                81,
+                94,
+                69
+              ]
+            }
+          ],
+          "indexEntries": [
+            {
+              "blockIndex": 0,
+              "max": 35,
+              "start": 0,
+              "length": 4
+            },
+            {
+              "blockIndex": 1,
+              "max": 66,
+              "start": 4,
+              "length": 4
+            },
+            {
+              "blockIndex": 2,
+              "max": 94,
+              "start": 8,
+              "length": 4
+            }
+          ],
+          "currentIndex": 0,
+          "currentBlock": 0,
+          "currentPos": null,
+          "compareValue": 35,
+          "phase": "block",
+          "indexComparisons": 1,
+          "blockComparisons": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "done": false
+        },
+        "message": "块内第 1 项：比较 8 与 22 / compare inside the selected block",
+        "line": 185,
+        "variables": {
+          "n": 12,
+          "blockSize": 4,
+          "blocks": 3,
+          "target": 8,
+          "currentIndex": 0,
+          "currentBlock": 0,
+          "currentPos": 0,
+          "indexComparisons": 1,
+          "blockComparisons": 1,
+          "result": "pending"
+        },
+        "lessonStepId": "block-compare",
+        "structure": {
+          "kind": "block-search",
+          "preset": "hit-first-block",
+          "operation": "block-compare",
+          "targetValue": 8,
+          "blockSize": 4,
+          "data": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "blocks": [
+            {
+              "index": 0,
+              "start": 0,
+              "length": 4,
+              "max": 35,
+              "values": [
+                22,
+                8,
+                14,
+                35
+              ]
+            },
+            {
+              "index": 1,
+              "start": 4,
+              "length": 4,
+              "max": 66,
+              "values": [
+                41,
+                57,
+                66,
+                38
+              ]
+            },
+            {
+              "index": 2,
+              "start": 8,
+              "length": 4,
+              "max": 94,
+              "values": [
+                73,
+                81,
+                94,
+                69
+              ]
+            }
+          ],
+          "indexEntries": [
+            {
+              "blockIndex": 0,
+              "max": 35,
+              "start": 0,
+              "length": 4
+            },
+            {
+              "blockIndex": 1,
+              "max": 66,
+              "start": 4,
+              "length": 4
+            },
+            {
+              "blockIndex": 2,
+              "max": 94,
+              "start": 8,
+              "length": 4
+            }
+          ],
+          "currentIndex": 0,
+          "currentBlock": 0,
+          "currentPos": 0,
+          "compareValue": 22,
+          "phase": "block",
+          "indexComparisons": 1,
+          "blockComparisons": 1,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "done": false
+        },
+        "message": "块内第 2 项：比较 8 与 8 / compare inside the selected block",
+        "line": 185,
+        "variables": {
+          "n": 12,
+          "blockSize": 4,
+          "blocks": 3,
+          "target": 8,
+          "currentIndex": 0,
+          "currentBlock": 0,
+          "currentPos": 1,
+          "indexComparisons": 1,
+          "blockComparisons": 2,
+          "result": "pending"
+        },
+        "lessonStepId": "block-compare",
+        "structure": {
+          "kind": "block-search",
+          "preset": "hit-first-block",
+          "operation": "block-compare",
+          "targetValue": 8,
+          "blockSize": 4,
+          "data": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "blocks": [
+            {
+              "index": 0,
+              "start": 0,
+              "length": 4,
+              "max": 35,
+              "values": [
+                22,
+                8,
+                14,
+                35
+              ]
+            },
+            {
+              "index": 1,
+              "start": 4,
+              "length": 4,
+              "max": 66,
+              "values": [
+                41,
+                57,
+                66,
+                38
+              ]
+            },
+            {
+              "index": 2,
+              "start": 8,
+              "length": 4,
+              "max": 94,
+              "values": [
+                73,
+                81,
+                94,
+                69
+              ]
+            }
+          ],
+          "indexEntries": [
+            {
+              "blockIndex": 0,
+              "max": 35,
+              "start": 0,
+              "length": 4
+            },
+            {
+              "blockIndex": 1,
+              "max": 66,
+              "start": 4,
+              "length": 4
+            },
+            {
+              "blockIndex": 2,
+              "max": 94,
+              "start": 8,
+              "length": 4
+            }
+          ],
+          "currentIndex": 0,
+          "currentBlock": 0,
+          "currentPos": 1,
+          "compareValue": 8,
+          "phase": "block",
+          "indexComparisons": 1,
+          "blockComparisons": 2,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "done": true
+        },
+        "message": "命中 8：块内下标 1 / hit at block offset 1",
+        "line": 198,
+        "variables": {
+          "n": 12,
+          "blockSize": 4,
+          "blocks": 3,
+          "target": 8,
+          "currentIndex": 0,
+          "currentBlock": 0,
+          "currentPos": 1,
+          "indexComparisons": 1,
+          "blockComparisons": 2,
+          "result": "found"
+        },
+        "lessonStepId": "found",
+        "structure": {
+          "kind": "block-search",
+          "preset": "hit-first-block",
+          "operation": "found",
+          "targetValue": 8,
+          "blockSize": 4,
+          "data": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "blocks": [
+            {
+              "index": 0,
+              "start": 0,
+              "length": 4,
+              "max": 35,
+              "values": [
+                22,
+                8,
+                14,
+                35
+              ]
+            },
+            {
+              "index": 1,
+              "start": 4,
+              "length": 4,
+              "max": 66,
+              "values": [
+                41,
+                57,
+                66,
+                38
+              ]
+            },
+            {
+              "index": 2,
+              "start": 8,
+              "length": 4,
+              "max": 94,
+              "values": [
+                73,
+                81,
+                94,
+                69
+              ]
+            }
+          ],
+          "indexEntries": [
+            {
+              "blockIndex": 0,
+              "max": 35,
+              "start": 0,
+              "length": 4
+            },
+            {
+              "blockIndex": 1,
+              "max": 66,
+              "start": 4,
+              "length": 4
+            },
+            {
+              "blockIndex": 2,
+              "max": 94,
+              "start": 8,
+              "length": 4
+            }
+          ],
+          "currentIndex": 0,
+          "currentBlock": 0,
+          "currentPos": 1,
+          "compareValue": 8,
+          "phase": "done",
+          "indexComparisons": 1,
+          "blockComparisons": 2,
+          "result": "found"
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "done": true
+        },
+        "message": "查找完成 / search complete",
+        "line": 240,
+        "variables": {
+          "n": 12,
+          "blockSize": 4,
+          "blocks": 3,
+          "target": 8,
+          "currentIndex": null,
+          "currentBlock": null,
+          "currentPos": null,
+          "indexComparisons": 1,
+          "blockComparisons": 2,
+          "result": "found"
+        },
+        "lessonStepId": "done",
+        "structure": {
+          "kind": "block-search",
+          "preset": "hit-first-block",
+          "operation": "done",
+          "targetValue": 8,
+          "blockSize": 4,
+          "data": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "blocks": [
+            {
+              "index": 0,
+              "start": 0,
+              "length": 4,
+              "max": 35,
+              "values": [
+                22,
+                8,
+                14,
+                35
+              ]
+            },
+            {
+              "index": 1,
+              "start": 4,
+              "length": 4,
+              "max": 66,
+              "values": [
+                41,
+                57,
+                66,
+                38
+              ]
+            },
+            {
+              "index": 2,
+              "start": 8,
+              "length": 4,
+              "max": 94,
+              "values": [
+                73,
+                81,
+                94,
+                69
+              ]
+            }
+          ],
+          "indexEntries": [
+            {
+              "blockIndex": 0,
+              "max": 35,
+              "start": 0,
+              "length": 4
+            },
+            {
+              "blockIndex": 1,
+              "max": 66,
+              "start": 4,
+              "length": 4
+            },
+            {
+              "blockIndex": 2,
+              "max": 94,
+              "start": 8,
+              "length": 4
+            }
+          ],
+          "currentIndex": null,
+          "currentBlock": null,
+          "currentPos": null,
+          "compareValue": null,
+          "phase": "done",
+          "indexComparisons": 1,
+          "blockComparisons": 2,
+          "result": "found"
+        }
+      }
+    ]
+  },
+  "miss-all": {
+    "input": {
+      "preset": "miss-all",
+      "data": [
+        22,
+        8,
+        14,
+        35,
+        41,
+        57,
+        66,
+        38,
+        73,
+        81,
+        94,
+        69
+      ],
+      "blockSize": 4,
+      "target": 99
+    },
+    "frames": [
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "done": false
+        },
+        "message": "12 个记录、3 个块：索引表已按块最大值建好 / 12 records in 3 blocks",
+        "line": 231,
+        "variables": {
+          "n": 12,
+          "blockSize": 4,
+          "blocks": 3,
+          "target": 99,
+          "currentIndex": null,
+          "currentBlock": null,
+          "currentPos": null,
+          "indexComparisons": 0,
+          "blockComparisons": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "init",
+        "structure": {
+          "kind": "block-search",
+          "preset": "miss-all",
+          "operation": "init",
+          "targetValue": 99,
+          "blockSize": 4,
+          "data": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "blocks": [
+            {
+              "index": 0,
+              "start": 0,
+              "length": 4,
+              "max": 35,
+              "values": [
+                22,
+                8,
+                14,
+                35
+              ]
+            },
+            {
+              "index": 1,
+              "start": 4,
+              "length": 4,
+              "max": 66,
+              "values": [
+                41,
+                57,
+                66,
+                38
+              ]
+            },
+            {
+              "index": 2,
+              "start": 8,
+              "length": 4,
+              "max": 94,
+              "values": [
+                73,
+                81,
+                94,
+                69
+              ]
+            }
+          ],
+          "indexEntries": [
+            {
+              "blockIndex": 0,
+              "max": 35,
+              "start": 0,
+              "length": 4
+            },
+            {
+              "blockIndex": 1,
+              "max": 66,
+              "start": 4,
+              "length": 4
+            },
+            {
+              "blockIndex": 2,
+              "max": 94,
+              "start": 8,
+              "length": 4
+            }
+          ],
+          "currentIndex": null,
+          "currentBlock": null,
+          "currentPos": null,
+          "compareValue": null,
+          "phase": "index",
+          "indexComparisons": 0,
+          "blockComparisons": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "done": false
+        },
+        "message": "索引项 1：比较 99 与块最大值 35 / compare target with block max",
+        "line": 143,
+        "variables": {
+          "n": 12,
+          "blockSize": 4,
+          "blocks": 3,
+          "target": 99,
+          "currentIndex": 0,
+          "currentBlock": null,
+          "currentPos": null,
+          "indexComparisons": 1,
+          "blockComparisons": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "index-compare",
+        "structure": {
+          "kind": "block-search",
+          "preset": "miss-all",
+          "operation": "index-compare",
+          "targetValue": 99,
+          "blockSize": 4,
+          "data": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "blocks": [
+            {
+              "index": 0,
+              "start": 0,
+              "length": 4,
+              "max": 35,
+              "values": [
+                22,
+                8,
+                14,
+                35
+              ]
+            },
+            {
+              "index": 1,
+              "start": 4,
+              "length": 4,
+              "max": 66,
+              "values": [
+                41,
+                57,
+                66,
+                38
+              ]
+            },
+            {
+              "index": 2,
+              "start": 8,
+              "length": 4,
+              "max": 94,
+              "values": [
+                73,
+                81,
+                94,
+                69
+              ]
+            }
+          ],
+          "indexEntries": [
+            {
+              "blockIndex": 0,
+              "max": 35,
+              "start": 0,
+              "length": 4
+            },
+            {
+              "blockIndex": 1,
+              "max": 66,
+              "start": 4,
+              "length": 4
+            },
+            {
+              "blockIndex": 2,
+              "max": 94,
+              "start": 8,
+              "length": 4
+            }
+          ],
+          "currentIndex": 0,
+          "currentBlock": null,
+          "currentPos": null,
+          "compareValue": 35,
+          "phase": "index",
+          "indexComparisons": 1,
+          "blockComparisons": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "done": false
+        },
+        "message": "索引项 2：比较 99 与块最大值 66 / compare target with block max",
+        "line": 143,
+        "variables": {
+          "n": 12,
+          "blockSize": 4,
+          "blocks": 3,
+          "target": 99,
+          "currentIndex": 1,
+          "currentBlock": null,
+          "currentPos": null,
+          "indexComparisons": 2,
+          "blockComparisons": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "index-compare",
+        "structure": {
+          "kind": "block-search",
+          "preset": "miss-all",
+          "operation": "index-compare",
+          "targetValue": 99,
+          "blockSize": 4,
+          "data": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "blocks": [
+            {
+              "index": 0,
+              "start": 0,
+              "length": 4,
+              "max": 35,
+              "values": [
+                22,
+                8,
+                14,
+                35
+              ]
+            },
+            {
+              "index": 1,
+              "start": 4,
+              "length": 4,
+              "max": 66,
+              "values": [
+                41,
+                57,
+                66,
+                38
+              ]
+            },
+            {
+              "index": 2,
+              "start": 8,
+              "length": 4,
+              "max": 94,
+              "values": [
+                73,
+                81,
+                94,
+                69
+              ]
+            }
+          ],
+          "indexEntries": [
+            {
+              "blockIndex": 0,
+              "max": 35,
+              "start": 0,
+              "length": 4
+            },
+            {
+              "blockIndex": 1,
+              "max": 66,
+              "start": 4,
+              "length": 4
+            },
+            {
+              "blockIndex": 2,
+              "max": 94,
+              "start": 8,
+              "length": 4
+            }
+          ],
+          "currentIndex": 1,
+          "currentBlock": null,
+          "currentPos": null,
+          "compareValue": 66,
+          "phase": "index",
+          "indexComparisons": 2,
+          "blockComparisons": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "done": false
+        },
+        "message": "索引项 3：比较 99 与块最大值 94 / compare target with block max",
+        "line": 143,
+        "variables": {
+          "n": 12,
+          "blockSize": 4,
+          "blocks": 3,
+          "target": 99,
+          "currentIndex": 2,
+          "currentBlock": null,
+          "currentPos": null,
+          "indexComparisons": 3,
+          "blockComparisons": 0,
+          "result": "pending"
+        },
+        "lessonStepId": "index-compare",
+        "structure": {
+          "kind": "block-search",
+          "preset": "miss-all",
+          "operation": "index-compare",
+          "targetValue": 99,
+          "blockSize": 4,
+          "data": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "blocks": [
+            {
+              "index": 0,
+              "start": 0,
+              "length": 4,
+              "max": 35,
+              "values": [
+                22,
+                8,
+                14,
+                35
+              ]
+            },
+            {
+              "index": 1,
+              "start": 4,
+              "length": 4,
+              "max": 66,
+              "values": [
+                41,
+                57,
+                66,
+                38
+              ]
+            },
+            {
+              "index": 2,
+              "start": 8,
+              "length": 4,
+              "max": 94,
+              "values": [
+                73,
+                81,
+                94,
+                69
+              ]
+            }
+          ],
+          "indexEntries": [
+            {
+              "blockIndex": 0,
+              "max": 35,
+              "start": 0,
+              "length": 4
+            },
+            {
+              "blockIndex": 1,
+              "max": 66,
+              "start": 4,
+              "length": 4
+            },
+            {
+              "blockIndex": 2,
+              "max": 94,
+              "start": 8,
+              "length": 4
+            }
+          ],
+          "currentIndex": 2,
+          "currentBlock": null,
+          "currentPos": null,
+          "compareValue": 94,
+          "phase": "index",
+          "indexComparisons": 3,
+          "blockComparisons": 0,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "done": true
+        },
+        "message": "所有索引项的最大值都小于 target：查找失败 / every block max is smaller: not found",
+        "line": 168,
+        "variables": {
+          "n": 12,
+          "blockSize": 4,
+          "blocks": 3,
+          "target": 99,
+          "currentIndex": null,
+          "currentBlock": null,
+          "currentPos": null,
+          "indexComparisons": 3,
+          "blockComparisons": 0,
+          "result": "not-found"
+        },
+        "lessonStepId": "not-found",
+        "structure": {
+          "kind": "block-search",
+          "preset": "miss-all",
+          "operation": "not-found",
+          "targetValue": 99,
+          "blockSize": 4,
+          "data": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "blocks": [
+            {
+              "index": 0,
+              "start": 0,
+              "length": 4,
+              "max": 35,
+              "values": [
+                22,
+                8,
+                14,
+                35
+              ]
+            },
+            {
+              "index": 1,
+              "start": 4,
+              "length": 4,
+              "max": 66,
+              "values": [
+                41,
+                57,
+                66,
+                38
+              ]
+            },
+            {
+              "index": 2,
+              "start": 8,
+              "length": 4,
+              "max": 94,
+              "values": [
+                73,
+                81,
+                94,
+                69
+              ]
+            }
+          ],
+          "indexEntries": [
+            {
+              "blockIndex": 0,
+              "max": 35,
+              "start": 0,
+              "length": 4
+            },
+            {
+              "blockIndex": 1,
+              "max": 66,
+              "start": 4,
+              "length": 4
+            },
+            {
+              "blockIndex": 2,
+              "max": 94,
+              "start": 8,
+              "length": 4
+            }
+          ],
+          "currentIndex": null,
+          "currentBlock": null,
+          "currentPos": null,
+          "compareValue": null,
+          "phase": "done",
+          "indexComparisons": 3,
+          "blockComparisons": 0,
+          "result": "not-found"
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "done": true
+        },
+        "message": "查找完成 / search complete",
+        "line": 240,
+        "variables": {
+          "n": 12,
+          "blockSize": 4,
+          "blocks": 3,
+          "target": 99,
+          "currentIndex": null,
+          "currentBlock": null,
+          "currentPos": null,
+          "indexComparisons": 3,
+          "blockComparisons": 0,
+          "result": "not-found"
+        },
+        "lessonStepId": "done",
+        "structure": {
+          "kind": "block-search",
+          "preset": "miss-all",
+          "operation": "done",
+          "targetValue": 99,
+          "blockSize": 4,
+          "data": [
+            22,
+            8,
+            14,
+            35,
+            41,
+            57,
+            66,
+            38,
+            73,
+            81,
+            94,
+            69
+          ],
+          "blocks": [
+            {
+              "index": 0,
+              "start": 0,
+              "length": 4,
+              "max": 35,
+              "values": [
+                22,
+                8,
+                14,
+                35
+              ]
+            },
+            {
+              "index": 1,
+              "start": 4,
+              "length": 4,
+              "max": 66,
+              "values": [
+                41,
+                57,
+                66,
+                38
+              ]
+            },
+            {
+              "index": 2,
+              "start": 8,
+              "length": 4,
+              "max": 94,
+              "values": [
+                73,
+                81,
+                94,
+                69
+              ]
+            }
+          ],
+          "indexEntries": [
+            {
+              "blockIndex": 0,
+              "max": 35,
+              "start": 0,
+              "length": 4
+            },
+            {
+              "blockIndex": 1,
+              "max": 66,
+              "start": 4,
+              "length": 4
+            },
+            {
+              "blockIndex": 2,
+              "max": 94,
+              "start": 8,
+              "length": 4
+            }
+          ],
+          "currentIndex": null,
+          "currentBlock": null,
+          "currentPos": null,
+          "compareValue": null,
+          "phase": "done",
+          "indexComparisons": 3,
+          "blockComparisons": 0,
+          "result": "not-found"
+        }
+      }
+    ]
+  }
+}

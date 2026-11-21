@@ -33,6 +33,43 @@
   font: 750 14px/1.35 ui-monospace, SFMono-Regular, Consolas, monospace;
 }
 
+.btree-command {
+  padding: 2px 8px;
+  border: 1px solid var(--line, #d8dee8);
+  border-radius: 6px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.btree-delete-banner {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  align-items: center;
+  padding: 7px 10px;
+  border: 1px solid color-mix(in srgb, var(--warn, #b26a00) 55%, var(--line, #d8dee8));
+  border-left-width: 4px;
+  border-radius: 7px;
+  background: color-mix(in srgb, var(--warn, #b26a00) 8%, var(--panel, #fff));
+  color: var(--txt);
+  font-size: 12px;
+}
+
+.btree-delete-banner strong {
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+
+.btree-delete-banner .is-root-change {
+  color: var(--ok, #2e7d32);
+  font-weight: 700;
+}
+
+.btree-node.is-delete-affected .btree-node-box {
+  stroke: var(--warn, #b26a00);
+  stroke-width: 2.6;
+  stroke-dasharray: 7 4;
+}
+
 .btree-canvas-scroll {
   width: 100%;
   min-width: 0;

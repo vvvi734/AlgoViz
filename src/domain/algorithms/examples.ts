@@ -26,6 +26,21 @@ import {
   GARBAGE_COLLECTION_DEFAULT_INPUT,
   GARBAGE_COLLECTION_PYTHON,
 } from './garbageCollectionExamples';
+import {
+  BLOCK_SEARCH_ENTRY,
+  BLOCK_SEARCH_DEFAULT_INPUT,
+  BLOCK_SEARCH_PYTHON,
+} from './blockSearchExamples';
+import {
+  BPLUS_TREE_ENTRY,
+  BPLUS_TREE_DEFAULT_INPUT,
+  BPLUS_TREE_PYTHON,
+} from './bplusExamples';
+import {
+  KEY_TREE_ENTRY,
+  KEY_TREE_DEFAULT_INPUT,
+  KEY_TREE_PYTHON,
+} from './keyTreeExamples';
 import { structureDefaultInput, structurePythonExample } from './structureExamples';
 import {
   INFIX_TO_POSTFIX_ENTRY,
@@ -51,6 +66,9 @@ export const catalog: AlgorithmCatalog = {
   'free-list': { ...FREE_LIST_ENTRY, input: FREE_LIST_DEFAULT_INPUT },
   'buddy-system': { ...BUDDY_ENTRY, input: BUDDY_DEFAULT_INPUT },
   'garbage-collection': { ...GARBAGE_COLLECTION_ENTRY, input: GARBAGE_COLLECTION_DEFAULT_INPUT },
+  'block-search': { ...BLOCK_SEARCH_ENTRY, input: BLOCK_SEARCH_DEFAULT_INPUT },
+  'bplus-tree': { ...BPLUS_TREE_ENTRY, input: BPLUS_TREE_DEFAULT_INPUT },
+  'key-tree': { ...KEY_TREE_ENTRY, input: KEY_TREE_DEFAULT_INPUT },
 };
 
 export const algorithmIds = (): string[] => Object.keys(catalog);
@@ -89,6 +107,14 @@ export function memoryPythonExample(algoId: string): string | null {
   return null;
 }
 
+/** Python presets authored for TEXTBOOK-09 search modules. */
+export function searchPythonExample(algoId: string): string | null {
+  if (algoId === 'block-search') return BLOCK_SEARCH_PYTHON;
+  if (algoId === 'bplus-tree') return BPLUS_TREE_PYTHON;
+  if (algoId === 'key-tree') return KEY_TREE_PYTHON;
+  return null;
+}
+
 /** Returns the preset source for an algorithm in a given teaching language. */
 export function exampleFor(algoId: string, language: CodeLanguage): string {
   const entry = catalog[algoId];
@@ -99,6 +125,8 @@ export function exampleFor(algoId: string, language: CodeLanguage): string {
   if (structurePreset) return structurePreset;
   const memoryPreset = memoryPythonExample(algoId);
   if (memoryPreset) return memoryPreset;
+  const searchPreset = searchPythonExample(algoId);
+  if (searchPreset) return searchPreset;
   const preset = LANGUAGE_EXAMPLES[language]?.[algoId];
   if (preset) return preset;
   const name = entry?.name[1] ?? algoId;

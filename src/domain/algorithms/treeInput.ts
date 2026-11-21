@@ -76,6 +76,10 @@ export const TREE_RANDOM_SCENARIOS: Record<
     { id: 'split-root', label: ['根节点分裂', 'Root split'] },
     { id: 'find-hit', label: ['查找成功', 'Successful lookup'] },
     { id: 'find-miss', label: ['查找失败', 'Failed lookup'] },
+    { id: 'delete-leaf', label: ['删除叶子关键字', 'Delete a leaf key'] },
+    { id: 'delete-borrow', label: ['删除并借位', 'Delete with borrow'] },
+    { id: 'delete-merge', label: ['删除并合并', 'Delete with merge'] },
+    { id: 'delete-root-shrink', label: ['删除并收缩根', 'Delete and shrink root'] },
   ],
 };
 
@@ -91,7 +95,7 @@ export const TREE_COMMANDS: Record<TreeGuidedInputAlgorithm, readonly string[]> 
   'threaded-inorder': [],
   bst: ['find', 'insert', 'delete'],
   avl: ['insert'],
-  btree: ['find', 'insert'],
+  btree: ['find', 'insert', 'delete'],
 };
 
 export function treeDraftFromInput(
@@ -426,6 +430,33 @@ function randomBtreeDraft(scenario: string, random: () => number): TreeInputFiel
   }
   if (scenario === 'find-miss') {
     return { values: complete.join(', '), target: String(35 + offset), command: 'find', mode: '' };
+  }
+  if (scenario === 'delete-leaf') {
+    return { values: complete.join(', '), target: String(60 + offset), command: 'delete', mode: '' };
+  }
+  if (scenario === 'delete-borrow') {
+    return {
+      values: shift([27, 5, 16, 6, 36, 28, 4, 37], offset).join(', '),
+      target: String(27 + offset),
+      command: 'delete',
+      mode: '',
+    };
+  }
+  if (scenario === 'delete-merge') {
+    return {
+      values: shift([45, 16, 6, 37, 20, 34, 32, 22], offset).join(', '),
+      target: String(45 + offset),
+      command: 'delete',
+      mode: '',
+    };
+  }
+  if (scenario === 'delete-root-shrink') {
+    return {
+      values: shift([17, 2, 34, 30, 21, 23, 29, 27, 49], offset).join(', '),
+      target: String(17 + offset),
+      command: 'delete',
+      mode: '',
+    };
   }
   if (scenario === 'split-child') {
     return { values: complete.join(', '), target: String(80 + offset), command: 'insert', mode: '' };

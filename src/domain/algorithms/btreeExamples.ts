@@ -1,19 +1,21 @@
 /**
- * SEARCH-04: the REAL Python order-4 B-tree teaching program.
+ * SEARCH-04 + TEXTBOOK-09: the REAL Python order-4 B-tree teaching program.
  *
- * One program handles search and insertion. Nodes are genuine Python objects
- * with stable teaching ids (`n1`, `n2`, ...), real ordered key lists and real
- * child lists. The insertion policy is fixed and shared by the lesson, the
- * reference code and the animation:
- *   - keys are unique; a duplicate search hit rejects the insert before any
- *     structural change;
- *   - split a full child BEFORE descending into it;
- *   - a full root is split first, creating a new root.
+ * One program handles search, insertion and deletion. Nodes are genuine Python
+ * objects with stable teaching ids (`n1`, `n2`, ...), real ordered key lists and
+ * real child lists. Policies are fixed and shared by the lesson, the reference
+ * code and the animation:
+ *   - keys are unique; a duplicate search hit rejects the insert unchanged;
+ *   - insertion splits a full child BEFORE descending into it;
+ *   - deletion first proves the key exists, then uses top-down repair: before
+ *     entering a minimum child it borrows from a richer sibling or merges. A
+ *     missing key therefore leaves the tree completely unchanged;
+ *   - root contraction is performed immediately after a merge empties the root.
  * No frame is generated from a hard-coded animation script: `emit` reads the
  * current Python tree after the operation named on that frame.
  */
 
-export const BTREE_COMMAND = ['find', 'insert'] as const;
+export const BTREE_COMMAND = ['find', 'insert', 'delete'] as const;
 export type BtreeCommand = (typeof BTREE_COMMAND)[number];
 
 /** Official presets. The initial tree is built by real silent insertions. */
@@ -53,6 +55,48 @@ export const BTREE_PRESETS = [
     tree: [10, 20, 30],
     target: 40,
   },
+  {
+    id: 'delete-leaf-plain',
+    command: 'delete',
+    label: 'btreePresetDeleteLeaf',
+    tree: [10, 20, 30, 40, 50, 60, 70],
+    target: 60,
+  },
+  {
+    id: 'delete-internal-replace',
+    command: 'delete',
+    label: 'btreePresetDeleteInternal',
+    tree: [21, 10, 26, 42, 4, 5, 35, 7],
+    target: 21,
+  },
+  {
+    id: 'delete-borrow',
+    command: 'delete',
+    label: 'btreePresetDeleteBorrow',
+    tree: [27, 5, 16, 6, 36, 28, 4, 37],
+    target: 27,
+  },
+  {
+    id: 'delete-merge',
+    command: 'delete',
+    label: 'btreePresetDeleteMerge',
+    tree: [45, 16, 6, 37, 20, 34, 32, 22],
+    target: 45,
+  },
+  {
+    id: 'delete-root-shrink',
+    command: 'delete',
+    label: 'btreePresetDeleteRootShrink',
+    tree: [17, 2, 34, 30, 21, 23, 29, 27, 49],
+    target: 17,
+  },
+  {
+    id: 'delete-missing',
+    command: 'delete',
+    label: 'btreePresetDeleteMissing',
+    tree: [10, 20, 30, 40, 50, 60, 70],
+    target: 35,
+  },
 ] as const;
 
 export type BtreePreset = (typeof BTREE_PRESETS)[number];
@@ -65,8 +109,9 @@ export const BTREE_DEFAULT_INPUT: unknown = {
   target: 30,
 };
 
-export const BTREE_PYTHON = `# Order-4 B-tree: real nodes, real keys, real child lists and real splits.
-# Policy: unique keys; split a full child before descending; split a full root first.
+export const BTREE_PYTHON = `# Order-4 B-tree: real nodes, real keys, real child lists, real splits and deletion repair.
+# Policies: unique keys; split a full child before descending; for deletion
+# prove the key exists first, then borrow/merge BEFORE entering a minimum child.
 import inspect
 import math
 
@@ -74,7 +119,7 @@ raw_input = input
 if not isinstance(raw_input, dict):
     raw_input = {}
 OPERATION = raw_input.get("operation", "find")
-if OPERATION not in ("find", "insert"):
+if OPERATION not in ("find", "insert", "delete"):
     OPERATION = "find"
 raw_target = raw_input.get("target", 0)
 if isinstance(raw_target, bool) or not isinstance(raw_target, (int, float)) or not math.isfinite(raw_target):
@@ -95,6 +140,7 @@ if PRESET is not None and not isinstance(PRESET, str):
 
 ORDER = 4
 MAX_KEYS = ORDER - 1
+MIN_KEYS = 1
 TRACING = False
 ROOT = None
 NODES = []
@@ -153,7 +199,7 @@ def path_text(path):
 
 
 def emit(operation, message, lesson, current=None, path=None, compare=None,
-         slot=None, child=None, split=None, inserted=None, result=None):
+         slot=None, child=None, split=None, inserted=None, delete_info=None, result=None):
     if not TRACING:
         return
     payload = {
@@ -173,10 +219,13 @@ def emit(operation, message, lesson, current=None, path=None, compare=None,
         "childId": child.id if child is not None else None,
         "split": split,
         "insertedKey": inserted,
+        "deleteInfo": delete_info,
         "result": result,
     }
     variables = {
         "order": ORDER,
+        "minKeys": MIN_KEYS,
+        "maxKeys": MAX_KEYS,
         "target": TARGET,
         "nodeCount": len(NODES),
         "treeHeight": tree_height(),
@@ -449,6 +498,334 @@ def contains_silent(target):
         node = node.children[index]
 
 
+def slot_for(node, target):
+    index = 0
+    while index < len(node.keys) and target > node.keys[index]:
+        index += 1
+    return index
+
+
+def delete_info(action, key=None, parent=None, sibling=None, separator=None, root_changed=False):
+    return {
+        "action": action,
+        "key": key,
+        "parentId": parent.id if parent is not None else None,
+        "siblingId": sibling.id if sibling is not None else None,
+        "separatorKey": separator,
+        "rootChanged": root_changed,
+    }
+
+
+def borrow_from_left(parent, slot, child, path):
+    left = parent.children[slot - 1]
+    separator = parent.keys[slot - 1]
+    child.keys.insert(0, parent.keys[slot - 1])
+    parent.keys[slot - 1] = left.keys.pop()
+    if not child.leaf:
+        child.children.insert(0, left.children.pop())
+    emit(
+        "borrow-left",
+        f"左兄弟有富余：父键 {fmt(separator)} 下移，左兄弟最大键上移 / borrow through the parent from the left sibling",
+        "borrow-left",
+        current=child,
+        path=path + [child],
+        delete_info=delete_info("borrow-left", parent=parent, sibling=left, separator=separator),
+    )
+
+
+def borrow_from_right(parent, slot, child, path):
+    right = parent.children[slot + 1]
+    separator = parent.keys[slot]
+    child.keys.append(parent.keys[slot])
+    parent.keys[slot] = right.keys.pop(0)
+    if not child.leaf:
+        child.children.append(right.children.pop(0))
+    emit(
+        "borrow-right",
+        f"右兄弟有富余：父键 {fmt(separator)} 下移，右兄弟最小键上移 / borrow through the parent from the right sibling",
+        "borrow-right",
+        current=child,
+        path=path + [child],
+        delete_info=delete_info("borrow-right", parent=parent, sibling=right, separator=separator),
+    )
+
+
+def merge_with_left(parent, slot, child, path):
+    global ROOT
+    left = parent.children[slot - 1]
+    separator = parent.keys.pop(slot - 1)
+    parent.children.pop(slot)
+    left.keys.append(separator)
+    left.keys.extend(child.keys)
+    left.children.extend(child.children)
+    NODES.remove(child)
+    root_changed = False
+    if parent is ROOT and len(parent.keys) == 0:
+        ROOT = parent.children[0]
+        NODES.remove(parent)
+        root_changed = True
+    emit(
+        "merge",
+        f"兄弟不够借：父键 {fmt(separator)} 与两个节点合并 / siblings cannot lend: merge through the parent",
+        "merge",
+        current=left,
+        path=([ROOT] if root_changed else path + [left]),
+        delete_info=delete_info(
+            "merge",
+            parent=None if root_changed else parent,
+            sibling=child,
+            separator=separator,
+            root_changed=root_changed,
+        ),
+    )
+    if root_changed:
+        emit(
+            "root-shrink",
+            "根节点已空：唯一孩子成为新根，树高减一 / empty root contracts; the tree gets shorter",
+            "root-shrink",
+            current=ROOT,
+            path=[ROOT],
+            delete_info=delete_info("root-shrink", root_changed=True),
+        )
+    return left
+
+
+def merge_with_right(parent, slot, child, path):
+    global ROOT
+    right = parent.children[slot + 1]
+    separator = parent.keys.pop(slot)
+    parent.children.pop(slot + 1)
+    child.keys.append(separator)
+    child.keys.extend(right.keys)
+    child.children.extend(right.children)
+    NODES.remove(right)
+    root_changed = False
+    if parent is ROOT and len(parent.keys) == 0:
+        ROOT = parent.children[0]
+        NODES.remove(parent)
+        root_changed = True
+    emit(
+        "merge",
+        f"兄弟不够借：父键 {fmt(separator)} 与两个节点合并 / siblings cannot lend: merge through the parent",
+        "merge",
+        current=child,
+        path=([ROOT] if root_changed else path + [child]),
+        delete_info=delete_info(
+            "merge",
+            parent=None if root_changed else parent,
+            sibling=right,
+            separator=separator,
+            root_changed=root_changed,
+        ),
+    )
+    if root_changed:
+        emit(
+            "root-shrink",
+            "根节点已空：唯一孩子成为新根，树高减一 / empty root contracts; the tree gets shorter",
+            "root-shrink",
+            current=ROOT,
+            path=[ROOT],
+            delete_info=delete_info("root-shrink", root_changed=True),
+        )
+    return child
+
+
+def ensure_child(parent, slot, path):
+    # Called BEFORE entering a minimum child. The child always ends with at
+    # least two keys, so a subsequent delete can never underflow it.
+    global ROOT
+    child = parent.children[slot]
+    if len(child.keys) > MIN_KEYS:
+        return child
+    left = parent.children[slot - 1] if slot > 0 else None
+    right = parent.children[slot + 1] if slot + 1 < len(parent.children) else None
+    if left is not None and len(left.keys) > MIN_KEYS:
+        borrow_from_left(parent, slot, child, path)
+        return child
+    if right is not None and len(right.keys) > MIN_KEYS:
+        borrow_from_right(parent, slot, child, path)
+        return child
+    if left is not None:
+        return merge_with_left(parent, slot, child, path)
+    if right is not None:
+        return merge_with_right(parent, slot, child, path)
+    return child
+
+
+def report_missing(target):
+    node = ROOT
+    path = []
+    while node is not None:
+        path.append(node)
+        for index, key in enumerate(node.keys):
+            emit(
+                "inspect",
+                f"比较 {fmt(target)} 与关键字 {fmt(key)} / compare with key {fmt(key)}",
+                "inspect",
+                current=node,
+                path=path,
+                compare=(index, key),
+            )
+            if target < key:
+                slot = index
+                break
+        else:
+            slot = len(node.keys)
+        if node.leaf:
+            emit(
+                "not-found",
+                f"叶子中没有 {fmt(target)}：删除失败，结构不变 / key absent: delete does nothing",
+                "not-found",
+                current=node,
+                path=path,
+                result="not-found",
+            )
+            return "not-found"
+        child = node.children[slot]
+        emit(
+            "descend",
+            f"继续搜索第 {slot + 1} 个子树 / descend into child {slot + 1}",
+            "descend",
+            current=node,
+            path=path,
+            slot=slot,
+            child=child,
+        )
+        node = child
+    return "not-found"
+
+
+def delete_value(target):
+    global ROOT
+    if ROOT is None:
+        emit(
+            "not-found",
+            "空树：没有可删除的关键字 / empty tree: nothing to delete",
+            "not-found",
+            result="not-found",
+        )
+        return "not-found"
+    if not contains_silent(target):
+        return report_missing(target)
+
+    while ROOT is not None:
+        node = ROOT
+        path = [node]
+        while True:
+            index = 0
+            while index < len(node.keys) and target > node.keys[index]:
+                index += 1
+            found = index < len(node.keys) and target == node.keys[index]
+
+            if found and node.leaf:
+                node.keys.pop(index)
+                if node is ROOT and len(node.keys) == 0:
+                    NODES.clear()
+                    ROOT = None
+                    emit(
+                        "delete-leaf",
+                        f"删除叶子中的 {fmt(target)}：树已为空 / delete the last key: the tree becomes empty",
+                        "delete-leaf",
+                        current=None,
+                        path=[],
+                        delete_info=delete_info("delete-leaf", key=target),
+                        result=None,
+                    )
+                    return "deleted"
+                emit(
+                    "delete-leaf",
+                    f"在叶子中删除 {fmt(target)}；节点仍满足下限 / delete from a leaf that stays above the minimum",
+                    "delete-leaf",
+                    current=node,
+                    path=path,
+                    delete_info=delete_info("delete-leaf", key=target),
+                )
+                return "deleted"
+
+            if found and not node.leaf:
+                emit(
+                    "locate",
+                    f"关键字 {fmt(target)} 位于内部节点：用左子树最大前驱替换 / internal key: replace by its predecessor",
+                    "locate",
+                    current=node,
+                    path=path,
+                    compare=(index, target),
+                    delete_info=delete_info("locate", key=target),
+                )
+                root_before = ROOT
+                left = ensure_child(node, index, path)
+                if ROOT is not root_before:
+                    break
+                if index >= len(node.keys) or node.keys[index] != target:
+                    break
+                # Walk to the rightmost leaf of the left subtree, repairing any
+                # minimum child before entering it.
+                current = node.children[index]
+                pred_path = path + [current]
+                while not current.leaf:
+                    repaired = ensure_child(current, len(current.keys), pred_path)
+                    if ROOT is not root_before:
+                        break
+                    current = current.children[len(current.children) - 1]
+                    pred_path.append(current)
+                if ROOT is not root_before:
+                    break
+                if not current.keys:
+                    break
+                predecessor = current.keys.pop()
+                node.keys[index] = predecessor
+                emit(
+                    "replace",
+                    f"内部键 {fmt(target)} 被前驱 {fmt(predecessor)} 替换 / internal key replaced by predecessor {fmt(predecessor)}",
+                    "replace",
+                    current=node,
+                    path=path,
+                    compare=(index, predecessor),
+                    delete_info=delete_info("replace", key=target, parent=node),
+                )
+                emit(
+                    "delete-leaf",
+                    f"前驱 {fmt(predecessor)} 已从其叶子删除 / predecessor removed from its leaf",
+                    "delete-leaf",
+                    current=current,
+                    path=pred_path,
+                    delete_info=delete_info("delete-leaf", key=predecessor),
+                )
+                return "deleted"
+
+            if node.leaf:
+                emit(
+                    "not-found",
+                    f"叶子中没有 {fmt(target)}：结构不变 / key absent: tree unchanged",
+                    "not-found",
+                    current=node,
+                    path=path,
+                    result="not-found",
+                )
+                return "not-found"
+
+            root_before = ROOT
+            child = ensure_child(node, index, path)
+            if ROOT is not root_before:
+                break
+            # Repair may have merged the former child into its left sibling.
+            # Recompute the slot against the new keys of this same parent.
+            index = slot_for(node, target)
+            child = node.children[index]
+            emit(
+                "descend",
+                f"进入第 {index + 1} 个子树继续删除 / descend into repaired child {index + 1}",
+                "descend",
+                current=node,
+                path=path,
+                slot=index,
+                child=child,
+            )
+            node = child
+            path.append(node)
+    return "deleted"
+
+
 def build_from_values(values):
     global TRACING
     TRACING = False
@@ -477,7 +854,7 @@ if OPERATION == "find":
         "done",
         result="found" if found else "not-found",
     )
-else:
+elif OPERATION == "insert":
     _, duplicate = locate_for_insert(TARGET)
     if duplicate:
         emit(
@@ -494,13 +871,23 @@ else:
             "done",
             result="inserted",
         )
+else:
+    outcome = delete_value(TARGET)
+    emit(
+        "done",
+        "删除完成：容量、区间、叶深与根规则仍成立 / deletion complete: all B-tree invariants hold"
+        if outcome == "deleted"
+        else "删除失败：关键字不存在，结构不变 / delete failed: key absent, structure unchanged",
+        "done",
+        result="deleted" if outcome == "deleted" else "not-found",
+    )
 `;
 
 /** Normalise the stored input at the UI boundary, then hand it to the Python preset. */
 export function btreeCommandFromInput(input: unknown): BtreeCommand {
   if (!input || typeof input !== 'object') return 'find';
   const command = (input as { operation?: unknown }).operation;
-  return command === 'insert' ? 'insert' : 'find';
+  return command === 'insert' || command === 'delete' ? command : 'find';
 }
 
 export function btreeTargetFromInput(input: unknown): number {

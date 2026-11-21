@@ -1088,4 +1088,106 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
       zh: "引用中保存了地址，因此移动对象后所有相关端点都必须刷新。",
     },
   ],
+  "block_search.c": [
+    {
+      en: "Purpose: Validate the index prerequisite and build one entry per real block; returns the block count or -1.",
+      zh: "作用：校验索引前提并逐块建立索引项；合法返回块数，非法返回 -1。",
+    },
+    {
+      en: "Purpose: Probe the index, then scan exactly the selected block; comparisons reports both stage counts.",
+      zh: "作用：先顺序探测索引，再只扫描被选中的块；comparisons 分别报告索引与块内比较次数。",
+    },
+  ],
+  "block_search.cpp": [
+    {
+      en: "Purpose: Validate the range prerequisite and build one entry per consecutive block.",
+      zh: "作用：校验块范围递增前提，并为每个连续块建立索引项。",
+    },
+    {
+      en: "Purpose: Probe the index, then scan the selected block; stats separates the two stages.",
+      zh: "作用：先探测索引，再扫描选中的块；stats 分开记录两个阶段的比较次数。",
+    },
+  ],
+  "block_search.py": [
+    {
+      en: "Purpose: Build one index entry per consecutive block after validating the real range prerequisite.",
+      zh: "作用：校验真实块范围前提后，为每个连续块建立一个索引项。",
+    },
+    {
+      en: "Purpose: Probe the index sequentially, then scan only the selected real block.",
+      zh: "作用：顺序探测索引，然后只扫描被选中的真实块。",
+    },
+  ],
+  "bplus_tree.c": [
+    {
+      en: "Purpose: Split a leaf 2/2, preserve the leaf chain, and promote the first key of the new right leaf.",
+      zh: "作用：把叶节点按 2/2 分裂，保持叶链，并提升新右叶的首键。",
+    },
+    {
+      en: "Purpose: Split an internal node, promote and remove the middle separator, and move the right child range.",
+      zh: "作用：分裂内部节点，提升并移除中间分隔键，同时移动右半孩子范围。",
+    },
+    {
+      en: "Purpose: Range scan starts at the lower-bound leaf, then follows next and stops above high.",
+      zh: "作用：范围扫描从下界叶子开始，再沿 next 前进并在超过上界时停止。",
+    },
+  ],
+  "bplus_tree.cpp": [
+    {
+      en: "Purpose: Split a leaf 2/2 and promote the first key of the right leaf.",
+      zh: "作用：叶节点按 2/2 分裂，并提升右叶首键。",
+    },
+    {
+      en: "Purpose: Split an internal node, promote and remove the middle separator, and move the right child range.",
+      zh: "作用：分裂内部节点，提升并移除中间分隔键，同时移动右半孩子范围。",
+    },
+    {
+      en: "Purpose: Start at the lower-bound leaf, follow next, and stop once keys exceed the upper bound.",
+      zh: "作用：从下界叶子开始，沿 next 前进，超过上界即停止。",
+    },
+  ],
+  "bplus_tree.py": [
+    {
+      en: "Purpose: Split a leaf 2/2 and promote the first key of the new right leaf.",
+      zh: "作用：叶节点按 2/2 分裂，并提升新右叶首键。",
+    },
+    {
+      en: "Purpose: Start at the lower-bound leaf, follow next, and stop once records exceed high.",
+      zh: "作用：从下界叶子开始，沿 next 前进，超过上界即停止。",
+    },
+  ],
+  "key_tree.c": [
+    {
+      en: "Purpose: Follow the whole word and report the last existing node plus matched length; terminal is a separate test.",
+      zh: "作用：沿整词下降，返回最后存在的节点与已匹配长度；是否为词还要单独检查 terminal。",
+    },
+    {
+      en: "Purpose: A word exists only when every character edge exists AND the last node is terminal.",
+      zh: "作用：只有每个字符边都存在且末节点 terminal=true 才算命中。",
+    },
+    {
+      en: "Purpose: Reject duplicates first, create only missing suffix nodes, then set terminal at the end.",
+      zh: "作用：先拒绝重复，再只为缺失后缀建节点，最后在末端设置 terminal。",
+    },
+  ],
+  "key_tree.cpp": [
+    {
+      en: "Purpose: Walk as far as the edges exist and report the last real node plus matched length.",
+      zh: "作用：沿已存在的边尽量下降，返回最后真实节点与匹配长度。",
+    },
+    {
+      en: "Purpose: A hit needs the full path AND terminal=true; a prefix alone is not a word.",
+      zh: "作用：命中要求整条路径存在且 terminal=true；只有前缀不算单词。",
+    },
+  ],
+  "key_tree.py": [
+    {
+      en: "Purpose: A hit needs every edge and terminal=True; a shared prefix alone is not a word.",
+      zh: "作用：命中要求每条边都存在且 terminal=True；共享前缀本身不是单词。",
+    },
+    {
+      en: "Purpose: Reject duplicates first, then create only missing suffix nodes and mark the end terminal.",
+      zh: "作用：先拒绝重复，再只为缺失后缀创建节点，并把末端标记为 terminal。",
+    },
+  ],
 };

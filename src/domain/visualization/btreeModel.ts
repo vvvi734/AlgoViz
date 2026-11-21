@@ -6,7 +6,7 @@
  * from the boundary slots between keys, and wide/deep trees scroll instead of
  * shrinking the 18px key text.
  */
-import type { BtreeOperation, BtreeResult, BtreeSnapshot } from '../trace/schema';
+import type { BtreeDeleteInfo, BtreeOperation, BtreeResult, BtreeSnapshot } from '../trace/schema';
 
 export const BTREE_NODE_H = 46;
 export const BTREE_KEY_W = 42;
@@ -72,7 +72,7 @@ export interface BTreeSplitModel {
 export interface BTreeVisualModel {
   kind: 'btree';
   order: 4;
-  command: 'find' | 'insert';
+  command: 'find' | 'insert' | 'delete';
   operation: BtreeOperation;
   targetValue: number;
   rootId: string | null;
@@ -82,6 +82,8 @@ export interface BTreeVisualModel {
   currentNodeId: string | null;
   selectedSubtreeIds: string[];
   split: BTreeSplitModel | null;
+  deleteInfo: BtreeDeleteInfo | null;
+  deleteAffectedIds: string[];
   insertedKey: number | null;
   result: BtreeResult | null;
   empty: boolean;
@@ -123,6 +125,10 @@ export function buildBTreeModel(snapshot: BtreeSnapshot): BTreeVisualModel {
           : null,
       }
     : null;
+  const deleteAffectedIds = snapshot.deleteInfo
+    ? [snapshot.currentNodeId, snapshot.deleteInfo.parentId, snapshot.deleteInfo.siblingId]
+        .filter((id): id is string => id !== null && byId.has(id))
+    : [];
 
   if (!snapshot.rootId || snapshot.nodes.length === 0) {
     return {
@@ -138,6 +144,8 @@ export function buildBTreeModel(snapshot: BtreeSnapshot): BTreeVisualModel {
       currentNodeId: null,
       selectedSubtreeIds: [],
       split: split ? { ...split, promotedIndex: null } : null,
+      deleteInfo: snapshot.deleteInfo,
+      deleteAffectedIds: [],
       insertedKey: snapshot.insertedKey,
       result: snapshot.result,
       empty: true,
@@ -221,7 +229,9 @@ export function buildBTreeModel(snapshot: BtreeSnapshot): BTreeVisualModel {
       splitBefore: split !== null && split.phase === 'before' && split.nodeId === id,
       splitLeft: split !== null && split.phase === 'after' && split.leftId === id,
       splitRight: split !== null && split.phase === 'after' && split.rightId === id,
-      newRoot: split !== null && split.phase === 'after' && split.rootChanged && snapshot.rootId === id,
+      newRoot:
+        (split !== null && split.phase === 'after' && split.rootChanged && snapshot.rootId === id) ||
+        (snapshot.operation === 'root-shrink' && snapshot.rootId === id),
     };
     nodes.push(model);
     position.set(id, model);
@@ -279,6 +289,8 @@ export function buildBTreeModel(snapshot: BtreeSnapshot): BTreeVisualModel {
     currentNodeId: snapshot.currentNodeId,
     selectedSubtreeIds,
     split,
+    deleteInfo: snapshot.deleteInfo,
+    deleteAffectedIds,
     insertedKey: snapshot.insertedKey,
     result: snapshot.result,
     empty: false,

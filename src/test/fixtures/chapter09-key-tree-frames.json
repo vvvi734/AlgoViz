@@ -1,0 +1,5618 @@
+{
+  "shared-prefix-hit": {
+    "input": {
+      "preset": "shared-prefix-hit",
+      "words": [
+        "car",
+        "card",
+        "care",
+        "cat",
+        "dog",
+        "do"
+      ],
+      "operation": "find",
+      "target": "care"
+    },
+    "frames": [
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "done": false
+        },
+        "message": "键树已建立：6 个关键字共享字符前缀 / key tree ready with shared prefixes",
+        "line": 256,
+        "variables": {
+          "words": 6,
+          "target": "care",
+          "matchedLength": 0,
+          "nodes": 10,
+          "currentChar": "",
+          "result": "pending"
+        },
+        "lessonStepId": "init",
+        "structure": {
+          "kind": "key-tree",
+          "preset": "shared-prefix-hit",
+          "operation": "init",
+          "mode": "find",
+          "target": "care",
+          "rootId": "t1",
+          "nodes": [
+            {
+              "id": "t1",
+              "char": "",
+              "parentId": null,
+              "terminal": false,
+              "children": [
+                "t2",
+                "t8"
+              ]
+            },
+            {
+              "id": "t2",
+              "char": "c",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t3"
+              ]
+            },
+            {
+              "id": "t3",
+              "char": "a",
+              "parentId": "t2",
+              "terminal": false,
+              "children": [
+                "t4",
+                "t7"
+              ]
+            },
+            {
+              "id": "t4",
+              "char": "r",
+              "parentId": "t3",
+              "terminal": true,
+              "children": [
+                "t5",
+                "t6"
+              ]
+            },
+            {
+              "id": "t5",
+              "char": "d",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t6",
+              "char": "e",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t7",
+              "char": "t",
+              "parentId": "t3",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t8",
+              "char": "d",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t9"
+              ]
+            },
+            {
+              "id": "t9",
+              "char": "o",
+              "parentId": "t8",
+              "terminal": true,
+              "children": [
+                "t10"
+              ]
+            },
+            {
+              "id": "t10",
+              "char": "g",
+              "parentId": "t9",
+              "terminal": true,
+              "children": []
+            }
+          ],
+          "dictionary": [
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "pathIds": [
+            "t1"
+          ],
+          "currentNodeId": "t1",
+          "compareChar": null,
+          "matchedLength": 0,
+          "createdNodeId": null,
+          "terminalNodeId": null,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "done": false
+        },
+        "message": "第 1 个字符 'c'：查找对应分支 / look for the next edge",
+        "line": 199,
+        "variables": {
+          "words": 6,
+          "target": "care",
+          "matchedLength": 0,
+          "nodes": 10,
+          "currentChar": "",
+          "result": "pending"
+        },
+        "lessonStepId": "compare",
+        "structure": {
+          "kind": "key-tree",
+          "preset": "shared-prefix-hit",
+          "operation": "compare",
+          "mode": "find",
+          "target": "care",
+          "rootId": "t1",
+          "nodes": [
+            {
+              "id": "t1",
+              "char": "",
+              "parentId": null,
+              "terminal": false,
+              "children": [
+                "t2",
+                "t8"
+              ]
+            },
+            {
+              "id": "t2",
+              "char": "c",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t3"
+              ]
+            },
+            {
+              "id": "t3",
+              "char": "a",
+              "parentId": "t2",
+              "terminal": false,
+              "children": [
+                "t4",
+                "t7"
+              ]
+            },
+            {
+              "id": "t4",
+              "char": "r",
+              "parentId": "t3",
+              "terminal": true,
+              "children": [
+                "t5",
+                "t6"
+              ]
+            },
+            {
+              "id": "t5",
+              "char": "d",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t6",
+              "char": "e",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t7",
+              "char": "t",
+              "parentId": "t3",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t8",
+              "char": "d",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t9"
+              ]
+            },
+            {
+              "id": "t9",
+              "char": "o",
+              "parentId": "t8",
+              "terminal": true,
+              "children": [
+                "t10"
+              ]
+            },
+            {
+              "id": "t10",
+              "char": "g",
+              "parentId": "t9",
+              "terminal": true,
+              "children": []
+            }
+          ],
+          "dictionary": [
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "pathIds": [
+            "t1"
+          ],
+          "currentNodeId": "t1",
+          "compareChar": "c",
+          "matchedLength": 0,
+          "createdNodeId": null,
+          "terminalNodeId": null,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "done": false
+        },
+        "message": "第 2 个字符 'a'：查找对应分支 / look for the next edge",
+        "line": 199,
+        "variables": {
+          "words": 6,
+          "target": "care",
+          "matchedLength": 1,
+          "nodes": 10,
+          "currentChar": "c",
+          "result": "pending"
+        },
+        "lessonStepId": "compare",
+        "structure": {
+          "kind": "key-tree",
+          "preset": "shared-prefix-hit",
+          "operation": "compare",
+          "mode": "find",
+          "target": "care",
+          "rootId": "t1",
+          "nodes": [
+            {
+              "id": "t1",
+              "char": "",
+              "parentId": null,
+              "terminal": false,
+              "children": [
+                "t2",
+                "t8"
+              ]
+            },
+            {
+              "id": "t2",
+              "char": "c",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t3"
+              ]
+            },
+            {
+              "id": "t3",
+              "char": "a",
+              "parentId": "t2",
+              "terminal": false,
+              "children": [
+                "t4",
+                "t7"
+              ]
+            },
+            {
+              "id": "t4",
+              "char": "r",
+              "parentId": "t3",
+              "terminal": true,
+              "children": [
+                "t5",
+                "t6"
+              ]
+            },
+            {
+              "id": "t5",
+              "char": "d",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t6",
+              "char": "e",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t7",
+              "char": "t",
+              "parentId": "t3",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t8",
+              "char": "d",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t9"
+              ]
+            },
+            {
+              "id": "t9",
+              "char": "o",
+              "parentId": "t8",
+              "terminal": true,
+              "children": [
+                "t10"
+              ]
+            },
+            {
+              "id": "t10",
+              "char": "g",
+              "parentId": "t9",
+              "terminal": true,
+              "children": []
+            }
+          ],
+          "dictionary": [
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "pathIds": [
+            "t1",
+            "t2"
+          ],
+          "currentNodeId": "t2",
+          "compareChar": "a",
+          "matchedLength": 1,
+          "createdNodeId": null,
+          "terminalNodeId": null,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "done": false
+        },
+        "message": "第 3 个字符 'r'：查找对应分支 / look for the next edge",
+        "line": 199,
+        "variables": {
+          "words": 6,
+          "target": "care",
+          "matchedLength": 2,
+          "nodes": 10,
+          "currentChar": "a",
+          "result": "pending"
+        },
+        "lessonStepId": "compare",
+        "structure": {
+          "kind": "key-tree",
+          "preset": "shared-prefix-hit",
+          "operation": "compare",
+          "mode": "find",
+          "target": "care",
+          "rootId": "t1",
+          "nodes": [
+            {
+              "id": "t1",
+              "char": "",
+              "parentId": null,
+              "terminal": false,
+              "children": [
+                "t2",
+                "t8"
+              ]
+            },
+            {
+              "id": "t2",
+              "char": "c",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t3"
+              ]
+            },
+            {
+              "id": "t3",
+              "char": "a",
+              "parentId": "t2",
+              "terminal": false,
+              "children": [
+                "t4",
+                "t7"
+              ]
+            },
+            {
+              "id": "t4",
+              "char": "r",
+              "parentId": "t3",
+              "terminal": true,
+              "children": [
+                "t5",
+                "t6"
+              ]
+            },
+            {
+              "id": "t5",
+              "char": "d",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t6",
+              "char": "e",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t7",
+              "char": "t",
+              "parentId": "t3",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t8",
+              "char": "d",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t9"
+              ]
+            },
+            {
+              "id": "t9",
+              "char": "o",
+              "parentId": "t8",
+              "terminal": true,
+              "children": [
+                "t10"
+              ]
+            },
+            {
+              "id": "t10",
+              "char": "g",
+              "parentId": "t9",
+              "terminal": true,
+              "children": []
+            }
+          ],
+          "dictionary": [
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "pathIds": [
+            "t1",
+            "t2",
+            "t3"
+          ],
+          "currentNodeId": "t3",
+          "compareChar": "r",
+          "matchedLength": 2,
+          "createdNodeId": null,
+          "terminalNodeId": null,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "done": false
+        },
+        "message": "第 4 个字符 'e'：查找对应分支 / look for the next edge",
+        "line": 199,
+        "variables": {
+          "words": 6,
+          "target": "care",
+          "matchedLength": 3,
+          "nodes": 10,
+          "currentChar": "r",
+          "result": "pending"
+        },
+        "lessonStepId": "compare",
+        "structure": {
+          "kind": "key-tree",
+          "preset": "shared-prefix-hit",
+          "operation": "compare",
+          "mode": "find",
+          "target": "care",
+          "rootId": "t1",
+          "nodes": [
+            {
+              "id": "t1",
+              "char": "",
+              "parentId": null,
+              "terminal": false,
+              "children": [
+                "t2",
+                "t8"
+              ]
+            },
+            {
+              "id": "t2",
+              "char": "c",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t3"
+              ]
+            },
+            {
+              "id": "t3",
+              "char": "a",
+              "parentId": "t2",
+              "terminal": false,
+              "children": [
+                "t4",
+                "t7"
+              ]
+            },
+            {
+              "id": "t4",
+              "char": "r",
+              "parentId": "t3",
+              "terminal": true,
+              "children": [
+                "t5",
+                "t6"
+              ]
+            },
+            {
+              "id": "t5",
+              "char": "d",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t6",
+              "char": "e",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t7",
+              "char": "t",
+              "parentId": "t3",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t8",
+              "char": "d",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t9"
+              ]
+            },
+            {
+              "id": "t9",
+              "char": "o",
+              "parentId": "t8",
+              "terminal": true,
+              "children": [
+                "t10"
+              ]
+            },
+            {
+              "id": "t10",
+              "char": "g",
+              "parentId": "t9",
+              "terminal": true,
+              "children": []
+            }
+          ],
+          "dictionary": [
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "pathIds": [
+            "t1",
+            "t2",
+            "t3",
+            "t4"
+          ],
+          "currentNodeId": "t4",
+          "compareChar": "e",
+          "matchedLength": 3,
+          "createdNodeId": null,
+          "terminalNodeId": null,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "done": false
+        },
+        "message": "路径走完且 terminal=True：命中 'care' / path ends at a terminal marker",
+        "line": 224,
+        "variables": {
+          "words": 6,
+          "target": "care",
+          "matchedLength": 4,
+          "nodes": 10,
+          "currentChar": "e",
+          "result": "found"
+        },
+        "lessonStepId": "found",
+        "structure": {
+          "kind": "key-tree",
+          "preset": "shared-prefix-hit",
+          "operation": "found",
+          "mode": "find",
+          "target": "care",
+          "rootId": "t1",
+          "nodes": [
+            {
+              "id": "t1",
+              "char": "",
+              "parentId": null,
+              "terminal": false,
+              "children": [
+                "t2",
+                "t8"
+              ]
+            },
+            {
+              "id": "t2",
+              "char": "c",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t3"
+              ]
+            },
+            {
+              "id": "t3",
+              "char": "a",
+              "parentId": "t2",
+              "terminal": false,
+              "children": [
+                "t4",
+                "t7"
+              ]
+            },
+            {
+              "id": "t4",
+              "char": "r",
+              "parentId": "t3",
+              "terminal": true,
+              "children": [
+                "t5",
+                "t6"
+              ]
+            },
+            {
+              "id": "t5",
+              "char": "d",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t6",
+              "char": "e",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t7",
+              "char": "t",
+              "parentId": "t3",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t8",
+              "char": "d",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t9"
+              ]
+            },
+            {
+              "id": "t9",
+              "char": "o",
+              "parentId": "t8",
+              "terminal": true,
+              "children": [
+                "t10"
+              ]
+            },
+            {
+              "id": "t10",
+              "char": "g",
+              "parentId": "t9",
+              "terminal": true,
+              "children": []
+            }
+          ],
+          "dictionary": [
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "pathIds": [
+            "t1",
+            "t2",
+            "t3",
+            "t4",
+            "t6"
+          ],
+          "currentNodeId": "t6",
+          "compareChar": null,
+          "matchedLength": 4,
+          "createdNodeId": null,
+          "terminalNodeId": "t6",
+          "result": "found"
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "done": true
+        },
+        "message": "键树操作完成 / key-tree operation complete",
+        "line": 288,
+        "variables": {
+          "words": 6,
+          "target": "care",
+          "matchedLength": 4,
+          "nodes": 10,
+          "currentChar": "e",
+          "result": "found"
+        },
+        "lessonStepId": "done",
+        "structure": {
+          "kind": "key-tree",
+          "preset": "shared-prefix-hit",
+          "operation": "done",
+          "mode": "find",
+          "target": "care",
+          "rootId": "t1",
+          "nodes": [
+            {
+              "id": "t1",
+              "char": "",
+              "parentId": null,
+              "terminal": false,
+              "children": [
+                "t2",
+                "t8"
+              ]
+            },
+            {
+              "id": "t2",
+              "char": "c",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t3"
+              ]
+            },
+            {
+              "id": "t3",
+              "char": "a",
+              "parentId": "t2",
+              "terminal": false,
+              "children": [
+                "t4",
+                "t7"
+              ]
+            },
+            {
+              "id": "t4",
+              "char": "r",
+              "parentId": "t3",
+              "terminal": true,
+              "children": [
+                "t5",
+                "t6"
+              ]
+            },
+            {
+              "id": "t5",
+              "char": "d",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t6",
+              "char": "e",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t7",
+              "char": "t",
+              "parentId": "t3",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t8",
+              "char": "d",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t9"
+              ]
+            },
+            {
+              "id": "t9",
+              "char": "o",
+              "parentId": "t8",
+              "terminal": true,
+              "children": [
+                "t10"
+              ]
+            },
+            {
+              "id": "t10",
+              "char": "g",
+              "parentId": "t9",
+              "terminal": true,
+              "children": []
+            }
+          ],
+          "dictionary": [
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "pathIds": [
+            "t1",
+            "t2",
+            "t3",
+            "t4",
+            "t6"
+          ],
+          "currentNodeId": "t6",
+          "compareChar": null,
+          "matchedLength": 4,
+          "createdNodeId": null,
+          "terminalNodeId": "t6",
+          "result": "found"
+        }
+      }
+    ]
+  },
+  "prefix-is-not-word": {
+    "input": {
+      "preset": "prefix-is-not-word",
+      "words": [
+        "car",
+        "card",
+        "care",
+        "cat",
+        "dog",
+        "do"
+      ],
+      "operation": "find",
+      "target": "ca"
+    },
+    "frames": [
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "done": false
+        },
+        "message": "键树已建立：6 个关键字共享字符前缀 / key tree ready with shared prefixes",
+        "line": 256,
+        "variables": {
+          "words": 6,
+          "target": "ca",
+          "matchedLength": 0,
+          "nodes": 10,
+          "currentChar": "",
+          "result": "pending"
+        },
+        "lessonStepId": "init",
+        "structure": {
+          "kind": "key-tree",
+          "preset": "prefix-is-not-word",
+          "operation": "init",
+          "mode": "find",
+          "target": "ca",
+          "rootId": "t1",
+          "nodes": [
+            {
+              "id": "t1",
+              "char": "",
+              "parentId": null,
+              "terminal": false,
+              "children": [
+                "t2",
+                "t8"
+              ]
+            },
+            {
+              "id": "t2",
+              "char": "c",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t3"
+              ]
+            },
+            {
+              "id": "t3",
+              "char": "a",
+              "parentId": "t2",
+              "terminal": false,
+              "children": [
+                "t4",
+                "t7"
+              ]
+            },
+            {
+              "id": "t4",
+              "char": "r",
+              "parentId": "t3",
+              "terminal": true,
+              "children": [
+                "t5",
+                "t6"
+              ]
+            },
+            {
+              "id": "t5",
+              "char": "d",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t6",
+              "char": "e",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t7",
+              "char": "t",
+              "parentId": "t3",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t8",
+              "char": "d",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t9"
+              ]
+            },
+            {
+              "id": "t9",
+              "char": "o",
+              "parentId": "t8",
+              "terminal": true,
+              "children": [
+                "t10"
+              ]
+            },
+            {
+              "id": "t10",
+              "char": "g",
+              "parentId": "t9",
+              "terminal": true,
+              "children": []
+            }
+          ],
+          "dictionary": [
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "pathIds": [
+            "t1"
+          ],
+          "currentNodeId": "t1",
+          "compareChar": null,
+          "matchedLength": 0,
+          "createdNodeId": null,
+          "terminalNodeId": null,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "done": false
+        },
+        "message": "第 1 个字符 'c'：查找对应分支 / look for the next edge",
+        "line": 199,
+        "variables": {
+          "words": 6,
+          "target": "ca",
+          "matchedLength": 0,
+          "nodes": 10,
+          "currentChar": "",
+          "result": "pending"
+        },
+        "lessonStepId": "compare",
+        "structure": {
+          "kind": "key-tree",
+          "preset": "prefix-is-not-word",
+          "operation": "compare",
+          "mode": "find",
+          "target": "ca",
+          "rootId": "t1",
+          "nodes": [
+            {
+              "id": "t1",
+              "char": "",
+              "parentId": null,
+              "terminal": false,
+              "children": [
+                "t2",
+                "t8"
+              ]
+            },
+            {
+              "id": "t2",
+              "char": "c",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t3"
+              ]
+            },
+            {
+              "id": "t3",
+              "char": "a",
+              "parentId": "t2",
+              "terminal": false,
+              "children": [
+                "t4",
+                "t7"
+              ]
+            },
+            {
+              "id": "t4",
+              "char": "r",
+              "parentId": "t3",
+              "terminal": true,
+              "children": [
+                "t5",
+                "t6"
+              ]
+            },
+            {
+              "id": "t5",
+              "char": "d",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t6",
+              "char": "e",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t7",
+              "char": "t",
+              "parentId": "t3",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t8",
+              "char": "d",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t9"
+              ]
+            },
+            {
+              "id": "t9",
+              "char": "o",
+              "parentId": "t8",
+              "terminal": true,
+              "children": [
+                "t10"
+              ]
+            },
+            {
+              "id": "t10",
+              "char": "g",
+              "parentId": "t9",
+              "terminal": true,
+              "children": []
+            }
+          ],
+          "dictionary": [
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "pathIds": [
+            "t1"
+          ],
+          "currentNodeId": "t1",
+          "compareChar": "c",
+          "matchedLength": 0,
+          "createdNodeId": null,
+          "terminalNodeId": null,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "done": false
+        },
+        "message": "第 2 个字符 'a'：查找对应分支 / look for the next edge",
+        "line": 199,
+        "variables": {
+          "words": 6,
+          "target": "ca",
+          "matchedLength": 1,
+          "nodes": 10,
+          "currentChar": "c",
+          "result": "pending"
+        },
+        "lessonStepId": "compare",
+        "structure": {
+          "kind": "key-tree",
+          "preset": "prefix-is-not-word",
+          "operation": "compare",
+          "mode": "find",
+          "target": "ca",
+          "rootId": "t1",
+          "nodes": [
+            {
+              "id": "t1",
+              "char": "",
+              "parentId": null,
+              "terminal": false,
+              "children": [
+                "t2",
+                "t8"
+              ]
+            },
+            {
+              "id": "t2",
+              "char": "c",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t3"
+              ]
+            },
+            {
+              "id": "t3",
+              "char": "a",
+              "parentId": "t2",
+              "terminal": false,
+              "children": [
+                "t4",
+                "t7"
+              ]
+            },
+            {
+              "id": "t4",
+              "char": "r",
+              "parentId": "t3",
+              "terminal": true,
+              "children": [
+                "t5",
+                "t6"
+              ]
+            },
+            {
+              "id": "t5",
+              "char": "d",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t6",
+              "char": "e",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t7",
+              "char": "t",
+              "parentId": "t3",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t8",
+              "char": "d",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t9"
+              ]
+            },
+            {
+              "id": "t9",
+              "char": "o",
+              "parentId": "t8",
+              "terminal": true,
+              "children": [
+                "t10"
+              ]
+            },
+            {
+              "id": "t10",
+              "char": "g",
+              "parentId": "t9",
+              "terminal": true,
+              "children": []
+            }
+          ],
+          "dictionary": [
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "pathIds": [
+            "t1",
+            "t2"
+          ],
+          "currentNodeId": "t2",
+          "compareChar": "a",
+          "matchedLength": 1,
+          "createdNodeId": null,
+          "terminalNodeId": null,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "done": false
+        },
+        "message": "路径存在但末端没有终止标记：'ca' 只是更长关键字的前缀 / path exists but is not a word",
+        "line": 235,
+        "variables": {
+          "words": 6,
+          "target": "ca",
+          "matchedLength": 2,
+          "nodes": 10,
+          "currentChar": "a",
+          "result": "not-found"
+        },
+        "lessonStepId": "not-found",
+        "structure": {
+          "kind": "key-tree",
+          "preset": "prefix-is-not-word",
+          "operation": "not-found",
+          "mode": "find",
+          "target": "ca",
+          "rootId": "t1",
+          "nodes": [
+            {
+              "id": "t1",
+              "char": "",
+              "parentId": null,
+              "terminal": false,
+              "children": [
+                "t2",
+                "t8"
+              ]
+            },
+            {
+              "id": "t2",
+              "char": "c",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t3"
+              ]
+            },
+            {
+              "id": "t3",
+              "char": "a",
+              "parentId": "t2",
+              "terminal": false,
+              "children": [
+                "t4",
+                "t7"
+              ]
+            },
+            {
+              "id": "t4",
+              "char": "r",
+              "parentId": "t3",
+              "terminal": true,
+              "children": [
+                "t5",
+                "t6"
+              ]
+            },
+            {
+              "id": "t5",
+              "char": "d",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t6",
+              "char": "e",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t7",
+              "char": "t",
+              "parentId": "t3",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t8",
+              "char": "d",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t9"
+              ]
+            },
+            {
+              "id": "t9",
+              "char": "o",
+              "parentId": "t8",
+              "terminal": true,
+              "children": [
+                "t10"
+              ]
+            },
+            {
+              "id": "t10",
+              "char": "g",
+              "parentId": "t9",
+              "terminal": true,
+              "children": []
+            }
+          ],
+          "dictionary": [
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "pathIds": [
+            "t1",
+            "t2",
+            "t3"
+          ],
+          "currentNodeId": "t3",
+          "compareChar": null,
+          "matchedLength": 2,
+          "createdNodeId": null,
+          "terminalNodeId": null,
+          "result": "not-found"
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "done": true
+        },
+        "message": "键树操作完成 / key-tree operation complete",
+        "line": 288,
+        "variables": {
+          "words": 6,
+          "target": "ca",
+          "matchedLength": 2,
+          "nodes": 10,
+          "currentChar": "a",
+          "result": "not-found"
+        },
+        "lessonStepId": "done",
+        "structure": {
+          "kind": "key-tree",
+          "preset": "prefix-is-not-word",
+          "operation": "done",
+          "mode": "find",
+          "target": "ca",
+          "rootId": "t1",
+          "nodes": [
+            {
+              "id": "t1",
+              "char": "",
+              "parentId": null,
+              "terminal": false,
+              "children": [
+                "t2",
+                "t8"
+              ]
+            },
+            {
+              "id": "t2",
+              "char": "c",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t3"
+              ]
+            },
+            {
+              "id": "t3",
+              "char": "a",
+              "parentId": "t2",
+              "terminal": false,
+              "children": [
+                "t4",
+                "t7"
+              ]
+            },
+            {
+              "id": "t4",
+              "char": "r",
+              "parentId": "t3",
+              "terminal": true,
+              "children": [
+                "t5",
+                "t6"
+              ]
+            },
+            {
+              "id": "t5",
+              "char": "d",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t6",
+              "char": "e",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t7",
+              "char": "t",
+              "parentId": "t3",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t8",
+              "char": "d",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t9"
+              ]
+            },
+            {
+              "id": "t9",
+              "char": "o",
+              "parentId": "t8",
+              "terminal": true,
+              "children": [
+                "t10"
+              ]
+            },
+            {
+              "id": "t10",
+              "char": "g",
+              "parentId": "t9",
+              "terminal": true,
+              "children": []
+            }
+          ],
+          "dictionary": [
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "pathIds": [
+            "t1",
+            "t2",
+            "t3"
+          ],
+          "currentNodeId": "t3",
+          "compareChar": null,
+          "matchedLength": 2,
+          "createdNodeId": null,
+          "terminalNodeId": null,
+          "result": "not-found"
+        }
+      }
+    ]
+  },
+  "missing-branch": {
+    "input": {
+      "preset": "missing-branch",
+      "words": [
+        "car",
+        "card",
+        "care",
+        "cat",
+        "dog",
+        "do"
+      ],
+      "operation": "find",
+      "target": "cow"
+    },
+    "frames": [
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "done": false
+        },
+        "message": "键树已建立：6 个关键字共享字符前缀 / key tree ready with shared prefixes",
+        "line": 256,
+        "variables": {
+          "words": 6,
+          "target": "cow",
+          "matchedLength": 0,
+          "nodes": 10,
+          "currentChar": "",
+          "result": "pending"
+        },
+        "lessonStepId": "init",
+        "structure": {
+          "kind": "key-tree",
+          "preset": "missing-branch",
+          "operation": "init",
+          "mode": "find",
+          "target": "cow",
+          "rootId": "t1",
+          "nodes": [
+            {
+              "id": "t1",
+              "char": "",
+              "parentId": null,
+              "terminal": false,
+              "children": [
+                "t2",
+                "t8"
+              ]
+            },
+            {
+              "id": "t2",
+              "char": "c",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t3"
+              ]
+            },
+            {
+              "id": "t3",
+              "char": "a",
+              "parentId": "t2",
+              "terminal": false,
+              "children": [
+                "t4",
+                "t7"
+              ]
+            },
+            {
+              "id": "t4",
+              "char": "r",
+              "parentId": "t3",
+              "terminal": true,
+              "children": [
+                "t5",
+                "t6"
+              ]
+            },
+            {
+              "id": "t5",
+              "char": "d",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t6",
+              "char": "e",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t7",
+              "char": "t",
+              "parentId": "t3",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t8",
+              "char": "d",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t9"
+              ]
+            },
+            {
+              "id": "t9",
+              "char": "o",
+              "parentId": "t8",
+              "terminal": true,
+              "children": [
+                "t10"
+              ]
+            },
+            {
+              "id": "t10",
+              "char": "g",
+              "parentId": "t9",
+              "terminal": true,
+              "children": []
+            }
+          ],
+          "dictionary": [
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "pathIds": [
+            "t1"
+          ],
+          "currentNodeId": "t1",
+          "compareChar": null,
+          "matchedLength": 0,
+          "createdNodeId": null,
+          "terminalNodeId": null,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "done": false
+        },
+        "message": "第 1 个字符 'c'：查找对应分支 / look for the next edge",
+        "line": 199,
+        "variables": {
+          "words": 6,
+          "target": "cow",
+          "matchedLength": 0,
+          "nodes": 10,
+          "currentChar": "",
+          "result": "pending"
+        },
+        "lessonStepId": "compare",
+        "structure": {
+          "kind": "key-tree",
+          "preset": "missing-branch",
+          "operation": "compare",
+          "mode": "find",
+          "target": "cow",
+          "rootId": "t1",
+          "nodes": [
+            {
+              "id": "t1",
+              "char": "",
+              "parentId": null,
+              "terminal": false,
+              "children": [
+                "t2",
+                "t8"
+              ]
+            },
+            {
+              "id": "t2",
+              "char": "c",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t3"
+              ]
+            },
+            {
+              "id": "t3",
+              "char": "a",
+              "parentId": "t2",
+              "terminal": false,
+              "children": [
+                "t4",
+                "t7"
+              ]
+            },
+            {
+              "id": "t4",
+              "char": "r",
+              "parentId": "t3",
+              "terminal": true,
+              "children": [
+                "t5",
+                "t6"
+              ]
+            },
+            {
+              "id": "t5",
+              "char": "d",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t6",
+              "char": "e",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t7",
+              "char": "t",
+              "parentId": "t3",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t8",
+              "char": "d",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t9"
+              ]
+            },
+            {
+              "id": "t9",
+              "char": "o",
+              "parentId": "t8",
+              "terminal": true,
+              "children": [
+                "t10"
+              ]
+            },
+            {
+              "id": "t10",
+              "char": "g",
+              "parentId": "t9",
+              "terminal": true,
+              "children": []
+            }
+          ],
+          "dictionary": [
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "pathIds": [
+            "t1"
+          ],
+          "currentNodeId": "t1",
+          "compareChar": "c",
+          "matchedLength": 0,
+          "createdNodeId": null,
+          "terminalNodeId": null,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "done": false
+        },
+        "message": "第 2 个字符 'o'：查找对应分支 / look for the next edge",
+        "line": 199,
+        "variables": {
+          "words": 6,
+          "target": "cow",
+          "matchedLength": 1,
+          "nodes": 10,
+          "currentChar": "c",
+          "result": "pending"
+        },
+        "lessonStepId": "compare",
+        "structure": {
+          "kind": "key-tree",
+          "preset": "missing-branch",
+          "operation": "compare",
+          "mode": "find",
+          "target": "cow",
+          "rootId": "t1",
+          "nodes": [
+            {
+              "id": "t1",
+              "char": "",
+              "parentId": null,
+              "terminal": false,
+              "children": [
+                "t2",
+                "t8"
+              ]
+            },
+            {
+              "id": "t2",
+              "char": "c",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t3"
+              ]
+            },
+            {
+              "id": "t3",
+              "char": "a",
+              "parentId": "t2",
+              "terminal": false,
+              "children": [
+                "t4",
+                "t7"
+              ]
+            },
+            {
+              "id": "t4",
+              "char": "r",
+              "parentId": "t3",
+              "terminal": true,
+              "children": [
+                "t5",
+                "t6"
+              ]
+            },
+            {
+              "id": "t5",
+              "char": "d",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t6",
+              "char": "e",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t7",
+              "char": "t",
+              "parentId": "t3",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t8",
+              "char": "d",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t9"
+              ]
+            },
+            {
+              "id": "t9",
+              "char": "o",
+              "parentId": "t8",
+              "terminal": true,
+              "children": [
+                "t10"
+              ]
+            },
+            {
+              "id": "t10",
+              "char": "g",
+              "parentId": "t9",
+              "terminal": true,
+              "children": []
+            }
+          ],
+          "dictionary": [
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "pathIds": [
+            "t1",
+            "t2"
+          ],
+          "currentNodeId": "t2",
+          "compareChar": "o",
+          "matchedLength": 1,
+          "createdNodeId": null,
+          "terminalNodeId": null,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "done": false
+        },
+        "message": "没有 'o' 分支：关键字不存在的后缀 / missing suffix edge",
+        "line": 210,
+        "variables": {
+          "words": 6,
+          "target": "cow",
+          "matchedLength": 1,
+          "nodes": 10,
+          "currentChar": "c",
+          "result": "not-found"
+        },
+        "lessonStepId": "not-found",
+        "structure": {
+          "kind": "key-tree",
+          "preset": "missing-branch",
+          "operation": "not-found",
+          "mode": "find",
+          "target": "cow",
+          "rootId": "t1",
+          "nodes": [
+            {
+              "id": "t1",
+              "char": "",
+              "parentId": null,
+              "terminal": false,
+              "children": [
+                "t2",
+                "t8"
+              ]
+            },
+            {
+              "id": "t2",
+              "char": "c",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t3"
+              ]
+            },
+            {
+              "id": "t3",
+              "char": "a",
+              "parentId": "t2",
+              "terminal": false,
+              "children": [
+                "t4",
+                "t7"
+              ]
+            },
+            {
+              "id": "t4",
+              "char": "r",
+              "parentId": "t3",
+              "terminal": true,
+              "children": [
+                "t5",
+                "t6"
+              ]
+            },
+            {
+              "id": "t5",
+              "char": "d",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t6",
+              "char": "e",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t7",
+              "char": "t",
+              "parentId": "t3",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t8",
+              "char": "d",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t9"
+              ]
+            },
+            {
+              "id": "t9",
+              "char": "o",
+              "parentId": "t8",
+              "terminal": true,
+              "children": [
+                "t10"
+              ]
+            },
+            {
+              "id": "t10",
+              "char": "g",
+              "parentId": "t9",
+              "terminal": true,
+              "children": []
+            }
+          ],
+          "dictionary": [
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "pathIds": [
+            "t1",
+            "t2"
+          ],
+          "currentNodeId": "t2",
+          "compareChar": "o",
+          "matchedLength": 1,
+          "createdNodeId": null,
+          "terminalNodeId": null,
+          "result": "not-found"
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "done": true
+        },
+        "message": "键树操作完成 / key-tree operation complete",
+        "line": 288,
+        "variables": {
+          "words": 6,
+          "target": "cow",
+          "matchedLength": 1,
+          "nodes": 10,
+          "currentChar": "c",
+          "result": "not-found"
+        },
+        "lessonStepId": "done",
+        "structure": {
+          "kind": "key-tree",
+          "preset": "missing-branch",
+          "operation": "done",
+          "mode": "find",
+          "target": "cow",
+          "rootId": "t1",
+          "nodes": [
+            {
+              "id": "t1",
+              "char": "",
+              "parentId": null,
+              "terminal": false,
+              "children": [
+                "t2",
+                "t8"
+              ]
+            },
+            {
+              "id": "t2",
+              "char": "c",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t3"
+              ]
+            },
+            {
+              "id": "t3",
+              "char": "a",
+              "parentId": "t2",
+              "terminal": false,
+              "children": [
+                "t4",
+                "t7"
+              ]
+            },
+            {
+              "id": "t4",
+              "char": "r",
+              "parentId": "t3",
+              "terminal": true,
+              "children": [
+                "t5",
+                "t6"
+              ]
+            },
+            {
+              "id": "t5",
+              "char": "d",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t6",
+              "char": "e",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t7",
+              "char": "t",
+              "parentId": "t3",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t8",
+              "char": "d",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t9"
+              ]
+            },
+            {
+              "id": "t9",
+              "char": "o",
+              "parentId": "t8",
+              "terminal": true,
+              "children": [
+                "t10"
+              ]
+            },
+            {
+              "id": "t10",
+              "char": "g",
+              "parentId": "t9",
+              "terminal": true,
+              "children": []
+            }
+          ],
+          "dictionary": [
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "pathIds": [
+            "t1",
+            "t2"
+          ],
+          "currentNodeId": "t2",
+          "compareChar": null,
+          "matchedLength": 1,
+          "createdNodeId": null,
+          "terminalNodeId": null,
+          "result": "not-found"
+        }
+      }
+    ]
+  },
+  "insert-shared": {
+    "input": {
+      "preset": "insert-shared",
+      "words": [
+        "car",
+        "card",
+        "care",
+        "cat",
+        "dog",
+        "do"
+      ],
+      "operation": "insert",
+      "target": "cargo"
+    },
+    "frames": [
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "done": false
+        },
+        "message": "键树已建立：6 个关键字共享字符前缀 / key tree ready with shared prefixes",
+        "line": 256,
+        "variables": {
+          "words": 6,
+          "target": "cargo",
+          "matchedLength": 0,
+          "nodes": 10,
+          "currentChar": "",
+          "result": "pending"
+        },
+        "lessonStepId": "init",
+        "structure": {
+          "kind": "key-tree",
+          "preset": "insert-shared",
+          "operation": "init",
+          "mode": "insert",
+          "target": "cargo",
+          "rootId": "t1",
+          "nodes": [
+            {
+              "id": "t1",
+              "char": "",
+              "parentId": null,
+              "terminal": false,
+              "children": [
+                "t2",
+                "t8"
+              ]
+            },
+            {
+              "id": "t2",
+              "char": "c",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t3"
+              ]
+            },
+            {
+              "id": "t3",
+              "char": "a",
+              "parentId": "t2",
+              "terminal": false,
+              "children": [
+                "t4",
+                "t7"
+              ]
+            },
+            {
+              "id": "t4",
+              "char": "r",
+              "parentId": "t3",
+              "terminal": true,
+              "children": [
+                "t5",
+                "t6"
+              ]
+            },
+            {
+              "id": "t5",
+              "char": "d",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t6",
+              "char": "e",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t7",
+              "char": "t",
+              "parentId": "t3",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t8",
+              "char": "d",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t9"
+              ]
+            },
+            {
+              "id": "t9",
+              "char": "o",
+              "parentId": "t8",
+              "terminal": true,
+              "children": [
+                "t10"
+              ]
+            },
+            {
+              "id": "t10",
+              "char": "g",
+              "parentId": "t9",
+              "terminal": true,
+              "children": []
+            }
+          ],
+          "dictionary": [
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "pathIds": [
+            "t1"
+          ],
+          "currentNodeId": "t1",
+          "compareChar": null,
+          "matchedLength": 0,
+          "createdNodeId": null,
+          "terminalNodeId": null,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "done": false
+        },
+        "message": "第 1 个字符 'c'：检查是否已有分支 / check the outgoing edge",
+        "line": 151,
+        "variables": {
+          "words": 6,
+          "target": "cargo",
+          "matchedLength": 0,
+          "nodes": 10,
+          "currentChar": "",
+          "result": "pending"
+        },
+        "lessonStepId": "compare",
+        "structure": {
+          "kind": "key-tree",
+          "preset": "insert-shared",
+          "operation": "compare",
+          "mode": "insert",
+          "target": "cargo",
+          "rootId": "t1",
+          "nodes": [
+            {
+              "id": "t1",
+              "char": "",
+              "parentId": null,
+              "terminal": false,
+              "children": [
+                "t2",
+                "t8"
+              ]
+            },
+            {
+              "id": "t2",
+              "char": "c",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t3"
+              ]
+            },
+            {
+              "id": "t3",
+              "char": "a",
+              "parentId": "t2",
+              "terminal": false,
+              "children": [
+                "t4",
+                "t7"
+              ]
+            },
+            {
+              "id": "t4",
+              "char": "r",
+              "parentId": "t3",
+              "terminal": true,
+              "children": [
+                "t5",
+                "t6"
+              ]
+            },
+            {
+              "id": "t5",
+              "char": "d",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t6",
+              "char": "e",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t7",
+              "char": "t",
+              "parentId": "t3",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t8",
+              "char": "d",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t9"
+              ]
+            },
+            {
+              "id": "t9",
+              "char": "o",
+              "parentId": "t8",
+              "terminal": true,
+              "children": [
+                "t10"
+              ]
+            },
+            {
+              "id": "t10",
+              "char": "g",
+              "parentId": "t9",
+              "terminal": true,
+              "children": []
+            }
+          ],
+          "dictionary": [
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "pathIds": [
+            "t1"
+          ],
+          "currentNodeId": "t1",
+          "compareChar": "c",
+          "matchedLength": 0,
+          "createdNodeId": null,
+          "terminalNodeId": null,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "done": false
+        },
+        "message": "第 2 个字符 'a'：检查是否已有分支 / check the outgoing edge",
+        "line": 151,
+        "variables": {
+          "words": 6,
+          "target": "cargo",
+          "matchedLength": 1,
+          "nodes": 10,
+          "currentChar": "c",
+          "result": "pending"
+        },
+        "lessonStepId": "compare",
+        "structure": {
+          "kind": "key-tree",
+          "preset": "insert-shared",
+          "operation": "compare",
+          "mode": "insert",
+          "target": "cargo",
+          "rootId": "t1",
+          "nodes": [
+            {
+              "id": "t1",
+              "char": "",
+              "parentId": null,
+              "terminal": false,
+              "children": [
+                "t2",
+                "t8"
+              ]
+            },
+            {
+              "id": "t2",
+              "char": "c",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t3"
+              ]
+            },
+            {
+              "id": "t3",
+              "char": "a",
+              "parentId": "t2",
+              "terminal": false,
+              "children": [
+                "t4",
+                "t7"
+              ]
+            },
+            {
+              "id": "t4",
+              "char": "r",
+              "parentId": "t3",
+              "terminal": true,
+              "children": [
+                "t5",
+                "t6"
+              ]
+            },
+            {
+              "id": "t5",
+              "char": "d",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t6",
+              "char": "e",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t7",
+              "char": "t",
+              "parentId": "t3",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t8",
+              "char": "d",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t9"
+              ]
+            },
+            {
+              "id": "t9",
+              "char": "o",
+              "parentId": "t8",
+              "terminal": true,
+              "children": [
+                "t10"
+              ]
+            },
+            {
+              "id": "t10",
+              "char": "g",
+              "parentId": "t9",
+              "terminal": true,
+              "children": []
+            }
+          ],
+          "dictionary": [
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "pathIds": [
+            "t1",
+            "t2"
+          ],
+          "currentNodeId": "t2",
+          "compareChar": "a",
+          "matchedLength": 1,
+          "createdNodeId": null,
+          "terminalNodeId": null,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "done": false
+        },
+        "message": "第 3 个字符 'r'：检查是否已有分支 / check the outgoing edge",
+        "line": 151,
+        "variables": {
+          "words": 6,
+          "target": "cargo",
+          "matchedLength": 2,
+          "nodes": 10,
+          "currentChar": "a",
+          "result": "pending"
+        },
+        "lessonStepId": "compare",
+        "structure": {
+          "kind": "key-tree",
+          "preset": "insert-shared",
+          "operation": "compare",
+          "mode": "insert",
+          "target": "cargo",
+          "rootId": "t1",
+          "nodes": [
+            {
+              "id": "t1",
+              "char": "",
+              "parentId": null,
+              "terminal": false,
+              "children": [
+                "t2",
+                "t8"
+              ]
+            },
+            {
+              "id": "t2",
+              "char": "c",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t3"
+              ]
+            },
+            {
+              "id": "t3",
+              "char": "a",
+              "parentId": "t2",
+              "terminal": false,
+              "children": [
+                "t4",
+                "t7"
+              ]
+            },
+            {
+              "id": "t4",
+              "char": "r",
+              "parentId": "t3",
+              "terminal": true,
+              "children": [
+                "t5",
+                "t6"
+              ]
+            },
+            {
+              "id": "t5",
+              "char": "d",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t6",
+              "char": "e",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t7",
+              "char": "t",
+              "parentId": "t3",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t8",
+              "char": "d",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t9"
+              ]
+            },
+            {
+              "id": "t9",
+              "char": "o",
+              "parentId": "t8",
+              "terminal": true,
+              "children": [
+                "t10"
+              ]
+            },
+            {
+              "id": "t10",
+              "char": "g",
+              "parentId": "t9",
+              "terminal": true,
+              "children": []
+            }
+          ],
+          "dictionary": [
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "pathIds": [
+            "t1",
+            "t2",
+            "t3"
+          ],
+          "currentNodeId": "t3",
+          "compareChar": "r",
+          "matchedLength": 2,
+          "createdNodeId": null,
+          "terminalNodeId": null,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "done": false
+        },
+        "message": "第 4 个字符 'g'：检查是否已有分支 / check the outgoing edge",
+        "line": 151,
+        "variables": {
+          "words": 6,
+          "target": "cargo",
+          "matchedLength": 3,
+          "nodes": 10,
+          "currentChar": "r",
+          "result": "pending"
+        },
+        "lessonStepId": "compare",
+        "structure": {
+          "kind": "key-tree",
+          "preset": "insert-shared",
+          "operation": "compare",
+          "mode": "insert",
+          "target": "cargo",
+          "rootId": "t1",
+          "nodes": [
+            {
+              "id": "t1",
+              "char": "",
+              "parentId": null,
+              "terminal": false,
+              "children": [
+                "t2",
+                "t8"
+              ]
+            },
+            {
+              "id": "t2",
+              "char": "c",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t3"
+              ]
+            },
+            {
+              "id": "t3",
+              "char": "a",
+              "parentId": "t2",
+              "terminal": false,
+              "children": [
+                "t4",
+                "t7"
+              ]
+            },
+            {
+              "id": "t4",
+              "char": "r",
+              "parentId": "t3",
+              "terminal": true,
+              "children": [
+                "t5",
+                "t6"
+              ]
+            },
+            {
+              "id": "t5",
+              "char": "d",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t6",
+              "char": "e",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t7",
+              "char": "t",
+              "parentId": "t3",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t8",
+              "char": "d",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t9"
+              ]
+            },
+            {
+              "id": "t9",
+              "char": "o",
+              "parentId": "t8",
+              "terminal": true,
+              "children": [
+                "t10"
+              ]
+            },
+            {
+              "id": "t10",
+              "char": "g",
+              "parentId": "t9",
+              "terminal": true,
+              "children": []
+            }
+          ],
+          "dictionary": [
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "pathIds": [
+            "t1",
+            "t2",
+            "t3",
+            "t4"
+          ],
+          "currentNodeId": "t4",
+          "compareChar": "g",
+          "matchedLength": 3,
+          "createdNodeId": null,
+          "terminalNodeId": null,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "done": false
+        },
+        "message": "新建节点 'g'：前缀不足以继续 / create the missing edge",
+        "line": 165,
+        "variables": {
+          "words": 6,
+          "target": "cargo",
+          "matchedLength": 4,
+          "nodes": 11,
+          "currentChar": "g",
+          "result": "pending"
+        },
+        "lessonStepId": "create",
+        "structure": {
+          "kind": "key-tree",
+          "preset": "insert-shared",
+          "operation": "create",
+          "mode": "insert",
+          "target": "cargo",
+          "rootId": "t1",
+          "nodes": [
+            {
+              "id": "t1",
+              "char": "",
+              "parentId": null,
+              "terminal": false,
+              "children": [
+                "t2",
+                "t8"
+              ]
+            },
+            {
+              "id": "t2",
+              "char": "c",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t3"
+              ]
+            },
+            {
+              "id": "t3",
+              "char": "a",
+              "parentId": "t2",
+              "terminal": false,
+              "children": [
+                "t4",
+                "t7"
+              ]
+            },
+            {
+              "id": "t4",
+              "char": "r",
+              "parentId": "t3",
+              "terminal": true,
+              "children": [
+                "t5",
+                "t6",
+                "t11"
+              ]
+            },
+            {
+              "id": "t5",
+              "char": "d",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t6",
+              "char": "e",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t7",
+              "char": "t",
+              "parentId": "t3",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t8",
+              "char": "d",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t9"
+              ]
+            },
+            {
+              "id": "t9",
+              "char": "o",
+              "parentId": "t8",
+              "terminal": true,
+              "children": [
+                "t10"
+              ]
+            },
+            {
+              "id": "t10",
+              "char": "g",
+              "parentId": "t9",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t11",
+              "char": "g",
+              "parentId": "t4",
+              "terminal": false,
+              "children": []
+            }
+          ],
+          "dictionary": [
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "pathIds": [
+            "t1",
+            "t2",
+            "t3",
+            "t4",
+            "t11"
+          ],
+          "currentNodeId": "t11",
+          "compareChar": "g",
+          "matchedLength": 4,
+          "createdNodeId": "t11",
+          "terminalNodeId": null,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "done": false
+        },
+        "message": "第 5 个字符 'o'：检查是否已有分支 / check the outgoing edge",
+        "line": 151,
+        "variables": {
+          "words": 6,
+          "target": "cargo",
+          "matchedLength": 4,
+          "nodes": 11,
+          "currentChar": "g",
+          "result": "pending"
+        },
+        "lessonStepId": "compare",
+        "structure": {
+          "kind": "key-tree",
+          "preset": "insert-shared",
+          "operation": "compare",
+          "mode": "insert",
+          "target": "cargo",
+          "rootId": "t1",
+          "nodes": [
+            {
+              "id": "t1",
+              "char": "",
+              "parentId": null,
+              "terminal": false,
+              "children": [
+                "t2",
+                "t8"
+              ]
+            },
+            {
+              "id": "t2",
+              "char": "c",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t3"
+              ]
+            },
+            {
+              "id": "t3",
+              "char": "a",
+              "parentId": "t2",
+              "terminal": false,
+              "children": [
+                "t4",
+                "t7"
+              ]
+            },
+            {
+              "id": "t4",
+              "char": "r",
+              "parentId": "t3",
+              "terminal": true,
+              "children": [
+                "t5",
+                "t6",
+                "t11"
+              ]
+            },
+            {
+              "id": "t5",
+              "char": "d",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t6",
+              "char": "e",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t7",
+              "char": "t",
+              "parentId": "t3",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t8",
+              "char": "d",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t9"
+              ]
+            },
+            {
+              "id": "t9",
+              "char": "o",
+              "parentId": "t8",
+              "terminal": true,
+              "children": [
+                "t10"
+              ]
+            },
+            {
+              "id": "t10",
+              "char": "g",
+              "parentId": "t9",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t11",
+              "char": "g",
+              "parentId": "t4",
+              "terminal": false,
+              "children": []
+            }
+          ],
+          "dictionary": [
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "pathIds": [
+            "t1",
+            "t2",
+            "t3",
+            "t4",
+            "t11"
+          ],
+          "currentNodeId": "t11",
+          "compareChar": "o",
+          "matchedLength": 4,
+          "createdNodeId": null,
+          "terminalNodeId": null,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "done": false
+        },
+        "message": "新建节点 'o'：前缀不足以继续 / create the missing edge",
+        "line": 165,
+        "variables": {
+          "words": 6,
+          "target": "cargo",
+          "matchedLength": 5,
+          "nodes": 12,
+          "currentChar": "o",
+          "result": "pending"
+        },
+        "lessonStepId": "create",
+        "structure": {
+          "kind": "key-tree",
+          "preset": "insert-shared",
+          "operation": "create",
+          "mode": "insert",
+          "target": "cargo",
+          "rootId": "t1",
+          "nodes": [
+            {
+              "id": "t1",
+              "char": "",
+              "parentId": null,
+              "terminal": false,
+              "children": [
+                "t2",
+                "t8"
+              ]
+            },
+            {
+              "id": "t2",
+              "char": "c",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t3"
+              ]
+            },
+            {
+              "id": "t3",
+              "char": "a",
+              "parentId": "t2",
+              "terminal": false,
+              "children": [
+                "t4",
+                "t7"
+              ]
+            },
+            {
+              "id": "t4",
+              "char": "r",
+              "parentId": "t3",
+              "terminal": true,
+              "children": [
+                "t5",
+                "t6",
+                "t11"
+              ]
+            },
+            {
+              "id": "t5",
+              "char": "d",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t6",
+              "char": "e",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t7",
+              "char": "t",
+              "parentId": "t3",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t8",
+              "char": "d",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t9"
+              ]
+            },
+            {
+              "id": "t9",
+              "char": "o",
+              "parentId": "t8",
+              "terminal": true,
+              "children": [
+                "t10"
+              ]
+            },
+            {
+              "id": "t10",
+              "char": "g",
+              "parentId": "t9",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t11",
+              "char": "g",
+              "parentId": "t4",
+              "terminal": false,
+              "children": [
+                "t12"
+              ]
+            },
+            {
+              "id": "t12",
+              "char": "o",
+              "parentId": "t11",
+              "terminal": false,
+              "children": []
+            }
+          ],
+          "dictionary": [
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "pathIds": [
+            "t1",
+            "t2",
+            "t3",
+            "t4",
+            "t11",
+            "t12"
+          ],
+          "currentNodeId": "t12",
+          "compareChar": "o",
+          "matchedLength": 5,
+          "createdNodeId": "t12",
+          "terminalNodeId": null,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            "car",
+            "card",
+            "care",
+            "cargo",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "done": false
+        },
+        "message": "在路径末端标记终止：'cargo' 成为一个完整关键字 / mark the path terminal",
+        "line": 178,
+        "variables": {
+          "words": 7,
+          "target": "cargo",
+          "matchedLength": 5,
+          "nodes": 12,
+          "currentChar": "o",
+          "result": "inserted"
+        },
+        "lessonStepId": "terminal",
+        "structure": {
+          "kind": "key-tree",
+          "preset": "insert-shared",
+          "operation": "terminal",
+          "mode": "insert",
+          "target": "cargo",
+          "rootId": "t1",
+          "nodes": [
+            {
+              "id": "t1",
+              "char": "",
+              "parentId": null,
+              "terminal": false,
+              "children": [
+                "t2",
+                "t8"
+              ]
+            },
+            {
+              "id": "t2",
+              "char": "c",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t3"
+              ]
+            },
+            {
+              "id": "t3",
+              "char": "a",
+              "parentId": "t2",
+              "terminal": false,
+              "children": [
+                "t4",
+                "t7"
+              ]
+            },
+            {
+              "id": "t4",
+              "char": "r",
+              "parentId": "t3",
+              "terminal": true,
+              "children": [
+                "t5",
+                "t6",
+                "t11"
+              ]
+            },
+            {
+              "id": "t5",
+              "char": "d",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t6",
+              "char": "e",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t7",
+              "char": "t",
+              "parentId": "t3",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t8",
+              "char": "d",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t9"
+              ]
+            },
+            {
+              "id": "t9",
+              "char": "o",
+              "parentId": "t8",
+              "terminal": true,
+              "children": [
+                "t10"
+              ]
+            },
+            {
+              "id": "t10",
+              "char": "g",
+              "parentId": "t9",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t11",
+              "char": "g",
+              "parentId": "t4",
+              "terminal": false,
+              "children": [
+                "t12"
+              ]
+            },
+            {
+              "id": "t12",
+              "char": "o",
+              "parentId": "t11",
+              "terminal": true,
+              "children": []
+            }
+          ],
+          "dictionary": [
+            "car",
+            "card",
+            "care",
+            "cargo",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "pathIds": [
+            "t1",
+            "t2",
+            "t3",
+            "t4",
+            "t11",
+            "t12"
+          ],
+          "currentNodeId": "t12",
+          "compareChar": null,
+          "matchedLength": 5,
+          "createdNodeId": null,
+          "terminalNodeId": "t12",
+          "result": "inserted"
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            "car",
+            "card",
+            "care",
+            "cargo",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "done": true
+        },
+        "message": "键树操作完成 / key-tree operation complete",
+        "line": 288,
+        "variables": {
+          "words": 7,
+          "target": "cargo",
+          "matchedLength": 5,
+          "nodes": 12,
+          "currentChar": "o",
+          "result": "inserted"
+        },
+        "lessonStepId": "done",
+        "structure": {
+          "kind": "key-tree",
+          "preset": "insert-shared",
+          "operation": "done",
+          "mode": "insert",
+          "target": "cargo",
+          "rootId": "t1",
+          "nodes": [
+            {
+              "id": "t1",
+              "char": "",
+              "parentId": null,
+              "terminal": false,
+              "children": [
+                "t2",
+                "t8"
+              ]
+            },
+            {
+              "id": "t2",
+              "char": "c",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t3"
+              ]
+            },
+            {
+              "id": "t3",
+              "char": "a",
+              "parentId": "t2",
+              "terminal": false,
+              "children": [
+                "t4",
+                "t7"
+              ]
+            },
+            {
+              "id": "t4",
+              "char": "r",
+              "parentId": "t3",
+              "terminal": true,
+              "children": [
+                "t5",
+                "t6",
+                "t11"
+              ]
+            },
+            {
+              "id": "t5",
+              "char": "d",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t6",
+              "char": "e",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t7",
+              "char": "t",
+              "parentId": "t3",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t8",
+              "char": "d",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t9"
+              ]
+            },
+            {
+              "id": "t9",
+              "char": "o",
+              "parentId": "t8",
+              "terminal": true,
+              "children": [
+                "t10"
+              ]
+            },
+            {
+              "id": "t10",
+              "char": "g",
+              "parentId": "t9",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t11",
+              "char": "g",
+              "parentId": "t4",
+              "terminal": false,
+              "children": [
+                "t12"
+              ]
+            },
+            {
+              "id": "t12",
+              "char": "o",
+              "parentId": "t11",
+              "terminal": true,
+              "children": []
+            }
+          ],
+          "dictionary": [
+            "car",
+            "card",
+            "care",
+            "cargo",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "pathIds": [
+            "t1",
+            "t2",
+            "t3",
+            "t4",
+            "t11",
+            "t12"
+          ],
+          "currentNodeId": "t12",
+          "compareChar": null,
+          "matchedLength": 5,
+          "createdNodeId": null,
+          "terminalNodeId": "t12",
+          "result": "inserted"
+        }
+      }
+    ]
+  },
+  "insert-new-branch": {
+    "input": {
+      "preset": "insert-new-branch",
+      "words": [
+        "car",
+        "card",
+        "care",
+        "cat",
+        "dog",
+        "do"
+      ],
+      "operation": "insert",
+      "target": "dot"
+    },
+    "frames": [
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "done": false
+        },
+        "message": "键树已建立：6 个关键字共享字符前缀 / key tree ready with shared prefixes",
+        "line": 256,
+        "variables": {
+          "words": 6,
+          "target": "dot",
+          "matchedLength": 0,
+          "nodes": 10,
+          "currentChar": "",
+          "result": "pending"
+        },
+        "lessonStepId": "init",
+        "structure": {
+          "kind": "key-tree",
+          "preset": "insert-new-branch",
+          "operation": "init",
+          "mode": "insert",
+          "target": "dot",
+          "rootId": "t1",
+          "nodes": [
+            {
+              "id": "t1",
+              "char": "",
+              "parentId": null,
+              "terminal": false,
+              "children": [
+                "t2",
+                "t8"
+              ]
+            },
+            {
+              "id": "t2",
+              "char": "c",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t3"
+              ]
+            },
+            {
+              "id": "t3",
+              "char": "a",
+              "parentId": "t2",
+              "terminal": false,
+              "children": [
+                "t4",
+                "t7"
+              ]
+            },
+            {
+              "id": "t4",
+              "char": "r",
+              "parentId": "t3",
+              "terminal": true,
+              "children": [
+                "t5",
+                "t6"
+              ]
+            },
+            {
+              "id": "t5",
+              "char": "d",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t6",
+              "char": "e",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t7",
+              "char": "t",
+              "parentId": "t3",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t8",
+              "char": "d",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t9"
+              ]
+            },
+            {
+              "id": "t9",
+              "char": "o",
+              "parentId": "t8",
+              "terminal": true,
+              "children": [
+                "t10"
+              ]
+            },
+            {
+              "id": "t10",
+              "char": "g",
+              "parentId": "t9",
+              "terminal": true,
+              "children": []
+            }
+          ],
+          "dictionary": [
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "pathIds": [
+            "t1"
+          ],
+          "currentNodeId": "t1",
+          "compareChar": null,
+          "matchedLength": 0,
+          "createdNodeId": null,
+          "terminalNodeId": null,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "done": false
+        },
+        "message": "第 1 个字符 'd'：检查是否已有分支 / check the outgoing edge",
+        "line": 151,
+        "variables": {
+          "words": 6,
+          "target": "dot",
+          "matchedLength": 0,
+          "nodes": 10,
+          "currentChar": "",
+          "result": "pending"
+        },
+        "lessonStepId": "compare",
+        "structure": {
+          "kind": "key-tree",
+          "preset": "insert-new-branch",
+          "operation": "compare",
+          "mode": "insert",
+          "target": "dot",
+          "rootId": "t1",
+          "nodes": [
+            {
+              "id": "t1",
+              "char": "",
+              "parentId": null,
+              "terminal": false,
+              "children": [
+                "t2",
+                "t8"
+              ]
+            },
+            {
+              "id": "t2",
+              "char": "c",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t3"
+              ]
+            },
+            {
+              "id": "t3",
+              "char": "a",
+              "parentId": "t2",
+              "terminal": false,
+              "children": [
+                "t4",
+                "t7"
+              ]
+            },
+            {
+              "id": "t4",
+              "char": "r",
+              "parentId": "t3",
+              "terminal": true,
+              "children": [
+                "t5",
+                "t6"
+              ]
+            },
+            {
+              "id": "t5",
+              "char": "d",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t6",
+              "char": "e",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t7",
+              "char": "t",
+              "parentId": "t3",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t8",
+              "char": "d",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t9"
+              ]
+            },
+            {
+              "id": "t9",
+              "char": "o",
+              "parentId": "t8",
+              "terminal": true,
+              "children": [
+                "t10"
+              ]
+            },
+            {
+              "id": "t10",
+              "char": "g",
+              "parentId": "t9",
+              "terminal": true,
+              "children": []
+            }
+          ],
+          "dictionary": [
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "pathIds": [
+            "t1"
+          ],
+          "currentNodeId": "t1",
+          "compareChar": "d",
+          "matchedLength": 0,
+          "createdNodeId": null,
+          "terminalNodeId": null,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "done": false
+        },
+        "message": "第 2 个字符 'o'：检查是否已有分支 / check the outgoing edge",
+        "line": 151,
+        "variables": {
+          "words": 6,
+          "target": "dot",
+          "matchedLength": 1,
+          "nodes": 10,
+          "currentChar": "d",
+          "result": "pending"
+        },
+        "lessonStepId": "compare",
+        "structure": {
+          "kind": "key-tree",
+          "preset": "insert-new-branch",
+          "operation": "compare",
+          "mode": "insert",
+          "target": "dot",
+          "rootId": "t1",
+          "nodes": [
+            {
+              "id": "t1",
+              "char": "",
+              "parentId": null,
+              "terminal": false,
+              "children": [
+                "t2",
+                "t8"
+              ]
+            },
+            {
+              "id": "t2",
+              "char": "c",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t3"
+              ]
+            },
+            {
+              "id": "t3",
+              "char": "a",
+              "parentId": "t2",
+              "terminal": false,
+              "children": [
+                "t4",
+                "t7"
+              ]
+            },
+            {
+              "id": "t4",
+              "char": "r",
+              "parentId": "t3",
+              "terminal": true,
+              "children": [
+                "t5",
+                "t6"
+              ]
+            },
+            {
+              "id": "t5",
+              "char": "d",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t6",
+              "char": "e",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t7",
+              "char": "t",
+              "parentId": "t3",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t8",
+              "char": "d",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t9"
+              ]
+            },
+            {
+              "id": "t9",
+              "char": "o",
+              "parentId": "t8",
+              "terminal": true,
+              "children": [
+                "t10"
+              ]
+            },
+            {
+              "id": "t10",
+              "char": "g",
+              "parentId": "t9",
+              "terminal": true,
+              "children": []
+            }
+          ],
+          "dictionary": [
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "pathIds": [
+            "t1",
+            "t8"
+          ],
+          "currentNodeId": "t8",
+          "compareChar": "o",
+          "matchedLength": 1,
+          "createdNodeId": null,
+          "terminalNodeId": null,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "done": false
+        },
+        "message": "第 3 个字符 't'：检查是否已有分支 / check the outgoing edge",
+        "line": 151,
+        "variables": {
+          "words": 6,
+          "target": "dot",
+          "matchedLength": 2,
+          "nodes": 10,
+          "currentChar": "o",
+          "result": "pending"
+        },
+        "lessonStepId": "compare",
+        "structure": {
+          "kind": "key-tree",
+          "preset": "insert-new-branch",
+          "operation": "compare",
+          "mode": "insert",
+          "target": "dot",
+          "rootId": "t1",
+          "nodes": [
+            {
+              "id": "t1",
+              "char": "",
+              "parentId": null,
+              "terminal": false,
+              "children": [
+                "t2",
+                "t8"
+              ]
+            },
+            {
+              "id": "t2",
+              "char": "c",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t3"
+              ]
+            },
+            {
+              "id": "t3",
+              "char": "a",
+              "parentId": "t2",
+              "terminal": false,
+              "children": [
+                "t4",
+                "t7"
+              ]
+            },
+            {
+              "id": "t4",
+              "char": "r",
+              "parentId": "t3",
+              "terminal": true,
+              "children": [
+                "t5",
+                "t6"
+              ]
+            },
+            {
+              "id": "t5",
+              "char": "d",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t6",
+              "char": "e",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t7",
+              "char": "t",
+              "parentId": "t3",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t8",
+              "char": "d",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t9"
+              ]
+            },
+            {
+              "id": "t9",
+              "char": "o",
+              "parentId": "t8",
+              "terminal": true,
+              "children": [
+                "t10"
+              ]
+            },
+            {
+              "id": "t10",
+              "char": "g",
+              "parentId": "t9",
+              "terminal": true,
+              "children": []
+            }
+          ],
+          "dictionary": [
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "pathIds": [
+            "t1",
+            "t8",
+            "t9"
+          ],
+          "currentNodeId": "t9",
+          "compareChar": "t",
+          "matchedLength": 2,
+          "createdNodeId": null,
+          "terminalNodeId": null,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "done": false
+        },
+        "message": "新建节点 't'：前缀不足以继续 / create the missing edge",
+        "line": 165,
+        "variables": {
+          "words": 6,
+          "target": "dot",
+          "matchedLength": 3,
+          "nodes": 11,
+          "currentChar": "t",
+          "result": "pending"
+        },
+        "lessonStepId": "create",
+        "structure": {
+          "kind": "key-tree",
+          "preset": "insert-new-branch",
+          "operation": "create",
+          "mode": "insert",
+          "target": "dot",
+          "rootId": "t1",
+          "nodes": [
+            {
+              "id": "t1",
+              "char": "",
+              "parentId": null,
+              "terminal": false,
+              "children": [
+                "t2",
+                "t8"
+              ]
+            },
+            {
+              "id": "t2",
+              "char": "c",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t3"
+              ]
+            },
+            {
+              "id": "t3",
+              "char": "a",
+              "parentId": "t2",
+              "terminal": false,
+              "children": [
+                "t4",
+                "t7"
+              ]
+            },
+            {
+              "id": "t4",
+              "char": "r",
+              "parentId": "t3",
+              "terminal": true,
+              "children": [
+                "t5",
+                "t6"
+              ]
+            },
+            {
+              "id": "t5",
+              "char": "d",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t6",
+              "char": "e",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t7",
+              "char": "t",
+              "parentId": "t3",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t8",
+              "char": "d",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t9"
+              ]
+            },
+            {
+              "id": "t9",
+              "char": "o",
+              "parentId": "t8",
+              "terminal": true,
+              "children": [
+                "t10",
+                "t11"
+              ]
+            },
+            {
+              "id": "t10",
+              "char": "g",
+              "parentId": "t9",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t11",
+              "char": "t",
+              "parentId": "t9",
+              "terminal": false,
+              "children": []
+            }
+          ],
+          "dictionary": [
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "pathIds": [
+            "t1",
+            "t8",
+            "t9",
+            "t11"
+          ],
+          "currentNodeId": "t11",
+          "compareChar": "t",
+          "matchedLength": 3,
+          "createdNodeId": "t11",
+          "terminalNodeId": null,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog",
+            "dot"
+          ],
+          "done": false
+        },
+        "message": "在路径末端标记终止：'dot' 成为一个完整关键字 / mark the path terminal",
+        "line": 178,
+        "variables": {
+          "words": 7,
+          "target": "dot",
+          "matchedLength": 3,
+          "nodes": 11,
+          "currentChar": "t",
+          "result": "inserted"
+        },
+        "lessonStepId": "terminal",
+        "structure": {
+          "kind": "key-tree",
+          "preset": "insert-new-branch",
+          "operation": "terminal",
+          "mode": "insert",
+          "target": "dot",
+          "rootId": "t1",
+          "nodes": [
+            {
+              "id": "t1",
+              "char": "",
+              "parentId": null,
+              "terminal": false,
+              "children": [
+                "t2",
+                "t8"
+              ]
+            },
+            {
+              "id": "t2",
+              "char": "c",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t3"
+              ]
+            },
+            {
+              "id": "t3",
+              "char": "a",
+              "parentId": "t2",
+              "terminal": false,
+              "children": [
+                "t4",
+                "t7"
+              ]
+            },
+            {
+              "id": "t4",
+              "char": "r",
+              "parentId": "t3",
+              "terminal": true,
+              "children": [
+                "t5",
+                "t6"
+              ]
+            },
+            {
+              "id": "t5",
+              "char": "d",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t6",
+              "char": "e",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t7",
+              "char": "t",
+              "parentId": "t3",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t8",
+              "char": "d",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t9"
+              ]
+            },
+            {
+              "id": "t9",
+              "char": "o",
+              "parentId": "t8",
+              "terminal": true,
+              "children": [
+                "t10",
+                "t11"
+              ]
+            },
+            {
+              "id": "t10",
+              "char": "g",
+              "parentId": "t9",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t11",
+              "char": "t",
+              "parentId": "t9",
+              "terminal": true,
+              "children": []
+            }
+          ],
+          "dictionary": [
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog",
+            "dot"
+          ],
+          "pathIds": [
+            "t1",
+            "t8",
+            "t9",
+            "t11"
+          ],
+          "currentNodeId": "t11",
+          "compareChar": null,
+          "matchedLength": 3,
+          "createdNodeId": null,
+          "terminalNodeId": "t11",
+          "result": "inserted"
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog",
+            "dot"
+          ],
+          "done": true
+        },
+        "message": "键树操作完成 / key-tree operation complete",
+        "line": 288,
+        "variables": {
+          "words": 7,
+          "target": "dot",
+          "matchedLength": 3,
+          "nodes": 11,
+          "currentChar": "t",
+          "result": "inserted"
+        },
+        "lessonStepId": "done",
+        "structure": {
+          "kind": "key-tree",
+          "preset": "insert-new-branch",
+          "operation": "done",
+          "mode": "insert",
+          "target": "dot",
+          "rootId": "t1",
+          "nodes": [
+            {
+              "id": "t1",
+              "char": "",
+              "parentId": null,
+              "terminal": false,
+              "children": [
+                "t2",
+                "t8"
+              ]
+            },
+            {
+              "id": "t2",
+              "char": "c",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t3"
+              ]
+            },
+            {
+              "id": "t3",
+              "char": "a",
+              "parentId": "t2",
+              "terminal": false,
+              "children": [
+                "t4",
+                "t7"
+              ]
+            },
+            {
+              "id": "t4",
+              "char": "r",
+              "parentId": "t3",
+              "terminal": true,
+              "children": [
+                "t5",
+                "t6"
+              ]
+            },
+            {
+              "id": "t5",
+              "char": "d",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t6",
+              "char": "e",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t7",
+              "char": "t",
+              "parentId": "t3",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t8",
+              "char": "d",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t9"
+              ]
+            },
+            {
+              "id": "t9",
+              "char": "o",
+              "parentId": "t8",
+              "terminal": true,
+              "children": [
+                "t10",
+                "t11"
+              ]
+            },
+            {
+              "id": "t10",
+              "char": "g",
+              "parentId": "t9",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t11",
+              "char": "t",
+              "parentId": "t9",
+              "terminal": true,
+              "children": []
+            }
+          ],
+          "dictionary": [
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog",
+            "dot"
+          ],
+          "pathIds": [
+            "t1",
+            "t8",
+            "t9",
+            "t11"
+          ],
+          "currentNodeId": "t11",
+          "compareChar": null,
+          "matchedLength": 3,
+          "createdNodeId": null,
+          "terminalNodeId": "t11",
+          "result": "inserted"
+        }
+      }
+    ]
+  },
+  "insert-prefix": {
+    "input": {
+      "preset": "insert-prefix",
+      "words": [
+        "car",
+        "card",
+        "care",
+        "cat",
+        "dog",
+        "do"
+      ],
+      "operation": "insert",
+      "target": "ca"
+    },
+    "frames": [
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "done": false
+        },
+        "message": "键树已建立：6 个关键字共享字符前缀 / key tree ready with shared prefixes",
+        "line": 256,
+        "variables": {
+          "words": 6,
+          "target": "ca",
+          "matchedLength": 0,
+          "nodes": 10,
+          "currentChar": "",
+          "result": "pending"
+        },
+        "lessonStepId": "init",
+        "structure": {
+          "kind": "key-tree",
+          "preset": "insert-prefix",
+          "operation": "init",
+          "mode": "insert",
+          "target": "ca",
+          "rootId": "t1",
+          "nodes": [
+            {
+              "id": "t1",
+              "char": "",
+              "parentId": null,
+              "terminal": false,
+              "children": [
+                "t2",
+                "t8"
+              ]
+            },
+            {
+              "id": "t2",
+              "char": "c",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t3"
+              ]
+            },
+            {
+              "id": "t3",
+              "char": "a",
+              "parentId": "t2",
+              "terminal": false,
+              "children": [
+                "t4",
+                "t7"
+              ]
+            },
+            {
+              "id": "t4",
+              "char": "r",
+              "parentId": "t3",
+              "terminal": true,
+              "children": [
+                "t5",
+                "t6"
+              ]
+            },
+            {
+              "id": "t5",
+              "char": "d",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t6",
+              "char": "e",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t7",
+              "char": "t",
+              "parentId": "t3",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t8",
+              "char": "d",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t9"
+              ]
+            },
+            {
+              "id": "t9",
+              "char": "o",
+              "parentId": "t8",
+              "terminal": true,
+              "children": [
+                "t10"
+              ]
+            },
+            {
+              "id": "t10",
+              "char": "g",
+              "parentId": "t9",
+              "terminal": true,
+              "children": []
+            }
+          ],
+          "dictionary": [
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "pathIds": [
+            "t1"
+          ],
+          "currentNodeId": "t1",
+          "compareChar": null,
+          "matchedLength": 0,
+          "createdNodeId": null,
+          "terminalNodeId": null,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "done": false
+        },
+        "message": "第 1 个字符 'c'：检查是否已有分支 / check the outgoing edge",
+        "line": 151,
+        "variables": {
+          "words": 6,
+          "target": "ca",
+          "matchedLength": 0,
+          "nodes": 10,
+          "currentChar": "",
+          "result": "pending"
+        },
+        "lessonStepId": "compare",
+        "structure": {
+          "kind": "key-tree",
+          "preset": "insert-prefix",
+          "operation": "compare",
+          "mode": "insert",
+          "target": "ca",
+          "rootId": "t1",
+          "nodes": [
+            {
+              "id": "t1",
+              "char": "",
+              "parentId": null,
+              "terminal": false,
+              "children": [
+                "t2",
+                "t8"
+              ]
+            },
+            {
+              "id": "t2",
+              "char": "c",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t3"
+              ]
+            },
+            {
+              "id": "t3",
+              "char": "a",
+              "parentId": "t2",
+              "terminal": false,
+              "children": [
+                "t4",
+                "t7"
+              ]
+            },
+            {
+              "id": "t4",
+              "char": "r",
+              "parentId": "t3",
+              "terminal": true,
+              "children": [
+                "t5",
+                "t6"
+              ]
+            },
+            {
+              "id": "t5",
+              "char": "d",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t6",
+              "char": "e",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t7",
+              "char": "t",
+              "parentId": "t3",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t8",
+              "char": "d",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t9"
+              ]
+            },
+            {
+              "id": "t9",
+              "char": "o",
+              "parentId": "t8",
+              "terminal": true,
+              "children": [
+                "t10"
+              ]
+            },
+            {
+              "id": "t10",
+              "char": "g",
+              "parentId": "t9",
+              "terminal": true,
+              "children": []
+            }
+          ],
+          "dictionary": [
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "pathIds": [
+            "t1"
+          ],
+          "currentNodeId": "t1",
+          "compareChar": "c",
+          "matchedLength": 0,
+          "createdNodeId": null,
+          "terminalNodeId": null,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "done": false
+        },
+        "message": "第 2 个字符 'a'：检查是否已有分支 / check the outgoing edge",
+        "line": 151,
+        "variables": {
+          "words": 6,
+          "target": "ca",
+          "matchedLength": 1,
+          "nodes": 10,
+          "currentChar": "c",
+          "result": "pending"
+        },
+        "lessonStepId": "compare",
+        "structure": {
+          "kind": "key-tree",
+          "preset": "insert-prefix",
+          "operation": "compare",
+          "mode": "insert",
+          "target": "ca",
+          "rootId": "t1",
+          "nodes": [
+            {
+              "id": "t1",
+              "char": "",
+              "parentId": null,
+              "terminal": false,
+              "children": [
+                "t2",
+                "t8"
+              ]
+            },
+            {
+              "id": "t2",
+              "char": "c",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t3"
+              ]
+            },
+            {
+              "id": "t3",
+              "char": "a",
+              "parentId": "t2",
+              "terminal": false,
+              "children": [
+                "t4",
+                "t7"
+              ]
+            },
+            {
+              "id": "t4",
+              "char": "r",
+              "parentId": "t3",
+              "terminal": true,
+              "children": [
+                "t5",
+                "t6"
+              ]
+            },
+            {
+              "id": "t5",
+              "char": "d",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t6",
+              "char": "e",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t7",
+              "char": "t",
+              "parentId": "t3",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t8",
+              "char": "d",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t9"
+              ]
+            },
+            {
+              "id": "t9",
+              "char": "o",
+              "parentId": "t8",
+              "terminal": true,
+              "children": [
+                "t10"
+              ]
+            },
+            {
+              "id": "t10",
+              "char": "g",
+              "parentId": "t9",
+              "terminal": true,
+              "children": []
+            }
+          ],
+          "dictionary": [
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "pathIds": [
+            "t1",
+            "t2"
+          ],
+          "currentNodeId": "t2",
+          "compareChar": "a",
+          "matchedLength": 1,
+          "createdNodeId": null,
+          "terminalNodeId": null,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            "ca",
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "done": false
+        },
+        "message": "在路径末端标记终止：'ca' 成为一个完整关键字 / mark the path terminal",
+        "line": 178,
+        "variables": {
+          "words": 7,
+          "target": "ca",
+          "matchedLength": 2,
+          "nodes": 10,
+          "currentChar": "a",
+          "result": "inserted"
+        },
+        "lessonStepId": "terminal",
+        "structure": {
+          "kind": "key-tree",
+          "preset": "insert-prefix",
+          "operation": "terminal",
+          "mode": "insert",
+          "target": "ca",
+          "rootId": "t1",
+          "nodes": [
+            {
+              "id": "t1",
+              "char": "",
+              "parentId": null,
+              "terminal": false,
+              "children": [
+                "t2",
+                "t8"
+              ]
+            },
+            {
+              "id": "t2",
+              "char": "c",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t3"
+              ]
+            },
+            {
+              "id": "t3",
+              "char": "a",
+              "parentId": "t2",
+              "terminal": true,
+              "children": [
+                "t4",
+                "t7"
+              ]
+            },
+            {
+              "id": "t4",
+              "char": "r",
+              "parentId": "t3",
+              "terminal": true,
+              "children": [
+                "t5",
+                "t6"
+              ]
+            },
+            {
+              "id": "t5",
+              "char": "d",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t6",
+              "char": "e",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t7",
+              "char": "t",
+              "parentId": "t3",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t8",
+              "char": "d",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t9"
+              ]
+            },
+            {
+              "id": "t9",
+              "char": "o",
+              "parentId": "t8",
+              "terminal": true,
+              "children": [
+                "t10"
+              ]
+            },
+            {
+              "id": "t10",
+              "char": "g",
+              "parentId": "t9",
+              "terminal": true,
+              "children": []
+            }
+          ],
+          "dictionary": [
+            "ca",
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "pathIds": [
+            "t1",
+            "t2",
+            "t3"
+          ],
+          "currentNodeId": "t3",
+          "compareChar": null,
+          "matchedLength": 2,
+          "createdNodeId": null,
+          "terminalNodeId": "t3",
+          "result": "inserted"
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            "ca",
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "done": true
+        },
+        "message": "键树操作完成 / key-tree operation complete",
+        "line": 288,
+        "variables": {
+          "words": 7,
+          "target": "ca",
+          "matchedLength": 2,
+          "nodes": 10,
+          "currentChar": "a",
+          "result": "inserted"
+        },
+        "lessonStepId": "done",
+        "structure": {
+          "kind": "key-tree",
+          "preset": "insert-prefix",
+          "operation": "done",
+          "mode": "insert",
+          "target": "ca",
+          "rootId": "t1",
+          "nodes": [
+            {
+              "id": "t1",
+              "char": "",
+              "parentId": null,
+              "terminal": false,
+              "children": [
+                "t2",
+                "t8"
+              ]
+            },
+            {
+              "id": "t2",
+              "char": "c",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t3"
+              ]
+            },
+            {
+              "id": "t3",
+              "char": "a",
+              "parentId": "t2",
+              "terminal": true,
+              "children": [
+                "t4",
+                "t7"
+              ]
+            },
+            {
+              "id": "t4",
+              "char": "r",
+              "parentId": "t3",
+              "terminal": true,
+              "children": [
+                "t5",
+                "t6"
+              ]
+            },
+            {
+              "id": "t5",
+              "char": "d",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t6",
+              "char": "e",
+              "parentId": "t4",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t7",
+              "char": "t",
+              "parentId": "t3",
+              "terminal": true,
+              "children": []
+            },
+            {
+              "id": "t8",
+              "char": "d",
+              "parentId": "t1",
+              "terminal": false,
+              "children": [
+                "t9"
+              ]
+            },
+            {
+              "id": "t9",
+              "char": "o",
+              "parentId": "t8",
+              "terminal": true,
+              "children": [
+                "t10"
+              ]
+            },
+            {
+              "id": "t10",
+              "char": "g",
+              "parentId": "t9",
+              "terminal": true,
+              "children": []
+            }
+          ],
+          "dictionary": [
+            "ca",
+            "car",
+            "card",
+            "care",
+            "cat",
+            "do",
+            "dog"
+          ],
+          "pathIds": [
+            "t1",
+            "t2",
+            "t3"
+          ],
+          "currentNodeId": "t3",
+          "compareChar": null,
+          "matchedLength": 2,
+          "createdNodeId": null,
+          "terminalNodeId": "t3",
+          "result": "inserted"
+        }
+      }
+    ]
+  }
+}

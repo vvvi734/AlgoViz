@@ -16,7 +16,24 @@ const OP_KEY: Record<BtreeOperation, string> = {
   duplicate: 'btreeOpDuplicate',
   split: 'btreeOpSplit',
   insert: 'btreeOpInsert',
+  locate: 'btreeOpLocate',
+  replace: 'btreeOpReplace',
+  'delete-leaf': 'btreeOpDeleteLeaf',
+  'borrow-left': 'btreeOpBorrowLeft',
+  'borrow-right': 'btreeOpBorrowRight',
+  merge: 'btreeOpMerge',
+  'root-shrink': 'btreeOpRootShrink',
   done: 'btreeOpDone',
+};
+
+const DELETE_ACTION_KEY: Record<string, string> = {
+  locate: 'btreeDeleteLocate',
+  replace: 'btreeDeleteReplace',
+  'delete-leaf': 'btreeDeleteLeaf',
+  'borrow-left': 'btreeDeleteBorrowLeft',
+  'borrow-right': 'btreeDeleteBorrowRight',
+  merge: 'btreeDeleteMerge',
+  'root-shrink': 'btreeDeleteRootShrink',
 };
 
 function displayNumber(value: number): string {
@@ -77,7 +94,23 @@ export function BTreeVisual({ model }: { model: BTreeVisualModel }) {
       <div className="btree-op-row">
         <span className="btree-op">{opLabel}</span>
         <span className="btree-order">{t('btreeOrderLabel')}</span>
+        {model.command === 'delete' ? <span className="btree-command">{t('btreeDeleteCommandTag')}</span> : null}
       </div>
+
+      {model.deleteInfo ? (
+        <div
+          className="btree-delete-banner"
+          data-testid="btree-delete-banner"
+          data-action={model.deleteInfo.action}
+          data-key={model.deleteInfo.key ?? ''}
+        >
+          <span>{t(DELETE_ACTION_KEY[model.deleteInfo.action] ?? 'btreeDeleteLocate')}</span>
+          {model.deleteInfo.key !== null ? <span>key <strong>{displayNumber(model.deleteInfo.key)}</strong></span> : null}
+          {model.deleteInfo.siblingId ? <span>sibling {model.deleteInfo.siblingId}</span> : null}
+          {model.deleteInfo.separatorKey !== null ? <span>separator {displayNumber(model.deleteInfo.separatorKey)}</span> : null}
+          {model.deleteInfo.rootChanged ? <span className="is-root-change">{t('btreeDeleteRootChanged')}</span> : null}
+        </div>
+      ) : null}
 
       <div className="btree-canvas-scroll" ref={scrollerRef}>
         <svg
@@ -118,6 +151,7 @@ export function BTreeVisual({ model }: { model: BTreeVisualModel }) {
               node.splitLeft ? 'is-split-left' : '',
               node.splitRight ? 'is-split-right' : '',
               node.newRoot ? 'is-new-root' : '',
+              model.deleteAffectedIds.includes(node.id) ? 'is-delete-affected' : '',
               node.leaf ? 'is-leaf' : '',
             ].filter(Boolean).join(' ');
             return (
@@ -134,6 +168,7 @@ export function BTreeVisual({ model }: { model: BTreeVisualModel }) {
                 data-split-left={String(node.splitLeft)}
                 data-split-right={String(node.splitRight)}
                 data-new-root={String(node.newRoot)}
+                data-delete-affected={String(model.deleteAffectedIds.includes(node.id))}
               >
                 <rect
                   className="btree-node-box"

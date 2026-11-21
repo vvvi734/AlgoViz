@@ -20,8 +20,9 @@
  *    full child before descending. Splitting moves the median up and keeps the
  *    left node at the old object.
  *
- * Complexity: height h = O(log_4 n); search and insert visit O(h) nodes.
- * Space: O(n). Deletion is out of scope.
+ * Complexity: height h = O(log_4 n); search, insert and delete visit O(h) nodes.
+ * Space: O(n). Delete repairs an underfull child before descending, replaces an
+ * internal key with a real subtree predecessor, and shrinks a zero-key root.
  * Convention: unique integer keys. std::map is NOT used here: the point is a
  * real B-tree, not a standard-library shortcut.
  */
@@ -34,6 +35,7 @@
 
 constexpr int ORDER = 4;
 constexpr int MAX_KEYS = ORDER - 1;
+constexpr int MIN_KEYS = ORDER / 2 - 1;
 
 struct BTreeNode
 {
@@ -163,6 +165,143 @@ NodePtr btree_insert(NodePtr root, int value)
     return root;
 }
 
+// Purpose: First key position not less than target; this slot is also the only possible child edge.
+// 作用：返回第一个不小于 target 的位置；该位置也是唯一可能的孩子边。
+static std::size_t node_index(const BTreeNode &node, int target)
+{
+    std::size_t index = 0;
+    while (index < node.keys.size() && node.keys[index] < target)
+    {
+        ++index;
+    }
+    return index;
+}
+
+// Purpose: Maximum key of a subtree, used as the real in-order predecessor of an internal key.
+// 作用：返回子树最大键，作为内部键的中序前驱。
+static int max_key(NodePtr node)
+{
+    while (!node->leaf)
+    {
+        node = node->children.back();
+    }
+    return node->keys.back();
+}
+
+// Purpose: Repair the child at index before descending: borrow left, borrow right, then merge.
+// 作用：下降前修复 index 处孩子：先左借、再右借、最后合并。
+static void ensure_child(const NodePtr &node, std::size_t index)
+{
+    NodePtr child = node->children[index];
+    if (child->keys.size() > static_cast<std::size_t>(MIN_KEYS))
+    {
+        return;
+    }
+    if (index > 0)
+    {
+        NodePtr left = node->children[index - 1];
+        if (left->keys.size() > static_cast<std::size_t>(MIN_KEYS))
+        {
+            child->keys.insert(child->keys.begin(), node->keys[index - 1]);
+            node->keys[index - 1] = left->keys.back();
+            left->keys.pop_back();
+            if (!child->leaf)
+            {
+                child->children.insert(child->children.begin(), left->children.back());
+                left->children.pop_back();
+            }
+            return;
+        }
+    }
+    if (index < node->keys.size())
+    {
+        NodePtr right = node->children[index + 1];
+        if (right->keys.size() > static_cast<std::size_t>(MIN_KEYS))
+        {
+            child->keys.push_back(node->keys[index]);
+            node->keys[index] = right->keys.front();
+            right->keys.erase(right->keys.begin());
+            if (!child->leaf)
+            {
+                child->children.push_back(right->children.front());
+                right->children.erase(right->children.begin());
+            }
+            return;
+        }
+    }
+    if (index > 0)
+    {
+        NodePtr left = node->children[index - 1];
+        left->keys.push_back(node->keys[index - 1]);
+        left->keys.insert(left->keys.end(), child->keys.begin(), child->keys.end());
+        if (!child->leaf)
+        {
+            left->children.insert(left->children.end(), child->children.begin(), child->children.end());
+        }
+        node->keys.erase(node->keys.begin() + static_cast<std::ptrdiff_t>(index - 1));
+        node->children.erase(node->children.begin() + static_cast<std::ptrdiff_t>(index));
+        return;
+    }
+    NodePtr right = node->children[index + 1];
+    child->keys.push_back(node->keys[index]);
+    child->keys.insert(child->keys.end(), right->keys.begin(), right->keys.end());
+    if (!child->leaf)
+    {
+        child->children.insert(child->children.end(), right->children.begin(), right->children.end());
+    }
+    node->keys.erase(node->keys.begin() + static_cast<std::ptrdiff_t>(index));
+    node->children.erase(node->children.begin() + static_cast<std::ptrdiff_t>(index + 1));
+}
+
+// Purpose: Delete from a subtree after existence is proved; internal keys are replaced by a subtree predecessor.
+// 作用：存在性已证明后从子树删除；内部键由真实子树前驱替换。
+static void delete_rec(const NodePtr &node, int target)
+{
+    if (node->leaf)
+    {
+        node->keys.erase(node->keys.begin() + static_cast<std::ptrdiff_t>(node_index(*node, target)));
+        return;
+    }
+    std::size_t index = node_index(*node, target);
+    if (index < node->keys.size() && node->keys[index] == target)
+    {
+        if (node->children[index]->keys.size() == static_cast<std::size_t>(MIN_KEYS))
+        {
+            ensure_child(node, index);
+            index = node_index(*node, target);
+            // A merge pulled the separator (the target) down into the child.
+            if (index == node->keys.size() || node->keys[index] != target)
+            {
+                delete_rec(node->children[index], target);
+                return;
+            }
+        }
+        int predecessor = max_key(node->children[index]);
+        node->keys[index] = predecessor;
+        delete_rec(node->children[index], predecessor);
+        return;
+    }
+    ensure_child(node, index);
+    index = node_index(*node, target);
+    delete_rec(node->children[index], target);
+}
+
+// Purpose: Delete entry; an absent key leaves the tree unchanged; a zero-key internal root shrinks immediately.
+// 作用：删除入口；不存在的键保持树不变；零键内部根立即收缩。
+NodePtr btree_delete(NodePtr root, int value)
+{
+    if (root == nullptr || !btree_search(root, value))
+    {
+        return root;
+    }
+    delete_rec(root, value);
+    if (!root->leaf && root->keys.empty())
+    {
+        root = root->children.front();
+    }
+    return root;
+}
+
 // Purpose: Print B-tree nodes and keys level by level to inspect parent-child links after splits; read-only.
 // 作用：按层输出 B 树结点及键值，用于检查分裂后的父子关系；只读。
 void print_tree(const NodePtr &root)
@@ -229,5 +368,11 @@ int main()
     root = btree_insert(root, 45);
     std::cout << "duplicate 45 rejected; search says "
               << (btree_search(root, 45) ? "present" : "impossible") << "\n";
+
+    root = btree_delete(root, 20);
+    std::cout << "B-tree after delete 20:\n";
+    print_tree(root);
+    std::cout << "delete missing 99 keeps 20 absent: "
+              << (!btree_search(root, 20) ? "absent" : "impossible") << "\n";
     return 0;
 }

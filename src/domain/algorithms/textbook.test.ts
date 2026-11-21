@@ -56,7 +56,7 @@ describe('textbook directory after TEXTBOOK-01', () => {
 
   it('preserves every existing algorithm exactly once in its new primary home', () => {
     const ids = textbookAlgorithmIds(nav);
-    expect(ids).toHaveLength(49);
+    expect(ids).toHaveLength(52);
     expect(new Set(ids).size).toBe(ids.length);
     expect(new Set(ids)).toEqual(new Set(Object.keys(catalog)));
   });
@@ -73,7 +73,7 @@ describe('textbook directory after TEXTBOOK-01', () => {
       ]),
     );
     const conceptRows = rows.filter(({ row }) => row.conceptId);
-    expect(CONCEPT_PAGES).toHaveLength(40);
+    expect(CONCEPT_PAGES).toHaveLength(44);
     expect(conceptRows.map(({ row }) => row.conceptId).sort()).toEqual(
       CONCEPT_PAGES.map((page) => page.id).sort(),
     );
@@ -267,9 +267,26 @@ describe('textbook directory after TEXTBOOK-01', () => {
     expect(threaded.children[1].algorithms[0].id).toBe('threaded-inorder');
     expect(tree.topics.some((topic) => topic.id === 'backtracking-tree')).toBe(false);
 
-    expect(search.algorithmCount).toBe(7);
-    expect(search.topics.map((topic) => topic.id)).toEqual(['static-search', 'tree-search', 'hash-search']);
-    for (const id of ['linear', 'binary', 'bst', 'avl', 'btree', 'hash-chain', 'hash-probe']) {
+    expect(search.algorithmCount).toBe(10);
+    expect(search.topics.map((topic) => topic.id)).toEqual([
+      'search-basics',
+      'static-search',
+      'tree-search',
+      'hash-search',
+      'search-comparison',
+    ]);
+    for (const id of [
+      'linear',
+      'binary',
+      'block-search',
+      'bst',
+      'avl',
+      'btree',
+      'bplus-tree',
+      'key-tree',
+      'hash-chain',
+      'hash-probe',
+    ]) {
       expect(textbookPathFor(catalog, id)?.chapterId).toBe('ch9-search');
     }
     expect(textbookPathFor(catalog, 'btree')).toEqual({

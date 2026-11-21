@@ -62,6 +62,10 @@ import type { BTreeVisualModel } from '../../domain/visualization/btreeModel';
 import { RecursionVisual } from './RecursionVisual';
 import { buildRecursionModel } from '../../domain/visualization/recursionModel';
 import { BuddyVisual, FreeListVisual, GarbageCollectionVisual } from './MemoryVisuals';
+import { BlockSearchVisual, BplusTreeVisual, KeyTreeVisual } from './SearchVisuals';
+import type { BlockSearchVisualModel } from '../../domain/visualization/blockSearchModel';
+import type { BplusVisualModel } from '../../domain/visualization/bplusModel';
+import type { KeyTreeVisualModel } from '../../domain/visualization/keyTreeModel';
 import type { BuddyVisualModel } from '../../domain/visualization/buddyModel';
 import type { GcVisualModel } from '../../domain/visualization/gcModel';
 import type { FreeListVisualModel } from '../../domain/visualization/freeListModel';
@@ -560,6 +564,15 @@ export function VisualStage({
     case 'garbage-collection':
       content = <GarbageCollectionVisual model={model as GcVisualModel} />;
       break;
+    case 'block-search':
+      content = <BlockSearchVisual model={model as BlockSearchVisualModel} />;
+      break;
+    case 'bplus-tree':
+      content = <BplusTreeVisual model={model as BplusVisualModel} />;
+      break;
+    case 'key-tree':
+      content = <KeyTreeVisual model={model as KeyTreeVisualModel} />;
+      break;
     case 'graph-traversal': {
       const operationText = graphOperationText(model, t);
       if (model.algorithm === 'dijkstra') {
@@ -702,6 +715,9 @@ export function VisualStage({
     model.kind === 'kosaraju' ||
     model.kind === 'free-list' ||
     model.kind === 'buddy-system' ||
+    model.kind === 'block-search' ||
+    model.kind === 'bplus-tree' ||
+    model.kind === 'key-tree' ||
     model.kind === 'garbage-collection';
   return (
     <div

@@ -114,7 +114,7 @@ describe('reference code localization', () => {
   });
 
   it('has a reviewed teaching header for every registered algorithm', async () => {
-    expect(REFERENCE_CODE_ALGORITHMS).toHaveLength(49);
+    expect(REFERENCE_CODE_ALGORITHMS).toHaveLength(52);
     for (const algorithmId of REFERENCE_CODE_ALGORITHMS) {
       const source = await loadReferenceCode(algorithmId, 'cpp');
       expect(source, algorithmId).not.toBeNull();

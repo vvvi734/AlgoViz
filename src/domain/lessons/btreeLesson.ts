@@ -5,23 +5,24 @@ import type { Lesson } from './types';
  *
  * Step ids are exactly the `lesson_step=` values emitted by `BTREE_PYTHON`:
  *   init / inspect / found / not-found / descend / duplicate /
- *   split-before / split-after / insert / done.
+ *   split-before / split-after / insert / locate / replace /
+ *   borrow-left / borrow-right / merge / root-shrink / delete-leaf / done.
  *
- * Search and insertion share one program and one split policy. Steps that only
- * one operation produces simply show zero current-run frames.
+ * Search, insertion and deletion share one program and one repair policy.
+ * Steps that only one operation produces simply show zero current-run frames.
  */
 export const btreeLesson: Lesson = {
   lessonId: 'b-tree-search-insert-split',
   algorithmId: 'btree',
   contentVersion: '1.0.0',
-  title: { zh: 'B 树：4 阶查找、插入与节点分裂', en: 'B-tree: order-4 search, insertion and splitting' },
+  title: { zh: 'B 树：4 阶查找、插入、删除与节点修复', en: 'B-tree: order-4 search, insertion, deletion and repair' },
   oneLiner: {
-    zh: 'B 树把多个有序关键字放进一个节点，用 k 个关键字分出 k+1 个子树；查找沿区间下降，插入则在下降前分裂满节点。',
-    en: 'A B-tree packs ordered keys into one node and uses k keys to separate k+1 subtrees; search descends by interval, while insertion splits full nodes before descending.',
+    zh: 'B 树把多个有序关键字放进一个节点，用 k 个关键字分出 k+1 个子树；查找沿区间下降，插入下降前分裂满节点，删除则先借后并，必要时让根收缩。',
+    en: 'A B-tree packs ordered keys into one node and uses k keys to separate k+1 subtrees; search descends by interval, insertion splits full nodes before descending, and deletion borrows or merges before the root contracts.',
   },
   overview: {
-    zh: '本课使用一棵真实的 4 阶 B 树：每个节点最多 4 个孩子、3 个关键字；非根节点至少 1 个关键字，根不是叶子时至少 2 个孩子，所有叶子位于同一深度。节点是真实的 Python 对象，关键字列表和孩子列表都是对象上的真实字段；初始树由同一套插入算法静默建成，动画帧不预先写死。查找从根开始，在当前节点内逐个比较关键字：命中就结束；否则按目标落在哪个区间选择唯一孩子，进入下一层继续比较；到达叶子仍未命中则报告不存在。插入先做一次只读定位：若命中重复关键字，明确拒绝且树完全不变；否则采用固定的“下降前分裂”策略——根满先分裂并产生新根，之后每进入一个孩子前，只要它已满就先分裂，把中间关键字上升到父节点，再沿正确的区间继续下降，最终在叶子插入。删除不在本轮范围内。',
-    en: 'This course runs a real order-4 B-tree: at most four children and three keys per node; every non-root node keeps at least one key, a non-leaf root has at least two children, and all leaves share one depth. Nodes are real Python objects with real key and child lists; the initial tree is built silently by the same insertion routine, and no animation frame is prewritten. Search starts at the root and compares keys inside the current node: a hit stops; otherwise the target’s interval selects exactly one child, and comparison continues one level down; reaching a leaf without a hit reports absence. Insertion first performs a read-only locate: a duplicate is explicitly rejected with the tree unchanged; otherwise the fixed “split before descending” policy applies — a full root splits first and creates a new root, then every full child is split before entering it, its median rises to the parent, and the walk continues through the correct interval until the key is inserted at a leaf. Deletion is out of scope this round.',
+    zh: '本课使用一棵真实的 4 阶 B 树：每个节点最多 4 个孩子、3 个关键字；非根节点至少 1 个关键字，根不是叶子时至少 2 个孩子，所有叶子位于同一深度。节点是真实的 Python 对象，关键字列表和孩子列表都是对象上的真实字段；初始树由同一套插入算法静默建成，动画帧不预先写死。查找从根开始，在当前节点内逐个比较关键字：命中就结束；否则按目标落在哪个区间选择唯一孩子，进入下一层继续比较；到达叶子仍未命中则报告不存在。插入先做一次只读定位：若命中重复关键字，明确拒绝且树完全不变；否则采用固定的“下降前分裂”策略——根满先分裂并产生新根，之后每进入一个孩子前，只要它已满就先分裂，把中间关键字上升到父节点，再沿正确的区间继续下降，最终在叶子插入。删除同样先证明关键字存在：不存在时只回放一次只读搜索，树保持原样。真正删除采用自顶向下预修复：下降前若目标孩子只有最小关键字数，就先从左兄弟借、再从右兄弟借，兄弟都不够借时把父分隔键下移并合并两个孩子；内部节点中的关键字先用左子树最大前驱替换，再删除那个前驱。合并可能抽空根，此时唯一孩子成为新根，树高减一。',
+    en: 'This course runs a real order-4 B-tree: at most four children and three keys per node; every non-root node keeps at least one key, a non-leaf root has at least two children, and all leaves share one depth. Nodes are real Python objects with real key and child lists; the initial tree is built silently by the same insertion routine, and no animation frame is prewritten. Search starts at the root and compares keys inside the current node: a hit stops; otherwise the target’s interval selects exactly one child, and comparison continues one level down; reaching a leaf without a hit reports absence. Insertion first performs a read-only locate: a duplicate is explicitly rejected with the tree unchanged; otherwise the fixed “split before descending” policy applies — a full root splits first and creates a new root, then every full child is split before entering it, its median rises to the parent, and the walk continues through the correct interval until the key is inserted at a leaf. Deletion also proves existence first: an absent key only replays a read-only search and leaves the tree unchanged. A real deletion repairs on the way down: before entering a target child that holds only the minimum key count, it borrows from the left sibling, then the right; when neither can lend, the parent separator moves down and the two children merge. An internal key is replaced by the maximum predecessor of its left subtree, which is then deleted from a leaf. A merge can empty the root, so its only child becomes the new root and the height drops by one.',
   },
   intuition: {
     zh: '把每个节点想成一页印着若干路标的纸：页内关键字把世界切成几段，页底的孩子指针各管一段。查找不是一次只问“左还是右”，而是先在页内找到目标落在哪一段，再翻到那一页孩子。插入像往一页已经写满的纸里加字：先把中间那个关键字抽出来贴到上一页，原页被切成左右两半，这样新页才有空格；如果连最上面那页也满了，就抽出一个新封面当根。所有位置都来自真实对象的孩子列表，而不是画布坐标。',
@@ -35,8 +36,8 @@ export const btreeLesson: Lesson = {
     time: 'O(log_m n) 节点访问',
     space: 'O(n)',
     note: {
-      zh: '设关键字总数为 n、阶为 m、树高为 h。每个节点最多 m 个孩子，因此 h 层最多约 mʰ 个叶子，h = O(log_m n)。查找每层只进入一个节点，层内最多比较 m−1 个关键字；插入的定位同样只走一条根到叶路径，下降前分裂每个满节点只做常数次关键字与孩子搬移，因此节点访问次数也是 O(log_m n)，总代价还要乘上节点内比较 O(m) 或二分 O(log m)。空间上树本身保存 n 个关键字与相应孩子引用，是 O(n)；迭代实现只用常数个辅助变量。m 增大时树高下降，但单节点容量和页内比较增加，实际 m 由页大小与关键字大小决定；本课固定 m=4 只是为了把分裂过程画清楚，不代表真实数据库索引的扇出。',
-      en: 'Let n be the key count, m the order and h the height. Each node has at most m children, so h levels hold about mʰ leaves and h = O(log_m n). Search enters one node per level with at most m−1 comparisons inside it; insertion also follows one root-to-leaf path, and splitting a full node moves only a constant number of keys and children, so node visits are O(log_m n) as well, with an extra factor O(m), or O(log m) with binary search inside a node. The tree itself stores n keys and child references, O(n); an iterative implementation uses constant auxiliary variables. A larger m lowers height but increases page payload and in-node comparisons; real m follows page and key sizes. The fixed m=4 here exists to make splitting legible, not to represent a real database fanout.',
+      zh: '设关键字总数为 n、阶为 m、树高为 h。每个节点最多 m 个孩子，因此 h 层最多约 mʰ 个叶子，h = O(log_m n)。查找每层只进入一个节点，层内最多比较 m−1 个关键字；插入的定位同样只走一条根到叶路径，下降前分裂每个满节点只做常数次关键字与孩子搬移，因此节点访问次数也是 O(log_m n)，总代价还要乘上节点内比较 O(m) 或二分 O(log m)。删除也只走一条根到叶路径：每层最多一次借位或一次合并，借位搬移常数个关键字与孩子，合并搬移 O(m) 个；因此删除的节点访问次数同样为 O(log_m n)，总代价再乘层内 O(m)。空间上树本身保存 n 个关键字与相应孩子引用，是 O(n)；迭代实现只用常数个辅助变量。m 增大时树高下降，但单节点容量和页内比较增加，实际 m 由页大小与关键字大小决定；本课固定 m=4 只是为了把分裂、借位与合并过程画清楚，不代表真实数据库索引的扇出。',
+      en: 'Let n be the key count, m the order and h the height. Each node has at most m children, so h levels hold about mʰ leaves and h = O(log_m n). Search enters one node per level with at most m−1 comparisons inside it; insertion also follows one root-to-leaf path, and splitting a full node moves only a constant number of keys and children, so node visits are O(log_m n) as well, with an extra factor O(m), or O(log m) with binary search inside a node. Deletion also follows one root-to-leaf path: each level performs at most one borrow or one merge, a borrow moves a constant number of keys and children, and a merge moves O(m) of them; node visits are therefore O(log_m n) too, with an extra O(m) per level. The tree itself stores n keys and child references, O(n); an iterative implementation uses constant auxiliary variables. A larger m lowers height but increases page payload and in-node comparisons; real m follows page and key sizes. The fixed m=4 here exists to make splitting, borrowing and merging legible, not to represent a real database fanout.',
     },
   },
   steps: [
@@ -79,8 +80,8 @@ export const btreeLesson: Lesson = {
       stepId: 'not-found',
       title: { zh: '⑤ 到达叶子仍未命中', en: '⑤ Reach a leaf without a hit' },
       explanation: {
-        zh: '叶子没有孩子。如果在叶子内比较完仍没有相等关键字，查找失败，发出 not-found 帧，result=not-found。空树查找只产生 init 与 done 两帧，done 的结果也是 not-found，不会伪造一个不存在的当前节点。失败路径同样真实：它指出了最后比较的叶子与完整路径。',
-        en: 'A leaf has no children. If no equal key appears after comparing inside a leaf, the search fails with a not-found frame and result=not-found. Searching an empty tree yields only init and done, with done reporting not-found; it never invents a nonexistent current node. The failure path is real too: it records the last leaf and the full path.',
+        zh: '叶子没有孩子。如果在叶子内比较完仍没有相等关键字，查找失败，发出 not-found 帧，result=not-found。删除操作也复用这一步：目标不存在时只回放只读搜索，树完全不变。空树查找只产生 init 与 done 两帧，done 的结果也是 not-found，不会伪造一个不存在的当前节点。失败路径同样真实：它指出了最后比较的叶子与完整路径。',
+        en: 'A leaf has no children. If no equal key appears after comparing inside a leaf, the search fails with a not-found frame and result=not-found. Deletion reuses this step: an absent target only replays the read-only search and leaves the tree unchanged. Searching an empty tree yields only init and done, with done reporting not-found; it never invents a nonexistent current node. The failure path is real too: it records the last leaf and the full path.',
       },
     },
     {
@@ -119,13 +120,72 @@ export const btreeLesson: Lesson = {
       },
     },
     {
-      stepId: 'done',
-      title: { zh: '⑩ 结果、树高与代价', en: '⑩ Result, height and cost' },
+      stepId: 'locate',
+      title: { zh: '⑩ 删除内部键：先定位它的左子树前驱', en: '⑩ Delete an internal key: locate its predecessor' },
       explanation: {
-        zh: 'done 帧给出最终结果：查找为 found / not-found，插入为 inserted / duplicate。查找与重复拒绝都不改变树；成功插入可能增加一个关键字，也可能因根分裂而使树高增加 1。设关键字数为 n、阶为 m、树高为 h，则 h = O(log_m n)；查找与插入都只访问 O(log_m n) 个节点，层内比较另计。节点容量越大树越矮，但单页比较与数据量也越大。',
-        en: 'The done frame reports the final result: found / not-found for search, inserted / duplicate for insertion. Search and duplicate rejection leave the tree unchanged; a successful insert adds one key and may increase height by one when the root splits. With n keys, order m and height h, h = O(log_m n); search and insertion visit O(log_m n) nodes, with in-node comparisons counted separately. Larger node capacity lowers height but increases per-page comparisons and payload.',
+        zh: '若目标关键字位于内部节点，不能直接把关键字抹掉，否则该关键字左右两侧的子树会失去分隔，孩子数与关键字数的对应也会被破坏。本课采用标准前驱替换：先进入目标关键字左侧的子树，再一路向右走到最右叶子，那个叶子的最大关键字就是前驱。locate 帧记录目标所在节点、完整路径和 compare 下标；此时树还没有被修改。下降进入左子树前同样会先修复不足的孩子，因此前驱一定真实可取。',
+        en: 'If the target sits in an internal node, erasing it directly would remove the separator between its left and right subtrees and break the child/key correspondence. This course uses the standard predecessor replacement: enter the subtree left of the target, then walk right to the rightmost leaf, whose largest key is the predecessor. The locate frame records the target node, the full path and the compare index; the tree is still unchanged. The child is repaired before entering it, so a real predecessor always exists.',
       },
-      tip: { zh: '判断插入是否正确：关键字有序、区间对应、非根下限、叶子同深，四项同时成立。', en: 'Judge an insertion by four facts together: ordered keys, correct intervals, non-root minimum, and equal leaf depth.' },
+      tip: { zh: '前驱一定在左子树最右叶子，不是“任意比目标小的键”。', en: 'The predecessor is the rightmost key of the left subtree, not just any smaller key.' },
+    },
+    {
+      stepId: 'replace',
+      title: { zh: '⑪ 前驱上移替换，再删除叶子中的前驱', en: '⑪ Lift the predecessor, then delete it from its leaf' },
+      explanation: {
+        zh: 'replace 帧把内部节点中的目标键改写为前驱值，父节点的分隔关系保持不变；随后 delete-leaf 帧从前驱所在的叶子弹出该值。这样删除一个内部关键字等价于“替换 + 删除一个叶子关键字”，不会产生悬空子树。替换后节点内关键字仍严格递增，子树区间仍满足“左小右大”。若前驱叶子删除后低于下限，之前的预修复已经保证它至少还有最小关键字数。',
+        en: 'The replace frame rewrites the internal target as the predecessor value, so the parent’s separator relation is unchanged; the following delete-leaf frame pops that value from the predecessor leaf. Deleting an internal key therefore becomes “replace, then delete one leaf key” without leaving a dangling subtree. Keys inside the node remain strictly increasing and subtree intervals still satisfy left-smaller/right-larger. Any underflow in the predecessor leaf was prevented by the earlier repair.',
+      },
+    },
+    {
+      stepId: 'borrow-left',
+      title: { zh: '⑫ 左兄弟有富余：父键下移，左兄弟最大键上移', en: '⑫ Left sibling can lend: rotate through the parent' },
+      explanation: {
+        zh: '下降前若目标孩子只有最小关键字数（本课 m=4 时为 1），直接进入再删除会使其变成 0 个关键字，违反非根下限。borrow-left 先检查左兄弟是否多于最小值：若有，就把父节点中分隔这两个孩子的关键字下移到目标孩子的最前面，再把左兄弟最大的关键字上移到父节点原位置。对内部节点还要同步搬移最右侧孩子指针，保证“孩子数 = 关键字数 + 1”。帧里的 parentId、siblingId 与 separatorKey 都是真实对象引用。',
+        en: 'Before descending, if the target child holds only the minimum key count (one key for m=4 here), deleting inside it would leave zero keys and violate the non-root minimum. borrow-left first checks whether the left sibling has more than the minimum: if so, the parent separator between the two children moves to the front of the target child, and the left sibling’s largest key rises into the parent slot. For an internal child the rightmost child pointer moves with it, preserving “children = keys + 1”. The frame’s parentId, siblingId and separatorKey are real object references.',
+      },
+    },
+    {
+      stepId: 'borrow-right',
+      title: { zh: '⑬ 左兄弟不够借，改向右兄弟借', en: '⑬ Left cannot lend: borrow from the right sibling' },
+      explanation: {
+        zh: '左兄弟也处于最小关键字数时不能借，否则只是把不足转移给左兄弟。此时检查右兄弟；若右兄弟有富余，把父分隔键下移到目标孩子末尾，再把右兄弟最小关键字上移到父节点。内部节点同样搬移最左侧孩子指针。borrow-right 是左借失败后的第二选择；两种借位都只改变少量关键字与孩子引用，不改变树高，也不改变所有叶子同深度的事实。',
+        en: 'If the left sibling also sits at the minimum, lending would merely move the shortage there, so the algorithm checks the right sibling. When the right sibling has spare keys, the parent separator moves to the end of the target child and the right sibling’s smallest key rises into the parent. An internal child also moves its leftmost child pointer. borrow-right is the second choice after a failed left borrow; both rotations move only a few keys and child references, keep the height, and preserve equal leaf depth.',
+      },
+      tip: { zh: '借位是旋转，不是把兄弟节点拆开；父键必须参与。', en: 'Borrowing is a rotation through the parent; it never splits a sibling apart.' },
+    },
+    {
+      stepId: 'merge',
+      title: { zh: '⑭ 两边都不够借：父键下移并合并两个孩子', en: '⑭ Neither sibling can lend: merge through the parent' },
+      explanation: {
+        zh: '当左右兄弟都只有最小关键字数时，无法借位，只能合并：把父节点中的分隔键下移，与左孩子、右孩子以及右孩子的全部孩子合成一个节点，然后从父节点删除该分隔键和右孩子指针。合并后节点关键字数不超过上限，父节点关键字数减一。若父节点因此低于下限，它会成为下一轮修复的对象；根节点允许暂时为空，但必须立即收缩。merge 帧记录被保留的左节点、被并入的兄弟、下移的分隔键以及父节点是否因此改变。',
+        en: 'When both siblings hold only the minimum, borrowing is impossible and a merge is required: the parent separator moves down and joins the left child, the right child and all of the right child’s children into one node; the separator and the right child pointer are then removed from the parent. The merged node stays within capacity and the parent loses one key. If the parent falls below its minimum it becomes the next repair target; the root may temporarily become empty but must contract immediately. The merge frame records the surviving left node, the absorbed sibling, the separator that moved down, and whether the parent changed.',
+      },
+    },
+    {
+      stepId: 'root-shrink',
+      title: { zh: '⑮ 根被抽空：唯一孩子成为新根，树高减一', en: '⑮ Empty root contracts: its only child becomes the root' },
+      explanation: {
+        zh: '根是唯一允许没有关键字节点的位置，但根为空且仍有孩子时，这个空根只会让所有查找多访问一层。root-shrink 把根的唯一孩子提升为新根，旧根不再被引用；树高减一，所有叶子仍处于同一深度。根为叶子且最后一个关键字被删除时，树直接变为空树，current 与 path 都为空，而不是保留一个空节点。根收缩后不能继续使用旧 root id 作为路径起点。',
+        en: 'The root is the only node allowed to hold no keys, but an empty root with a child only adds an extra level to every search. root-shrink promotes the root’s only child to be the new root and drops the old root; height decreases by one and all leaves keep the same depth. When the root is a leaf and its last key is deleted, the tree becomes empty with current and path both empty, rather than keeping an empty node. After contraction the old root id is no longer a valid path anchor.',
+      },
+      tip: { zh: '根收缩是删除的一部分，不是额外的“美化”步骤。', en: 'Root contraction is part of deletion, not cosmetic cleanup.' },
+    },
+    {
+      stepId: 'delete-leaf',
+      title: { zh: '⑯ 叶子仍有下限：直接删除关键字', en: '⑯ The leaf still meets its minimum: remove the key' },
+      explanation: {
+        zh: '当目标就在叶子且删除后关键字数仍不少于下限时，直接在有序列表中弹出它即可，不需要借位或合并。delete-leaf 帧显示被修改的真实叶子与完整路径；删除后节点内关键字仍递增，父分隔键仍落在正确区间。若目标不存在，算法不会走到这里：它先做一次只读搜索并发出 not-found，树完全不变。因此“删除不存在关键字”与“删除后结构损坏”是两类必须区分的结果。',
+        en: 'When the target is already in a leaf and removal still leaves at least the minimum, popping it from the ordered list is enough; no borrow or merge is needed. The delete-leaf frame shows the modified real leaf and its full path; keys stay ordered and the parent separators still delimit the correct intervals. An absent target never reaches this step: a read-only search emits not-found and the tree stays unchanged. “Deleting a missing key” and “corrupting the structure after deletion” are therefore distinct outcomes.',
+      },
+    },
+    {
+      stepId: 'done',
+      title: { zh: '⑰ 结果、树高与代价', en: '⑰ Result, height and cost' },
+      explanation: {
+        zh: 'done 帧给出最终结果：查找为 found / not-found，插入为 inserted / duplicate，删除为 deleted / not-found。查找、重复拒绝和删除不存在键都不改变树；成功插入可能增加一个关键字，也可能因根分裂而使树高增加 1；成功删除或合并可能使树高减 1。设关键字数为 n、阶为 m、树高为 h，则 h = O(log_m n)；查找、插入和删除都只访问 O(log_m n) 个节点，层内比较与借位/合并搬移另计。',
+        en: 'The done frame reports the final result: found / not-found for search, inserted / duplicate for insertion, and deleted / not-found for deletion. Search, duplicate rejection and deleting an absent key leave the tree unchanged; a successful insert adds a key and may raise height by one when the root splits, while a successful delete or merge may lower it by one. With n keys, order m and height h, h = O(log_m n); search, insertion and deletion visit O(log_m n) nodes, with in-node comparisons and borrow/merge moves counted separately.',
+      },
+      tip: { zh: '判断删除是否正确：容量、关键字有序、子树区间、叶子同深、根规则五项同时成立。', en: 'Judge a deletion by five facts together: capacity, key order, subtree intervals, equal leaf depth, and the root rule.' },
     },
   ],
   commonMistakes: {
@@ -137,6 +197,10 @@ export const btreeLesson: Lesson = {
       '在插入已经改变树之后才检查重复键，导致“拒绝”时树已被修改。',
       '把节点在画布上的左右位置当成父子关系，而不读真实 children 列表。',
       '认为 B 树查找一定在叶子结束；B 树的内部节点也可以命中。',
+      '删除内部键时直接抹掉关键字，却不处理左右子树的分隔关系。',
+      '节点低于下限时先删除再补修，导致中间快照出现非法节点。',
+      '合并时只合并关键字，忘记把右兄弟的全部孩子指针一起搬移。',
+      '合并抽空根后仍保留空根，平白增加一层树高。',
     ],
     en: [
       'Treating order m as a key limit: m=4 allows four children but only three keys.',
@@ -146,6 +210,10 @@ export const btreeLesson: Lesson = {
       'Checking for a duplicate only after mutation, so a “rejection” has already changed the tree.',
       'Inferring parent/child from canvas left/right instead of reading the real children list.',
       'Assuming a B-tree search always ends at a leaf; an internal node can hit.',
+      'Erasing an internal key directly without repairing the left/right subtree separator.',
+      'Deleting first and repairing later, so intermediate snapshots show an illegal node.',
+      'Merging keys but forgetting to move all child pointers of the right sibling.',
+      'Keeping an empty root after a merge, which only adds an unnecessary level.',
     ],
   },
 };

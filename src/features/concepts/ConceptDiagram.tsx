@@ -10,6 +10,7 @@ import {
   MultivariatePolynomialDiagram,
 } from './GeneralizedListDiagram';
 import { DynamicStorageDiagram } from './DynamicStorageDiagram';
+import { SearchConceptDiagram } from './SearchConceptDiagram';
 
 /**
  * Large, static SVG diagrams for concept lessons. They never animate and never
@@ -40,6 +41,15 @@ export function ConceptDiagram({ kind, lang }: { kind: ConceptDiagramKind; lang:
 
   if (kind === 'dynamic-storage' || kind === 'boundary-tag-method' || kind === 'storage-compaction') {
     return <DynamicStorageDiagram kind={kind} lang={lang} />;
+  }
+
+  if (
+    kind === 'search-basics' ||
+    kind === 'static-tree-table' ||
+    kind === 'hashing-basics' ||
+    kind === 'search-comparison'
+  ) {
+    return <SearchConceptDiagram kind={kind} lang={lang} />;
   }
 
   if (

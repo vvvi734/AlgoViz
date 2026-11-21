@@ -127,12 +127,22 @@ import {
   randomGarbageDraft,
   type GarbageInputDraft,
 } from './garbageInput';
+import {
+  SEARCH_GUIDED_INPUT_ALGORITHMS,
+  SEARCH_RANDOM_SCENARIOS,
+  buildSearchInput,
+  isSearchGuidedInputAlgorithm,
+  randomSearchDraft,
+  searchDraftFromInput,
+} from './searchInput';
 
 export { isStructureGuidedInputAlgorithm } from './structureInput';
 export { isSparseGuidedInputAlgorithm } from './sparseInput';
 export { isRecursionGuidedInputAlgorithm } from './recursionInput';
 export { isExpressionGuidedInputAlgorithm } from './expressionInput';
 export { isGeneralizedListGuidedInputAlgorithm } from './generalizedListInput';
+export { isSearchGuidedInputAlgorithm } from './searchInput';
+export type { SearchGuidedInputAlgorithm } from './searchInput';
 export type { ExpressionGuidedInputAlgorithm } from './expressionInput';
 export type {
   GeneralizedListGuidedInputAlgorithm,
@@ -207,6 +217,7 @@ export const GUIDED_INPUT_ALGORITHMS = [
   FREE_LIST_GUIDED_INPUT,
   BUDDY_GUIDED_INPUT,
   GARBAGE_COLLECTION_GUIDED_INPUT,
+  ...SEARCH_GUIDED_INPUT_ALGORITHMS,
 ] as const;
 export type GuidedInputAlgorithm = (typeof GUIDED_INPUT_ALGORITHMS)[number];
 
@@ -288,6 +299,9 @@ export const GUIDED_INPUT_LANGUAGE: Record<GuidedInputAlgorithm, CodeLanguage> =
   'free-list': 'python',
   'buddy-system': 'python',
   'garbage-collection': 'python',
+  'block-search': 'python',
+  'bplus-tree': 'python',
+  'key-tree': 'python',
 };
 
 export interface GuidedInputDraft {
@@ -332,6 +346,10 @@ export interface GuidedInputDraft {
   buddy?: BuddyInputDraft;
   /** TEXTBOOK-08 mark-sweep / compaction object graph. */
   garbage?: GarbageInputDraft;
+  /** TEXTBOOK-09 B+ range upper bound. */
+  end?: string;
+  /** TEXTBOOK-09 indexed sequential block size. */
+  blockSize?: string;
 }
 
 export interface GuidedInputError {
@@ -472,6 +490,7 @@ const RANDOM_SCENARIOS: Record<GuidedInputAlgorithm, readonly GuidedRandomScenar
   'free-list': FREE_LIST_RANDOM_SCENARIOS,
   'buddy-system': BUDDY_RANDOM_SCENARIOS,
   'garbage-collection': GARBAGE_RANDOM_SCENARIOS,
+  ...SEARCH_RANDOM_SCENARIOS,
 };
 
 export function isGuidedInputAlgorithm(id: string): id is GuidedInputAlgorithm {
@@ -695,6 +714,9 @@ export function guidedDraftFromInput(id: GuidedInputAlgorithm, input: unknown): 
   if (isGarbageCollectionGuidedInputAlgorithm(id)) {
     return { ...EMPTY_DRAFT, garbage: garbageDraftFromInput(input) };
   }
+  if (isSearchGuidedInputAlgorithm(id)) {
+    return { ...EMPTY_DRAFT, ...searchDraftFromInput(id, input) };
+  }
   if (isRecursionGuidedInputAlgorithm(id)) {
     return { ...EMPTY_DRAFT, n: recursionDraftFromInput(input) };
   }
@@ -771,6 +793,9 @@ export function buildGuidedInput(id: GuidedInputAlgorithm, draft: GuidedInputDra
   }
   if (isGarbageCollectionGuidedInputAlgorithm(id)) {
     return buildGarbageInput(draft.garbage ?? emptyGarbageDraft());
+  }
+  if (isSearchGuidedInputAlgorithm(id)) {
+    return buildSearchInput(id, draft);
   }
   if (isRecursionGuidedInputAlgorithm(id)) {
     return buildRecursionInput(id, draft.n);
@@ -1140,6 +1165,9 @@ export function randomGuidedDraft(
   }
   if (isGarbageCollectionGuidedInputAlgorithm(id)) {
     return { ...EMPTY_DRAFT, garbage: randomGarbageDraft(scenario, random) };
+  }
+  if (isSearchGuidedInputAlgorithm(id)) {
+    return { ...EMPTY_DRAFT, ...randomSearchDraft(id, scenario, random) };
   }
   if (isRecursionGuidedInputAlgorithm(id)) {
     return { ...EMPTY_DRAFT, n: String(randomRecursionN(id as RecursionGuidedInputAlgorithm, scenario, random)) };

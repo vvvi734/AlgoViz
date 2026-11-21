@@ -1,0 +1,3481 @@
+{
+  "delete-leaf-plain": {
+    "input": {
+      "preset": "delete-leaf-plain",
+      "operation": "delete",
+      "tree": [
+        10,
+        20,
+        30,
+        40,
+        50,
+        60,
+        70
+      ],
+      "target": 60
+    },
+    "frames": [
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            10,
+            20,
+            40,
+            30,
+            50,
+            60,
+            70
+          ],
+          "done": false
+        },
+        "message": "4 阶 B 树：最多 4 个孩子、3 个关键字 / order-4 B-tree ready",
+        "line": 730,
+        "variables": {
+          "order": 4,
+          "minKeys": 1,
+          "maxKeys": 3,
+          "target": 60,
+          "nodeCount": 4,
+          "treeHeight": 2,
+          "currentKeys": [
+            20,
+            40
+          ],
+          "path": "[20, 40]",
+          "result": "pending"
+        },
+        "lessonStepId": "init",
+        "structure": {
+          "kind": "btree",
+          "order": 4,
+          "preset": "delete-leaf-plain",
+          "command": "delete",
+          "operation": "init",
+          "targetValue": 60,
+          "rootId": "n2",
+          "nodes": [
+            {
+              "id": "n1",
+              "keys": [
+                10
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n2",
+              "keys": [
+                20,
+                40
+              ],
+              "children": [
+                "n1",
+                "n3",
+                "n4"
+              ],
+              "leaf": false
+            },
+            {
+              "id": "n3",
+              "keys": [
+                30
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n4",
+              "keys": [
+                50,
+                60,
+                70
+              ],
+              "children": [],
+              "leaf": true
+            }
+          ],
+          "currentNodeId": "n2",
+          "pathIds": [
+            "n2"
+          ],
+          "compareIndex": null,
+          "compareKey": null,
+          "childSlot": null,
+          "childId": null,
+          "split": null,
+          "insertedKey": null,
+          "deleteInfo": null,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            10,
+            20,
+            40,
+            30,
+            50,
+            60,
+            70
+          ],
+          "done": false
+        },
+        "message": "进入第 3 个子树继续删除 / descend into repaired child 3",
+        "line": 704,
+        "variables": {
+          "order": 4,
+          "minKeys": 1,
+          "maxKeys": 3,
+          "target": 60,
+          "nodeCount": 4,
+          "treeHeight": 2,
+          "currentKeys": [
+            20,
+            40
+          ],
+          "path": "[20, 40]",
+          "result": "pending"
+        },
+        "lessonStepId": "descend",
+        "structure": {
+          "kind": "btree",
+          "order": 4,
+          "preset": "delete-leaf-plain",
+          "command": "delete",
+          "operation": "descend",
+          "targetValue": 60,
+          "rootId": "n2",
+          "nodes": [
+            {
+              "id": "n1",
+              "keys": [
+                10
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n2",
+              "keys": [
+                20,
+                40
+              ],
+              "children": [
+                "n1",
+                "n3",
+                "n4"
+              ],
+              "leaf": false
+            },
+            {
+              "id": "n3",
+              "keys": [
+                30
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n4",
+              "keys": [
+                50,
+                60,
+                70
+              ],
+              "children": [],
+              "leaf": true
+            }
+          ],
+          "currentNodeId": "n2",
+          "pathIds": [
+            "n2"
+          ],
+          "compareIndex": null,
+          "compareKey": null,
+          "childSlot": 2,
+          "childId": "n4",
+          "split": null,
+          "insertedKey": null,
+          "deleteInfo": null,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            10,
+            20,
+            40,
+            30,
+            50,
+            70
+          ],
+          "done": false
+        },
+        "message": "在叶子中删除 60；节点仍满足下限 / delete from a leaf that stays above the minimum",
+        "line": 624,
+        "variables": {
+          "order": 4,
+          "minKeys": 1,
+          "maxKeys": 3,
+          "target": 60,
+          "nodeCount": 4,
+          "treeHeight": 2,
+          "currentKeys": [
+            50,
+            70
+          ],
+          "path": "[20, 40] → [50, 70]",
+          "result": "pending"
+        },
+        "lessonStepId": "delete-leaf",
+        "structure": {
+          "kind": "btree",
+          "order": 4,
+          "preset": "delete-leaf-plain",
+          "command": "delete",
+          "operation": "delete-leaf",
+          "targetValue": 60,
+          "rootId": "n2",
+          "nodes": [
+            {
+              "id": "n1",
+              "keys": [
+                10
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n2",
+              "keys": [
+                20,
+                40
+              ],
+              "children": [
+                "n1",
+                "n3",
+                "n4"
+              ],
+              "leaf": false
+            },
+            {
+              "id": "n3",
+              "keys": [
+                30
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n4",
+              "keys": [
+                50,
+                70
+              ],
+              "children": [],
+              "leaf": true
+            }
+          ],
+          "currentNodeId": "n4",
+          "pathIds": [
+            "n2",
+            "n4"
+          ],
+          "compareIndex": null,
+          "compareKey": null,
+          "childSlot": null,
+          "childId": null,
+          "split": null,
+          "insertedKey": null,
+          "deleteInfo": {
+            "action": "delete-leaf",
+            "key": 60,
+            "parentId": null,
+            "siblingId": null,
+            "separatorKey": null,
+            "rootChanged": false
+          },
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            10,
+            20,
+            40,
+            30,
+            50,
+            70
+          ],
+          "done": true
+        },
+        "message": "删除完成：容量、区间、叶深与根规则仍成立 / deletion complete: all B-tree invariants hold",
+        "line": 765,
+        "variables": {
+          "order": 4,
+          "minKeys": 1,
+          "maxKeys": 3,
+          "target": 60,
+          "nodeCount": 4,
+          "treeHeight": 2,
+          "currentKeys": [],
+          "path": "(空)",
+          "result": "deleted"
+        },
+        "lessonStepId": "done",
+        "structure": {
+          "kind": "btree",
+          "order": 4,
+          "preset": "delete-leaf-plain",
+          "command": "delete",
+          "operation": "done",
+          "targetValue": 60,
+          "rootId": "n2",
+          "nodes": [
+            {
+              "id": "n1",
+              "keys": [
+                10
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n2",
+              "keys": [
+                20,
+                40
+              ],
+              "children": [
+                "n1",
+                "n3",
+                "n4"
+              ],
+              "leaf": false
+            },
+            {
+              "id": "n3",
+              "keys": [
+                30
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n4",
+              "keys": [
+                50,
+                70
+              ],
+              "children": [],
+              "leaf": true
+            }
+          ],
+          "currentNodeId": null,
+          "pathIds": [],
+          "compareIndex": null,
+          "compareKey": null,
+          "childSlot": null,
+          "childId": null,
+          "split": null,
+          "insertedKey": null,
+          "deleteInfo": null,
+          "result": "deleted"
+        }
+      }
+    ]
+  },
+  "delete-internal-replace": {
+    "input": {
+      "preset": "delete-internal-replace",
+      "operation": "delete",
+      "tree": [
+        21,
+        10,
+        26,
+        42,
+        4,
+        5,
+        35,
+        7
+      ],
+      "target": 21
+    },
+    "frames": [
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            4,
+            5,
+            21,
+            26,
+            35,
+            42,
+            7,
+            10
+          ],
+          "done": false
+        },
+        "message": "4 阶 B 树：最多 4 个孩子、3 个关键字 / order-4 B-tree ready",
+        "line": 730,
+        "variables": {
+          "order": 4,
+          "minKeys": 1,
+          "maxKeys": 3,
+          "target": 21,
+          "nodeCount": 4,
+          "treeHeight": 2,
+          "currentKeys": [
+            5,
+            21
+          ],
+          "path": "[5, 21]",
+          "result": "pending"
+        },
+        "lessonStepId": "init",
+        "structure": {
+          "kind": "btree",
+          "order": 4,
+          "preset": "delete-internal-replace",
+          "command": "delete",
+          "operation": "init",
+          "targetValue": 21,
+          "rootId": "n2",
+          "nodes": [
+            {
+              "id": "n1",
+              "keys": [
+                4
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n2",
+              "keys": [
+                5,
+                21
+              ],
+              "children": [
+                "n1",
+                "n4",
+                "n3"
+              ],
+              "leaf": false
+            },
+            {
+              "id": "n3",
+              "keys": [
+                26,
+                35,
+                42
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n4",
+              "keys": [
+                7,
+                10
+              ],
+              "children": [],
+              "leaf": true
+            }
+          ],
+          "currentNodeId": "n2",
+          "pathIds": [
+            "n2"
+          ],
+          "compareIndex": null,
+          "compareKey": null,
+          "childSlot": null,
+          "childId": null,
+          "split": null,
+          "insertedKey": null,
+          "deleteInfo": null,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            4,
+            5,
+            21,
+            26,
+            35,
+            42,
+            7,
+            10
+          ],
+          "done": false
+        },
+        "message": "关键字 21 位于内部节点：用左子树最大前驱替换 / internal key: replace by its predecessor",
+        "line": 635,
+        "variables": {
+          "order": 4,
+          "minKeys": 1,
+          "maxKeys": 3,
+          "target": 21,
+          "nodeCount": 4,
+          "treeHeight": 2,
+          "currentKeys": [
+            5,
+            21
+          ],
+          "path": "[5, 21]",
+          "result": "pending"
+        },
+        "lessonStepId": "locate",
+        "structure": {
+          "kind": "btree",
+          "order": 4,
+          "preset": "delete-internal-replace",
+          "command": "delete",
+          "operation": "locate",
+          "targetValue": 21,
+          "rootId": "n2",
+          "nodes": [
+            {
+              "id": "n1",
+              "keys": [
+                4
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n2",
+              "keys": [
+                5,
+                21
+              ],
+              "children": [
+                "n1",
+                "n4",
+                "n3"
+              ],
+              "leaf": false
+            },
+            {
+              "id": "n3",
+              "keys": [
+                26,
+                35,
+                42
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n4",
+              "keys": [
+                7,
+                10
+              ],
+              "children": [],
+              "leaf": true
+            }
+          ],
+          "currentNodeId": "n2",
+          "pathIds": [
+            "n2"
+          ],
+          "compareIndex": 1,
+          "compareKey": 21,
+          "childSlot": null,
+          "childId": null,
+          "split": null,
+          "insertedKey": null,
+          "deleteInfo": {
+            "action": "locate",
+            "key": 21,
+            "parentId": null,
+            "siblingId": null,
+            "separatorKey": null,
+            "rootChanged": false
+          },
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            4,
+            5,
+            10,
+            26,
+            35,
+            42,
+            7
+          ],
+          "done": false
+        },
+        "message": "内部键 21 被前驱 10 替换 / internal key replaced by predecessor 10",
+        "line": 666,
+        "variables": {
+          "order": 4,
+          "minKeys": 1,
+          "maxKeys": 3,
+          "target": 21,
+          "nodeCount": 4,
+          "treeHeight": 2,
+          "currentKeys": [
+            5,
+            10
+          ],
+          "path": "[5, 10]",
+          "result": "pending"
+        },
+        "lessonStepId": "replace",
+        "structure": {
+          "kind": "btree",
+          "order": 4,
+          "preset": "delete-internal-replace",
+          "command": "delete",
+          "operation": "replace",
+          "targetValue": 21,
+          "rootId": "n2",
+          "nodes": [
+            {
+              "id": "n1",
+              "keys": [
+                4
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n2",
+              "keys": [
+                5,
+                10
+              ],
+              "children": [
+                "n1",
+                "n4",
+                "n3"
+              ],
+              "leaf": false
+            },
+            {
+              "id": "n3",
+              "keys": [
+                26,
+                35,
+                42
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n4",
+              "keys": [
+                7
+              ],
+              "children": [],
+              "leaf": true
+            }
+          ],
+          "currentNodeId": "n2",
+          "pathIds": [
+            "n2"
+          ],
+          "compareIndex": 1,
+          "compareKey": 10,
+          "childSlot": null,
+          "childId": null,
+          "split": null,
+          "insertedKey": null,
+          "deleteInfo": {
+            "action": "replace",
+            "key": 21,
+            "parentId": "n2",
+            "siblingId": null,
+            "separatorKey": null,
+            "rootChanged": false
+          },
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            4,
+            5,
+            10,
+            26,
+            35,
+            42,
+            7
+          ],
+          "done": false
+        },
+        "message": "前驱 10 已从其叶子删除 / predecessor removed from its leaf",
+        "line": 675,
+        "variables": {
+          "order": 4,
+          "minKeys": 1,
+          "maxKeys": 3,
+          "target": 21,
+          "nodeCount": 4,
+          "treeHeight": 2,
+          "currentKeys": [
+            7
+          ],
+          "path": "[5, 10] → [7]",
+          "result": "pending"
+        },
+        "lessonStepId": "delete-leaf",
+        "structure": {
+          "kind": "btree",
+          "order": 4,
+          "preset": "delete-internal-replace",
+          "command": "delete",
+          "operation": "delete-leaf",
+          "targetValue": 21,
+          "rootId": "n2",
+          "nodes": [
+            {
+              "id": "n1",
+              "keys": [
+                4
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n2",
+              "keys": [
+                5,
+                10
+              ],
+              "children": [
+                "n1",
+                "n4",
+                "n3"
+              ],
+              "leaf": false
+            },
+            {
+              "id": "n3",
+              "keys": [
+                26,
+                35,
+                42
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n4",
+              "keys": [
+                7
+              ],
+              "children": [],
+              "leaf": true
+            }
+          ],
+          "currentNodeId": "n4",
+          "pathIds": [
+            "n2",
+            "n4"
+          ],
+          "compareIndex": null,
+          "compareKey": null,
+          "childSlot": null,
+          "childId": null,
+          "split": null,
+          "insertedKey": null,
+          "deleteInfo": {
+            "action": "delete-leaf",
+            "key": 10,
+            "parentId": null,
+            "siblingId": null,
+            "separatorKey": null,
+            "rootChanged": false
+          },
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            4,
+            5,
+            10,
+            26,
+            35,
+            42,
+            7
+          ],
+          "done": true
+        },
+        "message": "删除完成：容量、区间、叶深与根规则仍成立 / deletion complete: all B-tree invariants hold",
+        "line": 765,
+        "variables": {
+          "order": 4,
+          "minKeys": 1,
+          "maxKeys": 3,
+          "target": 21,
+          "nodeCount": 4,
+          "treeHeight": 2,
+          "currentKeys": [],
+          "path": "(空)",
+          "result": "deleted"
+        },
+        "lessonStepId": "done",
+        "structure": {
+          "kind": "btree",
+          "order": 4,
+          "preset": "delete-internal-replace",
+          "command": "delete",
+          "operation": "done",
+          "targetValue": 21,
+          "rootId": "n2",
+          "nodes": [
+            {
+              "id": "n1",
+              "keys": [
+                4
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n2",
+              "keys": [
+                5,
+                10
+              ],
+              "children": [
+                "n1",
+                "n4",
+                "n3"
+              ],
+              "leaf": false
+            },
+            {
+              "id": "n3",
+              "keys": [
+                26,
+                35,
+                42
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n4",
+              "keys": [
+                7
+              ],
+              "children": [],
+              "leaf": true
+            }
+          ],
+          "currentNodeId": null,
+          "pathIds": [],
+          "compareIndex": null,
+          "compareKey": null,
+          "childSlot": null,
+          "childId": null,
+          "split": null,
+          "insertedKey": null,
+          "deleteInfo": null,
+          "result": "deleted"
+        }
+      }
+    ]
+  },
+  "delete-borrow": {
+    "input": {
+      "preset": "delete-borrow",
+      "operation": "delete",
+      "tree": [
+        27,
+        5,
+        16,
+        6,
+        36,
+        28,
+        4,
+        37
+      ],
+      "target": 27
+    },
+    "frames": [
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            4,
+            5,
+            6,
+            16,
+            28,
+            27,
+            36,
+            37
+          ],
+          "done": false
+        },
+        "message": "4 阶 B 树：最多 4 个孩子、3 个关键字 / order-4 B-tree ready",
+        "line": 730,
+        "variables": {
+          "order": 4,
+          "minKeys": 1,
+          "maxKeys": 3,
+          "target": 27,
+          "nodeCount": 4,
+          "treeHeight": 2,
+          "currentKeys": [
+            16,
+            28
+          ],
+          "path": "[16, 28]",
+          "result": "pending"
+        },
+        "lessonStepId": "init",
+        "structure": {
+          "kind": "btree",
+          "order": 4,
+          "preset": "delete-borrow",
+          "command": "delete",
+          "operation": "init",
+          "targetValue": 27,
+          "rootId": "n2",
+          "nodes": [
+            {
+              "id": "n1",
+              "keys": [
+                4,
+                5,
+                6
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n2",
+              "keys": [
+                16,
+                28
+              ],
+              "children": [
+                "n1",
+                "n3",
+                "n4"
+              ],
+              "leaf": false
+            },
+            {
+              "id": "n3",
+              "keys": [
+                27
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n4",
+              "keys": [
+                36,
+                37
+              ],
+              "children": [],
+              "leaf": true
+            }
+          ],
+          "currentNodeId": "n2",
+          "pathIds": [
+            "n2"
+          ],
+          "compareIndex": null,
+          "compareKey": null,
+          "childSlot": null,
+          "childId": null,
+          "split": null,
+          "insertedKey": null,
+          "deleteInfo": null,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            4,
+            5,
+            6,
+            28,
+            16,
+            27,
+            36,
+            37
+          ],
+          "done": false
+        },
+        "message": "左兄弟有富余：父键 16 下移，左兄弟最大键上移 / borrow through the parent from the left sibling",
+        "line": 415,
+        "variables": {
+          "order": 4,
+          "minKeys": 1,
+          "maxKeys": 3,
+          "target": 27,
+          "nodeCount": 4,
+          "treeHeight": 2,
+          "currentKeys": [
+            16,
+            27
+          ],
+          "path": "[6, 28] → [16, 27]",
+          "result": "pending"
+        },
+        "lessonStepId": "borrow-left",
+        "structure": {
+          "kind": "btree",
+          "order": 4,
+          "preset": "delete-borrow",
+          "command": "delete",
+          "operation": "borrow-left",
+          "targetValue": 27,
+          "rootId": "n2",
+          "nodes": [
+            {
+              "id": "n1",
+              "keys": [
+                4,
+                5
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n2",
+              "keys": [
+                6,
+                28
+              ],
+              "children": [
+                "n1",
+                "n3",
+                "n4"
+              ],
+              "leaf": false
+            },
+            {
+              "id": "n3",
+              "keys": [
+                16,
+                27
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n4",
+              "keys": [
+                36,
+                37
+              ],
+              "children": [],
+              "leaf": true
+            }
+          ],
+          "currentNodeId": "n3",
+          "pathIds": [
+            "n2",
+            "n3"
+          ],
+          "compareIndex": null,
+          "compareKey": null,
+          "childSlot": null,
+          "childId": null,
+          "split": null,
+          "insertedKey": null,
+          "deleteInfo": {
+            "action": "borrow-left",
+            "key": null,
+            "parentId": "n2",
+            "siblingId": "n1",
+            "separatorKey": 16,
+            "rootChanged": false
+          },
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            4,
+            5,
+            6,
+            28,
+            16,
+            27,
+            36,
+            37
+          ],
+          "done": false
+        },
+        "message": "进入第 2 个子树继续删除 / descend into repaired child 2",
+        "line": 704,
+        "variables": {
+          "order": 4,
+          "minKeys": 1,
+          "maxKeys": 3,
+          "target": 27,
+          "nodeCount": 4,
+          "treeHeight": 2,
+          "currentKeys": [
+            6,
+            28
+          ],
+          "path": "[6, 28]",
+          "result": "pending"
+        },
+        "lessonStepId": "descend",
+        "structure": {
+          "kind": "btree",
+          "order": 4,
+          "preset": "delete-borrow",
+          "command": "delete",
+          "operation": "descend",
+          "targetValue": 27,
+          "rootId": "n2",
+          "nodes": [
+            {
+              "id": "n1",
+              "keys": [
+                4,
+                5
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n2",
+              "keys": [
+                6,
+                28
+              ],
+              "children": [
+                "n1",
+                "n3",
+                "n4"
+              ],
+              "leaf": false
+            },
+            {
+              "id": "n3",
+              "keys": [
+                16,
+                27
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n4",
+              "keys": [
+                36,
+                37
+              ],
+              "children": [],
+              "leaf": true
+            }
+          ],
+          "currentNodeId": "n2",
+          "pathIds": [
+            "n2"
+          ],
+          "compareIndex": null,
+          "compareKey": null,
+          "childSlot": 1,
+          "childId": "n3",
+          "split": null,
+          "insertedKey": null,
+          "deleteInfo": null,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            4,
+            5,
+            6,
+            28,
+            16,
+            36,
+            37
+          ],
+          "done": false
+        },
+        "message": "在叶子中删除 27；节点仍满足下限 / delete from a leaf that stays above the minimum",
+        "line": 624,
+        "variables": {
+          "order": 4,
+          "minKeys": 1,
+          "maxKeys": 3,
+          "target": 27,
+          "nodeCount": 4,
+          "treeHeight": 2,
+          "currentKeys": [
+            16
+          ],
+          "path": "[6, 28] → [16]",
+          "result": "pending"
+        },
+        "lessonStepId": "delete-leaf",
+        "structure": {
+          "kind": "btree",
+          "order": 4,
+          "preset": "delete-borrow",
+          "command": "delete",
+          "operation": "delete-leaf",
+          "targetValue": 27,
+          "rootId": "n2",
+          "nodes": [
+            {
+              "id": "n1",
+              "keys": [
+                4,
+                5
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n2",
+              "keys": [
+                6,
+                28
+              ],
+              "children": [
+                "n1",
+                "n3",
+                "n4"
+              ],
+              "leaf": false
+            },
+            {
+              "id": "n3",
+              "keys": [
+                16
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n4",
+              "keys": [
+                36,
+                37
+              ],
+              "children": [],
+              "leaf": true
+            }
+          ],
+          "currentNodeId": "n3",
+          "pathIds": [
+            "n2",
+            "n3"
+          ],
+          "compareIndex": null,
+          "compareKey": null,
+          "childSlot": null,
+          "childId": null,
+          "split": null,
+          "insertedKey": null,
+          "deleteInfo": {
+            "action": "delete-leaf",
+            "key": 27,
+            "parentId": null,
+            "siblingId": null,
+            "separatorKey": null,
+            "rootChanged": false
+          },
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            4,
+            5,
+            6,
+            28,
+            16,
+            36,
+            37
+          ],
+          "done": true
+        },
+        "message": "删除完成：容量、区间、叶深与根规则仍成立 / deletion complete: all B-tree invariants hold",
+        "line": 765,
+        "variables": {
+          "order": 4,
+          "minKeys": 1,
+          "maxKeys": 3,
+          "target": 27,
+          "nodeCount": 4,
+          "treeHeight": 2,
+          "currentKeys": [],
+          "path": "(空)",
+          "result": "deleted"
+        },
+        "lessonStepId": "done",
+        "structure": {
+          "kind": "btree",
+          "order": 4,
+          "preset": "delete-borrow",
+          "command": "delete",
+          "operation": "done",
+          "targetValue": 27,
+          "rootId": "n2",
+          "nodes": [
+            {
+              "id": "n1",
+              "keys": [
+                4,
+                5
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n2",
+              "keys": [
+                6,
+                28
+              ],
+              "children": [
+                "n1",
+                "n3",
+                "n4"
+              ],
+              "leaf": false
+            },
+            {
+              "id": "n3",
+              "keys": [
+                16
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n4",
+              "keys": [
+                36,
+                37
+              ],
+              "children": [],
+              "leaf": true
+            }
+          ],
+          "currentNodeId": null,
+          "pathIds": [],
+          "compareIndex": null,
+          "compareKey": null,
+          "childSlot": null,
+          "childId": null,
+          "split": null,
+          "insertedKey": null,
+          "deleteInfo": null,
+          "result": "deleted"
+        }
+      }
+    ]
+  },
+  "delete-merge": {
+    "input": {
+      "preset": "delete-merge",
+      "operation": "delete",
+      "tree": [
+        45,
+        16,
+        6,
+        37,
+        20,
+        34,
+        32,
+        22
+      ],
+      "target": 45
+    },
+    "frames": [
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            6,
+            16,
+            32,
+            37,
+            20,
+            22,
+            45,
+            34
+          ],
+          "done": false
+        },
+        "message": "4 阶 B 树：最多 4 个孩子、3 个关键字 / order-4 B-tree ready",
+        "line": 730,
+        "variables": {
+          "order": 4,
+          "minKeys": 1,
+          "maxKeys": 3,
+          "target": 45,
+          "nodeCount": 5,
+          "treeHeight": 2,
+          "currentKeys": [
+            16,
+            32,
+            37
+          ],
+          "path": "[16, 32, 37]",
+          "result": "pending"
+        },
+        "lessonStepId": "init",
+        "structure": {
+          "kind": "btree",
+          "order": 4,
+          "preset": "delete-merge",
+          "command": "delete",
+          "operation": "init",
+          "targetValue": 45,
+          "rootId": "n2",
+          "nodes": [
+            {
+              "id": "n1",
+              "keys": [
+                6
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n2",
+              "keys": [
+                16,
+                32,
+                37
+              ],
+              "children": [
+                "n1",
+                "n3",
+                "n5",
+                "n4"
+              ],
+              "leaf": false
+            },
+            {
+              "id": "n3",
+              "keys": [
+                20,
+                22
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n4",
+              "keys": [
+                45
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n5",
+              "keys": [
+                34
+              ],
+              "children": [],
+              "leaf": true
+            }
+          ],
+          "currentNodeId": "n2",
+          "pathIds": [
+            "n2"
+          ],
+          "compareIndex": null,
+          "compareKey": null,
+          "childSlot": null,
+          "childId": null,
+          "split": null,
+          "insertedKey": null,
+          "deleteInfo": null,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            6,
+            16,
+            32,
+            20,
+            22,
+            34,
+            37,
+            45
+          ],
+          "done": false
+        },
+        "message": "兄弟不够借：父键 37 与两个节点合并 / siblings cannot lend: merge through the parent",
+        "line": 456,
+        "variables": {
+          "order": 4,
+          "minKeys": 1,
+          "maxKeys": 3,
+          "target": 45,
+          "nodeCount": 4,
+          "treeHeight": 2,
+          "currentKeys": [
+            34,
+            37,
+            45
+          ],
+          "path": "[16, 32] → [34, 37, 45]",
+          "result": "pending"
+        },
+        "lessonStepId": "merge",
+        "structure": {
+          "kind": "btree",
+          "order": 4,
+          "preset": "delete-merge",
+          "command": "delete",
+          "operation": "merge",
+          "targetValue": 45,
+          "rootId": "n2",
+          "nodes": [
+            {
+              "id": "n1",
+              "keys": [
+                6
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n2",
+              "keys": [
+                16,
+                32
+              ],
+              "children": [
+                "n1",
+                "n3",
+                "n5"
+              ],
+              "leaf": false
+            },
+            {
+              "id": "n3",
+              "keys": [
+                20,
+                22
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n5",
+              "keys": [
+                34,
+                37,
+                45
+              ],
+              "children": [],
+              "leaf": true
+            }
+          ],
+          "currentNodeId": "n5",
+          "pathIds": [
+            "n2",
+            "n5"
+          ],
+          "compareIndex": null,
+          "compareKey": null,
+          "childSlot": null,
+          "childId": null,
+          "split": null,
+          "insertedKey": null,
+          "deleteInfo": {
+            "action": "merge",
+            "key": null,
+            "parentId": "n2",
+            "siblingId": "n4",
+            "separatorKey": 37,
+            "rootChanged": false
+          },
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            6,
+            16,
+            32,
+            20,
+            22,
+            34,
+            37,
+            45
+          ],
+          "done": false
+        },
+        "message": "进入第 3 个子树继续删除 / descend into repaired child 3",
+        "line": 704,
+        "variables": {
+          "order": 4,
+          "minKeys": 1,
+          "maxKeys": 3,
+          "target": 45,
+          "nodeCount": 4,
+          "treeHeight": 2,
+          "currentKeys": [
+            16,
+            32
+          ],
+          "path": "[16, 32]",
+          "result": "pending"
+        },
+        "lessonStepId": "descend",
+        "structure": {
+          "kind": "btree",
+          "order": 4,
+          "preset": "delete-merge",
+          "command": "delete",
+          "operation": "descend",
+          "targetValue": 45,
+          "rootId": "n2",
+          "nodes": [
+            {
+              "id": "n1",
+              "keys": [
+                6
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n2",
+              "keys": [
+                16,
+                32
+              ],
+              "children": [
+                "n1",
+                "n3",
+                "n5"
+              ],
+              "leaf": false
+            },
+            {
+              "id": "n3",
+              "keys": [
+                20,
+                22
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n5",
+              "keys": [
+                34,
+                37,
+                45
+              ],
+              "children": [],
+              "leaf": true
+            }
+          ],
+          "currentNodeId": "n2",
+          "pathIds": [
+            "n2"
+          ],
+          "compareIndex": null,
+          "compareKey": null,
+          "childSlot": 2,
+          "childId": "n5",
+          "split": null,
+          "insertedKey": null,
+          "deleteInfo": null,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            6,
+            16,
+            32,
+            20,
+            22,
+            34,
+            37
+          ],
+          "done": false
+        },
+        "message": "在叶子中删除 45；节点仍满足下限 / delete from a leaf that stays above the minimum",
+        "line": 624,
+        "variables": {
+          "order": 4,
+          "minKeys": 1,
+          "maxKeys": 3,
+          "target": 45,
+          "nodeCount": 4,
+          "treeHeight": 2,
+          "currentKeys": [
+            34,
+            37
+          ],
+          "path": "[16, 32] → [34, 37]",
+          "result": "pending"
+        },
+        "lessonStepId": "delete-leaf",
+        "structure": {
+          "kind": "btree",
+          "order": 4,
+          "preset": "delete-merge",
+          "command": "delete",
+          "operation": "delete-leaf",
+          "targetValue": 45,
+          "rootId": "n2",
+          "nodes": [
+            {
+              "id": "n1",
+              "keys": [
+                6
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n2",
+              "keys": [
+                16,
+                32
+              ],
+              "children": [
+                "n1",
+                "n3",
+                "n5"
+              ],
+              "leaf": false
+            },
+            {
+              "id": "n3",
+              "keys": [
+                20,
+                22
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n5",
+              "keys": [
+                34,
+                37
+              ],
+              "children": [],
+              "leaf": true
+            }
+          ],
+          "currentNodeId": "n5",
+          "pathIds": [
+            "n2",
+            "n5"
+          ],
+          "compareIndex": null,
+          "compareKey": null,
+          "childSlot": null,
+          "childId": null,
+          "split": null,
+          "insertedKey": null,
+          "deleteInfo": {
+            "action": "delete-leaf",
+            "key": 45,
+            "parentId": null,
+            "siblingId": null,
+            "separatorKey": null,
+            "rootChanged": false
+          },
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            6,
+            16,
+            32,
+            20,
+            22,
+            34,
+            37
+          ],
+          "done": true
+        },
+        "message": "删除完成：容量、区间、叶深与根规则仍成立 / deletion complete: all B-tree invariants hold",
+        "line": 765,
+        "variables": {
+          "order": 4,
+          "minKeys": 1,
+          "maxKeys": 3,
+          "target": 45,
+          "nodeCount": 4,
+          "treeHeight": 2,
+          "currentKeys": [],
+          "path": "(空)",
+          "result": "deleted"
+        },
+        "lessonStepId": "done",
+        "structure": {
+          "kind": "btree",
+          "order": 4,
+          "preset": "delete-merge",
+          "command": "delete",
+          "operation": "done",
+          "targetValue": 45,
+          "rootId": "n2",
+          "nodes": [
+            {
+              "id": "n1",
+              "keys": [
+                6
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n2",
+              "keys": [
+                16,
+                32
+              ],
+              "children": [
+                "n1",
+                "n3",
+                "n5"
+              ],
+              "leaf": false
+            },
+            {
+              "id": "n3",
+              "keys": [
+                20,
+                22
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n5",
+              "keys": [
+                34,
+                37
+              ],
+              "children": [],
+              "leaf": true
+            }
+          ],
+          "currentNodeId": null,
+          "pathIds": [],
+          "compareIndex": null,
+          "compareKey": null,
+          "childSlot": null,
+          "childId": null,
+          "split": null,
+          "insertedKey": null,
+          "deleteInfo": null,
+          "result": "deleted"
+        }
+      }
+    ]
+  },
+  "delete-root-shrink": {
+    "input": {
+      "preset": "delete-root-shrink",
+      "operation": "delete",
+      "tree": [
+        17,
+        2,
+        34,
+        30,
+        21,
+        23,
+        29,
+        27,
+        49
+      ],
+      "target": 17
+    },
+    "frames": [
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            2,
+            17,
+            21,
+            34,
+            49,
+            27,
+            29,
+            23,
+            30
+          ],
+          "done": false
+        },
+        "message": "4 阶 B 树：最多 4 个孩子、3 个关键字 / order-4 B-tree ready",
+        "line": 730,
+        "variables": {
+          "order": 4,
+          "minKeys": 1,
+          "maxKeys": 3,
+          "target": 17,
+          "nodeCount": 7,
+          "treeHeight": 3,
+          "currentKeys": [
+            23
+          ],
+          "path": "[23]",
+          "result": "pending"
+        },
+        "lessonStepId": "init",
+        "structure": {
+          "kind": "btree",
+          "order": 4,
+          "preset": "delete-root-shrink",
+          "command": "delete",
+          "operation": "init",
+          "targetValue": 17,
+          "rootId": "n6",
+          "nodes": [
+            {
+              "id": "n1",
+              "keys": [
+                2
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n2",
+              "keys": [
+                17
+              ],
+              "children": [
+                "n1",
+                "n3"
+              ],
+              "leaf": false
+            },
+            {
+              "id": "n3",
+              "keys": [
+                21
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n4",
+              "keys": [
+                34,
+                49
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n5",
+              "keys": [
+                27,
+                29
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n6",
+              "keys": [
+                23
+              ],
+              "children": [
+                "n2",
+                "n7"
+              ],
+              "leaf": false
+            },
+            {
+              "id": "n7",
+              "keys": [
+                30
+              ],
+              "children": [
+                "n5",
+                "n4"
+              ],
+              "leaf": false
+            }
+          ],
+          "currentNodeId": "n6",
+          "pathIds": [
+            "n6"
+          ],
+          "compareIndex": null,
+          "compareKey": null,
+          "childSlot": null,
+          "childId": null,
+          "split": null,
+          "insertedKey": null,
+          "deleteInfo": null,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            2,
+            17,
+            23,
+            30,
+            21,
+            34,
+            49,
+            27,
+            29
+          ],
+          "done": false
+        },
+        "message": "兄弟不够借：父键 23 与两个节点合并 / siblings cannot lend: merge through the parent",
+        "line": 496,
+        "variables": {
+          "order": 4,
+          "minKeys": 1,
+          "maxKeys": 3,
+          "target": 17,
+          "nodeCount": 5,
+          "treeHeight": 2,
+          "currentKeys": [
+            17,
+            23,
+            30
+          ],
+          "path": "[17, 23, 30]",
+          "result": "pending"
+        },
+        "lessonStepId": "merge",
+        "structure": {
+          "kind": "btree",
+          "order": 4,
+          "preset": "delete-root-shrink",
+          "command": "delete",
+          "operation": "merge",
+          "targetValue": 17,
+          "rootId": "n2",
+          "nodes": [
+            {
+              "id": "n1",
+              "keys": [
+                2
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n2",
+              "keys": [
+                17,
+                23,
+                30
+              ],
+              "children": [
+                "n1",
+                "n3",
+                "n5",
+                "n4"
+              ],
+              "leaf": false
+            },
+            {
+              "id": "n3",
+              "keys": [
+                21
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n4",
+              "keys": [
+                34,
+                49
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n5",
+              "keys": [
+                27,
+                29
+              ],
+              "children": [],
+              "leaf": true
+            }
+          ],
+          "currentNodeId": "n2",
+          "pathIds": [
+            "n2"
+          ],
+          "compareIndex": null,
+          "compareKey": null,
+          "childSlot": null,
+          "childId": null,
+          "split": null,
+          "insertedKey": null,
+          "deleteInfo": {
+            "action": "merge",
+            "key": null,
+            "parentId": null,
+            "siblingId": "n7",
+            "separatorKey": 23,
+            "rootChanged": true
+          },
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            2,
+            17,
+            23,
+            30,
+            21,
+            34,
+            49,
+            27,
+            29
+          ],
+          "done": false
+        },
+        "message": "根节点已空：唯一孩子成为新根，树高减一 / empty root contracts; the tree gets shorter",
+        "line": 511,
+        "variables": {
+          "order": 4,
+          "minKeys": 1,
+          "maxKeys": 3,
+          "target": 17,
+          "nodeCount": 5,
+          "treeHeight": 2,
+          "currentKeys": [
+            17,
+            23,
+            30
+          ],
+          "path": "[17, 23, 30]",
+          "result": "pending"
+        },
+        "lessonStepId": "root-shrink",
+        "structure": {
+          "kind": "btree",
+          "order": 4,
+          "preset": "delete-root-shrink",
+          "command": "delete",
+          "operation": "root-shrink",
+          "targetValue": 17,
+          "rootId": "n2",
+          "nodes": [
+            {
+              "id": "n1",
+              "keys": [
+                2
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n2",
+              "keys": [
+                17,
+                23,
+                30
+              ],
+              "children": [
+                "n1",
+                "n3",
+                "n5",
+                "n4"
+              ],
+              "leaf": false
+            },
+            {
+              "id": "n3",
+              "keys": [
+                21
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n4",
+              "keys": [
+                34,
+                49
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n5",
+              "keys": [
+                27,
+                29
+              ],
+              "children": [],
+              "leaf": true
+            }
+          ],
+          "currentNodeId": "n2",
+          "pathIds": [
+            "n2"
+          ],
+          "compareIndex": null,
+          "compareKey": null,
+          "childSlot": null,
+          "childId": null,
+          "split": null,
+          "insertedKey": null,
+          "deleteInfo": {
+            "action": "root-shrink",
+            "key": null,
+            "parentId": null,
+            "siblingId": null,
+            "separatorKey": null,
+            "rootChanged": true
+          },
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            2,
+            17,
+            23,
+            30,
+            21,
+            34,
+            49,
+            27,
+            29
+          ],
+          "done": false
+        },
+        "message": "关键字 17 位于内部节点：用左子树最大前驱替换 / internal key: replace by its predecessor",
+        "line": 635,
+        "variables": {
+          "order": 4,
+          "minKeys": 1,
+          "maxKeys": 3,
+          "target": 17,
+          "nodeCount": 5,
+          "treeHeight": 2,
+          "currentKeys": [
+            17,
+            23,
+            30
+          ],
+          "path": "[17, 23, 30]",
+          "result": "pending"
+        },
+        "lessonStepId": "locate",
+        "structure": {
+          "kind": "btree",
+          "order": 4,
+          "preset": "delete-root-shrink",
+          "command": "delete",
+          "operation": "locate",
+          "targetValue": 17,
+          "rootId": "n2",
+          "nodes": [
+            {
+              "id": "n1",
+              "keys": [
+                2
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n2",
+              "keys": [
+                17,
+                23,
+                30
+              ],
+              "children": [
+                "n1",
+                "n3",
+                "n5",
+                "n4"
+              ],
+              "leaf": false
+            },
+            {
+              "id": "n3",
+              "keys": [
+                21
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n4",
+              "keys": [
+                34,
+                49
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n5",
+              "keys": [
+                27,
+                29
+              ],
+              "children": [],
+              "leaf": true
+            }
+          ],
+          "currentNodeId": "n2",
+          "pathIds": [
+            "n2"
+          ],
+          "compareIndex": 0,
+          "compareKey": 17,
+          "childSlot": null,
+          "childId": null,
+          "split": null,
+          "insertedKey": null,
+          "deleteInfo": {
+            "action": "locate",
+            "key": 17,
+            "parentId": null,
+            "siblingId": null,
+            "separatorKey": null,
+            "rootChanged": false
+          },
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            2,
+            17,
+            21,
+            23,
+            30,
+            34,
+            49,
+            27,
+            29
+          ],
+          "done": false
+        },
+        "message": "兄弟不够借：父键 17 与两个节点合并 / siblings cannot lend: merge through the parent",
+        "line": 496,
+        "variables": {
+          "order": 4,
+          "minKeys": 1,
+          "maxKeys": 3,
+          "target": 17,
+          "nodeCount": 4,
+          "treeHeight": 2,
+          "currentKeys": [
+            2,
+            17,
+            21
+          ],
+          "path": "[23, 30] → [2, 17, 21]",
+          "result": "pending"
+        },
+        "lessonStepId": "merge",
+        "structure": {
+          "kind": "btree",
+          "order": 4,
+          "preset": "delete-root-shrink",
+          "command": "delete",
+          "operation": "merge",
+          "targetValue": 17,
+          "rootId": "n2",
+          "nodes": [
+            {
+              "id": "n1",
+              "keys": [
+                2,
+                17,
+                21
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n2",
+              "keys": [
+                23,
+                30
+              ],
+              "children": [
+                "n1",
+                "n5",
+                "n4"
+              ],
+              "leaf": false
+            },
+            {
+              "id": "n4",
+              "keys": [
+                34,
+                49
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n5",
+              "keys": [
+                27,
+                29
+              ],
+              "children": [],
+              "leaf": true
+            }
+          ],
+          "currentNodeId": "n1",
+          "pathIds": [
+            "n2",
+            "n1"
+          ],
+          "compareIndex": null,
+          "compareKey": null,
+          "childSlot": null,
+          "childId": null,
+          "split": null,
+          "insertedKey": null,
+          "deleteInfo": {
+            "action": "merge",
+            "key": null,
+            "parentId": "n2",
+            "siblingId": "n3",
+            "separatorKey": 17,
+            "rootChanged": false
+          },
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            2,
+            17,
+            21,
+            23,
+            30,
+            34,
+            49,
+            27,
+            29
+          ],
+          "done": false
+        },
+        "message": "进入第 1 个子树继续删除 / descend into repaired child 1",
+        "line": 704,
+        "variables": {
+          "order": 4,
+          "minKeys": 1,
+          "maxKeys": 3,
+          "target": 17,
+          "nodeCount": 4,
+          "treeHeight": 2,
+          "currentKeys": [
+            23,
+            30
+          ],
+          "path": "[23, 30]",
+          "result": "pending"
+        },
+        "lessonStepId": "descend",
+        "structure": {
+          "kind": "btree",
+          "order": 4,
+          "preset": "delete-root-shrink",
+          "command": "delete",
+          "operation": "descend",
+          "targetValue": 17,
+          "rootId": "n2",
+          "nodes": [
+            {
+              "id": "n1",
+              "keys": [
+                2,
+                17,
+                21
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n2",
+              "keys": [
+                23,
+                30
+              ],
+              "children": [
+                "n1",
+                "n5",
+                "n4"
+              ],
+              "leaf": false
+            },
+            {
+              "id": "n4",
+              "keys": [
+                34,
+                49
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n5",
+              "keys": [
+                27,
+                29
+              ],
+              "children": [],
+              "leaf": true
+            }
+          ],
+          "currentNodeId": "n2",
+          "pathIds": [
+            "n2"
+          ],
+          "compareIndex": null,
+          "compareKey": null,
+          "childSlot": 0,
+          "childId": "n1",
+          "split": null,
+          "insertedKey": null,
+          "deleteInfo": null,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            2,
+            21,
+            23,
+            30,
+            34,
+            49,
+            27,
+            29
+          ],
+          "done": false
+        },
+        "message": "在叶子中删除 17；节点仍满足下限 / delete from a leaf that stays above the minimum",
+        "line": 624,
+        "variables": {
+          "order": 4,
+          "minKeys": 1,
+          "maxKeys": 3,
+          "target": 17,
+          "nodeCount": 4,
+          "treeHeight": 2,
+          "currentKeys": [
+            2,
+            21
+          ],
+          "path": "[23, 30] → [2, 21]",
+          "result": "pending"
+        },
+        "lessonStepId": "delete-leaf",
+        "structure": {
+          "kind": "btree",
+          "order": 4,
+          "preset": "delete-root-shrink",
+          "command": "delete",
+          "operation": "delete-leaf",
+          "targetValue": 17,
+          "rootId": "n2",
+          "nodes": [
+            {
+              "id": "n1",
+              "keys": [
+                2,
+                21
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n2",
+              "keys": [
+                23,
+                30
+              ],
+              "children": [
+                "n1",
+                "n5",
+                "n4"
+              ],
+              "leaf": false
+            },
+            {
+              "id": "n4",
+              "keys": [
+                34,
+                49
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n5",
+              "keys": [
+                27,
+                29
+              ],
+              "children": [],
+              "leaf": true
+            }
+          ],
+          "currentNodeId": "n1",
+          "pathIds": [
+            "n2",
+            "n1"
+          ],
+          "compareIndex": null,
+          "compareKey": null,
+          "childSlot": null,
+          "childId": null,
+          "split": null,
+          "insertedKey": null,
+          "deleteInfo": {
+            "action": "delete-leaf",
+            "key": 17,
+            "parentId": null,
+            "siblingId": null,
+            "separatorKey": null,
+            "rootChanged": false
+          },
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            2,
+            21,
+            23,
+            30,
+            34,
+            49,
+            27,
+            29
+          ],
+          "done": true
+        },
+        "message": "删除完成：容量、区间、叶深与根规则仍成立 / deletion complete: all B-tree invariants hold",
+        "line": 765,
+        "variables": {
+          "order": 4,
+          "minKeys": 1,
+          "maxKeys": 3,
+          "target": 17,
+          "nodeCount": 4,
+          "treeHeight": 2,
+          "currentKeys": [],
+          "path": "(空)",
+          "result": "deleted"
+        },
+        "lessonStepId": "done",
+        "structure": {
+          "kind": "btree",
+          "order": 4,
+          "preset": "delete-root-shrink",
+          "command": "delete",
+          "operation": "done",
+          "targetValue": 17,
+          "rootId": "n2",
+          "nodes": [
+            {
+              "id": "n1",
+              "keys": [
+                2,
+                21
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n2",
+              "keys": [
+                23,
+                30
+              ],
+              "children": [
+                "n1",
+                "n5",
+                "n4"
+              ],
+              "leaf": false
+            },
+            {
+              "id": "n4",
+              "keys": [
+                34,
+                49
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n5",
+              "keys": [
+                27,
+                29
+              ],
+              "children": [],
+              "leaf": true
+            }
+          ],
+          "currentNodeId": null,
+          "pathIds": [],
+          "compareIndex": null,
+          "compareKey": null,
+          "childSlot": null,
+          "childId": null,
+          "split": null,
+          "insertedKey": null,
+          "deleteInfo": null,
+          "result": "deleted"
+        }
+      }
+    ]
+  },
+  "delete-missing": {
+    "input": {
+      "preset": "delete-missing",
+      "operation": "delete",
+      "tree": [
+        10,
+        20,
+        30,
+        40,
+        50,
+        60,
+        70
+      ],
+      "target": 35
+    },
+    "frames": [
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            10,
+            20,
+            40,
+            30,
+            50,
+            60,
+            70
+          ],
+          "done": false
+        },
+        "message": "4 阶 B 树：最多 4 个孩子、3 个关键字 / order-4 B-tree ready",
+        "line": 730,
+        "variables": {
+          "order": 4,
+          "minKeys": 1,
+          "maxKeys": 3,
+          "target": 35,
+          "nodeCount": 4,
+          "treeHeight": 2,
+          "currentKeys": [
+            20,
+            40
+          ],
+          "path": "[20, 40]",
+          "result": "pending"
+        },
+        "lessonStepId": "init",
+        "structure": {
+          "kind": "btree",
+          "order": 4,
+          "preset": "delete-missing",
+          "command": "delete",
+          "operation": "init",
+          "targetValue": 35,
+          "rootId": "n2",
+          "nodes": [
+            {
+              "id": "n1",
+              "keys": [
+                10
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n2",
+              "keys": [
+                20,
+                40
+              ],
+              "children": [
+                "n1",
+                "n3",
+                "n4"
+              ],
+              "leaf": false
+            },
+            {
+              "id": "n3",
+              "keys": [
+                30
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n4",
+              "keys": [
+                50,
+                60,
+                70
+              ],
+              "children": [],
+              "leaf": true
+            }
+          ],
+          "currentNodeId": "n2",
+          "pathIds": [
+            "n2"
+          ],
+          "compareIndex": null,
+          "compareKey": null,
+          "childSlot": null,
+          "childId": null,
+          "split": null,
+          "insertedKey": null,
+          "deleteInfo": null,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            10,
+            20,
+            40,
+            30,
+            50,
+            60,
+            70
+          ],
+          "done": false
+        },
+        "message": "比较 35 与关键字 20 / compare with key 20",
+        "line": 550,
+        "variables": {
+          "order": 4,
+          "minKeys": 1,
+          "maxKeys": 3,
+          "target": 35,
+          "nodeCount": 4,
+          "treeHeight": 2,
+          "currentKeys": [
+            20,
+            40
+          ],
+          "path": "[20, 40]",
+          "result": "pending"
+        },
+        "lessonStepId": "inspect",
+        "structure": {
+          "kind": "btree",
+          "order": 4,
+          "preset": "delete-missing",
+          "command": "delete",
+          "operation": "inspect",
+          "targetValue": 35,
+          "rootId": "n2",
+          "nodes": [
+            {
+              "id": "n1",
+              "keys": [
+                10
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n2",
+              "keys": [
+                20,
+                40
+              ],
+              "children": [
+                "n1",
+                "n3",
+                "n4"
+              ],
+              "leaf": false
+            },
+            {
+              "id": "n3",
+              "keys": [
+                30
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n4",
+              "keys": [
+                50,
+                60,
+                70
+              ],
+              "children": [],
+              "leaf": true
+            }
+          ],
+          "currentNodeId": "n2",
+          "pathIds": [
+            "n2"
+          ],
+          "compareIndex": 0,
+          "compareKey": 20,
+          "childSlot": null,
+          "childId": null,
+          "split": null,
+          "insertedKey": null,
+          "deleteInfo": null,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            10,
+            20,
+            40,
+            30,
+            50,
+            60,
+            70
+          ],
+          "done": false
+        },
+        "message": "比较 35 与关键字 40 / compare with key 40",
+        "line": 550,
+        "variables": {
+          "order": 4,
+          "minKeys": 1,
+          "maxKeys": 3,
+          "target": 35,
+          "nodeCount": 4,
+          "treeHeight": 2,
+          "currentKeys": [
+            20,
+            40
+          ],
+          "path": "[20, 40]",
+          "result": "pending"
+        },
+        "lessonStepId": "inspect",
+        "structure": {
+          "kind": "btree",
+          "order": 4,
+          "preset": "delete-missing",
+          "command": "delete",
+          "operation": "inspect",
+          "targetValue": 35,
+          "rootId": "n2",
+          "nodes": [
+            {
+              "id": "n1",
+              "keys": [
+                10
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n2",
+              "keys": [
+                20,
+                40
+              ],
+              "children": [
+                "n1",
+                "n3",
+                "n4"
+              ],
+              "leaf": false
+            },
+            {
+              "id": "n3",
+              "keys": [
+                30
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n4",
+              "keys": [
+                50,
+                60,
+                70
+              ],
+              "children": [],
+              "leaf": true
+            }
+          ],
+          "currentNodeId": "n2",
+          "pathIds": [
+            "n2"
+          ],
+          "compareIndex": 1,
+          "compareKey": 40,
+          "childSlot": null,
+          "childId": null,
+          "split": null,
+          "insertedKey": null,
+          "deleteInfo": null,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            10,
+            20,
+            40,
+            30,
+            50,
+            60,
+            70
+          ],
+          "done": false
+        },
+        "message": "继续搜索第 2 个子树 / descend into child 2",
+        "line": 574,
+        "variables": {
+          "order": 4,
+          "minKeys": 1,
+          "maxKeys": 3,
+          "target": 35,
+          "nodeCount": 4,
+          "treeHeight": 2,
+          "currentKeys": [
+            20,
+            40
+          ],
+          "path": "[20, 40]",
+          "result": "pending"
+        },
+        "lessonStepId": "descend",
+        "structure": {
+          "kind": "btree",
+          "order": 4,
+          "preset": "delete-missing",
+          "command": "delete",
+          "operation": "descend",
+          "targetValue": 35,
+          "rootId": "n2",
+          "nodes": [
+            {
+              "id": "n1",
+              "keys": [
+                10
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n2",
+              "keys": [
+                20,
+                40
+              ],
+              "children": [
+                "n1",
+                "n3",
+                "n4"
+              ],
+              "leaf": false
+            },
+            {
+              "id": "n3",
+              "keys": [
+                30
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n4",
+              "keys": [
+                50,
+                60,
+                70
+              ],
+              "children": [],
+              "leaf": true
+            }
+          ],
+          "currentNodeId": "n2",
+          "pathIds": [
+            "n2"
+          ],
+          "compareIndex": null,
+          "compareKey": null,
+          "childSlot": 1,
+          "childId": "n3",
+          "split": null,
+          "insertedKey": null,
+          "deleteInfo": null,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            10,
+            20,
+            40,
+            30,
+            50,
+            60,
+            70
+          ],
+          "done": false
+        },
+        "message": "比较 35 与关键字 30 / compare with key 30",
+        "line": 550,
+        "variables": {
+          "order": 4,
+          "minKeys": 1,
+          "maxKeys": 3,
+          "target": 35,
+          "nodeCount": 4,
+          "treeHeight": 2,
+          "currentKeys": [
+            30
+          ],
+          "path": "[20, 40] → [30]",
+          "result": "pending"
+        },
+        "lessonStepId": "inspect",
+        "structure": {
+          "kind": "btree",
+          "order": 4,
+          "preset": "delete-missing",
+          "command": "delete",
+          "operation": "inspect",
+          "targetValue": 35,
+          "rootId": "n2",
+          "nodes": [
+            {
+              "id": "n1",
+              "keys": [
+                10
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n2",
+              "keys": [
+                20,
+                40
+              ],
+              "children": [
+                "n1",
+                "n3",
+                "n4"
+              ],
+              "leaf": false
+            },
+            {
+              "id": "n3",
+              "keys": [
+                30
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n4",
+              "keys": [
+                50,
+                60,
+                70
+              ],
+              "children": [],
+              "leaf": true
+            }
+          ],
+          "currentNodeId": "n3",
+          "pathIds": [
+            "n2",
+            "n3"
+          ],
+          "compareIndex": 0,
+          "compareKey": 30,
+          "childSlot": null,
+          "childId": null,
+          "split": null,
+          "insertedKey": null,
+          "deleteInfo": null,
+          "result": null
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            10,
+            20,
+            40,
+            30,
+            50,
+            60,
+            70
+          ],
+          "done": false
+        },
+        "message": "叶子中没有 35：删除失败，结构不变 / key absent: delete does nothing",
+        "line": 564,
+        "variables": {
+          "order": 4,
+          "minKeys": 1,
+          "maxKeys": 3,
+          "target": 35,
+          "nodeCount": 4,
+          "treeHeight": 2,
+          "currentKeys": [
+            30
+          ],
+          "path": "[20, 40] → [30]",
+          "result": "not-found"
+        },
+        "lessonStepId": "not-found",
+        "structure": {
+          "kind": "btree",
+          "order": 4,
+          "preset": "delete-missing",
+          "command": "delete",
+          "operation": "not-found",
+          "targetValue": 35,
+          "rootId": "n2",
+          "nodes": [
+            {
+              "id": "n1",
+              "keys": [
+                10
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n2",
+              "keys": [
+                20,
+                40
+              ],
+              "children": [
+                "n1",
+                "n3",
+                "n4"
+              ],
+              "leaf": false
+            },
+            {
+              "id": "n3",
+              "keys": [
+                30
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n4",
+              "keys": [
+                50,
+                60,
+                70
+              ],
+              "children": [],
+              "leaf": true
+            }
+          ],
+          "currentNodeId": "n3",
+          "pathIds": [
+            "n2",
+            "n3"
+          ],
+          "compareIndex": null,
+          "compareKey": null,
+          "childSlot": null,
+          "childId": null,
+          "split": null,
+          "insertedKey": null,
+          "deleteInfo": null,
+          "result": "not-found"
+        }
+      },
+      {
+        "state": {
+          "type": "array",
+          "values": [
+            10,
+            20,
+            40,
+            30,
+            50,
+            60,
+            70
+          ],
+          "done": true
+        },
+        "message": "删除失败：关键字不存在，结构不变 / delete failed: key absent, structure unchanged",
+        "line": 765,
+        "variables": {
+          "order": 4,
+          "minKeys": 1,
+          "maxKeys": 3,
+          "target": 35,
+          "nodeCount": 4,
+          "treeHeight": 2,
+          "currentKeys": [],
+          "path": "(空)",
+          "result": "not-found"
+        },
+        "lessonStepId": "done",
+        "structure": {
+          "kind": "btree",
+          "order": 4,
+          "preset": "delete-missing",
+          "command": "delete",
+          "operation": "done",
+          "targetValue": 35,
+          "rootId": "n2",
+          "nodes": [
+            {
+              "id": "n1",
+              "keys": [
+                10
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n2",
+              "keys": [
+                20,
+                40
+              ],
+              "children": [
+                "n1",
+                "n3",
+                "n4"
+              ],
+              "leaf": false
+            },
+            {
+              "id": "n3",
+              "keys": [
+                30
+              ],
+              "children": [],
+              "leaf": true
+            },
+            {
+              "id": "n4",
+              "keys": [
+                50,
+                60,
+                70
+              ],
+              "children": [],
+              "leaf": true
+            }
+          ],
+          "currentNodeId": null,
+          "pathIds": [],
+          "compareIndex": null,
+          "compareKey": null,
+          "childSlot": null,
+          "childId": null,
+          "split": null,
+          "insertedKey": null,
+          "deleteInfo": null,
+          "result": "not-found"
+        }
+      }
+    ]
+  }
+}

@@ -94,8 +94,8 @@ const REFERENCE_LEARNING_NOTES: Record<string, LocalizedText> = {
     en: 'An AVL tree keeps left and right subtree heights within one; after insertion or deletion it updates heights on the path and applies a single or double rotation when needed. Height O(log n).',
   },
   btree: {
-    zh: '多路搜索树的每个节点保存多个有序关键字和多个孩子；插入溢出时分裂并把中间关键字上移，所有叶子保持同一深度。',
-    en: 'A multiway search tree stores several ordered keys and children per node; an overflowing node splits and promotes its middle key, keeping all leaves at the same depth.',
+    zh: '多路搜索树的每个节点保存多个有序关键字和多个孩子；插入溢出时分裂并把中间关键字上移，删除不足时先借后并，所有叶子保持同一深度。',
+    en: 'A multiway search tree stores several ordered keys and children per node; an overflowing node splits and promotes its middle key, while an underfull node borrows or merges, keeping all leaves at the same depth.',
   },
   heap: {
     zh: '用数组表示完全二叉树，父节点不小于孩子；插入上浮，删除堆顶下沉。建堆 O(n)，单次插删 O(log n)，堆排序 O(n log n)。',
@@ -156,6 +156,18 @@ const REFERENCE_LEARNING_NOTES: Record<string, LocalizedText> = {
   linear: {
     zh: '从数组一端开始逐个比较，命中就返回下标，扫描结束仍未命中返回 -1。最坏 O(n)，不需要有序，额外 O(1)。',
     en: 'Compare from one end of the array and return the index on a hit, or -1 after the scan. O(n) worst case, no ordering requirement, O(1) extra space.',
+  },
+  'block-search': {
+    zh: '块间最大值严格递增、后块最小值大于前块最大值，块内保持原顺序。先比较索引最大值锁定一个块，再在块内逐项扫描；时间 O(√n)（块长与块数约为 √n 时），空间 O(n+b)。',
+    en: 'Block maxima strictly increase and each later block starts above the previous maximum, while in-block order stays untouched. Index maxima select one block, then records are scanned there; O(√n) with block count and length near √n, and O(n+b) space.',
+  },
+  'bplus-tree': {
+    zh: '内部节点只存分隔键，记录全部在叶层；内部键等于右子树最小记录，叶链用 next 串联。点查找必须到叶子，范围查询先定位下界叶再沿 next 扫描；本轮实现查找、插入、分裂与范围查询，不实现删除。',
+    en: 'Internal nodes hold separators only and every record lives in the leaf layer; an internal key equals the right subtree minimum and leaves are linked by next. Point search must reach a leaf, range search locates the lower-bound leaf then follows next; this round implements search, insertion, splits and ranges, not deletion.',
+  },
+  'key-tree': {
+    zh: '根为哨兵，每条边一个字符，共享前缀只保存一份；路径末端必须 terminal=true 才是完整关键字。查找与插入只走长度为 L 的一条路径，时间 O(L)，空间按所有关键字的字符总数计。',
+    en: 'The root is a sentinel, each edge carries one character, and a shared prefix is stored once; the path end must be terminal=true to be a complete key. Search and insertion follow one path of length L in O(L) time, with space counted over all characters of all keys.',
   },
   'hash-chain': {
     zh: '散列函数把关键字映射到桶，桶内用链表保存冲突项；查找先定位桶，再沿链比较。平均 O(1+α)，最坏 O(n)。',
