@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { useI18n } from '../../i18n/I18nProvider';
 import {
   STRUCTURE_LIMITS,
@@ -35,6 +36,12 @@ export function StructureOperationEditor({
 }: StructureOperationEditorProps) {
   const { t } = useI18n();
   const specs = structureOperationSpecs(algorithm);
+  const [collapsed, setCollapsed] = useState(false);
+
+  useEffect(() => {
+    // Switching algorithms should never leave the new editor hidden.
+    setCollapsed(false);
+  }, [algorithm]);
 
   const update = (index: number, patch: Partial<StructureOperationDraft>) => {
     onChangeRows(rows.map((row, position) => (position === index ? { ...row, ...patch } : row)));
@@ -117,73 +124,84 @@ export function StructureOperationEditor({
           className="btn small structure-add"
           type="button"
           onClick={addRow}
-          disabled={rows.length >= STRUCTURE_LIMITS.MAX_OPERATIONS}
+          disabled={collapsed || rows.length >= STRUCTURE_LIMITS.MAX_OPERATIONS}
           data-testid="structure-add"
         >
           + {t('structureAddOperation')}
         </button>
+        <button
+          className="btn small structure-toggle"
+          type="button"
+          onClick={() => setCollapsed((value) => !value)}
+          aria-expanded={!collapsed}
+          data-testid="structure-toggle"
+        >
+          {collapsed ? t('structureExpand') : t('structureCollapse')}
+        </button>
       </div>
 
-      <div className="structure-rows" data-testid="structure-op-list">
-        {rows.map((row, index) => {
-          const spec = specs.find((candidate) => candidate.op === row.op) ?? specs[0]!;
-          const fields = spec.fields;
-          return (
-            <div className="structure-row" data-testid="structure-op-row" data-op={row.op} key={row.id}>
-              <span className="structure-row-index">{index + 1}</span>
-              <select
-                id={index === 0 ? 'run-input' : undefined}
-                className="input structure-op-select"
-                data-testid="structure-op-type"
-                value={row.op}
-                onChange={(event) => changeOperation(index, event.target.value)}
-                aria-label={`${t('structureOperationsLabel')} ${index + 1}`}
-              >
-                {specs.map((candidate) => (
-                  <option key={candidate.op} value={candidate.op}>
-                    {t(candidate.labelKey)}
-                  </option>
-                ))}
-              </select>
-              {fields.includes('anchor') ? fieldInput(row, spec, 'anchor', index) : null}
-              {fields.includes('index') ? fieldInput(row, spec, 'index', index) : null}
-              {fields.includes('value') ? fieldInput(row, spec, 'value', index) : null}
-              <div className="structure-row-actions">
-                <button
-                  className="btn small structure-move"
-                  type="button"
-                  onClick={() => moveRow(index, -1)}
-                  disabled={index === 0}
-                  aria-label={t('structureMoveUp')}
-                  data-testid="structure-row-up"
+      {collapsed ? null : (
+        <div className="structure-rows" data-testid="structure-op-list">
+          {rows.map((row, index) => {
+            const spec = specs.find((candidate) => candidate.op === row.op) ?? specs[0]!;
+            const fields = spec.fields;
+            return (
+              <div className="structure-row" data-testid="structure-op-row" data-op={row.op} key={row.id}>
+                <span className="structure-row-index">{index + 1}</span>
+                <select
+                  id={index === 0 ? 'run-input' : undefined}
+                  className="input structure-op-select"
+                  data-testid="structure-op-type"
+                  value={row.op}
+                  onChange={(event) => changeOperation(index, event.target.value)}
+                  aria-label={`${t('structureOperationsLabel')} ${index + 1}`}
                 >
-                  ↑
-                </button>
-                <button
-                  className="btn small structure-move"
-                  type="button"
-                  onClick={() => moveRow(index, 1)}
-                  disabled={index === rows.length - 1}
-                  aria-label={t('structureMoveDown')}
-                  data-testid="structure-row-down"
-                >
-                  ↓
-                </button>
-                <button
-                  className="btn small structure-remove"
-                  type="button"
-                  onClick={() => removeRow(index)}
-                  disabled={rows.length <= 1}
-                  aria-label={t('structureRemoveOperation')}
-                  data-testid="structure-row-remove"
-                >
-                  ×
-                </button>
+                  {specs.map((candidate) => (
+                    <option key={candidate.op} value={candidate.op}>
+                      {t(candidate.labelKey)}
+                    </option>
+                  ))}
+                </select>
+                {fields.includes('anchor') ? fieldInput(row, spec, 'anchor', index) : null}
+                {fields.includes('index') ? fieldInput(row, spec, 'index', index) : null}
+                {fields.includes('value') ? fieldInput(row, spec, 'value', index) : null}
+                <div className="structure-row-actions">
+                  <button
+                    className="btn small structure-move"
+                    type="button"
+                    onClick={() => moveRow(index, -1)}
+                    disabled={index === 0}
+                    aria-label={t('structureMoveUp')}
+                    data-testid="structure-row-up"
+                  >
+                    ↑
+                  </button>
+                  <button
+                    className="btn small structure-move"
+                    type="button"
+                    onClick={() => moveRow(index, 1)}
+                    disabled={index === rows.length - 1}
+                    aria-label={t('structureMoveDown')}
+                    data-testid="structure-row-down"
+                  >
+                    ↓
+                  </button>
+                  <button
+                    className="btn small structure-remove"
+                    type="button"
+                    onClick={() => removeRow(index)}
+                    disabled={rows.length <= 1}
+                    aria-label={t('structureRemoveOperation')}
+                    data-testid="structure-row-remove"
+                  >
+                    ×
+                  </button>
+                </div>
               </div>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

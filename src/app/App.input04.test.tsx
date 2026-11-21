@@ -115,6 +115,13 @@ describe('INPUT-04 — structured linear operation sequences', () => {
     expect(rows()).toHaveLength(1);
     expect(rows()[0]!.getAttribute('data-op')).toBe('insert');
     expect((screen.getByTestId('structure-op-value') as HTMLInputElement).value).toBe('7');
+
+    fireEvent.click(screen.getByTestId('structure-toggle'));
+    expect(screen.queryByTestId('structure-op-list')).toBeNull();
+    expect((screen.getByTestId('structure-toggle') as HTMLButtonElement).getAttribute('aria-expanded')).toBe('false');
+    expect((screen.getByTestId('structure-add') as HTMLButtonElement).disabled).toBe(true);
+    fireEvent.click(screen.getByTestId('structure-toggle'));
+    expect(rows()).toHaveLength(1);
   });
 
   it('runs custom stack and queue sequences and preserves their operation order', async () => {
