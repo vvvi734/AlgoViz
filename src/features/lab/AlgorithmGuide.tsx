@@ -1,6 +1,7 @@
 import type { AlgorithmGuideContent } from '../../domain/guides/types';
 import { localizeComplexity } from '../../domain/lessons/localizeMessage';
 import { useI18n } from '../../i18n/I18nProvider';
+import { AlgorithmFlowView } from './AlgorithmFlow';
 import { GuideDiagram } from './GuideDiagram';
 
 export const ALGORITHM_GUIDE_ID = 'algorithm-guide';
@@ -8,10 +9,10 @@ export const ALGORITHM_GUIDE_ID = 'algorithm-guide';
 /**
  * Algorithm review sheet.
  *
- * Five blocks, one screen: intro, formal definition + plain-language reading,
- * complexity/conditions, a horizontal abstract flow, and 1–3 mistakes plus a
- * memory hook. The Trace's frame captions and per-step examples are deliberately
- * absent: the player below owns frame-level explanation.
+ * Reading order: why the algorithm exists → formal/plain explanation →
+ * complexity and limits → the structured control flow → mistakes. The flow is
+ * the visual centre; the mistakes sit last and deliberately carry less weight.
+ * Trace frame captions stay in the player below and are never copied here.
  */
 export function AlgorithmGuide({
   guide,
@@ -31,7 +32,7 @@ export function AlgorithmGuide({
 
   return (
     <article
-      className="panel algorithm-guide guide-sheet"
+      className="algorithm-guide guide-sheet"
       id={ALGORITHM_GUIDE_ID}
       data-testid="algorithm-guide"
       data-source={guide.source}
@@ -77,12 +78,10 @@ export function AlgorithmGuide({
             </section>
           </div>
 
-          <div className="guide-facts" data-testid="guide-facts">
-            <div className="guide-section-head">
-              <h3>{t('guideComplexityTitle')}</h3>
-            </div>
-            <div className="guide-meta-row">
-              <div className="guide-complexity-chips" data-testid="guide-complexity">
+          <section className="guide-facts" data-testid="guide-facts" aria-labelledby="guide-facts-title">
+            <h3 id="guide-facts-title">{t('guideComplexityTitle')}</h3>
+            <div className="guide-fact-lines">
+              <div className="guide-complexity-lines" data-testid="guide-complexity">
                 <span>
                   <b>{t('guideTime')}</b>
                   {guide.complexity ? localizeComplexity(guide.complexity.time, lang) : '—'}
@@ -92,18 +91,21 @@ export function AlgorithmGuide({
                   {guide.complexity ? localizeComplexity(guide.complexity.space, lang) : '—'}
                 </span>
               </div>
-              {conditions.length > 0 ? (
-                <div className="guide-conditions" data-testid="guide-conditions">
-                  <b>{t('guideConditionsTitle')}</b>
-                  <ul>
-                    {conditions.map((item) => (
-                      <li key={item}>{item}</li>
-                    ))}
-                  </ul>
-                </div>
+              {guide.complexity?.note ? (
+                <p className="guide-complexity-note">{localized(guide.complexity.note)}</p>
               ) : null}
             </div>
-          </div>
+            {conditions.length > 0 ? (
+              <div className="guide-conditions" data-testid="guide-conditions">
+                <b>{t('guideConditionsTitle')}</b>
+                <ul>
+                  {conditions.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+          </section>
 
           <section className="guide-flow-section" aria-labelledby="guide-flow-title">
             <div className="guide-section-head">
@@ -116,7 +118,9 @@ export function AlgorithmGuide({
                 </span>
               ) : null}
             </div>
-            {guide.stages.length > 0 ? (
+            {guide.flow ? (
+              <AlgorithmFlowView flow={guide.flow} />
+            ) : guide.stages.length > 0 ? (
               <ol className="guide-flow-row" data-testid="guide-stage-list">
                 {guide.stages.map((stage, index) => (
                   <li className="guide-flow-step" key={`${guide.algorithmId}-flow-${index}`}>
@@ -139,7 +143,7 @@ export function AlgorithmGuide({
             )}
           </section>
 
-          <section className="guide-pitfalls-section" aria-labelledby="guide-pitfalls-title">
+          <footer className="guide-pitfalls-section" aria-labelledby="guide-pitfalls-title">
             <h3 id="guide-pitfalls-title">{t('guideMistakesTitle')}</h3>
             {pitfalls.length > 0 ? (
               <ul className="guide-pitfall-list" data-testid="guide-pitfalls">
@@ -156,7 +160,7 @@ export function AlgorithmGuide({
                 <span>{localized(guide.memoryHook)}</span>
               </p>
             ) : null}
-          </section>
+          </footer>
 
           <footer className="guide-actions">
             <button
@@ -196,7 +200,7 @@ function CatalogGuide({
           {guide.definition ? guide.definition[lang] : t('guideEmptyBody')}
         </h2>
         <div className="guide-meta-row">
-          <div className="guide-complexity-chips" data-testid="guide-complexity">
+          <div className="guide-complexity-lines" data-testid="guide-complexity">
             <span>
               <b>{t('guideTime')}</b>
               {guide.complexity ? localizeComplexity(guide.complexity.time, lang) : '—'}

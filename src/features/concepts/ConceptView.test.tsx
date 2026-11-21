@@ -32,6 +32,36 @@ describe('ConceptView (CORE-REFINE-01)', () => {
     }
   });
 
+  it('keeps the editorial reading order on the basics page and localizes its formula', () => {
+    renderConcept('data-structure-basics');
+
+    const order = [
+      'concept-goal',
+      'concept-diagram',
+      'concept-key-concepts',
+      'concept-definition',
+      'concept-section-list',
+      'concept-comparison',
+      'concept-takeaway',
+    ];
+    const elements = order.map((id) => screen.getByTestId(id));
+    for (let index = 0; index < elements.length - 1; index += 1) {
+      expect(
+        elements[index].compareDocumentPosition(elements[index + 1]) & Node.DOCUMENT_POSITION_FOLLOWING,
+      ).toBeTruthy();
+    }
+
+    window.localStorage.setItem('algolens-lang', 'en');
+    cleanup();
+    renderConcept('data-structure-basics');
+    expect(document.querySelector('.concept-formula')?.textContent).toBe(
+      'data structure = logical structure + storage structure + operations',
+    );
+    expect(screen.getByTestId('concept-page').textContent).not.toMatch(/[\u3400-\u9fff]/);
+    window.localStorage.removeItem('algolens-lang');
+    cleanup();
+  });
+
   it('shows formulas, comparisons and definitions where authored', () => {
     renderConcept('complexity');
     expect(document.querySelector('.concept-formula')?.textContent).toContain('T(n) = O(f(n))');

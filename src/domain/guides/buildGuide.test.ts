@@ -70,6 +70,22 @@ describe('algorithm review guide', () => {
     }
   });
 
+  it('attaches the new structured flow only to the four representative algorithms', () => {
+    for (const lesson of lessonRegistry.lessons) {
+      const guide = buildAlgorithmGuide(
+        lesson.algorithmId,
+        lesson,
+        ALGORITHM_CATALOG[lesson.algorithmId],
+      );
+      if (['kruskal', 'binary', 'kmp', 'merge'].includes(lesson.algorithmId)) {
+        expect(guide.flow?.algorithmId).toBe(lesson.algorithmId);
+        expect(guide.flow?.sections.length).toBeGreaterThan(0);
+      } else {
+        expect(guide.flow).toBeNull();
+      }
+    }
+  });
+
   it('uses core operations for data-structure courses and an algorithmic flow otherwise', () => {
     const linked = buildAlgorithmGuide('linked', lessonRegistry.byAlgorithm('linked'));
     expect(linked.flowKind).toBe('operations');

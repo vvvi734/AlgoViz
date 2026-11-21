@@ -73,6 +73,62 @@ describe('algorithm review sheet UI', () => {
     expect(screen.getByTestId('guide-stage-list').textContent).not.toContain('演示结束');
   });
 
+  it('renders the declarative flow for Kruskal instead of the linear stage cards', () => {
+    renderGuide(
+      buildAlgorithmGuide(
+        'kruskal',
+        lessonRegistry.byAlgorithm('kruskal'),
+        ALGORITHM_CATALOG.kruskal,
+      ),
+      'Kruskal',
+    );
+
+    const flow = screen.getByTestId('algorithm-flow');
+    expect(flow).toBeTruthy();
+    expect(screen.queryByTestId('guide-stage-list')).toBeNull();
+
+    const main = screen.getByTestId('algorithm-flow-section-main');
+    expect(main.querySelector('[data-node-kind="decision"][data-node-id="connected"]')).toBeTruthy();
+    expect(main.querySelector('[data-edge-from="connected"][data-edge-to="skip"]')).toBeTruthy();
+    expect(main.querySelector('[data-edge-from="skip"][data-edge-to="edge-loop"]')).toBeTruthy();
+    expect(main.textContent).toContain('最小生成森林');
+  });
+
+  it('renders KMP as two separated flow sections and merge sort with recursive calls', () => {
+    renderGuide(
+      buildAlgorithmGuide(
+        'kmp',
+        lessonRegistry.byAlgorithm('kmp'),
+        ALGORITHM_CATALOG.kmp,
+      ),
+      'KMP',
+    );
+    expect(screen.getByTestId('algorithm-flow-section-lps')).toBeTruthy();
+    expect(screen.queryByTestId('algorithm-flow-section-main')).toBeNull();
+    expect(screen.getByTestId('algorithm-flow-section-match')).toBeTruthy();
+
+    // Mobile reflow keeps every exit after the operations on the path; a
+    // reader never sees "return the table" before the comparison that exits.
+    const lps = screen.getByTestId('algorithm-flow-section-lps');
+    const mobileIds = [...lps.querySelectorAll('.algorithm-flow-mobile .flow-mobile-node')]
+      .map((node) => node.getAttribute('data-node-id'));
+    expect(mobileIds.indexOf('lps-end')).toBeGreaterThan(mobileIds.indexOf('lps-compare'));
+    expect(mobileIds[mobileIds.length - 1]).toBe('lps-end');
+
+    renderGuide(
+      buildAlgorithmGuide(
+        'merge',
+        lessonRegistry.byAlgorithm('merge'),
+        ALGORITHM_CATALOG.merge,
+      ),
+      '归并排序',
+    );
+    const merge = screen.getByTestId('algorithm-flow-section-recursive-range');
+    expect(merge.querySelector('[data-node-kind="call"]')).toBeTruthy();
+    expect(merge.querySelector('[data-node-kind="subreturn"]')).toBeTruthy();
+    expect(merge.textContent).toContain('左半');
+  });
+
   it('provides an explicit start action without any player controls', () => {
     const onStart = renderGuide();
     expect(screen.getByTestId('guide-start').textContent).toContain('开始看动画');

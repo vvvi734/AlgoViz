@@ -1,0 +1,289 @@
+/* Declarative algorithm flow: editorial graph on desktop, reading list on mobile. */
+.algorithm-flow {
+  display: grid;
+  gap: 22px;
+  min-width: 0;
+  margin-top: 4px;
+}
+
+.algorithm-flow-legend {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.algorithm-flow-section {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+
+.algorithm-flow-section-head {
+  display: grid;
+  gap: 4px;
+  max-width: 88ch;
+}
+
+.algorithm-flow-section-head h4 {
+  margin: 0;
+  color: var(--txt);
+  font-size: 18px;
+  line-height: 1.35;
+}
+
+.algorithm-flow-section-head p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.65;
+}
+
+.algorithm-flow-desktop {
+  width: 100%;
+  min-width: 0;
+}
+
+.algorithm-flow-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.flow-edge-path {
+  fill: none;
+  stroke: color-mix(in srgb, var(--muted) 62%, var(--txt));
+  stroke-width: 1.6;
+  stroke-linejoin: round;
+}
+
+.flow-edge--yes .flow-edge-path {
+  stroke: var(--accent);
+  stroke-width: 1.8;
+}
+
+.flow-edge--no .flow-edge-path {
+  stroke: color-mix(in srgb, var(--muted) 78%, var(--txt));
+}
+
+.flow-edge--loop .flow-edge-path {
+  stroke: var(--accent);
+  stroke-width: 1.7;
+  stroke-dasharray: 8 5;
+}
+
+.flow-edge--call .flow-edge-path,
+.flow-edge--return .flow-edge-path {
+  stroke: color-mix(in srgb, var(--muted) 58%, var(--txt));
+  stroke-dasharray: 5 4;
+}
+
+.flow-arrow-head {
+  fill: color-mix(in srgb, var(--muted) 62%, var(--txt));
+}
+
+.flow-edge-label {
+  fill: var(--muted);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  paint-order: stroke fill;
+  stroke: var(--panel);
+  stroke-width: 5px;
+  stroke-linecap: round;
+}
+
+.flow-edge--yes .flow-edge-label,
+.flow-edge--loop .flow-edge-label {
+  fill: var(--accent);
+}
+
+.flow-node-shape {
+  fill: color-mix(in srgb, var(--panel-2) 60%, var(--panel));
+  stroke: color-mix(in srgb, var(--edge-hover) 80%, var(--txt));
+  stroke-width: 1.4;
+}
+
+.flow-node--start .flow-node-shape,
+.flow-node--end .flow-node-shape {
+  fill: color-mix(in srgb, var(--accent) 9%, var(--panel));
+  stroke: var(--accent);
+  stroke-width: 1.6;
+}
+
+.flow-node--end.is-failure .flow-node-shape {
+  fill: color-mix(in srgb, var(--red) 8%, var(--panel));
+  stroke: var(--red);
+}
+
+.flow-node--end.is-neutral .flow-node-shape {
+  fill: color-mix(in srgb, var(--muted) 8%, var(--panel));
+  stroke: color-mix(in srgb, var(--muted) 72%, var(--edge-hover));
+}
+
+.flow-node--decision .flow-node-shape {
+  fill: color-mix(in srgb, var(--panel-2) 42%, var(--panel));
+  stroke: color-mix(in srgb, var(--txt) 42%, var(--edge-hover));
+  stroke-width: 1.5;
+}
+
+.flow-node--subflow .flow-node-shape,
+.flow-node--call .flow-node-shape,
+.flow-node--subreturn .flow-node-shape {
+  stroke: color-mix(in srgb, var(--accent) 48%, var(--edge-hover));
+  stroke-dasharray: 6 4;
+}
+
+.flow-subflow-inner,
+.flow-call-mark,
+.flow-return-mark {
+  fill: none;
+  stroke: color-mix(in srgb, var(--accent) 55%, var(--muted));
+  stroke-width: 1.4;
+}
+
+.flow-return-mark {
+  stroke-dasharray: 4 3;
+}
+
+.flow-node-label {
+  fill: var(--txt);
+  font-size: 14px;
+  font-weight: 750;
+  line-height: 20px;
+}
+
+.flow-node-detail {
+  fill: var(--muted);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 18px;
+}
+
+.algorithm-flow-mobile {
+  display: none;
+}
+
+.algorithm-flow-mobile-list {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.flow-mobile-node {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  gap: 10px;
+  padding: 14px 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--edge) 78%, transparent);
+}
+
+.flow-mobile-node:last-child {
+  border-bottom: 0;
+}
+
+.flow-mobile-index {
+  color: var(--muted);
+  font: 700 14px/1.5 ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+
+.flow-mobile-body {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+}
+
+.flow-mobile-title {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+  color: var(--txt);
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.flow-mobile-title strong {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-weight: 750;
+}
+
+.flow-mobile-kind {
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.flow-mobile-node--start .flow-mobile-kind,
+.flow-mobile-node--end .flow-mobile-kind {
+  color: var(--accent);
+}
+
+.flow-mobile-node--end.is-failure .flow-mobile-kind {
+  color: var(--red);
+}
+
+.flow-mobile-detail {
+  margin: 0;
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.flow-mobile-branches {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.flow-mobile-branch {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+  color: var(--txt);
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.flow-mobile-branch-label {
+  flex: 0 0 auto;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.flow-mobile-branch--yes .flow-mobile-branch-label,
+.flow-mobile-branch--loop .flow-mobile-branch-label {
+  color: var(--accent);
+}
+
+@media (max-width: 1100px) {
+  .algorithm-flow-legend,
+  .algorithm-flow-desktop {
+    display: none;
+  }
+
+  .algorithm-flow-mobile {
+    display: block;
+  }
+
+  .algorithm-flow {
+    gap: 18px;
+  }
+
+  .algorithm-flow-section {
+    gap: 8px;
+  }
+
+  .algorithm-flow-section-head h4 {
+    font-size: 18px;
+  }
+}

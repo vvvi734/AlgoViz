@@ -1,5 +1,6 @@
 import type { AlgorithmEntry } from '../algorithms/types';
 import type { Lesson, LocalizedList, LocalizedText } from '../lessons/types';
+import { ALGORITHM_FLOWS } from './algorithmFlows';
 import { COURSE_GUIDES } from './courseGuides';
 import {
   EMPTY_LOCALIZED_LIST,
@@ -79,6 +80,7 @@ export function buildAlgorithmGuide(
       plain: firstSentences(lesson.intuition, 2, 260),
       flowKind: authored.flowKind,
       stages: courseStages(algorithmId),
+      flow: ALGORITHM_FLOWS[algorithmId] ?? null,
       conditions: authored.conditions,
       complexity: lesson.complexity,
       pitfalls: teachingPitfalls(lesson),
@@ -97,6 +99,7 @@ export function buildAlgorithmGuide(
       plain: firstSentences(lesson.intuition, 2, 260),
       flowKind: null,
       stages: [],
+      flow: null,
       conditions: emptyList(),
       complexity: lesson.complexity,
       pitfalls: teachingPitfalls(lesson),
@@ -115,6 +118,7 @@ export function buildAlgorithmGuide(
       plain: null,
       flowKind: null,
       stages: [],
+      flow: null,
       conditions: emptyList(),
       complexity: {
         time: entry.time,
@@ -137,6 +141,7 @@ export function buildAlgorithmGuide(
     plain: null,
     flowKind: null,
     stages: [],
+    flow: null,
     conditions: emptyList(),
     complexity: null,
     pitfalls: emptyList(),

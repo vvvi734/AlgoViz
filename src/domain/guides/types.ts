@@ -7,6 +7,7 @@
  * concatenated into the overview.
  */
 import type { LocalizedList, LocalizedText, LessonComplexity } from '../lessons/types';
+import type { AlgorithmFlow } from './flowTypes';
 
 export type GuideDiagramKind = 'dijkstra' | 'kahn' | 'kosaraju';
 export type GuideFlowKind = 'algorithm' | 'operations';
@@ -30,6 +31,8 @@ export interface AlgorithmGuideContent {
   /** Whether the horizontal row describes an algorithm flow or core operations. */
   flowKind: GuideFlowKind | null;
   stages: GuideStage[];
+  /** Structured control flow, only present when the algorithm is authored. */
+  flow: AlgorithmFlow | null;
   conditions: LocalizedList;
   complexity: LessonComplexity | null;
   /** At most three genuinely important mistakes. */

@@ -75,6 +75,7 @@ export const CONCEPT_PAGES: readonly ConceptPage[] = [
           'The same logical structure can use different storage structures, so operation costs differ. Always name the logical structure, storage structure and operations together.',
         ],
         formula: '数据结构 = 逻辑结构 + 存储结构 + 运算',
+        formulaEn: 'data structure = logical structure + storage structure + operations',
       },
     ],
     comparison: {

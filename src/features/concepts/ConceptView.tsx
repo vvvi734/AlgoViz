@@ -9,6 +9,9 @@ import '../../styles/concepts.css';
 /**
  * Static concept lesson. It deliberately contains no VisualStage, Timeline,
  * run button or code editor: the knowledge itself is the page.
+ *
+ * The visual order is an editorial reading order, not a dashboard:
+ * title + goal → core diagram → key concepts → comparison → takeaway.
  */
 export function ConceptView({ concept }: { concept: ConceptPage }) {
   const { t, lang } = useI18n();
@@ -17,14 +20,17 @@ export function ConceptView({ concept }: { concept: ConceptPage }) {
 
   return (
     <article
-      className="concept-page panel"
+      className="concept-page"
       data-testid="concept-page"
       data-concept-id={concept.id}
     >
       <header className="concept-hero">
         <span className="concept-kicker">{tr(concept.chapter)}</span>
         <h1 data-testid="concept-title">{tr(concept.title)}</h1>
-        <p className="concept-lede">{tr(concept.summary)}</p>
+        <div className="concept-goal" data-testid="concept-goal">
+          <span className="concept-goal-label">{t('conceptGoal')}</span>
+          <p className="concept-lede">{tr(concept.summary)}</p>
+        </div>
       </header>
 
       <section className="concept-visual" aria-labelledby="concept-diagram-title">
@@ -50,10 +56,11 @@ export function ConceptView({ concept }: { concept: ConceptPage }) {
         </div>
       </section>
 
-      <section className="concept-definitions" aria-labelledby="concept-definitions-title">
-        <div className="concept-section-head">
-          <h2 id="concept-definitions-title">{t('conceptDefinition')}</h2>
+      <section className="concept-concepts" aria-labelledby="concept-concepts-title" data-testid="concept-key-concepts">
+        <div className="concept-section-head concept-major-head">
+          <h2 id="concept-concepts-title">{t('conceptKeyConcepts')}</h2>
         </div>
+        <h3 className="concept-definitions-title">{t('conceptDefinition')}</h3>
         <dl className="concept-term-list" data-testid="concept-definition">
           {concept.definitions.map((item) => (
             <div className="concept-term" key={tr(item.term)}>
@@ -62,32 +69,37 @@ export function ConceptView({ concept }: { concept: ConceptPage }) {
             </div>
           ))}
         </dl>
-      </section>
 
-      <div className="concept-grid">
-        {concept.sections.map((section) => (
-          <section className="concept-section" key={tr(section.title)}>
-            <h2>{tr(section.title)}</h2>
-            <p>{tr(section.body)}</p>
-            {section.points?.length ? (
-              <ul>
-                {section.points.map((point) => (
-                  <li key={tr(point)}>{tr(point)}</li>
-                ))}
-              </ul>
-            ) : null}
-            {section.formula ? (
-              <div className="concept-formula" aria-label={t('conceptFormula')}>
-                <code>{lang === 'en' && section.formulaEn ? section.formulaEn : section.formula}</code>
+        <div className="concept-sections" data-testid="concept-section-list">
+          {concept.sections.map((section, index) => (
+            <section className="concept-section" key={tr(section.title)}>
+              <div className="concept-section-title">
+                <span className="concept-section-index" aria-hidden="true">
+                  {String(index + 1).padStart(2, '0')}
+                </span>
+                <h3>{tr(section.title)}</h3>
               </div>
-            ) : null}
-          </section>
-        ))}
-      </div>
+              <p>{tr(section.body)}</p>
+              {section.points?.length ? (
+                <ul>
+                  {section.points.map((point) => (
+                    <li key={tr(point)}>{tr(point)}</li>
+                  ))}
+                </ul>
+              ) : null}
+              {section.formula ? (
+                <div className="concept-formula" aria-label={t('conceptFormula')}>
+                  <code>{lang === 'en' && section.formulaEn ? section.formulaEn : section.formula}</code>
+                </div>
+              ) : null}
+            </section>
+          ))}
+        </div>
+      </section>
 
       {comparison ? (
         <section className="concept-comparison" aria-labelledby="concept-comparison-title" data-testid="concept-comparison">
-          <div className="concept-section-head">
+          <div className="concept-section-head concept-major-head">
             <h2 id="concept-comparison-title">{t('conceptComparison')}</h2>
             <span className="concept-section-note concept-table-swipe-hint">{t('conceptTableSwipe')}</span>
           </div>
