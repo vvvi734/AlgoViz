@@ -1,6 +1,6 @@
 # AlgoViz 架构说明
 
-本文描述 TEXTBOOK-01 之后的实际代码结构。历史阶段报告已移至 `docs/archive/`，不作为当前实现依据。
+本文描述 TEXTBOOK-01 之后的实际代码结构。
 
 ## 1. 定位与边界
 
@@ -145,5 +145,4 @@ npm run test:e2e        # 代表性真实 Pyodide / 目录 / 播放器流程
 ## 9. 已知的后续整理项
 
 - `features/lab/` 仍有若干较大的画布组件（如 `DAGVisuals.tsx`、`MSTVisuals.tsx`、`VisualStage.tsx`）。它们职责明确，暂不再拆，避免本轮扩大范围。
-- 历史截图证据仍保存在 `docs/archive/evidence/`，不参与构建；如未来需要缩小仓库体积，可单独评估移除。
 - `catalog.generated.ts` 与 `languageExamples.generated.ts` 仍由迁移脚本生成；新增特殊算法通过 `examples.ts` 合并，暂不强行统一所有注册表。

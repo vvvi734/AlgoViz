@@ -11,7 +11,7 @@ npm test
 npm run build
 ```
 
-三条命令全绿才可以开 PR。课程已完成 / 待开发状态以 [`docs/TEXTBOOK_COVERAGE.md`](docs/TEXTBOOK_COVERAGE.md) 为准；历史阶段报告在 `docs/archive/`，不要据此判断当前功能。
+三条命令全绿才可以开 PR。课程已完成 / 待开发状态以 [`docs/TEXTBOOK_COVERAGE.md`](docs/TEXTBOOK_COVERAGE.md) 为准。
 
 ## 模块边界（PR 评审重点）
 
