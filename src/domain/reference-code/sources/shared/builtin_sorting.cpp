@@ -21,6 +21,7 @@
 
 int main() {
     std::vector<int> values{5, 1, 4, 2, 8, 0, 3, 7, 6, 9};
+    // `std::sort` is not stable; use `std::stable_sort` when equal-key order matters.
     std::sort(values.begin(), values.end());
 
     std::cout << "sorted:";

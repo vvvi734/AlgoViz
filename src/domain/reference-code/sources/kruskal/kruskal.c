@@ -52,6 +52,7 @@ static int UnionRoots(int parent[], int rank[], int left, int right)
     return 1;
 }
 
+// Sort by weight, then accept an edge only when union-find reports different components; otherwise it closes a cycle.
 void Kruskal(Edge edges[], int edge_count)
 {
     int parent[VERTEX_COUNT];

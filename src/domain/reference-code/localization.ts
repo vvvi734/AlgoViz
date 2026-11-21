@@ -1,5 +1,6 @@
 import type { Lang } from '../../i18n/types';
 import type { LocalizedText } from '../lessons/types';
+import { REFERENCE_ANNOTATIONS, type ReferenceAnnotation } from './annotations';
 import {
   REFERENCE_CONVENIENCE_NOTES,
   referenceCommentLanguage,
@@ -335,6 +336,49 @@ export function stripReferenceComments(source: string, language: ReferenceLangua
 }
 
 /**
+ * Return the body of a standalone line comment, or null for code, inline
+ * comments and block-comment lines. Only standalone line comments are used by
+ * the reviewed annotation map, which keeps injection from touching code.
+ */
+function annotationText(line: string, language: ReferenceLanguage): string | null {
+  const trimmed = line.trim();
+  const marker = language === 'python' ? '#' : '//';
+  if (!trimmed.startsWith(marker)) return null;
+  return trimmed.slice(marker.length).trim();
+}
+
+function annotateBody(
+  source: string,
+  stripped: string,
+  language: ReferenceLanguage,
+  annotations: readonly ReferenceAnnotation[],
+): string {
+  if (annotations.length === 0) return stripped;
+
+  const originalLines = source.split('\n');
+  const strippedLines = stripped.split('\n');
+  const firstContent = strippedLines.findIndex((line) => line.trim().length > 0);
+  if (firstContent < 0) return stripped;
+
+  const bodyLines = strippedLines.slice(firstContent);
+  const marker = language === 'python' ? '#' : '//';
+
+  for (const annotation of annotations) {
+    const sourceIndex = originalLines.findIndex(
+      (line) => annotationText(line, language) === annotation.en,
+    );
+    if (sourceIndex < firstContent) continue;
+    const indent = originalLines[sourceIndex].slice(
+      0,
+      originalLines[sourceIndex].length - originalLines[sourceIndex].trimStart().length,
+    );
+    bodyLines[sourceIndex - firstContent] = `${indent}${marker} ${annotation.zh}`;
+  }
+
+  return bodyLines.join('\n');
+}
+
+/**
  * Keep one algorithm body and add a reviewed annotation layer for the opposite
  * UI language. When the source already uses that language, its native comments
  * remain visible unchanged.
@@ -346,19 +390,27 @@ export function localizeReferenceSource(
     algorithmName,
     language,
     implementation,
+    fileName,
     lang,
   }: {
     algorithmId: string;
     algorithmName: string;
     language: ReferenceLanguage;
     implementation: ReferenceImplementation;
+    fileName?: string;
     lang: Lang;
   },
 ): string {
   const nativeLanguage = referenceCommentLanguage();
   if (nativeLanguage === lang) return source;
 
-  const body = stripReferenceComments(source, language).replace(/^(?:[ \t]*\n)+/, '');
+  const stripped = stripReferenceComments(source, language);
+  const body = annotateBody(
+    source,
+    stripped,
+    language,
+    fileName ? REFERENCE_ANNOTATIONS[fileName] ?? [] : [],
+  ).replace(/^(?:[ \t]*\n)+/, '');
   return `${wrapHeader(
     headerLines(algorithmId, algorithmName, language, implementation, lang),
     language,

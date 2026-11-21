@@ -27,6 +27,7 @@ class Triple:
 
 def sort_transpose(triples: List[Triple]) -> List[Triple]:
     swapped = [Triple(item.col, item.row, item.value) for item in triples]
+    # Swap row/col first, then sort by (row, col); this is O(t log t), not the course O(t+c) fast transpose.
     return sorted(swapped, key=lambda item: (item.row, item.col))
 
 

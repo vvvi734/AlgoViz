@@ -18,6 +18,7 @@ from __future__ import annotations
 
 
 # Each gap pass insertion-sorts independent subsequences; gap 1 finishes the array.
+# Each gap pass insertion-sorts independent subsequences; gap 1 is the final ordinary insertion sort.
 def shell_sort(values: list[int]) -> None:
     gap = len(values) // 2
     while gap > 0:

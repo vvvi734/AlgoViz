@@ -30,6 +30,7 @@ bool QueueEmpty(const Queue *queue)
     return queue->count == 0;
 }
 
+// `head` is the next slot to remove, `tail` the next free slot, and `count` separates empty from full when indices wrap.
 bool Enqueue(Queue *queue, int value)
 {
     if (queue->count == QUEUE_CAPACITY) {

@@ -85,6 +85,7 @@ NodePtr split_child(const NodePtr &parent, std::size_t index) {
 }
 
 /* Insert a unique key; returns the possibly new root. Duplicate is rejected. */
+// A full child is split before descending; its median moves into the parent, so insertion never needs to back up.
 NodePtr btree_insert(NodePtr root, int value) {
     if (root == nullptr) {
         root = make_node(true);

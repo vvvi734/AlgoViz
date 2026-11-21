@@ -33,6 +33,7 @@ class DisjointSet {
     }
 
     // Union by rank keeps DSU trees shallow; a rejected edge would close a cycle.
+    // Sort by weight, then accept an edge only when union-find reports different components; otherwise it closes a cycle.
     bool unite(int a, int b) {
         int root_a = find(a);
         int root_b = find(b);

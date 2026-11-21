@@ -17,6 +17,7 @@
 #include <vector>
 
 // Invariant: [0, i) is sorted; shift larger values right before writing the key.
+// Shift only while the previous value is strictly greater; equal keys stop the shift and keep the sort stable.
 void insertion_sort(std::vector<int>& values) {
     for (std::size_t index = 1; index < values.size(); ++index) {
         int current = values[index];

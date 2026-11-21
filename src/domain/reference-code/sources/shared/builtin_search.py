@@ -19,6 +19,7 @@ from bisect import bisect_left
 
 
 def binary_search_builtin(values: list[int], target: int) -> int:
+    # `bisect_left` returns an insertion point in [0, len]; check the slot before treating it as a hit.
     position = bisect_left(values, target)
     if position == len(values) or values[position] != target:
         return -1

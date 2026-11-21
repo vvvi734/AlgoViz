@@ -37,6 +37,7 @@ std::vector<std::size_t> build_lps(const std::string &pattern)
             lps[i] = ++j;
             ++i;
         } else if (j > 0) {
+            // lps stores lengths, not positions; j - 1 is the last matched prefix index.
             j = lps[j - 1];
         } else {
             lps[i] = 0;
@@ -66,6 +67,7 @@ std::vector<std::size_t> kmp_find_all(const std::string &text,
             ++i;
             ++j;
             if (j == m) {
+                // i has already moved past the match; subtract m to report its start.
                 starts.push_back(i - m);
                 j = lps[j - 1];
             }

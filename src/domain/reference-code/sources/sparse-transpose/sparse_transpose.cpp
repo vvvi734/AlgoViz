@@ -33,6 +33,7 @@ struct SparseMatrix {
     std::vector<Triple> triples;
 };
 
+// `cpot[col]` is the next write position for that column; writing a triple increments it for the next entry.
 SparseMatrix fast_transpose(const SparseMatrix &source)
 {
     SparseMatrix result;

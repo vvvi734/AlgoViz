@@ -21,6 +21,7 @@ static const int GRAPH[VERTEX_COUNT][VERTEX_COUNT] = {
     {0, 0, 0, 0, 0, 0},
 };
 
+// A vertex enters the queue only when its indegree reaches zero; fewer than V emitted vertices means a directed cycle.
 int TopologicalSort(int order[])
 {
     int indegree[VERTEX_COUNT] = {0};

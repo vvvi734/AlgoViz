@@ -19,6 +19,7 @@ struct Node {
 };
 
 // Left subtree, then node, then right subtree; a BST yields ascending keys.
+// Recurse left, visit the root, then recurse right; for a BST this emits keys in ascending order.
 void inorder(const Node* node) {
     if (!node) {
         return;

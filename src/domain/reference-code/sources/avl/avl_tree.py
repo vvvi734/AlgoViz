@@ -61,10 +61,12 @@ def rotate_left(x: Node) -> Node:
 # Recompute height after insertion, then apply LL/RR/LR/RL if balance leaves {-1, 0, 1}.
 def balance(node: Node) -> Node:
     update_height(node)
+    # The balance factor is height(left) - height(right); values outside {-1, 0, 1} need rotation.
     factor = balance_factor(node)
     if factor > 1:
         assert node.left is not None
         if balance_factor(node.left) < 0:
+            # A negative left-child factor means LR: rotate the child left before rotating the root right.
             node.left = rotate_left(node.left)
         return rotate_right(node)
     if factor < -1:

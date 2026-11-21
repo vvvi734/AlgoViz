@@ -15,6 +15,7 @@ from __future__ import annotations
 
 
 def main() -> None:
+    # A dict may use any collision strategy; probe sequences and tombstones are not exposed.
     table: dict[int, str] = {22: "a", 11: "b", 33: "c", 44: "d", 55: "e"}
     for key, value in table.items():
         print(key, "->", value)

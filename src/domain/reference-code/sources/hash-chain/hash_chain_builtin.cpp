@@ -17,6 +17,7 @@
 #include <vector>
 
 int main() {
+    // `unordered_map` owns hashing and chains; iteration order is unspecified, so it is not sorted output.
     std::unordered_map<int, std::string> table;
     table[15] = "alpha";
     table[22] = "beta";

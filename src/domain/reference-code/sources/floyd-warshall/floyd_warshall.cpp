@@ -19,6 +19,7 @@
 constexpr int kInfinity = 1000000;
 
 // Outer loop fixes the only allowed intermediate vertex k; relax i -> j through k.
+// The outer loop must be the intermediate vertex k; relaxing k before it is allowed would use incomplete paths.
 void floyd_warshall(std::vector<std::vector<int>>& dist) {
     for (std::size_t middle = 0; middle < dist.size(); ++middle) {
         for (std::size_t from = 0; from < dist.size(); ++from) {

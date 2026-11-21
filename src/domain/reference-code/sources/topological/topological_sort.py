@@ -18,6 +18,7 @@ from __future__ import annotations
 from collections import deque
 
 
+# A vertex enters the queue only when its indegree reaches zero; fewer than V emitted vertices means a directed cycle.
 def main() -> None:
     edges = [(5, 2), (5, 0), (4, 0), (4, 1), (2, 3), (3, 1)]
     graph: list[list[int]] = [[] for _ in range(6)]

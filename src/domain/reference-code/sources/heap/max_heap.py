@@ -41,6 +41,7 @@ class MaxHeap:
             self._items[parent], self._items[index] = self._items[index], self._items[parent]
             index = parent
 
+    # For index i the children are 2*i+1 and 2*i+2; sift-down swaps with the larger child until the parent is >= both.
     def _sift_down(self, index: int) -> None:
         while True:
             left = index * 2 + 1

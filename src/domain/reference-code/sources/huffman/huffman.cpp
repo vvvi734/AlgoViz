@@ -121,6 +121,7 @@ int main() {
     }
 
     int order = static_cast<int>(frequencies.size());
+    // Merge the two least frequent nodes repeatedly; the final tree gives shorter codes to more frequent symbols.
     while (heap.size() > 1) {
         int first = heap.pop();
         int second = heap.pop();

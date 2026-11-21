@@ -22,6 +22,7 @@ def find_all(text: str, pattern: str) -> list[int]:
         raise ValueError("pattern must not be empty")
 
     starts: list[int] = []
+    # Advancing by one after a hit keeps overlapping occurrences; find is a library shortcut, not KMP.
     pos = text.find(pattern)
     while pos != -1:
         starts.append(pos)

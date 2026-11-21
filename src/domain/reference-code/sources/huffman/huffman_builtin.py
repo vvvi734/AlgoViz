@@ -44,6 +44,7 @@ def main() -> None:
         heapq.heappush(heap, (frequency, order, Node(frequency, symbol)))
 
     order = len(frequencies)
+    # Heap tuples include a sequence number so equal frequencies never compare node objects.
     while len(heap) > 1:
         first_frequency, _, first = heapq.heappop(heap)
         second_frequency, _, second = heapq.heappop(heap)

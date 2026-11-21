@@ -25,6 +25,7 @@ class Node:
     right: "Node | None" = None
 
 
+# `deque.popleft()` is O(1); a list pop(0) would shift every remaining element.
 def level_order(root: Node | None) -> list[int]:
     if root is None:
         return []

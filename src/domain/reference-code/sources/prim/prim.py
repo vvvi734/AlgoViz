@@ -20,6 +20,7 @@ from __future__ import annotations
 import heapq
 
 
+# This implementation grows the tree by popping the lightest cut edge from `candidates`; selected vertices are skipped as stale.
 def main() -> None:
     graph: list[list[tuple[int, int]]] = [[] for _ in range(5)]
 

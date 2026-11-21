@@ -40,6 +40,7 @@ int hash_index(int key) {
 }
 
 // Search the target bucket before appending; the chain holds only colliding keys.
+// Each bucket owns a chain; inserting at the bucket head is O(1), and duplicates are rejected before allocation.
 bool table_insert(HashTable *table, int key) {
     int index = hash_index(key);
     for (Node *node = table->buckets[index]; node != NULL; node = node->next) {

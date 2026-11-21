@@ -28,6 +28,7 @@ class Triple:
     value: int
 
 
+# `cpot[col]` is the next write position for that column; writing a triple increments it for the next entry.
 def fast_transpose(rows: int, cols: int, triples: List[Triple]) -> Tuple[int, int, List[Triple]]:
     """Return (transposed_rows, transposed_cols, transposed_triplets)."""
     if rows < 0 or cols < 0:

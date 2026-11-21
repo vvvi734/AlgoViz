@@ -15,6 +15,7 @@
 #include <stack>
 
 int main() {
+    // `std::stack::pop()` returns void; read `top()` first and check emptiness before either call.
     std::stack<int> stack;
     stack.push(1);
     stack.push(2);

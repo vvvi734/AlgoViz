@@ -16,6 +16,7 @@ from __future__ import annotations
 
 
 def main() -> None:
+    # A dict owns hashing and collision resolution; insertion order is incidental, not a hash-table guarantee.
     table: dict[int, str] = {15: "alpha", 22: "beta", 8: "gamma", 29: "delta"}
     for key, value in table.items():
         print(key, "->", value)

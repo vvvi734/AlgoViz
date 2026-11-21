@@ -11,6 +11,7 @@
 
 #include <iostream>
 
+// The two recursive calls are independent and uncached, so identical subproblems are recomputed.
 unsigned long long fib(unsigned int n) {
     if (n <= 1U) {
         return static_cast<unsigned long long>(n);

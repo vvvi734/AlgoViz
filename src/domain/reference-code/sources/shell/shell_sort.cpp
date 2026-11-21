@@ -17,6 +17,7 @@
 #include <vector>
 
 // Each gap pass insertion-sorts independent subsequences; gap 1 finishes the array.
+// Each gap pass insertion-sorts independent subsequences; gap 1 is the final ordinary insertion sort.
 void shell_sort(std::vector<int>& values) {
     for (std::size_t gap = values.size() / 2; gap > 0; gap /= 2) {
         for (std::size_t index = gap; index < values.size(); ++index) {

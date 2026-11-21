@@ -26,6 +26,7 @@ class SeqList:
         return self._size
 
     # Insert shifts [index, length) one slot right, then writes the new value.
+    # `length` is the live element count, not capacity; insert/erase shift only the live range and then update it.
     def insert(self, index: int, value: int) -> bool:
         if self._size == len(self._items) or not 0 <= index <= self._size:
             return False

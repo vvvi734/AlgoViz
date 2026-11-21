@@ -52,6 +52,7 @@ Node *list_append(DoublyList *list, int value) {
     return node;
 }
 
+// Removal repairs both `prev` and `next`; removing the head or tail must also update the external head/tail pointer.
 void list_remove(DoublyList *list, Node *node) {
     if (node->prev != NULL) {
         node->prev->next = node->next;

@@ -29,6 +29,7 @@ typedef struct {
 } Edge;
 
 // V - 1 passes suffice because a shortest simple path uses at most V - 1 edges.
+// V-1 full passes settle every simple shortest path; one more pass that still relaxes proves a reachable negative cycle.
 bool bellman_ford(int vertex_count, const Edge edges[], int edge_count, int source, int dist[]) {
     for (int i = 0; i < vertex_count; ++i) {
         dist[i] = INF;

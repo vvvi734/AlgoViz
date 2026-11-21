@@ -16,6 +16,7 @@
 #include <set>
 
 int main() {
+    // `std::set` keeps unique keys ordered; `count` is membership, not an index lookup.
     std::set<int> tree;
     for (int key : {5, 2, 7, 1, 4, 6, 8, 3}) {
         tree.insert(key);

@@ -33,6 +33,7 @@ void list_init(CircularList *list) {
 }
 
 // New node points at head; the old tail points at the new node, preserving the ring.
+// The tail's `next` points back to `head`, so traversal stops after returning to head, not at NULL.
 bool list_append(CircularList *list, int value) {
     Node *node = (Node *)malloc(sizeof(Node));
     if (node == NULL) {

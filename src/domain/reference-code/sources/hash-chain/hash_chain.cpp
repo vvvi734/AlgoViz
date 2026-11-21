@@ -17,6 +17,7 @@
 class HashTable {
  public:
     // Search the target bucket before appending; the chain holds only colliding keys.
+    // Each bucket owns a chain; inserting at the bucket head is O(1), and duplicates are rejected before allocation.
     bool insert(int key) {
         std::size_t index = hash_index(key);
         for (int existing : buckets_[index]) {

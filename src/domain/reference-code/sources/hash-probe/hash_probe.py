@@ -27,6 +27,7 @@ class HashTable:
         return key % len(self._slots)
 
     # Probe forward modulo capacity; an empty slot both accepts an insert and proves absence.
+    # This teaching version has no deletion, so an empty slot ends the probe; adding tombstones would require lookup to continue past them.
     def insert(self, key: int) -> bool:
         start = self._index(key)
         for step in range(len(self._slots)):

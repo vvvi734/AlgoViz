@@ -40,6 +40,7 @@ class DoublyList:
         self.tail = node
         return node
 
+    # Removal repairs both `prev` and `next`; removing the head or tail must also update the external head/tail pointer.
     def remove(self, node: Node) -> None:
         if node.prev is None:
             self.head = node.next

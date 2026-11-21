@@ -16,6 +16,7 @@
 #include <unordered_map>
 
 int main() {
+    // `unordered_map` may use any collision strategy; this file cannot show linear probing or tombstones.
     std::unordered_map<int, std::string> table;
     table[22] = "a";
     table[11] = "b";

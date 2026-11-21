@@ -24,6 +24,7 @@ class Queue:
         self._count = 0
 
     # Enqueue writes at tail, advances tail modulo capacity, then increments count.
+    # `head` is the next slot to remove, `tail` the next free slot, and `count` separates empty from full when indices wrap.
     def enqueue(self, value: int) -> bool:
         if self._count == len(self._items):
             return False

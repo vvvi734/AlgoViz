@@ -8,6 +8,7 @@
 
 #include <stdio.h>
 
+// Shift only while the previous value is strictly greater; equal keys stop the shift and keep the sort stable.
 void InsertionSort(int *values, int count)
 {
     for (int index = 1; index < count; ++index) {

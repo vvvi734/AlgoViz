@@ -55,6 +55,7 @@ BiTNode* queue_dequeue(Queue* q) {
 }
 
 // Visit each node exactly once, level by level and left to right.
+// The FIFO queue holds pending nodes; enqueue children after visiting the parent to keep level order.
 void level_order(BiTNode* root) {
     if (root == NULL) {
         return;

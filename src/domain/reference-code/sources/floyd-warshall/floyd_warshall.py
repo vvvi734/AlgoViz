@@ -20,6 +20,7 @@ INF = float("inf")
 
 
 # Outer loop fixes the only allowed intermediate vertex k; relax i -> j through k.
+# The outer loop must be the intermediate vertex k; relaxing k before it is allowed would use incomplete paths.
 def floyd_warshall(dist: list[list[float]]) -> None:
     size = len(dist)
     for middle in range(size):

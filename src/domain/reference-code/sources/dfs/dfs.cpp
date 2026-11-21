@@ -16,6 +16,7 @@
 #include <vector>
 
 // Mark on entry, then recurse into every unvisited neighbour before backtracking.
+// Mark a vertex on entry; the recursion then visits every unvisited neighbour before returning.
 void dfs_visit(const std::vector<std::vector<int>>& graph, int vertex, std::vector<bool>& visited) {
     visited[vertex] = true;
     std::cout << ' ' << vertex;

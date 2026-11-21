@@ -21,6 +21,7 @@ from bisect import bisect_left, insort
 def main() -> None:
     tree: list[int] = []
     for key in [5, 2, 7, 1, 4, 6, 8, 3]:
+        # `insort` keeps the list ordered but shifts the tail, so insertion is O(n) even though search is O(log n).
         insort(tree, key)
 
     print("inorder:", tree)

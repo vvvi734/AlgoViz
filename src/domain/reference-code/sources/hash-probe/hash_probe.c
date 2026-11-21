@@ -31,6 +31,7 @@ static int HomeSlot(int key)
     return slot < 0 ? slot + HASH_CAPACITY : slot;
 }
 
+// This teaching version has no deletion, so an empty slot ends the probe; adding tombstones would require lookup to continue past them.
 bool HashInsert(HashTable *table, int key)
 {
     int start = HomeSlot(key);

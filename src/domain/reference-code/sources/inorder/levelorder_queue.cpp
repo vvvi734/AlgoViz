@@ -19,6 +19,7 @@ struct Node {
     Node* right = nullptr;
 };
 
+// The FIFO queue holds pending nodes; enqueue children after visiting the parent to keep level order.
 void level_order(const Node* root) {
     if (!root) {
         return;

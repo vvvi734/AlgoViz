@@ -17,6 +17,7 @@
 class Queue {
  public:
     // Enqueue writes at tail, advances tail modulo capacity, then increments count.
+    // `head` is the next slot to remove, `tail` the next free slot, and `count` separates empty from full when indices wrap.
     bool enqueue(int value) {
         if (count_ == items_.size()) {
             return false;

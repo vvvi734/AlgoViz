@@ -24,6 +24,7 @@ struct Activity {
     int weight;
 };
 
+// Forward pass takes the maximum predecessor finish; backward pass the minimum successor start; activity slack is latest(head) - earliest(tail) - weight.
 int main() {
     std::vector<Activity> activities{
         {0, 1, 3}, {0, 2, 2}, {1, 2, 1}, {1, 3, 2},

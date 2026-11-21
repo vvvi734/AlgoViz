@@ -34,6 +34,7 @@ void visit(int graph[VERTEX_COUNT][VERTEX_COUNT], int vertex, bool visited[VERTE
 }
 
 // Every unvisited start opens a new component; one DFS marks all vertices reachable from it.
+// The outer scan opens a new component only at an unvisited vertex; one DFS marks its whole component.
 int count_components(int graph[VERTEX_COUNT][VERTEX_COUNT]) {
     bool visited[VERTEX_COUNT] = {false};
     int components = 0;

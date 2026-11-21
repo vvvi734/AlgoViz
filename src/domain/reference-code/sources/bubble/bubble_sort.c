@@ -9,6 +9,7 @@
 
 #include <stdio.h>
 
+// After pass k the largest k values sit at the right end; an unchanged pass ends the sort early.
 void BubbleSort(int *values, int count)
 {
     for (int end = count - 1; end > 0; --end) {

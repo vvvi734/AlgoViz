@@ -19,6 +19,7 @@
 #include <utility>
 #include <vector>
 
+// First pass records finish order; the reverse graph is then explored in decreasing finish order to isolate SCCs.
 void first_pass(const std::vector<std::vector<int>>& graph, int vertex,
                 std::vector<bool>& visited, std::vector<int>& order) {
     visited[vertex] = true;

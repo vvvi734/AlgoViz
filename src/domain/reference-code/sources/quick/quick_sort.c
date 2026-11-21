@@ -9,6 +9,7 @@
 
 #include <stdio.h>
 
+// Lomuto partition: `boundary` marks the end of the <= pivot region and starts at low - 1; the pivot is swapped to `boundary + 1`.
 static int Partition(int *values, int low, int high)
 {
     int pivot = values[high];

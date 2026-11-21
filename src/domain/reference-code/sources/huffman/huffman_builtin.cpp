@@ -69,6 +69,7 @@ int main() {
     }
 
     int order = static_cast<int>(frequencies.size());
+    // The comparator reverses the default max-heap order so the two smallest frequencies are popped first.
     while (heap.size() > 1) {
         Node* first = heap.top();
         heap.pop();

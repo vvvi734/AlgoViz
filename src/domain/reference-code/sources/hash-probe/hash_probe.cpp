@@ -21,6 +21,7 @@ class HashTable {
     explicit HashTable(std::size_t size) : slots_(size, kEmpty) {}
 
     // Probe forward modulo capacity; an empty slot both accepts an insert and proves absence.
+    // This teaching version has no deletion, so an empty slot ends the probe; adding tombstones would require lookup to continue past them.
     bool insert(int key) {
         std::size_t start = hash_index(key);
         for (std::size_t step = 0; step < slots_.size(); ++step) {

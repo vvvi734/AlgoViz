@@ -21,6 +21,7 @@ def is_non_decreasing(values: list[int]) -> bool:
 
 
 # Invariant: the answer, if present, stays inside the inclusive [low, high] window.
+# The window is inclusive: low == high still leaves one candidate, and mid is computed without overflow.
 def binary_search(values: list[int], target: int) -> int:
     """Return the index of target in a non-decreasing list, or -1."""
     if not values:

@@ -76,11 +76,13 @@ AVLNode *AVLInsert(AVLNode *root, int value)
     }
 
     RefreshHeight(root);
+    // The balance factor is height(left) - height(right); values outside {-1, 0, 1} need rotation.
     int balance = NodeHeight(root->left) - NodeHeight(root->right);
     if (balance > 1) {
         if (value < root->left->value) {
             return RotateRight(root);
         }
+        // LR case: rotate the left child left first, then rotate the unbalanced root right.
         root->left = RotateLeft(root->left);
         return RotateRight(root);
     }

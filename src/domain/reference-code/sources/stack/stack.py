@@ -24,6 +24,7 @@ class Stack:
         self._size = 0
 
     # Push writes at size and increments it; the capacity check prevents overflow.
+    # `capacity` is the total number of slots; `size` is the live element count and the next free slot, so full and empty are distinct.
     def push(self, value: int) -> bool:
         if self._size == len(self._items):
             return False

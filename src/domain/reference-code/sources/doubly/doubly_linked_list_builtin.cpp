@@ -26,6 +26,7 @@ void print(const std::list<T>& values) {
 
 int main() {
     std::list<int> values;
+    // `std::list` owns both directions; iterators survive splicing, but there is no random access.
     values.push_back(1);
     values.push_back(2);
     values.push_back(3);

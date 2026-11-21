@@ -30,6 +30,7 @@ class DisjointSet:
         return vertex
 
     # Union by rank keeps DSU trees shallow; a rejected edge would close a cycle.
+    # Sort by weight, then accept an edge only when union-find reports different components; otherwise it closes a cycle.
     def unite(self, a: int, b: int) -> bool:
         root_a = self.find(a)
         root_b = self.find(b)

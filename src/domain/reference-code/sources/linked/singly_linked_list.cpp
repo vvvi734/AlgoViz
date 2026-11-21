@@ -38,6 +38,7 @@ public:
 
     void insert_head(int value) {
         Node* node = new Node(value);
+        // Publish the new node only after its next pointer reaches the old head.
         node->next = head_;
         head_ = node;
         if (tail_ == nullptr) {
@@ -86,6 +87,7 @@ public:
         } else {
             prev->next = current->next;
         }
+        // Removing the current tail must move tail_ back to prev, or the tail becomes dangling.
         if (current == tail_) {
             tail_ = prev;
         }

@@ -48,6 +48,7 @@ static void print_triplets(const TripletList *matrix)
  * Transposes src into dst. Returns 1 on success, 0 on allocation failure or
  * invalid dimensions. dst must not alias src.
  */
+// `cpot[col]` is the next write position for that column; writing a triple increments it for the next entry.
 static int fast_transpose(const TripletList *src, TripletList *dst)
 {
     int *num = NULL;

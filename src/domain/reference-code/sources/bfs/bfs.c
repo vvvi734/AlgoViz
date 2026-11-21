@@ -19,6 +19,7 @@ static const int GRAPH[VERTEX_COUNT][VERTEX_COUNT] = {
     {0, 0, 0, 1, 0, 0},
 };
 
+// Mark a vertex when it enters the queue, not when it leaves, so it cannot be enqueued twice.
 void BFS(int start)
 {
     int visited[VERTEX_COUNT] = {0};

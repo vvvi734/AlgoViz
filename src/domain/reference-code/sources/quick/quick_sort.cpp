@@ -18,6 +18,7 @@
 namespace {
 
 // Lomuto partition: <= pivot goes left, > pivot goes right, pivot returns at boundary + 1.
+// Lomuto partition: `boundary` marks the end of the <= pivot region and starts at low - 1; the pivot is swapped to `boundary + 1`.
 int partition(std::vector<int>& values, int low, int high) {
     int pivot = values[static_cast<std::size_t>(high)];
     int boundary = low - 1;

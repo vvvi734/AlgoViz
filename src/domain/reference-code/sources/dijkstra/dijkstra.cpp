@@ -53,9 +53,11 @@ std::vector<long long> dijkstra(const std::vector<std::vector<Edge>>& graph,
         QueueEntry current = queue.top();
         queue.pop();
         int u = current.vertex;
+        // Ignore stale heap entries: a shorter distance for this vertex was pushed later.
         if (current.distance != distance[static_cast<std::size_t>(u)] || settled[static_cast<std::size_t>(u)]) {
             continue;  // stale heap entry
         }
+        // Once settled, the vertex distance cannot improve when all edge weights are non-negative.
         settled[static_cast<std::size_t>(u)] = 1;
 
         for (const Edge& edge : graph[static_cast<std::size_t>(u)]) {

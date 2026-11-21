@@ -21,6 +21,7 @@
 #define VERTEX_COUNT 6
 
 // First pass appends a vertex only after all its outgoing neighbours are finished.
+// First pass records finish order; the reverse graph is then explored in decreasing finish order to isolate SCCs.
 void first_pass(int graph[VERTEX_COUNT][VERTEX_COUNT], int vertex, bool visited[VERTEX_COUNT], int order[VERTEX_COUNT], int *position) {
     visited[vertex] = true;
     for (int next = 0; next < VERTEX_COUNT; ++next) {

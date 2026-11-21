@@ -12,6 +12,7 @@
 #define VERTEX_COUNT 4
 #define INF 1000000
 
+// The outer loop must be the intermediate vertex k; relaxing k before it is allowed would use incomplete paths.
 void FloydWarshall(int distance[VERTEX_COUNT][VERTEX_COUNT])
 {
     for (int middle = 0; middle < VERTEX_COUNT; ++middle) {

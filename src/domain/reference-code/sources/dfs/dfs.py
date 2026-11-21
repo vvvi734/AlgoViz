@@ -17,6 +17,7 @@ from __future__ import annotations
 
 
 # Mark on entry, then recurse into every unvisited neighbour before backtracking.
+# Mark a vertex on entry; the recursion then visits every unvisited neighbour before returning.
 def dfs_visit(graph: list[list[int]], vertex: int, visited: list[bool], order: list[int]) -> None:
     visited[vertex] = True
     order.append(vertex)

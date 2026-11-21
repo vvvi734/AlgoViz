@@ -16,6 +16,7 @@ from __future__ import annotations
 
 
 # Invariant: [0, start) is sorted; each scan finds the minimum of the unsorted suffix.
+# `minimum` holds the index of the smallest value seen in the unsorted suffix; swap only after the scan finishes.
 def selection_sort(values: list[int]) -> None:
     for start in range(len(values) - 1):
         minimum = start

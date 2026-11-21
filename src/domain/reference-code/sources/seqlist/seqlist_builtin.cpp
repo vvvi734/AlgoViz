@@ -24,6 +24,7 @@ void print(const std::vector<T>& values) {
 }
 
 int main() {
+    // `std::vector::insert/erase` shift later elements and may invalidate iterators after the edit.
     std::vector<int> values{1, 3};
     values.insert(values.begin() + 1, 2);
     values.insert(values.end(), 4);

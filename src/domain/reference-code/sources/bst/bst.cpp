@@ -26,6 +26,7 @@ class BST {
     };
 
     // Descend one branch by key comparison; duplicates are ignored by the insert contract.
+    // BST invariant: left keys < root < right keys; duplicates are rejected, so search follows one path.
     void insert(int value) {
         root_ = insert(std::move(root_), value);
     }

@@ -15,6 +15,7 @@ Convention: Ranges are half-open [left, right); 0-based indices; taking the left
 from __future__ import annotations
 
 
+# The buffer is shared across recursive calls; ties take the left run, which keeps the merge stable.
 def merge_range(values: list[int], buffer: list[int], left: int, middle: int, right: int) -> None:
     i, j, k = left, middle + 1, left
 

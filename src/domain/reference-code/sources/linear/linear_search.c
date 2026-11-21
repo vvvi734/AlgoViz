@@ -8,6 +8,7 @@
 
 #include <stdio.h>
 
+// Return the first matching index; -1 is correct only after the entire array has been scanned.
 int LinearSearch(const int *values, int count, int target)
 {
     for (int index = 0; index < count; ++index) {

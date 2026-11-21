@@ -17,6 +17,7 @@
 #include <vector>
 
 int main() {
+    // `std::priority_queue` is a max-heap by default; equal keys have unspecified relative order.
     std::priority_queue<int> heap;
     for (int value : {5, 3, 8, 1, 9, 2}) {
         heap.push(value);

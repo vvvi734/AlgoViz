@@ -16,6 +16,7 @@ from __future__ import annotations
 
 
 def main() -> None:
+    # `list.insert/pop` shift the tail; this adapter has no separate capacity field.
     values = [1, 3]
     values.insert(1, 2)
     values.append(4)

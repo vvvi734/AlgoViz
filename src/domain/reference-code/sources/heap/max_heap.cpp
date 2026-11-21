@@ -55,6 +55,7 @@ class MaxHeap {
         }
     }
 
+    // For index i the children are 2*i+1 and 2*i+2; sift-down swaps with the larger child until the parent is >= both.
     void sift_down(std::size_t index) {
         while (true) {
             std::size_t left = index * 2 + 1;

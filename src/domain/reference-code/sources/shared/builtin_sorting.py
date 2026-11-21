@@ -23,6 +23,7 @@ from __future__ import annotations
 def main() -> None:
     values = [5, 1, 4, 2, 8, 0, 3, 7, 6, 9]
 
+    # `sorted()` returns a new list; `list.sort()` mutates in place, and both are stable.
     ordered = sorted(values)
     in_place = values.copy()
     in_place.sort()

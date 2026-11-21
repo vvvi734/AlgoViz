@@ -62,6 +62,7 @@ def split_child(parent, index):
     return right
 
 
+# A full child is split before descending; its median moves into the parent, so insertion never needs to back up.
 def btree_insert(root, value):
     """Insert one unique key; returns the possibly new root.
 

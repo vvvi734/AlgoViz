@@ -23,6 +23,7 @@ void get_next(const char *pattern, int next[])
             ++border;
             next[position] = border;
         } else {
+            // next[] is a one-based failure table; follow its chain instead of restarting the pattern.
             border = next[border];
         }
     }
@@ -54,6 +55,7 @@ int KMP(const char *text, const char *pattern)
         }
         if (pattern_index == pattern_length) {
             ++matches;
+            // After a full match, reuse the border table so overlapping occurrences are still found.
             pattern_index = next[pattern_index];
         }
     }

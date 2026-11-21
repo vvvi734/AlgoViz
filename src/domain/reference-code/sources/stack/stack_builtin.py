@@ -15,6 +15,7 @@ from __future__ import annotations
 
 
 def main() -> None:
+    # A Python list is a dynamic stack; pop() on an empty list raises IndexError.
     stack: list[int] = []
     stack.append(1)
     stack.append(2)

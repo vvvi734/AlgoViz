@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// The buffer is shared across recursive calls; ties take the left run, which keeps the merge stable.
 static void MergeRange(int *values, int low, int middle, int high, int *buffer)
 {
     int left = low;

@@ -100,6 +100,7 @@ static void InsertNonFull(BTreeNode *node, int key)
     InsertNonFull(node->children[index], key);
 }
 
+// A full child is split before descending; its median moves into the parent, so insertion never needs to back up.
 void InsertBTree(BTreeNode **root, int key)
 {
     if (*root == NULL) {

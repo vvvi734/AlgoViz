@@ -13,6 +13,7 @@
 #include <vector>
 
 // Return the first matching index; -1 means the whole array was scanned.
+// Return the first matching index; -1 is correct only after the entire array has been scanned.
 int linear_search(const std::vector<int>& values, int target) {
     for (std::size_t index = 0; index < values.size(); ++index) {
         if (values[index] == target) {

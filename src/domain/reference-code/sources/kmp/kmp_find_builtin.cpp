@@ -30,6 +30,7 @@ std::vector<std::size_t> find_all(const std::string &text,
         return starts;
     }
 
+    // Advancing by one after a hit keeps overlapping occurrences; find is a library shortcut, not KMP.
     std::size_t pos = text.find(pattern);
     while (pos != std::string::npos) {
         starts.push_back(pos);

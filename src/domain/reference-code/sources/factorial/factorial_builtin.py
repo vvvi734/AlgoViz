@@ -20,6 +20,7 @@ from math import factorial
 
 
 def main() -> None:
+    # `math.factorial` returns an arbitrary-precision integer and rejects negative input.
     assert factorial(0) == 1
     assert factorial(5) == 120
     print("5! =", factorial(5))

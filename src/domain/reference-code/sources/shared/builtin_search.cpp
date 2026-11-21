@@ -16,6 +16,7 @@
 #include <vector>
 
 int binary_search_builtin(const std::vector<int>& values, int target) {
+    // `lower_bound` returns the first position not less than the target; end() means no candidate.
     auto position = std::lower_bound(values.begin(), values.end(), target);
     if (position == values.end() || *position != target) {
         return -1;

@@ -19,6 +19,7 @@
 class Stack {
  public:
     // Push writes at size and increments it; the capacity check prevents overflow.
+    // `capacity` is the total number of slots; `size` is the live element count and the next free slot, so full and empty are distinct.
     bool push(int value) {
         if (size_ == items_.size()) {
             return false;

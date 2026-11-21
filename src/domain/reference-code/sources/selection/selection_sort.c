@@ -8,6 +8,7 @@
 
 #include <stdio.h>
 
+// `minimum` holds the index of the smallest value seen in the unsorted suffix; swap only after the scan finishes.
 void SelectionSort(int *values, int count)
 {
     for (int start = 0; start + 1 < count; ++start) {

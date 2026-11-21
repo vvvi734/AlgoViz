@@ -20,6 +20,7 @@
 #include <utility>
 #include <vector>
 
+// This implementation grows the tree by popping the lightest cut edge from `candidates`; selected vertices are skipped as stale.
 int main() {
     std::vector<std::vector<std::pair<int, int>>> graph(5);
     auto add_edge = [&graph](int a, int b, int weight) {

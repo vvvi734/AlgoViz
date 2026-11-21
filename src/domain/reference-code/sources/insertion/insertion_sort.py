@@ -17,6 +17,7 @@ from __future__ import annotations
 
 
 # Invariant: [0, i) is sorted; shift larger values right before writing the key.
+# Shift only while the previous value is strictly greater; equal keys stop the shift and keep the sort stable.
 def insertion_sort(values: list[int]) -> None:
     for index in range(1, len(values)):
         current = values[index]

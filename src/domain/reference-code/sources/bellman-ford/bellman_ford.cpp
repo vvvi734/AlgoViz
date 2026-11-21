@@ -23,6 +23,7 @@ struct Edge {
     int weight;
 };
 
+// V-1 full passes settle every simple shortest path; one more pass that still relaxes proves a reachable negative cycle.
 bool bellman_ford(int vertex_count, const std::vector<Edge>& edges, int source,
                   std::vector<int>& dist) {
     const int kInfinity = std::numeric_limits<int>::max();

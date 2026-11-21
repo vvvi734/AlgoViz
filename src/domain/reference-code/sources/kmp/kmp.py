@@ -32,6 +32,7 @@ def build_lps(pattern: str) -> list[int]:
             lps[i] = j
             i += 1
         elif j > 0:
+            # Fall back to the longest border that can still be extended.
             j = lps[j - 1]
         else:
             lps[i] = 0
@@ -56,6 +57,7 @@ def kmp_find_all(text: str, pattern: str) -> list[int]:
             i += 1
             j += 1
             if j == m:
+                # i is already past the match; i - m is the start, then j falls back for overlaps.
                 starts.append(i - m)
                 j = lps[j - 1]
         elif j > 0:

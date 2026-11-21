@@ -18,6 +18,7 @@
 #include <queue>
 #include <vector>
 
+// A vertex enters the queue only when its indegree reaches zero; fewer than V emitted vertices means a directed cycle.
 int main() {
     std::vector<std::pair<int, int>> edges{{5, 2}, {5, 0}, {4, 0}, {4, 1}, {2, 3}, {3, 1}};
     std::vector<std::vector<int>> graph(6);

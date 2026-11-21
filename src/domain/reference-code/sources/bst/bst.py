@@ -26,6 +26,7 @@ class Node:
 
 
 # Descend one branch by key comparison; duplicates are ignored by the insert contract.
+# BST invariant: left keys < root < right keys; duplicates are rejected, so search follows one path.
 def insert(root: Node | None, value: int) -> Node:
     if root is None:
         return Node(value)

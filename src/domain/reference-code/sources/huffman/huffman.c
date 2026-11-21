@@ -137,6 +137,7 @@ int main(void) {
     }
 
     int order = count;
+    // Merge the two least frequent nodes repeatedly; the final tree gives shorter codes to more frequent symbols.
     while (heap.size > 1) {
         HNode *first = heap_pop(&heap);
         HNode *second = heap_pop(&heap);

@@ -18,6 +18,7 @@ template <typename T, std::size_t Capacity>
 class SeqList {
  public:
     // Insert shifts [index, length) one slot right, then writes the new value.
+    // `length` is the live element count, not capacity; insert/erase shift only the live range and then update it.
     bool insert(std::size_t index, const T& value) {
         if (size_ >= Capacity || index > size_) {
             return false;

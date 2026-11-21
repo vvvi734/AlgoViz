@@ -20,6 +20,7 @@ import heapq
 def main() -> None:
     heap: list[int] = []
     for value in [5, 3, 8, 1, 9, 2]:
+        # `heapq` is a min-heap, so values are negated; remember to negate the popped value back.
         heapq.heappush(heap, -value)
 
     output: list[int] = []

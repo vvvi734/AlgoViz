@@ -20,6 +20,7 @@ INF = float("inf")
 
 
 # V - 1 passes suffice because a shortest simple path uses at most V - 1 edges.
+# V-1 full passes settle every simple shortest path; one more pass that still relaxes proves a reachable negative cycle.
 def bellman_ford(vertex_count: int, edges: list[tuple[int, int, int]], source: int) -> list[float] | None:
     dist: list[float] = [INF] * vertex_count
     dist[source] = 0

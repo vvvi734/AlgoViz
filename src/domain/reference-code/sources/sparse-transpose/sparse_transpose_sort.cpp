@@ -38,6 +38,7 @@ SparseMatrix sort_transpose(const SparseMatrix &source)
     for (const Triple &item : source.triples) {
         result.triples.push_back({item.col, item.row, item.value});
     }
+    // Swap row/col first, then sort by (row, col); this is O(t log t), not the course O(t+c) fast transpose.
     std::sort(result.triples.begin(), result.triples.end(),
               [](const Triple &a, const Triple &b) {
                   if (a.row != b.row) return a.row < b.row;

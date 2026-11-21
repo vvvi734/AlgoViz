@@ -22,6 +22,7 @@ void InitList(SeqList *list)
     list->length = 0;
 }
 
+// `length` is the live element count, not capacity; insert/erase shift only the live range and then update it.
 bool ListInsert(SeqList *list, int index, int value)
 {
     if (list->length == LIST_CAPACITY || index < 0 || index > list->length) {

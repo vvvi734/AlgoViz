@@ -15,6 +15,7 @@ from __future__ import annotations
 
 
 # Return the first matching index; -1 means the whole array was scanned.
+# Return the first matching index; -1 is correct only after the entire array has been scanned.
 def linear_search(values: list[int], target: int) -> int:
     for index, value in enumerate(values):
         if value == target:

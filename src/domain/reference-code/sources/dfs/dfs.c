@@ -19,6 +19,7 @@ static const int GRAPH[VERTEX_COUNT][VERTEX_COUNT] = {
     {0, 0, 0, 1, 0, 0},
 };
 
+// Mark a vertex on entry; the recursion then visits every unvisited neighbour before returning.
 static void Visit(int vertex, int visited[VERTEX_COUNT])
 {
     visited[vertex] = 1;

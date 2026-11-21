@@ -16,6 +16,7 @@
 #include <vector>
 
 // Invariant: [0, start) is sorted; each scan finds the minimum of the unsorted suffix.
+// `minimum` holds the index of the smallest value seen in the unsorted suffix; swap only after the scan finishes.
 void selection_sort(std::vector<int>& values) {
     for (std::size_t start = 0; start + 1 < values.size(); ++start) {
         std::size_t minimum = start;

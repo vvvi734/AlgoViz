@@ -55,8 +55,10 @@ void Dijkstra(int source)
         if (best == -1 || distance[best] == INF) {
             break;
         }
+        // best has the smallest tentative distance; with non-negative weights this value is final.
         settled[best] = 1;
         for (int next = 0; next < VERTEX_COUNT; ++next) {
+            // A zero matrix entry means no edge, not a zero-cost edge.
             if (GRAPH[best][next] != 0 && distance[best] + GRAPH[best][next] < distance[next]) {
                 distance[next] = distance[best] + GRAPH[best][next];
                 previous[next] = best;

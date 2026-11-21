@@ -72,9 +72,11 @@ class AVLTree {
     // Recompute height after insertion, then apply LL/RR/LR/RL if balance leaves {-1, 0, 1}.
     static std::unique_ptr<Node> balance(std::unique_ptr<Node> node) {
         update_height(node.get());
+        // The balance factor is height(left) - height(right); values outside {-1, 0, 1} need rotation.
         int factor = balance_factor(node.get());
         if (factor > 1) {
             if (balance_factor(node->left.get()) < 0) {
+                // LR case: repair the left-left shape with a left rotation on the child, then a right rotation.
                 node->left = rotate_left(std::move(node->left));
             }
             return rotate_right(std::move(node));

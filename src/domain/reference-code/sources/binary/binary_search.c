@@ -9,6 +9,7 @@
 
 #include <stdio.h>
 
+// The window is inclusive: low == high still leaves one candidate, and mid is computed without overflow.
 int Binary_Search(const int *values, int count, int target)
 {
     int low = 0;

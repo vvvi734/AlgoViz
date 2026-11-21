@@ -26,6 +26,7 @@ void visit(const std::vector<std::vector<int>>& graph, int vertex, std::vector<b
 }
 
 // Every unvisited start opens a new component; one DFS marks all vertices reachable from it.
+// The outer scan opens a new component only at an unvisited vertex; one DFS marks its whole component.
 int count_components(const std::vector<std::vector<int>>& graph) {
     std::vector<bool> visited(graph.size(), false);
     int components = 0;

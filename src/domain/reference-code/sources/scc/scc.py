@@ -19,6 +19,7 @@ from __future__ import annotations
 
 
 # First pass appends a vertex only after all its outgoing neighbours are finished.
+# First pass records finish order; the reverse graph is then explored in decreasing finish order to isolate SCCs.
 def first_pass(graph: list[list[int]], vertex: int, visited: list[bool], order: list[int]) -> None:
     visited[vertex] = True
     for neighbor in graph[vertex]:

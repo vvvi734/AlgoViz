@@ -30,6 +30,7 @@ class CircularList:
         self.tail: Node | None = None
 
     # New node points at head; the old tail points at the new node, preserving the ring.
+    # The tail's `next` points back to `head`, so traversal stops after returning to head, not at NULL.
     def append(self, value: int) -> None:
         node = Node(value)
         if self.tail is None:

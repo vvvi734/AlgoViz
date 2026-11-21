@@ -17,6 +17,7 @@ from collections import deque
 
 
 def main() -> None:
+    # `deque.popleft()` is O(1); a list pop(0) would shift every remaining element.
     queue: deque[int] = deque()
     for value in range(1, 5):
         queue.append(value)

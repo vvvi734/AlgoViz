@@ -26,6 +26,7 @@ bool StackEmpty(const Stack *stack)
     return stack->size == 0;
 }
 
+// `capacity` is the total number of slots; `size` is the live element count and the next free slot, so full and empty are distinct.
 bool Push(Stack *stack, int value)
 {
     if (stack->size == STACK_CAPACITY) {

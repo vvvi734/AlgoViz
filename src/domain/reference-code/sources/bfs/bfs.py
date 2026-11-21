@@ -19,6 +19,7 @@ from collections import deque
 
 
 # Mark a neighbour before enqueueing it; the FIFO frontier then visits level by level.
+# Mark a vertex when it enters the queue, not when it leaves, so it cannot be enqueued twice.
 def bfs(graph: list[list[int]], start: int) -> list[int]:
     visited = [False] * len(graph)
     visited[start] = True

@@ -16,6 +16,7 @@ from __future__ import annotations
 
 
 # Invariant: after each pass, the largest remaining values are fixed at the right end.
+# After pass k the largest k values sit at the right end; an unchanged pass ends the sort early.
 def bubble_sort(values: list[int]) -> None:
     end = len(values) - 1
     while end > 0:

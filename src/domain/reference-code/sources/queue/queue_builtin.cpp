@@ -14,6 +14,7 @@
 #include <queue>
 
 int main() {
+    // `std::queue::pop()` returns void; read `front()` before removing the oldest element.
     std::queue<int> queue;
     for (int value = 1; value <= 4; ++value) {
         queue.push(value);

@@ -25,6 +25,7 @@ class HashTable:
         return key % len(self._buckets)
 
     # Search the target bucket before appending; the chain holds only colliding keys.
+    # Each bucket owns a chain; inserting at the bucket head is O(1), and duplicates are rejected before allocation.
     def insert(self, key: int) -> bool:
         bucket = self._buckets[self._index(key)]
         if key in bucket:

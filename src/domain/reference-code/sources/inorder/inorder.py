@@ -25,6 +25,7 @@ class Node:
 
 
 # Left subtree, then node, then right subtree; a BST yields ascending keys.
+# Recurse left, visit the root, then recurse right; for a BST this emits keys in ascending order.
 def inorder(node: Node | None, output: list[int]) -> None:
     if node is None:
         return

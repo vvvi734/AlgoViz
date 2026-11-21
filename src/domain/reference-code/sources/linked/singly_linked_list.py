@@ -28,6 +28,7 @@ class SinglyLinkedList:
 
     def insert_head(self, value: int) -> None:
         node = Node(value)
+        # Point the new node at the old head before reassigning self.head.
         node.next = self.head
         self.head = node
         self.length += 1
@@ -42,6 +43,7 @@ class SinglyLinkedList:
         return prev if prev.next is target else None
 
     def insert_after(self, prev: Node | None, value: int) -> bool:
+        # A None predecessor means the insertion point is unknown, so reject the request instead of dereferencing it.
         if prev is None:
             return False
         node = Node(value)

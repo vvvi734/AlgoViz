@@ -14,6 +14,7 @@ typedef struct TreeNode {
     struct TreeNode *right;
 } TreeNode;
 
+// Recurse left, visit the root, then recurse right; for a BST this emits keys in ascending order.
 void InOrder(const TreeNode *node)
 {
     if (node == NULL) {

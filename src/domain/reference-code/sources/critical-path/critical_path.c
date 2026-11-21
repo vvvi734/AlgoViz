@@ -30,6 +30,7 @@ static const Activity ACTIVITIES[ACTIVITY_COUNT] = {
     {4, 5, 1},
 };
 
+// Forward pass takes the maximum predecessor finish; backward pass the minimum successor start; activity slack is latest(head) - earliest(tail) - weight.
 void CriticalPath(void)
 {
     int earliest[EVENT_COUNT] = {0};

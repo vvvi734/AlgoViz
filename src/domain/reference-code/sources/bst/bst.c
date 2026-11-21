@@ -17,6 +17,7 @@ typedef struct BSTNode {
     struct BSTNode *right;
 } BSTNode;
 
+// BST invariant: left keys < root < right keys; duplicates are rejected, so search follows one path.
 BSTNode *BSTInsert(BSTNode *root, int value, bool *inserted)
 {
     if (root == NULL) {

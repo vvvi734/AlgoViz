@@ -17,6 +17,7 @@ from __future__ import annotations
 
 
 # Lomuto partition: <= pivot goes left, > pivot goes right, pivot returns at boundary + 1.
+# Lomuto partition: `boundary` marks the end of the <= pivot region and starts at low - 1; the pivot is swapped to `boundary + 1`.
 def partition(values: list[int], low: int, high: int) -> int:
     pivot = values[high]
     boundary = low - 1

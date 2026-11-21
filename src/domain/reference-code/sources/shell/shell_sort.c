@@ -9,6 +9,7 @@
 
 #include <stdio.h>
 
+// Each gap pass insertion-sorts independent subsequences; gap 1 is the final ordinary insertion sort.
 void ShellSort(int *values, int count)
 {
     for (int gap = count / 2; gap > 0; gap /= 2) {

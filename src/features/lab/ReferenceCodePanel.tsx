@@ -120,10 +120,11 @@ export function ReferenceCodePanel({
             algorithmName,
             language,
             implementation: activeImplementation,
+            fileName: meta?.fileName,
             lang,
           })
         : null,
-    [source, algorithmId, algorithmName, language, activeImplementation, lang],
+    [source, algorithmId, algorithmName, language, activeImplementation, meta?.fileName, lang],
   );
   const hasAny = available.length > 0;
   const hasImplementationSwitch = implementations.length > 1;

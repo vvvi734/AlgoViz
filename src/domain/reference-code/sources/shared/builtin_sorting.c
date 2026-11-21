@@ -38,6 +38,7 @@ int main(void) {
     int values[] = {5, 1, 4, 2, 8, 0, 3, 7, 6, 9};
     size_t length = sizeof(values) / sizeof(values[0]);
 
+    // `qsort` is in-place and not guaranteed stable; the comparator returns negative, zero or positive.
     qsort(values, length, sizeof(values[0]), compare_int);
     printf("sorted:");
     print_values(values, length);

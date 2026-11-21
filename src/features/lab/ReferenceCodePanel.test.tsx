@@ -84,6 +84,30 @@ describe('ReferenceCodePanel', () => {
     expect(copied).toContain('int main(void)');
   });
 
+  it('copies internal annotations in the current UI language', async () => {
+    renderPanel('binary', '二分查找');
+    await waitForCode();
+
+    fireEvent.click(screen.getByTestId('reference-copy'));
+    await waitFor(() => expect(screen.getByTestId('reference-copy').textContent).toContain('已复制'));
+    const writeText = navigator.clipboard.writeText as unknown as ReturnType<typeof vi.fn>;
+    const zhCopy = String(writeText.mock.calls[0][0]);
+    expect(zhCopy).toContain('查找窗口是闭区间');
+    expect(zhCopy).not.toContain('The window is inclusive');
+    expect(zhCopy).toContain('int Binary_Search');
+
+    fireEvent.click(screen.getByTestId('test-toggle-language'));
+    await waitFor(() =>
+      expect(screen.getByTestId('reference-code-fallback').textContent).toContain('Binary search in C11'),
+    );
+    fireEvent.click(screen.getByTestId('reference-copy'));
+    await waitFor(() => expect(writeText).toHaveBeenCalledTimes(2));
+    const enCopy = String(writeText.mock.calls[1][0]);
+    expect(enCopy).toContain('The window is inclusive');
+    expect(enCopy).not.toContain('查找窗口是闭区间');
+    expect(enCopy).toContain('int Binary_Search');
+  });
+
   it('switches between the principle and shared convenience implementations', async () => {
     renderPanel('bubble', '冒泡排序');
     await waitForCode();

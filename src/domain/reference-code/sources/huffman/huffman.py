@@ -92,6 +92,7 @@ def main() -> None:
         heap.push(Node(frequency, symbol, order))
 
     order = len(frequencies)
+    # Merge the two least frequent nodes repeatedly; the final tree gives shorter codes to more frequent symbols.
     while len(heap) > 1:
         first = heap.pop()
         second = heap.pop()

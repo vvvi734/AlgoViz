@@ -14,6 +14,7 @@ Convention: Input is a non-negative integer; Python integers do not overflow.
 from __future__ import annotations
 
 
+# The two recursive calls are independent and uncached, so identical subproblems are recomputed.
 def fib(n: int) -> int:
     """Return F(n) using the naive two-branch recurrence."""
     if n < 0:

@@ -44,6 +44,7 @@ class DoublyList {
         return raw;
     }
 
+    // Removal repairs both `prev` and `next`; removing the head or tail must also update the external head/tail pointer.
     void remove(Node* node) {
         std::unique_ptr<Node> next = std::move(node->next);
         if (next) {

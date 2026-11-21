@@ -14,6 +14,7 @@
 
 #include <stdio.h>
 
+// The two recursive calls are independent and uncached, so identical subproblems are recomputed.
 static unsigned long long fib(unsigned int n) {
     if (n <= 1U) {
         return (unsigned long long)n;

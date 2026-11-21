@@ -32,8 +32,10 @@ def dijkstra(
 
     while queue:
         current_distance, u = heapq.heappop(queue)
+        # Ignore stale heap entries: the same vertex may appear with an older, larger distance.
         if u in settled or current_distance != distance[u]:
             continue  # stale heap entry
+        # Settling is final because every remaining candidate distance is at least this value.
         settled.add(u)
 
         for v, weight in graph.get(u, []):

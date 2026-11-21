@@ -20,6 +20,7 @@ static const int GRAPH[VERTEX_COUNT][VERTEX_COUNT] = {
     {0, 5, 7, 9, 0},
 };
 
+// `key[v]` is the lightest edge from v to the current tree; `parent[v]` records the endpoint that supplied it.
 void Prim(void)
 {
     int key[VERTEX_COUNT];

@@ -37,6 +37,7 @@ bool ListInsert(struct Node **head, int index, int value)
         if (node == NULL) {
             return false;
         }
+        // Link the new node to the old head before changing *head; otherwise the list is lost.
         node->next = *head;
         *head = node;
         return true;
@@ -66,6 +67,7 @@ bool ListDelete(struct Node **head, int index, int *removed)
     if (index == 0) {
         struct Node *node = *head;
         *removed = node->value;
+        // Deleting the head only moves *head; the successor already owns the rest of the list.
         *head = node->next;
         free(node);
         return true;
@@ -80,6 +82,7 @@ bool ListDelete(struct Node **head, int index, int *removed)
     }
     struct Node *node = previous->next;
     *removed = node->value;
+    // Unlink the target before freeing it; previous keeps the only link to its successor.
     previous->next = node->next;
     free(node);
     return true;

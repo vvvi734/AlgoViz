@@ -24,6 +24,7 @@ bool is_non_decreasing(const std::vector<int>& values) {
     return true;
 }
 
+// The window is inclusive: low == high still leaves one candidate, and mid is computed without overflow.
 int binary_search_index(const std::vector<int>& values, int target) {
     if (values.empty()) {
         return -1;

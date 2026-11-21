@@ -18,6 +18,7 @@
 #include <vector>
 
 // Mark a neighbour before enqueueing it; the FIFO frontier then visits level by level.
+// Mark a vertex when it enters the queue, not when it leaves, so it cannot be enqueued twice.
 void bfs(const std::vector<std::vector<int>>& graph, int start) {
     std::vector<bool> visited(graph.size(), false);
     std::queue<int> pending;

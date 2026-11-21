@@ -2,17 +2,18 @@
 // std::sort / std::stable_sort are deliberately not used.
 //
 // Reading guide:
-// 1. Split the half-open range [left, right) at its midpoint.
+// 1. Split the closed range [left, right] at its midpoint into [left, middle] and [middle + 1, right].
 // 2. Recursively sort both halves, then merge them into a temporary buffer.
 // 3. Merge by repeatedly taking the smaller front element; copy the merged run back.
 //
 // Complexity: O(n log n); extra space O(n) for the merge buffer.
-// Convention: Ranges are half-open [left, right); 0-based indices; taking the left
+// Convention: Ranges are closed [left, right]; 0-based indices; taking the left
 //   element on ties keeps the sort stable.
 
 #include <iostream>
 #include <vector>
 
+// The buffer is shared across recursive calls; ties take the left run, which keeps the merge stable.
 void merge_range(std::vector<int>& values,
                  std::vector<int>& buffer,
                  int left,

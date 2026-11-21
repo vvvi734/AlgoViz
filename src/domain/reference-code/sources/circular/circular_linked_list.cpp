@@ -26,6 +26,7 @@ class CircularList {
     }
 
     // New node points at head; the old tail points at the new node, preserving the ring.
+    // The tail's `next` points back to `head`, so traversal stops after returning to head, not at NULL.
     bool append(int value) {
         Node* node = new (std::nothrow) Node{value, nullptr};
         if (!node) {
