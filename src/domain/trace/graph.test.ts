@@ -62,6 +62,13 @@ describe('Stage 7E graph schema', () => {
     expect(parsed.data.visitedIds).toEqual(['A']);
   });
 
+  it('keeps the optional INPUT-06 directed flag on a traversal frame', () => {
+    const parsed = graphSnapshotSchema.safeParse(base({ directed: true }));
+    expect(parsed.success).toBe(true);
+    if (!parsed.success) return;
+    expect(parsed.data.directed).toBe(true);
+  });
+
   it('accepts a valid DFS stack snapshot', () => {
     const parsed = graphSnapshotSchema.safeParse(base({
       algorithm: 'dfs',

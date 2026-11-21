@@ -329,7 +329,7 @@ describe('INPUT-01/02 guided input parsing', () => {
     expect(guidedLanguageFor('hash-chain')).toBe('python');
     expect(guidedLanguageFor('hash-probe')).toBe('python');
     expect(guidedLanguageFor('kmp')).toBe('python');
-    expect(guidedLanguageFor('dijkstra')).toBeNull();
+    expect(guidedLanguageFor('dijkstra')).toBe('python');
     expect(guidedExecutionLanguage('bubble', 'official')).toBe('js');
     expect(guidedExecutionLanguage('bubble', 'custom')).toBe('python');
     expect(guidedExecutionLanguage('bubble', 'random')).toBe('python');
@@ -338,7 +338,7 @@ describe('INPUT-01/02 guided input parsing', () => {
     expect(guidedExecutionLanguage('binary', 'random')).toBe('python');
     expect(guidedExecutionLanguage('linear', 'custom')).toBe('python');
     expect(guidedExecutionLanguage('hash-probe', 'random')).toBe('python');
-    expect(guidedExecutionLanguage('dijkstra', 'custom')).toBeNull();
+    expect(guidedExecutionLanguage('dijkstra', 'custom')).toBe('python');
   });
 });
 

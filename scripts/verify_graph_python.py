@@ -29,8 +29,15 @@ GRAPH = {
     "edges": [["A", "B"], ["A", "C"], ["B", "D"], ["B", "E"], ["C", "F"], ["E", "F"], ["F", "G"]],
 }
 
+DIRECTED_GRAPH = {
+    "start": "A",
+    "directed": True,
+    "nodes": ["A", "B", "C", "D"],
+    "edges": [["A", "B"], ["A", "C"], ["B", "D"], ["D", "A"], ["C", "D"]],
+}
 
-def run(source: str):
+
+def run(source: str, graph=None):
     frames = []
 
     def trace(state, message="", line=None, variables=None, lesson_step=None, structure=None):
@@ -43,7 +50,7 @@ def run(source: str):
             "structure": structure,
         })
 
-    ns = {"input": json.loads(json.dumps(GRAPH)), "trace": trace}
+    ns = {"input": json.loads(json.dumps(graph or GRAPH)), "trace": trace}
     exec(compile(source, "<algo>", "exec"), ns)
     return frames
 
@@ -88,5 +95,15 @@ dfs_frames = run("import sys\n\n" + DFS)
 report("DFS", dfs_frames)
 assert dfs_frames[-1]["structure"]["visitOrder"] == ["A", "B", "D", "E", "F", "G", "C"]
 assert dfs_frames[0]["structure"]["nodes"][-1]["id"] == "G"
+
+bfs_directed = run("from collections import deque\nimport sys\n\n" + BFS, DIRECTED_GRAPH)
+report("BFS directed", bfs_directed)
+assert bfs_directed[0]["structure"]["directed"] is True
+assert bfs_directed[-1]["structure"]["visitOrder"] == ["A", "B", "C", "D"]
+
+dfs_directed = run("import sys\n\n" + DFS, DIRECTED_GRAPH)
+report("DFS directed", dfs_directed)
+assert dfs_directed[0]["structure"]["directed"] is True
+assert dfs_directed[-1]["structure"]["visitOrder"] == ["A", "B", "D", "C"]
 
 print("\nlocal Python smoke check passed")

@@ -68,6 +68,16 @@ describe('Stage 7E graph visual model', () => {
     expect(model?.edges.find((edge) => edge.id === 'e2')?.fromId).toBe('A');
   });
 
+  it('keeps the directed flag on the model and every drawn edge', () => {
+    const directed = buildGraphVisualModel(base({ directed: true }), 'empty graph');
+    expect(directed?.directed).toBe(true);
+    expect(directed?.edges.every((edge) => edge.directed === true)).toBe(true);
+
+    const undirected = buildGraphVisualModel(base(), 'empty graph');
+    expect(undirected?.directed).toBeUndefined();
+    expect(undirected?.edges.every((edge) => edge.directed === false)).toBe(true);
+  });
+
   it('shows the removed frontier element at dequeue without inventing text', () => {
     const model = buildGraphVisualModel(base({
       operation: 'dequeue',

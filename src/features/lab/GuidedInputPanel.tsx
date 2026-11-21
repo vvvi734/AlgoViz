@@ -7,13 +7,16 @@ import { btreePresetFromInput } from '../../domain/algorithms/btreeExamples';
 import { heapPresetFromInput } from '../../domain/algorithms/heapExamples';
 import { huffmanPresetFromInput } from '../../domain/algorithms/huffmanExamples';
 import type { TreeGuidedInputAlgorithm } from '../../domain/algorithms/treeInput';
+import type { GraphGuidedInputAlgorithm, GraphInputFields } from '../../domain/algorithms/graphInput';
 import {
   buildGuidedInput,
   defaultGuidedScenario,
   guidedDraftFromInput,
   guidedExecutionLanguage,
+  guidedGraphSpec,
   guidedRandomScenarios,
   isArrayGuidedInputAlgorithm,
+  isGraphAlgorithmGuidedInput,
   isHashGuidedInputAlgorithm,
   isHeapGuidedInputAlgorithm,
   isHuffmanGuidedInputAlgorithm,
@@ -35,6 +38,7 @@ import { StructureOperationEditor } from './StructureOperationEditor';
 import { TreeInputEditor } from './TreeInputEditor';
 import { HeapInputEditor } from './HeapInputEditor';
 import { HuffmanInputEditor } from './HuffmanInputEditor';
+import { GraphInputEditor } from './GraphInputEditor';
 import type { LabController } from './useLabController';
 
 function parseInput(raw: string): unknown {
@@ -60,6 +64,20 @@ const TREE_HINT_KEYS: Record<TreeGuidedInputAlgorithm, string> = {
   btree: 'treeHintBtree',
 };
 
+const GRAPH_HINT_KEYS: Record<GraphGuidedInputAlgorithm, string> = {
+  bfs: 'graphHintBfs',
+  dfs: 'graphHintDfs',
+  components: 'graphHintComponents',
+  scc: 'graphHintScc',
+  dijkstra: 'graphHintDijkstra',
+  'floyd-warshall': 'graphHintFloyd',
+  'bellman-ford': 'graphHintBellman',
+  prim: 'graphHintPrim',
+  kruskal: 'graphHintKruskal',
+  topological: 'graphHintTopological',
+  'critical-path': 'graphHintCritical',
+};
+
 function hintKeyFor(id: GuidedInputAlgorithm): string {
   if (isArrayGuidedInputAlgorithm(id)) return id === 'bubble' ? 'guidedBubbleHint' : 'guidedSortHint';
   if (isNumsTargetGuidedInputAlgorithm(id)) {
@@ -67,6 +85,9 @@ function hintKeyFor(id: GuidedInputAlgorithm): string {
   }
   if (isHashGuidedInputAlgorithm(id)) {
     return id === 'hash-chain' ? 'guidedChainHint' : 'guidedProbeHint';
+  }
+  if (isGraphAlgorithmGuidedInput(id)) {
+    return GRAPH_HINT_KEYS[id];
   }
   if (isStructureGuidedInputAlgorithm(id)) {
     return STRUCTURE_HINT_KEYS[id as StructureGuidedInputAlgorithm];
@@ -167,6 +188,13 @@ export function GuidedInputPanel({ lab }: { lab: LabController }) {
     setRandomFilled(false);
   };
 
+  const setGraph = (graph: GraphInputFields) => {
+    setDraft((current) => ({ ...current, graph }));
+    setMode('custom');
+    setIssue(null);
+    setRandomFilled(false);
+  };
+
   const loadOfficial = () => {
     setMode('official');
     setIssue(null);
@@ -186,6 +214,12 @@ export function GuidedInputPanel({ lab }: { lab: LabController }) {
 
   const errorText = (error: GuidedInputError) => {
     const text = t(error.key).replace('{max}', String(error.max ?? ''));
+    if (error.edge !== undefined) {
+      return `${t('graphEdgeRowError').replace('{row}', String(error.edge))} ${text}`;
+    }
+    if (error.node !== undefined) {
+      return `${t('graphNodeRowError').replace('{row}', String(error.node))} ${text}`;
+    }
     return error.row === undefined
       ? text
       : `${t('structureRowError').replace('{row}', String(error.row))} ${text}`;
@@ -197,7 +231,7 @@ export function GuidedInputPanel({ lab }: { lab: LabController }) {
       // Picker-backed official examples write their selection into inputJson.
       // Official mode must run that selection, not a stale default.
       input = id === 'heap' || id === 'seqlist' || id === 'inorder' || id === 'bst' || id === 'avl' ||
-        id === 'btree' || id === 'huffman'
+        id === 'btree' || id === 'huffman' || isGraphAlgorithmGuidedInput(id)
         ? (parseInput(lab.inputJson) ?? defaultInputFor(id))
         : defaultInputFor(id);
     } else {
@@ -304,6 +338,15 @@ export function GuidedInputPanel({ lab }: { lab: LabController }) {
 
       {isHuffmanGuidedInputAlgorithm(id) ? (
         <HuffmanInputEditor draft={draft} onChange={setField} />
+      ) : null}
+
+      {isGraphAlgorithmGuidedInput(id) ? (
+        <GraphInputEditor
+          algorithm={id}
+          spec={guidedGraphSpec(id)!}
+          draft={draft.graph ?? { nodes: ['A'], edges: [], directed: false, start: 'A', target: '' }}
+          onChange={setGraph}
+        />
       ) : null}
 
       {isArrayGuidedInputAlgorithm(id) ? (

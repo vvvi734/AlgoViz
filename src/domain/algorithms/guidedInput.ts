@@ -39,12 +39,24 @@ import {
   huffmanDraftFromInput,
   randomHuffmanDraft,
 } from './huffmanInput';
+import {
+  GRAPH_GUIDED_INPUT_ALGORITHMS,
+  GRAPH_RANDOM_SCENARIOS,
+  buildGraphInput,
+  emptyGraphDraft,
+  graphAlgorithmSpec,
+  graphDraftFromInput,
+  randomGraphDraft,
+  type GraphGuidedInputAlgorithm,
+  type GraphInputFields,
+} from './graphInput';
 
 export { isStructureGuidedInputAlgorithm } from './structureInput';
 export type { StructureOperationDraft, StructureOperationSpec } from './structureInput';
 export type { TreeGuidedInputAlgorithm, TreeInputFields } from './treeInput';
 export type { HeapInputFields, HeapOperation } from './heapInput';
 export type { HuffmanInputFields } from './huffmanInput';
+export type { GraphGuidedInputAlgorithm, GraphInputFields } from './graphInput';
 
 export const GUIDED_INPUT_ALGORITHMS = [
   'bubble',
@@ -62,6 +74,7 @@ export const GUIDED_INPUT_ALGORITHMS = [
   ...STRUCTURE_GUIDED_INPUT_ALGORITHMS,
   ...TREE_GUIDED_INPUT_ALGORITHMS,
   HUFFMAN_GUIDED_INPUT,
+  ...GRAPH_GUIDED_INPUT_ALGORITHMS,
 ] as const;
 export type GuidedInputAlgorithm = (typeof GUIDED_INPUT_ALGORITHMS)[number];
 
@@ -113,6 +126,17 @@ export const GUIDED_INPUT_LANGUAGE: Record<GuidedInputAlgorithm, CodeLanguage> =
   avl: 'python',
   btree: 'python',
   huffman: 'python',
+  bfs: 'python',
+  dfs: 'python',
+  components: 'python',
+  scc: 'python',
+  dijkstra: 'python',
+  'floyd-warshall': 'python',
+  'bellman-ford': 'python',
+  prim: 'python',
+  kruskal: 'python',
+  topological: 'python',
+  'critical-path': 'python',
 };
 
 export interface GuidedInputDraft {
@@ -135,6 +159,8 @@ export interface GuidedInputDraft {
   command: string;
   /** INPUT-05 Huffman symbol/weight lines. */
   symbols: string;
+  /** INPUT-06 shared graph node/edge table. */
+  graph?: GraphInputFields;
 }
 
 export interface GuidedInputError {
@@ -142,6 +168,10 @@ export interface GuidedInputError {
   max?: number;
   /** 1-based operation row for the structured editor. */
   row?: number;
+  /** 1-based graph edge row. */
+  edge?: number;
+  /** 1-based graph node row. */
+  node?: number;
 }
 
 export type GuidedBuildResult =
@@ -180,6 +210,7 @@ const EMPTY_DRAFT: GuidedInputDraft = {
   mode: 'inorder',
   command: '',
   symbols: '',
+  graph: emptyGraphDraft(),
 };
 
 const SORTING_SCENARIOS: readonly GuidedRandomScenario[] = [
@@ -238,6 +269,7 @@ const RANDOM_SCENARIOS: Record<GuidedInputAlgorithm, readonly GuidedRandomScenar
   ...STRUCTURE_RANDOM_SCENARIOS,
   ...TREE_RANDOM_SCENARIOS,
   huffman: HUFFMAN_RANDOM_SCENARIOS,
+  ...GRAPH_RANDOM_SCENARIOS,
 };
 
 export function isGuidedInputAlgorithm(id: string): id is GuidedInputAlgorithm {
@@ -266,6 +298,14 @@ export function isHeapGuidedInputAlgorithm(id: string): boolean {
 
 export function isHuffmanGuidedInputAlgorithm(id: string): boolean {
   return id === HUFFMAN_GUIDED_INPUT;
+}
+
+export function isGraphAlgorithmGuidedInput(id: string): id is GraphGuidedInputAlgorithm {
+  return (GRAPH_GUIDED_INPUT_ALGORITHMS as readonly string[]).includes(id);
+}
+
+export function guidedGraphSpec(id: string) {
+  return graphAlgorithmSpec(id);
 }
 
 export function guidedLanguageFor(id: string): CodeLanguage | null {
@@ -417,6 +457,9 @@ function formatHashOperations(input: unknown): string {
 }
 
 export function guidedDraftFromInput(id: GuidedInputAlgorithm, input: unknown): GuidedInputDraft {
+  if (isGraphAlgorithmGuidedInput(id)) {
+    return { ...EMPTY_DRAFT, graph: graphDraftFromInput(id, input) };
+  }
   if (isStructureGuidedInputAlgorithm(id)) {
     const parts = structureDraftFromInput(id, input);
     return { ...EMPTY_DRAFT, values: parts.values, rows: parts.rows };
@@ -458,6 +501,9 @@ export function guidedDraftFromInput(id: GuidedInputAlgorithm, input: unknown): 
 }
 
 export function buildGuidedInput(id: GuidedInputAlgorithm, draft: GuidedInputDraft): GuidedBuildResult {
+  if (isGraphAlgorithmGuidedInput(id)) {
+    return buildGraphInput(id, draft.graph ?? emptyGraphDraft());
+  }
   if (isStructureGuidedInputAlgorithm(id)) {
     return buildStructureInput(id, draft);
   }
@@ -759,6 +805,9 @@ export function randomGuidedDraft(
   scenario: string,
   random: () => number = Math.random,
 ): GuidedInputDraft {
+  if (isGraphAlgorithmGuidedInput(id)) {
+    return { ...EMPTY_DRAFT, graph: randomGraphDraft(id, scenario, random) };
+  }
   if (isStructureGuidedInputAlgorithm(id)) {
     return randomStructureDraft(id, scenario, random);
   }

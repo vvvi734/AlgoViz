@@ -1,15 +1,16 @@
 /**
  * Stage 7E real Python BFS / iterative DFS teaching programs.
  *
- * Both programs parse the SAME `{start, nodes, edges}` input, build a stable
- * undirected adjacency list, and emit one GraphSnapshot per real operation.
- * BFS uses `collections.deque`; DFS uses an explicit Python list stack. The
- * runner marks BFS discovered at enqueue and DFS discovered at push; both mark
- * visited only after dequeue/pop. `sourceLocation` comes from the caller frame
- * via `sys._getframe(1).f_lineno`, not from a guessed string index.
+ * Both programs parse the SAME `{start, nodes, edges, directed?}` input, build a
+ * stable adjacency list (directed when requested, undirected otherwise), and
+ * emit one GraphSnapshot per real operation. BFS uses `collections.deque`; DFS
+ * uses an explicit Python list stack. The runner marks BFS discovered at enqueue
+ * and DFS discovered at push; both mark visited only after dequeue/pop.
+ * `sourceLocation` comes from the caller frame via `sys._getframe(1).f_lineno`,
+ * not from a guessed string index.
  *
- * Duplicate undirected edges are normalised to the first occurrence (stable id
- * e1, e2, …). Self-loops and dangling endpoints are rejected before execution.
+ * Duplicate edges are normalised to the first occurrence (stable id e1, e2, …).
+ * Self-loops and dangling endpoints are rejected before execution.
  */
 export const GRAPH_DEFAULT_INPUT: unknown = {
   start: 'A',
@@ -30,6 +31,9 @@ if not isinstance(raw, dict):
     raise ValueError("graph input must be an object: {start, nodes, edges}")
 nodes_input = raw.get("nodes")
 edges_input = raw.get("edges", [])
+directed = raw.get("directed", False)
+if not isinstance(directed, bool):
+    raise ValueError("directed must be true or false")
 if not isinstance(nodes_input, list):
     raise ValueError("nodes must be an array of non-empty strings")
 if len(nodes_input) > 20:
@@ -64,7 +68,7 @@ for pair in edges_input:
         raise ValueError("an edge endpoint does not exist")
     if a == b:
         raise ValueError("self-loops are not supported")
-    key = tuple(sorted((a, b)))
+    key = (a, b) if directed else tuple(sorted((a, b)))
     if key in edge_by_pair:
         continue
     if len(edges_payload) >= 40:
@@ -73,7 +77,8 @@ for pair in edges_input:
     edge_by_pair[key] = edge_id
     edges_payload.append({"id": edge_id, "fromId": a, "toId": b})
     adjacency[a].append(b)
-    adjacency[b].append(a)
+    if not directed:
+        adjacency[b].append(a)
 nodes_payload = [{"id": node, "value": node} for node in nodes]`;
 
 const BFS_PROGRAM = `${GRAPH_INPUT_HELPER}
@@ -99,6 +104,7 @@ def bfs(adjacency, start):
             "currentNodeId": current,
             "currentEdgeId": edge,
             "neighborNodeId": neighbor,
+            "directed": directed,
             "discoveredIds": discovered_order[:],
             "visitedIds": visit_order[:],
             "visitOrder": visit_order[:],
@@ -126,7 +132,7 @@ def bfs(adjacency, start):
             structure=payload,
         )
 
-    emit("init", "初始化：建立无向邻接表 / Init: build the undirected adjacency list", "init")
+    emit("init", "初始化：建立有向邻接表 / Init: build the directed adjacency list" if directed else "初始化：建立无向邻接表 / Init: build the undirected adjacency list", "init")
     if start is None:
         emit("done", "空图：没有节点可访问 / Empty graph: no node to visit", "done")
         return
@@ -147,8 +153,9 @@ def bfs(adjacency, start):
         emit("visit", "访问 " + current + "，访问序号 " + str(len(visit_order)) + " / Visit " + current + " (#" + str(len(visit_order)) + ")", "visit", current=current)
 
         for neighbor in adjacency[current]:
-            edge = edge_by_pair[tuple(sorted((current, neighbor)))]
-            emit("inspect-edge", "检查边 " + current + "–" + neighbor + " / Inspect edge " + current + "–" + neighbor, "inspect", current=current, edge=edge, neighbor=neighbor)
+            edge = edge_by_pair[(current, neighbor) if directed else tuple(sorted((current, neighbor)))]
+            edge_mark = "→" if directed else "–"
+            emit("inspect-edge", "检查边 " + current + edge_mark + neighbor + " / Inspect edge " + current + edge_mark + neighbor, "inspect", current=current, edge=edge, neighbor=neighbor)
             if neighbor in discovered:
                 emit("skip", neighbor + " 已被发现，跳过 / " + neighbor + " is already discovered, skip", "skip", current=current, edge=edge, neighbor=neighbor)
                 continue
@@ -188,6 +195,7 @@ def dfs_iterative(adjacency, start):
             "currentNodeId": current,
             "currentEdgeId": edge,
             "neighborNodeId": neighbor,
+            "directed": directed,
             "discoveredIds": discovered_order[:],
             "visitedIds": visit_order[:],
             "visitOrder": visit_order[:],
@@ -215,7 +223,7 @@ def dfs_iterative(adjacency, start):
             structure=payload,
         )
 
-    emit("init", "初始化：建立无向邻接表 / Init: build the undirected adjacency list", "init")
+    emit("init", "初始化：建立有向邻接表 / Init: build the directed adjacency list" if directed else "初始化：建立无向邻接表 / Init: build the undirected adjacency list", "init")
     if start is None:
         emit("done", "空图：没有节点可访问 / Empty graph: no node to visit", "done")
         return
@@ -238,8 +246,9 @@ def dfs_iterative(adjacency, start):
         # Reversed order puts the FIRST adjacency neighbor on top of the LIFO
         # stack, reproducing recursive DFS order without recursion.
         for neighbor in reversed(adjacency[current]):
-            edge = edge_by_pair[tuple(sorted((current, neighbor)))]
-            emit("inspect-edge", "检查边 " + current + "–" + neighbor + " / Inspect edge " + current + "–" + neighbor, "inspect", current=current, edge=edge, neighbor=neighbor)
+            edge = edge_by_pair[(current, neighbor) if directed else tuple(sorted((current, neighbor)))]
+            edge_mark = "→" if directed else "–"
+            emit("inspect-edge", "检查边 " + current + edge_mark + neighbor + " / Inspect edge " + current + edge_mark + neighbor, "inspect", current=current, edge=edge, neighbor=neighbor)
             if neighbor in discovered:
                 emit("skip", neighbor + " 已被发现，跳过 / " + neighbor + " is already discovered, skip", "skip", current=current, edge=edge, neighbor=neighbor)
                 continue

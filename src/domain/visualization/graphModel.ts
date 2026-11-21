@@ -183,6 +183,7 @@ export function buildGraphVisualModel(
   const edges: GraphVisualEdge[] = layout.edges.map((edge) => ({
     ...edge,
     active: edge.id === snapshot.currentEdgeId,
+    directed: snapshot.directed === true,
   }));
   const viewBox = computeGraphViewBox(nodes, edges, layout.nodeRadius);
 
@@ -226,6 +227,7 @@ export function buildGraphVisualModel(
     height: layout.height,
     viewBox,
     nodeRadius: layout.nodeRadius,
+    ...(snapshot.directed === true ? { directed: true } : {}),
   };
 }
 

@@ -2426,6 +2426,8 @@ export const graphSnapshotSchema = z
     frontierItems: z.array(graphFrontierItemSchema).max(GRAPH_LIMITS.MAX_FRONTIER),
     /** The element that just left the frontier; non-null only for dequeue/pop. */
     frontierRemoved: graphFrontierItemSchema.nullable(),
+    /** INPUT-06: directed traversal keeps the arrow direction in the shared canvas. */
+    directed: z.boolean().optional(),
   })
   .superRefine((snapshot, ctx) => {
     const ids = new Set<string>();
