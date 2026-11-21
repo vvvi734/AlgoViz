@@ -9,6 +9,8 @@ import {
   guidedExecutionLanguage,
   guidedRandomScenarios,
   isArrayGuidedInputAlgorithm,
+  isHashGuidedInputAlgorithm,
+  isNumsTargetGuidedInputAlgorithm,
   randomGuidedDraft,
   type GuidedInputAlgorithm,
   type GuidedInputDraft,
@@ -191,17 +193,17 @@ export function GuidedInputPanel({ lab }: { lab: LabController }) {
         </div>
       ) : null}
 
-      {id === 'binary' ? (
+      {isNumsTargetGuidedInputAlgorithm(id) ? (
         <div className="guided-field-grid">
           <label className="guided-field">
-            <span>{t('guidedBinaryNumsLabel')}</span>
+            <span>{id === 'binary' ? t('guidedBinaryNumsLabel') : t('guidedValuesLabel')}</span>
             <input
               id="run-input"
               className="input code-dock-input"
               data-testid="run-input"
               value={draft.nums}
               onChange={(event) => setField('nums', event.target.value)}
-              placeholder="1, 3, 5, 7, 9"
+              placeholder={id === 'binary' ? '1, 3, 5, 7, 9' : '6, 3, 9, 2, 7, 4'}
               spellCheck={false}
               autoComplete="off"
             />
@@ -209,18 +211,35 @@ export function GuidedInputPanel({ lab }: { lab: LabController }) {
           <label className="guided-field guided-field-target">
             <span>{t('guidedBinaryTargetLabel')}</span>
             <input
-              id="binary-target"
+              id={id === 'binary' ? 'binary-target' : 'linear-target'}
               className="input code-dock-input"
-              data-testid="binary-target"
+              data-testid={id === 'binary' ? 'binary-target' : 'linear-target'}
               value={draft.target}
               onChange={(event) => setField('target', event.target.value)}
-              placeholder="9"
+              placeholder={id === 'binary' ? '9' : '7'}
               inputMode="numeric"
               spellCheck={false}
               autoComplete="off"
             />
           </label>
         </div>
+      ) : null}
+
+      {isHashGuidedInputAlgorithm(id) ? (
+        <label className="guided-hash-field">
+          <span>{t('guidedHashOperationsLabel')}</span>
+          <textarea
+            id="run-input"
+            className="input code-dock-input guided-hash-ops"
+            data-testid="hash-operations"
+            rows={4}
+            value={draft.operations}
+            onChange={(event) => setField('operations', event.target.value)}
+            placeholder={'insert 1\ninsert 8\nfind 8\ndelete 8'}
+            spellCheck={false}
+            autoComplete="off"
+          />
+        </label>
       ) : null}
 
       {id === 'kmp' ? (
@@ -261,9 +280,15 @@ export function GuidedInputPanel({ lab }: { lab: LabController }) {
             : id === 'heap'
               ? t('guidedHeapHint')
               : t('guidedSortHint')
-          : id === 'binary'
-            ? t('guidedBinaryHint')
-            : t('guidedKmpHint')}
+          : isNumsTargetGuidedInputAlgorithm(id)
+            ? id === 'binary'
+              ? t('guidedBinaryHint')
+              : t('guidedLinearHint')
+            : isHashGuidedInputAlgorithm(id)
+              ? id === 'hash-chain'
+                ? t('guidedChainHint')
+                : t('guidedProbeHint')
+              : t('guidedKmpHint')}
         {mode === 'official' ? ` ${t('guidedOfficialHint')}` : mode === 'random' ? ` ${t('guidedRandomHint')}` : ''}
       </p>
 

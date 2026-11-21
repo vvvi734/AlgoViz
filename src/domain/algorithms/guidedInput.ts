@@ -18,7 +18,10 @@ export const GUIDED_INPUT_ALGORITHMS = [
   'merge',
   'heap',
   'binary',
+  'linear',
   'kmp',
+  'hash-chain',
+  'hash-probe',
 ] as const;
 export type GuidedInputAlgorithm = (typeof GUIDED_INPUT_ALGORITHMS)[number];
 
@@ -34,6 +37,14 @@ export const ARRAY_GUIDED_INPUT_ALGORITHMS = [
 ] as const;
 export type ArrayGuidedInputAlgorithm = (typeof ARRAY_GUIDED_INPUT_ALGORITHMS)[number];
 
+/** Search algorithms that consume both an integer array and one target. */
+export const NUMS_TARGET_GUIDED_INPUT_ALGORITHMS = ['binary', 'linear'] as const;
+export type NumsTargetGuidedInputAlgorithm = (typeof NUMS_TARGET_GUIDED_INPUT_ALGORITHMS)[number];
+
+/** Hash tables consume a simple insert/find/delete operation sequence. */
+export const HASH_GUIDED_INPUT_ALGORITHMS = ['hash-chain', 'hash-probe'] as const;
+export type HashGuidedInputAlgorithm = (typeof HASH_GUIDED_INPUT_ALGORITHMS)[number];
+
 export type GuidedInputMode = 'official' | 'custom' | 'random';
 
 export const GUIDED_INPUT_LANGUAGE: Record<GuidedInputAlgorithm, CodeLanguage> = {
@@ -48,20 +59,25 @@ export const GUIDED_INPUT_LANGUAGE: Record<GuidedInputAlgorithm, CodeLanguage> =
   merge: 'python',
   heap: 'python',
   binary: 'python',
+  linear: 'python',
   kmp: 'python',
+  'hash-chain': 'python',
+  'hash-probe': 'python',
 };
 
 export interface GuidedInputDraft {
   /** Integer array for bubble, selection, insertion, Shell, quick, merge and heap. */
   values: string;
-  /** Binary search array, comma/space separated. */
+  /** Search array, comma/space separated. */
   nums: string;
-  /** Binary search target. */
+  /** Integer search target. */
   target: string;
   /** KMP text. */
   text: string;
   /** KMP pattern. */
   pattern: string;
+  /** Hash operation sequence, one `insert/find/delete key` per line. */
+  operations: string;
 }
 
 export interface GuidedInputError {
@@ -83,6 +99,10 @@ export const GUIDED_INPUT_LIMITS = {
   BUBBLE_MAX: 16,
   SORT_MIN: 2,
   SORT_MAX: 16,
+  LINEAR_MAX: 20,
+  HASH_TABLE_SIZE: 7,
+  HASH_MAX_OPERATIONS: 16,
+  HASH_KEY_MAX: 99,
   BINARY_MIN: 1,
   BINARY_MAX: 15,
   KMP_TEXT_MAX: 24,
@@ -96,6 +116,7 @@ const EMPTY_DRAFT: GuidedInputDraft = {
   target: '',
   text: '',
   pattern: '',
+  operations: '',
 };
 
 const SORTING_SCENARIOS: readonly GuidedRandomScenario[] = [
@@ -103,6 +124,30 @@ const SORTING_SCENARIOS: readonly GuidedRandomScenario[] = [
   { id: 'nearly-sorted', label: ['基本有序', 'Nearly sorted'] },
   { id: 'reversed', label: ['逆序', 'Reversed'] },
   { id: 'duplicates', label: ['重复值较多', 'Many duplicates'] },
+];
+
+const LINEAR_SCENARIOS: readonly GuidedRandomScenario[] = [
+  { id: 'normal', label: ['普通查找', 'Ordinary lookup'] },
+  { id: 'first', label: ['首元素命中', 'First element hit'] },
+  { id: 'last', label: ['末元素命中', 'Last element hit'] },
+  { id: 'not-found', label: ['查找失败', 'Lookup failure'] },
+  { id: 'duplicates', label: ['重复值', 'Duplicate values'] },
+];
+
+const CHAIN_SCENARIOS: readonly GuidedRandomScenario[] = [
+  { id: 'no-collision', label: ['无冲突', 'No collision'] },
+  { id: 'collision', label: ['同桶冲突', 'Same-bucket collision'] },
+  { id: 'delete-head', label: ['删除头节点', 'Delete head node'] },
+  { id: 'delete-middle', label: ['删除中间节点', 'Delete middle node'] },
+  { id: 'find-miss', label: ['查找失败', 'Lookup failure'] },
+];
+
+const PROBE_SCENARIOS: readonly GuidedRandomScenario[] = [
+  { id: 'no-collision', label: ['无冲突插入', 'No collision'] },
+  { id: 'collision', label: ['发生探测冲突', 'Probe collision'] },
+  { id: 'tombstone', label: ['墓碑与后续探测', 'Tombstone and later probe'] },
+  { id: 'find-fail', label: ['查找失败', 'Lookup failure'] },
+  { id: 'table-full', label: ['表满无法插入', 'Table full'] },
 ];
 
 const RANDOM_SCENARIOS: Record<GuidedInputAlgorithm, readonly GuidedRandomScenario[]> = {
@@ -117,6 +162,7 @@ const RANDOM_SCENARIOS: Record<GuidedInputAlgorithm, readonly GuidedRandomScenar
     { id: 'found', label: ['一定能找到', 'Always found'] },
     { id: 'not-found', label: ['一定找不到', 'Never found'] },
   ],
+  linear: LINEAR_SCENARIOS,
   kmp: [
     { id: 'success', label: ['成功匹配', 'Successful match'] },
     { id: 'failure', label: ['匹配失败', 'No match'] },
@@ -124,6 +170,8 @@ const RANDOM_SCENARIOS: Record<GuidedInputAlgorithm, readonly GuidedRandomScenar
     { id: 'fallback', label: ['失配回退', 'Fallback on mismatch'] },
     { id: 'overlap', label: ['多个 / 重叠匹配', 'Multiple / overlapping'] },
   ],
+  'hash-chain': CHAIN_SCENARIOS,
+  'hash-probe': PROBE_SCENARIOS,
 };
 
 export function isGuidedInputAlgorithm(id: string): id is GuidedInputAlgorithm {
@@ -132,6 +180,14 @@ export function isGuidedInputAlgorithm(id: string): id is GuidedInputAlgorithm {
 
 export function isArrayGuidedInputAlgorithm(id: string): id is ArrayGuidedInputAlgorithm {
   return (ARRAY_GUIDED_INPUT_ALGORITHMS as readonly string[]).includes(id);
+}
+
+export function isNumsTargetGuidedInputAlgorithm(id: string): id is NumsTargetGuidedInputAlgorithm {
+  return (NUMS_TARGET_GUIDED_INPUT_ALGORITHMS as readonly string[]).includes(id);
+}
+
+export function isHashGuidedInputAlgorithm(id: string): id is HashGuidedInputAlgorithm {
+  return (HASH_GUIDED_INPUT_ALGORITHMS as readonly string[]).includes(id);
 }
 
 export function guidedLanguageFor(id: string): CodeLanguage | null {
@@ -225,6 +281,63 @@ function parseInteger(raw: string): number | null {
   return value;
 }
 
+type HashOperation = 'insert' | 'find' | 'delete';
+type HashOperationTuple = [HashOperation, number];
+
+const HASH_OPERATION_ALIASES: Record<string, HashOperation> = {
+  insert: 'insert',
+  find: 'find',
+  delete: 'delete',
+  插入: 'insert',
+  查找: 'find',
+  删除: 'delete',
+};
+
+function parseHashOperations(
+  raw: string,
+): { ok: true; operations: HashOperationTuple[] } | { ok: false; error: GuidedInputError } {
+  const source = raw.trim();
+  if (source === '') return { ok: false, error: { key: 'guidedErrorHashOperations' } };
+  const segments = source
+    .split(/[\n\r;；,，]+/u)
+    .map((segment) => segment.trim())
+    .filter(Boolean);
+  if (segments.length === 0) return { ok: false, error: { key: 'guidedErrorHashOperations' } };
+
+  const operations: HashOperationTuple[] = [];
+  for (const segment of segments) {
+    const match = /^(insert|find|delete|插入|查找|删除)\s*[:：]?\s*(-?\d+)$/iu.exec(segment);
+    if (!match) return { ok: false, error: { key: 'guidedErrorHashOperation' } };
+    const operation = HASH_OPERATION_ALIASES[match[1]!.toLocaleLowerCase()];
+    const key = Number(match[2]);
+    if (!operation) return { ok: false, error: { key: 'guidedErrorHashOperation' } };
+    if (!Number.isSafeInteger(key) || key < 0 || key > GUIDED_INPUT_LIMITS.HASH_KEY_MAX) {
+      return { ok: false, error: { key: 'guidedErrorHashKey', max: GUIDED_INPUT_LIMITS.HASH_KEY_MAX } };
+    }
+    operations.push([operation, key]);
+  }
+  if (operations.length > GUIDED_INPUT_LIMITS.HASH_MAX_OPERATIONS) {
+    return {
+      ok: false,
+      error: { key: 'guidedErrorHashLimit', max: GUIDED_INPUT_LIMITS.HASH_MAX_OPERATIONS },
+    };
+  }
+  return { ok: true, operations };
+}
+
+function formatHashOperations(input: unknown): string {
+  if (!isRecord(input) || !Array.isArray(input.operations)) return '';
+  return input.operations
+    .flatMap((entry) => {
+      if (!Array.isArray(entry) || entry.length < 2) return [];
+      const operation = typeof entry[0] === 'string' ? HASH_OPERATION_ALIASES[entry[0]] : undefined;
+      const key = entry[1];
+      if (!operation || !Number.isSafeInteger(key) || (key as number) < 0) return [];
+      return [`${operation} ${key}`];
+    })
+    .join('\n');
+}
+
 export function guidedDraftFromInput(id: GuidedInputAlgorithm, input: unknown): GuidedInputDraft {
   if (isArrayGuidedInputAlgorithm(id)) {
     const values =
@@ -239,13 +352,16 @@ export function guidedDraftFromInput(id: GuidedInputAlgorithm, input: unknown): 
             : [];
     return { ...EMPTY_DRAFT, values: formatNumbers(values) };
   }
-  if (id === 'binary') {
+  if (isNumsTargetGuidedInputAlgorithm(id)) {
     const record = isRecord(input) ? input : {};
     return {
       ...EMPTY_DRAFT,
       nums: Array.isArray(record.nums) ? formatNumbers(record.nums) : '',
       target: describeNumber(record.target),
     };
+  }
+  if (isHashGuidedInputAlgorithm(id)) {
+    return { ...EMPTY_DRAFT, operations: formatHashOperations(input) };
   }
   const record = isRecord(input) ? input : {};
   return {
@@ -282,7 +398,7 @@ export function buildGuidedInput(id: GuidedInputAlgorithm, draft: GuidedInputDra
     return { ok: true, input: parsed.values };
   }
 
-  if (id === 'binary') {
+  if (isNumsTargetGuidedInputAlgorithm(id)) {
     let numsRaw = draft.nums;
     let targetRaw = draft.target;
     // Backward-compatible paste of the old JSON field: `{"nums":[...],"target":2}`.
@@ -293,8 +409,29 @@ export function buildGuidedInput(id: GuidedInputAlgorithm, draft: GuidedInputDra
         targetRaw = describeNumber(object.target);
       }
     }
+
+    if (id === 'linear' && numsRaw.trim() === '') {
+      // An empty array is a valid linear-search input and must reach the real
+      // Python program, which emits the correct -1 result instead of an old trace.
+      const target = parseInteger(targetRaw);
+      if (target === null) return { ok: false, error: { key: 'guidedErrorTarget' } };
+      return { ok: true, input: { nums: [], target } };
+    }
+
     const parsed = parseIntegerList(numsRaw);
     if (!parsed.ok) return { ok: false, error: { key: 'guidedErrorIntegerList' } };
+    if (id === 'linear') {
+      if (parsed.values.length > GUIDED_INPUT_LIMITS.LINEAR_MAX) {
+        return {
+          ok: false,
+          error: { key: 'guidedErrorLinearLength', max: GUIDED_INPUT_LIMITS.LINEAR_MAX },
+        };
+      }
+      const target = parseInteger(targetRaw);
+      if (target === null) return { ok: false, error: { key: 'guidedErrorTarget' } };
+      // Linear search deliberately does not require or create ascending order.
+      return { ok: true, input: { nums: parsed.values, target } };
+    }
     if (
       parsed.values.length < GUIDED_INPUT_LIMITS.BINARY_MIN ||
       parsed.values.length > GUIDED_INPUT_LIMITS.BINARY_MAX
@@ -307,6 +444,15 @@ export function buildGuidedInput(id: GuidedInputAlgorithm, draft: GuidedInputDra
     // Python program is allowed to reject unsorted data and emit its real
     // invalid trace; this UI never reorders it.
     return { ok: true, input: { nums: parsed.values, target } };
+  }
+
+  if (isHashGuidedInputAlgorithm(id)) {
+    const parsed = parseHashOperations(draft.operations);
+    if (!parsed.ok) return parsed;
+    return {
+      ok: true,
+      input: { tableSize: GUIDED_INPUT_LIMITS.HASH_TABLE_SIZE, operations: parsed.operations },
+    };
   }
 
   let text = draft.text;
@@ -367,6 +513,102 @@ function randomArrayValues(scenario: string, random: () => number): number[] {
   return values;
 }
 
+function randomLinearValues(scenario: string, random: () => number): { nums: number[]; target: number } {
+  if (scenario === 'duplicates') {
+    const target = randInt(random, -5, 20);
+    const fill = () => {
+      let value = randInt(random, -8, 24);
+      if (value === target) value += 3;
+      return value;
+    };
+    // First occurrence is at index 1; the later repeat proves that linear
+    // search returns the first match rather than a later duplicate.
+    return { nums: [fill(), target, fill(), fill(), target, fill()], target };
+  }
+
+  const length = randInt(random, 6, 9);
+  const nums = Array.from({ length }, () => randInt(random, -12, 35));
+  if (scenario === 'first') {
+    nums[0] = randInt(random, -5, 25);
+    return { nums, target: nums[0]! };
+  }
+  if (scenario === 'last') {
+    nums[nums.length - 1] = randInt(random, -5, 25);
+    return { nums, target: nums[nums.length - 1]! };
+  }
+  if (scenario === 'not-found') {
+    return { nums, target: (Math.max(...nums) ?? 0) + randInt(random, 1, 9) };
+  }
+  const target = nums[randInt(random, 1, nums.length - 2)]!;
+  return { nums, target };
+}
+
+function randomHashOperations(
+  id: HashGuidedInputAlgorithm,
+  scenario: string,
+  random: () => number,
+): HashOperationTuple[] {
+  const shift = randInt(random, 0, 2);
+  const collisionKeys = [1 + shift, 8 + shift, 15 + shift];
+
+  if (id === 'hash-chain') {
+    if (scenario === 'no-collision') {
+      const keys = [1 + shift, 2 + shift, 3 + shift, 4 + shift];
+      return [
+        ...keys.map((key): HashOperationTuple => ['insert', key]),
+        ['find', keys[2]!],
+        ['delete', keys[1]!],
+      ];
+    }
+    if (scenario === 'delete-head') {
+      return [
+        ...collisionKeys.map((key): HashOperationTuple => ['insert', key]),
+        ['delete', collisionKeys[2]!],
+        ['find', collisionKeys[1]!],
+      ];
+    }
+    if (scenario === 'delete-middle') {
+      return [
+        ...collisionKeys.map((key): HashOperationTuple => ['insert', key]),
+        ['delete', collisionKeys[1]!],
+        ['find', collisionKeys[2]!],
+      ];
+    }
+    return [
+      ...collisionKeys.map((key): HashOperationTuple => ['insert', key]),
+      ['find', collisionKeys[1]!],
+      ['find', scenario === 'find-miss' ? 20 + shift : 99],
+    ];
+  }
+
+  if (scenario === 'no-collision') {
+    const keys = [1 + shift, 2 + shift, 3 + shift, 4 + shift];
+    return [
+      ...keys.map((key): HashOperationTuple => ['insert', key]),
+      ['find', keys[2]!],
+      ['delete', keys[1]!],
+    ];
+  }
+  if (scenario === 'tombstone') {
+    return [
+      ...collisionKeys.map((key): HashOperationTuple => ['insert', key]),
+      ['delete', collisionKeys[1]!],
+      ['find', collisionKeys[2]!],
+      ['insert', 22 + shift],
+    ];
+  }
+  if (scenario === 'table-full') {
+    return [
+      ...Array.from({ length: GUIDED_INPUT_LIMITS.HASH_TABLE_SIZE }, (_, key): HashOperationTuple => ['insert', key]),
+      ['insert', GUIDED_INPUT_LIMITS.HASH_TABLE_SIZE],
+    ];
+  }
+  return [
+    ...collisionKeys.map((key): HashOperationTuple => ['insert', key]),
+    ['find', scenario === 'find-fail' ? 99 : collisionKeys[1]!],
+  ];
+}
+
 function randomBinaryValues(scenario: string, random: () => number): { nums: number[]; target: number } {
   const length = randInt(random, 7, 10);
   const nums: number[] = [];
@@ -421,6 +663,22 @@ export function randomGuidedDraft(
 ): GuidedInputDraft {
   if (isArrayGuidedInputAlgorithm(id)) {
     return { ...EMPTY_DRAFT, values: randomArrayValues(scenario, random).join(', ') };
+  }
+  if (id === 'linear') {
+    const generated = randomLinearValues(scenario, random);
+    return {
+      ...EMPTY_DRAFT,
+      nums: generated.nums.join(', '),
+      target: String(generated.target),
+    };
+  }
+  if (isHashGuidedInputAlgorithm(id)) {
+    return {
+      ...EMPTY_DRAFT,
+      operations: randomHashOperations(id, scenario, random)
+        .map(([operation, key]) => `${operation} ${key}`)
+        .join('\n'),
+    };
   }
   if (id === 'binary') {
     const generated = randomBinaryValues(scenario, random);
