@@ -66,6 +66,9 @@ import { BlockSearchVisual, BplusTreeVisual, KeyTreeVisual } from './SearchVisua
 import type { BlockSearchVisualModel } from '../../domain/visualization/blockSearchModel';
 import type { BplusVisualModel } from '../../domain/visualization/bplusModel';
 import type { KeyTreeVisualModel } from '../../domain/visualization/keyTreeModel';
+import type { TournamentVisualModel } from '../../domain/visualization/tournamentModel';
+import type { RadixVisualModel } from '../../domain/visualization/radixModel';
+import { RadixVisual, TournamentVisual } from './Sorting10Visuals';
 import type { BuddyVisualModel } from '../../domain/visualization/buddyModel';
 import type { GcVisualModel } from '../../domain/visualization/gcModel';
 import type { FreeListVisualModel } from '../../domain/visualization/freeListModel';
@@ -573,6 +576,12 @@ export function VisualStage({
     case 'key-tree':
       content = <KeyTreeVisual model={model as KeyTreeVisualModel} />;
       break;
+    case 'tournament':
+      content = <TournamentVisual model={model as TournamentVisualModel} />;
+      break;
+    case 'radix':
+      content = <RadixVisual model={model as RadixVisualModel} />;
+      break;
     case 'graph-traversal': {
       const operationText = graphOperationText(model, t);
       if (model.algorithm === 'dijkstra') {
@@ -718,6 +727,8 @@ export function VisualStage({
     model.kind === 'block-search' ||
     model.kind === 'bplus-tree' ||
     model.kind === 'key-tree' ||
+    model.kind === 'tournament' ||
+    model.kind === 'radix' ||
     model.kind === 'garbage-collection';
   return (
     <div

@@ -166,6 +166,52 @@ export const COURSE_GUIDES: Record<string, CourseGuide> = {
     ),
   },
 
+  tournament: {
+    intro: text(
+      '简单选择排序每轮都要重新扫描整个未排序区才能找到下一个最小值，比较次数固定为 O(n²)。树形选择排序把“谁更小”的比较结果缓存到一棵选择树上：每个内部节点保存两个子树中的较优候选，根节点就是当前最小值。取走根节点赢家后，只沿它原来所在的叶到根路径重新比较，其他分支的结果完全复用。代价是额外维护一棵 2n−1 个节点的树，换来每轮 O(log n) 的更新。',
+      'Simple selection sort rescans the whole unsorted region to find the next minimum, so its comparison count is always O(n²). Tournament selection sort caches “who is smaller” in a selection tree: each internal node stores the better candidate of its two subtrees, and the root is the current minimum. After removing the root winner, only its original leaf-to-root path is recomputed; every other branch is reused. The price is a 2n−1 node tree, buying O(log n) updates per output.',
+    ),
+    definition: text(
+      '树形选择排序（锦标赛排序）把记录放在完全二叉树的叶节点，内部节点保存两个孩子中按 (关键字, 原始下标) 较优的记录；根节点输出当前最小记录后，将该叶失效并沿叶到根重算赢家。',
+      'Tournament selection sort places records in the leaves of a complete binary tree; each internal node stores the better child by (key, originalIndex). The root outputs the current minimum; its leaf is then deactivated and only the leaf-to-root path is recomputed.',
+    ),
+    ...algorithm(
+      step('叶节点登记记录', 'Register records in leaves', '相同关键字仍是不同记录，保留原始下标。', 'Equal keys remain distinct records with their original indices.'),
+      step('自底向上建树', 'Build the tree bottom-up', '每个内部节点比较两个孩子，把较优候选上送。', 'Each internal node compares its children and promotes the better candidate.'),
+      step('根节点输出赢家', 'Output the root winner', '根节点是剩余记录中的最小值。', 'The root is the minimum among remaining records.'),
+      step('标记赢家叶失效', 'Deactivate the winner leaf', '叶仍保留原记录用于溯源，但不再参与比较。', 'The leaf keeps its record for provenance but no longer participates.'),
+      step('沿叶到根重算', 'Recompute the leaf-to-root path', '只访问被移除叶的祖先，其他分支复用。', 'Only the removed leaf’s ancestors are visited; other branches are reused.'),
+      step('重复直到树空', 'Repeat until the tree is empty', 'n 条记录全部输出后得到稳定升序序列。', 'After all n records are output, the result is stable ascending order.'),
+    ),
+    conditions: list(
+      ['需要可比较关键字；相等时以 originalIndex 作为稳定决胜键。', '叶容量通常补齐到 2 的幂，填充叶不是值为 0 的记录。', '建树 O(n)，每轮更新 O(log n)，总计 O(n log n)；树需要 O(n) 额外空间。', '当前实现按 (关键字, 原始下标) 比较，因此稳定；若只比较关键字并在相等时任意选择，则不稳定。'],
+      ['Keys must be comparable; originalIndex is the stable tie-breaker.', 'Leaf capacity is usually padded to a power of two; padding leaves are not records with value 0.', 'Build O(n), each update O(log n), total O(n log n); the tree needs O(n) extra space.', 'This implementation compares (key, originalIndex), so it is stable; comparing keys alone and choosing arbitrarily on ties would be unstable.'],
+    ),
+  },
+
+  radix: {
+    intro: text(
+      '比较排序必须通过两两比较确定次序，因此比较模型下有 Ω(n log n) 的下界。基数排序走另一条路：把关键字拆成十进制数位，从最低位开始，每一趟按当前位把记录分配进 0–9 号桶，再按桶号稳定收集。它不比较完整关键字，时间取决于位数 d 和基数 k，而不是 log n；代价是需要桶和额外的记录引用，并且只对可分解为有限位的关键字域有效。',
+      'Comparison sorts must order elements through pairwise comparisons, hence the Ω(n log n) lower bound in the comparison model. Radix sort takes another route: decompose each key into decimal digits, and starting from the least significant digit, distribute records into buckets 0–9 and collect them in stable bucket order. It never compares full keys; its time depends on the digit count d and radix k rather than log n. The price is buckets and extra record references, and it only applies to key domains with finitely many digits.',
+    ),
+    definition: text(
+      'LSD 基数排序是一种非比较排序：按最低位到最高位依次处理，每一趟把记录稳定分配到基数为 10 的桶中，再按桶号 0–9 依次收集；所有数位处理完后序列按完整关键字升序。',
+      'LSD radix sort is a non-comparison sort: it processes digits from least to most significant, stably distributes records into radix-10 buckets each pass, then collects buckets 0–9 in order; after all digits the sequence is ascending by the full key.',
+    ),
+    ...algorithm(
+      step('确定最大位数', 'Find the maximum digit count'),
+      step('选择当前数位', 'Choose the active digit', '当前位权为 10^pass，不足位按 0 处理。', 'The active place value is 10^pass; missing places count as zero.'),
+      step('逐项稳定分配', 'Distribute every record stably', '追加到桶尾，绝不按关键字重排桶内记录。', 'Append to the bucket tail; never reorder records inside a bucket by key.'),
+      step('按桶号收集', 'Collect buckets in order', '从 0 号桶到 9 号桶，桶内 FIFO。', 'From bucket 0 through 9, FIFO within each bucket.'),
+      step('替换序列并进入高位', 'Replace the sequence and raise the digit', '本趟只保证当前位及更低各位有序。', 'A pass guarantees order only for the active digit and all lower digits.'),
+      step('所有数位完成', 'All digits complete', '最终序列按完整关键字稳定升序。', 'The final sequence is stably ascending by the full key.'),
+    ),
+    conditions: list(
+      ['关键字必须能按固定基数拆成有限位；本课程使用十进制 0–9。', '当前模型只接受 0–9999 的非负整数；负数与超范围输入会被拒绝，不会静默取绝对值。', '每趟分配和收集都必须稳定，否则低位建立的次序会被破坏。', '时间 O(d(n+k))，d 为最大位数、k=10；额外空间 O(n+k)。', '不是比较排序，不能套用 Ω(n log n) 的比较下界。'],
+      ['Keys must decompose into finitely many digits at a fixed radix; this course uses decimal 0–9.', 'The current model accepts only non-negative integers 0–9999; negative or out-of-range input is rejected rather than silently absolute-valued.', 'Every distribution and collection must be stable, or lower-digit order is destroyed.', 'Time O(d(n+k)) with d the maximum digit count and k=10; extra space O(n+k).', 'It is not a comparison sort and does not inherit the Ω(n log n) comparison lower bound.'],
+    ),
+  },
+
   factorial: {
     intro: text(
       '阶乘的数学定义天然是递归的：n! 依赖 (n−1)!。如果直接写循环也能算，但递归定义更贴近“把同类子问题交给下一层”这一模式。递归实现必须显式给出 0! 或 1! 的终止条件，否则会无限下探；它的调用栈深度是 O(n)。',

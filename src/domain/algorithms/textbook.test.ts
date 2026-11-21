@@ -56,7 +56,7 @@ describe('textbook directory after TEXTBOOK-01', () => {
 
   it('preserves every existing algorithm exactly once in its new primary home', () => {
     const ids = textbookAlgorithmIds(nav);
-    expect(ids).toHaveLength(52);
+    expect(ids).toHaveLength(54);
     expect(new Set(ids).size).toBe(ids.length);
     expect(new Set(ids)).toEqual(new Set(Object.keys(catalog)));
   });
@@ -73,7 +73,7 @@ describe('textbook directory after TEXTBOOK-01', () => {
       ]),
     );
     const conceptRows = rows.filter(({ row }) => row.conceptId);
-    expect(CONCEPT_PAGES).toHaveLength(44);
+    expect(CONCEPT_PAGES).toHaveLength(45);
     expect(conceptRows.map(({ row }) => row.conceptId).sort()).toEqual(
       CONCEPT_PAGES.map((page) => page.id).sort(),
     );
@@ -297,7 +297,7 @@ describe('textbook directory after TEXTBOOK-01', () => {
 
   it('orders internal sorting by insertion/exchange/selection/merge and keeps bubble as a core course', () => {
     const sort = nav.find((chapter) => chapter.id === 'ch10-sort')!;
-    expect(sort.algorithmCount).toBe(7);
+    expect(sort.algorithmCount).toBe(9);
     expect(sort.topics.map((topic) => topic.id)).toEqual([
       'sort-basics',
       'insertion-sort',
@@ -319,9 +319,18 @@ describe('textbook directory after TEXTBOOK-01', () => {
     const selection = sort.topics.find((topic) => topic.id === 'selection-sort')!;
     expect(selection.children.map((child) => child.id)).toEqual([
       'simple-selection-sort',
+      'tree-selection-sort',
       'heap-sort',
     ]);
-    expect(sort.topics.find((topic) => topic.id === 'radix-sort')?.category).toBe('pending');
+    expect(sort.topics.find((topic) => topic.id === 'radix-sort')?.category).toBe('visual');
+    expect(textbookPathFor(catalog, 'tournament')).toEqual({
+      chapterId: 'ch10-sort',
+      topicId: 'selection-sort',
+    });
+    expect(textbookPathFor(catalog, 'radix')).toEqual({
+      chapterId: 'ch10-sort',
+      topicId: 'radix-sort',
+    });
     expect(textbookPathFor(catalog, 'quick')).toEqual({
       chapterId: 'ch10-sort',
       topicId: 'exchange-sort',

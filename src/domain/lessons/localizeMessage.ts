@@ -61,6 +61,14 @@ const COMPLEXITY_EN: Record<string, string> = {
   'O(ΣL) 个字符节点': 'O(ΣL) character nodes',
   '递归栈平均 O(log n)；最坏 O(n)': 'Recursion stack average O(log n); worst O(n)',
   'O(m+n)（结果链新建结点）': 'O(m+n) (a new result chain is allocated)',
+  '建树 O(n)；每输出一个记录更新 O(log n)，共 O(n log n)':
+    'Build O(n); each output updates one path in O(log n), total O(n log n)',
+  'O(n) 选择树（2n-1 个节点；补齐到 2 的幂时不超过 4n）':
+    'O(n) selection tree (2n-1 nodes; at most 4n when padded to a power of two)',
+  'O(d(n + k))，d 为最大位数，k=10 为基数':
+    'O(d(n + k)) where d is the maximum digit count and k=10 is the radix',
+  'O(n + k)（记录引用/链节点与 10 个桶）':
+    'O(n + k) (record references/links and 10 buckets)',
 };
 
 /** Translate the Chinese descriptor in a lesson complexity row. */

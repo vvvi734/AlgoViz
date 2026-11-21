@@ -45,6 +45,14 @@ const REFERENCE_LEARNING_NOTES: Record<string, LocalizedText> = {
     zh: '二分到单元素，再合并两个有序半区；相等时优先取左侧以保持稳定。任何输入 O(n log n)，但数组版需要 O(n) 辅助空间。',
     en: 'Split to single elements, then merge two sorted halves; take the left item on equality to stay stable. O(n log n) for every input, but the array version needs O(n) auxiliary space.',
   },
+  tournament: {
+    zh: '叶节点存放记录，内部节点保存两个子树中的较优赢家；根节点是当前最小值。取走赢家后只沿叶到根重算，按 (关键字, 原始下标) 比较，因此稳定；总 O(n log n)、树空间 O(n)。',
+    en: 'Leaves hold records and each internal node stores the better subtree winner; the root is the current minimum. After a removal only the leaf-to-root path is recomputed. Comparison uses (key, originalIndex), so it is stable; O(n log n) time and O(n) tree space.',
+  },
+  radix: {
+    zh: '按最低位到最高位逐位处理，把记录稳定放入 0–9 号桶，再按桶号收集。桶内 FIFO 是正确性的必要条件；O(d(n+10))，额外 O(n+10)。当前模型只接受 0–9999 的非负整数。',
+    en: 'Process digits from least to most significant, stably distribute records into buckets 0–9, then collect in bucket order. FIFO order inside buckets is required for correctness; O(d(n+10)) time and O(n+10) extra space. The current model accepts only non-negative integers 0–9999.',
+  },
   factorial: {
     zh: '递归把 n! 化为 n × (n−1)!，以 0! = 1! = 1 为终止条件；返回时逐层相乘。时间 O(n)，递归栈 O(n)。',
     en: 'Recursively reduce n! to n × (n−1)!, with 0! = 1! = 1 as the base cases, then multiply while unwinding. O(n) time and O(n) recursion space.',

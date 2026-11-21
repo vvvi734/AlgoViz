@@ -154,7 +154,7 @@ export function buildTreeInput(id: TreeGuidedInputAlgorithm, fields: TreeInputFi
     ok: true,
     input: {
       preset: null,
-      operation: id === 'bst' ? command : command === 'insert' ? 'insert' : 'find',
+      operation: command,
       tree: parsed.values,
       target: targets.target,
     },

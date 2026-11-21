@@ -896,6 +896,11 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
             algorithms: [{ id: 'selection' }],
           },
           {
+            id: 'tree-selection-sort',
+            title: { zh: '树形选择排序', en: 'Tournament selection sort' },
+            algorithms: [{ id: 'tournament' }],
+          },
+          {
             id: 'heap-sort',
             title: { zh: '堆排序', en: 'Heapsort' },
             algorithms: [{ id: 'heap' }],
@@ -910,14 +915,14 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
       {
         id: 'radix-sort',
         title: { zh: '基数排序', en: 'Radix sort' },
-        algorithms: [],
-        planned: true,
+        algorithms: [{ id: 'radix' }],
       },
       {
         id: 'sort-comparison',
         title: { zh: '各种内部排序方法的比较讨论', en: 'Comparing internal sorting methods' },
         algorithms: [],
-        planned: true,
+        concept: true,
+        conceptId: 'sorting-comparison',
       },
     ],
   },

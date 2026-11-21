@@ -12,6 +12,8 @@ import { insertionSortLesson } from './insertionSortLesson';
 import { shellSortLesson } from './shellSortLesson';
 import { quickSortLesson } from './quickSortLesson';
 import { mergeSortLesson } from './mergeSortLesson';
+import { tournamentSortLesson } from './tournamentSortLesson';
+import { radixSortLesson } from './radixSortLesson';
 import { queueLesson } from './queue';
 import { stackLesson } from './stack';
 import { sequentialListLesson } from './sequentialList';
@@ -90,6 +92,8 @@ const BUNDLED: unknown[] = [
   shellSortLesson,
   quickSortLesson,
   mergeSortLesson,
+  tournamentSortLesson,
+  radixSortLesson,
   factorialLesson,
   fibonacciLesson,
   stackLesson,

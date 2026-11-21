@@ -41,6 +41,16 @@ import {
   KEY_TREE_DEFAULT_INPUT,
   KEY_TREE_PYTHON,
 } from './keyTreeExamples';
+import {
+  TOURNAMENT_ENTRY,
+  TOURNAMENT_DEFAULT_INPUT,
+  TOURNAMENT_PYTHON,
+} from './tournamentExamples';
+import {
+  RADIX_ENTRY,
+  RADIX_DEFAULT_INPUT,
+  RADIX_PYTHON,
+} from './radixExamples';
 import { structureDefaultInput, structurePythonExample } from './structureExamples';
 import {
   INFIX_TO_POSTFIX_ENTRY,
@@ -69,6 +79,8 @@ export const catalog: AlgorithmCatalog = {
   'block-search': { ...BLOCK_SEARCH_ENTRY, input: BLOCK_SEARCH_DEFAULT_INPUT },
   'bplus-tree': { ...BPLUS_TREE_ENTRY, input: BPLUS_TREE_DEFAULT_INPUT },
   'key-tree': { ...KEY_TREE_ENTRY, input: KEY_TREE_DEFAULT_INPUT },
+  tournament: { ...TOURNAMENT_ENTRY, input: TOURNAMENT_DEFAULT_INPUT },
+  radix: { ...RADIX_ENTRY, input: RADIX_DEFAULT_INPUT },
 };
 
 export const algorithmIds = (): string[] => Object.keys(catalog);
@@ -115,6 +127,13 @@ export function searchPythonExample(algoId: string): string | null {
   return null;
 }
 
+/** Python presets authored for the two new TEXTBOOK-10 sorting courses. */
+export function sorting10PythonExample(algoId: string): string | null {
+  if (algoId === 'tournament') return TOURNAMENT_PYTHON;
+  if (algoId === 'radix') return RADIX_PYTHON;
+  return null;
+}
+
 /** Returns the preset source for an algorithm in a given teaching language. */
 export function exampleFor(algoId: string, language: CodeLanguage): string {
   const entry = catalog[algoId];
@@ -127,6 +146,8 @@ export function exampleFor(algoId: string, language: CodeLanguage): string {
   if (memoryPreset) return memoryPreset;
   const searchPreset = searchPythonExample(algoId);
   if (searchPreset) return searchPreset;
+  const sortingPreset = sorting10PythonExample(algoId);
+  if (sortingPreset) return sortingPreset;
   const preset = LANGUAGE_EXAMPLES[language]?.[algoId];
   if (preset) return preset;
   const name = entry?.name[1] ?? algoId;

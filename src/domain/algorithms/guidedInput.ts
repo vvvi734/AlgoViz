@@ -197,6 +197,8 @@ export const GUIDED_INPUT_ALGORITHMS = [
   'shell',
   'quick',
   'merge',
+  'tournament',
+  'radix',
   'heap',
   'binary',
   'linear',
@@ -229,6 +231,8 @@ export const ARRAY_GUIDED_INPUT_ALGORITHMS = [
   'shell',
   'quick',
   'merge',
+  'tournament',
+  'radix',
 ] as const;
 export type ArrayGuidedInputAlgorithm = (typeof ARRAY_GUIDED_INPUT_ALGORITHMS)[number];
 
@@ -256,6 +260,8 @@ export const GUIDED_INPUT_LANGUAGE: Record<GuidedInputAlgorithm, CodeLanguage> =
   shell: 'python',
   quick: 'python',
   merge: 'python',
+  tournament: 'python',
+  radix: 'python',
   heap: 'python',
   binary: 'python',
   linear: 'python',
@@ -379,6 +385,11 @@ export const GUIDED_INPUT_LIMITS = {
   BUBBLE_MAX: 16,
   SORT_MIN: 2,
   SORT_MAX: 16,
+  TOURNAMENT_MIN: 1,
+  TOURNAMENT_MAX: 12,
+  RADIX_MIN: 1,
+  RADIX_MAX: 16,
+  RADIX_VALUE_MAX: 9999,
   LINEAR_MAX: 20,
   HASH_TABLE_SIZE: 7,
   HASH_MAX_OPERATIONS: 20,
@@ -420,6 +431,22 @@ const SORTING_SCENARIOS: readonly GuidedRandomScenario[] = [
   { id: 'duplicates', label: ['重复值较多', 'Many duplicates'] },
 ];
 
+const TOURNAMENT_SCENARIOS: readonly GuidedRandomScenario[] = [
+  { id: 'normal', label: ['普通乱序', 'Ordinary shuffle'] },
+  { id: 'duplicates', label: ['重复关键字', 'Duplicate keys'] },
+  { id: 'reversed', label: ['逆序', 'Reversed'] },
+  { id: 'non-power', label: ['非 2 的幂长度', 'Non-power-of-two length'] },
+  { id: 'single', label: ['单元素', 'Single record'] },
+];
+
+const RADIX_SCENARIOS: readonly GuidedRandomScenario[] = [
+  { id: 'multi-digit', label: ['多位整数', 'Multi-digit integers'] },
+  { id: 'mixed-length', label: ['不同数位长度', 'Mixed digit lengths'] },
+  { id: 'duplicates', label: ['重复关键字', 'Duplicate keys'] },
+  { id: 'zero', label: ['含零值', 'Values containing zero'] },
+  { id: 'identical', label: ['完全相同关键字', 'All keys identical'] },
+];
+
 const LINEAR_SCENARIOS: readonly GuidedRandomScenario[] = [
   { id: 'normal', label: ['普通查找', 'Ordinary lookup'] },
   { id: 'first', label: ['首元素命中', 'First element hit'] },
@@ -451,6 +478,8 @@ const RANDOM_SCENARIOS: Record<GuidedInputAlgorithm, readonly GuidedRandomScenar
   shell: SORTING_SCENARIOS,
   quick: SORTING_SCENARIOS,
   merge: SORTING_SCENARIOS,
+  tournament: TOURNAMENT_SCENARIOS,
+  radix: RADIX_SCENARIOS,
   heap: HEAP_RANDOM_SCENARIOS,
   binary: [
     { id: 'found', label: ['一定能找到', 'Always found'] },
@@ -830,6 +859,39 @@ export function buildGuidedInput(id: GuidedInputAlgorithm, draft: GuidedInputDra
   if (isArrayGuidedInputAlgorithm(id)) {
     const parsed = parseIntegerList(draft.values);
     if (!parsed.ok) return { ok: false, error: { key: 'guidedErrorIntegerList' } };
+    if (id === 'tournament') {
+      if (
+        parsed.values.length < GUIDED_INPUT_LIMITS.TOURNAMENT_MIN ||
+        parsed.values.length > GUIDED_INPUT_LIMITS.TOURNAMENT_MAX
+      ) {
+        return {
+          ok: false,
+          error: { key: 'guidedErrorTournamentLength', max: GUIDED_INPUT_LIMITS.TOURNAMENT_MAX },
+        };
+      }
+      return { ok: true, input: parsed.values };
+    }
+    if (id === 'radix') {
+      if (parsed.values.some((value) => value < 0)) {
+        return { ok: false, error: { key: 'guidedErrorRadixNonNegative' } };
+      }
+      if (parsed.values.some((value) => value > GUIDED_INPUT_LIMITS.RADIX_VALUE_MAX)) {
+        return {
+          ok: false,
+          error: { key: 'guidedErrorRadixRange', max: GUIDED_INPUT_LIMITS.RADIX_VALUE_MAX },
+        };
+      }
+      if (
+        parsed.values.length < GUIDED_INPUT_LIMITS.RADIX_MIN ||
+        parsed.values.length > GUIDED_INPUT_LIMITS.RADIX_MAX
+      ) {
+        return {
+          ok: false,
+          error: { key: 'guidedErrorRadixLength', max: GUIDED_INPUT_LIMITS.RADIX_MAX },
+        };
+      }
+      return { ok: true, input: parsed.values };
+    }
     const min = id === 'bubble' ? GUIDED_INPUT_LIMITS.BUBBLE_MIN : GUIDED_INPUT_LIMITS.SORT_MIN;
     const max = id === 'bubble' ? GUIDED_INPUT_LIMITS.BUBBLE_MAX : GUIDED_INPUT_LIMITS.SORT_MAX;
     if (parsed.values.length < min || parsed.values.length > max) {
@@ -1133,6 +1195,59 @@ function randomKmpValues(scenario: string, random: () => number): { text: string
   return { text: `${prefix}${pattern}${suffix}`, pattern };
 }
 
+function randomTournamentValues(scenario: string, random: () => number): number[] {
+  if (scenario === 'single') return [randInt(random, -10, 30)];
+  if (scenario === 'duplicates') {
+    const length = randInt(random, 6, 9);
+    const pool = [1, 3, 5, 8];
+    return Array.from({ length }, () => pool[randInt(random, 0, pool.length - 1)]!);
+  }
+  if (scenario === 'reversed') {
+    const length = randInt(random, 6, 10);
+    return Array.from({ length }, (_, index) => 40 - index * randInt(random, 2, 5));
+  }
+  if (scenario === 'non-power') {
+    const length = [5, 6, 7, 9, 10, 11, 12][randInt(random, 0, 6)]!;
+    return Array.from({ length }, () => randInt(random, -15, 35));
+  }
+  const length = randInt(random, 6, 10);
+  const values = Array.from({ length }, () => randInt(random, -15, 35));
+  if (isAscending(values)) [values[0], values[values.length - 1]] = [values[values.length - 1]!, values[0]!];
+  return values;
+}
+
+function randomRadixValues(scenario: string, random: () => number): number[] {
+  const pick = (min: number, max: number) => randInt(random, min, max);
+  if (scenario === 'duplicates') {
+    const pool = [12, 21, 45, 108, 210];
+    const length = randInt(random, 6, 9);
+    return Array.from({ length }, () => pool[randInt(random, 0, pool.length - 1)]!);
+  }
+  if (scenario === 'zero') {
+    const length = randInt(random, 5, 8);
+    const values = Array.from({ length }, () => pick(0, 999));
+    values[0] = 0;
+    values[values.length - 1] = 0;
+    return values;
+  }
+  if (scenario === 'identical') {
+    const value = pick(1, 999);
+    return Array.from({ length: randInt(random, 5, 7) }, () => value);
+  }
+  if (scenario === 'mixed-length') {
+    const length = randInt(random, 6, 9);
+    return Array.from({ length }, (_, index) => {
+      const lengthClass = index % 4;
+      if (lengthClass === 0) return pick(0, 9);
+      if (lengthClass === 1) return pick(10, 99);
+      if (lengthClass === 2) return pick(100, 999);
+      return pick(1000, 9999);
+    }).sort(() => random() - 0.5);
+  }
+  const length = randInt(random, 6, 9);
+  return Array.from({ length }, () => pick(100, 999));
+}
+
 export function randomGuidedDraft(
   id: GuidedInputAlgorithm,
   scenario: string,
@@ -1191,6 +1306,12 @@ export function randomGuidedDraft(
     return { ...EMPTY_DRAFT, ...randomHuffmanDraft(scenario, random) };
   }
   if (isArrayGuidedInputAlgorithm(id)) {
+    if (id === 'tournament') {
+      return { ...EMPTY_DRAFT, values: randomTournamentValues(scenario, random).join(', ') };
+    }
+    if (id === 'radix') {
+      return { ...EMPTY_DRAFT, values: randomRadixValues(scenario, random).join(', ') };
+    }
     return { ...EMPTY_DRAFT, values: randomArrayValues(scenario, random).join(', ') };
   }
   if (id === 'linear') {

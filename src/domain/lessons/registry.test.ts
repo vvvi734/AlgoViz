@@ -33,6 +33,8 @@ describe('Lesson registry (Stage 3B)', () => {
       'shell-sort-basics',
       'quick-sort-basics',
       'merge-sort-basics',
+      'tree-selection-sort',
+      'radix-sort-basics',
       'factorial-recursion-basics',
       'fibonacci-recursion-basics',
       'stack-lifo-basics',
@@ -110,11 +112,11 @@ describe('Lesson registry (Stage 3B)', () => {
     expect(broken.errors.join(' ')).toContain('buble-sort');
   });
 
-  it('covers all 52 algorithms with a validated course', () => {
+  it('covers all 54 algorithms with a validated course', () => {
     const covered = lessonRegistry.lessons.map((lesson) => lesson.algorithmId);
     const uncovered = catalogIds.filter((id) => !covered.includes(id));
-    expect(catalogIds.length).toBe(52);
-    expect(lessonRegistry.lessons.length).toBe(52);
+    expect(catalogIds.length).toBe(54);
+    expect(lessonRegistry.lessons.length).toBe(54);
     expect(uncovered).toEqual([]);
   });
 });

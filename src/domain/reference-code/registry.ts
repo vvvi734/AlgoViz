@@ -156,6 +156,20 @@ export const REFERENCE_CODE: Record<string, ReferenceEntry> = {
       python: { fileName: 'merge_sort.py' },
     },
   },
+  tournament: {
+    files: {
+      c: { fileName: 'tournament_sort.c' },
+      cpp: { fileName: 'tournament_sort.cpp' },
+      python: { fileName: 'tournament_sort.py' },
+    },
+  },
+  radix: {
+    files: {
+      c: { fileName: 'radix_sort.c' },
+      cpp: { fileName: 'radix_sort.cpp' },
+      python: { fileName: 'radix_sort.py' },
+    },
+  },
   factorial: {
     files: {
       c: { fileName: 'factorial.c' },

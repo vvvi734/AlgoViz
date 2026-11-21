@@ -111,10 +111,11 @@ describe('F2 hash lessons', () => {
     expect(topic).toBeTruthy();
     expect(topic!.planned).not.toBe(true);
     expect(topic!.algorithms).toEqual([]);
-    expect(topic!.children?.map((child) => child.algorithms[0]?.id)).toEqual(['hash-chain', 'hash-probe']);
+    expect(topic!.children?.flatMap((child) => child.algorithms.map((algorithm) => algorithm.id)))
+      .toEqual(['hash-chain', 'hash-probe']);
     const duplicate = chapter!.topics.filter((entry) => entry.id === 'hash-search');
     expect(duplicate).toHaveLength(1);
-    expect(chapter!.topics.map((entry) => entry.id).slice(-2)).toEqual(['tree-search', 'hash-search']);
+    expect(chapter!.topics.map((entry) => entry.id).slice(-2)).toEqual(['hash-search', 'search-comparison']);
   });
 
   it('uses one unique-key policy in the courses and metadata', () => {

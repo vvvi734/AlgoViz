@@ -54,6 +54,8 @@ import { buildGcVisualModel, type GcVisualModel } from './gcModel';
 import { buildBlockSearchModel, type BlockSearchVisualModel } from './blockSearchModel';
 import { buildBplusModel, type BplusVisualModel } from './bplusModel';
 import { buildKeyTreeModel, type KeyTreeVisualModel } from './keyTreeModel';
+import { buildTournamentModel, type TournamentVisualModel } from './tournamentModel';
+import { buildRadixModel, type RadixVisualModel } from './radixModel';
 
 /**
  * Pure mapping from a trace state to a renderable model. React components only
@@ -180,6 +182,8 @@ export type VisualModel =
   | BlockSearchVisualModel
   | BplusVisualModel
   | KeyTreeVisualModel
+  | TournamentVisualModel
+  | RadixVisualModel
   | { kind: 'graph'; edges: Array<[number, number]>; nodes: GraphNodeModel[]; isTree: boolean }
   | { kind: 'raw'; text: string };
 
@@ -380,6 +384,16 @@ export function buildVisualModel(
   if (structure !== undefined && structure.kind === 'key-tree') {
     if (kind !== 'array') return { kind: 'raw', text: labels.invalid };
     return buildKeyTreeModel(structure);
+  }
+
+  if (structure !== undefined && structure.kind === 'tournament') {
+    if (kind !== 'array') return { kind: 'raw', text: labels.invalid };
+    return buildTournamentModel(structure);
+  }
+
+  if (structure !== undefined && structure.kind === 'radix') {
+    if (kind !== 'array') return { kind: 'raw', text: labels.invalid };
+    return buildRadixModel(structure);
   }
 
   if (structure !== undefined && structure.kind === 'generalized-list') {

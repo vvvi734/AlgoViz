@@ -260,7 +260,17 @@ describe('INPUT-05 AVL input', () => {
 describe('INPUT-05 order-4 B-tree input', () => {
   it('covers ordinary leaf insert, child split, root split and both find outcomes', () => {
     const scenarios = TREE_RANDOM_SCENARIOS.btree.map((scenario) => scenario.id);
-    expect(scenarios).toEqual(['insert-leaf', 'split-child', 'split-root', 'find-hit', 'find-miss']);
+    expect(scenarios).toEqual([
+      'insert-leaf',
+      'split-child',
+      'split-root',
+      'find-hit',
+      'find-miss',
+      'delete-leaf',
+      'delete-borrow',
+      'delete-merge',
+      'delete-root-shrink',
+    ]);
 
     for (const scenario of scenarios) {
       for (let seed = 1; seed <= 10; seed += 1) {
@@ -271,7 +281,14 @@ describe('INPUT-05 order-4 B-tree input', () => {
         expect(new Set(sequence).size).toBe(sequence.length);
         expect(sequence.length).toBeGreaterThan(0);
         expect(sequence.length).toBeLessThanOrEqual(TREE_INPUT_LIMITS.MAX_BTREE_KEYS);
-        expect(input.operation).toBe(scenario.startsWith('find') ? 'find' : 'insert');
+        expect(input.operation).toBe(
+          scenario.startsWith('find')
+            ? 'find'
+            : scenario.startsWith('delete')
+              ? 'delete'
+              : 'insert',
+        );
+        if (scenario.startsWith('delete')) expect(sequence).toContain(target);
         if (scenario === 'find-hit') expect(sequence).toContain(target);
         if (scenario === 'find-miss') expect(sequence).not.toContain(target);
         if (scenario === 'split-child') expect(sequence).not.toContain(target);

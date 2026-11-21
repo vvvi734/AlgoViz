@@ -1190,4 +1190,72 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
       zh: "作用：先拒绝重复，再只为缺失后缀创建节点，并把末端标记为 terminal。",
     },
   ],
+  "tournament_sort.c": [
+    {
+      en: "Stable order: smaller value wins; on equality the smaller originalIndex wins.",
+      zh: "稳定次序：关键字更小者胜出；关键字相等时原始下标更小者胜出。",
+    },
+    {
+      en: "Purpose: Fill leaves in input order, then build every internal winner bottom-up.",
+      zh: "作用：按输入次序填充叶节点，再自底向上构建每个内部节点的赢家。",
+    },
+    {
+      en: "Purpose: Remove one winner and recompute only the ancestors of its leaf.",
+      zh: "作用：取出一个赢家，并只重算它所在叶子到根的祖先路径。",
+    },
+  ],
+  "tournament_sort.cpp": [
+    {
+      en: "Stable order: smaller value wins; on equality the smaller originalIndex wins.",
+      zh: "稳定次序：关键字更小者胜出；关键字相等时原始下标更小者胜出。",
+    },
+    {
+      en: "Purpose: Fill leaves in input order, then build every internal winner bottom-up.",
+      zh: "作用：按输入次序填充叶节点，再自底向上构建每个内部节点的赢家。",
+    },
+    {
+      en: "Purpose: Deactivate the winner and recompute parents along its leaf-to-root path.",
+      zh: "作用：失效赢家，并沿它的叶到根路径重算父节点。",
+    },
+  ],
+  "tournament_sort.py": [
+    {
+      en: "Purpose: Fill leaves in input order, then build every internal winner bottom-up.",
+      zh: "作用：按输入次序填充叶节点，再自底向上构建每个内部节点的赢家。",
+    },
+    {
+      en: "Purpose: Deactivate the winner and recompute only its leaf-to-root path.",
+      zh: "作用：失效赢家，并只重算它的叶到根路径。",
+    },
+  ],
+  "radix_sort.c": [
+    {
+      en: "Purpose: Extract the decimal digit selected by the current place value.",
+      zh: "作用：按当前位权取出一个十进制数位。",
+    },
+    {
+      en: "Purpose: Run LSD passes over order, using stable FIFO buckets and a fresh order each pass.",
+      zh: "作用：按 LSD 顺序处理各趟，使用稳定的 FIFO 桶，并在每趟生成新的序列。",
+    },
+  ],
+  "radix_sort.cpp": [
+    {
+      en: "Purpose: Extract the decimal digit selected by the current place value.",
+      zh: "作用：按当前位权取出一个十进制数位。",
+    },
+    {
+      en: "Purpose: Run LSD passes over order, using stable FIFO buckets and a fresh order each pass.",
+      zh: "作用：按 LSD 顺序处理各趟，使用稳定的 FIFO 桶，并在每趟生成新的序列。",
+    },
+  ],
+  "radix_sort.py": [
+    {
+      en: "Purpose: Extract the decimal digit selected by the current place value.",
+      zh: "作用：按当前位权取出一个十进制数位。",
+    },
+    {
+      en: "Purpose: Run stable LSD passes; the result is built only by distribution and collection.",
+      zh: "作用：执行稳定的 LSD 各趟；最终结果只由分配和收集产生。",
+    },
+  ],
 };

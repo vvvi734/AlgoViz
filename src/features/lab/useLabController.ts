@@ -271,7 +271,7 @@ export function useLabController(): LabController {
     const preferredLang: CodeLanguage =
       id === 'bubble'
         ? 'js'
-        : id === 'stack' || id === 'queue' || id === 'linked' || id === 'doubly' || id === 'circular' || id === 'seqlist' || id === 'inorder' || id === 'threaded-inorder' || id === 'bst' || id === 'avl' || id === 'btree' || id === 'block-search' || id === 'bplus-tree' || id === 'key-tree' || id === 'heap' || id === 'huffman' || id === 'selection' || id === 'insertion' || id === 'shell' || id === 'quick' || id === 'merge' || id === 'linear' || id === 'binary' || id === 'hash-chain' || id === 'hash-probe' || id === 'kmp' || id === 'bf' || id === 'gl-depth' || id === 'gl-copy' || id === 'sparse-transpose' || id === 'static-linked-list' || id === 'polynomial-add' || id === 'factorial' || id === 'fib' || id === 'free-list' || id === 'buddy-system' || id === 'garbage-collection' || isGraphAlgorithm(id)
+        : id === 'stack' || id === 'queue' || id === 'linked' || id === 'doubly' || id === 'circular' || id === 'seqlist' || id === 'inorder' || id === 'threaded-inorder' || id === 'bst' || id === 'avl' || id === 'btree' || id === 'block-search' || id === 'bplus-tree' || id === 'key-tree' || id === 'heap' || id === 'huffman' || id === 'selection' || id === 'insertion' || id === 'shell' || id === 'quick' || id === 'merge' || id === 'tournament' || id === 'radix' || id === 'linear' || id === 'binary' || id === 'hash-chain' || id === 'hash-probe' || id === 'kmp' || id === 'bf' || id === 'gl-depth' || id === 'gl-copy' || id === 'sparse-transpose' || id === 'static-linked-list' || id === 'polynomial-add' || id === 'factorial' || id === 'fib' || id === 'free-list' || id === 'buddy-system' || id === 'garbage-collection' || isGraphAlgorithm(id)
           ? 'python'
           : codeLang;
     if (preferredLang !== codeLang) {
@@ -428,6 +428,10 @@ export function useLabController(): LabController {
       }
       triples.sort((a, b) => a.row - b.row || a.col - b.col);
       next = { rows, cols, triples };
+    } else if (currentAlgo === 'tournament') {
+      next = Array.from({ length: 7 }, () => -15 + Math.floor(Math.random() * 50));
+    } else if (currentAlgo === 'radix') {
+      next = Array.from({ length: 7 }, () => Math.floor(Math.random() * 1000));
     } else if (entry.group === 'sort') {
       next = Array.from({ length: 7 }, () => 1 + Math.floor(Math.random() * 15));
     } else if (currentAlgo === 'block-search' || currentAlgo === 'bplus-tree' || currentAlgo === 'key-tree') {
