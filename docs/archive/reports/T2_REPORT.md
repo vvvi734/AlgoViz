@@ -117,12 +117,12 @@ node_id / value / left / right / parent / height
 
 | 截图 | 内容 |
 | --- | --- |
-| [`avl-insert-ll-1440-light.png`](t2/avl-insert-ll-1440-light.png) | LL 旋转后，根 `a1`、pivot `a2`、promoted `a4` |
-| [`avl-insert-rr-1440-light.png`](t2/avl-insert-rr-1440-light.png) | RR 旋转后，右子树 `50/40/60` |
-| [`avl-insert-lr-1440-light.png`](t2/avl-insert-lr-1440-light.png) | LR 第一段后，chip 1/2，pivot `a4`、promoted `a9` |
-| [`avl-insert-rl-1440-light.png`](t2/avl-insert-rl-1440-light.png) | RL 第二段后，chip 2/2，根 `a5=55` |
-| [`avl-delete-cascade-rebalance-1440-light.png`](t2/avl-delete-cascade-rebalance-1440-light.png) | 叶子删除后第二段 LR 重平衡，根 `a4=6` |
-| [`avl-delete-cascade-390-light.png`](t2/avl-delete-cascade-390-light.png) | 390 宽完成态，根居中、树画布内部滚动、页面无横向溢出 |
+| [`avl-insert-ll-1440-light.png`](../evidence/t2/avl-insert-ll-1440-light.png) | LL 旋转后，根 `a1`、pivot `a2`、promoted `a4` |
+| [`avl-insert-rr-1440-light.png`](../evidence/t2/avl-insert-rr-1440-light.png) | RR 旋转后，右子树 `50/40/60` |
+| [`avl-insert-lr-1440-light.png`](../evidence/t2/avl-insert-lr-1440-light.png) | LR 第一段后，chip 1/2，pivot `a4`、promoted `a9` |
+| [`avl-insert-rl-1440-light.png`](../evidence/t2/avl-insert-rl-1440-light.png) | RL 第二段后，chip 2/2，根 `a5=55` |
+| [`avl-delete-cascade-rebalance-1440-light.png`](../evidence/t2/avl-delete-cascade-rebalance-1440-light.png) | 叶子删除后第二段 LR 重平衡，根 `a4=6` |
+| [`avl-delete-cascade-390-light.png`](../evidence/t2/avl-delete-cascade-390-light.png) | 390 宽完成态，根居中、树画布内部滚动、页面无横向溢出 |
 
 ## 4. 覆盖清单
 

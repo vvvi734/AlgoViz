@@ -91,21 +91,6 @@
 }
 
 /* Every lesson/step list is fully expanded; the document supplies the scroll. */
-.lessonsteps,
-.lessonsteps.is-rail-list,
-.lab-explanation .lessonsteps.is-rail-list,
-.lesson-steps-panel .lessonsteps {
-  max-height: none;
-  overflow: visible;
-  overscroll-behavior: auto;
-}
-
-.lab-explanation .lesson-overview,
-.lessonpanel.is-compact .lesson-overview {
-  max-height: none;
-  overflow: visible;
-  overscroll-behavior: auto;
-}
 
 .learning-rail .callstack,
 .callstack {

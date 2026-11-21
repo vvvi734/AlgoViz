@@ -1,5 +1,6 @@
 import type { Lang } from '../../i18n/types';
 import type { ConceptDiagramKind } from '../../domain/concepts/types';
+import { StorageConceptDiagram } from './StorageConceptDiagram';
 
 /**
  * Large, static SVG diagrams for concept lessons. They never animate and never
@@ -1022,6 +1023,14 @@ export function ConceptDiagram({ kind, lang }: { kind: ConceptDiagramKind; lang:
         </text>
       </svg>
     );
+  }
+
+  if (
+    kind === 'static-linked-list' ||
+    kind === 'stack-recursion' ||
+    kind === 'string-storage'
+  ) {
+    return <StorageConceptDiagram kind={kind} lang={lang} />;
   }
 
   const graphNodes: Array<[string, number, number]> = [

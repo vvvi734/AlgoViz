@@ -40,7 +40,7 @@ test.describe('SEARCH-04 — B-tree concept pages and real order-4 trace', () =>
     test.setTimeout(180_000);
     await page.goto('/?view=lab');
     await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
-    await openTextbookChapter(page, 'ch8-search');
+    await openTextbookChapter(page, 'ch9-search');
 
     await page.getByTestId('topic-multiway-tree').click();
     await expect(page.getByTestId('concept-title')).toContainText('B 树（B-Tree）');

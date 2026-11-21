@@ -42,11 +42,11 @@ describe('UX-03 textbook directory does not touch learning state', () => {
     expect(screen.getByTestId('progress').textContent).toBe('3 / 3');
 
     // Folding the chapter that holds the current algorithm is also layout-only.
-    fireEvent.click(screen.getByTestId('chapter-ch9-sort'));
-    expect(screen.getByTestId('chapter-ch9-sort').getAttribute('aria-expanded')).toBe('false');
+    fireEvent.click(screen.getByTestId('chapter-ch10-sort'));
+    expect(screen.getByTestId('chapter-ch10-sort').getAttribute('aria-expanded')).toBe('false');
     expect(screen.getByTestId('progress').textContent).toBe('3 / 3');
     expect(screen.getByTestId('step-desc').textContent).toBe('STEP THREE');
-    fireEvent.click(screen.getByTestId('chapter-ch9-sort'));
+    fireEvent.click(screen.getByTestId('chapter-ch10-sort'));
 
     fireEvent.click(screen.getByTestId('sidebar-collapse'));
     expect(screen.getByTestId('sidebar').getAttribute('data-collapsed')).toBe('true');
@@ -63,14 +63,14 @@ describe('UX-03 textbook directory does not touch learning state', () => {
     renderApp(null);
     await ready();
 
-    fireEvent.click(screen.getByTestId('chapter-ch9-sort'));
-    expect(screen.getByTestId('chapter-ch9-sort').getAttribute('aria-expanded')).toBe('false');
+    fireEvent.click(screen.getByTestId('chapter-ch10-sort'));
+    expect(screen.getByTestId('chapter-ch10-sort').getAttribute('aria-expanded')).toBe('false');
 
     // The mobile selector is the same registry-driven entry point on narrow
     // screens; choosing from it must reveal the algorithm's textbook path.
     fireEvent.change(screen.getByTestId('mobile-algo-select'), { target: { value: 'insertion' } });
     await waitFor(() => expect(screen.getByTestId('lab-title').textContent).toBe('插入排序'));
-    expect(screen.getByTestId('chapter-ch9-sort').getAttribute('aria-expanded')).toBe('true');
+    expect(screen.getByTestId('chapter-ch10-sort').getAttribute('aria-expanded')).toBe('true');
     expect(screen.getByTestId('topic-insertion-sort').getAttribute('data-direct')).toBe('true');
     expect(screen.getByTestId('algo-insertion').getAttribute('aria-current')).toBe('true');
   });

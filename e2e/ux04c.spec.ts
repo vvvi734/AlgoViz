@@ -12,7 +12,7 @@ import { collapseAlgorithmGuide, expect, selectAlgorithm, test, type Page } from
  * passed the broken build, so it is never used as the acceptance signal.
  */
 
-const AFTER = resolve(process.cwd(), 'docs/ux04c/after');
+const AFTER = resolve(process.cwd(), 'test-results/evidence/ux04c/after');
 mkdirSync(AFTER, { recursive: true });
 
 type Box = { x: number; y: number; width: number; height: number; bottom: number; right: number };

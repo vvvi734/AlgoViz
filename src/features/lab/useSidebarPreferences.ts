@@ -1,12 +1,16 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { safeGet, safeSet } from '../../runtime/storage';
-import type { TextbookPath } from '../../domain/algorithms/textbook';
+import {
+  migrateTextbookId,
+  migrateTextbookTopicId,
+  type TextbookPath,
+} from '../../domain/algorithms/textbook';
 
 /**
  * UX-03 directory preferences.
  *
  * The textbook directory has two independent, presentation-only levels:
- *   chapter (nine book chapters + an extension chapter)
+ *   chapter (twelve book chapters; the extension chapter is hidden when empty)
  *   topic   (knowledge points inside a chapter)
  *
  * Only *open* ids are stored. This is deliberately additive to the UI-01 key
@@ -26,13 +30,17 @@ export interface SidebarPreferences {
 
 const EMPTY: SidebarPreferences = { collapsed: false, openChapters: [], openTopics: [] };
 
-function readIdList(value: unknown, max: number): string[] {
+function readIdList(
+  value: unknown,
+  max: number,
+  migrate: (id: string) => string,
+): string[] {
   if (!Array.isArray(value)) return [];
   return Array.from(
     new Set(
-      value.filter(
-        (id): id is string => typeof id === 'string' && id.length > 0 && id.length <= 80,
-      ),
+      value
+        .filter((id): id is string => typeof id === 'string' && id.length > 0 && id.length <= 80)
+        .map(migrate),
     ),
   ).slice(0, max);
 }
@@ -45,8 +53,11 @@ export function parseSidebarPreferences(raw: string | null): SidebarPreferences 
     if (!value || typeof value !== 'object') return EMPTY;
     return {
       collapsed: value.collapsed === true,
-      openChapters: readIdList(value.openChapters, 16),
-      openTopics: readIdList(value.openTopics, 96),
+      // TEXTBOOK-01: pre-migration preferences may still use the old nine-
+      // chapter ids. Resolve aliases on read instead of discarding a learner's
+      // open chapters; the next write persists the new ids.
+      openChapters: readIdList(value.openChapters, 16, migrateTextbookId),
+      openTopics: readIdList(value.openTopics, 96, migrateTextbookTopicId),
     };
   } catch {
     return EMPTY;

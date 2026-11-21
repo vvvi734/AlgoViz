@@ -111,30 +111,6 @@
 }
 
 /* ---------- Legacy Teaching Course selectors still used by unit tests ---------- */
-.lesson-oneliner,
-.lesson-overview p,
-.lessonstep-text,
-.lessonstep-tip,
-.lesson-current,
-.lesson-focus-explanation,
-.lesson-memory,
-.lesson-memory span,
-.lesson-mistakes li,
-.lesson-subhead {
-  font-size: var(--font-body);
-  line-height: 1.6;
-}
-
-.lessonstep-title,
-.lesson-focus-title {
-  font-size: var(--font-title);
-}
-
-.lesson-block-label,
-.lesson-memory-label,
-.lesson-origin {
-  font-size: var(--font-ui);
-}
 
 /* ---------- Shared headings / operation titles ---------- */
 .sectionhead h2,

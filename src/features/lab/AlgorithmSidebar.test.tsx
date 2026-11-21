@@ -26,7 +26,7 @@ function Harness({
   onSelectConcept?: (id: string) => void;
 }) {
   const [collapsed, setCollapsed] = useState(initialCollapsed);
-  const [openChapters, setOpenChapters] = useState<ReadonlySet<string>>(new Set(['ch9-sort']));
+  const [openChapters, setOpenChapters] = useState<ReadonlySet<string>>(new Set(['ch10-sort']));
   const [openTopics, setOpenTopics] = useState<ReadonlySet<string>>(new Set(['bubble-sort']));
   return (
     <I18nProvider>
@@ -103,12 +103,12 @@ describe('AlgorithmSidebar — textbook chapters (UX-03)', () => {
 
   it('starts with only the current path open; other chapters stay folded', () => {
     render(<Harness />);
-    const sort = screen.getByTestId('chapter-ch9-sort');
-    const search = screen.getByTestId('chapter-ch8-search');
+    const sort = screen.getByTestId('chapter-ch10-sort');
+    const search = screen.getByTestId('chapter-ch9-search');
     expect(sort.getAttribute('aria-expanded')).toBe('true');
     expect(search.getAttribute('aria-expanded')).toBe('false');
 
-    const searchBody = document.getElementById('chapter-ch8-search-body');
+    const searchBody = document.getElementById('chapter-ch9-search-body');
     expect(searchBody?.getAttribute('data-open')).toBe('false');
     expect(searchBody?.hasAttribute('inert')).toBe(true);
 
@@ -125,7 +125,7 @@ describe('AlgorithmSidebar — textbook chapters (UX-03)', () => {
     expect(bubbleTopic.getAttribute('data-direct')).toBe('true');
     expect(bubbleTopic.getAttribute('data-has-current')).toBe('true');
     expect(bubbleTopic.querySelector('.textbook-topic-head')).toBeNull();
-    expect(within(bubbleTopic).getAllByText('冒泡排序')).toHaveLength(1);
+    expect(within(bubbleTopic).getAllByText(/冒泡排序/)).toHaveLength(1);
     expect(within(bubbleTopic).getByTestId('algo-bubble')).toBeTruthy();
     expect(within(bubbleTopic).getAllByTestId(/^algo-/)).toHaveLength(1);
   });
@@ -152,8 +152,8 @@ describe('AlgorithmSidebar — textbook chapters (UX-03)', () => {
 
   it('allows multiple chapters and topics to be open without closing siblings', () => {
     render(<Harness />);
-    const sort = screen.getByTestId('chapter-ch9-sort');
-    const search = screen.getByTestId('chapter-ch8-search');
+    const sort = screen.getByTestId('chapter-ch10-sort');
+    const search = screen.getByTestId('chapter-ch9-search');
     fireEvent.click(search);
     expect(search.getAttribute('aria-expanded')).toBe('true');
     expect(sort.getAttribute('aria-expanded')).toBe('true');
@@ -168,7 +168,7 @@ describe('AlgorithmSidebar — textbook chapters (UX-03)', () => {
 
     fireEvent.click(search);
     expect(search.getAttribute('aria-expanded')).toBe('false');
-    expect(document.getElementById('chapter-ch8-search-body')?.hasAttribute('inert')).toBe(true);
+    expect(document.getElementById('chapter-ch9-search-body')?.hasAttribute('inert')).toBe(true);
     expect(sort.getAttribute('aria-expanded')).toBe('true');
   });
 
@@ -177,9 +177,9 @@ describe('AlgorithmSidebar — textbook chapters (UX-03)', () => {
     const bubble = screen.getByTestId('algo-bubble');
     expect(bubble.className).toContain('active');
     expect(bubble.getAttribute('aria-current')).toBe('true');
-    expect(bubble.getAttribute('data-chapter')).toBe('ch9-sort');
+    expect(bubble.getAttribute('data-chapter')).toBe('ch10-sort');
     expect(bubble.getAttribute('data-topic')).toBe('bubble-sort');
-    expect(screen.getByTestId('chapter-ch9-sort').getAttribute('data-has-current')).toBe('true');
+    expect(screen.getByTestId('chapter-ch10-sort').getAttribute('data-has-current')).toBe('true');
     expect(screen.getByTestId('topic-bubble-sort').getAttribute('data-has-current')).toBe('true');
     expect(screen.getByTestId('chapter-ch7-graph').getAttribute('data-has-current')).toBe('false');
     expect(screen.getAllByTestId(/^algo-/).filter((item) => item.getAttribute('aria-current') === 'true')).toHaveLength(1);
@@ -215,7 +215,7 @@ describe('AlgorithmSidebar — textbook chapters (UX-03)', () => {
     fireEvent.click(graphBasics);
     expect(onSelectConcept).toHaveBeenCalledWith('graph-basics');
 
-    const unAuthored = screen.getByTestId('topic-string-storage');
+    const unAuthored = screen.getByTestId('topic-generalized-list');
     expect(unAuthored.tagName).toBe('DIV');
     expect(unAuthored.getAttribute('aria-disabled')).toBe('true');
     expect(unAuthored.getAttribute('data-category')).toBe('pending');
@@ -268,9 +268,9 @@ describe('AlgorithmSidebar — textbook chapters (UX-03)', () => {
 
   it('uses one toggle to collapse every open branch, then expand all', () => {
     render(<Harness />);
-    const sort = screen.getByTestId('chapter-ch9-sort');
+    const sort = screen.getByTestId('chapter-ch10-sort');
     const graph = screen.getByTestId('chapter-ch7-graph');
-    const search = screen.getByTestId('chapter-ch8-search');
+    const search = screen.getByTestId('chapter-ch9-search');
     const toggle = screen.getByTestId('sidebar-toggle-all');
     expect(toggle.getAttribute('data-expanded')).toBe('true');
     expect(toggle.textContent).toContain('全部收起');
@@ -296,7 +296,7 @@ describe('AlgorithmSidebar — textbook chapters (UX-03)', () => {
     const onSelect = vi.fn();
     render(<Harness onSelect={onSelect} />);
     for (const button of [
-      screen.getByTestId('chapter-ch9-sort'),
+      screen.getByTestId('chapter-ch10-sort'),
       screen.getByTestId('algo-bubble'),
       screen.getByTestId('algo-quick'),
       screen.getByTestId('sidebar-collapse'),
@@ -308,7 +308,7 @@ describe('AlgorithmSidebar — textbook chapters (UX-03)', () => {
     fireEvent.click(screen.getByTestId('algo-quick'));
     expect(onSelect).toHaveBeenCalledWith('quick');
     onSelect.mockClear();
-    fireEvent.click(screen.getByTestId('chapter-ch9-sort'));
+    fireEvent.click(screen.getByTestId('chapter-ch10-sort'));
     fireEvent.click(screen.getByTestId('sidebar-collapse'));
     expect(onSelect).not.toHaveBeenCalled();
   });
@@ -320,7 +320,7 @@ describe('AlgorithmSidebar — textbook chapters (UX-03)', () => {
     expect(screen.queryByTestId('sidebar-collapse')).toBeNull();
 
     expect(screen.getByTestId('rail-chapter-ch7-graph')).toBeTruthy();
-    expect(screen.getByTestId('rail-chapter-ch9-sort').getAttribute('data-has-current')).toBe('true');
+    expect(screen.getByTestId('rail-chapter-ch10-sort').getAttribute('data-has-current')).toBe('true');
     expect(screen.getByTestId('rail-current').textContent).toContain(catalog.bubble.icon);
 
     fireEvent.click(screen.getByTestId('rail-chapter-ch7-graph'));

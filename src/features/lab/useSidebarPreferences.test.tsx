@@ -36,18 +36,34 @@ describe('useSidebarPreferences', () => {
     });
   });
 
+  it('migrates pre-TEXTBOOK-01 chapter and topic ids on read', () => {
+    expect(
+      parseSidebarPreferences(
+        JSON.stringify({
+          collapsed: false,
+          openChapters: ['ch2-algorithm', 'ch3-linear', 'ch8-search', 'ch9-sort'],
+          openTopics: ['recursion-extension', 'avl'],
+        }),
+      ),
+    ).toEqual({
+      collapsed: false,
+      openChapters: ['ch1-intro', 'ch2-linear', 'ch9-search', 'ch10-sort'],
+      openTopics: ['recursion-examples', 'avl'],
+    });
+  });
+
   it('persists chapter/topic open state without touching other learner keys', () => {
     window.localStorage.setItem('algolens-code-language', 'python');
     window.localStorage.setItem('algolens-theme', 'light');
 
     const { result } = renderHook(() => useSidebarPreferences());
     act(() => result.current.toggleCollapsed());
-    act(() => result.current.toggleChapter('ch9-sort'));
+    act(() => result.current.toggleChapter('ch10-sort'));
     act(() => result.current.toggleTopic('bubble-sort'));
 
     expect(JSON.parse(window.localStorage.getItem('algolens-sidebar') ?? '{}')).toEqual({
       collapsed: true,
-      openChapters: ['ch9-sort'],
+      openChapters: ['ch10-sort'],
       openTopics: ['bubble-sort'],
     });
     expect(window.localStorage.getItem('algolens-code-language')).toBe('python');
@@ -65,14 +81,14 @@ describe('useSidebarPreferences', () => {
       'algolens-sidebar',
       JSON.stringify({
         collapsed: true,
-        openChapters: ['ch7-graph', 'ch8-search'],
+        openChapters: ['ch7-graph', 'ch9-search'],
         openTopics: ['mst', 'bst'],
       }),
     );
     const { result } = renderHook(() => useSidebarPreferences());
     expect(result.current.collapsed).toBe(true);
     expect(result.current.isChapterOpen('ch7-graph')).toBe(true);
-    expect(result.current.isChapterOpen('ch9-sort')).toBe(false);
+    expect(result.current.isChapterOpen('ch10-sort')).toBe(false);
     expect(result.current.isTopicOpen('mst')).toBe(true);
     expect(result.current.isTopicOpen('bubble-sort')).toBe(false);
   });
@@ -91,8 +107,8 @@ describe('useSidebarPreferences', () => {
     expect(result.current.isChapterOpen('ch7-graph')).toBe(false);
 
     // Selecting another algorithm opens its new path and leaves the old fold alone.
-    rerender({ chapterId: 'ch8-search', topicId: 'avl' });
-    expect(result.current.isChapterOpen('ch8-search')).toBe(true);
+    rerender({ chapterId: 'ch9-search', topicId: 'avl' });
+    expect(result.current.isChapterOpen('ch9-search')).toBe(true);
     expect(result.current.isTopicOpen('avl')).toBe(true);
     expect(result.current.isChapterOpen('ch7-graph')).toBe(false);
   });

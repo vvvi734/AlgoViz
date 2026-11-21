@@ -2,7 +2,7 @@ import { expect, selectAlgorithm as chooseAlgorithm, test, type Page } from './f
 import { mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 
-const SHOT_DIR = resolve(process.cwd(), 'docs/stage7e/after');
+const SHOT_DIR = resolve(process.cwd(), 'test-results/evidence/stage7e/after');
 mkdirSync(SHOT_DIR, { recursive: true });
 
 const VIEWPORTS = [

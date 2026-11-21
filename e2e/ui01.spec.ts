@@ -27,23 +27,23 @@ test.describe('UI-01/UX-03 — textbook directory', () => {
   test('folds one chapter without closing another', async ({ page }) => {
     await openApp(page);
 
-    const sort = page.getByTestId('chapter-ch9-sort');
-    const search = page.getByTestId('chapter-ch8-search');
+    const sort = page.getByTestId('chapter-ch10-sort');
+    const search = page.getByTestId('chapter-ch9-search');
     await expect(sort).toHaveAttribute('aria-expanded', 'true');
     await expect(search).toHaveAttribute('aria-expanded', 'false');
 
-    await openTextbookChapter(page, 'ch8-search');
+    await openTextbookChapter(page, 'ch9-search');
     await expect(search).toHaveAttribute('aria-expanded', 'true');
     await expect(sort).toHaveAttribute('aria-expanded', 'true');
 
     await sort.click();
     await expect(sort).toHaveAttribute('aria-expanded', 'false');
-    await expect(page.locator('#chapter-ch9-sort-body')).toHaveAttribute('data-open', 'false');
+    await expect(page.locator('#chapter-ch10-sort-body')).toHaveAttribute('data-open', 'false');
     await expect(page.getByTestId('algo-bubble')).toBeHidden();
 
     // The second chapter stays open: several chapters may be expanded at once.
     await expect(search).toHaveAttribute('aria-expanded', 'true');
-    await expect(page.locator('#chapter-ch8-search-body')).toHaveAttribute('data-open', 'true');
+    await expect(page.locator('#chapter-ch9-search-body')).toHaveAttribute('data-open', 'true');
 
     await sort.click();
     await expect(sort).toHaveAttribute('aria-expanded', 'true');
@@ -86,11 +86,11 @@ test.describe('UI-01/UX-03 — textbook directory', () => {
     await expect(page.getByTestId('algo-bubble')).toHaveAttribute('aria-current', 'true');
 
     // Keyboard: native buttons respond to Enter and Space.
-    await page.getByTestId('chapter-ch9-sort').focus();
+    await page.getByTestId('chapter-ch10-sort').focus();
     await page.keyboard.press('Enter');
-    await expect(page.getByTestId('chapter-ch9-sort')).toHaveAttribute('aria-expanded', 'false');
+    await expect(page.getByTestId('chapter-ch10-sort')).toHaveAttribute('aria-expanded', 'false');
     await page.keyboard.press('Space');
-    await expect(page.getByTestId('chapter-ch9-sort')).toHaveAttribute('aria-expanded', 'true');
+    await expect(page.getByTestId('chapter-ch10-sort')).toHaveAttribute('aria-expanded', 'true');
 
     await openTextbookTopic(page, 'insertion-sort');
     await page.getByTestId('algo-insertion').click();
@@ -122,8 +122,8 @@ test.describe('UI-01/UX-03 — textbook directory', () => {
     await expect(page.locator('.lab-sidebar-wrap')).toBeHidden();
     const mobile = page.getByTestId('mobile-algo-select');
     await expect(mobile).toBeVisible();
-    await expect(mobile.locator('optgroup')).toHaveCount(9);
-    await expect(mobile.locator('optgroup').first()).toHaveAttribute('label', '1. 数据结构绪论');
+    await expect(mobile.locator('optgroup')).toHaveCount(13);
+    await expect(mobile.locator('optgroup').first()).toHaveAttribute('label', '1. 绪论');
     await mobile.selectOption('insertion');
     await expect(page.getByTestId('lab-title')).toHaveText('插入排序');
     await expectNoPageOverflow(page);

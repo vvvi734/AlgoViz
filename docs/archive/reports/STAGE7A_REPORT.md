@@ -138,33 +138,33 @@
 
 改版前（1920 Light，完整页面 3089 px）：
 
-![before 1920](stage7a/before/1920-light.png)
+![before 1920](../evidence/stage7a/before/1920-light.png)
 
 改版后：
 
 **1920 Light**（`bodyHeight 1639`，动画 + 代码 + 当前步骤同屏）
 
-![after 1920 light](stage7a/after/1920-light.png)
+![after 1920 light](../evidence/stage7a/after/1920-light.png)
 
 **1440 Dark**（当前步骤 687–760，完整落在 900 高首屏）
 
-![after 1440 dark](stage7a/after/1440-dark.png)
+![after 1440 dark](../evidence/stage7a/after/1440-dark.png)
 
 **1024 Light**（单列，动画后立即当前步骤，代码随后）
 
-![after 1024 light](stage7a/after/1024-light.png)
+![after 1024 light](../evidence/stage7a/after/1024-light.png)
 
 **390 Light**（无页面横向溢出，当前步骤完整可见）
 
-![after 390 light](stage7a/after/390-light.png)
+![after 390 light](../evidence/stage7a/after/390-light.png)
 
 **390 Dark**
 
-![after 390 dark](stage7a/after/390-dark.png)
+![after 390 dark](../evidence/stage7a/after/390-dark.png)
 
 **AI 导师标签（1440，Gateway 未连接）**
 
-![after 1440 AI](stage7a/after/1440-ai.png)
+![after 1440 AI](../evidence/stage7a/after/1440-ai.png)
 
 完整证据：`docs/stage7a/before/`、`docs/stage7a/after/`（1920/1440/1024/768/390 × Light/Dark，含 `*-full.png` 全页图与 `metrics.json`）。截图由 `scripts/capture-ui.mjs` 对实际 `dist/` 构建生成，不是设计稿。
 

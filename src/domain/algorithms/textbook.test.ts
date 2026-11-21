@@ -2,205 +2,248 @@ import { describe, expect, it } from 'vitest';
 import { CONCEPT_PAGES, conceptById } from '../concepts/catalog';
 import { catalog } from './examples';
 import {
+  LEGACY_CHAPTER_ID_MAP,
+  LEGACY_TOPIC_ID_MAP,
   TEXTBOOK_CHAPTERS,
   TEXTBOOK_REFERENCE,
   buildTextbookNavigation,
+  findConceptPath,
   findTextbookPath,
+  migrateTextbookId,
+  migrateTextbookTopicId,
   textbookAlgorithmIds,
   textbookPathFor,
-  textbookTitle,
 } from './textbook';
 
 const nav = buildTextbookNavigation(catalog);
 
-describe('textbook directory (UX-03)', () => {
-  it('keeps the nine book chapters in source order plus the array/matrix supplement', () => {
-    expect(nav).toHaveLength(10);
-    expect(nav.map((chapter) => chapter.number)).toEqual([1, 2, 3, 4, 5, 0, 6, 7, 8, 9]);
+describe('textbook directory after TEXTBOOK-01', () => {
+  it('keeps the twelve chapters of 严蔚敏《数据结构（C语言版）》 in book order', () => {
+    expect(nav).toHaveLength(12);
+    expect(nav.map((chapter) => chapter.number)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
     expect(nav.map((chapter) => chapter.id)).toEqual([
       'ch1-intro',
-      'ch2-algorithm',
-      'ch3-linear',
-      'ch4-stack-queue',
-      'ch5-string',
+      'ch2-linear',
+      'ch3-stack-queue',
+      'ch4-string',
       'ch5-array',
       'ch6-tree',
       'ch7-graph',
-      'ch8-search',
-      'ch9-sort',
+      'ch8-dynamic-storage',
+      'ch9-search',
+      'ch10-sort',
+      'ch11-external-sort',
+      'ch12-files',
     ]);
-    const supplement = nav.find((chapter) => chapter.id === 'ch5-array')!;
-    expect(supplement.extension).toBe(true);
-    expect(supplement.number).toBe(0);
-    expect(TEXTBOOK_REFERENCE.author).toBe('程杰');
-    expect(TEXTBOOK_REFERENCE.edition.zh).toContain('2011');
+    expect(nav.map((chapter) => chapter.title.zh)).toEqual([
+      '绪论',
+      '线性表',
+      '栈和队列',
+      '串',
+      '数组和广义表',
+      '树和二叉树',
+      '图',
+      '动态存储管理',
+      '查找',
+      '内部排序',
+      '外部排序',
+      '文件',
+    ]);
+    expect(TEXTBOOK_REFERENCE.author).toBe('严蔚敏、吴伟民');
+    expect(TEXTBOOK_REFERENCE.edition.zh).toContain('1997');
+    expect(nav.every((chapter) => chapter.extension !== true)).toBe(true);
   });
 
-  it('links every authored concept page to an existing textbook topic', () => {
+  it('preserves every existing algorithm exactly once in its new primary home', () => {
+    const ids = textbookAlgorithmIds(nav);
+    expect(ids).toHaveLength(37);
+    expect(new Set(ids).size).toBe(ids.length);
+    expect(new Set(ids)).toEqual(new Set(Object.keys(catalog)));
+  });
+
+  it('maps every authored concept page to a real concept topic', () => {
     const conceptTopics = nav
       .flatMap((chapter) => chapter.topics)
       .filter((topic) => topic.conceptId);
+    expect(CONCEPT_PAGES).toHaveLength(28);
     expect(conceptTopics.map((topic) => topic.conceptId).sort()).toEqual(
       CONCEPT_PAGES.map((page) => page.id).sort(),
     );
-    expect(conceptTopics.map((topic) => topic.id).sort()).toEqual([
-      'algorithm-cases',
-      'algorithm-definition',
-      'algorithm-efficiency',
-      'array-basics',
-      'binary-tree',
-      'bplus-tree',
-      'circular-queue',
-      'forest-conversion',
-      'graph-basics',
-      'graph-storage',
-      'indexed-search',
-      'intro-adt',
-      'intro-concepts',
-      'intro-logical-physical',
-      'linear-basics',
-      'multiway-tree',
-      'naive-match',
-      'search-asl',
-      'sort-basics',
-      'sparse-matrix',
-      'special-matrices',
-      'stack-queue-storage',
-      'string-basics',
-      'threaded-tree',
-      'tree-basics',
-    ]);
     for (const topic of conceptTopics) {
-      expect(conceptById(topic.conceptId!)).toBeTruthy();
+      const page = conceptById(topic.conceptId!);
+      expect(page, topic.id).toBeTruthy();
+      expect(page?.topicId).toBe(topic.id);
+      expect(findConceptPath(nav, topic.conceptId!)).toEqual({
+        chapterId: nav.find((chapter) =>
+          chapter.topics.some((entry) => entry.id === topic.id),
+        )?.id,
+        topicId: topic.id,
+      });
     }
   });
 
-  it('gives every registered algorithm exactly one primary home', () => {
-    const ids = textbookAlgorithmIds(nav);
-    expect(ids).toHaveLength(Object.keys(catalog).length);
-    expect(new Set(ids).size).toBe(ids.length);
-    expect(new Set(ids)).toEqual(new Set(Object.keys(catalog)));
-    expect(ids).toHaveLength(37);
+  it('keeps the old chapter ids readable after the migration', () => {
+    for (const [legacy, current] of Object.entries(LEGACY_CHAPTER_ID_MAP)) {
+      expect(migrateTextbookId(legacy)).toBe(current);
+      expect(nav.some((chapter) => chapter.id === current), legacy).toBe(true);
+    }
+    expect(migrateTextbookId('ch7-graph')).toBe('ch7-graph');
+    expect(LEGACY_TOPIC_ID_MAP['recursion-extension']).toBe('recursion-examples');
+    expect(migrateTextbookTopicId('recursion-extension')).toBe('recursion-examples');
+    expect(migrateTextbookTopicId('kmp')).toBe('kmp');
   });
 
-  it('wires the authored string concept and runnable KMP into chapter 5', () => {
-    const strings = nav.find((chapter) => chapter.id === 'ch5-string')!;
+  it('places KMP in chapter 4 and sparse transpose in chapter 5', () => {
+    const strings = nav.find((chapter) => chapter.id === 'ch4-string')!;
     expect(strings.topics.map((topic) => topic.id)).toEqual([
       'string-basics',
       'string-storage',
       'naive-match',
       'kmp',
+      'string-applications',
     ]);
-    const basics = strings.topics.find((topic) => topic.id === 'string-basics')!;
-    expect(basics.kind).toBe('concept');
-    expect(basics.conceptId).toBe('string-basics');
-    expect(basics.title.zh).toContain('模式匹配');
+    expect(strings.topics.find((topic) => topic.id === 'kmp')?.algorithms).toEqual([
+      expect.objectContaining({ id: 'kmp' }),
+    ]);
+    expect(textbookPathFor(catalog, 'kmp')).toEqual({ chapterId: 'ch4-string', topicId: 'kmp' });
 
-    const naive = strings.topics.find((topic) => topic.id === 'naive-match')!;
-    expect(naive.kind).toBe('concept');
-    expect(naive.conceptId).toBe('naive-matching');
-    expect(naive.category).toBe('theory');
-    expect(naive.planned).toBeUndefined();
-
-    const kmp = strings.topics.find((topic) => topic.id === 'kmp')!;
-    expect(kmp.planned).toBeUndefined();
-    expect(kmp.algorithms.map((algorithm) => algorithm.id)).toEqual(['kmp']);
-    expect(textbookPathFor(catalog, 'kmp')).toEqual({ chapterId: 'ch5-string', topicId: 'kmp' });
-  });
-
-  it('wires the array/matrix supplement between strings and trees', () => {
-    const supplement = nav.find((chapter) => chapter.id === 'ch5-array')!;
-    expect(supplement.title.zh).toContain('数组');
-    expect(supplement.topics.map((topic) => topic.id)).toEqual([
+    const arrays = nav.find((chapter) => chapter.id === 'ch5-array')!;
+    expect(arrays.topics.map((topic) => topic.id)).toEqual([
       'array-basics',
       'special-matrices',
       'sparse-matrix',
       'sparse-transpose',
+      'generalized-list',
+      'm-variable-polynomial',
     ]);
-    expect(supplement.topics.slice(0, 3).map((topic) => topic.kind)).toEqual([
-      'concept',
-      'concept',
-      'concept',
-    ]);
-    expect(supplement.topics.slice(0, 3).map((topic) => topic.conceptId)).toEqual([
-      'array-basics',
-      'special-matrices',
-      'sparse-matrix',
-    ]);
-    const transpose = supplement.topics.find((topic) => topic.id === 'sparse-transpose')!;
-    expect(transpose.algorithms.map((algorithm) => algorithm.id)).toEqual(['sparse-transpose']);
     expect(textbookPathFor(catalog, 'sparse-transpose')).toEqual({
       chapterId: 'ch5-array',
       topicId: 'sparse-transpose',
     });
-    const ids = nav.map((chapter) => chapter.id);
-    expect(ids.indexOf('ch5-array')).toBeLessThan(ids.indexOf('ch6-tree'));
   });
 
-  it('places MST before shortest paths and marks Bellman-Ford / connectivity as extensions', () => {
+  it('wires the three completed concept pages into chapters 2, 3 and 4', () => {
+    const staticList = nav.find((chapter) => chapter.id === 'ch2-linear')!;
+    const recursion = nav.find((chapter) => chapter.id === 'ch3-stack-queue')!;
+    const strings = nav.find((chapter) => chapter.id === 'ch4-string')!;
+
+    for (const [chapter, topicId, pageId] of [
+      [staticList, 'static-linked-list', 'static-linked-list'],
+      [recursion, 'stack-recursion', 'stack-recursion'],
+      [strings, 'string-storage', 'string-storage'],
+    ] as const) {
+      const topic = chapter.topics.find((entry) => entry.id === topicId)!;
+      expect(topic.conceptId).toBe(pageId);
+      expect(topic.category).toBe('theory');
+      expect(topic.planned).toBeUndefined();
+      expect(topic.algorithms).toHaveLength(0);
+      expect(conceptById(pageId)).toBeTruthy();
+    }
+
+    const recursionTopic = recursion.topics.find((topic) => topic.id === 'stack-recursion')!;
+    expect(recursionTopic.algorithms).toHaveLength(0);
+    const recursionExamples = recursion.topics.find((topic) => topic.id === 'recursion-examples')!;
+    expect(recursionExamples.algorithms.map((algorithm) => algorithm.id)).toEqual([
+      'factorial',
+      'fib',
+    ]);
+    expect(recursionExamples.algorithms.every((algorithm) => algorithm.extension)).toBe(true);
+  });
+
+  it('keeps chapter 8, 11 and 12 visible as planned knowledge even without algorithms', () => {
+    for (const id of ['ch8-dynamic-storage', 'ch11-external-sort', 'ch12-files']) {
+      const chapter = nav.find((entry) => entry.id === id)!;
+      expect(chapter.algorithmCount).toBe(0);
+      expect(chapter.topics.length).toBeGreaterThan(0);
+      expect(chapter.topics.every((topic) => topic.category === 'pending')).toBe(true);
+      expect(chapter.topics.every((topic) => topic.algorithms.length === 0)).toBe(true);
+    }
+  });
+
+  it('keeps graph order aligned with the book: connectivity, MST, DAG, shortest paths', () => {
     const graph = nav.find((chapter) => chapter.id === 'ch7-graph')!;
     expect(graph.algorithmCount).toBe(11);
     expect(graph.topics.map((topic) => topic.id)).toEqual([
       'graph-basics',
       'graph-storage',
       'graph-traversal',
+      'graph-connectivity',
       'mst',
-      'shortest-path',
       'topological',
       'critical-path',
-      'graph-connectivity',
+      'shortest-path',
     ]);
-
-    const mst = graph.topics.find((topic) => topic.id === 'mst')!;
-    const shortest = graph.topics.find((topic) => topic.id === 'shortest-path')!;
-    const traversal = graph.topics.find((topic) => topic.id === 'graph-traversal')!;
-    const connectivity = graph.topics.find((topic) => topic.id === 'graph-connectivity')!;
-    expect(graph.topics.indexOf(mst)).toBeLessThan(graph.topics.indexOf(shortest));
-    expect(traversal.algorithms.map((algorithm) => algorithm.id)).toEqual(['bfs', 'dfs']);
-    expect(mst.algorithms.map((algorithm) => algorithm.id)).toEqual(['prim', 'kruskal']);
-    expect(shortest.algorithms.map((algorithm) => algorithm.id)).toEqual([
-      'dijkstra',
-      'floyd-warshall',
-      'bellman-ford',
-    ]);
-    expect(shortest.algorithms[2].extension).toBe(true);
-    expect(connectivity.extension).toBe(true);
-    expect(connectivity.algorithms.map((algorithm) => algorithm.id)).toEqual(['components', 'scc']);
+    const ids = graph.topics.map((topic) => topic.id);
+    expect(ids.indexOf('graph-connectivity')).toBeLessThan(ids.indexOf('mst'));
+    expect(ids.indexOf('topological')).toBeLessThan(ids.indexOf('shortest-path'));
+    for (const id of ['bfs', 'dfs', 'components', 'scc', 'prim', 'kruskal', 'topological', 'critical-path', 'dijkstra', 'floyd-warshall', 'bellman-ford']) {
+      expect(textbookPathFor(catalog, id)?.chapterId).toBe('ch7-graph');
+    }
+    expect(
+      graph.topics.find((topic) => topic.id === 'shortest-path')?.algorithms.find((algorithm) => algorithm.id === 'bellman-ford')?.extension,
+    ).toBe(true);
   });
 
-  it('puts BST and AVL under 查找, not under 树; Huffman is now an authored tree topic', () => {
+  it('puts tree traversal and Huffman in chapter 6, and BST/AVL/B-tree/hash in chapter 9', () => {
     const tree = nav.find((chapter) => chapter.id === 'ch6-tree')!;
-    const search = nav.find((chapter) => chapter.id === 'ch8-search')!;
-    expect(tree.topics.map((topic) => topic.id)).toEqual([
-      'tree-basics',
-      'binary-tree',
-      'binary-tree-traversal',
-      'threaded-tree',
-      'forest-conversion',
-      'huffman',
-    ]);
-    expect(tree.topics.find((topic) => topic.id === 'tree-basics')?.conceptId).toBe('tree-storage');
-    expect(tree.topics.find((topic) => topic.id === 'forest-conversion')?.conceptId).toBe(
-      'forest-conversion',
-    );
-    expect(tree.topics.find((topic) => topic.id === 'tree-basics')?.category).toBe('theory');
-    expect(tree.topics.find((topic) => topic.id === 'binary-tree')?.category).toBe('theory');
-    expect(tree.topics.find((topic) => topic.id === 'forest-conversion')?.category).toBe('theory');
-    expect(tree.topics.find((topic) => topic.id === 'binary-tree-traversal')?.category).toBe('visual');
-    expect(tree.topics.find((topic) => topic.id === 'huffman')?.category).toBe('visual');
-    expect(tree.topics.find((topic) => topic.id === 'threaded-tree')?.conceptId).toBe(
-      'threaded-binary-tree',
-    );
-    expect(tree.topics.find((topic) => topic.id === 'threaded-tree')?.category).toBe('theory');
-    expect(tree.topics.find((topic) => topic.id === 'binary-tree-traversal')?.algorithms).toEqual([
-      expect.objectContaining({ id: 'inorder' }),
-    ]);
-    expect(tree.topics.find((topic) => topic.id === 'huffman')?.planned).toBeUndefined();
+    const search = nav.find((chapter) => chapter.id === 'ch9-search')!;
+    expect(tree.algorithmCount).toBe(2);
+    expect(tree.topics.find((topic) => topic.id === 'binary-tree-traversal')?.algorithms[0].id).toBe('inorder');
     expect(tree.topics.find((topic) => topic.id === 'huffman')?.algorithms[0].id).toBe('huffman');
-    expect(search.topics.find((topic) => topic.id === 'bst')?.algorithms[0].id).toBe('bst');
-    expect(search.topics.find((topic) => topic.id === 'avl')?.algorithms[0].id).toBe('avl');
-    expect(search.topics.find((topic) => topic.id === 'sequential-search')?.algorithms[0].id).toBe('linear');
-    expect(search.topics.find((topic) => topic.id === 'ordered-search')?.algorithms[0].id).toBe('binary');
+    expect(search.algorithmCount).toBe(7);
+    for (const id of ['linear', 'binary', 'bst', 'avl', 'btree', 'hash-chain', 'hash-probe']) {
+      expect(textbookPathFor(catalog, id)?.chapterId).toBe('ch9-search');
+    }
+    expect(textbookPathFor(catalog, 'btree')).toEqual({
+      chapterId: 'ch9-search',
+      topicId: 'btree-demo',
+    });
+  });
+
+  it('orders internal sorting by insertion/quick/selection/merge and keeps bubble as a supplement', () => {
+    const sort = nav.find((chapter) => chapter.id === 'ch10-sort')!;
+    expect(sort.algorithmCount).toBe(7);
+    expect(sort.topics.map((topic) => topic.id)).toEqual([
+      'sort-basics',
+      'insertion-sort',
+      'shell-sort',
+      'bubble-sort',
+      'quick-sort',
+      'selection-sort',
+      'heap-sort',
+      'merge-sort',
+      'radix-sort',
+      'sort-comparison',
+    ]);
+    const bubble = sort.topics.find((topic) => topic.id === 'bubble-sort')!;
+    expect(bubble.extension).toBe(true);
+    expect(bubble.algorithms[0]).toEqual(expect.objectContaining({ id: 'bubble', extension: true }));
+    expect(sort.topics.find((topic) => topic.id === 'radix-sort')?.category).toBe('pending');
+    expect(textbookPathFor(catalog, 'quick')).toEqual({ chapterId: 'ch10-sort', topicId: 'quick-sort' });
+  });
+
+  it('keeps planned rows target-free and concept rows separate from planned rows', () => {
+    for (const chapter of TEXTBOOK_CHAPTERS) {
+      for (const topic of chapter.topics) {
+        if (topic.concept || topic.planned) {
+          expect(topic.algorithms).toHaveLength(0);
+        }
+        expect(Boolean(topic.concept && topic.planned), topic.id).toBe(false);
+      }
+    }
+    for (const chapter of nav) {
+      for (const topic of chapter.topics) {
+        expect(
+          topic.algorithms.length > 0 ||
+            topic.kind === 'planned' ||
+            (topic.kind === 'concept' && topic.conceptId !== undefined),
+          `${chapter.id}/${topic.id}`,
+        ).toBe(true);
+        if (topic.kind === 'planned') {
+          expect(findTextbookPath(nav, topic.id)).toBeNull();
+        }
+      }
+    }
   });
 
   it('derives theory, visual and pending categories from row semantics', () => {
@@ -208,7 +251,6 @@ describe('textbook directory (UX-03)', () => {
     const theory = topics.filter((topic) => topic.category === 'theory');
     const visual = topics.filter((topic) => topic.category === 'visual');
     const pending = topics.filter((topic) => topic.category === 'pending');
-
     expect(theory.length).toBeGreaterThan(0);
     expect(visual.length).toBeGreaterThan(0);
     expect(pending.length).toBeGreaterThan(0);
@@ -221,199 +263,7 @@ describe('textbook directory (UX-03)', () => {
           (topic.kind === 'concept' && Boolean(topic.conceptId) === false),
       ),
     ).toBe(true);
-
-    const graphStorage = topics.find((topic) => topic.id === 'graph-storage')!;
-    const circularQueue = topics.find((topic) => topic.id === 'circular-queue')!;
-    const sparseTranspose = topics.find((topic) => topic.id === 'sparse-transpose')!;
-    expect(graphStorage.category).toBe('theory');
-    expect(circularQueue.category).toBe('theory');
-    expect(sparseTranspose.category).toBe('visual');
-    expect(topics.find((topic) => topic.id === 'recursion-extension')?.category).toBe('visual');
-  });
-
-  it('wires the B-tree and B+ tree concept pages plus the B-tree demo into chapter 8', () => {
-    const search = nav.find((chapter) => chapter.id === 'ch8-search')!;
-    const btreeConcept = search.topics.find((topic) => topic.id === 'multiway-tree')!;
-    const bplusConcept = search.topics.find((topic) => topic.id === 'bplus-tree')!;
-    const demo = search.topics.find((topic) => topic.id === 'btree-demo')!;
-    expect(btreeConcept.kind).toBe('concept');
-    expect(btreeConcept.conceptId).toBe('b-tree');
-    expect(btreeConcept.planned).toBeUndefined();
-    expect(bplusConcept.kind).toBe('concept');
-    expect(bplusConcept.conceptId).toBe('b-plus-tree');
-    expect(demo.kind).toBe('algorithm');
-    expect(demo.algorithms.map((algorithm) => algorithm.id)).toEqual(['btree']);
-    expect(textbookPathFor(catalog, 'btree')).toEqual({ chapterId: 'ch8-search', topicId: 'btree-demo' });
-  });
-
-  it('links ASL and block search as static concepts without duplicating indexed-search', () => {
-    const search = nav.find((chapter) => chapter.id === 'ch8-search')!;
-    const asl = search.topics.find((topic) => topic.id === 'search-asl')!;
-    const indexed = search.topics.find((topic) => topic.id === 'indexed-search')!;
-    expect(asl.kind).toBe('concept');
-    expect(asl.conceptId).toBe('asl-decision-tree');
-    expect(asl.algorithms).toHaveLength(0);
-    expect(indexed.kind).toBe('concept');
-    expect(indexed.conceptId).toBe('indexed-search');
-    expect(indexed.planned).toBeUndefined();
-    expect(indexed.algorithms).toHaveLength(0);
-    expect(indexed.title.zh).toContain('分块');
-    expect(search.topics.filter((topic) => topic.id === 'indexed-search')).toHaveLength(1);
-    expect(search.topics.indexOf(asl)).toBeLessThan(search.topics.indexOf(indexed));
-  });
-
-  it('follows the textbook sorting order and keeps shell, heap, merge and quick authored', () => {
-    const sort = nav.find((chapter) => chapter.id === 'ch9-sort')!;
-    expect(sort.topics.map((topic) => topic.id)).toEqual([
-      'sort-basics',
-      'bubble-sort',
-      'selection-sort',
-      'insertion-sort',
-      'shell-sort',
-      'heap-sort',
-      'merge-sort',
-      'quick-sort',
-    ]);
-    expect(sort.topics.find((topic) => topic.id === 'shell-sort')?.planned).toBeUndefined();
-    expect(sort.topics.find((topic) => topic.id === 'shell-sort')?.algorithms[0].id).toBe('shell');
-    expect(sort.topics.find((topic) => topic.id === 'heap-sort')?.planned).toBeUndefined();
-    expect(sort.topics.find((topic) => topic.id === 'heap-sort')?.algorithms[0].id).toBe('heap');
-    expect(sort.topics.find((topic) => topic.id === 'merge-sort')?.planned).toBeUndefined();
-    expect(sort.topics.find((topic) => topic.id === 'merge-sort')?.algorithms[0].id).toBe('merge');
-    expect(sort.topics.at(-1)?.id).toBe('quick-sort');
-  });
-
-  it('keeps planned entries target-free and every authored algorithm valid', () => {
-    for (const chapter of TEXTBOOK_CHAPTERS) {
-      for (const topic of chapter.topics) {
-        if (topic.concept || topic.planned) {
-          expect(topic.algorithms).toHaveLength(0);
-        }
-        // Concept and planned are distinct statuses; an authored topic cannot
-        // claim both and cannot be silently left without semantics.
-        expect(Boolean(topic.concept && topic.planned)).toBe(false);
-      }
-    }
-    for (const chapter of nav) {
-      for (const topic of chapter.topics) {
-        expect(
-          topic.algorithms.length > 0 ||
-            topic.kind === 'concept' ||
-            topic.kind === 'planned' ||
-            topic.id === 'custom',
-        ).toBe(true);
-      }
-    }
-  });
-
-  it('collapses single-algorithm topics into direct entries and keeps multi-algorithm topics expandable', () => {
-    const topics = nav.flatMap((chapter) => chapter.topics);
-    const direct = topics.filter((topic) => topic.kind === 'algorithm');
-    const groups = topics.filter((topic) => topic.kind === 'group');
-
-    expect(direct.map((topic) => topic.id)).toEqual([
-      'sequential-list',
-      'linked-list',
-      'circular-linked-list',
-      'doubly-linked-list',
-      'stack-basics',
-      'queue-basics',
-      'kmp',
-      'sparse-transpose',
-      'binary-tree-traversal',
-      'huffman',
-      'topological',
-      'critical-path',
-      'sequential-search',
-      'ordered-search',
-      'bst',
-      'avl',
-      'btree-demo',
-      'bubble-sort',
-      'selection-sort',
-      'insertion-sort',
-      'shell-sort',
-      'heap-sort',
-      'merge-sort',
-      'quick-sort',
-    ]);
-    expect(groups.map((topic) => topic.id)).toEqual([
-      'recursion-extension',
-      'graph-traversal',
-      'mst',
-      'shortest-path',
-      'graph-connectivity',
-      'hash-search',
-    ]);
-
-    for (const topic of direct) {
-      expect(topic.algorithms).toHaveLength(1);
-      expect(topic.concept).toBeUndefined();
-      expect(topic.planned).toBeUndefined();
-    }
-    for (const topic of groups) {
-      expect(topic.algorithms.length).toBeGreaterThan(1);
-    }
-
-    const graphBasics = topics.find((topic) => topic.id === 'graph-basics');
-    const mergeSort = topics.find((topic) => topic.id === 'merge-sort');
-    expect(graphBasics?.kind).toBe('concept');
-    expect(mergeSort?.kind).toBe('algorithm');
-    expect(topics.every((topic) => topic.kind !== undefined)).toBe(true);
-  });
-
-  it('maps the current algorithm to one chapter/topic path', () => {
-    expect(textbookPathFor(catalog, 'bubble')).toEqual({ chapterId: 'ch9-sort', topicId: 'bubble-sort' });
-    expect(textbookPathFor(catalog, 'dijkstra')).toEqual({
-      chapterId: 'ch7-graph',
-      topicId: 'shortest-path',
-    });
-    expect(textbookPathFor(catalog, 'bst')).toEqual({ chapterId: 'ch8-search', topicId: 'bst' });
-    expect(textbookPathFor(catalog, 'avl')).toEqual({ chapterId: 'ch8-search', topicId: 'avl' });
-    expect(textbookPathFor(catalog, 'seqlist')).toEqual({
-      chapterId: 'ch3-linear',
-      topicId: 'sequential-list',
-    });
-    expect(textbookPathFor(catalog, 'factorial')).toEqual({
-      chapterId: 'ch2-algorithm',
-      topicId: 'recursion-extension',
-    });
-    expect(textbookPathFor(catalog, 'scc')).toEqual({
-      chapterId: 'ch7-graph',
-      topicId: 'graph-connectivity',
-    });
-    expect(textbookPathFor(catalog, 'missing')).toBeNull();
-    expect(findTextbookPath(nav, 'bubble')).toEqual({ chapterId: 'ch9-sort', topicId: 'bubble-sort' });
-  });
-
-  it('appends unknown future ids in an explicit extension chapter', () => {
-    const futureNav = buildTextbookNavigation({
-      ...catalog,
-      future: {
-        ...catalog.bubble,
-        name: ['未来算法', 'Future algorithm'] as [string, string],
-      },
-    });
-    const extension = futureNav.at(-1)!;
-    expect(futureNav).toHaveLength(11);
-    expect(extension.id).toBe('ext');
-    expect(extension.extension).toBe(true);
-    expect(extension.topics.find((topic) => topic.id === 'unclassified')?.algorithms[0].id).toBe(
-      'future',
-    );
-    expect(textbookAlgorithmIds(futureNav)).toContain('future');
-  });
-
-  it('has bilingual chapter and topic labels for every authored row', () => {
-    for (const chapter of TEXTBOOK_CHAPTERS) {
-      expect(textbookTitle(chapter.title, 'zh')).toBeTruthy();
-      expect(textbookTitle(chapter.title, 'en')).toBeTruthy();
-      expect(textbookTitle(chapter.shortTitle, 'zh')).toBeTruthy();
-      expect(textbookTitle(chapter.shortTitle, 'en')).toBeTruthy();
-      for (const topic of chapter.topics) {
-        expect(textbookTitle(topic.title, 'zh')).toBeTruthy();
-        expect(textbookTitle(topic.title, 'en')).toBeTruthy();
-      }
-    }
+    expect(topics.find((topic) => topic.id === 'string-storage')?.category).toBe('theory');
+    expect(topics.find((topic) => topic.id === 'sparse-transpose')?.category).toBe('visual');
   });
 });

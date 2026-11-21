@@ -35,7 +35,7 @@ test.describe('STR-01 — strings concept and real Python KMP', () => {
     test.setTimeout(180_000);
     await page.goto('/?view=lab');
     await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
-    await openTextbookChapter(page, 'ch5-string');
+    await openTextbookChapter(page, 'ch4-string');
     await page.getByTestId('topic-string-basics').click();
 
     await expect(page.getByTestId('concept-page')).toBeVisible();

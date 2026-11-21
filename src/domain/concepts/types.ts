@@ -22,6 +22,9 @@ export type ConceptDiagramKind =
   | 'block-search'
   | 'circular-queue'
   | 'stack-queue-storage'
+  | 'static-linked-list'
+  | 'stack-recursion'
+  | 'string-storage'
   | 'tree-storage'
   | 'forest-conversion'
   | 'threaded-binary-tree';

@@ -285,23 +285,23 @@ class Node:
 
 **1440 Light：中间插入完成**
 
-![Linked list inserted 1440 light](stage7c/after/linked-inserted-1440-light.png)
+![Linked list inserted 1440 light](../evidence/stage7c/after/linked-inserted-1440-light.png)
 
 **1440 Light：新节点刚创建（主链下方托盘）**
 
-![Linked list create 1440 light](stage7c/after/linked-create-1440-light.png)
+![Linked list create 1440 light](../evidence/stage7c/after/linked-create-1440-light.png)
 
 **1024 Light：四节点完整可见**
 
-![Linked list inserted 1024 light](stage7c/after/linked-inserted-1024-light.png)
+![Linked list inserted 1024 light](../evidence/stage7c/after/linked-inserted-1024-light.png)
 
 **390 Light：画布内滚动提示**
 
-![Linked list inserted 390 light](stage7c/after/linked-inserted-390-light.png)
+![Linked list inserted 390 light](../evidence/stage7c/after/linked-inserted-390-light.png)
 
 **1440 Dark：删除后 n2 断开、next 清空**
 
-![Linked list delete after 1440 dark](stage7c/after/linked-delete-after-1440-dark.png)
+![Linked list delete after 1440 dark](../evidence/stage7c/after/linked-delete-after-1440-dark.png)
 
 ### 视觉检查结论
 

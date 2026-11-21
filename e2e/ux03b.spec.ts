@@ -13,7 +13,7 @@ import {
  * registry entry, but one-algorithm topics become direct rows. Multi-algorithm
  * topics remain disclosures. Concepts and planned algorithms stay static.
  */
-const SHOT_DIR = resolve(process.cwd(), 'docs/ux03b/after');
+const SHOT_DIR = resolve(process.cwd(), 'test-results/evidence/ux03b/after');
 mkdirSync(SHOT_DIR, { recursive: true });
 
 async function openApp(page: Page) {
@@ -69,7 +69,7 @@ test.describe('UX-03B — compact textbook navigation', () => {
 
     // BST and AVL are direct entries under 查找; selecting one reaches the real
     // algorithm page without an intermediate topic click.
-    await openTextbookChapter(page, 'ch8-search');
+    await openTextbookChapter(page, 'ch9-search');
     await expect(page.getByTestId('topic-bst')).toHaveAttribute('data-direct', 'true');
     await expect(page.getByTestId('topic-avl')).toHaveAttribute('data-direct', 'true');
     await expect(page.getByTestId('algo-bst')).toHaveCount(1);
@@ -87,7 +87,7 @@ test.describe('UX-03B — compact textbook navigation', () => {
     await expect(concept).toContainText(/阅读|Read/i);
     await expect(concept.locator('[data-testid^="algo-"]')).toHaveCount(0);
 
-    await openTextbookChapter(page, 'ch9-sort');
+    await openTextbookChapter(page, 'ch10-sort');
     const merge = page.getByTestId('topic-merge-sort');
     await expect(merge).toHaveAttribute('data-kind', 'algorithm');
     await expect(merge).toHaveAttribute('data-direct', 'true');
@@ -96,7 +96,7 @@ test.describe('UX-03B — compact textbook navigation', () => {
     await expect(page.getByTestId('algo-merge')).toHaveCount(1);
 
     // Planned rows remain static and never fake an algorithm target.
-    await openTextbookChapter(page, 'ch5-string');
+    await openTextbookChapter(page, 'ch4-string');
     const planned = page.getByTestId('topic-kmp');
     await expect(planned).toHaveAttribute('data-kind', 'planned');
     await expect(planned).toHaveAttribute('aria-disabled', 'true');
@@ -117,10 +117,10 @@ test.describe('UX-03B — compact textbook navigation', () => {
     await page.getByTestId('next-btn').click();
     await expect(page.getByTestId('progress')).toHaveText('3 / 25');
 
-    await page.getByTestId('chapter-ch9-sort').click();
-    await expect(page.getByTestId('chapter-ch9-sort')).toHaveAttribute('aria-expanded', 'false');
+    await page.getByTestId('chapter-ch10-sort').click();
+    await expect(page.getByTestId('chapter-ch10-sort')).toHaveAttribute('aria-expanded', 'false');
     await expect(page.getByTestId('progress')).toHaveText('3 / 25');
-    await page.getByTestId('chapter-ch9-sort').click();
+    await page.getByTestId('chapter-ch10-sort').click();
 
     await page.getByTestId('sidebar-collapse').click();
     await expect(page.getByTestId('sidebar')).toHaveAttribute('data-collapsed', 'true');
@@ -136,7 +136,7 @@ test.describe('UX-03B — compact textbook navigation', () => {
         'algolens-sidebar',
         JSON.stringify({
           collapsed: false,
-          openChapters: ['ch7-graph', 'ch8-search'],
+          openChapters: ['ch7-graph', 'ch9-search'],
           openTopics: ['shortest-path', 'bst'],
         }),
       );
@@ -144,7 +144,7 @@ test.describe('UX-03B — compact textbook navigation', () => {
     await page.reload();
     await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
     await expect(page.getByTestId('chapter-ch7-graph')).toHaveAttribute('aria-expanded', 'true');
-    await expect(page.getByTestId('chapter-ch8-search')).toHaveAttribute('aria-expanded', 'true');
+    await expect(page.getByTestId('chapter-ch9-search')).toHaveAttribute('aria-expanded', 'true');
     await expect(page.getByTestId('topic-shortest-path')).toHaveAttribute('aria-expanded', 'true');
     await expect(page.getByTestId('topic-bst')).toHaveAttribute('data-direct', 'true');
     await expect(page.getByTestId('algo-bst')).toBeVisible();

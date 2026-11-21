@@ -372,44 +372,12 @@ body {
 .workspace-tabpanel .panel .panel { padding: 0; }
 
 /* Compact teaching course: current step + clickable stage chips. */
-.lessonpanel.is-compact .sectionhead { margin-bottom: 7px; }
-.lessonpanel.is-compact .lesson-oneliner { font-size: var(--font-body); max-width: 76ch; }
-.lessonpanel.is-compact .lesson-meta { margin-bottom: 4px; }
-.lessonpanel.is-compact .lessonsteps {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  max-height: 320px;
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding-bottom: 4px;
-  scrollbar-width: thin;
-}
-.lessonpanel.is-compact .lessonstep {
-  flex: 0 0 204px;
-  width: 204px;
-  max-width: 204px;
-  grid-template-columns: 22px minmax(0, 1fr) auto;
-  padding: 7px 9px;
-}
-.lessonpanel.is-compact .lessonstep-body { white-space: normal; }
-.lessonpanel.is-compact .lessonstep-title { font-size: var(--font-body); }
-.lessonpanel.is-compact .lesson-current { margin-top: 8px; }
-.lessonpanel.is-compact .lesson-overview {
-  max-height: 34vh;
-  overflow: auto;
-  overscroll-behavior: contain;
-}
-.lesson-overview p, .lessonstep-text, .lesson-mistakes ul { font-size: 16px; line-height: 1.65; }
-.lessonstep-title { font-size: var(--font-body); }
-.lesson-current { font-size: var(--font-body); }
-.lesson-vars .chip { font-size: 14px; }
 
 /* Secondary panel typography and tables. */
 .vartable { font-size: 14px; }
 .vartable th { font-size: var(--font-ui); }
 .codeview { font-size: 15px; }
-.sync-col h3, .sync-explanation h3, .lesson-subhead, .sidebar h3 { font-size: var(--font-ui); }
+.sync-col h3, .sync-explanation h3, .sidebar h3 { font-size: var(--font-ui); }
 .sync-snapshot { display: flex; flex-direction: column; align-items: flex-start; gap: 7px; }
 .sync-snapshot .btn { align-self: flex-start; }
 
@@ -463,14 +431,6 @@ body {
   .current-step-main { flex: 1 1 100%; }
   .current-step-copy strong { font-size: 16px; }
   .workspace-tabpanel { padding: 2px 10px 10px; }
-  .lessonpanel.is-compact .lessonsteps {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    max-height: none;
-    overflow: visible;
-  }
-  .lessonpanel.is-compact .lessonstep { width: 100%; max-width: none; }
-  .lessonpanel.is-compact .lesson-overview { max-height: none; }
   .modal { padding: 10px; }
   .sync-grid { grid-template-columns: minmax(0, 1fr); }
   .vartable { table-layout: fixed; }

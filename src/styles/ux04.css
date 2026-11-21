@@ -336,10 +336,6 @@
     padding-right: 2px;
   }
 
-  .app[data-view='learn'] .lab-shell:not(.guide-open) .lab-explanation .lessonpanel.is-rail {
-    padding: 11px 13px 12px;
-  }
-
   /* Collapsed code dock: one readable row with the run and expand actions.
      The editor stays mounted; expanded mode keeps its original layout. */
   .app[data-view='learn'] .code-dock:not(.is-expanded) .code-dock-head {

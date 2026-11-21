@@ -2,7 +2,7 @@ import { mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { collapseAlgorithmGuide, expect, selectAlgorithm as chooseAlgorithm, test, type Page } from './fixtures';
 
-const SHOT_DIR = resolve(process.cwd(), 'docs/ux02/after');
+const SHOT_DIR = resolve(process.cwd(), 'test-results/evidence/ux02/after');
 mkdirSync(SHOT_DIR, { recursive: true });
 
 async function openApp(page: Page) {

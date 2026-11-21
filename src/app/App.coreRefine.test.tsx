@@ -83,7 +83,7 @@ describe('CORE-REFINE-01 shell integration', () => {
     expect(toggle.textContent).toContain('全部收起');
 
     fireEvent.click(toggle);
-    for (const chapter of ['ch1-intro', 'ch2-algorithm', 'ch9-sort']) {
+    for (const chapter of ['ch1-intro', 'ch7-graph', 'ch10-sort']) {
       expect(screen.getByTestId(`chapter-${chapter}`).getAttribute('aria-expanded')).toBe('false');
     }
     expect(screen.getByTestId('algo-bubble').getAttribute('aria-current')).toBe('true');
@@ -93,7 +93,7 @@ describe('CORE-REFINE-01 shell integration', () => {
 
     fireEvent.click(screen.getByTestId('sidebar-toggle-all'));
     expect(screen.getByTestId('sidebar-toggle-all').getAttribute('data-expanded')).toBe('true');
-    expect(screen.getByTestId('chapter-ch2-algorithm').getAttribute('aria-expanded')).toBe('true');
+    expect(screen.getByTestId('chapter-ch1-intro').getAttribute('aria-expanded')).toBe('true');
     expect(screen.getByTestId('topic-shortest-path').getAttribute('aria-expanded')).toBe('true');
     expect(screen.getByTestId('algo-dijkstra')).toBeTruthy();
     expect(screen.getByTestId('algo-bubble').getAttribute('aria-current')).toBe('true');

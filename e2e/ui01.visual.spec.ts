@@ -6,7 +6,7 @@ import { expect, openTextbookChapter, test } from './fixtures';
  * UX-03 directory screenshots. Real Edge against the production build
  * (`vite preview`) with the default JavaScript demo — no mocked layout.
  */
-const DIR = resolve(process.cwd(), 'docs/ux03/nav');
+const DIR = resolve(process.cwd(), 'test-results/evidence/ux03/nav');
 mkdirSync(DIR, { recursive: true });
 
 test.describe('UX-03 — directory screenshots', () => {
@@ -18,14 +18,14 @@ test.describe('UX-03 — directory screenshots', () => {
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
 
     // The default current algorithm is bubble sort: chapter 9 + its topic open.
-    await page.getByTestId('chapter-ch9-sort').scrollIntoViewIfNeeded();
+    await page.getByTestId('chapter-ch10-sort').scrollIntoViewIfNeeded();
     await page.waitForTimeout(260);
     await page.screenshot({ path: resolve(DIR, 'current-path-1440-light.png') });
 
     // Open chapters 7 and 8 as well; all three stay open simultaneously.
     await openTextbookChapter(page, 'ch7-graph');
-    await openTextbookChapter(page, 'ch8-search');
-    await expect(page.getByTestId('chapter-ch9-sort')).toHaveAttribute('aria-expanded', 'true');
+    await openTextbookChapter(page, 'ch9-search');
+    await expect(page.getByTestId('chapter-ch10-sort')).toHaveAttribute('aria-expanded', 'true');
     await page.setViewportSize({ width: 1440, height: 1200 });
     await page.getByTestId('chapter-ch1-intro').scrollIntoViewIfNeeded();
     await page.waitForTimeout(260);
@@ -48,7 +48,7 @@ test.describe('UX-03 — directory screenshots', () => {
     await page.selectOption('[data-testid="theme-select"]', 'light');
     const mobile = page.getByTestId('mobile-algo-select');
     await expect(mobile).toBeVisible();
-    await expect(mobile.locator('optgroup')).toHaveCount(9);
+    await expect(mobile.locator('optgroup')).toHaveCount(13);
     await page.screenshot({ path: resolve(DIR, 'mobile-390-light.png') });
   });
 });

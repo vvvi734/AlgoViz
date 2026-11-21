@@ -199,6 +199,45 @@ describe('ConceptView (CORE-REFINE-01)', () => {
     expect(screen.getByTestId('concept-comparison').textContent).toContain('中序前驱');
   });
 
+  it('renders the three TEXTBOOK-01 concept pages with matching diagrams and no player', () => {
+    renderConcept('static-linked-list');
+    let diagram = screen.getByTestId('concept-diagram');
+    expect(diagram.textContent).toContain('head = 1');
+    expect(diagram.textContent).toContain('freeHead = 4');
+    expect(diagram.textContent).toContain('NULL');
+    expect(screen.getByTestId('concept-page').textContent).toContain('游标');
+    expect(screen.queryByTestId('play-btn')).toBeNull();
+    cleanup();
+
+    renderConcept('stack-recursion');
+    diagram = screen.getByTestId('concept-diagram');
+    expect(diagram.textContent).toContain('F(0)');
+    expect(diagram.textContent).toContain('F(3)');
+    expect(diagram.textContent).toContain('递归基');
+    expect(screen.queryByTestId('reference-code-panel')).toBeNull();
+    cleanup();
+
+    renderConcept('string-storage');
+    diagram = screen.getByTestId('concept-diagram');
+    expect(diagram.textContent).toContain('MAXLEN = 8');
+    expect(diagram.textContent).toContain('base');
+    expect(diagram.textContent).toContain('next = NULL');
+    expect(screen.getByTestId('concept-page').textContent).toContain('块链存储');
+    expect(screen.getByTestId('concept-comparison').textContent).toContain('堆分配');
+  });
+
+  it('localizes the three new diagrams and teaching copy without leaking Chinese', () => {
+    window.localStorage.setItem('algolens-lang', 'en');
+    for (const id of ['static-linked-list', 'stack-recursion', 'string-storage']) {
+      renderConcept(id);
+      const page = screen.getByTestId('concept-page').textContent ?? '';
+      expect(page, id).not.toMatch(/[\u3400-\u9fff]/);
+      expect(screen.getByTestId('concept-diagram').querySelector('svg'), id).not.toBeNull();
+      cleanup();
+    }
+    window.localStorage.removeItem('algolens-lang');
+  });
+
   it('has a diagram for each concept kind', () => {
     for (const concept of CONCEPT_PAGES) {
       renderConcept(concept.id);

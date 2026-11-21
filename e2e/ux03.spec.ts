@@ -10,7 +10,7 @@ import { resolve } from 'node:path';
  * label: chapter/topic/algorithm ids are the stable ids from
  * `domain/algorithms/textbook.ts`.
  */
-const SHOT_DIR = resolve(process.cwd(), 'docs/ux03/evidence');
+const SHOT_DIR = resolve(process.cwd(), 'test-results/evidence/ux03/evidence');
 mkdirSync(SHOT_DIR, { recursive: true });
 
 async function openApp(page: Page) {
@@ -39,38 +39,41 @@ async function setFrame(page: Page, frame: number, total: number) {
 }
 
 test.describe('UX-03 — textbook navigation', () => {
-  test('renders the fixed nine-chapter order with chapter → topic → algorithm', async ({ page }) => {
+  test('renders the fixed twelve-chapter order with chapter → topic → algorithm', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await openApp(page);
 
     const heads = page.locator('.textbook-nav .textbook-chapter-head');
-    await expect(heads).toHaveCount(9);
+    await expect(heads).toHaveCount(12);
     const chapterIds = await heads.evaluateAll((nodes) => nodes.map((node) => node.getAttribute('data-testid')));
     expect(chapterIds).toEqual([
       'chapter-ch1-intro',
-      'chapter-ch2-algorithm',
-      'chapter-ch3-linear',
-      'chapter-ch4-stack-queue',
-      'chapter-ch5-string',
+      'chapter-ch2-linear',
+      'chapter-ch3-stack-queue',
+      'chapter-ch4-string',
+      'chapter-ch5-array',
       'chapter-ch6-tree',
       'chapter-ch7-graph',
-      'chapter-ch8-search',
-      'chapter-ch9-sort',
+      'chapter-ch8-dynamic-storage',
+      'chapter-ch9-search',
+      'chapter-ch10-sort',
+      'chapter-ch11-external-sort',
+      'chapter-ch12-files',
     ]);
 
     // The current path is the only default expansion: chapter 9, then the
     // single-algorithm bubble topic as one direct row.
-    await expect(page.getByTestId('chapter-ch9-sort')).toHaveAttribute('aria-expanded', 'true');
+    await expect(page.getByTestId('chapter-ch10-sort')).toHaveAttribute('aria-expanded', 'true');
     await expect(page.getByTestId('topic-bubble-sort')).toHaveAttribute('data-direct', 'true');
     await expect(page.getByTestId('topic-bubble-sort')).toHaveAttribute('data-kind', 'algorithm');
     await expect(page.getByTestId('algo-bubble')).toHaveAttribute('aria-current', 'true');
-    for (const id of ['ch7-graph', 'ch8-search', 'ch2-algorithm']) {
+    for (const id of ['ch7-graph', 'ch9-search', 'ch1-intro']) {
       await expect(page.getByTestId(`chapter-${id}`)).toHaveAttribute('aria-expanded', 'false');
     }
 
-    // 34 shipped algorithms, each rendered once with exactly one primary home.
+    // 37 shipped algorithms, each rendered once with exactly one primary home.
     const algorithms = page.locator('[data-testid^="algo-"]');
-    await expect(algorithms).toHaveCount(34);
+    await expect(algorithms).toHaveCount(37);
     const placements = await algorithms.evaluateAll((nodes) =>
       nodes.map((node) => ({
         id: node.getAttribute('data-testid'),
@@ -78,13 +81,13 @@ test.describe('UX-03 — textbook navigation', () => {
         topic: node.getAttribute('data-topic'),
       })),
     );
-    expect(new Set(placements.map((item) => item.id)).size).toBe(34);
+    expect(new Set(placements.map((item) => item.id)).size).toBe(37);
     for (const item of placements) {
       expect(item.chapter).toBeTruthy();
       expect(item.topic).toBeTruthy();
     }
 
-    // 图 has the textbook topic order, and MST comes before shortest paths.
+    // The graph chapter follows the book: connectivity, MST, DAG, shortest.
     await openTextbookChapter(page, 'ch7-graph');
     await expect(page.getByTestId('chapter-ch7-graph')).toHaveAttribute('data-has-current', 'false');
     const graphTopics = page.locator('#chapter-ch7-graph-body [data-testid^="topic-"]');
@@ -93,11 +96,11 @@ test.describe('UX-03 — textbook navigation', () => {
       'topic-graph-basics',
       'topic-graph-storage',
       'topic-graph-traversal',
+      'topic-graph-connectivity',
       'topic-mst',
-      'topic-shortest-path',
       'topic-topological',
       'topic-critical-path',
-      'topic-graph-connectivity',
+      'topic-shortest-path',
     ]);
     const mstBox = await page.getByTestId('topic-mst').boundingBox();
     const shortestBox = await page.getByTestId('topic-shortest-path').boundingBox();
@@ -107,7 +110,8 @@ test.describe('UX-03 — textbook navigation', () => {
     // masquerade as an algorithm target.
     await expect(page.getByTestId('topic-graph-basics')).toHaveAttribute('data-kind', 'concept');
     await expect(page.getByTestId('topic-graph-basics')).toHaveAttribute('data-concept-id', 'graph-basics');
-    await expect(page.getByTestId('topic-graph-basics')).toContainText(/阅读|Read/i);
+    await expect(page.getByTestId('topic-graph-basics')).toHaveAttribute('data-category', 'theory');
+    await expect(page.getByTestId('topic-graph-basics')).toHaveAttribute('aria-label', /理论专题|Theory topic/i);
     await expect(page.getByTestId('topic-graph-basics').locator('[data-testid^="algo-"]')).toHaveCount(0);
 
     // BST/AVL belong to 查找, while Huffman is now an authored 树 algorithm.
@@ -115,18 +119,18 @@ test.describe('UX-03 — textbook navigation', () => {
     await expect(page.getByTestId('topic-huffman')).toHaveAttribute('data-kind', 'algorithm');
     await expect(page.getByTestId('topic-huffman')).toHaveAttribute('data-direct', 'true');
     await expect(page.getByTestId('algo-huffman')).toBeVisible();
-    await openTextbookChapter(page, 'ch8-search');
+    await openTextbookChapter(page, 'ch9-search');
     await openTextbookTopic(page, 'bst');
     await openTextbookTopic(page, 'avl');
     await expect(page.getByTestId('algo-bst')).toBeVisible();
     await expect(page.getByTestId('algo-avl')).toBeVisible();
-    await expect(page.getByTestId('algo-bst')).toHaveAttribute('data-chapter', 'ch8-search');
-    await expect(page.getByTestId('algo-avl')).toHaveAttribute('data-chapter', 'ch8-search');
+    await expect(page.getByTestId('algo-bst')).toHaveAttribute('data-chapter', 'ch9-search');
+    await expect(page.getByTestId('algo-avl')).toHaveAttribute('data-chapter', 'ch9-search');
     await openTextbookTopic(page, 'hash-search');
     await expect(page.getByTestId('algo-hash-chain')).toBeVisible();
     await expect(page.getByTestId('algo-hash-probe')).toBeVisible();
-    await expect(page.getByTestId('algo-hash-chain')).toHaveAttribute('data-chapter', 'ch8-search');
-    await expect(page.getByTestId('algo-hash-probe')).toHaveAttribute('data-chapter', 'ch8-search');
+    await expect(page.getByTestId('algo-hash-chain')).toHaveAttribute('data-chapter', 'ch9-search');
+    await expect(page.getByTestId('algo-hash-probe')).toHaveAttribute('data-chapter', 'ch9-search');
     await expectNoPageOverflow(page);
   });
 
@@ -134,11 +138,10 @@ test.describe('UX-03 — textbook navigation', () => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await openApp(page);
 
-    // Factorial lives in chapter 2, under the extension recursion topic.
+    // Factorial lives in chapter 3, under 3.3 栈与递归的实现.
     await selectAlgorithm(page, 'factorial');
-    await expect(page.getByTestId('chapter-ch2-algorithm')).toHaveAttribute('aria-expanded', 'true');
-    await expect(page.getByTestId('topic-recursion-extension')).toHaveAttribute('data-has-current', 'true');
-    await expect(page.getByTestId('topic-recursion-extension').locator('.textbook-extension')).toHaveText('扩展');
+    await expect(page.getByTestId('chapter-ch3-stack-queue')).toHaveAttribute('aria-expanded', 'true');
+    await expect(page.getByTestId('topic-recursion-examples')).toHaveAttribute('data-has-current', 'true');
     await expect(page.getByTestId('algo-factorial').locator('.textbook-extension')).toHaveText('扩展');
     await expect(page.getByTestId('algo-factorial')).toHaveAttribute('aria-current', 'true');
 
@@ -167,8 +170,8 @@ test.describe('UX-03 — textbook navigation', () => {
 
     await page.getByTestId('sidebar-collapse').click();
     await expect(page.getByTestId('sidebar')).toHaveAttribute('data-collapsed', 'true');
-    await expect(page.locator('.rail-chapter')).toHaveCount(9);
-    await expect(page.getByTestId('rail-chapter-ch9-sort')).toHaveAttribute('data-has-current', 'true');
+    await expect(page.locator('.rail-chapter')).toHaveCount(12);
+    await expect(page.getByTestId('rail-chapter-ch10-sort')).toHaveAttribute('data-has-current', 'true');
     await expect(page.getByTestId('rail-current')).toBeVisible();
 
     await page.getByTestId('rail-chapter-ch7-graph').click();
@@ -179,11 +182,12 @@ test.describe('UX-03 — textbook navigation', () => {
     await page.getByRole('button', { name: 'Switch language' }).click();
     await expect(page.getByTestId('sidebar')).toContainText('Textbook directory');
     await expect(page.getByTestId('chapter-ch7-graph')).toContainText('Graphs');
-    await expect(page.getByTestId('chapter-ch9-sort')).toContainText('Sorting');
-    await expect(page.getByTestId('topic-graph-basics')).toContainText(/阅读|Read|Concept/i);
+    await expect(page.getByTestId('chapter-ch10-sort')).toContainText('Internal sorting');
+    await expect(page.getByTestId('topic-graph-basics')).toHaveAttribute('data-category', 'theory');
+    await expect(page.getByTestId('topic-graph-basics')).toHaveAttribute('aria-label', /理论专题|Theory topic/i);
     await expect(page.getByTestId('topic-merge-sort')).toContainText('Merge sort');
-    await expect(page.getByTestId('topic-graph-connectivity')).toContainText('Extension');
-    await expect(page.locator('.textbook-source')).toContainText('Da Hua Data Structures');
+    await expect(page.getByTestId('topic-bubble-sort')).toContainText('Extension');
+    await expect(page.locator('.textbook-source')).toContainText('Yan Weimin');
     await expectNoPageOverflow(page);
   });
 
@@ -194,9 +198,9 @@ test.describe('UX-03 — textbook navigation', () => {
     await expect(page.locator('.lab-sidebar-wrap')).toBeHidden();
     const mobile = page.getByTestId('mobile-algo-select');
     await expect(mobile).toBeVisible();
-    await expect(mobile.locator('optgroup')).toHaveCount(9);
+    await expect(mobile.locator('optgroup')).toHaveCount(13);
     await expect(mobile.locator('optgroup').nth(6)).toHaveAttribute('label', '7. 图');
-    await expect(mobile.locator('optgroup').nth(7)).toHaveAttribute('label', '8. 查找');
+    await expect(mobile.locator('optgroup').nth(7)).toHaveAttribute('label', '8. 动态存储管理');
     await mobile.selectOption('dijkstra');
     await expect(page.getByTestId('lab-title')).toContainText('Dijkstra');
     await expectNoPageOverflow(page);
@@ -212,7 +216,7 @@ test.describe('UX-03 — textbook navigation', () => {
     await page.waitForTimeout(300);
     await page.screenshot({ path: resolve(SHOT_DIR, 'graph-dijkstra-frame-1440-light.png') });
 
-    await openTextbookChapter(page, 'ch8-search');
+    await openTextbookChapter(page, 'ch9-search');
     await openTextbookTopic(page, 'bst');
     await openTextbookTopic(page, 'avl');
     await expect(page.getByTestId('algo-bst')).toBeVisible();
@@ -229,7 +233,7 @@ test.describe('UX-03 — textbook navigation', () => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.getByTestId('chapter-ch7-graph').click();
     await expect(page.getByTestId('chapter-ch7-graph')).toHaveAttribute('aria-expanded', 'false');
-    await page.getByTestId('chapter-ch8-search').scrollIntoViewIfNeeded();
+    await page.getByTestId('chapter-ch9-search').scrollIntoViewIfNeeded();
     await page.waitForTimeout(200);
     await page.screenshot({ path: resolve(SHOT_DIR, 'search-chapter-1440-light.png') });
 

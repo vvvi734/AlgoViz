@@ -1,6 +1,6 @@
 # 贡献指南 / Contributing
 
-感谢你愿意改进 AlgoViz。请先阅读 [README 状态矩阵](../README.md) 与 [架构方案](ARCHITECTURE.md)，避免重复实现或把未实现能力误标为已支持。
+感谢你愿意改进 AlgoViz。请先阅读 [README](README.md)、[架构说明](docs/ARCHITECTURE.md) 与 [教材课程覆盖表](docs/TEXTBOOK_COVERAGE.md)，避免重复实现或把待完善条目误标为已支持。
 
 ## 开发前
 
@@ -11,7 +11,7 @@ npm test
 npm run build
 ```
 
-三条命令全绿才可以开 PR。Issue 列表在 [`docs/issues/`](issues/)，按编号领取并在 PR 中写明 `Closes #NN`。
+三条命令全绿才可以开 PR。课程已完成 / 待开发状态以 [`docs/TEXTBOOK_COVERAGE.md`](docs/TEXTBOOK_COVERAGE.md) 为准；历史阶段报告在 `docs/archive/`，不要据此判断当前功能。
 
 ## 模块边界（PR 评审重点）
 
@@ -26,9 +26,11 @@ npm run build
 
 ## 新增或修改算法
 
-1. 算法代码字符串在 `legacy/algorithm-definitions.js` 中；改完执行 `npm run sync:legacy`，**把生成的 `.generated.ts` 与 `src/test/fixtures/legacy-frames.json` 一起提交**，并在 PR 描述里说明帧数变化的原因。
-2. 新算法必须至少有：正常输入、空输入、重复元素、边界输入四类测试。
-3. 帧数上限 500，消息长度上限 240；不要绕过 `createTraceCollector()`。
+1. 已有生成式算法的基础定义在 `legacy/algorithm-definitions.js`；修改后执行 `npm run sync:legacy`，把生成的 `.generated.ts` 与帧 fixture 一起 review 并提交，说明帧数变化原因。不要直接手改 `*.generated.ts`。
+2. KMP、稀疏矩阵快速转置等特殊入口通过 `src/domain/algorithms/examples.ts` 合并，不要为了统一注册表而漏掉它们。
+3. 新算法必须提供真实 Python Trace、输入 Schema、官方 / 自定义 / 随机输入、三语言参考代码与双语课程；完整路径见 [架构说明](ARCHITECTURE.md#6-新增课程的统一路径)。
+4. 新算法至少覆盖正常输入、空输入、重复元素、边界输入；帧数上限 500，消息长度上限 240，不得绕过 `createTraceCollector()`。
+5. 理论专题不得挂播放器；动态算法只允许一个时间轴、一个播放器。
 
 ## 主题与文案
 
@@ -38,10 +40,9 @@ npm run build
 
 ## 安全红线
 
-- 不得把 API key、沙箱凭据或隐藏测试写进前端或仓库。
-- 不得在普通 Web 服务进程里编译 / 执行用户提交的 C/C++、Python 或 JavaScript。
-- 不得把 AI 生成的代码不经检查直接执行或声称其正确。
-- 题目内容必须原创或附带合法授权说明；不要搬运未授权的历年真题。
+- 不得把 API key 或凭据提交到仓库。
+- 不得在普通 Web 服务进程里编译 / 执行用户提交的 C/C++、Python 或 JavaScript；C / C++ 当前只允许只读参考代码。
+- 课程文案、参考代码与题目必须原创或附带合法授权说明；不要搬运未授权的历年真题或教材原文。
 
 ## PR 描述模板
 

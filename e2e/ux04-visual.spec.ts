@@ -2,7 +2,7 @@ import { mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { collapseAlgorithmGuide, expect, selectAlgorithm, test } from './fixtures';
 
-const SHOT_DIR = resolve(process.cwd(), 'docs/ux04/after');
+const SHOT_DIR = resolve(process.cwd(), 'test-results/evidence/ux04/after');
 mkdirSync(SHOT_DIR, { recursive: true });
 
 async function setFrame(page: import('@playwright/test').Page, frame: number) {

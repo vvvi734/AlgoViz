@@ -2,22 +2,23 @@ import type { Lang } from '../../i18n/types';
 import type { AlgorithmCatalog } from './types';
 
 /**
- * UX-03 — textbook directory.
+ * TEXTBOOK-01 — textbook directory.
  *
  * The navigation is authored here, once, as data:
- *   chapter (《大话数据结构》 order) → topic → algorithm ids.
+ *   chapter → section/topic → algorithm ids.
  *
- * The React sidebar never hard-codes an algorithm name. It reads the generated
- * registry for icons, localized names and the actual algorithm ids, then builds
- * the tree below. Runtime algorithms are always registered here; the directory
- * never depends on imported or user-generated content.
+ * Reference edition (fixed for this directory):
+ *   严蔚敏、吴伟民《数据结构（C语言版）》，清华大学出版社，1997 年 4 月第 1 版。
  *
- * Reference edition (fixed before the navigation was written):
- *   程杰《大话数据结构》，清华大学出版社，2011 年 6 月第 1 版。
+ * The twelve chapters follow the book's knowledge structure. Only chapter and
+ * section organisation is borrowed; no textbook prose, figures or exercises are
+ * copied. Sections with no shipped teaching page/algorithm are explicit
+ * `planned` or `concept` rows and never invent a runnable target.
  *
- * Only the chapter/topic organisation is borrowed. No textbook prose, figures
- * or exercises are copied. Topics with no shipped algorithm are marked
- * `planned` and have no clickable target.
+ * Existing learner preferences and deep links may still contain the old
+ * 《大话数据结构》 chapter ids. `migrateTextbookId` keeps those ids readable while
+ * every authored row below uses the new twelve-chapter ids. Algorithm ids and
+ * concept ids are unchanged.
  */
 
 export interface TextbookTitle {
@@ -51,61 +52,81 @@ export interface TextbookTopic {
 
 export interface TextbookChapter {
   id: string;
-  /** 1–9 for the book chapters; 0 for the extension chapter. */
+  /** 1–12 for the book chapters. Extension chapters are hidden from the nav. */
   number: number;
   title: TextbookTitle;
   shortTitle: TextbookTitle;
   topics: TextbookTopic[];
-  /** Not one of the nine book chapters. */
+  /** Not one of the twelve book chapters. */
   extension?: boolean;
 }
 
 export const TEXTBOOK_REFERENCE = {
-  title: { zh: '大话数据结构', en: 'Da Hua Data Structures' },
-  author: '程杰',
+  title: { zh: '数据结构（C语言版）', en: 'Data Structures (C Language Edition)' },
+  author: '严蔚敏、吴伟民',
   publisher: { zh: '清华大学出版社', en: 'Tsinghua University Press' },
-  edition: { zh: '2011 年 6 月第 1 版', en: '1st edition, June 2011' },
+  edition: { zh: '1997 年 4 月第 1 版', en: '1st edition, April 1997' },
 } as const;
+
+/**
+ * Compatibility bridge for chapter ids persisted before TEXTBOOK-01.
+ * The old directory used 《大话数据结构》's nine chapters; these ids may still be
+ * present in `algolens-sidebar` or in an old deep link. Resolve them to the
+ * chapter that now owns the same course content.
+ */
+export const LEGACY_CHAPTER_ID_MAP: Readonly<Record<string, string>> = {
+  'ch2-algorithm': 'ch1-intro',
+  'ch3-linear': 'ch2-linear',
+  'ch4-stack-queue': 'ch3-stack-queue',
+  'ch5-string': 'ch4-string',
+  'ch8-search': 'ch9-search',
+  'ch9-sort': 'ch10-sort',
+};
+
+/** The old recursion slot now lives under 3.3 栈与递归的实现. */
+export const LEGACY_TOPIC_ID_MAP: Readonly<Record<string, string>> = {
+  'recursion-extension': 'recursion-examples',
+};
+
+export function migrateTextbookId(id: string): string {
+  return LEGACY_CHAPTER_ID_MAP[id] ?? id;
+}
+
+export function migrateTextbookTopicId(id: string): string {
+  return LEGACY_TOPIC_ID_MAP[id] ?? id;
+}
 
 export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
   {
     id: 'ch1-intro',
     number: 1,
-    title: { zh: '数据结构绪论', en: 'Introduction to data structures' },
+    title: { zh: '绪论', en: 'Introduction' },
     shortTitle: { zh: '绪论', en: 'Introduction' },
     topics: [
       {
         id: 'intro-concepts',
-        title: { zh: '数据结构的基本概念', en: 'Basic concepts' },
+        title: { zh: '数据结构的基本概念', en: 'Basic concepts of data structures' },
         algorithms: [],
         concept: true,
         conceptId: 'data-structure-basics',
       },
       {
         id: 'intro-logical-physical',
-        title: { zh: '逻辑结构与物理结构', en: 'Logical and physical structures' },
+        title: { zh: '逻辑结构与存储结构', en: 'Logical and storage structures' },
         algorithms: [],
         concept: true,
         conceptId: 'storage-structures',
       },
       {
         id: 'intro-adt',
-        title: { zh: '抽象数据类型', en: 'Abstract data types' },
+        title: { zh: '抽象数据类型的表示与实现', en: 'Abstract data types' },
         algorithms: [],
         concept: true,
         conceptId: 'adt',
       },
-    ],
-  },
-  {
-    id: 'ch2-algorithm',
-    number: 2,
-    title: { zh: '算法', en: 'Algorithms' },
-    shortTitle: { zh: '算法', en: 'Algorithms' },
-    topics: [
       {
         id: 'algorithm-definition',
-        title: { zh: '算法的定义与特性', en: 'Definition and properties' },
+        title: { zh: '算法和算法分析：算法', en: 'Algorithms: definition and properties' },
         algorithms: [],
         concept: true,
         conceptId: 'algorithm-definition',
@@ -119,43 +140,34 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
       },
       {
         id: 'algorithm-cases',
-        title: { zh: '最好、平均与最坏', en: 'Best, average and worst' },
+        title: { zh: '最好、平均与最坏情况', en: 'Best, average and worst cases' },
         algorithms: [],
         concept: true,
         conceptId: 'algorithm-cases',
       },
-      {
-        id: 'recursion-extension',
-        title: { zh: '递归算法', en: 'Recursive algorithms' },
-        algorithms: [
-          { id: 'factorial', extension: true },
-          { id: 'fib', extension: true },
-        ],
-        extension: true,
-      },
     ],
   },
   {
-    id: 'ch3-linear',
-    number: 3,
+    id: 'ch2-linear',
+    number: 2,
     title: { zh: '线性表', en: 'Linear lists' },
     shortTitle: { zh: '线性表', en: 'Linear lists' },
     topics: [
       {
         id: 'linear-basics',
-        title: { zh: '线性表：定义与操作', en: 'Definition and operations' },
+        title: { zh: '线性表的类型定义', en: 'Definition of the linear-list type' },
         algorithms: [],
         concept: true,
         conceptId: 'linear-list',
       },
       {
         id: 'sequential-list',
-        title: { zh: '顺序表（顺序存储结构）', en: 'Sequential list (sequential storage)' },
+        title: { zh: '线性表的顺序表示和实现', en: 'Sequential representation and implementation' },
         algorithms: [{ id: 'seqlist' }],
       },
       {
         id: 'linked-list',
-        title: { zh: '单链表', en: 'Singly linked list' },
+        title: { zh: '线性链表', en: 'Linked list' },
         algorithms: [{ id: 'linked' }],
       },
       {
@@ -163,6 +175,7 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
         title: { zh: '静态链表', en: 'Static linked list' },
         algorithms: [],
         concept: true,
+        conceptId: 'static-linked-list',
       },
       {
         id: 'circular-linked-list',
@@ -174,36 +187,56 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
         title: { zh: '双向链表', en: 'Doubly linked list' },
         algorithms: [{ id: 'doubly' }],
       },
+      {
+        id: 'polynomial-add',
+        title: { zh: '一元多项式的表示及相加', en: 'Polynomial representation and addition' },
+        algorithms: [],
+        planned: true,
+      },
     ],
   },
   {
-    id: 'ch4-stack-queue',
-    number: 4,
-    title: { zh: '栈与队列', en: 'Stacks and queues' },
-    shortTitle: { zh: '栈与队列', en: 'Stacks & queues' },
+    id: 'ch3-stack-queue',
+    number: 3,
+    title: { zh: '栈和队列', en: 'Stacks and queues' },
+    shortTitle: { zh: '栈和队列', en: 'Stacks & queues' },
     topics: [
       {
         id: 'stack-basics',
-        title: { zh: '栈的定义与实现', en: 'Stack definition and implementation' },
+        title: { zh: '栈的表示和实现', en: 'Stack representation and implementation' },
         algorithms: [{ id: 'stack' }],
       },
       {
+        id: 'stack-applications',
+        title: { zh: '栈的应用举例', en: 'Stack applications' },
+        algorithms: [],
+        planned: true,
+      },
+      {
         id: 'stack-recursion',
-        title: { zh: '栈的应用——递归', en: 'Stack application: recursion' },
+        title: { zh: '栈与递归的实现', en: 'Stacks and recursive calls' },
         algorithms: [],
         concept: true,
+        conceptId: 'stack-recursion',
+      },
+      {
+        id: 'recursion-examples',
+        title: { zh: '递归调用的执行过程', en: 'Execution of recursive calls' },
+        algorithms: [
+          { id: 'factorial', extension: true },
+          { id: 'fib', extension: true },
+        ],
       },
       {
         id: 'queue-basics',
-        title: { zh: '队列的定义与实现', en: 'Queue definition and implementation' },
+        title: { zh: '队列的表示和实现', en: 'Queue representation and implementation' },
         algorithms: [{ id: 'queue' }],
       },
       {
-        id: 'stack-queue-storage',
-        title: { zh: '栈与队列的存储结构', en: 'Storage structures for stacks and queues' },
+        id: 'chain-queue',
+        title: { zh: '链队列', en: 'Linked queue' },
         algorithms: [],
-        concept: true,
-        conceptId: 'stack-queue-storage',
+        planned: true,
       },
       {
         id: 'circular-queue',
@@ -212,26 +245,34 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
         concept: true,
         conceptId: 'circular-queue',
       },
+      {
+        id: 'stack-queue-storage',
+        title: { zh: '栈与队列的存储结构', en: 'Storage structures for stacks and queues' },
+        algorithms: [],
+        concept: true,
+        conceptId: 'stack-queue-storage',
+      },
     ],
   },
   {
-    id: 'ch5-string',
-    number: 5,
+    id: 'ch4-string',
+    number: 4,
     title: { zh: '串', en: 'Strings' },
     shortTitle: { zh: '串', en: 'Strings' },
     topics: [
       {
         id: 'string-basics',
-        title: { zh: '串的定义与模式匹配基础', en: 'Strings and the foundations of pattern matching' },
+        title: { zh: '串类型的定义', en: 'Definition of the string type' },
         algorithms: [],
         concept: true,
         conceptId: 'string-basics',
       },
       {
         id: 'string-storage',
-        title: { zh: '串的存储结构', en: 'String storage structures' },
+        title: { zh: '串的表示和实现', en: 'String representation and implementation' },
         algorithms: [],
         concept: true,
+        conceptId: 'string-storage',
       },
       {
         id: 'naive-match',
@@ -245,18 +286,23 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
         title: { zh: 'KMP 模式匹配算法', en: 'KMP pattern matching' },
         algorithms: [{ id: 'kmp' }],
       },
+      {
+        id: 'string-applications',
+        title: { zh: '串操作应用举例', en: 'String applications' },
+        algorithms: [],
+        planned: true,
+      },
     ],
   },
   {
     id: 'ch5-array',
-    number: 0,
-    title: { zh: '数组与矩阵', en: 'Arrays and matrices' },
-    shortTitle: { zh: '数组与矩阵', en: 'Arrays & matrices' },
-    extension: true,
+    number: 5,
+    title: { zh: '数组和广义表', en: 'Arrays and generalized lists' },
+    shortTitle: { zh: '数组和广义表', en: 'Arrays & generalized lists' },
     topics: [
       {
         id: 'array-basics',
-        title: { zh: '数组与多维数组', en: 'Arrays and multidimensional arrays' },
+        title: { zh: '数组的定义与顺序表示', en: 'Array definition and sequential representation' },
         algorithms: [],
         concept: true,
         conceptId: 'array-basics',
@@ -270,41 +316,53 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
       },
       {
         id: 'sparse-matrix',
-        title: { zh: '稀疏矩阵与三元组', en: 'Sparse matrices and triplets' },
+        title: { zh: '稀疏矩阵', en: 'Sparse matrices' },
         algorithms: [],
         concept: true,
         conceptId: 'sparse-matrix',
       },
       {
         id: 'sparse-transpose',
-        title: { zh: '稀疏矩阵快速转置', en: 'Fast transpose of a sparse matrix' },
+        title: { zh: '稀疏矩阵的快速转置', en: 'Fast transpose of a sparse matrix' },
         algorithms: [{ id: 'sparse-transpose' }],
+      },
+      {
+        id: 'generalized-list',
+        title: { zh: '广义表的定义与存储结构', en: 'Generalized lists: definition and storage' },
+        algorithms: [],
+        planned: true,
+      },
+      {
+        id: 'm-variable-polynomial',
+        title: { zh: 'm 元多项式的表示', en: 'Representing polynomials in m variables' },
+        algorithms: [],
+        planned: true,
       },
     ],
   },
   {
     id: 'ch6-tree',
     number: 6,
-    title: { zh: '树', en: 'Trees' },
-    shortTitle: { zh: '树', en: 'Trees' },
+    title: { zh: '树和二叉树', en: 'Trees and binary trees' },
+    shortTitle: { zh: '树和二叉树', en: 'Trees & binary trees' },
     topics: [
       {
         id: 'tree-basics',
-        title: { zh: '树的存储结构', en: 'Tree storage structures' },
+        title: { zh: '树的定义、术语与存储结构', en: 'Tree terms and storage structures' },
         algorithms: [],
         concept: true,
         conceptId: 'tree-storage',
       },
       {
         id: 'binary-tree',
-        title: { zh: '二叉树的性质与存储结构', en: 'Binary tree properties and storage' },
+        title: { zh: '二叉树的定义、性质与存储结构', en: 'Binary trees: definition, properties and storage' },
         algorithms: [],
         concept: true,
         conceptId: 'tree-terms',
       },
       {
         id: 'binary-tree-traversal',
-        title: { zh: '遍历二叉树', en: 'Binary tree traversal' },
+        title: { zh: '遍历二叉树', en: 'Binary-tree traversal' },
         algorithms: [{ id: 'inorder' }],
       },
       {
@@ -316,15 +374,21 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
       },
       {
         id: 'forest-conversion',
-        title: { zh: '树、森林与二叉树的转换', en: 'Tree, forest and binary tree conversion' },
+        title: { zh: '树、森林与二叉树的转换', en: 'Tree, forest and binary-tree conversion' },
         algorithms: [],
         concept: true,
         conceptId: 'forest-conversion',
       },
       {
         id: 'huffman',
-        title: { zh: '哈夫曼树与哈夫曼编码', en: 'Huffman trees and Huffman coding' },
+        title: { zh: '赫夫曼树及其应用', en: 'Huffman trees and coding' },
         algorithms: [{ id: 'huffman' }],
+      },
+      {
+        id: 'backtracking-tree',
+        title: { zh: '回溯法与树的遍历', en: 'Backtracking and tree traversal' },
+        algorithms: [],
+        planned: true,
       },
     ],
   },
@@ -336,7 +400,7 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
     topics: [
       {
         id: 'graph-basics',
-        title: { zh: '图的基本概念', en: 'Graph fundamentals' },
+        title: { zh: '图的定义和术语', en: 'Graph definition and terminology' },
         algorithms: [],
         concept: true,
         conceptId: 'graph-basics',
@@ -354,9 +418,24 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
         algorithms: [{ id: 'bfs' }, { id: 'dfs' }],
       },
       {
+        id: 'graph-connectivity',
+        title: { zh: '图的连通性问题', en: 'Graph connectivity' },
+        algorithms: [{ id: 'components' }, { id: 'scc' }],
+      },
+      {
         id: 'mst',
         title: { zh: '最小生成树', en: 'Minimum spanning tree' },
         algorithms: [{ id: 'prim' }, { id: 'kruskal' }],
+      },
+      {
+        id: 'topological',
+        title: { zh: '有向无环图：拓扑排序', en: 'DAG: topological sort' },
+        algorithms: [{ id: 'topological' }],
+      },
+      {
+        id: 'critical-path',
+        title: { zh: '有向无环图：关键路径', en: 'DAG: critical path' },
+        algorithms: [{ id: 'critical-path' }],
       },
       {
         id: 'shortest-path',
@@ -367,38 +446,66 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
           { id: 'bellman-ford', extension: true },
         ],
       },
+    ],
+  },
+  {
+    id: 'ch8-dynamic-storage',
+    number: 8,
+    title: { zh: '动态存储管理', en: 'Dynamic storage management' },
+    shortTitle: { zh: '动态存储管理', en: 'Dynamic storage' },
+    topics: [
       {
-        id: 'topological',
-        title: { zh: '拓扑排序', en: 'Topological sort' },
-        algorithms: [{ id: 'topological' }],
+        id: 'dynamic-storage-overview',
+        title: { zh: '概述', en: 'Overview' },
+        algorithms: [],
+        planned: true,
       },
       {
-        id: 'critical-path',
-        title: { zh: '关键路径', en: 'Critical path' },
-        algorithms: [{ id: 'critical-path' }],
+        id: 'free-space-list',
+        title: { zh: '可利用空间表及分配方法', en: 'Free-space lists and allocation' },
+        algorithms: [],
+        planned: true,
       },
       {
-        id: 'graph-connectivity',
-        title: { zh: '图的连通性', en: 'Graph connectivity' },
-        algorithms: [{ id: 'components' }, { id: 'scc' }],
-        extension: true,
+        id: 'boundary-tag',
+        title: { zh: '边界标识法', en: 'Boundary-tag method' },
+        algorithms: [],
+        planned: true,
+      },
+      {
+        id: 'buddy-system',
+        title: { zh: '伙伴系统', en: 'Buddy system' },
+        algorithms: [],
+        planned: true,
+      },
+      {
+        id: 'garbage-collection',
+        title: { zh: '无用单元收集', en: 'Garbage collection' },
+        algorithms: [],
+        planned: true,
+      },
+      {
+        id: 'storage-compaction',
+        title: { zh: '存储紧缩', en: 'Storage compaction' },
+        algorithms: [],
+        planned: true,
       },
     ],
   },
   {
-    id: 'ch8-search',
-    number: 8,
+    id: 'ch9-search',
+    number: 9,
     title: { zh: '查找', en: 'Searching' },
     shortTitle: { zh: '查找', en: 'Searching' },
     topics: [
       {
         id: 'sequential-search',
-        title: { zh: '顺序表查找', en: 'Sequential-table search' },
+        title: { zh: '静态查找表：顺序表的查找', en: 'Static search: sequential search' },
         algorithms: [{ id: 'linear' }],
       },
       {
         id: 'ordered-search',
-        title: { zh: '有序表查找', en: 'Ordered-table search' },
+        title: { zh: '静态查找表：有序表的查找', en: 'Static search: ordered-table search' },
         algorithms: [{ id: 'binary' }],
       },
       {
@@ -410,7 +517,7 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
       },
       {
         id: 'indexed-search',
-        title: { zh: '分块查找（索引顺序查找）', en: 'Block search (indexed sequential search)' },
+        title: { zh: '静态查找表：索引顺序表的查找', en: 'Static search: indexed sequential search' },
         algorithms: [],
         concept: true,
         conceptId: 'indexed-search',
@@ -427,14 +534,14 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
       },
       {
         id: 'multiway-tree',
-        title: { zh: 'B 树（B-Tree）', en: 'B-tree' },
+        title: { zh: 'B 树', en: 'B-tree' },
         algorithms: [],
         concept: true,
         conceptId: 'b-tree',
       },
       {
         id: 'bplus-tree',
-        title: { zh: 'B+ 树（B+ Tree）', en: 'B+ tree' },
+        title: { zh: 'B+ 树', en: 'B+ tree' },
         algorithms: [],
         concept: true,
         conceptId: 'b-plus-tree',
@@ -446,47 +553,53 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
       },
       {
         id: 'hash-search',
-        title: { zh: '散列表查找', en: 'Hash-table search' },
+        title: { zh: '哈希表', en: 'Hash tables' },
         algorithms: [{ id: 'hash-chain' }, { id: 'hash-probe' }],
       },
     ],
   },
   {
-    id: 'ch9-sort',
-    number: 9,
-    title: { zh: '排序', en: 'Sorting' },
-    shortTitle: { zh: '排序', en: 'Sorting' },
+    id: 'ch10-sort',
+    number: 10,
+    title: { zh: '内部排序', en: 'Internal sorting' },
+    shortTitle: { zh: '内部排序', en: 'Internal sorting' },
     topics: [
       {
         id: 'sort-basics',
-        title: { zh: '排序基础与分类', en: 'Sorting basics and classification' },
+        title: { zh: '概述', en: 'Overview' },
         algorithms: [],
         concept: true,
         conceptId: 'sorting-basics',
       },
       {
-        id: 'bubble-sort',
-        title: { zh: '冒泡排序', en: 'Bubble sort' },
-        algorithms: [{ id: 'bubble' }],
-      },
-      {
-        id: 'selection-sort',
-        title: { zh: '简单选择排序', en: 'Simple selection sort' },
-        algorithms: [{ id: 'selection' }],
-      },
-      {
         id: 'insertion-sort',
-        title: { zh: '直接插入排序', en: 'Direct insertion sort' },
+        title: { zh: '插入排序：直接插入排序', en: 'Insertion sort: direct insertion' },
         algorithms: [{ id: 'insertion' }],
       },
       {
         id: 'shell-sort',
-        title: { zh: '希尔排序', en: 'Shell sort' },
+        title: { zh: '插入排序：希尔排序', en: 'Insertion sort: Shell sort' },
         algorithms: [{ id: 'shell' }],
       },
       {
+        id: 'bubble-sort',
+        title: { zh: '冒泡排序（补充）', en: 'Bubble sort (supplement)' },
+        algorithms: [{ id: 'bubble', extension: true }],
+        extension: true,
+      },
+      {
+        id: 'quick-sort',
+        title: { zh: '快速排序', en: 'Quicksort' },
+        algorithms: [{ id: 'quick' }],
+      },
+      {
+        id: 'selection-sort',
+        title: { zh: '选择排序：简单选择排序', en: 'Selection sort: simple selection' },
+        algorithms: [{ id: 'selection' }],
+      },
+      {
         id: 'heap-sort',
-        title: { zh: '堆排序', en: 'Heap sort' },
+        title: { zh: '选择排序：堆排序', en: 'Selection sort: heapsort' },
         algorithms: [{ id: 'heap' }],
       },
       {
@@ -495,9 +608,98 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
         algorithms: [{ id: 'merge' }],
       },
       {
-        id: 'quick-sort',
-        title: { zh: '快速排序', en: 'Quicksort' },
-        algorithms: [{ id: 'quick' }],
+        id: 'radix-sort',
+        title: { zh: '基数排序', en: 'Radix sort' },
+        algorithms: [],
+        planned: true,
+      },
+      {
+        id: 'sort-comparison',
+        title: { zh: '各种内部排序方法的比较讨论', en: 'Comparing internal sorting methods' },
+        algorithms: [],
+        planned: true,
+      },
+    ],
+  },
+  {
+    id: 'ch11-external-sort',
+    number: 11,
+    title: { zh: '外部排序', en: 'External sorting' },
+    shortTitle: { zh: '外部排序', en: 'External sorting' },
+    topics: [
+      {
+        id: 'external-storage',
+        title: { zh: '外存信息的存取', en: 'External-memory access' },
+        algorithms: [],
+        planned: true,
+      },
+      {
+        id: 'external-sort-method',
+        title: { zh: '外部排序的方法', en: 'External sorting methods' },
+        algorithms: [],
+        planned: true,
+      },
+      {
+        id: 'multiway-merge',
+        title: { zh: '多路平衡归并的实现', en: 'Multiway balanced merging' },
+        algorithms: [],
+        planned: true,
+      },
+      {
+        id: 'replacement-selection',
+        title: { zh: '置换-选择排序', en: 'Replacement selection' },
+        algorithms: [],
+        planned: true,
+      },
+      {
+        id: 'optimal-merge-tree',
+        title: { zh: '最佳归并树', en: 'Optimal merge tree' },
+        algorithms: [],
+        planned: true,
+      },
+    ],
+  },
+  {
+    id: 'ch12-files',
+    number: 12,
+    title: { zh: '文件', en: 'Files' },
+    shortTitle: { zh: '文件', en: 'Files' },
+    topics: [
+      {
+        id: 'file-concepts',
+        title: { zh: '有关文件的基本概念', en: 'File fundamentals' },
+        algorithms: [],
+        planned: true,
+      },
+      {
+        id: 'sequential-file',
+        title: { zh: '顺序文件', en: 'Sequential files' },
+        algorithms: [],
+        planned: true,
+      },
+      {
+        id: 'index-file',
+        title: { zh: '索引文件', en: 'Indexed files' },
+        algorithms: [],
+        planned: true,
+      },
+      {
+        id: 'isam-vsam',
+        title: { zh: 'ISAM 文件和 VSAM 文件', en: 'ISAM and VSAM files' },
+        algorithms: [],
+        planned: true,
+      },
+      {
+        id: 'direct-file',
+        title: { zh: '直接存取文件（散列文件）', en: 'Direct-access (hashed) files' },
+        algorithms: [],
+        planned: true,
+      },
+      {
+        id: 'multi-key-file',
+        title: { zh: '多关键字文件', en: 'Multi-key files' },
+        algorithms: [],
+        planned: true,
       },
     ],
   },

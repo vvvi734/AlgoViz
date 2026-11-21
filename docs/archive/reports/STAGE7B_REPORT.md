@@ -220,19 +220,19 @@ VisualStage → StackVisual / QueueVisual
 
 **宽屏 1440 Light：栈 Push 后**
 
-![Stack push 1440 light](stage7b/after/stack-push-1440-light.png)
+![Stack push 1440 light](../evidence/stage7b/after/stack-push-1440-light.png)
 
 **1024 Light：栈 Pop 后**
 
-![Stack pop 1024 light](stage7b/after/stack-pop-1024-light.png)
+![Stack pop 1024 light](../evidence/stage7b/after/stack-pop-1024-light.png)
 
 **1440 Dark：队列 Enqueue 后**
 
-![Queue enqueue 1440 dark](stage7b/after/queue-enqueue-1440-dark.png)
+![Queue enqueue 1440 dark](../evidence/stage7b/after/queue-enqueue-1440-dark.png)
 
 **390 Dark：队列 Dequeue 后**
 
-![Queue dequeue 390 dark](stage7b/after/queue-dequeue-390-dark.png)
+![Queue dequeue 390 dark](../evidence/stage7b/after/queue-dequeue-390-dark.png)
 
 完整 36 张见 `docs/stage7b/after/`。
 

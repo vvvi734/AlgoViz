@@ -1,4 +1,5 @@
 import type { ConceptPage } from './types';
+import { STORAGE_CONCEPT_PAGES } from './storageConcepts';
 
 /**
  * Authored concept lessons.
@@ -12,12 +13,12 @@ import type { ConceptPage } from './types';
  * `concept: true` topics keep their pending row until a page is authored; no
  * placeholder page is generated.
  */
-export const CONCEPT_PAGES: readonly ConceptPage[] = [
+const BASE_CONCEPT_PAGES: readonly ConceptPage[] = [
   {
     id: 'data-structure-basics',
     topicId: 'intro-concepts',
     title: ['数据结构的基本概念', 'Basic concepts of data structures'],
-    chapter: ['第 1 章 · 数据结构绪论', 'Chapter 1 · Introduction'],
+    chapter: ['第 1 章 · 绪论', 'Chapter 1 · Introduction'],
     summary: [
       '数据结构研究数据元素之间的关系，以及这些关系如何存放在计算机中、可以做哪些运算。',
       'A data structure describes relationships between data elements, how those relationships are stored, and which operations they support.',
@@ -109,7 +110,7 @@ export const CONCEPT_PAGES: readonly ConceptPage[] = [
     id: 'algorithm-definition',
     topicId: 'algorithm-definition',
     title: ['算法的定义与特性', 'Algorithm definition and properties'],
-    chapter: ['第 2 章 · 算法', 'Chapter 2 · Algorithms'],
+    chapter: ['第 1 章 · 绪论', 'Chapter 1 · Introduction'],
     summary: [
       '算法描述“怎样从一个合法输入得到答案”，它必须是一个有限、确定、可执行的步骤序列。理解五大特性，才能区分算法、程序与单纯的设想。',
       'An algorithm describes how to obtain an answer from a valid input. It must be a finite, deterministic and executable sequence of steps; the five properties distinguish an algorithm from a program or a mere idea.',
@@ -170,7 +171,7 @@ export const CONCEPT_PAGES: readonly ConceptPage[] = [
     id: 'complexity',
     topicId: 'algorithm-efficiency',
     title: ['时间复杂度与空间复杂度', 'Time and space complexity'],
-    chapter: ['第 2 章 · 算法', 'Chapter 2 · Algorithms'],
+    chapter: ['第 1 章 · 绪论', 'Chapter 1 · Introduction'],
     summary: [
       '复杂度不计算精确秒数，而是描述运行时间或额外空间随输入规模增长的趋势。',
       'Complexity does not measure exact seconds; it describes how time or extra space grows with input size.',
@@ -261,7 +262,7 @@ export const CONCEPT_PAGES: readonly ConceptPage[] = [
     id: 'storage-structures',
     topicId: 'intro-logical-physical',
     title: ['顺序存储与链式存储', 'Sequential and linked storage'],
-    chapter: ['第 1 章 · 数据结构绪论', 'Chapter 1 · Introduction'],
+    chapter: ['第 1 章 · 绪论', 'Chapter 1 · Introduction'],
     summary: [
       '同一种逻辑结构可以用不同物理方式实现。顺序存储和链式存储是最基本、也最常考的两种策略。',
       'The same logical structure can be implemented in different physical ways. Sequential and linked storage are the two basic strategies.',
@@ -355,7 +356,7 @@ export const CONCEPT_PAGES: readonly ConceptPage[] = [
     id: 'tree-terms',
     topicId: 'binary-tree',
     title: ['树与二叉树的基本术语', 'Tree and binary tree terms'],
-    chapter: ['第 6 章 · 树', 'Chapter 6 · Trees'],
+    chapter: ['第 6 章 · 树和二叉树', 'Chapter 6 · Trees and binary trees'],
     summary: [
       '树用一对多的层次关系组织数据；二叉树是每个节点最多有两个孩子的有序树，也是考试中性质最多的一类结构。',
       'A tree organizes data hierarchically; a binary tree is an ordered tree where each node has at most two children and carries most of the examinable properties.',
@@ -575,7 +576,7 @@ export const CONCEPT_PAGES: readonly ConceptPage[] = [
     id: 'adt',
     topicId: 'intro-adt',
     title: ['抽象数据类型（ADT）', 'Abstract data types (ADT)'],
-    chapter: ['第 1 章 · 数据结构绪论', 'Chapter 1 · Introduction'],
+    chapter: ['第 1 章 · 绪论', 'Chapter 1 · Introduction'],
     summary: [
       '抽象数据类型先把“数据是什么、能做什么操作”定义清楚，再决定底层怎样存储。它让你在使用一个结构时，不必依赖它的内部实现。',
       'An abstract data type specifies what data is stored and which operations it supports before deciding how it is represented. Its users need not depend on the internal implementation.',
@@ -664,7 +665,7 @@ export const CONCEPT_PAGES: readonly ConceptPage[] = [
     id: 'algorithm-cases',
     topicId: 'algorithm-cases',
     title: ['最好、平均与最坏情况', 'Best, average and worst cases'],
-    chapter: ['第 2 章 · 算法', 'Chapter 2 · Algorithms'],
+    chapter: ['第 1 章 · 绪论', 'Chapter 1 · Introduction'],
     summary: [
       '同一个算法、同样的输入规模，不同输入仍可能让执行次数相差很大。最好、平均和最坏情况分别描述这三种可能，而不是三个不同算法。',
       'The same algorithm and input size can still take very different numbers of steps on different inputs. Best, average and worst cases describe these possibilities, not three different algorithms.',
@@ -758,7 +759,7 @@ export const CONCEPT_PAGES: readonly ConceptPage[] = [
     id: 'linear-list',
     topicId: 'linear-basics',
     title: ['线性表的定义与基本操作', 'Linear lists: definition and operations'],
-    chapter: ['第 3 章 · 线性表', 'Chapter 3 · Linear lists'],
+    chapter: ['第 2 章 · 线性表', 'Chapter 2 · Linear lists'],
     summary: [
       '线性表是由有限个同类型元素组成的有序序列。它描述的是元素之间的前驱、后继关系，具体用数组还是链表存放则是另一层问题。',
       'A linear list is a finite ordered sequence of elements of the same type. It describes predecessor and successor relationships; whether an array or a linked list stores it is a separate question.',
@@ -959,7 +960,7 @@ export const CONCEPT_PAGES: readonly ConceptPage[] = [
     id: 'sorting-basics',
     topicId: 'sort-basics',
     title: ['排序基础：稳定性、原地与复杂度', 'Sorting basics: stability, in-place and complexity'],
-    chapter: ['第 9 章 · 排序', 'Chapter 9 · Sorting'],
+    chapter: ['第 10 章 · 内部排序', 'Chapter 10 · Internal sorting'],
     summary: [
       '评价排序算法不只看平均时间复杂度，还要看最坏情况、额外空间、稳定性和数据特点。稳定性在按多个关键字排序时尤其重要。',
       'Evaluating a sorting algorithm is not only about average time. Worst case, extra space, stability and input characteristics all matter; stability is especially important for multi-key sorting.',
@@ -1092,7 +1093,7 @@ export const CONCEPT_PAGES: readonly ConceptPage[] = [
     id: 'string-basics',
     topicId: 'string-basics',
     title: ['串的定义与模式匹配基础', 'Strings and the foundations of pattern matching'],
-    chapter: ['第 5 章 · 串与模式匹配', 'Chapter 5 · Strings and pattern matching'],
+    chapter: ['第 4 章 · 串', 'Chapter 4 · Strings'],
     summary: [
       '串是由字符组成的有限序列；模式匹配要在一段主串中找出模式串的全部出现位置。朴素方法在失配后反复回到起点，KMP 则用前缀表复用已经比较过的信息。',
       'A string is a finite sequence of characters; pattern matching finds every occurrence of a pattern inside a text. Naive matching restarts after each mismatch, while KMP reuses already-compared information through a prefix table.',
@@ -1241,7 +1242,7 @@ export const CONCEPT_PAGES: readonly ConceptPage[] = [
     id: 'naive-matching',
     topicId: 'naive-match',
     title: ['朴素模式匹配：逐起点比较', 'Naive pattern matching: compare every start'],
-    chapter: ['第 5 章 · 串与模式匹配', 'Chapter 5 · Strings and pattern matching'],
+    chapter: ['第 4 章 · 串', 'Chapter 4 · Strings'],
     summary: [
       '朴素匹配把模式串依次对齐到主串的每个可能起点，失配就换下一个起点。它不需要预处理，最坏却会反复比较已经确认过的字符。',
       'Naive matching aligns the pattern with every possible text start and moves to the next start after a mismatch. It needs no preprocessing, but in the worst case it rechecks characters already confirmed.',
@@ -1319,7 +1320,7 @@ export const CONCEPT_PAGES: readonly ConceptPage[] = [
     id: 'array-basics',
     topicId: 'array-basics',
     title: ['数组与多维数组', 'Arrays and multidimensional arrays'],
-    chapter: ['补充章节 · 数组与矩阵', 'Supplementary chapter · Arrays and matrices'],
+    chapter: ['第 5 章 · 数组和广义表', 'Chapter 5 · Arrays and generalized lists'],
     summary: [
       '数组把相同类型的元素排成一条序列，并用连续存储单元实现按下标随机访问。二维数组可以看成“元素是一维数组的一维数组”，行优先与列优先决定它怎样压进一维内存。',
       'An array stores elements of the same type in a sequence and uses contiguous cells to support random access by index. A 2D array is an array of 1D arrays; row-major or column-major order decides how it is flattened into one-dimensional memory.',
@@ -1422,7 +1423,7 @@ export const CONCEPT_PAGES: readonly ConceptPage[] = [
     id: 'special-matrices',
     topicId: 'special-matrices',
     title: ['特殊矩阵的压缩存储', 'Compressed storage of special matrices'],
-    chapter: ['补充章节 · 数组与矩阵', 'Supplementary chapter · Arrays and matrices'],
+    chapter: ['第 5 章 · 数组和广义表', 'Chapter 5 · Arrays and generalized lists'],
     summary: [
       '对称矩阵、三角矩阵和带状矩阵都有大量重复或恒定元素。只要结构已知，就可以只存一部分元素，再用一个下标映射把 A[i][j] 定位到一维压缩数组。',
       'Symmetric, triangular and band matrices contain many repeated or constant entries. When the structure is known, store only part of it and map A[i][j] to a 1D compressed array by an index formula.',
@@ -1541,7 +1542,7 @@ export const CONCEPT_PAGES: readonly ConceptPage[] = [
     id: 'sparse-matrix',
     topicId: 'sparse-matrix',
     title: ['稀疏矩阵与三元组表示', 'Sparse matrices and triplet representation'],
-    chapter: ['补充章节 · 数组与矩阵', 'Supplementary chapter · Arrays and matrices'],
+    chapter: ['第 5 章 · 数组和广义表', 'Chapter 5 · Arrays and generalized lists'],
     summary: [
       '稀疏矩阵的非零元素远少于总位置。普通二维数组仍为每个零分配空间；三元组表只记录 (row, col, value)，CSR 则进一步把行号压进 row_ptr。',
       'A sparse matrix has far fewer non-zeros than total positions. A dense 2D array still allocates a slot for every zero; a triplet list stores only (row, col, value), while CSR folds row numbers into row_ptr.',
@@ -1665,7 +1666,7 @@ export const CONCEPT_PAGES: readonly ConceptPage[] = [
     id: 'b-tree',
     topicId: 'multiway-tree',
     title: ['B 树（B-Tree）', 'B-tree'],
-    chapter: ['第 8 章 · 查找', 'Chapter 8 · Searching'],
+    chapter: ['第 9 章 · 查找', 'Chapter 9 · Searching'],
     summary: [
       'B 树是一棵所有叶子等深的多路平衡查找树。一个节点存放多个有序关键字，并用 k 个关键字把关键字空间划分成 k+1 个区间，分别交给 k+1 棵子树。节点容量变大后，树高显著降低，磁盘上一次节点访问可以取回更多关键字。',
       'A B-tree is a multiway balanced search tree whose leaves all lie at the same depth. One node stores several ordered keys and partitions the key space into k+1 intervals, one per child. Larger nodes reduce height, so one disk page read can bring back more keys.',
@@ -1789,7 +1790,7 @@ export const CONCEPT_PAGES: readonly ConceptPage[] = [
     id: 'b-plus-tree',
     topicId: 'bplus-tree',
     title: ['B+ 树（B+ Tree）', 'B+ tree'],
-    chapter: ['第 8 章 · 查找', 'Chapter 8 · Searching'],
+    chapter: ['第 9 章 · 查找', 'Chapter 9 · Searching'],
     summary: [
       'B+ 树把内部节点和叶子节点分工：内部节点只保存用于路由的索引关键字，记录（或指向记录的指针）全部放在叶子层；叶子按关键字顺序串成链表。查找必须走到叶子，范围查询则可以先定位左端，再沿叶子链顺序扫描。',
       'A B+ tree separates routing from storage: internal nodes hold only separator keys, while all records (or record pointers) live in the leaf level; leaves are linked in key order. A search always reaches a leaf, and a range query locates its left endpoint then scans the leaf chain.',
@@ -1898,7 +1899,7 @@ export const CONCEPT_PAGES: readonly ConceptPage[] = [
     id: 'asl-decision-tree',
     topicId: 'search-asl',
     title: ['平均查找长度（ASL）与判定树', 'Average search length (ASL) and decision trees'],
-    chapter: ['第 8 章 · 查找', 'Chapter 8 · Searching'],
+    chapter: ['第 9 章 · 查找', 'Chapter 9 · Searching'],
     summary: [
       '平均查找长度（ASL）是在给定查找概率下，一次查找所进行比较次数的加权平均值。它必须把查找成功与查找失败分开统计；在等概率假设下，二分查找的 ASL 可以直接从其判定树的内部节点和外部区间读出。时间复杂度描述增长趋势，ASL 描述具体数据与概率下的实际比较成本，两者回答的不是同一个问题。',
       'Average search length (ASL) is the probability-weighted mean number of key comparisons in one search. Successful and unsuccessful searches must be counted separately; under an equal-probability assumption, a binary-search ASL can be read directly from the internal nodes and external gaps of its decision tree. Time complexity describes growth, while ASL describes comparison cost under concrete data and probabilities.',
@@ -2047,7 +2048,7 @@ export const CONCEPT_PAGES: readonly ConceptPage[] = [
     id: 'indexed-search',
     topicId: 'indexed-search',
     title: ['分块查找（索引顺序查找）', 'Block search (indexed sequential search)'],
-    chapter: ['第 8 章 · 查找', 'Chapter 8 · Searching'],
+    chapter: ['第 9 章 · 查找', 'Chapter 9 · Searching'],
     summary: [
       '分块查找把记录分成若干块，并为每块建立索引：块间按最大关键字有序，块内元素不要求有序。查找时先查索引确定目标可能所在的块，再在块内顺序扫描。它用少量索引换掉“全表有序”的维护成本，在顺序查找与二分查找之间取得折中。',
       'Block search divides records into blocks and indexes each block: blocks are ordered by their maximum key, while keys inside a block need not be ordered. A search first consults the index to choose a block, then scans that block sequentially. It trades a small index for avoiding globally sorted data, sitting between sequential and binary search.',
@@ -2177,7 +2178,7 @@ export const CONCEPT_PAGES: readonly ConceptPage[] = [
     id: 'circular-queue',
     topicId: 'circular-queue',
     title: ['循环队列', 'Circular queue'],
-    chapter: ['第 4 章 · 栈与队列', 'Chapter 4 · Stacks and queues'],
+    chapter: ['第 3 章 · 栈和队列', 'Chapter 3 · Stacks and queues'],
     summary: [
       '循环队列把顺序队列的数组看成首尾相接的环：front 和 rear 到达数组末端后回到 0。它复用出队留下的空位，解决普通顺序队列“前面空着、后面却进不来”的假溢出。',
       'A circular queue treats the array as a ring: front and rear wrap from the last index back to 0. It reuses slots freed by dequeues and removes the false overflow of an ordinary array queue.',
@@ -2324,7 +2325,7 @@ export const CONCEPT_PAGES: readonly ConceptPage[] = [
     id: 'stack-queue-storage',
     topicId: 'stack-queue-storage',
     title: ['栈与队列的存储结构', 'Storage structures for stacks and queues'],
-    chapter: ['第 4 章 · 栈与队列', 'Chapter 4 · Stacks and queues'],
+    chapter: ['第 3 章 · 栈和队列', 'Chapter 3 · Stacks and queues'],
     summary: [
       '栈和队列的逻辑结构分别是后进先出与先进先出；物理上都可以用连续数组或链表实现。顺序栈靠 top 标记栈顶，链栈在表头插入删除；顺序队列靠 front、rear 标记有效区间，链式队列靠头尾指针维护链表。',
       'Stacks are LIFO and queues are FIFO at the logical level; either can be stored in a contiguous array or a linked list. An array stack uses top, a linked stack inserts and removes at the head; an array queue uses front and rear, while a linked queue maintains head and tail pointers.',
@@ -2501,7 +2502,7 @@ export const CONCEPT_PAGES: readonly ConceptPage[] = [
     id: 'tree-storage',
     topicId: 'tree-basics',
     title: ['树的存储结构', 'Tree storage structures'],
-    chapter: ['第 6 章 · 树', 'Chapter 6 · Trees'],
+    chapter: ['第 6 章 · 树和二叉树', 'Chapter 6 · Trees and binary trees'],
     summary: [
       '树是一种一对多的层次结构，存储时要同时记录“数据”和“关系”。双亲表示法存父下标，孩子表示法挂孩子链表，孩子兄弟表示法用 firstChild 与 nextSibling 两个指针把普通树写成二叉链表。',
       'A tree is a one-to-many hierarchy, so storage must record both data and relationships. Parent representation stores a parent index, child representation links each node’s children, and child-sibling representation uses firstChild and nextSibling to encode an ordinary tree as a binary linked structure.',
@@ -2644,7 +2645,7 @@ export const CONCEPT_PAGES: readonly ConceptPage[] = [
     id: 'forest-conversion',
     topicId: 'forest-conversion',
     title: ['树与森林的转换', 'Tree and forest conversion'],
-    chapter: ['第 6 章 · 树', 'Chapter 6 · Trees'],
+    chapter: ['第 6 章 · 树和二叉树', 'Chapter 6 · Trees and binary trees'],
     summary: [
       '树、森林与二叉树可以相互转换，靠的是孩子兄弟表示法：第一个孩子变左孩子，下一个兄弟变右孩子。森林只是把多棵树的根也看成兄弟，沿右链串起来；逆向转换时，沿根层右链把二叉树拆回多棵树。',
       'Trees, forests and binary trees convert into one another through child-sibling links: the first child becomes the left child and the next sibling becomes the right child. A forest treats the roots of its trees as siblings along a right chain; reversing the conversion splits that root-level right chain back into separate trees.',
@@ -2770,7 +2771,7 @@ export const CONCEPT_PAGES: readonly ConceptPage[] = [
     id: 'threaded-binary-tree',
     topicId: 'threaded-tree',
     title: ['线索二叉树：把空指针变成遍历线索', 'Threaded binary tree: turning null pointers into traversal threads'],
-    chapter: ['第 6 章 · 树', 'Chapter 6 · Trees'],
+    chapter: ['第 6 章 · 树和二叉树', 'Chapter 6 · Trees and binary trees'],
     summary: [
       '普通二叉链表有大量空指针。中序线索化把空的左、右指针分别改为指向中序前驱和中序后继，并用 ltag/rtag 区分“孩子”与“线索”。这样不靠递归或辅助栈也能沿中序次序走完整棵树。',
       'An ordinary binary linked list wastes many null pointers. Inorder threading replaces empty left/right pointers with inorder predecessors/successors and uses ltag/rtag to distinguish a child link from a thread. The tree can then be walked in inorder without recursion or an auxiliary stack.',
@@ -2902,6 +2903,17 @@ export const CONCEPT_PAGES: readonly ConceptPage[] = [
     },
     takeaway: ['记牢“空指针才线索化、tag 决定指针含义”。中序线索树中，rtag=1 直接取后继，rtag=0 进入右子树找最左节点；这样不用递归和栈也能完成中序遍历。', 'Remember: thread only null pointers, and let the tag decide what a pointer means. In an inorder threaded tree, rtag=1 gives the successor directly; rtag=0 means entering the right subtree and taking its leftmost node. That yields inorder without recursion or a stack.'],
   },
+];
+
+/**
+ * TEXTBOOK-01 keeps the three newly authored storage/recursion pages in a
+ * separate module. The visible catalogue remains a single ordered list, so
+ * search, topic lookup and directory registration do not need to know how the
+ * page source is split.
+ */
+export const CONCEPT_PAGES: readonly ConceptPage[] = [
+  ...BASE_CONCEPT_PAGES,
+  ...STORAGE_CONCEPT_PAGES,
 ];
 
 const BY_ID = new Map(CONCEPT_PAGES.map((page) => [page.id, page]));

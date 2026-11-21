@@ -105,7 +105,7 @@ describe('F2 hash lessons', () => {
   });
 
   it('upgrades the existing textbook hash topic without changing chapter order', () => {
-    const chapter = TEXTBOOK_CHAPTERS.find((entry) => entry.id === 'ch8-search');
+    const chapter = TEXTBOOK_CHAPTERS.find((entry) => entry.id === 'ch9-search');
     expect(chapter).toBeTruthy();
     const topic = chapter!.topics.find((entry) => entry.id === 'hash-search');
     expect(topic).toBeTruthy();

@@ -9,7 +9,7 @@ import { resolve } from 'node:path';
  * only the Dijkstra trace/render state. This test proves they coexist in one
  * page and one playback controller.
  */
-const SHOT_DIR = resolve(process.cwd(), 'docs/merge01');
+const SHOT_DIR = resolve(process.cwd(), 'test-results/evidence/merge01');
 mkdirSync(SHOT_DIR, { recursive: true });
 
 async function openApp(page: Page) {
@@ -45,7 +45,7 @@ test.describe('MERGE-01 — textbook directory + real Dijkstra', () => {
     await page.selectOption('[data-testid="theme-select"]', 'light');
 
     // Bubble is the current path; the graph chapter starts folded.
-    await expect(page.getByTestId('chapter-ch9-sort')).toHaveAttribute('aria-expanded', 'true');
+    await expect(page.getByTestId('chapter-ch10-sort')).toHaveAttribute('aria-expanded', 'true');
     await expect(page.getByTestId('chapter-ch7-graph')).toHaveAttribute('aria-expanded', 'false');
 
     await openTextbookChapter(page, 'ch7-graph');

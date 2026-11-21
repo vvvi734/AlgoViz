@@ -74,39 +74,39 @@ BFS 的图形过小不是单一 CSS 高度造成的，而是三处叠加：
 
 Before：
 
-![BFS 1440 before](ux04c/before/bfs-1440x900-frame10-full.png)
+![BFS 1440 before](../evidence/ux04c/before/bfs-1440x900-frame10-full.png)
 
 After：
 
-![BFS 1440 after](ux04c/after/bfs-1440x900-frame10-full.png)
+![BFS 1440 after](../evidence/ux04c/after/bfs-1440x900-frame10-full.png)
 
 图形卡前后：
 
-![BFS graph before](ux04c/before/bfs-1440x900-frame10-graph.png)
+![BFS graph before](../evidence/ux04c/before/bfs-1440x900-frame10-graph.png)
 
-![BFS graph after](ux04c/after/bfs-1440x900-frame10-graph.png)
+![BFS graph after](../evidence/ux04c/after/bfs-1440x900-frame10-graph.png)
 
 ### BFS 1366
 
 Before：
 
-![BFS 1366 before](ux04c/before/bfs-1366x768-frame10-full.png)
+![BFS 1366 before](../evidence/ux04c/before/bfs-1366x768-frame10-full.png)
 
 After：
 
-![BFS 1366 after](ux04c/after/bfs-1366x768-frame10-full.png)
+![BFS 1366 after](../evidence/ux04c/after/bfs-1366x768-frame10-full.png)
 
 ### Dijkstra 1440 / 1366 回归
 
-![Dijkstra 1440 after](ux04c/after/dijkstra-1440x900-frame28-full.png)
+![Dijkstra 1440 after](../evidence/ux04c/after/dijkstra-1440x900-frame28-full.png)
 
-![Dijkstra 1366 after](ux04c/after/dijkstra-1366x768-frame28-full.png)
+![Dijkstra 1366 after](../evidence/ux04c/after/dijkstra-1366x768-frame28-full.png)
 
 ### Kosaraju 1440 / 390 回归
 
-![Kosaraju 1440 after](ux04c/after/scc-1440x900-frame27-full.png)
+![Kosaraju 1440 after](../evidence/ux04c/after/scc-1440x900-frame27-full.png)
 
-![Kosaraju 390 after](ux04c/after/scc-390x844-frame27-full.png)
+![Kosaraju 390 after](../evidence/ux04c/after/scc-390x844-frame27-full.png)
 
 ## 4. 验收与门禁
 

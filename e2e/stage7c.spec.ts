@@ -2,7 +2,7 @@ import { expect, openCodePanel, selectAlgorithm as chooseAlgorithm, test, type P
 import { mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 
-const SHOT_DIR = resolve(process.cwd(), 'docs/stage7c/after');
+const SHOT_DIR = resolve(process.cwd(), 'test-results/evidence/stage7c/after');
 mkdirSync(SHOT_DIR, { recursive: true });
 
 async function openApp(page: Page) {

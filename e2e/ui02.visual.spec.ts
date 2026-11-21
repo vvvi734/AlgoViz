@@ -7,7 +7,7 @@ import { expect, selectAlgorithm as chooseAlgorithm, test, type Page } from './f
  * Pyodide Dijkstra trace. Every image is a browser screenshot, not a mock.
  */
 
-const SHOT_DIR = resolve(process.cwd(), 'docs/ui02');
+const SHOT_DIR = resolve(process.cwd(), 'test-results/evidence/ui02');
 mkdirSync(SHOT_DIR, { recursive: true });
 
 const VIEWPORTS = [

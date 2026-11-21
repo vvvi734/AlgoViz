@@ -2,7 +2,7 @@ import { expect, selectAlgorithm as chooseAlgorithm, test, type Page } from './f
 import { mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 
-const SHOT_DIR = resolve(process.cwd(), 'docs/g3');
+const SHOT_DIR = resolve(process.cwd(), 'test-results/evidence/g3');
 mkdirSync(SHOT_DIR, { recursive: true });
 
 async function openAlgorithm(page: Page, id: string, total: number) {
