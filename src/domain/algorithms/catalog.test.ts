@@ -6,7 +6,8 @@ import { runJsProgram } from '../../runtime/js/program';
 import type { TraceFrame } from '../trace/types';
 
 const expected = baseline as Record<string, TraceFrame[]>;
-const legacyIds = Object.keys(catalog).filter((id) => id !== 'kmp' && id !== 'sparse-transpose');
+const nonLegacyIds = new Set(['kmp', 'sparse-transpose', 'static-linked-list', 'polynomial-add']);
+const legacyIds = Object.keys(catalog).filter((id) => !nonLegacyIds.has(id));
 
 function visualFrames(code: string, input: unknown): TraceFrame[] {
   const result = runJsProgram({ mode: 'visual', code, input, tests: null });
@@ -14,15 +15,17 @@ function visualFrames(code: string, input: unknown): TraceFrame[] {
   return result.frames;
 }
 
-describe('algorithm catalogue (35 legacy presets plus STR-01 KMP and MATRIX-01 sparse transpose)', () => {
-  it('keeps all legacy presets and adds the two real-trace additions', () => {
-    expect(algorithmIds()).toHaveLength(37);
+describe('algorithm catalogue (35 legacy presets plus four real-trace additions)', () => {
+  it('keeps all legacy presets and adds the real-trace additions', () => {
+    expect(algorithmIds()).toHaveLength(39);
     expect(legacyIds).toHaveLength(35);
     expect(Object.keys(expected)).toHaveLength(35);
     expect(catalog.kmp.time).toBe('O(n + m)');
     expect(catalog.kmp.space).toBe('O(m)');
     expect(catalog['sparse-transpose'].time).toBe('O(t + c)');
     expect(catalog['sparse-transpose'].space).toBe('O(c) 额外');
+    expect(catalog['static-linked-list'].time).toContain('O(n)');
+    expect(catalog['polynomial-add'].time).toBe('O(m+n)');
   });
 
   it.each(legacyIds)('%s reproduces the pre-refactor frame stream byte-for-byte', (id) => {

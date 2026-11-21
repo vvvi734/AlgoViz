@@ -69,6 +69,20 @@ import {
   recursionDraftFromInput,
   type RecursionGuidedInputAlgorithm,
 } from './recursionInput';
+import {
+  POLYNOMIAL_RANDOM_SCENARIOS,
+  STATIC_LINKED_RANDOM_SCENARIOS,
+  buildPolynomialInput,
+  buildStaticLinkedInput,
+  emptyPolynomialDraft,
+  emptyStaticLinkedDraft,
+  polynomialDraftFromInput,
+  randomPolynomialDraft,
+  randomStaticLinkedDraft,
+  staticLinkedDraftFromInput,
+  type StaticLinkedOperationRow,
+  type PolynomialTermRow,
+} from './chapter2Input';
 
 export { isStructureGuidedInputAlgorithm } from './structureInput';
 export { isSparseGuidedInputAlgorithm } from './sparseInput';
@@ -80,6 +94,25 @@ export type { HuffmanInputFields } from './huffmanInput';
 export type { GraphGuidedInputAlgorithm, GraphInputFields } from './graphInput';
 export type { SparseGuidedInputAlgorithm, SparseInputFields, SparseTripleFields } from './sparseInput';
 export type { RecursionGuidedInputAlgorithm } from './recursionInput';
+export type {
+  PolynomialInputFields,
+  PolynomialTermRow,
+  StaticLinkedInputFields,
+  StaticLinkedOperationRow,
+} from './chapter2Input';
+
+export const STATIC_LINKED_GUIDED_INPUT = 'static-linked-list' as const;
+export const POLYNOMIAL_GUIDED_INPUT = 'polynomial-add' as const;
+export type StaticLinkedGuidedInputAlgorithm = typeof STATIC_LINKED_GUIDED_INPUT;
+export type PolynomialGuidedInputAlgorithm = typeof POLYNOMIAL_GUIDED_INPUT;
+
+export function isStaticLinkedGuidedInputAlgorithm(id: string): id is StaticLinkedGuidedInputAlgorithm {
+  return id === STATIC_LINKED_GUIDED_INPUT;
+}
+
+export function isPolynomialGuidedInputAlgorithm(id: string): id is PolynomialGuidedInputAlgorithm {
+  return id === POLYNOMIAL_GUIDED_INPUT;
+}
 
 export const GUIDED_INPUT_ALGORITHMS = [
   'bubble',
@@ -100,6 +133,8 @@ export const GUIDED_INPUT_ALGORITHMS = [
   ...GRAPH_GUIDED_INPUT_ALGORITHMS,
   SPARSE_GUIDED_INPUT,
   ...RECURSION_GUIDED_INPUT_ALGORITHMS,
+  STATIC_LINKED_GUIDED_INPUT,
+  POLYNOMIAL_GUIDED_INPUT,
 ] as const;
 export type GuidedInputAlgorithm = (typeof GUIDED_INPUT_ALGORITHMS)[number];
 
@@ -165,6 +200,8 @@ export const GUIDED_INPUT_LANGUAGE: Record<GuidedInputAlgorithm, CodeLanguage> =
   'sparse-transpose': 'python',
   factorial: 'python',
   fib: 'python',
+  'static-linked-list': 'python',
+  'polynomial-add': 'python',
 };
 
 export interface GuidedInputDraft {
@@ -193,6 +230,12 @@ export interface GuidedInputDraft {
   graph?: GraphInputFields;
   /** INPUT-07 sparse matrix shape and row-major non-zero triples. */
   sparse?: SparseInputFields;
+  /** TEXTBOOK-02 static linked list: capacity, initial values and operations. */
+  capacity?: string;
+  staticOperations?: StaticLinkedOperationRow[];
+  /** TEXTBOOK-02 polynomial add: two independently edited term lists. */
+  polynomialA?: PolynomialTermRow[];
+  polynomialB?: PolynomialTermRow[];
 }
 
 export interface GuidedInputError {
@@ -214,7 +257,7 @@ export type GuidedBuildResult =
 
 export interface GuidedRandomScenario {
   id: string;
-  label: [zh: string, en: string];
+  label: readonly [zh: string, en: string];
 }
 
 export const GUIDED_INPUT_LIMITS = {
@@ -247,6 +290,10 @@ const EMPTY_DRAFT: GuidedInputDraft = {
   symbols: '',
   graph: emptyGraphDraft(),
   sparse: emptySparseDraft(),
+  capacity: '8',
+  staticOperations: emptyStaticLinkedDraft().operations,
+  polynomialA: emptyPolynomialDraft().a,
+  polynomialB: emptyPolynomialDraft().b,
 };
 
 const SORTING_SCENARIOS: readonly GuidedRandomScenario[] = [
@@ -308,6 +355,8 @@ const RANDOM_SCENARIOS: Record<GuidedInputAlgorithm, readonly GuidedRandomScenar
   ...GRAPH_RANDOM_SCENARIOS,
   ...SPARSE_RANDOM_SCENARIOS,
   ...RECURSION_RANDOM_SCENARIOS,
+  [STATIC_LINKED_GUIDED_INPUT]: STATIC_LINKED_RANDOM_SCENARIOS,
+  [POLYNOMIAL_GUIDED_INPUT]: POLYNOMIAL_RANDOM_SCENARIOS,
 };
 
 export function isGuidedInputAlgorithm(id: string): id is GuidedInputAlgorithm {
@@ -495,6 +544,23 @@ function formatHashOperations(input: unknown): string {
 }
 
 export function guidedDraftFromInput(id: GuidedInputAlgorithm, input: unknown): GuidedInputDraft {
+  if (isStaticLinkedGuidedInputAlgorithm(id)) {
+    const parts = staticLinkedDraftFromInput(input);
+    return {
+      ...EMPTY_DRAFT,
+      capacity: parts.capacity,
+      values: parts.values,
+      staticOperations: parts.operations,
+    };
+  }
+  if (isPolynomialGuidedInputAlgorithm(id)) {
+    const parts = polynomialDraftFromInput(input);
+    return {
+      ...EMPTY_DRAFT,
+      polynomialA: parts.a,
+      polynomialB: parts.b,
+    };
+  }
   if (isRecursionGuidedInputAlgorithm(id)) {
     return { ...EMPTY_DRAFT, n: recursionDraftFromInput(input) };
   }
@@ -545,6 +611,16 @@ export function guidedDraftFromInput(id: GuidedInputAlgorithm, input: unknown): 
 }
 
 export function buildGuidedInput(id: GuidedInputAlgorithm, draft: GuidedInputDraft): GuidedBuildResult {
+  if (isStaticLinkedGuidedInputAlgorithm(id)) {
+    return buildStaticLinkedInput({
+      capacity: draft.capacity ?? '',
+      values: draft.values,
+      operations: draft.staticOperations ?? [],
+    });
+  }
+  if (isPolynomialGuidedInputAlgorithm(id)) {
+    return buildPolynomialInput({ a: draft.polynomialA ?? [], b: draft.polynomialB ?? [] });
+  }
   if (isRecursionGuidedInputAlgorithm(id)) {
     return buildRecursionInput(id, draft.n);
   }
@@ -855,6 +931,19 @@ export function randomGuidedDraft(
   scenario: string,
   random: () => number = Math.random,
 ): GuidedInputDraft {
+  if (isStaticLinkedGuidedInputAlgorithm(id)) {
+    const fields = randomStaticLinkedDraft(scenario, random);
+    return {
+      ...EMPTY_DRAFT,
+      capacity: fields.capacity,
+      values: fields.values,
+      staticOperations: fields.operations,
+    };
+  }
+  if (isPolynomialGuidedInputAlgorithm(id)) {
+    const fields = randomPolynomialDraft(scenario, random);
+    return { ...EMPTY_DRAFT, polynomialA: fields.a, polynomialB: fields.b };
+  }
   if (isRecursionGuidedInputAlgorithm(id)) {
     return { ...EMPTY_DRAFT, n: String(randomRecursionN(id as RecursionGuidedInputAlgorithm, scenario, random)) };
   }

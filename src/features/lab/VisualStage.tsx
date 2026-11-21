@@ -19,6 +19,8 @@ import { useI18n } from '../../i18n/I18nProvider';
 import { QueueVisual, StackVisual } from './StructureVisuals';import { LinkedListVisual } from './LinkedListVisual';
 import { AdvancedLinkedListVisual } from './AdvancedLinkedListVisual';
 import { SequentialListVisual } from './SequentialListVisual';
+import { StaticLinkedListVisual } from './StaticLinkedListVisual';
+import { PolynomialVisual } from './PolynomialVisual';
 import type { SequentialListVisualModel } from '../../domain/visualization/sequentialListModel';
 import { BinaryTreeVisual } from './BinaryTreeVisual';
 import { GraphVisual } from './GraphVisual';
@@ -405,6 +407,12 @@ export function VisualStage({
     case 'sequential-list':
       content = <SequentialListVisual model={model as SequentialListVisualModel} />;
       break;
+    case 'static-linked-list':
+      content = <StaticLinkedListVisual model={model} />;
+      break;
+    case 'polynomial':
+      content = <PolynomialVisual model={model} />;
+      break;
     case 'binary-tree':
       content = <BinaryTreeVisual model={model} />;
       break;
@@ -621,6 +629,9 @@ export function VisualStage({
     model.kind === 'linked-list' ||
     model.kind === 'doubly-linked-list' ||
     model.kind === 'circular-linked-list' ||
+    model.kind === 'sequential-list' ||
+    model.kind === 'static-linked-list' ||
+    model.kind === 'polynomial' ||
     model.kind === 'binary-tree' ||
     model.kind === 'bst' ||
     model.kind === 'avl' ||

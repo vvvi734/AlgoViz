@@ -166,6 +166,13 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
         algorithms: [{ id: 'seqlist' }],
       },
       {
+        id: 'sequential-capacity',
+        title: { zh: '顺序表的容量与动态扩容', en: 'Sequential-list capacity and dynamic growth' },
+        algorithms: [],
+        concept: true,
+        conceptId: 'sequential-list-capacity',
+      },
+      {
         id: 'linked-list',
         title: { zh: '线性链表', en: 'Linked list' },
         algorithms: [{ id: 'linked' }],
@@ -176,6 +183,11 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
         algorithms: [],
         concept: true,
         conceptId: 'static-linked-list',
+      },
+      {
+        id: 'static-linked-operations',
+        title: { zh: '静态链表的操作', en: 'Static linked-list operations' },
+        algorithms: [{ id: 'static-linked-list' }],
       },
       {
         id: 'circular-linked-list',
@@ -190,8 +202,7 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
       {
         id: 'polynomial-add',
         title: { zh: '一元多项式的表示及相加', en: 'Polynomial representation and addition' },
-        algorithms: [],
-        planned: true,
+        algorithms: [{ id: 'polynomial-add' }],
       },
     ],
   },

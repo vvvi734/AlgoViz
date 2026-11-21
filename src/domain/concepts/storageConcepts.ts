@@ -142,6 +142,113 @@ export const STORAGE_CONCEPT_PAGES: readonly ConceptPage[] = [
     ],
   },
   {
+    id: 'sequential-list-capacity',
+    topicId: 'sequential-capacity',
+    title: ['顺序表的容量与动态扩容', 'Sequential-list capacity and dynamic growth'],
+    chapter: ['第 2 章 · 线性表', 'Chapter 2 · Linear lists'],
+    summary: [
+      '顺序表用一段连续的存储单元保存元素。length 是当前有效元素个数，capacity 是这段空间最多能容纳多少个；两者不是同一个量。固定数组在 length 达到 capacity 后无法再插入，动态扩容通过申请更大的连续空间、复制旧元素、释放旧空间来继续增长。',
+      'A sequential list stores elements in one contiguous block. length counts live elements, while capacity is how many the block can hold; they are different quantities. A fixed array cannot insert once length reaches capacity. Dynamic growth allocates a larger contiguous block, copies the old elements, releases the old block, and continues.',
+    ],
+    diagram: 'array',
+    definitions: [
+      {
+        term: ['表长 length', 'Length'],
+        text: ['当前真正保存的元素个数，合法范围是 0 ≤ length ≤ capacity。访问、插入、删除的有效范围都由 length 决定。', 'The number of elements actually stored, 0 ≤ length ≤ capacity. length, not capacity, defines the valid ranges for access, insertion and deletion.'],
+      },
+      {
+        term: ['容量 capacity', 'Capacity'],
+        text: ['当前这块连续存储空间最多能容纳的元素个数。容量不等于表长；length 达到 capacity 只表示“满了”，不表示“有 capacity 个有效元素”。', 'The maximum number of elements the current contiguous block can hold. Capacity is not length; length reaching capacity means full, not that capacity elements are meaningful.'],
+      },
+      {
+        term: ['动态扩容', 'Dynamic growth'],
+        text: ['表满且仍需插入时，申请一块更大的连续空间，把原有 length 个元素复制过去，更新数据区指针与 capacity，再释放旧空间。length 在复制前后保持不变。', 'When the table is full and another insertion is required, allocate a larger contiguous block, copy the length live elements, update the data pointer and capacity, then release the old block. length is unchanged by the copy.'],
+      },
+      {
+        term: ['摊还代价', 'Amortised cost'],
+        text: ['单次扩容要复制 length 个元素，是 O(n)；若每次把容量扩大为原来的常数倍（常见是 2 倍），连续 n 次插入的总复制量是 O(n)，平均每次插入 O(1)。', 'One growth copies length elements, O(n). If capacity is multiplied by a constant factor (commonly 2), the total copying over n insertions is O(n), so the average per insertion is O(1).'],
+      },
+    ],
+    sections: [
+      {
+        title: ['先分清 length 与 capacity', 'Separate length from capacity'],
+        body: [
+          '固定容量顺序表常见的实现是 data[capacity] 加一个 length。前 length 个槽位是有效区 [0, length)，后面 capacity−length 个槽位是空闲区。按下标访问只允许 0 ≤ i < length；插入允许 0 ≤ i ≤ length，但必须先检查 length < capacity。把 capacity 当成元素个数，或遍历到 capacity，是顺序表最常见的越界错误。',
+          'A fixed-capacity sequential list is usually data[capacity] plus a length. The first length slots form the live range [0, length); the remaining capacity−length slots are free. Indexed access allows 0 ≤ i < length; insertion allows 0 ≤ i ≤ length but must first check length < capacity. Treating capacity as the element count, or traversing to capacity, is the classic out-of-range bug.',
+        ],
+        points: [
+          ['length = 0 是空表，仍是合法状态；capacity 可以大于 0。', 'length = 0 is a valid empty table even when capacity > 0.'],
+          ['length = capacity 时表满；再插入必须先扩容或拒绝。', 'When length = capacity the table is full; another insertion must grow or be rejected.'],
+          ['顺序表的随机访问 O(1) 来自连续地址计算，不来自 length 或 capacity 的数值。', 'O(1) random access comes from contiguous address arithmetic, not from the values of length or capacity.'],
+        ],
+        formula: '0 ≤ length ≤ capacity；有效下标 0 ≤ i < length',
+        formulaEn: '0 ≤ length ≤ capacity; valid index 0 ≤ i < length',
+      },
+      {
+        title: ['表满时怎样扩容', 'How growth works when the table is full'],
+        body: [
+          '扩容不是“把数组原地拉长”。连续空间后面可能已经被别的数据占用，所以通常要申请一块新的、更大的连续区域，把原 data[0..length) 逐个复制到新区域，再让 data 指向新区域、capacity 改成新容量，最后释放旧区域。复制后逻辑顺序不变，length 也不变；改变的是存放地点和可用空间。',
+          'Growth is not “stretching the array in place”. The bytes after the block may belong to other data, so the usual procedure allocates a new, larger contiguous block, copies data[0..length) into it, points data at the new block, updates capacity, and releases the old block. Logical order and length do not change; the storage location and available space do.',
+        ],
+        points: [
+          ['常见策略是把容量扩大为 2 倍；固定增量（例如每次加 10）在大量插入时会导致 O(n²) 的总复制。', 'A common policy doubles capacity; a fixed increment such as +10 can lead to O(n²) total copying over many insertions.'],
+          ['扩容后旧空间的地址失效；任何指向旧 data 的指针、引用或迭代器都必须重新获取。', 'After growth the old block is invalid; any pointer, reference or iterator into the old data must be reacquired.'],
+          ['扩容只发生在 length = capacity 且还要插入时；删除通常不缩容，避免频繁申请释放。', 'Growth happens only when length = capacity and another insertion is required; deletion usually does not shrink, avoiding repeated allocate/free churn.'],
+        ],
+        formula: 'newCapacity = max(1, 2 × capacity)；复制 length 个元素',
+        formulaEn: 'newCapacity = max(1, 2 × capacity); copy length elements',
+      },
+      {
+        title: ['复杂度与适用判断', 'Costs and when to use it'],
+        body: [
+          '扩容的单次复制是 O(length)，但按倍数增长时，容量序列是 1, 2, 4, 8, …，到 n 个元素总共复制的元素数不超过 2n，所以 n 次插入的摊还代价是 O(1)。这不代表每次插入都 O(1)：刚好触发扩容的那一次仍是 O(n)。顺序表的优势是随机访问 O(1)、缓存局部性好；代价是中间插入删除要搬移 O(n) 个元素，扩容时还要复制整块数据。若元素数量变化很大且主要在中间增删，链式存储通常更合适。',
+          'One growth copies O(length) elements, but with doubling the capacities are 1, 2, 4, 8, … and the total copied before reaching n elements is at most 2n, so n insertions have O(1) amortised cost. That does not make every insertion O(1): the one that triggers growth is still O(n). The sequential list offers O(1) random access and good locality; it pays O(n) shifting for middle insertion/deletion and a full copy when growing. If the element count varies widely and changes concentrate in the middle, linked storage is often a better fit.',
+        ],
+        points: [
+          ['扩容期间旧数组仍然存在，峰值内存可能接近旧容量与新容量之和。', 'During growth both blocks exist, so peak memory can approach old capacity plus new capacity.'],
+          ['扩容改变的是 capacity，不是 length；复制完成后有效元素个数仍相同。', 'Growth changes capacity, not length; the element count is unchanged after copying.'],
+          ['不要把“摊还 O(1)”误写成“最坏 O(1)”；单次扩容的最坏代价是 O(n)。', 'Do not turn “amortised O(1)” into “worst-case O(1)”; a single growth is O(n) worst case.'],
+        ],
+        formula: '访问 O(1)；中间插删 O(n)；扩容单次 O(n)，摊还 O(1)',
+        formulaEn: 'access O(1); middle insert/delete O(n); growth O(n) once, O(1) amortised',
+      },
+    ],
+    comparison: {
+      title: ['固定容量与动态扩容', 'Fixed capacity versus dynamic growth'],
+      columns: [
+        ['比较项', 'Aspect'],
+        ['固定容量数组', 'Fixed-capacity array'],
+        ['动态扩容数组', 'Growing array'],
+      ],
+      rows: [
+        [
+          ['容量来源', 'Capacity source'],
+          ['初始化时确定，之后不变', 'Fixed at initialisation'],
+          ['满时申请更大连续块并更新 capacity', 'Allocates a larger block when full and updates capacity'],
+        ],
+        [
+          ['表满插入', 'Insert when full'],
+          ['直接拒绝', 'Rejected'],
+          ['先扩容、复制，再插入', 'Grow, copy, then insert'],
+        ],
+        [
+          ['单次最坏代价', 'Worst case per insertion'],
+          ['O(n) 搬移，但无扩容复制', 'O(n) shifting, no growth copy'],
+          ['O(n) 搬移，触发扩容时另加 O(n) 复制', 'O(n) shifting plus O(n) copying when growth triggers'],
+        ],
+        [
+          ['地址稳定性', 'Address stability'],
+          ['data 地址固定', 'data address is stable'],
+          ['扩容后旧地址失效', 'Old addresses become invalid after growth'],
+        ],
+      ],
+    },
+    takeaway: [
+      '容量是“能放多少”，表长是“已经放了多少”；扩容复制的是 length 个有效元素，复制后 length 不变、capacity 变大。按倍数扩容才有摊还 O(1)，单次扩容仍是 O(n)。',
+      'Capacity is how much the block can hold; length is how much is stored. Growth copies the length live elements and changes capacity, not length. Doubling gives amortised O(1), while one growth is still O(n).',
+    ],
+  },
+  {
     id: 'stack-recursion',
     topicId: 'stack-recursion',
     title: ['栈与递归', 'Stacks and recursion'],

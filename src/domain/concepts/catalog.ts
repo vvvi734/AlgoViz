@@ -779,6 +779,10 @@ const BASE_CONCEPT_PAGES: readonly ConceptPage[] = [
         text: ['除首元素外，每个元素恰有一个直接前驱；除尾元素外，每个元素恰有一个直接后继。', 'Every element except the first has one immediate predecessor; every element except the last has one immediate successor.'],
       },
       {
+        term: ['抽象数据类型（ADT）', 'Abstract data type (ADT)'],
+        text: ['由数据对象、数据关系与一组基本操作组成，只规定“能做什么”，不规定用数组还是链表“怎么做”。', 'A data object, its relationships and a set of operations: it specifies what can be done, not whether an array or a linked list implements it.'],
+      },
+      {
         term: ['基本操作', 'Basic operations'],
         text: ['初始化、求长度、按位置读取、按值查找、插入、删除和遍历。', 'Initialise, get length, read by position, locate by value, insert, delete and traverse.'],
       },
@@ -796,6 +800,18 @@ const BASE_CONCEPT_PAGES: readonly ConceptPage[] = [
           ['线性表不要求元素按值有序，只要求位置有先后。', 'The values need not be sorted; only positions are ordered.'],
         ],
         formula: 'a(i−1) → ai → a(i+1)，其中 1 < i < n',
+      },
+      {
+        title: ['抽象数据类型：先定接口，再选存储', 'ADT first, storage second'],
+        body: [
+          '线性表的 ADT 把数据对象 (a1, …, an)、前驱后继关系和基本操作打包在一起。它不承诺底层用连续空间还是指针；顺序表和链表只是两种满足同一组操作的实现。接口相同，代价可以不同。',
+          'The linear-list ADT packages the data object (a1, …, an), the predecessor/successor relation and the basic operations. It does not promise contiguous storage or pointers; arrays and linked lists are two implementations of the same interface, with different costs.',
+        ],
+        points: [
+          ['同一 ADT 可以由不同存储结构实现，操作语义必须一致。', 'One ADT may have several storage implementations; operation semantics must agree.'],
+          ['复杂度属于实现，不属于 ADT 定义本身。', 'Complexity belongs to the implementation, not to the ADT definition.'],
+          ['前置条件（如 1 ≤ i ≤ n）属于操作契约，换实现也不能省略。', 'Preconditions such as 1 ≤ i ≤ n are part of the operation contract in every implementation.'],
+        ],
       },
       {
         title: ['操作要写清位置是否合法', 'Operations have position preconditions'],

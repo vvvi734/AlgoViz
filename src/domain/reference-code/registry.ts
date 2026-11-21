@@ -206,6 +206,20 @@ export const REFERENCE_CODE: Record<string, ReferenceEntry> = {
       python: { fileName: 'seqlist_builtin.py' },
     },
   },
+  'static-linked-list': {
+    files: {
+      c: { fileName: 'static_linked_list.c' },
+      cpp: { fileName: 'static_linked_list.cpp' },
+      python: { fileName: 'static_linked_list.py' },
+    },
+  },
+  'polynomial-add': {
+    files: {
+      c: { fileName: 'polynomial_add.c' },
+      cpp: { fileName: 'polynomial_add.cpp' },
+      python: { fileName: 'polynomial_add.py' },
+    },
+  },
   doubly: {
     files: {
       c: { fileName: 'doubly_linked_list.c' },

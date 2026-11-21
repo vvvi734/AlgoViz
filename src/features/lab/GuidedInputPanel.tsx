@@ -26,6 +26,8 @@ import {
   isStructureGuidedInputAlgorithm,
   isSparseGuidedInputAlgorithm,
   isTreeGuidedInputAlgorithm,
+  isStaticLinkedGuidedInputAlgorithm,
+  isPolynomialGuidedInputAlgorithm,
   randomGuidedDraft,
   type GuidedInputAlgorithm,
   type GuidedInputDraft,
@@ -34,6 +36,12 @@ import {
   type GuidedRandomScenario,
 } from '../../domain/algorithms/guidedInput';
 import { emptySparseDraft } from '../../domain/algorithms/sparseInput';
+import {
+  type StaticLinkedInputFields,
+} from '../../domain/algorithms/chapter2Input';
+import type {
+  PolynomialTermRow,
+} from '../../domain/algorithms/chapter2Input';
 import type {
   StructureGuidedInputAlgorithm,
   StructureOperationDraft,
@@ -45,6 +53,8 @@ import { HuffmanInputEditor } from './HuffmanInputEditor';
 import { GraphInputEditor } from './GraphInputEditor';
 import { SparseInputEditor } from './SparseInputEditor';
 import { RecursionInputEditor } from './RecursionInputEditor';
+import { StaticLinkedInputEditor } from './StaticLinkedInputEditor';
+import { PolynomialInputEditor } from './PolynomialInputEditor';
 import type { RecursionGuidedInputAlgorithm } from '../../domain/algorithms/recursionInput';
 import type { LabController } from './useLabController';
 
@@ -86,6 +96,8 @@ const GRAPH_HINT_KEYS: Record<GraphGuidedInputAlgorithm, string> = {
 };
 
 function hintKeyFor(id: GuidedInputAlgorithm): string {
+  if (isStaticLinkedGuidedInputAlgorithm(id)) return 'staticLinkedHint';
+  if (isPolynomialGuidedInputAlgorithm(id)) return 'polynomialHint';
   if (isRecursionGuidedInputAlgorithm(id)) {
     return id === 'factorial' ? 'guidedFactorialHint' : 'guidedFibHint';
   }
@@ -210,6 +222,25 @@ export function GuidedInputPanel({ lab }: { lab: LabController }) {
 
   const setSparse = (sparse: SparseInputFields) => {
     setDraft((current) => ({ ...current, sparse }));
+    setMode('custom');
+    setIssue(null);
+    setRandomFilled(false);
+  };
+
+  const setStaticLinked = (fields: StaticLinkedInputFields) => {
+    setDraft((current) => ({
+      ...current,
+      capacity: fields.capacity,
+      values: fields.values,
+      staticOperations: fields.operations,
+    }));
+    setMode('custom');
+    setIssue(null);
+    setRandomFilled(false);
+  };
+
+  const setPolynomial = (a: PolynomialTermRow[], b: PolynomialTermRow[]) => {
+    setDraft((current) => ({ ...current, polynomialA: a, polynomialB: b }));
     setMode('custom');
     setIssue(null);
     setRandomFilled(false);
@@ -390,6 +421,25 @@ export function GuidedInputPanel({ lab }: { lab: LabController }) {
         <SparseInputEditor
           draft={draft.sparse ?? emptySparseDraft()}
           onChange={setSparse}
+        />
+      ) : null}
+
+      {isStaticLinkedGuidedInputAlgorithm(id) ? (
+        <StaticLinkedInputEditor
+          fields={{
+            capacity: draft.capacity ?? '8',
+            values: draft.values,
+            operations: draft.staticOperations ?? [],
+          }}
+          onChange={setStaticLinked}
+        />
+      ) : null}
+
+      {isPolynomialGuidedInputAlgorithm(id) ? (
+        <PolynomialInputEditor
+          a={draft.polynomialA ?? []}
+          b={draft.polynomialB ?? []}
+          onChange={setPolynomial}
         />
       ) : null}
 

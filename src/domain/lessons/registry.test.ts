@@ -64,6 +64,8 @@ describe('Lesson registry (Stage 3B)', () => {
       'hash-probing-basics',
       'kmp-pattern-matching',
       'sparse-transpose-fast',
+      'static-linked-list-operations',
+      'polynomial-add-linked-lists',
     ]);
   });
 
@@ -95,11 +97,11 @@ describe('Lesson registry (Stage 3B)', () => {
     expect(broken.errors.join(' ')).toContain('buble-sort');
   });
 
-  it('covers all 37 algorithms with a validated course', () => {
+  it('covers all 39 algorithms with a validated course', () => {
     const covered = lessonRegistry.lessons.map((lesson) => lesson.algorithmId);
     const uncovered = catalogIds.filter((id) => !covered.includes(id));
-    expect(catalogIds.length).toBe(37);
-    expect(lessonRegistry.lessons.length).toBe(37);
+    expect(catalogIds.length).toBe(39);
+    expect(lessonRegistry.lessons.length).toBe(39);
     expect(uncovered).toEqual([]);
   });
 });

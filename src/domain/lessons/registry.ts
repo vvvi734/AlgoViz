@@ -42,6 +42,8 @@ import { hashChainingLesson } from './hashChainingLesson';
 import { hashProbingLesson } from './hashProbingLesson';
 import { kmpLesson } from './kmpLesson';
 import { sparseTransposeLesson } from './sparseTransposeLesson';
+import { staticLinkedListLesson } from './staticLinkedList';
+import { polynomialAddLesson } from './polynomialAdd';
 import { validateLessonSet } from './schema';
 import type { Lesson, LessonValidationResult } from './types';
 
@@ -112,6 +114,8 @@ const BUNDLED: unknown[] = [
   hashProbingLesson,
   kmpLesson,
   sparseTransposeLesson,
+  staticLinkedListLesson,
+  polynomialAddLesson,
 ];
 
 /** Courses shipped with the app itself (bubble, factorial, stack, queue, linked-list, binary-tree). */

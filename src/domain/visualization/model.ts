@@ -35,6 +35,11 @@ import {
   type SparseTransposeVisualModel,
 } from './sparseTransposeModel';
 import { buildSequentialListModel, type SequentialListVisualModel } from './sequentialListModel';
+import {
+  buildStaticLinkedListModel,
+  type StaticLinkedListVisualModel,
+} from './staticLinkedListModel';
+import { buildPolynomialModel, type PolynomialVisualModel } from './polynomialModel';
 
 /**
  * Pure mapping from a trace state to a renderable model. React components only
@@ -89,6 +94,8 @@ export type VisualModel =
   | LinkedListVisualModel
   | AdvancedLinkedListVisualModel
   | SequentialListVisualModel
+  | StaticLinkedListVisualModel
+  | PolynomialVisualModel
   | BinaryTreeVisualModel
   | BstVisualModel
   | AvlVisualModel
@@ -267,6 +274,16 @@ export function buildVisualModel(
   if (structure !== undefined && structure.kind === 'sequential-list') {
     if (kind !== 'array') return { kind: 'raw', text: labels.invalid };
     return buildSequentialListModel(structure);
+  }
+
+  if (structure !== undefined && structure.kind === 'static-linked-list') {
+    if (kind !== 'array') return { kind: 'raw', text: labels.invalid };
+    return buildStaticLinkedListModel(structure);
+  }
+
+  if (structure !== undefined && structure.kind === 'polynomial') {
+    if (kind !== 'linked') return { kind: 'raw', text: labels.invalid };
+    return buildPolynomialModel(structure);
   }
 
   if (structure !== undefined && structure.kind === 'search') {

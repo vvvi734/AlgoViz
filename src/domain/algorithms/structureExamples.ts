@@ -91,6 +91,12 @@ import {
   FIB_DEFAULT_INPUT,
   FIB_PYTHON,
 } from './recursionExamples';
+import {
+  POLYNOMIAL_ADD_DEFAULT_INPUT,
+  POLYNOMIAL_ADD_PYTHON,
+  STATIC_LINKED_DEFAULT_INPUT,
+  STATIC_LINKED_PYTHON,
+} from './chapter2Examples';
 
 export const STACK_DEFAULT_INPUT: unknown = [
   ['push', 3],
@@ -233,6 +239,8 @@ const STRUCTURE_PYTHON: Record<string, string> = {
   btree: btreePythonExample(),
   factorial: FACTORIAL_PYTHON,
   fib: FIB_PYTHON,
+  'static-linked-list': STATIC_LINKED_PYTHON,
+  'polynomial-add': POLYNOMIAL_ADD_PYTHON,
 };
 
 const STRUCTURE_INPUT: Record<string, unknown> = {
@@ -271,6 +279,8 @@ const STRUCTURE_INPUT: Record<string, unknown> = {
   btree: BTREE_DEFAULT_INPUT,
   factorial: FACTORIAL_DEFAULT_INPUT,
   fib: FIB_DEFAULT_INPUT,
+  'static-linked-list': STATIC_LINKED_DEFAULT_INPUT,
+  'polynomial-add': POLYNOMIAL_ADD_DEFAULT_INPUT,
 };
 
 export function structurePythonExample(algorithmId: string): string | undefined {

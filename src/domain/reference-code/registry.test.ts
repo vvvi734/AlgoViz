@@ -10,7 +10,7 @@ import {
 } from './registry';
 
 describe('three-language reference registry', () => {
-  it('registers all 37 formal courses with three principle implementations', () => {
+  it('registers all 39 formal courses with three principle implementations', () => {
     expect(REFERENCE_CODE_ALGORITHMS.sort()).toEqual([
       'avl',
       'bellman-ford',
@@ -39,6 +39,7 @@ describe('three-language reference registry', () => {
       'linear',
       'linked',
       'merge',
+      'polynomial-add',
       'prim',
       'queue',
       'quick',
@@ -48,6 +49,7 @@ describe('three-language reference registry', () => {
       'shell',
       'sparse-transpose',
       'stack',
+      'static-linked-list',
       'topological',
     ]);
     for (const algorithmId of REFERENCE_CODE_ALGORITHMS) {
@@ -91,7 +93,7 @@ describe('three-language reference registry', () => {
 
   it('has no remaining formal course outside the registry', () => {
     expect(REFERENCE_CODE_BACKLOG).toHaveLength(0);
-    expect(REFERENCE_CODE_ALGORITHMS.length + REFERENCE_CODE_BACKLOG.length).toBe(37);
+    expect(REFERENCE_CODE_ALGORITHMS.length + REFERENCE_CODE_BACKLOG.length).toBe(39);
     expect(referenceLanguages('shell')).toEqual(REFERENCE_LANGUAGES);
     expect(referenceFileMeta('shell', 'c')).not.toBeNull();
   });

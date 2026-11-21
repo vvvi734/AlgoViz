@@ -298,6 +298,51 @@ export const COURSE_GUIDES: Record<string, CourseGuide> = {
     ),
   },
 
+  'static-linked-list': {
+    intro: text(
+      '不能随意申请结点、又需要频繁插入删除时，可以把链式关系塞回一段固定数组：每个单元存 data 和一个 cur 下标，下标代替指针。逻辑顺序由 cur 决定，物理行号只表示存放位置；再用一条空闲链复用被删除的单元。难点不是“把链表画进数组”，而是同时维护有效链、空闲链和不重叠的游标约定。',
+      'When nodes cannot be allocated freely but insertion and deletion must stay cheap, the links can live inside a fixed array: each cell stores data and a cur index, and indices replace pointers. Cursors define logical order while row numbers only locate storage; a free chain recycles deleted cells. The difficulty is maintaining the live chain, the free chain and a non-overlapping cursor convention at the same time.',
+    ),
+    definition: text(
+      '静态链表用数组单元保存结点，每个结点含 data 与 cur；cur 保存后继在数组中的下标（或空游标），并用独立的 head/freeHead 分别指向逻辑链与空闲链。',
+      'A static linked list stores nodes in array cells, each with data and cur; cur holds the successor’s array index (or a null cursor), and separate head/freeHead cursors start the live and free chains.',
+    ),
+    ...operations(
+      step('初始化有效链与空闲链', 'Initialise live and free chains', '初始值按逻辑顺序放在数组前缀，剩余单元用 cur 串成空闲链。', 'Initial values occupy the array prefix in logical order; remaining cells form the free chain through cur.'),
+      step('申请空闲结点', 'Allocate a free cell', '先从 freeHead 借出首单元，再让 freeHead 后移。', 'Borrow the first cell from freeHead, then advance freeHead.'),
+      step('按游标插入', 'Insert by cursor', '先让新结点接住原后继，再改前驱的 cur 或 head。', 'Point the new cell at the old successor first, then change the predecessor’s cur or head.'),
+      step('按游标删除', 'Delete by cursor', '从逻辑链摘下目标，再把它接到空闲链头部。', 'Unlink the target from the live chain, then push it onto the free-chain head.'),
+      step('按 cur 遍历', 'Traverse by cur'),
+    ),
+    conditions: list(
+      ['插入位置满足 1 ≤ position ≤ length+1；删除位置满足 1 ≤ position ≤ length。', 'freeHead 为空表示数组已满，插入必须拒绝。', '空游标不能与“下标 0 是头结点”的约定混用；有效链与空闲链不得重叠。'],
+      ['Insertion requires 1 ≤ position ≤ length+1; deletion requires 1 ≤ position ≤ length.', 'A null freeHead means the array is full and insertion must be rejected.', 'A null cursor must not be mixed with the convention that index 0 is a header; the live and free chains must stay disjoint.'],
+    ),
+  },
+
+  'polynomial-add': {
+    intro: text(
+      '稀疏多项式只有少数非零项，若按次数逐项存数组会浪费大量零系数。把每个非零项做成“系数 + 指数”结点，并按指数降序串成链表，就可以只保存有效项。两个这样的有序链相加时，用两个指针同步扫描：指数相同就合并系数，指数不同就取较大者；系数和为零的项不进入结果。整个过程 O(m+n)，且不破坏输入链。',
+      'A sparse polynomial has few nonzero terms; storing every degree in an array wastes space on zeros. Represent each nonzero term as a coefficient/exponent node and chain them in descending exponent order. To add two such ordered chains, scan with two cursors: equal exponents merge coefficients, unequal exponents take the larger one, and a zero coefficient sum creates no result node. The merge is O(m+n) and leaves both inputs intact.',
+    ),
+    definition: text(
+      '一元多项式链表按指数严格降序保存非零项；每项含系数 coef 与指数 exp。相加即对两条有序链做双指针归并，生成一条新的有序结果链。',
+      'A univariate polynomial chain stores nonzero terms in strictly descending exponent order; each term has a coefficient and an exponent. Addition is a two-cursor merge of two ordered chains into a new ordered result chain.',
+    ),
+    ...algorithm(
+      step('初始化两个指针与结果链', 'Initialise two cursors and the result'),
+      step('比较当前指数', 'Compare current exponents', '指数大者先进入结果；相等时合并系数。', 'The larger exponent enters the result first; equal exponents merge coefficients.'),
+      step('处理相等指数', 'Handle equal exponents', '系数和为零时不创建结点；否则新建结点并同时后移两个指针。', 'A zero sum creates no node; otherwise create one node and advance both cursors.'),
+      step('取较大指数项', 'Take the larger-exponent term', '只后移被取走那一侧的指针。', 'Advance only the cursor whose term was taken.'),
+      step('追加剩余段', 'Append the remaining tail', '一侧耗尽后，另一侧已经有序，可整段接入结果。', 'Once one side is exhausted, the other side is already ordered and can be appended as a segment.'),
+      step('返回结果链', 'Return the result chain'),
+    ),
+    conditions: list(
+      ['每个多项式的指数必须非负、互不重复且严格降序；本课不自动重排非法输入。', '零系数项不应出现在稀疏链中；系数相加为零时结果也不保留该指数。', '输入链只读，结果链由新结点组成；m、n 分别为两个多项式的项数，时间 O(m+n)。'],
+      ['Exponents must be non-negative, unique and strictly descending; invalid order is rejected rather than silently sorted.', 'Zero coefficients are not stored; a zero coefficient sum also leaves no result term.', 'Inputs are read-only and the result uses new nodes; with m and n terms, time is O(m+n).'],
+    ),
+  },
+
   doubly: {
     intro: text(
       '单链表只能沿 next 前进，删除时还要先找前驱。双向链表给每个节点再加一条 prev 引用，使“已知节点”的插入和删除可以 O(1) 完成，也能从尾部反向遍历。代价是每个节点多一条指针，且每次改链都要同时维护两个方向。',

@@ -7513,7 +7513,334 @@ export const searchSnapshotSchema = z
   });
 export type SearchSnapshot = z.infer<typeof searchSnapshotSchema>;
 
-/** Stage 7B stack/queue + Stage 7C linked-list + L1A doubly/circular linked lists + L1B sequential list + Stage 7D binary-tree + T1 BST + T2 AVL + T3 max-heap + T4 Huffman + S1/S2 sorting + F1 search + F2 hash + Stage 7E/7F/G1/G2/G3/G4 graphs. */
+/**
+ * TEXTBOOK-02: static linked list. The array is the physical storage and the
+ * cursor chains are recorded explicitly. `logical` and `freeList` must agree
+ * with the cursors, so the renderer can show both the array and the logical
+ * chain without ever falling back to array order as chain order.
+ */
+export const STATIC_LINKED_OPERATIONS = ['init', 'insert', 'delete', 'traverse', 'done'] as const;
+export const STATIC_LINKED_ACTIONS = [
+  'complete', 'allocate', 'write', 'link', 'unlink', 'release', 'visit', 'reject',
+] as const;
+
+export const staticLinkedSlotSchema = z.object({
+  index: z.number().int().min(0).max(9),
+  data: jsonValueSchema,
+  cursor: z.number().int().min(0).max(9).nullable(),
+});
+export type StaticLinkedSlot = z.infer<typeof staticLinkedSlotSchema>;
+
+export const staticLinkedChangeSchema = z.object({
+  index: z.number().int().min(0).max(9),
+  beforeCursor: z.number().int().min(0).max(9).nullable(),
+  afterCursor: z.number().int().min(0).max(9).nullable(),
+});
+
+export const staticLinkedSnapshotSchema = z
+  .object({
+    kind: z.literal('static-linked-list'),
+    operation: z.enum(STATIC_LINKED_OPERATIONS),
+    action: z.enum(STATIC_LINKED_ACTIONS),
+    phase: z.enum(['intermediate', 'complete']),
+    capacity: z.number().int().min(4).max(10),
+    head: z.number().int().min(0).max(9).nullable(),
+    freeHead: z.number().int().min(0).max(9).nullable(),
+    slots: z.array(staticLinkedSlotSchema).max(10),
+    logical: z.array(z.number().int().min(0).max(9)).max(10),
+    freeList: z.array(z.number().int().min(0).max(9)).max(10),
+    focusIndex: z.number().int().min(0).max(9).optional(),
+    allocatedIndex: z.number().int().min(0).max(9).optional(),
+    predecessorIndex: z.number().int().min(0).max(9).nullable().optional(),
+    removedIndex: z.number().int().min(0).max(9).optional(),
+    removedValue: jsonValueSchema.optional(),
+    visited: z.array(z.number().int().min(0).max(9)).max(10).optional(),
+    change: staticLinkedChangeSchema.optional(),
+    error: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).optional(),
+  })
+  .superRefine((snapshot, ctx) => {
+    const issue = (path: (string | number)[], message: string) =>
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path, message });
+    if (snapshot.slots.length !== snapshot.capacity) {
+      issue(['slots'], `slots length ${snapshot.slots.length} must equal capacity ${snapshot.capacity}`);
+      return;
+    }
+    const byIndex = new Map<number, StaticLinkedSlot>();
+    snapshot.slots.forEach((slot, position) => {
+      if (slot.index !== position) issue(['slots', position, 'index'], `slot ${position} must carry index ${position}`);
+      byIndex.set(slot.index, slot);
+      if (slot.cursor !== null && slot.cursor >= snapshot.capacity) {
+        issue(['slots', position, 'cursor'], `cursor ${slot.cursor} is outside capacity`);
+      }
+    });
+
+    const walk = (start: number | null, name: string): number[] => {
+      const order: number[] = [];
+      const seen = new Set<number>();
+      let current = start;
+      while (current !== null) {
+        if (!byIndex.has(current)) {
+          issue([name], `${name} references missing slot ${current}`);
+          break;
+        }
+        if (seen.has(current)) {
+          issue([name], `${name} contains a cursor cycle at slot ${current}`);
+          break;
+        }
+        seen.add(current);
+        order.push(current);
+        current = byIndex.get(current)!.cursor;
+      }
+      return order;
+    };
+
+    const logical = walk(snapshot.head, 'head');
+    const free = walk(snapshot.freeHead, 'freeHead');
+    if (JSON.stringify(logical) !== JSON.stringify(snapshot.logical)) {
+      issue(['logical'], 'logical must equal the actual cursor chain from head');
+    }
+    if (JSON.stringify(free) !== JSON.stringify(snapshot.freeList)) {
+      issue(['freeList'], 'freeList must equal the actual cursor chain from freeHead');
+    }
+    const logicalSet = new Set(logical);
+    const freeSet = new Set(free);
+    for (const index of logical) {
+      if (freeSet.has(index)) issue(['freeList'], `slot ${index} cannot be both live and free`);
+      if (byIndex.get(index)!.data === null) issue(['slots', index, 'data'], `live slot ${index} cannot have null data`);
+    }
+    for (const index of free) {
+      if (logicalSet.has(index)) issue(['logical'], `slot ${index} cannot be both free and live`);
+      if (byIndex.get(index)!.data !== null) issue(['slots', index, 'data'], `free slot ${index} must have null data`);
+      if (byIndex.get(index)!.cursor === index) issue(['slots', index, 'cursor'], 'a free slot cannot point to itself');
+    }
+    for (const [name, value] of [
+      ['focusIndex', snapshot.focusIndex],
+      ['allocatedIndex', snapshot.allocatedIndex],
+      ['removedIndex', snapshot.removedIndex],
+      ['predecessorIndex', snapshot.predecessorIndex ?? undefined],
+    ] as const) {
+      if (value !== undefined && value !== null && value >= snapshot.capacity) {
+        issue([name], `${name} is outside capacity`);
+      }
+    }
+    if (snapshot.change) {
+      const slot = byIndex.get(snapshot.change.index);
+      if (!slot) issue(['change', 'index'], 'change.index does not refer to a slot');
+      else if (slot.cursor !== snapshot.change.afterCursor) {
+        issue(['change', 'afterCursor'], "change.afterCursor must equal the slot's recorded cursor");
+      }
+      if (snapshot.change.beforeCursor !== null && snapshot.change.beforeCursor >= snapshot.capacity) {
+        issue(['change', 'beforeCursor'], 'change.beforeCursor is outside capacity');
+      }
+      if (snapshot.phase !== 'intermediate') issue(['change'], 'change only belongs to an intermediate frame');
+    }
+    if (snapshot.action === 'reject') {
+      if (!snapshot.error) issue(['error'], 'reject must record an error reason');
+      if (snapshot.phase !== 'complete') issue(['phase'], 'reject is a complete frame');
+    } else if (snapshot.error) {
+      issue(['error'], 'error requires action = reject');
+    }
+    if (snapshot.action === 'allocate') {
+      if (snapshot.operation !== 'insert' || snapshot.allocatedIndex === undefined) {
+        issue(['allocatedIndex'], 'allocate must record the borrowed slot');
+      }
+    }
+    if (snapshot.action === 'release') {
+      if (snapshot.operation !== 'delete' || snapshot.removedIndex === undefined) {
+        issue(['removedIndex'], 'release must record the recycled slot');
+      }
+      const removedIndex = snapshot.removedIndex;
+      if (removedIndex !== undefined && !freeSet.has(removedIndex)) {
+        issue(['freeList'], 'the released slot must belong to the free chain');
+      }
+    }
+    if (snapshot.phase === 'complete') {
+      // A complete frame has no half-built node: every slot holding data is
+      // reachable from head. Intermediate allocation and linking may still
+      // retain a detached node.
+      for (const slot of snapshot.slots) {
+        if (slot.data !== null && !logicalSet.has(slot.index)) {
+          issue(['slots', slot.index, 'data'], `detached slot ${slot.index} cannot appear in a complete frame`);
+        }
+      }
+    }
+    if (snapshot.operation === 'done' && (snapshot.action !== 'complete' || snapshot.phase !== 'complete')) {
+      issue(['operation'], 'done must be a complete frame');
+    }
+    if (snapshot.operation === 'init' && (snapshot.action !== 'complete' || snapshot.phase !== 'complete')) {
+      issue(['operation'], 'init must be a complete frame');
+    }
+  });
+export type StaticLinkedSnapshot = z.infer<typeof staticLinkedSnapshotSchema>;
+
+/**
+ * TEXTBOOK-02: polynomial addition. Three recorded chains (A, B, result) are
+ * snapshotted together. Every term keeps a stable id; current and tail pointers
+ * are recorded by the program rather than inferred from list lengths.
+ */
+export const POLYNOMIAL_OPERATIONS = [
+  'init', 'compare', 'merge', 'cancel', 'take-a', 'take-b', 'append-a', 'append-b', 'done',
+] as const;
+export const POLYNOMIAL_ACTIONS = [
+  'complete', 'compare', 'merge', 'cancel', 'take-a', 'take-b', 'append-a', 'append-b',
+] as const;
+export const POLYNOMIAL_PHASES = ['intermediate', 'complete'] as const;
+
+export const polynomialNodeSchema = z.object({
+  id: z.string().min(1).max(LIMITS.MAX_NAME_CHARS),
+  coefficient: z.number().int().min(-1000).max(1000).refine((value) => value !== 0, 'coefficient must be nonzero'),
+  exponent: z.number().int().min(0).max(20),
+  nextId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+});
+export type PolynomialNode = z.infer<typeof polynomialNodeSchema>;
+
+export const polynomialComparisonSchema = z.object({
+  aExp: z.number().int().min(0).max(20).nullable(),
+  bExp: z.number().int().min(0).max(20).nullable(),
+});
+
+function checkPolynomialChain(
+  name: string,
+  headId: string | null,
+  nodes: PolynomialNode[],
+  ctx: z.RefinementCtx,
+): string[] {
+  const issue = (path: (string | number)[], message: string) =>
+    ctx.addIssue({ code: z.ZodIssueCode.custom, path, message });
+  const byId = new Map<string, PolynomialNode>();
+  nodes.forEach((node, index) => {
+    if (byId.has(node.id)) issue([name, index, 'id'], `duplicate ${name} node id "${node.id}"`);
+    byId.set(node.id, node);
+    if (node.nextId !== null && !nodes.some((candidate) => candidate.id === node.nextId)) {
+      issue([name, index, 'nextId'], `${name} node ${node.id} points outside its list`);
+    }
+  });
+  if (headId !== null && !byId.has(headId)) {
+    issue([name], `${name} head "${headId}" does not refer to a node`);
+    return [];
+  }
+  const order: string[] = [];
+  const seen = new Set<string>();
+  let current = headId;
+  while (current !== null) {
+    if (seen.has(current)) {
+      issue([name], `${name} contains a cycle at node "${current}"`);
+      break;
+    }
+    seen.add(current);
+    order.push(current);
+    current = byId.get(current)?.nextId ?? null;
+  }
+  if (order.length !== nodes.length) {
+    issue([name], `${name} must contain exactly the nodes reachable from its head`);
+  }
+  const reachable = order.map((id) => byId.get(id)!);
+  for (let index = 1; index < reachable.length; index += 1) {
+    if (reachable[index - 1]!.exponent <= reachable[index]!.exponent) {
+      issue([name], `${name} exponents must strictly decrease along the chain`);
+    }
+  }
+  return order;
+}
+
+export const polynomialSnapshotSchema = z
+  .object({
+    kind: z.literal('polynomial'),
+    operation: z.enum(POLYNOMIAL_OPERATIONS),
+    action: z.enum(POLYNOMIAL_ACTIONS),
+    phase: z.enum(POLYNOMIAL_PHASES),
+    aHeadId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+    bHeadId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+    resultHeadId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+    aNodes: z.array(polynomialNodeSchema).max(12),
+    bNodes: z.array(polynomialNodeSchema).max(12),
+    resultNodes: z.array(polynomialNodeSchema).max(12),
+    aCurrentId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+    bCurrentId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+    resultTailId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+    focusSide: z.enum(['a', 'b', 'result', 'both']).optional(),
+    comparison: polynomialComparisonSchema.optional(),
+  })
+  .superRefine((snapshot, ctx) => {
+    const issue = (path: (string | number)[], message: string) =>
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path, message });
+    const aOrder = checkPolynomialChain('aNodes', snapshot.aHeadId, snapshot.aNodes, ctx);
+    const bOrder = checkPolynomialChain('bNodes', snapshot.bHeadId, snapshot.bNodes, ctx);
+    const resultOrder = checkPolynomialChain('resultNodes', snapshot.resultHeadId, snapshot.resultNodes, ctx);
+    if (snapshot.aCurrentId !== null && !aOrder.includes(snapshot.aCurrentId)) {
+      issue(['aCurrentId'], 'aCurrentId must belong to the A chain');
+    }
+    if (snapshot.bCurrentId !== null && !bOrder.includes(snapshot.bCurrentId)) {
+      issue(['bCurrentId'], 'bCurrentId must belong to the B chain');
+    }
+    if (snapshot.resultTailId !== null) {
+      if (resultOrder.length === 0 || resultOrder[resultOrder.length - 1] !== snapshot.resultTailId) {
+        issue(['resultTailId'], 'resultTailId must be the last node of the result chain');
+      }
+    } else if (resultOrder.length > 0) {
+      issue(['resultTailId'], 'a non-empty result chain must record its tail');
+    }
+    if (snapshot.operation === 'init') {
+      if (snapshot.resultHeadId !== null || snapshot.resultNodes.length > 0) {
+        issue(['resultHeadId'], 'init must start with an empty result chain');
+      }
+      if (snapshot.action !== 'complete' || snapshot.phase !== 'complete') {
+        issue(['operation'], 'init must be a complete frame');
+      }
+    }
+    if (snapshot.operation === 'done' && (snapshot.action !== 'complete' || snapshot.phase !== 'complete')) {
+      issue(['operation'], 'done must be a complete frame');
+    }
+    if (snapshot.action === 'compare') {
+      if (!snapshot.comparison || snapshot.comparison.aExp === null || snapshot.comparison.bExp === null) {
+        issue(['comparison'], 'compare must record both current exponents');
+      }
+      if (snapshot.operation !== 'compare') issue(['operation'], 'compare action belongs to compare');
+    }
+    if (snapshot.action === 'cancel') {
+      if (!snapshot.comparison || snapshot.comparison.aExp === null || snapshot.comparison.bExp === null) {
+        issue(['comparison'], 'cancel must record both equal exponents');
+      } else if (snapshot.comparison.aExp !== snapshot.comparison.bExp) {
+        issue(['comparison'], 'cancel requires equal exponents');
+      }
+      if (snapshot.operation !== 'cancel') issue(['operation'], 'cancel action belongs to cancel');
+    }
+    if (snapshot.action === 'merge') {
+      if (!snapshot.comparison || snapshot.comparison.aExp !== snapshot.comparison.bExp) {
+        issue(['comparison'], 'merge requires equal exponents');
+      }
+      if (snapshot.operation !== 'merge') issue(['operation'], 'merge action belongs to merge');
+    }
+    if (snapshot.action === 'take-a') {
+      if (!snapshot.comparison || snapshot.comparison.aExp === null || snapshot.comparison.bExp === null ||
+          snapshot.comparison.aExp <= snapshot.comparison.bExp) {
+        issue(['comparison'], 'take-a requires A exponent greater than B exponent');
+      }
+      if (snapshot.operation !== 'take-a') issue(['operation'], 'take-a action belongs to take-a');
+    }
+    if (snapshot.action === 'take-b') {
+      if (!snapshot.comparison || snapshot.comparison.aExp === null || snapshot.comparison.bExp === null ||
+          snapshot.comparison.bExp <= snapshot.comparison.aExp) {
+        issue(['comparison'], 'take-b requires B exponent greater than A exponent');
+      }
+      if (snapshot.operation !== 'take-b') issue(['operation'], 'take-b action belongs to take-b');
+    }
+    if (snapshot.action === 'append-a') {
+      if (snapshot.bCurrentId !== null) {
+        issue(['bCurrentId'], 'append-a is only valid after the B cursor is exhausted');
+      }
+      if (snapshot.operation !== 'append-a') issue(['operation'], 'append-a action belongs to append-a');
+    }
+    if (snapshot.action === 'append-b') {
+      if (snapshot.aCurrentId !== null) {
+        issue(['aCurrentId'], 'append-b is only valid after the A cursor is exhausted');
+      }
+      if (snapshot.operation !== 'append-b') issue(['operation'], 'append-b action belongs to append-b');
+    }
+  });
+export type PolynomialSnapshot = z.infer<typeof polynomialSnapshotSchema>;
+
+/** Stage 7B stack/queue + Stage 7C linked-list + L1A doubly/circular linked lists + L1B sequential list + Stage 7D binary-tree + T1 BST + T2 AVL + T3 max-heap + T4 Huffman + S1/S2 sorting + F1 search + F2 hash + Stage 7E/7F/G1/G2/G3/G4 graphs + TEXTBOOK-02 static list/polynomial. */
 export const structureSchema = z.union([
   kmpSnapshotSchema,
   sparseTransposeSnapshotSchema,
@@ -7521,6 +7848,8 @@ export const structureSchema = z.union([
   searchSnapshotSchema,
   hashSnapshotSchema,
   sequentialListSnapshotSchema,
+  staticLinkedSnapshotSchema,
+  polynomialSnapshotSchema,
   huffmanSnapshotSchema,
   maxHeapSnapshotSchema,
   structureSnapshotSchema,
@@ -7537,6 +7866,7 @@ export const structureSchema = z.union([
   bellmanFordSnapshotSchema,
   primMstSnapshotSchema,
   kruskalMstSnapshotSchema,
+
   topologicalSortSnapshotSchema,
   criticalPathSnapshotSchema,
   connectedComponentsSnapshotSchema,

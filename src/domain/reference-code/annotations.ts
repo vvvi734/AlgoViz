@@ -917,4 +917,40 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
       zh: "只有入度变为 0 的顶点才入队；最终输出少于 V 个顶点就说明存在有向环。",
     },
   ],
+  "static_linked_list.cpp": [
+    {
+      en: "Keep the successor first, then redirect the predecessor; reversing loses the tail.",
+      zh: "先让新结点接住后继，再改前驱；顺序反过来会丢掉后面的链。",
+    },
+  ],
+  "static_linked_list.c": [
+    {
+      en: "Keep the successor first, then redirect the predecessor.",
+      zh: "先让新结点接住后继，再改前驱。",
+    },
+  ],
+  "static_linked_list.py": [
+    {
+      en: "Follow cur from head; array order is not logical order.",
+      zh: "从 head 沿 cur 前进；数组顺序不是逻辑顺序。",
+    },
+  ],
+  "polynomial_add.c": [
+    {
+      en: "Equal exponents add; a zero sum creates no result node.",
+      zh: "指数相等时系数相加；和为 0 不创建结果结点。",
+    },
+  ],
+  "polynomial_add.py": [
+    {
+      en: "Two cursors advance once each; a zero coefficient sum creates no node.",
+      zh: "两个指针各前进一次；系数和为 0 不建结点。",
+    },
+  ],
+  "polynomial_add.cpp": [
+    {
+      en: "A zero coefficient sum must create no node: 0x^k is not a sparse term.",
+      zh: "系数相加为 0 时不能建结点：0x^k 不是稀疏多项式的有效项。",
+    },
+  ],
 };

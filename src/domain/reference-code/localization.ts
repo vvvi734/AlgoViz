@@ -162,6 +162,14 @@ const REFERENCE_LEARNING_NOTES: Record<string, LocalizedText> = {
     zh: '快速转置先统计原矩阵每列的非零个数 num，再求各列在结果中的起始槽 cpot；按行扫描三元组并写入 cpot 指向的位置。O(t+c)。',
     en: 'Fast transpose counts nonzeros per original column, computes each column starting slot cpot, then scans triplets in row order and writes them at cpot positions. O(t+c).',
   },
+  'static-linked-list': {
+    zh: '结点存放在固定数组，data 保存元素、cur 保存后继下标；插入先从空闲链借单元并保住后继，删除先摘链再把单元还给空闲链。按位置定位 O(n)，改游标 O(1)。',
+    en: 'Nodes live in a fixed array: data stores the element and cur the successor index. Insertion borrows a free cell and preserves the successor; deletion unlinks first, then recycles the cell. Locating by position is O(n), while rewiring cursors is O(1).',
+  },
+  'polynomial-add': {
+    zh: '两条按指数降序的链表用双指针合并：指数相等时系数相加，和为 0 不建结点；否则取指数较大项并只移动对应指针；一方耗尽后直接追加剩余段。O(m+n)。',
+    en: 'Merge two exponent-descending chains with two cursors: equal exponents add coefficients and a zero sum creates no node; otherwise take the larger exponent and advance only that cursor; append the remaining segment once one side is exhausted. O(m+n).',
+  },
 };
 
 const LANGUAGE_NAME: Record<ReferenceLanguage, { zh: string; en: string }> = {

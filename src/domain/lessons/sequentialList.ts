@@ -15,8 +15,8 @@ export const sequentialListLesson: Lesson = {
     en: 'A sequential list keeps its live elements in a contiguous block of fixed slots; indexing is O(1), while insertion and deletion must physically shift elements.',
   },
   overview: {
-    zh: '顺序存储就是把逻辑上相邻的元素放到物理上相邻的槽位中。这里的底层 data 是一个长度恒为 capacity 的 Python 列表：索引 0 到 length-1 是有效元素，索引 length 到 capacity-1 是空闲槽位。capacity 描述“这块连续空间一共能放几个”，length 描述“现在真正放了几个”，两者不能混用。因为每个槽位到起始地址的偏移量可以由下标直接算出，访问 data[i] 不需要从头走，时间复杂度是 O(1)。但插入要在中间腾出一个槽位，只能从最后一个有效元素开始逐个向右复制；删除要填掉被删位置的空洞，只能从被删位置开始逐个向左复制。这也是顺序表与链表最核心的取舍：顺序表随机访问快、缓存友好，但中间插入删除要搬移 O(n) 个元素；链表改链只需改常数条引用，却不能按下标直接访问。本课程只讲固定容量数组，length 达到 capacity 后插入会被明确拒绝，不把动态扩容策略混进来。',
-    en: 'Sequential storage places logically adjacent elements in physically adjacent slots. Here the underlying data is a Python list whose size is always capacity: indices 0 through length-1 are live elements, and indices length through capacity-1 are free slots. Capacity says how many cells the contiguous block can hold; length says how many are actually live, and the two must not be conflated. Because a slot’s offset from the start can be computed directly from its index, reading data[i] does not walk the prefix, so indexing is O(1). Insertion, however, must open a hole in the middle by copying from the last live element rightwards; deletion must fill the hole by copying leftwards from the removed position. That is the central trade-off against a linked list: the sequential list has fast random access and cache-friendly storage, but middle insertion/deletion moves O(n) elements, while a linked list relinks a constant number of references but cannot index directly. This lesson covers a fixed-capacity array only: insertion is rejected once length reaches capacity, and dynamic resizing is deliberately out of scope.',
+    zh: '顺序存储就是把逻辑上相邻的元素放到物理上相邻的槽位中。这里的底层 data 是一个长度恒为 capacity 的 Python 列表：索引 0 到 length-1 是有效元素，索引 length 到 capacity-1 是空闲槽位。capacity 描述“这块连续空间一共能放几个”，length 描述“现在真正放了几个”，两者不能混用。因为每个槽位到起始地址的偏移量可以由下标直接算出，访问 data[i] 不需要从头走，时间复杂度是 O(1)。但插入要在中间腾出一个槽位，只能从最后一个有效元素开始逐个向右复制；删除要填掉被删位置的空洞，只能从被删位置开始逐个向左复制。这也是顺序表与链表最核心的取舍：顺序表随机访问快、缓存友好，但中间插入删除要搬移 O(n) 个元素；链表改链只需改常数条引用，却不能按下标直接访问。本课程只讲固定容量数组，length 达到 capacity 后插入会被明确拒绝；动态扩容的申请更大连续空间、复制元素、更新容量与指针等基本思想，见同节专题「顺序表的容量与动态扩容」，本动画不伪造扩容过程。',
+    en: 'Sequential storage places logically adjacent elements in physically adjacent slots. Here the underlying data is a Python list whose size is always capacity: indices 0 through length-1 are live elements, and indices length through capacity-1 are free slots. Capacity says how many cells the contiguous block can hold; length says how many are actually live, and the two must not be conflated. Because a slot’s offset from the start can be computed directly from its index, reading data[i] does not walk the prefix, so indexing is O(1). Insertion, however, must open a hole in the middle by copying from the last live element rightwards; deletion must fill the hole by copying leftwards from the removed position. That is the central trade-off against a linked list: the sequential list has fast random access and cache-friendly storage, but middle insertion/deletion moves O(n) elements, while a linked list relinks a constant number of references but cannot index directly. This lesson animates a fixed-capacity array: insertion is rejected once length reaches capacity. The basic idea of dynamic growth — allocate a larger contiguous block, copy the live elements, update capacity and the data pointer — is covered by the companion concept page “Sequential-list capacity and dynamic growth”; this animation does not fake a growth it does not execute.',
   },
   intuition: {
     zh: '把顺序表想成一排编号固定的储物柜：柜子总数是 capacity，已经放了东西的是前 length 个，后面是空柜。想知道第 i 个柜子里是什么，直接走到第 i 个柜门即可，不用从第一个开始数，所以按下标访问很快。想在中间插入一件东西，必须先把第 i 个柜到最后一个已用柜里的东西依次往右挪一格，腾出第 i 个柜，再放新东西；想删除第 i 个柜里的东西，则要把它右边的每个已用柜依次往左挪一格，最后把最右边的旧副本清空。搬移顺序不能反：插入必须从后往前，删除必须从前往后，否则会把还没搬走的元素覆盖掉。',
@@ -30,8 +30,8 @@ export const sequentialListLesson: Lesson = {
     time: '访问 O(1) · 查找/插入/删除 O(n)',
     space: 'O(capacity)',
     note: {
-      zh: '这里的复杂度针对当前固定容量数组实现：按下标访问只做一次槽位定位，是 O(1)；按值查找最坏要看完全部 length 个有效元素，是 O(n)；在索引 i 插入要搬移 length-i 个元素，删除索引 i 要搬移 length-i-1 个元素，最坏都是 O(n)。空间固定为 capacity 个槽位，不随 length 增长而重新分配；本批次不实现动态扩容，所以不讨论摊还 O(1) 的扩容策略。',
-      en: 'These costs describe the current fixed-capacity array implementation: indexed access locates one slot directly and is O(1); value search may inspect all length live elements and is O(n); insertion at index i moves length-i elements and deletion at index i moves length-i-1 elements, both O(n) in the worst case. Space is the fixed capacity slot block, not reallocated as length grows; dynamic resizing is not implemented in this batch, so amortised O(1) growth strategies are out of scope.',
+      zh: '这里的复杂度针对当前固定容量数组实现：按下标访问只做一次槽位定位，是 O(1)；按值查找最坏要看完全部 length 个有效元素，是 O(n)；在索引 i 插入要搬移 length-i 个元素，删除索引 i 要搬移 length-i-1 个元素，最坏都是 O(n)。空间固定为 capacity 个槽位，不随 length 增长而重新分配；本动画不实现动态扩容，所以不伪造摊还 O(1) 的扩容过程。扩容的复制步骤、capacity 变化与旧地址失效，见同节专题页。',
+      en: 'These costs describe the current fixed-capacity array implementation: indexed access locates one slot directly and is O(1); value search may inspect all length live elements and is O(n); insertion at index i moves length-i elements and deletion at index i moves length-i-1 elements, both O(n) in the worst case. Space is the fixed capacity slot block, not reallocated as length grows; this animation does not implement dynamic growth, so it does not fake an amortised O(1) resize. The copy step, capacity change and invalidation of old addresses are covered by the companion concept page.',
     },
   },
   steps: [
@@ -108,7 +108,7 @@ export const sequentialListLesson: Lesson = {
       '删除后忘记把 data[length] 清成 None，让空闲区残留旧值。',
       '误以为 index = length 非法：插入允许追加到第一个空闲槽位，访问和删除不允许。',
       '把顺序表的 O(1) 下标访问误说成按值查找也是 O(1)。',
-      '在固定容量实现里假设会自动扩容；本批次满表插入必须被拒绝。',
+      '在固定容量实现里假设会自动扩容；本动画满表插入必须被拒绝，扩容只作为专题知识说明。',
     ],
     en: [
       'Treating capacity as the current element count and traversing into the free tail.',
@@ -118,7 +118,7 @@ export const sequentialListLesson: Lesson = {
       'Forgetting to clear data[length] after deletion, leaving stale values in the free tail.',
       'Assuming index = length is always illegal: insertion may append into the first free slot, while access and deletion may not.',
       'Confusing O(1) indexed access with O(1) search by value.',
-      'Assuming automatic growth in a fixed-capacity implementation; this batch must reject insertion into a full table.',
+      'Assuming automatic growth in a fixed-capacity implementation; this animation must reject insertion into a full table, and growth is covered only by the concept page.',
     ],
   },
 };

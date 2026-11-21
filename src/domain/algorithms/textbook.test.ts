@@ -56,7 +56,7 @@ describe('textbook directory after TEXTBOOK-01', () => {
 
   it('preserves every existing algorithm exactly once in its new primary home', () => {
     const ids = textbookAlgorithmIds(nav);
-    expect(ids).toHaveLength(37);
+    expect(ids).toHaveLength(39);
     expect(new Set(ids).size).toBe(ids.length);
     expect(new Set(ids)).toEqual(new Set(Object.keys(catalog)));
   });
@@ -65,7 +65,7 @@ describe('textbook directory after TEXTBOOK-01', () => {
     const conceptTopics = nav
       .flatMap((chapter) => chapter.topics)
       .filter((topic) => topic.conceptId);
-    expect(CONCEPT_PAGES).toHaveLength(28);
+    expect(CONCEPT_PAGES).toHaveLength(29);
     expect(conceptTopics.map((topic) => topic.conceptId).sort()).toEqual(
       CONCEPT_PAGES.map((page) => page.id).sort(),
     );
