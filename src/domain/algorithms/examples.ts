@@ -5,6 +5,12 @@ import { KMP_ENTRY } from './kmpExamples';
 import { SPARSE_TRANSPOSE_ENTRY } from './sparseTransposeExamples';
 import { POLYNOMIAL_ADD_ENTRY, STATIC_LINKED_ENTRY } from './chapter2Examples';
 import { structureDefaultInput, structurePythonExample } from './structureExamples';
+import {
+  INFIX_TO_POSTFIX_ENTRY,
+  POSTFIX_EVAL_ENTRY,
+  expressionDefaultInput,
+  expressionPythonExample,
+} from './expressionExamples';
 import type { AlgorithmCatalog, AlgorithmGroup, CodeLanguage } from './types';
 
 export const catalog: AlgorithmCatalog = {
@@ -13,6 +19,8 @@ export const catalog: AlgorithmCatalog = {
   'sparse-transpose': SPARSE_TRANSPOSE_ENTRY,
   'static-linked-list': STATIC_LINKED_ENTRY,
   'polynomial-add': POLYNOMIAL_ADD_ENTRY,
+  'infix-to-postfix': INFIX_TO_POSTFIX_ENTRY,
+  'postfix-eval': POSTFIX_EVAL_ENTRY,
 };
 
 export const algorithmIds = (): string[] => Object.keys(catalog);
@@ -47,6 +55,8 @@ export const groups: Array<[AlgorithmGroup, string]> = ALGORITHM_GROUPS as Array
 export function exampleFor(algoId: string, language: CodeLanguage): string {
   const entry = catalog[algoId];
   if (language === 'js') return entry?.code ?? '';
+  const expressionPreset = expressionPythonExample(algoId);
+  if (expressionPreset) return expressionPreset;
   const structurePreset = structurePythonExample(algoId);
   if (structurePreset) return structurePreset;
   const preset = LANGUAGE_EXAMPLES[language]?.[algoId];
@@ -57,7 +67,7 @@ export function exampleFor(algoId: string, language: CodeLanguage): string {
 
 /** Stage 7B default operations; does not mutate the legacy catalogue or frame oracle. */
 export function defaultInputFor(algoId: string): unknown {
-  return structureDefaultInput(algoId) ?? catalog[algoId]?.input ?? null;
+  return expressionDefaultInput(algoId) ?? structureDefaultInput(algoId) ?? catalog[algoId]?.input ?? null;
 }
 
 export function engineNote(language: CodeLanguage, lang: Lang): string {

@@ -47,9 +47,40 @@ export const STRUCTURE_LIMITS = {
   MAX_OPERATIONS: 20,
   MAX_ITEMS: 10,
   SEQUENTIAL_CAPACITY: 8,
+  STACK_CAPACITY: 4,
+  /** Circular queue capacity includes the reserved empty slot. */
+  QUEUE_CAPACITY: 5,
   VALUE_ABS_MAX: 1_000_000,
   MAX_INDEX: 999,
 } as const;
+
+export type StructureStorage = 'array' | 'linked' | 'circular';
+
+/** Storage choices that each Python teaching program genuinely implements. */
+export function structureStorageOptions(id: StructureGuidedInputAlgorithm): readonly StructureStorage[] {
+  if (id === 'stack') return ['array', 'linked'];
+  if (id === 'queue') return ['circular', 'linked'];
+  return [];
+}
+
+export function defaultStructureStorage(id: StructureGuidedInputAlgorithm): StructureStorage | '' {
+  if (id === 'stack') return 'array';
+  if (id === 'queue') return 'circular';
+  return '';
+}
+
+export function structureCapacityFor(storage: StructureStorage | ''): number | null {
+  if (storage === 'array') return STRUCTURE_LIMITS.STACK_CAPACITY;
+  if (storage === 'circular') return STRUCTURE_LIMITS.QUEUE_CAPACITY;
+  return null;
+}
+
+/** Effective item limit after the reserved slot of a circular queue. */
+export function structureItemLimit(storage: StructureStorage | ''): number {
+  if (storage === 'array') return STRUCTURE_LIMITS.STACK_CAPACITY;
+  if (storage === 'circular') return STRUCTURE_LIMITS.QUEUE_CAPACITY - 1;
+  return STRUCTURE_LIMITS.MAX_ITEMS;
+}
 
 const FIELD_LABEL_KEYS: Record<StructureField, string> = {
   value: 'structureFieldValue',
@@ -217,6 +248,11 @@ function draftRowFromTuple(
 export interface StructureDraftParts {
   values: string;
   rows: StructureOperationDraft[];
+  storage: StructureStorage | '';
+}
+
+function isStorage(value: unknown): value is StructureStorage {
+  return value === 'array' || value === 'linked' || value === 'circular';
 }
 
 export function structureDraftFromInput(
@@ -242,17 +278,25 @@ export function structureDraftFromInput(
     const rows = tuples
       .map((tuple, position) => draftRowFromTuple(id, tuple, position))
       .filter((item): item is StructureOperationDraft => item !== null && specFor(id, item.op) !== undefined);
-    return { values: initial.join(', '), rows };
+    return { values: initial.join(', '), rows, storage: '' };
   }
 
-  const tuples = Array.isArray(input)
-    ? input.filter((operation): operation is unknown[] => Array.isArray(operation))
-    : [];
+  const record = isRecord(input) ? input : {};
+  const operations = Array.isArray(input)
+    ? input
+    : Array.isArray(record.operations)
+      ? record.operations
+      : [];
+  const storage = isStorage(record.storage) && structureStorageOptions(id).includes(record.storage)
+    ? record.storage
+    : defaultStructureStorage(id);
+  const tuples = operations.filter((operation): operation is unknown[] => Array.isArray(operation));
   return {
     values: '',
     rows: tuples
       .map((tuple, position) => draftRowFromTuple(id, tuple, position))
       .filter((item): item is StructureOperationDraft => item !== null && specFor(id, item.op) !== undefined),
+    storage,
   };
 }
 
@@ -333,15 +377,16 @@ function applyRow(
   state: ValidationState,
   parsed: ParsedRow,
   rowNumber: number,
+  itemLimit: number,
 ): GuidedInputError | null {
   const values = state.values;
   const empty = () => inputError('structureErrorEmpty', rowNumber);
-  const full = () => inputError('structureErrorItemLimit', rowNumber, STRUCTURE_LIMITS.MAX_ITEMS);
+  const full = () => inputError('structureErrorItemLimit', rowNumber, itemLimit);
   const missing = () => inputError('structureErrorMissing', rowNumber);
 
   if (id === 'stack') {
     if (parsed.op === 'push') {
-      if (values.length >= STRUCTURE_LIMITS.MAX_ITEMS) return full();
+      if (values.length >= itemLimit) return full();
       values.push(parsed.value!);
     } else if (values.length === 0) {
       return empty();
@@ -353,7 +398,7 @@ function applyRow(
 
   if (id === 'queue') {
     if (parsed.op === 'enqueue') {
-      if (values.length >= STRUCTURE_LIMITS.MAX_ITEMS) return full();
+      if (values.length >= itemLimit) return full();
       values.push(parsed.value!);
     } else if (values.length === 0) {
       return empty();
@@ -447,6 +492,18 @@ export function buildStructureInput(
     };
   }
 
+  const pickedStorage: StructureStorage | '' =
+    isStorage(draft.storage) && structureStorageOptions(id).includes(draft.storage)
+      ? draft.storage
+      : defaultStructureStorage(id);
+  const storage: StructureStorage | '' =
+    id === 'stack' && pickedStorage === 'circular'
+      ? 'array'
+      : id === 'queue' && pickedStorage === 'array'
+        ? 'circular'
+        : pickedStorage;
+  const itemLimit = structureItemLimit(storage);
+
   const state: ValidationState =
     id === 'seqlist'
       ? { kind: 'seqlist', values: [...initial] }
@@ -461,7 +518,7 @@ export function buildStructureInput(
     const rowNumber = position + 1;
     const parsed = parseRow(id, rowDraft, rowNumber);
     if (!parsed.ok) return parsed;
-    const error = applyRow(id, state, parsed.parsed, rowNumber);
+    const error = applyRow(id, state, parsed.parsed, rowNumber, itemLimit);
     if (error) return { ok: false, error };
     tuples.push(tupleFor(parsed.parsed));
   }
@@ -472,6 +529,17 @@ export function buildStructureInput(
       input: {
         capacity: STRUCTURE_LIMITS.SEQUENTIAL_CAPACITY,
         values: initial,
+        operations: tuples,
+      },
+    };
+  }
+  if (id === 'stack' || id === 'queue') {
+    const capacity = structureCapacityFor(storage);
+    return {
+      ok: true,
+      input: {
+        storage,
+        ...(capacity === null ? {} : { capacity }),
         operations: tuples,
       },
     };
@@ -676,7 +744,7 @@ function stackRows(
   }
   if (scenario === 'capacity') {
     return makeRows([
-      ...Array.from({ length: STRUCTURE_LIMITS.MAX_ITEMS }, (_, index): [string, { value: string }] => [
+      ...Array.from({ length: STRUCTURE_LIMITS.STACK_CAPACITY }, (_, index): [string, { value: string }] => [
         'push',
         { value: String(next() + index) },
       ]),
@@ -714,7 +782,7 @@ function queueRows(
   }
   if (scenario === 'capacity') {
     return makeRows([
-      ...Array.from({ length: STRUCTURE_LIMITS.MAX_ITEMS }, (_, index): [string, { value: string }] => [
+      ...Array.from({ length: STRUCTURE_LIMITS.QUEUE_CAPACITY - 1 }, (_, index): [string, { value: string }] => [
         'enqueue',
         { value: String(next() + index) },
       ]),
@@ -782,5 +850,6 @@ export function randomStructureDraft(
     mode: 'inorder',
     command: '',
     symbols: '',
+    storage: defaultStructureStorage(id),
   };
 }

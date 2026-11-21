@@ -1,3 +1,13 @@
+/*
+ * 中文导读：用 front/rear 维护先进先出序列；循环数组用取模复用出队留下的空位。
+ * 阅读顺序：先看 front/rear 的含义；再看入队写哪个格子、出队读哪个格子；最后看回绕与队空/队满判定。
+ * 关键不变量：本文件采用“牺牲一个单元”的约定：front 指队首，rear 指下一个待写入的空位，cap-1 个元素即满。
+ * 易错点：把 rear 当成最后一个元素；混用 count 与牺牲单元两套规则；入队/出队移动指针的顺序写反；空队列仍读 front。
+ * 复杂度：入队/出队/取队首 O(1)，空间 O(capacity)。
+ * 本文件是标准库对照版：重点看“库函数调用”与手写算法在接口、稳定性、边界上的差异。
+ * This is the standard-library comparison file: focus on interface, stability and boundary differences from the hand-written algorithm.
+ */
+
 // AlgoViz convenience implementation: queue with std::queue (C++17).
 // std::queue is an adapter; its default container is std::deque.
 //
@@ -9,19 +19,22 @@
 // Complexity: O(1) per push/pop/front; extra space O(n).
 // Convention: front/pop require a non-empty queue; the demo checks empty() first.
 
-
 #include <iostream>
 #include <queue>
 
-int main() {
+// 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
+int main()
+{
     // `std::queue::pop()` returns void; read `front()` before removing the oldest element.
     std::queue<int> queue;
-    for (int value = 1; value <= 4; ++value) {
+    for (int value = 1; value <= 4; ++value)
+    {
         queue.push(value);
     }
 
     std::cout << "front: " << queue.front() << '\n';
-    while (!queue.empty()) {
+    while (!queue.empty())
+    {
         std::cout << "dequeue: " << queue.front() << '\n';
         queue.pop();
     }

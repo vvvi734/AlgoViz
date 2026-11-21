@@ -1,3 +1,11 @@
+/*
+ * 中文导读：在带权有向无环图上求事件最早/最迟发生时间，找出决定总工期的活动链。
+ * 阅读顺序：先看拓扑排序求 ve；再看逆拓扑求 vl；最后用 e/vl 差值为 0 判定关键活动。
+ * 关键不变量：ve 只能由所有前驱完成后确定；vl 必须由所有后继的最迟时间倒推。
+ * 易错点：把边权当成点权；入度/出度更新不对称；多个终点时没有统一汇点；e/l 公式记反。
+ * 复杂度：O(V+E) 时间，O(V+E) 空间。
+ */
+
 // AlgoViz reference implementation: critical path on an AOE network (C++17).
 // A forward topological pass computes earliest start times; a reverse pass
 // computes latest times. An activity is critical when its slack is zero.
@@ -18,43 +26,51 @@
 #include <queue>
 #include <vector>
 
-struct Activity {
+struct Activity
+{
     int from;
     int to;
     int weight;
 };
 
 // Forward pass takes the maximum predecessor finish; backward pass the minimum successor start; activity slack is latest(head) - earliest(tail) - weight.
-int main() {
+// 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
+int main()
+{
     std::vector<Activity> activities{
-        {0, 1, 3}, {0, 2, 2}, {1, 2, 1}, {1, 3, 2},
-        {2, 3, 1}, {2, 4, 3}, {3, 5, 2}, {4, 5, 1},
+        {0, 1, 3}, {0, 2, 2}, {1, 2, 1}, {1, 3, 2}, {2, 3, 1}, {2, 4, 3}, {3, 5, 2}, {4, 5, 1},
     };
     std::vector<std::vector<int>> graph(6);
     std::vector<int> indegree(6, 0);
-    for (std::size_t i = 0; i < activities.size(); ++i) {
+    for (std::size_t i = 0; i < activities.size(); ++i)
+    {
         graph[activities[i].from].push_back(static_cast<int>(i));
         ++indegree[activities[i].to];
     }
 
     std::vector<int> earliest(6, 0);
     std::queue<int> ready;
-    for (int vertex = 0; vertex < 6; ++vertex) {
-        if (indegree[vertex] == 0) {
+    for (int vertex = 0; vertex < 6; ++vertex)
+    {
+        if (indegree[vertex] == 0)
+        {
             ready.push(vertex);
         }
     }
 
     std::vector<int> order;
-    while (!ready.empty()) {
+    while (!ready.empty())
+    {
         int vertex = ready.front();
         ready.pop();
         order.push_back(vertex);
-        for (int index : graph[vertex]) {
-            const Activity& activity = activities[index];
-            earliest[activity.to] = std::max(earliest[activity.to],
-                                             earliest[vertex] + activity.weight);
-            if (--indegree[activity.to] == 0) {
+        for (int index : graph[vertex])
+        {
+            const Activity &activity = activities[index];
+            earliest[activity.to] =
+                std::max(earliest[activity.to], earliest[vertex] + activity.weight);
+            if (--indegree[activity.to] == 0)
+            {
                 ready.push(activity.to);
             }
         }
@@ -62,32 +78,36 @@ int main() {
 
     std::vector<int> latest(6, earliest[5]);
     // Reverse pass: latest[v] = min(latest[next] - weight).
-    for (auto it = order.rbegin(); it != order.rend(); ++it) {
+    for (auto it = order.rbegin(); it != order.rend(); ++it)
+    {
         int vertex = *it;
-        for (int index : graph[vertex]) {
-            const Activity& activity = activities[index];
-            latest[vertex] = std::min(latest[vertex],
-                                      latest[activity.to] - activity.weight);
+        for (int index : graph[vertex])
+        {
+            const Activity &activity = activities[index];
+            latest[vertex] = std::min(latest[vertex], latest[activity.to] - activity.weight);
         }
     }
 
     std::cout << "earliest:";
-    for (int value : earliest) {
+    for (int value : earliest)
+    {
         std::cout << ' ' << value;
     }
     std::cout << "\nlatest:";
-    for (int value : latest) {
+    for (int value : latest)
+    {
         std::cout << ' ' << value;
     }
     std::cout << "\nduration: " << earliest[5] << '\n';
 
     std::cout << "critical edges:\n";
-    for (const Activity& activity : activities) {
+    for (const Activity &activity : activities)
+    {
         if (earliest[activity.from] == latest[activity.from] &&
             earliest[activity.to] == latest[activity.to] &&
-            latest[activity.to] - earliest[activity.from] == activity.weight) {
-            std::cout << activity.from << " -> " << activity.to << " : "
-                      << activity.weight << '\n';
+            latest[activity.to] - earliest[activity.from] == activity.weight)
+        {
+            std::cout << activity.from << " -> " << activity.to << " : " << activity.weight << '\n';
         }
     }
     return 0;

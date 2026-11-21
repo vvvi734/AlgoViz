@@ -1,3 +1,11 @@
+/*
+ * 中文导读：反复比较相邻元素并交换，让每一轮把当前最大元素推到未排序区末尾。
+ * 阅读顺序：先看双层循环的边界；再看 swapped 提前结束；最后确认每轮结束后哪一段已经有序。
+ * 关键不变量：第 i 轮结束后，末尾 i 个元素是全局最大的 i 个，且已排好序。
+ * 易错点：内层边界写成 n 导致越界；每一轮都从 0 到 n-1 做无效比较；忘记提前退出只影响常数，不影响正确性。
+ * 复杂度：最坏/平均 O(n²)，最好 O(n)（已有序且提前退出），原地 O(1)。
+ */
+
 // AlgoViz reference implementation: bubble sort (C++17).
 // This is the manual exchange-sort version; std::sort is intentionally not used.
 //
@@ -19,32 +27,42 @@
 
 // Invariant: after each pass, the largest remaining values are fixed at the right end.
 // After pass k the largest k values sit at the right end; an unchanged pass ends the sort early.
-void bubble_sort(std::vector<int>& values) {
-    if (values.size() < 2) {
+// 作用：对 vector 做冒泡排序；每轮缩小未排序区，某轮没有交换就提前结束。
+void bubble_sort(std::vector<int> &values)
+{
+    if (values.size() < 2)
+    {
         return;
     }
 
-    for (std::size_t end = values.size(); end > 1; --end) {
+    for (std::size_t end = values.size(); end > 1; --end)
+    {
         bool swapped = false;
-        for (std::size_t index = 1; index < end; ++index) {
-            if (values[index - 1] > values[index]) {
+        for (std::size_t index = 1; index < end; ++index)
+        {
+            if (values[index - 1] > values[index])
+            {
                 std::swap(values[index - 1], values[index]);
                 swapped = true;
             }
         }
         // A pass without swaps means the remaining prefix is already sorted.
-        if (!swapped) {
+        if (!swapped)
+        {
             break;
         }
     }
 }
 
-int main() {
+// 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
+int main()
+{
     std::vector<int> values{5, 1, 4, 2, 8, 0, 3, 7, 6, 9};
     bubble_sort(values);
 
     std::cout << "sorted:";
-    for (int value : values) {
+    for (int value : values)
+    {
         std::cout << ' ' << value;
     }
     std::cout << '\n';

@@ -1,3 +1,11 @@
+/*
+ * 中文导读：对每个未访问结点启动一次遍历，给同一连通块的所有结点相同编号。
+ * 阅读顺序：先看 visited/component 数组；再看外层为什么遍历所有结点；最后看内层 DFS/BFS 如何扩散。
+ * 关键不变量：一次内层遍历访问到的结点恰好属于同一个连通分量；外层保证不遗漏任何分量。
+ * 易错点：只从 0 号点开始；把有向图弱连通当成强连通；visited 标记时机不一致。
+ * 复杂度：O(V+E) 时间，O(V) 额外空间。
+ */
+
 // AlgoViz reference implementation: connected components (C++17).
 // Runs DFS from every unvisited vertex; one DFS tree is one component.
 //
@@ -11,15 +19,18 @@
 //   space O(V).
 // Convention: Components are numbered in ascending order of their smallest vertex.
 
-
 #include <iostream>
 #include <vector>
 
-void visit(const std::vector<std::vector<int>>& graph, int vertex, std::vector<bool>& visited) {
+// 作用：从 vertex 出发 DFS，把同一连通分量中的所有结点标记为已访问。
+void visit(const std::vector<std::vector<int>> &graph, int vertex, std::vector<bool> &visited)
+{
     visited[vertex] = true;
     std::cout << ' ' << vertex;
-    for (int next : graph[vertex]) {
-        if (!visited[next]) {
+    for (int next : graph[vertex])
+    {
+        if (!visited[next])
+        {
             visit(graph, next, visited);
         }
     }
@@ -27,11 +38,15 @@ void visit(const std::vector<std::vector<int>>& graph, int vertex, std::vector<b
 
 // Every unvisited start opens a new component; one DFS marks all vertices reachable from it.
 // The outer scan opens a new component only at an unvisited vertex; one DFS marks its whole component.
-int count_components(const std::vector<std::vector<int>>& graph) {
+// 作用：扫描所有未访问结点，每启动一次 DFS 就得到一个连通分量。
+int count_components(const std::vector<std::vector<int>> &graph)
+{
     std::vector<bool> visited(graph.size(), false);
     int components = 0;
-    for (std::size_t start = 0; start < graph.size(); ++start) {
-        if (!visited[start]) {
+    for (std::size_t start = 0; start < graph.size(); ++start)
+    {
+        if (!visited[start])
+        {
             ++components;
             std::cout << "component " << components << ":";
             visit(graph, static_cast<int>(start), visited);
@@ -41,9 +56,12 @@ int count_components(const std::vector<std::vector<int>>& graph) {
     return components;
 }
 
-int main() {
+// 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
+int main()
+{
     std::vector<std::vector<int>> graph(7);
-    auto add_edge = [&graph](int a, int b) {
+    auto add_edge = [&graph](int a, int b)
+    {
         graph[a].push_back(b);
         graph[b].push_back(a);
     };

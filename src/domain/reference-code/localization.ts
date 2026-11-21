@@ -55,12 +55,20 @@ const REFERENCE_LEARNING_NOTES: Record<string, LocalizedText> = {
     en: 'Naive recursion expands F(n) into F(n−1)+F(n−2), with F(0)=0 and F(1)=1 as base cases. Branches share no results, so calls grow exponentially while the live stack stays O(n) deep.',
   },
   stack: {
-    zh: '用数组和栈顶下标实现后进先出；push 先检查容量再写入，pop 先检查空栈再减 top。单次操作 O(1)，额外空间 O(n)。',
-    en: 'A LIFO stack uses an array and a top index; push checks capacity before writing, and pop checks emptiness before decrementing top. O(1) per operation and O(n) space.',
+    zh: '栈遵循后进先出：顺序栈用 top 指向当前栈顶，top = −1 表示空；链栈用 top 指向首结点。push/pop 单次 O(1)，额外空间 O(n)。',
+    en: 'A stack is LIFO: a sequential stack keeps top on the current top element with top = −1 meaning empty, while a linked stack points top at the first node. Push and pop cost O(1), with O(n) space.',
   },
   queue: {
-    zh: '用循环数组保存先进先出序列，front 指向队首、rear 指向下一个空位；入队和出队都要对容量取模。单次 O(1)。',
-    en: 'A circular array stores the FIFO queue: front is the head and rear is the next free slot; enqueue and dequeue wrap modulo capacity. O(1) per operation.',
+    zh: '队列遵循先进先出：循环队列用 front 指向队首、rear 指向下一个空位并牺牲一个单元区分空满；链队列用 front 指头结点、rear 指尾结点。单次 O(1)。',
+    en: 'A queue is FIFO: a circular queue keeps front on the head and rear on the next free slot, reserving one slot to distinguish full from empty; a linked queue points front at the head sentinel and rear at the tail. O(1) per operation.',
+  },
+  'infix-to-postfix': {
+    zh: '扫描中缀 token：操作数直接输出，左括号入栈，右括号弹到左括号，运算符先弹掉优先级不低于自己的栈顶再入栈，最后清空运算符栈。时间 O(n)，栈空间 O(n)。',
+    en: 'Scan infix tokens: operands emit directly, a left parenthesis is pushed, a right parenthesis pops back to it, an operator pops tops with greater-or-equal precedence before pushing, and the stack is flushed at the end. O(n) time and O(n) stack space.',
+  },
+  'postfix-eval': {
+    zh: '从左到右扫描后缀：数字入操作数栈；运算符先弹右、再弹左，按 left op right 求值后压回。结束时栈中恰有一个结果。时间 O(n)，最坏栈空间 O(n)。',
+    en: 'Scan postfix left to right: push numbers; an operator pops right then left, computes left op right and pushes the result back. Exactly one value remains at the end. O(n) time and O(n) worst-case stack space.',
   },
   seqlist: {
     zh: '用连续存储保存元素和长度 length；按下标访问 O(1)，插入或删除要移动后续元素，最坏 O(n)。',
@@ -368,22 +376,22 @@ function annotateBody(
   const firstContent = strippedLines.findIndex((line) => line.trim().length > 0);
   if (firstContent < 0) return stripped;
 
-  const bodyLines = strippedLines.slice(firstContent);
+  const bodyLines = [...strippedLines];
   const marker = language === 'python' ? '#' : '//';
 
   for (const annotation of annotations) {
     const sourceIndex = originalLines.findIndex(
       (line) => annotationText(line, language) === annotation.en,
     );
-    if (sourceIndex < firstContent) continue;
+    if (sourceIndex < 0 || sourceIndex < firstContent) continue;
     const indent = originalLines[sourceIndex].slice(
       0,
       originalLines[sourceIndex].length - originalLines[sourceIndex].trimStart().length,
     );
-    bodyLines[sourceIndex - firstContent] = `${indent}${marker} ${annotation.zh}`;
+    bodyLines[sourceIndex] = `${indent}${marker} ${annotation.zh}`;
   }
 
-  return bodyLines.join('\n');
+  return bodyLines.slice(firstContent).join('\n');
 }
 
 /**

@@ -253,10 +253,14 @@ describe('declarative algorithm flows (VISUAL-01 + VISUAL-02)', () => {
     const stackPush = section('stack', 'push');
     expect(stackPush.nodes.map((node) => node.id)).toEqual([
       'stack-push-start',
-      'stack-push-append',
+      'stack-push-storage',
+      'stack-push-full',
+      'stack-push-fail',
+      'stack-push-array',
+      'stack-push-linked',
       'stack-push-done',
     ]);
-    expect(stackPush.nodes.every((node) => !node.label.zh.includes('capacity'))).toBe(true);
+    expect(stackPush.nodes.every((node) => !/size/i.test(node.label.zh))).toBe(true);
 
     expect(ALGORITHM_FLOWS.queue.sections.map((item) => item.id)).toEqual([
       'enqueue',
@@ -264,7 +268,16 @@ describe('declarative algorithm flows (VISUAL-01 + VISUAL-02)', () => {
       'front',
     ]);
     const queueNodes = ALGORITHM_FLOWS.queue.sections.flatMap((item) => item.nodes);
-    expect(queueNodes.every((node) => !/(capacity|count|tail)/i.test(node.label.zh))).toBe(true);
+    expect(queueNodes.map((node) => node.id)).toEqual(expect.arrayContaining([
+      'queue-enqueue-storage',
+      'queue-enqueue-full',
+      'queue-enqueue-wrap',
+      'queue-enqueue-linked',
+      'queue-dequeue-circular',
+      'queue-dequeue-reset',
+    ]));
+    // The circular queue uses the reserved-slot rule, never a live count.
+    expect(queueNodes.every((node) => !/count/i.test(node.label.zh))).toBe(true);
 
     const bstInsert = section('bst', 'insert');
     expect(bstInsert.nodes.some((node) => node.id === 'bst-insert-search')).toBe(true);

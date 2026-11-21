@@ -98,108 +98,285 @@ import {
   STATIC_LINKED_PYTHON,
 } from './chapter2Examples';
 
-export const STACK_DEFAULT_INPUT: unknown = [
-  ['push', 3],
-  ['push', 5],
-  ['push', 8],
-  ['peek'],
-  ['pop'],
-];
+export const STACK_DEFAULT_INPUT: unknown = {
+  storage: 'array',
+  capacity: 4,
+  operations: [
+    ['push', 3],
+    ['push', 5],
+    ['push', 8],
+    ['push', 11],
+    ['peek'],
+    ['pop'],
+  ],
+};
 
-export const QUEUE_DEFAULT_INPUT: unknown = [
-  ['enqueue', 3],
-  ['enqueue', 5],
-  ['enqueue', 8],
-  ['front'],
-  ['dequeue'],
-];
+export const QUEUE_DEFAULT_INPUT: unknown = {
+  storage: 'circular',
+  capacity: 5,
+  operations: [
+    ['enqueue', 3],
+    ['enqueue', 5],
+    ['enqueue', 8],
+    ['enqueue', 11],
+    ['front'],
+    ['dequeue'],
+    ['enqueue', 15],
+    ['dequeue'],
+  ],
+};
 
-export const STACK_PYTHON = `# Stack: closed bottom, open top. Every frame below comes from real execution.
-operations = input
-stack = []          # values, bottom -> top
-ids = []            # one stable id per element, used only by the animation
+export const STACK_PYTHON = `# Stack: one logical LIFO container, two real storage layouts.
+request = input
+if isinstance(request, dict):
+    operations = request.get("operations", [])
+    storage = request.get("storage", "array")
+    capacity = int(request.get("capacity", 4))
+else:
+    operations = request
+    storage = "array"
+    capacity = 4
+
+array_values = []
+array_ids = []
+top = -1
+nodes = {}
+top_id = None
 sequence = 0
 
+def linked_snapshot():
+    out = []
+    current = top_id
+    seen = set()
+    while current is not None and current in nodes and current not in seen:
+        seen.add(current)
+        node = nodes[current]
+        out.append({"id": node["id"], "value": node["value"], "nextId": node["nextId"]})
+        current = node["nextId"]
+    return out
+
+def current_items():
+    if storage == "array":
+        return [{"id": array_ids[i], "value": array_values[i], "slot": i} for i in range(len(array_values))]
+    chain = linked_snapshot()
+    return [{"id": node["id"], "value": node["value"]} for node in reversed(chain)]
+
 def emit(operation, message, line, lesson, target=None, removed=None):
-    items = [{"id": ids[i], "value": stack[i]} for i in range(len(stack))]
-    payload = {"kind": "stack", "operation": operation, "items": items}
+    items = current_items()
+    payload = {"kind": "stack", "operation": operation, "items": items, "storage": storage}
+    if storage == "array":
+        payload["capacity"] = capacity
+        payload["top"] = top
+    else:
+        payload["nodes"] = linked_snapshot()
+        payload["topId"] = top_id
     if target is not None:
         payload["targetId"] = target
     if removed is not None:
         payload["removed"] = removed
-    variables = {"stack": stack[:], "top": stack[-1] if stack else None}
+    if storage == "array":
+        values = array_values[:]
+        variables = {"storage": storage, "stack": values, "top": top, "size": len(values)}
+    else:
+        values = [item["value"] for item in items]
+        variables = {"storage": storage, "stack": values, "topId": top_id, "size": len(values)}
     if removed is not None:
         variables["removed"] = removed["value"]
     trace(
-        {"type": "stack", "values": stack[:], "focus": [len(stack) - 1] if stack else []},
+        {"type": "stack", "values": values, "focus": [len(values) - 1] if values else []},
         message,
         line=line, variables=variables, lesson_step=lesson, structure=payload,
     )
 
-emit("init", "空栈：还没有元素 / Empty stack: no elements", 23, "empty")
+emit("init", "空栈：top = -1 / empty stack", 43, "empty")
 
 for entry in operations:
     op = entry[0]
     value = entry[1] if len(entry) > 1 else None
     if op == "push":
-        sequence += 1
-        element_id = f"s{sequence}"
-        stack.append(value)
-        ids.append(element_id)
-        emit("push", f"Push {value}：从顶部进入 / enters at the top", 31, "push", target=element_id)
-    elif op == "peek" and stack:
-        emit("peek", f"Peek 查看栈顶 {stack[-1]}，不移除 / reads TOP without removing", 35, "peek", target=ids[-1])
-    elif op == "pop" and stack:
-        removed_id = ids.pop()
-        removed_value = stack.pop()
-        emit("pop", f"Pop {removed_value}：从顶部离开 / leaves from the top", 38, "pop", target=removed_id, removed={"id": removed_id, "value": removed_value})
+        if storage == "array":
+            if top >= capacity - 1:
+                emit("push", "栈满：top 已到 capacity - 1，push 被拒绝 / stack full, push rejected",
+                     48, "full")
+                continue
+            sequence += 1
+            element_id = "s" + str(sequence)
+            array_values.append(value)
+            array_ids.append(element_id)
+            top += 1
+            lesson = "full" if top == capacity - 1 else "push"
+            emit("push", "push " + str(value) + "：先 ++top，再写入数组 / increment top then write",
+                 55, lesson, target=element_id)
+        else:
+            sequence += 1
+            element_id = "n" + str(sequence)
+            nodes[element_id] = {"id": element_id, "value": value, "nextId": top_id}
+            top_id = element_id
+            emit("push", "push " + str(value) + "：新结点 next 指向旧栈顶，top 移到新结点 / relink at the head",
+                 61, "push", target=element_id)
+    elif op == "peek" and current_items():
+        top_item = current_items()[-1]
+        emit("peek", "peek 读取栈顶 " + str(top_item["value"]) + "，不移除 / read TOP",
+             65, "peek", target=top_item["id"])
+    elif op == "pop" and current_items():
+        top_item = current_items()[-1]
+        if storage == "array":
+            removed = {"id": array_ids.pop(), "value": array_values.pop(), "slot": top}
+            top -= 1
+            emit("pop", "pop " + str(removed["value"]) + "：先读取，再 --top / read then decrement top",
+                 72, "pop", target=removed["id"], removed=removed)
+        else:
+            removed_id = top_id
+            removed_value = nodes[removed_id]["value"]
+            top_id = nodes[removed_id]["nextId"]
+            del nodes[removed_id]
+            emit("pop", "pop " + str(removed_value) + "：top 移到下一个结点 / move top to next",
+                 78, "pop", target=removed_id, removed={"id": removed_id, "value": removed_value})
 
-emit("done", "演示结束 / Done", 43, "done")
+emit("done", "演示结束 / done", 82, "done")
 `;
 
-export const QUEUE_PYTHON = `# Queue: enqueue at REAR, dequeue from FRONT. Real Python + real frames.
-from collections import deque
+export const QUEUE_PYTHON = `# Queue: circular array and linked queue share one logical FIFO stream.
+request = input
+if isinstance(request, dict):
+    operations = request.get("operations", [])
+    storage = request.get("storage", "circular")
+    capacity = int(request.get("capacity", 5))
+else:
+    operations = request
+    storage = "circular"
+    capacity = 5
 
-operations = input
-queue = deque()     # front -> rear
-ids = []            # stable ids, used only by the animation
+slots = [None] * capacity
+slot_ids = [None] * capacity
+front = 0
+rear = 0
+count = 0
+nodes = {}
+front_id = "head"
+rear_id = "head"
+nodes["head"] = {"id": "head", "value": None, "nextId": None}
 sequence = 0
 
+def linked_snapshot():
+    out = []
+    current = front_id
+    seen = set()
+    while current is not None and current in nodes and current not in seen:
+        seen.add(current)
+        node = nodes[current]
+        out.append({"id": node["id"], "value": node["value"], "nextId": node["nextId"]})
+        current = node["nextId"]
+    return out
+
+def data_chain():
+    out = []
+    current = nodes["head"]["nextId"] if "head" in nodes else None
+    seen = set()
+    while current is not None and current in nodes and current not in seen:
+        seen.add(current)
+        out.append(nodes[current])
+        current = nodes[current]["nextId"]
+    return out
+
+def current_items():
+    if storage == "circular":
+        items = []
+        for offset in range(count):
+            index = (front + offset) % capacity
+            items.append({"id": slot_ids[index], "value": slots[index], "slot": index})
+        return items
+    return [{"id": node["id"], "value": node["value"]} for node in data_chain()]
+
 def emit(operation, message, line, lesson, target=None, removed=None):
-    items = [{"id": ids[i], "value": queue[i]} for i in range(len(queue))]
-    payload = {"kind": "queue", "operation": operation, "items": items}
+    items = current_items()
+    payload = {"kind": "queue", "operation": operation, "items": items, "storage": storage}
+    if storage == "circular":
+        payload["capacity"] = capacity
+        payload["front"] = front
+        payload["rear"] = rear
+        payload["count"] = count
+    else:
+        payload["nodes"] = linked_snapshot()
+        payload["frontId"] = front_id
+        payload["rearId"] = rear_id
     if target is not None:
         payload["targetId"] = target
     if removed is not None:
         payload["removed"] = removed
-    variables = {"queue": list(queue), "front": queue[0] if queue else None}
+    values = [item["value"] for item in items]
+    if storage == "circular":
+        variables = {"storage": storage, "queue": values, "front": front, "rear": rear, "count": count}
+    else:
+        variables = {"storage": storage, "queue": values, "frontId": front_id, "rearId": rear_id}
     if removed is not None:
         variables["removed"] = removed["value"]
     trace(
-        {"type": "queue", "values": list(queue), "focus": [0] if queue else []},
+        {"type": "queue", "values": values, "focus": [0] if values else []},
         message,
         line=line, variables=variables, lesson_step=lesson, structure=payload,
     )
 
-emit("init", "空队列：还没有元素 / Empty queue: no elements", 25, "empty")
+emit("init", "空队列：front == rear / empty queue", 54, "empty")
 
 for entry in operations:
     op = entry[0]
     value = entry[1] if len(entry) > 1 else None
     if op == "enqueue":
-        sequence += 1
-        element_id = f"q{sequence}"
-        queue.append(value)
-        ids.append(element_id)
-        emit("enqueue", f"Enqueue {value}：从队尾进入 / enters at REAR", 33, "enqueue", target=element_id)
-    elif op == "front" and queue:
-        emit("front", f"Front 查看队首 {queue[0]}，不移除 / reads FRONT without removing", 37, "front", target=ids[0])
-    elif op == "dequeue" and queue:
-        removed_id = ids.pop(0)
-        removed_value = queue.popleft()
-        emit("dequeue", f"Dequeue {removed_value}：从队首离开 / leaves from FRONT", 40, "dequeue", target=removed_id, removed={"id": removed_id, "value": removed_value})
+        if storage == "circular":
+            if count == capacity - 1:
+                emit("enqueue", "队满：(rear + 1) % capacity == front，入队被拒绝 / queue full",
+                     59, "full")
+                continue
+            sequence += 1
+            element_id = "q" + str(sequence)
+            slots[rear] = value
+            slot_ids[rear] = element_id
+            count += 1
+            rear = (rear + 1) % capacity
+            if rear == 0:
+                lesson = "wrap"
+                message = "enqueue " + str(value) + "：rear 从 " + str(capacity - 1) + " 回绕到 0 / rear wraps to 0"
+            elif count == capacity - 1:
+                lesson = "full"
+                message = "enqueue " + str(value) + "：写入后队满 / queue becomes full"
+            else:
+                lesson = "enqueue"
+                message = "enqueue " + str(value) + "：写入 rear 后 rear 后移 / write at rear then advance"
+            emit("enqueue", message, 71, lesson, target=element_id)
+        else:
+            sequence += 1
+            element_id = "n" + str(sequence)
+            nodes[element_id] = {"id": element_id, "value": value, "nextId": None}
+            nodes[rear_id]["nextId"] = element_id
+            rear_id = element_id
+            emit("enqueue", "enqueue " + str(value) + "：接在 rear 后，rear 移到新结点 / link after rear",
+                 79, "enqueue", target=element_id)
+    elif op == "front" and current_items():
+        first = current_items()[0]
+        emit("front", "front 读取队首 " + str(first["value"]) + "，不移除 / read FRONT",
+             83, "front", target=first["id"])
+    elif op == "dequeue" and current_items():
+        first = current_items()[0]
+        if storage == "circular":
+            removed = {"id": slot_ids[front], "value": slots[front], "slot": front}
+            slots[front] = None
+            slot_ids[front] = None
+            front = (front + 1) % capacity
+            count -= 1
+            emit("dequeue", "dequeue " + str(removed["value"]) + "：front 后移，逻辑队首改变 / advance front",
+                 92, "dequeue", target=removed["id"], removed=removed)
+        else:
+            target_id = nodes["head"]["nextId"]
+            removed_value = nodes[target_id]["value"]
+            nodes["head"]["nextId"] = nodes[target_id]["nextId"]
+            if rear_id == target_id:
+                rear_id = "head"
+            del nodes[target_id]
+            emit("dequeue", "dequeue " + str(removed_value) + "：删除 head.next；若删空，rear 回到 head / remove head.next",
+                 100, "dequeue", target=target_id, removed={"id": target_id, "value": removed_value})
 
-emit("done", "演示结束 / Done", 43, "done")
+emit("done", "演示结束 / done", 104, "done")
 `;
 
 const STRUCTURE_PYTHON: Record<string, string> = {

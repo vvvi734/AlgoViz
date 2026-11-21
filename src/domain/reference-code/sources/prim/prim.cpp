@@ -1,3 +1,11 @@
+/*
+ * 中文导读：从一个结点开始，每次选择连接“已选集合”和“未选集合”的最小边。
+ * 阅读顺序：先看 key[]/in_mst[]；再看每次选最小 key 的顶点；最后看用它更新邻居的 key。
+ * 关键不变量：已选顶点集合始终连成一棵树；key[v] 是 v 到该树的最小边权。
+ * 易错点：没有跳过已选点；非连通图仍报成功；key 初始化成 0 而非 INF；更新条件写成小于等于。
+ * 复杂度：邻接矩阵 O(V²)，堆 O(E log V)，空间 O(V+E)。
+ */
+
 // AlgoViz reference implementation: Prim's minimum spanning tree (C++17).
 // Grows one tree from vertex 0 using a min-heap of candidate edges.
 //
@@ -13,7 +21,6 @@
 // Convention: Undirected weighted graph; 0-based vertices; equal weights may produce
 //   different but valid MSTs.
 
-
 #include <functional>
 #include <iostream>
 #include <queue>
@@ -21,9 +28,12 @@
 #include <vector>
 
 // This implementation grows the tree by popping the lightest cut edge from `candidates`; selected vertices are skipped as stale.
-int main() {
+// 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
+int main()
+{
     std::vector<std::vector<std::pair<int, int>>> graph(5);
-    auto add_edge = [&graph](int a, int b, int weight) {
+    auto add_edge = [&graph](int a, int b, int weight)
+    {
         graph[a].push_back({weight, b});
         graph[b].push_back({weight, a});
     };
@@ -42,19 +52,24 @@ int main() {
 
     int total = 0;
     std::cout << "mst edges:\n";
-    while (!candidates.empty()) {
+    while (!candidates.empty())
+    {
         auto [weight, vertex] = candidates.top();
         candidates.pop();
-        if (selected[vertex]) {
+        if (selected[vertex])
+        {
             continue;
         }
         selected[vertex] = true;
         total += weight;
-        if (weight != 0) {
+        if (weight != 0)
+        {
             std::cout << "edge to " << vertex << " : " << weight << '\n';
         }
-        for (auto [next_weight, next] : graph[vertex]) {
-            if (!selected[next]) {
+        for (auto [next_weight, next] : graph[vertex])
+        {
+            if (!selected[next])
+            {
                 candidates.push({next_weight, next});
             }
         }

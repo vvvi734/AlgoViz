@@ -1,3 +1,11 @@
+/*
+ * 中文导读：每一轮从未排序区选出最小元素，放到未排序区的最前面。
+ * 阅读顺序：先看外层 i 的已排序前缀；再看内层如何记录 min_index；最后看一轮只交换一次。
+ * 关键不变量：外层第 i 轮前，a[0..i) 是全局最小的 i 个元素且已排序。
+ * 易错点：每轮都交换导致不稳定/多写；min_index 未初始化；边界写成 n；相等元素顺序被交换破坏稳定性。
+ * 复杂度：O(n²) 时间，O(1) 空间，不稳定。
+ */
+
 // AlgoViz reference implementation: selection sort (C++17).
 // Each pass selects the smallest remaining element and places it at the front.
 //
@@ -17,26 +25,35 @@
 
 // Invariant: [0, start) is sorted; each scan finds the minimum of the unsorted suffix.
 // `minimum` holds the index of the smallest value seen in the unsorted suffix; swap only after the scan finishes.
-void selection_sort(std::vector<int>& values) {
-    for (std::size_t start = 0; start + 1 < values.size(); ++start) {
+// 作用：每轮从未排序区选最小值放到前缀末尾；只交换一次，减少写操作。
+void selection_sort(std::vector<int> &values)
+{
+    for (std::size_t start = 0; start + 1 < values.size(); ++start)
+    {
         std::size_t minimum = start;
-        for (std::size_t index = start + 1; index < values.size(); ++index) {
-            if (values[index] < values[minimum]) {
+        for (std::size_t index = start + 1; index < values.size(); ++index)
+        {
+            if (values[index] < values[minimum])
+            {
                 minimum = index;
             }
         }
-        if (minimum != start) {
+        if (minimum != start)
+        {
             std::swap(values[start], values[minimum]);
         }
     }
 }
 
-int main() {
+// 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
+int main()
+{
     std::vector<int> values{5, 1, 4, 2, 8, 0, 3, 7, 6, 9};
     selection_sort(values);
 
     std::cout << "sorted:";
-    for (int value : values) {
+    for (int value : values)
+    {
         std::cout << ' ' << value;
     }
     std::cout << '\n';

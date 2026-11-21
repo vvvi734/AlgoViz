@@ -1,6 +1,7 @@
 import type { AlgorithmFlow, FlowEdge, FlowSection } from './flowTypes';
 import { SORTING_SEARCH_FLOWS } from './flows/sortingSearchFlows';
 import { STRUCTURE_FLOWS } from './flows/structureFlows';
+import { EXPRESSION_FLOWS } from './flows/expressionFlows';
 import { GRAPH_FLOWS } from './flows/graphFlows';
 
 const text = (zh: string, en: string) => ({ zh, en });
@@ -573,6 +574,7 @@ const MERGE_FLOW: AlgorithmFlow = {
 export const ALGORITHM_FLOWS: Record<string, AlgorithmFlow> = {
   ...SORTING_SEARCH_FLOWS,
   ...STRUCTURE_FLOWS,
+  ...EXPRESSION_FLOWS,
   ...GRAPH_FLOWS,
   kruskal: KRUSKAL_FLOW,
   binary: BINARY_FLOW,

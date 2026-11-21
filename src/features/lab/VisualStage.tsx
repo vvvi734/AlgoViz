@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { buildVisualModel } from '../../domain/visualization/model';
+import type { QueueVisualModel, StackVisualModel } from '../../domain/visualization/model';
 import type { GraphVisualModel } from '../../domain/visualization/graphModel';
 import type { BellmanVisualModel, FloydVisualModel } from '../../domain/visualization/shortestPathModel';
 import type {
@@ -17,6 +18,7 @@ import type { StructureOperation } from '../../domain/trace/schema';
 import type { TraceEvent } from '../../domain/trace/schema';
 import { useI18n } from '../../i18n/I18nProvider';
 import { QueueVisual, StackVisual } from './StructureVisuals';import { LinkedListVisual } from './LinkedListVisual';
+import { ExpressionVisual } from './ExpressionVisual';
 import { AdvancedLinkedListVisual } from './AdvancedLinkedListVisual';
 import { SequentialListVisual } from './SequentialListVisual';
 import { StaticLinkedListVisual } from './StaticLinkedListVisual';
@@ -257,13 +259,16 @@ function graphFrontierModel(model: GraphVisualModel, t: (key: string) => string)
       : (model.operation === 'push' || model.operation === 'pop' || model.operation === 'done'
           ? model.operation
           : 'init');
-  return {
+  const base = {
     operation,
     items,
     ...(removed ? { removed } : {}),
     empty: items.length === 0,
     label: kind === 'queue' ? t('graphQueueEmpty') : t('graphStackEmpty'),
   };
+  return kind === 'queue'
+    ? { kind: 'queue' as const, ...base }
+    : { kind: 'stack' as const, ...base };
 }
 
 function formatPqDistance(distance: number | null | undefined): string {
@@ -396,6 +401,9 @@ export function VisualStage({
       break;
     case 'queue':
       content = <QueueVisual model={model} />;
+      break;
+    case 'expression':
+      content = <ExpressionVisual model={model} />;
       break;
     case 'linked-list':
       content = <LinkedListVisual model={model} />;
@@ -544,14 +552,14 @@ export function VisualStage({
             {model.frontierKind === 'queue' ? (
               <QueueVisual
                 compact
-                model={frontier}
+                model={frontier as QueueVisualModel}
                 operationLabel={operationText}
                 hint={null}
               />
             ) : (
               <StackVisual
                 compact
-                model={frontier}
+                model={frontier as StackVisualModel}
                 operationLabel={operationText}
                 hint={null}
               />

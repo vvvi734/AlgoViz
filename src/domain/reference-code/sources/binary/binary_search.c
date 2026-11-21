@@ -1,4 +1,12 @@
 /*
+ * 中文导读：在有序数组中不断缩小闭区间/半开区间，排除一半候选。
+ * 阅读顺序：先确认区间定义（本文件用的是哪种 low/high 约定）；再算 mid；最后看更新 low/high 后区间是否真的变小。
+ * 关键不变量：目标如果存在，一定在当前候选区间内；区间外的元素已经被证明不可能。
+ * 易错点：low/high 约定混用；mid 计算溢出；死循环（区间没有缩小）；把重复元素的第一个/最后一个位置混淆。
+ * 复杂度：O(log n) 时间，O(1) 额外空间。
+ */
+
+/*
  * Binary search in C11.
  *
  * Precondition: values is sorted in non-decreasing order. Keep an inclusive
@@ -10,25 +18,32 @@
 #include <stdio.h>
 
 // The window is inclusive: low == high still leaves one candidate, and mid is computed without overflow.
+// 作用：在有序数组中做二分查找；返回下标，找不到返回 -1。区间约定见函数第一行注释。
 int Binary_Search(const int *values, int count, int target)
 {
     int low = 0;
     int high = count - 1;
 
-    while (low <= high) {
+    while (low <= high)
+    {
         int middle = low + (high - low) / 2;
-        if (values[middle] == target) {
+        if (values[middle] == target)
+        {
             return middle;
         }
-        if (values[middle] < target) {
+        if (values[middle] < target)
+        {
             low = middle + 1;
-        } else {
+        }
+        else
+        {
             high = middle - 1;
         }
     }
     return -1;
 }
 
+// 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main(void)
 {
     int values[] = {1, 3, 5, 7, 9, 11, 13};

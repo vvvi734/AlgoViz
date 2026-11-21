@@ -40,6 +40,7 @@ import {
   type StaticLinkedListVisualModel,
 } from './staticLinkedListModel';
 import { buildPolynomialModel, type PolynomialVisualModel } from './polynomialModel';
+import { buildExpressionModel, type ExpressionVisualModel } from './expressionModel';
 
 /**
  * Pure mapping from a trace state to a renderable model. React components only
@@ -83,14 +84,54 @@ export interface StructureItemModel {
   state: StructureItemState;
   /** Stage 7E: the graph node this frontier entry refers to, never inferred from text. */
   nodeId?: string;
+  /** Physical slot for array-backed storage (array stack / circular queue). */
+  slot?: number;
+}
+
+export interface StructureNodeModel {
+  id: string;
+  value: unknown;
+  nextId: string | null;
+}
+
+export interface StackVisualModel {
+  kind: 'stack';
+  operation: StructureOperation;
+  items: StructureItemModel[];
+  removed?: StructureItemModel;
+  empty: boolean;
+  label: string;
+  storage?: 'array' | 'linked';
+  capacity?: number;
+  topIndex?: number;
+  nodes?: StructureNodeModel[];
+  topId?: string | null;
+}
+
+export interface QueueVisualModel {
+  kind: 'queue';
+  operation: StructureOperation;
+  items: StructureItemModel[];
+  removed?: StructureItemModel;
+  empty: boolean;
+  label: string;
+  storage?: 'circular' | 'linked';
+  capacity?: number;
+  frontIndex?: number;
+  rearIndex?: number;
+  count?: number;
+  nodes?: StructureNodeModel[];
+  frontId?: string | null;
+  rearId?: string | null;
 }
 
 export type VisualModel =
   | { kind: 'empty'; text: string }
   | { kind: 'bars'; bars: BarModel[] }
   | { kind: 'nodes'; structure: 'stack' | 'queue' | 'linked'; nodes: NodeModel[] }
-  | { kind: 'stack'; operation: StructureOperation; items: StructureItemModel[]; removed?: StructureItemModel; empty: boolean; label: string }
-  | { kind: 'queue'; operation: StructureOperation; items: StructureItemModel[]; removed?: StructureItemModel; empty: boolean; label: string }
+  | StackVisualModel
+  | QueueVisualModel
+  | ExpressionVisualModel
   | LinkedListVisualModel
   | AdvancedLinkedListVisualModel
   | SequentialListVisualModel
@@ -179,7 +220,7 @@ export function isRenderableStructure(value: unknown): value is StructureSnapsho
   return true;
 }
 
-function buildStackModel(snapshot: StructureSnapshot, label: string): VisualModel {
+function buildStackModel(snapshot: StructureSnapshot, label: string): StackVisualModel {
   const items: StructureItemModel[] = snapshot.items.map((item, index) => ({
     id: item.id,
     value: item.value,
@@ -189,6 +230,7 @@ function buildStackModel(snapshot: StructureSnapshot, label: string): VisualMode
     state:
       snapshot.operation === 'push' && item.id === snapshot.targetId ? 'entering' :
       snapshot.operation === 'peek' && item.id === snapshot.targetId ? 'peeking' : 'normal',
+    ...(item.slot === undefined ? {} : { slot: item.slot }),
   }));
   const removed = snapshot.removed
     ? ({
@@ -212,10 +254,17 @@ function buildStackModel(snapshot: StructureSnapshot, label: string): VisualMode
     ...(removed ? { removed } : {}),
     empty: items.length === 0,
     label,
+    ...(snapshot.storage === 'array' || snapshot.storage === 'linked'
+      ? { storage: snapshot.storage }
+      : {}),
+    ...(snapshot.capacity === undefined ? {} : { capacity: snapshot.capacity }),
+    ...(snapshot.top === undefined ? {} : { topIndex: snapshot.top }),
+    ...(snapshot.nodes ? { nodes: snapshot.nodes } : {}),
+    ...(snapshot.topId === undefined ? {} : { topId: snapshot.topId }),
   };
 }
 
-function buildQueueModel(snapshot: StructureSnapshot, label: string): VisualModel {
+function buildQueueModel(snapshot: StructureSnapshot, label: string): QueueVisualModel {
   const items: StructureItemModel[] = snapshot.items.map((item, index) => ({
     id: item.id,
     value: item.value,
@@ -227,6 +276,7 @@ function buildQueueModel(snapshot: StructureSnapshot, label: string): VisualMode
     active:
       (snapshot.operation === 'front' || snapshot.operation === 'dequeue') && item.id === snapshot.targetId,
     state: snapshot.operation === 'enqueue' && item.id === snapshot.targetId ? 'entering' : 'normal',
+    ...(item.slot === undefined ? {} : { slot: item.slot }),
   }));
   const removed = snapshot.removed
     ? ({
@@ -246,6 +296,14 @@ function buildQueueModel(snapshot: StructureSnapshot, label: string): VisualMode
     ...(removed ? { removed } : {}),
     empty: items.length === 0,
     label,
+    ...(snapshot.storage && snapshot.storage !== 'array' ? { storage: snapshot.storage } : {}),
+    ...(snapshot.capacity === undefined ? {} : { capacity: snapshot.capacity }),
+    ...(snapshot.front === undefined ? {} : { frontIndex: snapshot.front }),
+    ...(snapshot.rear === undefined ? {} : { rearIndex: snapshot.rear }),
+    ...(snapshot.count === undefined ? {} : { count: snapshot.count }),
+    ...(snapshot.nodes ? { nodes: snapshot.nodes } : {}),
+    ...(snapshot.frontId === undefined ? {} : { frontId: snapshot.frontId }),
+    ...(snapshot.rearId === undefined ? {} : { rearId: snapshot.rearId }),
   };
 }
 
@@ -270,6 +328,11 @@ export function buildVisualModel(
   const s = state as TraceState;
   const kind = s.type || 'array';
   const focus = asFocusSet(s);
+
+  if (structure !== undefined && structure.kind === 'expression') {
+    if (kind !== 'expression') return { kind: 'raw', text: labels.invalid };
+    return buildExpressionModel(structure, labels.emptyStructure);
+  }
 
   if (structure !== undefined && structure.kind === 'sequential-list') {
     if (kind !== 'array') return { kind: 'raw', text: labels.invalid };

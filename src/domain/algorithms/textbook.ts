@@ -220,8 +220,10 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
       {
         id: 'stack-applications',
         title: { zh: '栈的应用举例', en: 'Stack applications' },
-        algorithms: [],
-        planned: true,
+        algorithms: [
+          { id: 'infix-to-postfix' },
+          { id: 'postfix-eval' },
+        ],
       },
       {
         id: 'stack-recursion',
@@ -242,12 +244,6 @@ export const TEXTBOOK_CHAPTERS: TextbookChapter[] = [
         id: 'queue-basics',
         title: { zh: '队列的表示和实现', en: 'Queue representation and implementation' },
         algorithms: [{ id: 'queue' }],
-      },
-      {
-        id: 'chain-queue',
-        title: { zh: '链队列', en: 'Linked queue' },
-        algorithms: [],
-        planned: true,
       },
       {
         id: 'circular-queue',

@@ -1,3 +1,11 @@
+/*
+ * 中文导读：允许负权边，通过反复松弛所有边求最短路径，并能检测从源点可达的负环。
+ * 阅读顺序：先看 dist[] 的初始化；再看外层为什么跑 V-1 轮；最后看第 V 轮仍能松弛说明了什么。
+ * 关键不变量：第 k 轮结束后，dist[v] 已经不超过“最多用 k 条边”的最短路径长度。
+ * 易错点：把 INF 加上负权后仍当普通数比较；负环不可达也报错；忘记无向图一条边要当两条有向边。
+ * 复杂度：O(VE) 时间，O(V) 额外空间。
+ */
+
 // AlgoViz reference implementation: Bellman-Ford (C++17).
 // Relaxes every edge V - 1 times; an extra successful relaxation means a
 // reachable negative cycle. Supports negative edges.
@@ -17,60 +25,77 @@
 #include <limits>
 #include <vector>
 
-struct Edge {
+struct Edge
+{
     int from;
     int to;
     int weight;
 };
 
 // V-1 full passes settle every simple shortest path; one more pass that still relaxes proves a reachable negative cycle.
-bool bellman_ford(int vertex_count, const std::vector<Edge>& edges, int source,
-                  std::vector<int>& dist) {
+// 作用：对所有边做 V-1 轮松弛；若第 V 轮仍能松弛，说明存在从源点可达的负环。
+bool bellman_ford(int vertex_count, const std::vector<Edge> &edges, int source,
+                  std::vector<int> &dist)
+{
     const int kInfinity = std::numeric_limits<int>::max();
     dist.assign(vertex_count, kInfinity);
     dist[source] = 0;
 
-    for (int round = 0; round < vertex_count - 1; ++round) {
+    for (int round = 0; round < vertex_count - 1; ++round)
+    {
         bool changed = false;
-        for (const Edge& edge : edges) {
-            if (dist[edge.from] == kInfinity) {
+        for (const Edge &edge : edges)
+        {
+            if (dist[edge.from] == kInfinity)
+            {
                 continue;
             }
             int candidate = dist[edge.from] + edge.weight;
-            if (candidate < dist[edge.to]) {
+            if (candidate < dist[edge.to])
+            {
                 dist[edge.to] = candidate;
                 changed = true;
             }
         }
-        if (!changed) {
+        if (!changed)
+        {
             break;
         }
     }
 
-    for (const Edge& edge : edges) {
-        if (dist[edge.from] != kInfinity && dist[edge.from] + edge.weight < dist[edge.to]) {
+    for (const Edge &edge : edges)
+    {
+        if (dist[edge.from] != kInfinity && dist[edge.from] + edge.weight < dist[edge.to])
+        {
             return false;
         }
     }
     return true;
 }
 
-int main() {
+// 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
+int main()
+{
     std::vector<Edge> edges{
-        {0, 1, 6}, {0, 2, 7}, {1, 2, 8}, {1, 3, 5}, {1, 4, -4},
+        {0, 1, 6},  {0, 2, 7}, {1, 2, 8},  {1, 3, 5}, {1, 4, -4},
         {2, 3, -3}, {2, 4, 9}, {3, 1, -2}, {4, 0, 2}, {4, 3, 7},
     };
     std::vector<int> dist;
-    if (!bellman_ford(5, edges, 0, dist)) {
+    if (!bellman_ford(5, edges, 0, dist))
+    {
         std::cout << "negative cycle\n";
         return 0;
     }
 
     std::cout << "distances:";
-    for (int value : dist) {
-        if (value == std::numeric_limits<int>::max()) {
+    for (int value : dist)
+    {
+        if (value == std::numeric_limits<int>::max())
+        {
             std::cout << " INF";
-        } else {
+        }
+        else
+        {
             std::cout << ' ' << value;
         }
     }

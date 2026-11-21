@@ -1,3 +1,11 @@
+/*
+ * 中文导读：冲突时在表内继续探测空位；本文件使用线性探测并处理删除墓碑。
+ * 阅读顺序：先看 EMPTY/OCCUPIED/DELETED 三种槽状态；再看 insert 如何从 hash 开始找空位；最后看 search 何时可以停止。
+ * 关键不变量：查找路径上若目标存在，一定在第一个 EMPTY 之前被看到；DELETED 不能被当成空位截断查找。
+ * 易错点：删除直接置 EMPTY 截断后续查找；表满死循环；负载因子过高；负哈希下标。
+ * 复杂度：平均 O(1)，最坏 O(n)；空间 O(capacity)。
+ */
+
 // AlgoViz reference implementation: linear probing hash table (C++17).
 // -1 marks an empty slot; insert and search probe forward with wraparound.
 //
@@ -16,66 +24,92 @@
 #include <iostream>
 #include <vector>
 
-class HashTable {
- public:
-    explicit HashTable(std::size_t size) : slots_(size, kEmpty) {}
+class HashTable
+{
+  public:
+    // 作用：构造开放地址散列表：分配 capacity 个槽并全部标为 EMPTY。
+    explicit HashTable(std::size_t size) : slots_(size, kEmpty)
+    {
+    }
 
     // Probe forward modulo capacity; an empty slot both accepts an insert and proves absence.
     // This teaching version has no deletion, so an empty slot ends the probe; adding tombstones would require lookup to continue past them.
-    bool insert(int key) {
+    // 作用：线性探测找空位写入；重复键返回 false，表满返回 false。
+    bool insert(int key)
+    {
         std::size_t start = hash_index(key);
-        for (std::size_t step = 0; step < slots_.size(); ++step) {
+        for (std::size_t step = 0; step < slots_.size(); ++step)
+        {
             std::size_t index = (start + step) % slots_.size();
-            if (slots_[index] == kEmpty) {
+            if (slots_[index] == kEmpty)
+            {
                 slots_[index] = key;
                 return true;
             }
-            if (slots_[index] == key) {
+            if (slots_[index] == key)
+            {
                 return false;
             }
         }
         return false;
     }
 
-    bool contains(int key) const {
+    // 作用：从初始槽位线性探测；遇到 EMPTY 停止，DELETED 不能截断查找。
+    bool contains(int key) const
+    {
         std::size_t start = hash_index(key);
-        for (std::size_t step = 0; step < slots_.size(); ++step) {
+        for (std::size_t step = 0; step < slots_.size(); ++step)
+        {
             std::size_t index = (start + step) % slots_.size();
-            if (slots_[index] == kEmpty) {
+            if (slots_[index] == kEmpty)
+            {
                 return false;
             }
-            if (slots_[index] == key) {
+            if (slots_[index] == key)
+            {
                 return true;
             }
         }
         return false;
     }
 
-    void print() const {
-        for (std::size_t i = 0; i < slots_.size(); ++i) {
+    // 作用：输出每个槽的状态（空/占用/墓碑）和键值；只读。
+    void print() const
+    {
+        for (std::size_t i = 0; i < slots_.size(); ++i)
+        {
             std::cout << '[' << i << "] ";
-            if (slots_[i] == kEmpty) {
+            if (slots_[i] == kEmpty)
+            {
                 std::cout << "_\n";
-            } else {
+            }
+            else
+            {
                 std::cout << slots_[i] << '\n';
             }
         }
     }
 
- private:
+  private:
     static constexpr int kEmpty = -1;
 
-    std::size_t hash_index(int key) const {
+    // 作用：把 key 映射到 0..capacity-1 的初始槽位。
+    std::size_t hash_index(int key) const
+    {
         int index = key % static_cast<int>(slots_.size());
-        return static_cast<std::size_t>(index < 0 ? index + static_cast<int>(slots_.size()) : index);
+        return static_cast<std::size_t>(index < 0 ? index + static_cast<int>(slots_.size())
+                                                  : index);
     }
 
     std::vector<int> slots_;
 };
 
-int main() {
+// 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
+int main()
+{
     HashTable table(11);
-    for (int key : {22, 11, 33, 44, 55}) {
+    for (int key : {22, 11, 33, 44, 55})
+    {
         table.insert(key);
     }
     table.print();

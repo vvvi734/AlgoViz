@@ -1,4 +1,12 @@
 /*
+ * 中文导读：从一端逐个比较，直到找到目标或扫描完整个区间。
+ * 阅读顺序：先看循环边界；再看找到时返回下标、失败时返回什么；最后看哨兵写法为什么能少一次边界判断。
+ * 关键不变量：当前下标之前的元素都已经比较过且不是目标。
+ * 易错点：返回 0 当作未找到与真实下标 0 混淆；越界；哨兵值覆盖原数据；重复元素返回哪一个不明确。
+ * 复杂度：O(n) 时间，O(1) 空间。
+ */
+
+/*
  * Linear search in C11.
  *
  * Compare every element from left to right. The array does not need to be
@@ -9,16 +17,20 @@
 #include <stdio.h>
 
 // Return the first matching index; -1 is correct only after the entire array has been scanned.
+// 作用：从 0 到 count-1 逐个比较；找到返回下标，失败返回 -1。
 int LinearSearch(const int *values, int count, int target)
 {
-    for (int index = 0; index < count; ++index) {
-        if (values[index] == target) {
+    for (int index = 0; index < count; ++index)
+    {
+        if (values[index] == target)
+        {
             return index;
         }
     }
     return -1;
 }
 
+// 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main(void)
 {
     int values[] = {7, 2, 9, 4, 4, 1};

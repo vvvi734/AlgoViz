@@ -1,4 +1,12 @@
 /*
+ * 中文导读：只保存非零三元组；转置时交换行/列下标，并保持按行优先的顺序。
+ * 阅读顺序：先看 Triple 的 row/col/value 和 rows/cols/nonzero；再看普通转置如何扫描列；最后看快速转置的列计数与起始位置。
+ * 关键不变量：转置后三元组仍按行优先排列；行列维度互换但非零元素个数不变。
+ * 易错点：行列下标写反；快速转置的起始位置数组算错；零元素被保存；输出顺序不是行优先。
+ * 复杂度：普通转置 O(cols × nonzeros)，快速转置 O(cols + nonzeros)，空间 O(nonzeros)。
+ */
+
+/*
  * Sparse matrix fast transpose — original C++17 implementation.
  *
  * Convention: 0-based matrix coordinates, triplet positions and cpot slots; input
@@ -21,19 +29,22 @@
 #include <iostream>
 #include <vector>
 
-struct Triple {
+struct Triple
+{
     int row;
     int col;
     int value;
 };
 
-struct SparseMatrix {
+struct SparseMatrix
+{
     int rows = 0;
     int cols = 0;
     std::vector<Triple> triples;
 };
 
 // `cpot[col]` is the next write position for that column; writing a triple increments it for the next entry.
+// 作用：快速转置：先统计每列非零个数，再累加得到每列起始位置，最后按原顺序填入目标三元组。
 SparseMatrix fast_transpose(const SparseMatrix &source)
 {
     SparseMatrix result;
@@ -41,7 +52,8 @@ SparseMatrix fast_transpose(const SparseMatrix &source)
     result.cols = source.rows;
     result.triples.resize(source.triples.size());
 
-    if (source.cols == 0) {
+    if (source.cols == 0)
+    {
         return result;
     }
 
@@ -49,19 +61,22 @@ SparseMatrix fast_transpose(const SparseMatrix &source)
     std::vector<int> cpot(static_cast<std::size_t>(source.cols), 0);
 
     // Phase 1: count non-zeros per original column.
-    for (const Triple &item : source.triples) {
+    for (const Triple &item : source.triples)
+    {
         ++num[static_cast<std::size_t>(item.col)];
     }
 
     // Phase 2: each column's first result slot.
     cpot[0] = 0;
-    for (int c = 1; c < source.cols; ++c) {
+    for (int c = 1; c < source.cols; ++c)
+    {
         cpot[static_cast<std::size_t>(c)] =
             cpot[static_cast<std::size_t>(c - 1)] + num[static_cast<std::size_t>(c - 1)];
     }
 
     // Phase 3: place entries directly; cpot acts as a moving write cursor.
-    for (const Triple &item : source.triples) {
+    for (const Triple &item : source.triples)
+    {
         int q = cpot[static_cast<std::size_t>(item.col)];
         result.triples[static_cast<std::size_t>(q)] = {item.col, item.row, item.value};
         ++cpot[static_cast<std::size_t>(item.col)];
@@ -70,25 +85,30 @@ SparseMatrix fast_transpose(const SparseMatrix &source)
     return result;
 }
 
+// 作用：按行优先输出三元组 (row, col, value)；只读。
 void print_triplets(const SparseMatrix &matrix)
 {
     std::cout << "shape = " << matrix.rows << " x " << matrix.cols
               << ", nnz = " << matrix.triples.size() << '\n';
-    for (const Triple &item : matrix.triples) {
+    for (const Triple &item : matrix.triples)
+    {
         std::cout << '(' << item.row << ", " << item.col << ", " << item.value << ")\n";
     }
 }
 
+// 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main()
 {
-    SparseMatrix source{4, 5, {
-        {0, 0, 3},
-        {0, 2, 7},
-        {1, 2, 5},
-        {2, 1, 4},
-        {3, 0, 6},
-        {3, 2, 8},
-    }};
+    SparseMatrix source{4,
+                        5,
+                        {
+                            {0, 0, 3},
+                            {0, 2, 7},
+                            {1, 2, 5},
+                            {2, 1, 4},
+                            {3, 0, 6},
+                            {3, 2, 8},
+                        }};
 
     const SparseMatrix result = fast_transpose(source);
     print_triplets(source);

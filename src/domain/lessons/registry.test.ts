@@ -66,6 +66,8 @@ describe('Lesson registry (Stage 3B)', () => {
       'sparse-transpose-fast',
       'static-linked-list-operations',
       'polynomial-add-linked-lists',
+      'infix-to-postfix-operator-stack',
+      'postfix-eval-operand-stack',
     ]);
   });
 
@@ -97,11 +99,11 @@ describe('Lesson registry (Stage 3B)', () => {
     expect(broken.errors.join(' ')).toContain('buble-sort');
   });
 
-  it('covers all 39 algorithms with a validated course', () => {
+  it('covers all 41 algorithms with a validated course', () => {
     const covered = lessonRegistry.lessons.map((lesson) => lesson.algorithmId);
     const uncovered = catalogIds.filter((id) => !covered.includes(id));
-    expect(catalogIds.length).toBe(39);
-    expect(lessonRegistry.lessons.length).toBe(39);
+    expect(catalogIds.length).toBe(41);
+    expect(lessonRegistry.lessons.length).toBe(41);
     expect(uncovered).toEqual([]);
   });
 });

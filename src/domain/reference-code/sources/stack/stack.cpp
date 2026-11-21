@@ -1,70 +1,115 @@
-// AlgoViz reference implementation: array stack (C++17).
-// A fixed-capacity stack with manual top index and overflow checks.
-//
-// Reading guide:
-// 1. The stack stores items in a fixed array plus a size counter.
-// 2. The top element is items[size - 1]; push writes at items[size] and increments
-//    size.
-// 3. Pop decrements size before reading; empty and full operations report failure
-//    instead of crashing.
-//
-// Complexity: O(1) per operation; extra space O(capacity).
-// Convention: size is the number of stored items and also the next free slot;
-//   capacity is fixed.
+/*
+ * 中文导读：用 std::array 和当前栈顶下标 top 实现后进先出；所有操作只碰栈顶。
+ * 阅读顺序：先看 top 的约定；再看 push 的容量检查与 ++top；然后看 pop 读取后 --top；最后看 peek 不修改状态。
+ * 关键不变量：有效元素始终占据 data[0..top]，top 指向当前栈顶，top = -1 表示空栈。
+ * 易错点：把 top 当成下一个空位；栈满仍写入；空栈仍读取；先移动 top 再读取；peek 修改 top。
+ * 复杂度：push/pop/peek O(1)，空间 O(capacity)。
+ */
+
+/*
+ * Array stack in C++17.
+ *
+ * The class keeps a fixed array and the index of the live top. top = -1 means
+ * empty. Push checks capacity, increments top and writes; pop reads then
+ * decrements top; peek only reads. Every operation is O(1).
+ */
 
 #include <array>
+#include <cstddef>
 #include <iostream>
 #include <optional>
 
-class Stack {
- public:
-    // Push writes at size and increments it; the capacity check prevents overflow.
-    // `capacity` is the total number of slots; `size` is the live element count and the next free slot, so full and empty are distinct.
-    bool push(int value) {
-        if (size_ == items_.size()) {
+class Stack
+{
+public:
+    static constexpr std::size_t kCapacity = 8;
+
+    // top is the live top index; -1 means empty.
+
+    /*
+     * 作用：构造空栈。top_ = -1 表示还没有元素，与顶层数据结构约定一致。
+     */
+    Stack() : top_(-1)
+    {
+    }
+
+    /*
+     * 作用：只读判断栈是否为空。空栈的唯一条件是 top_ == -1。
+     */
+    bool empty() const
+    {
+        return top_ == -1;
+    }
+
+    /*
+     * 作用：压入 value。先检查容量，再 ++top_ 并写入 data_[top_]；栈满返回 false。
+     */
+    bool push(int value)
+    {
+        if (top_ >= static_cast<int>(kCapacity) - 1)
+        {
             return false;
         }
-        items_[size_] = value;
-        ++size_;
+        ++top_;
+        data_[static_cast<std::size_t>(top_)] = value;
         return true;
     }
 
-    std::optional<int> pop() {
-        if (size_ == 0) {
+    /*
+     * 作用：弹出栈顶。空栈返回 std::nullopt；否则读取 data_[top_] 后 --top_。
+     */
+    std::optional<int> pop()
+    {
+        if (empty())
+        {
             return std::nullopt;
         }
-        --size_;
-        return items_[size_];
+        const int value = data_[static_cast<std::size_t>(top_)];
+        --top_;
+        return value;
     }
 
-    std::optional<int> peek() const {
-        if (size_ == 0) {
+    /*
+     * 作用：只读栈顶。空栈返回 std::nullopt，成功时返回 data_[top_]，不移动 top_。
+     */
+    std::optional<int> peek() const
+    {
+        if (empty())
+        {
             return std::nullopt;
         }
-        return items_[size_ - 1];
+        return data_[static_cast<std::size_t>(top_)];
     }
 
-    bool empty() const {
-        return size_ == 0;
-    }
-
- private:
-    std::array<int, 8> items_{};
-    std::size_t size_ = 0;
+private:
+    std::array<int, kCapacity> data_{};
+    int top_;
 };
 
-int main() {
+/*
+ * 作用：演示建栈、压栈、peek、弹栈与空栈检测，并输出每一步结果。
+ */
+int main()
+{
     Stack stack;
-    stack.push(1);
-    stack.push(2);
-    stack.push(3);
+    for (int value = 1; value <= 3; ++value)
+    {
+        if (!stack.push(value))
+        {
+            std::cout << "push " << value << " failed: full\n";
+        }
+    }
 
-    if (auto top = stack.peek()) {
+    if (const auto top = stack.peek())
+    {
         std::cout << "top: " << *top << '\n';
     }
-    while (auto value = stack.pop()) {
+
+    while (const auto value = stack.pop())
+    {
         std::cout << "pop: " << *value << '\n';
     }
+
     std::cout << "empty: " << (stack.empty() ? "yes" : "no") << '\n';
     std::cout << "underflow: " << (stack.pop() ? "no" : "yes") << '\n';
     return 0;

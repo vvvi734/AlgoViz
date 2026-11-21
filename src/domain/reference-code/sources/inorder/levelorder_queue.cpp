@@ -1,3 +1,11 @@
+/*
+ * 中文导读：按访问根结点的时机区分前序、中序、后序；层序遍历则借助队列逐层访问。
+ * 阅读顺序：先看递归函数中 visit 放在两次递归的哪一侧；再看显式栈版本为什么要一路压左孩子；最后看层序队列的 size 分层。
+ * 关键不变量：递归栈保存的是尚未访问完的祖先；中序输出始终按左—根—右。
+ * 易错点：前/中/后序访问语句位置放错；显式栈弹栈后忘记右子树；层序不记录每层 size 导致分层错误；空树边界。
+ * 复杂度：O(n) 时间，递归 O(h) 栈 / 层序 O(width) 队列。
+ */
+
 // AlgoViz reference implementation: level-order traversal with std::queue (C++17).
 // This convenience file adds a fourth traversal alongside the recursive
 // preorder/inorder/postorder reference implementation.
@@ -13,36 +21,45 @@
 #include <iostream>
 #include <queue>
 
-struct Node {
+struct Node
+{
     int value = 0;
-    Node* left = nullptr;
-    Node* right = nullptr;
+    Node *left = nullptr;
+    Node *right = nullptr;
 };
 
 // The FIFO queue holds pending nodes; enqueue children after visiting the parent to keep level order.
-void level_order(const Node* root) {
-    if (!root) {
+// 作用：借助队列逐层访问二叉树：先根，出队后把左右孩子依次入队；用每层 size 分层输出。
+void level_order(const Node *root)
+{
+    if (!root)
+    {
         return;
     }
 
-    std::queue<const Node*> pending;
+    std::queue<const Node *> pending;
     pending.push(root);
 
-    while (!pending.empty()) {
-        const Node* node = pending.front();
+    while (!pending.empty())
+    {
+        const Node *node = pending.front();
         pending.pop();
         std::cout << node->value << ' ';
 
-        if (node->left) {
+        if (node->left)
+        {
             pending.push(node->left);
         }
-        if (node->right) {
+        if (node->right)
+        {
             pending.push(node->right);
         }
     }
 }
 
-int main() {
+// 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
+int main()
+{
     Node one{1, nullptr, nullptr};
     Node three{3, nullptr, nullptr};
     Node six{6, nullptr, nullptr};

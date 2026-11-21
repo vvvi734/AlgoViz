@@ -211,7 +211,7 @@ test.describe('INPUT-04 — real structured-sequence traces', () => {
   test('stack is LIFO, queue is FIFO, and a random clear scenario runs', async ({ page }) => {
     test.setTimeout(300_000);
 
-    await openAlgorithm(page, 'stack', 'stack-visual');
+    await openAlgorithm(page, 'stack', 'array-stack-visual');
     await resetToOneOperation(page);
     await setOperation(page, 0, 'push', { value: '3' });
     await addOperation(page, 'push', { value: '8' });
@@ -220,25 +220,29 @@ test.describe('INPUT-04 — real structured-sequence traces', () => {
     await addOperation(page, 'pop');
     await runCurrent(page);
 
-    await seekMatching(page, 'stack-visual', { operation: 'peek' });
-    await expect(page.getByTestId('stack-item').first()).toHaveAttribute('data-value', '5');
-    await expect(page.getByTestId('stack-item').first()).toHaveAttribute('data-role', 'top');
-    await expect(page.getByTestId('stack-item').first()).toHaveAttribute('data-active', 'true');
+    await seekMatching(page, 'array-stack-visual', { operation: 'peek' });
+    await expect(page.getByTestId('array-stack-slot').nth(2)).toHaveAttribute('data-value', '5');
+    await expect(page.getByTestId('array-stack-slot').nth(2)).toHaveAttribute('data-status', 'top');
+    await expect(page.getByTestId('array-stack-slot').nth(2)).toHaveClass(/is-peek/);
+    await expect(page.getByTestId('array-stack-top')).toHaveText('top = 2');
 
-    await seekMatching(page, 'stack-visual', { operation: 'pop' });
-    await expect(page.getByTestId('stack-leaving')).toHaveAttribute('data-value', '5');
-    await expect(page.getByTestId('stack-item')).toHaveCount(2);
-    await expect(page.getByTestId('stack-item').first()).toHaveAttribute('data-value', '8');
-    await expect(page.getByTestId('stack-item').first()).toHaveAttribute('data-role', 'top');
+    await seekMatching(page, 'array-stack-visual', { operation: 'pop' });
+    await expect(page.getByTestId('array-stack-leaving')).toContainText('5');
+    await expect(page.getByTestId('array-stack-slot').nth(2)).toHaveAttribute('data-status', 'free');
+    await expect(page.getByTestId('array-stack-slot').nth(1)).toHaveAttribute('data-value', '8');
+    await expect(page.getByTestId('array-stack-slot').nth(1)).toHaveAttribute('data-status', 'top');
+    await expect(page.getByTestId('array-stack-top')).toHaveText('top = 1');
 
     await page.getByTestId('guided-mode-random').click();
     await page.getByTestId('guided-random-scenario').selectOption('clear');
     await runCurrent(page);
     await seekLast(page);
-    await expect(page.getByTestId('stack-empty')).toBeVisible();
-    await expect(page.getByTestId('stack-item')).toHaveCount(0);
+    await expect(page.getByTestId('array-stack-top')).toHaveText('top = -1');
+    for (let slot = 0; slot < 4; slot += 1) {
+      await expect(page.getByTestId('array-stack-slot').nth(slot)).toHaveAttribute('data-status', 'free');
+    }
 
-    await openAlgorithm(page, 'queue', 'queue-visual');
+    await openAlgorithm(page, 'queue', 'circular-queue-visual');
     await resetToOneOperation(page);
     await setOperation(page, 0, 'enqueue', { value: '3' });
     await addOperation(page, 'enqueue', { value: '8' });
@@ -247,15 +251,17 @@ test.describe('INPUT-04 — real structured-sequence traces', () => {
     await addOperation(page, 'dequeue');
     await runCurrent(page);
 
-    await seekMatching(page, 'queue-visual', { operation: 'front' });
-    await expect(page.getByTestId('queue-item').first()).toHaveAttribute('data-value', '3');
-    await expect(page.getByTestId('queue-item').first()).toHaveAttribute('data-role', 'front');
-    await expect(page.getByTestId('queue-item').first()).toHaveAttribute('data-active', 'true');
+    await seekMatching(page, 'circular-queue-visual', { operation: 'front' });
+    await expect(page.getByTestId('circular-queue-slot').nth(0)).toHaveAttribute('data-value', '3');
+    await expect(page.getByTestId('circular-queue-slot').nth(0)).toHaveAttribute('data-status', 'front');
+    await expect(page.getByTestId('circular-queue-slot').nth(0)).toHaveClass(/is-front/);
+    await expect(page.getByTestId('circular-front')).toHaveText('front = 0');
 
-    await seekMatching(page, 'queue-visual', { operation: 'dequeue' });
-    await expect(page.getByTestId('queue-leaving')).toHaveAttribute('data-value', '3');
-    await expect(page.getByTestId('queue-item')).toHaveCount(2);
-    await expect(page.getByTestId('queue-item').first()).toHaveAttribute('data-value', '8');
-    await expect(page.getByTestId('queue-item').first()).toHaveAttribute('data-role', 'front');
+    await seekMatching(page, 'circular-queue-visual', { operation: 'dequeue' });
+    await expect(page.getByTestId('circular-queue-leaving')).toContainText('3');
+    await expect(page.getByTestId('circular-queue-slot').nth(0)).toHaveAttribute('data-status', 'free');
+    await expect(page.getByTestId('circular-queue-slot').nth(1)).toHaveAttribute('data-value', '8');
+    await expect(page.getByTestId('circular-queue-slot').nth(1)).toHaveAttribute('data-status', 'front');
+    await expect(page.getByTestId('circular-front')).toHaveText('front = 1');
   });
 });

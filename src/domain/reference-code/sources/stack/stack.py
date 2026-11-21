@@ -1,16 +1,14 @@
 """AlgoViz reference implementation: array stack.
 
-A fixed-capacity stack with an explicit size and overflow checks.
+A fixed-capacity stack whose `top` is the index of the live top element.
 
 Reading guide:
-1. The stack stores items in a fixed array plus a size counter.
-2. The top element is items[size - 1]; push writes at items[size] and increments size.
-3. Pop decrements size before reading; empty and full operations report failure instead
-   of crashing.
+1. `top = -1` means empty; the first push makes it 0.
+2. Push checks capacity, increments `top`, then writes `data[top]`.
+3. Pop reads `data[top]` first, then decrements `top`; peek never moves `top`.
 
 Complexity: O(1) per operation; extra space O(capacity).
-Convention: size is the number of stored items and also the next free slot; capacity is
-  fixed.
+Convention: `top` is the current top, not the next free slot.
 """
 
 from __future__ import annotations
@@ -20,31 +18,35 @@ class Stack:
     def __init__(self, capacity: int = 8) -> None:
         if capacity <= 0:
             raise ValueError("capacity must be positive")
-        self._items: list[int] = [0] * capacity
-        self._size = 0
+        self._data: list[int] = [0] * capacity
+        self._top = -1
 
-    # Push writes at size and increments it; the capacity check prevents overflow.
-    # `capacity` is the total number of slots; `size` is the live element count and the next free slot, so full and empty are distinct.
+    # top is the live top index; -1 means empty.
+    # 作用：压栈。先检查 top 是否已到 capacity - 1，再 ++top 后写入。
     def push(self, value: int) -> bool:
-        if self._size == len(self._items):
+        if self._top >= len(self._data) - 1:
             return False
-        self._items[self._size] = value
-        self._size += 1
+        self._top += 1
+        self._data[self._top] = value
         return True
 
+    # 作用：弹栈。先读取当前栈顶，再 --top；空栈返回 None。
     def pop(self) -> int | None:
-        if self._size == 0:
+        if self._top == -1:
             return None
-        self._size -= 1
-        return self._items[self._size]
+        value = self._data[self._top]
+        self._top -= 1
+        return value
 
+    # 作用：只读栈顶，不移动 top；空栈返回 None。
     def peek(self) -> int | None:
-        if self._size == 0:
+        if self._top == -1:
             return None
-        return self._items[self._size - 1]
+        return self._data[self._top]
 
+    # 作用：判断空栈。唯一条件是 top == -1。
     def is_empty(self) -> bool:
-        return self._size == 0
+        return self._top == -1
 
 
 def main() -> None:

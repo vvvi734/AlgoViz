@@ -1,3 +1,11 @@
+/*
+ * 中文导读：反复合并权值最小的两棵树，得到带权路径长度最小的前缀码。
+ * 阅读顺序：先看优先队列/最小堆如何选两个最小结点；再看合并后的新结点权值；最后递归打印 0/1 路径得到编码。
+ * 关键不变量：每次合并后森林结点数减一；任何字符编码都不是另一个编码的前缀。
+ * 易错点：合并顺序不稳定导致同权树形不同；叶子权值当频率用错；只支持单字符；释放树时递归断链。
+ * 复杂度：O(n log n) 时间（堆），O(n) 空间；编码长度取决于频率分布。
+ */
+
 // AlgoViz reference implementation: Huffman coding (C++17).
 // Builds a min-heap of nodes, repeatedly merges the two lightest nodes,
 // then emits prefix-free codes by walking the tree.
@@ -16,7 +24,8 @@
 #include <string>
 #include <vector>
 
-struct Node {
+struct Node
+{
     int frequency = 0;
     char symbol = '\0';
     int order = 0;
@@ -24,46 +33,66 @@ struct Node {
     int right = -1;
 };
 
-class MinHeap {
- public:
-    explicit MinHeap(std::vector<Node>& nodes) : nodes_(nodes) {}
+class MinHeap
+{
+  public:
+    // 作用：用叶子结点数组建最小堆；只保存下标，真实结点在 nodes_ 中。
+    explicit MinHeap(std::vector<Node> &nodes) : nodes_(nodes)
+    {
+    }
 
     // Min-heap ordering is (frequency, insertion order), keeping ties deterministic.
-    void push(int index) {
+    // 作用：把结点下标加入最小堆并上浮；比较用 less(index, index)。
+    void push(int index)
+    {
         heap_.push_back(index);
         sift_up(heap_.size() - 1);
     }
 
-    int pop() {
+    // 作用：弹出堆顶下标并把末尾下标下沉；返回频率最小的结点下标。
+    int pop()
+    {
         int top = heap_.front();
         heap_.front() = heap_.back();
         heap_.pop_back();
-        if (!heap_.empty()) {
+        if (!heap_.empty())
+        {
             sift_down(0);
         }
         return top;
     }
 
-    bool empty() const {
+    // 作用：只读判断容器是否为空；不修改结构。
+    bool empty() const
+    {
         return heap_.empty();
     }
 
-    std::size_t size() const {
+    // 作用：返回当前有效元素个数；直接读取维护字段，不遍历。
+    std::size_t size() const
+    {
         return heap_.size();
     }
 
- private:
-    bool less(int a, int b) const {
-        if (nodes_[a].frequency != nodes_[b].frequency) {
+  private:
+    // 作用：比较两个结点下标：频率小者优先，频率相同按插入序号稳定排序。
+    bool less(int a, int b) const
+    {
+        if (nodes_[a].frequency != nodes_[b].frequency)
+        {
             return nodes_[a].frequency < nodes_[b].frequency;
         }
         return nodes_[a].order < nodes_[b].order;
     }
 
-    void sift_up(std::size_t index) {
-        while (index > 0) {
+    // 作用：从 index 向上与父结点比较并交换，直到最小堆序恢复。
+    void sift_up(std::size_t index)
+    {
+        while (index > 0)
+        {
             std::size_t parent = (index - 1) / 2;
-            if (!less(heap_[index], heap_[parent])) {
+            if (!less(heap_[index], heap_[parent]))
+            {
                 return;
             }
             std::swap(heap_[parent], heap_[index]);
@@ -71,18 +100,24 @@ class MinHeap {
         }
     }
 
-    void sift_down(std::size_t index) {
-        while (true) {
+    // 作用：从 index 向下与较小孩子交换，直到最小堆序恢复。
+    void sift_down(std::size_t index)
+    {
+        while (true)
+        {
             std::size_t left = index * 2 + 1;
             std::size_t right = left + 1;
             std::size_t smallest = index;
-            if (left < heap_.size() && less(heap_[left], heap_[smallest])) {
+            if (left < heap_.size() && less(heap_[left], heap_[smallest]))
+            {
                 smallest = left;
             }
-            if (right < heap_.size() && less(heap_[right], heap_[smallest])) {
+            if (right < heap_.size() && less(heap_[right], heap_[smallest]))
+            {
                 smallest = right;
             }
-            if (smallest == index) {
+            if (smallest == index)
+            {
                 return;
             }
             std::swap(heap_[index], heap_[smallest]);
@@ -90,43 +125,52 @@ class MinHeap {
         }
     }
 
-    std::vector<Node>& nodes_;
+    std::vector<Node> &nodes_;
     std::vector<int> heap_;
 };
 
-void print_codes(const std::vector<Node>& nodes, int index, std::string path) {
-    const Node& node = nodes[index];
-    if (node.left == -1 && node.right == -1) {
+// 作用：沿树的 0/1 路径递归输出每个叶子的哈夫曼编码；不修改树。
+void print_codes(const std::vector<Node> &nodes, int index, std::string path)
+{
+    const Node &node = nodes[index];
+    if (node.left == -1 && node.right == -1)
+    {
         std::cout << node.symbol << ": " << (path.empty() ? "(empty)" : path) << '\n';
         return;
     }
-    if (node.left != -1) {
+    if (node.left != -1)
+    {
         print_codes(nodes, node.left, path + '0');
     }
-    if (node.right != -1) {
+    if (node.right != -1)
+    {
         print_codes(nodes, node.right, path + '1');
     }
 }
 
-int main() {
+// 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
+int main()
+{
     std::vector<int> frequencies{5, 9, 12, 13, 16, 45};
     std::vector<char> symbols{'a', 'b', 'c', 'd', 'e', 'f'};
 
     std::vector<Node> nodes;
     nodes.reserve(2 * frequencies.size() - 1);
     MinHeap heap(nodes);
-    for (std::size_t i = 0; i < frequencies.size(); ++i) {
+    for (std::size_t i = 0; i < frequencies.size(); ++i)
+    {
         nodes.push_back(Node{frequencies[i], symbols[i], static_cast<int>(i), -1, -1});
         heap.push(static_cast<int>(i));
     }
 
     int order = static_cast<int>(frequencies.size());
     // Merge the two least frequent nodes repeatedly; the final tree gives shorter codes to more frequent symbols.
-    while (heap.size() > 1) {
+    while (heap.size() > 1)
+    {
         int first = heap.pop();
         int second = heap.pop();
-        nodes.push_back(Node{
-            nodes[first].frequency + nodes[second].frequency, '\0', order++, first, second});
+        nodes.push_back(
+            Node{nodes[first].frequency + nodes[second].frequency, '\0', order++, first, second});
         heap.push(static_cast<int>(nodes.size() - 1));
     }
 

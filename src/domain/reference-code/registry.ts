@@ -195,6 +195,20 @@ export const REFERENCE_CODE: Record<string, ReferenceEntry> = {
       python: { fileName: 'queue_builtin.py' },
     },
   },
+  'infix-to-postfix': {
+    files: {
+      c: { fileName: 'infix_to_postfix.c', path: 'infix-to-postfix/infix_to_postfix.c' },
+      cpp: { fileName: 'infix_to_postfix.cpp', path: 'infix-to-postfix/infix_to_postfix.cpp' },
+      python: { fileName: 'infix_to_postfix.py', path: 'infix-to-postfix/infix_to_postfix.py' },
+    },
+  },
+  'postfix-eval': {
+    files: {
+      c: { fileName: 'postfix_eval.c', path: 'postfix-eval/postfix_eval.c' },
+      cpp: { fileName: 'postfix_eval.cpp', path: 'postfix-eval/postfix_eval.cpp' },
+      python: { fileName: 'postfix_eval.py', path: 'postfix-eval/postfix_eval.py' },
+    },
+  },
   seqlist: {
     files: {
       c: { fileName: 'seqlist.c' },

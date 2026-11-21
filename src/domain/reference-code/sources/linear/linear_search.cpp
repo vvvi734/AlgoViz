@@ -1,3 +1,11 @@
+/*
+ * 中文导读：从一端逐个比较，直到找到目标或扫描完整个区间。
+ * 阅读顺序：先看循环边界；再看找到时返回下标、失败时返回什么；最后看哨兵写法为什么能少一次边界判断。
+ * 关键不变量：当前下标之前的元素都已经比较过且不是目标。
+ * 易错点：返回 0 当作未找到与真实下标 0 混淆；越界；哨兵值覆盖原数据；重复元素返回哪一个不明确。
+ * 复杂度：O(n) 时间，O(1) 空间。
+ */
+
 // AlgoViz reference implementation: linear search (C++17).
 // Scans from left to right and returns the first matching index, or -1.
 //
@@ -14,16 +22,22 @@
 
 // Return the first matching index; -1 means the whole array was scanned.
 // Return the first matching index; -1 is correct only after the entire array has been scanned.
-int linear_search(const std::vector<int>& values, int target) {
-    for (std::size_t index = 0; index < values.size(); ++index) {
-        if (values[index] == target) {
+// 作用：从数组一端逐个比较；找到返回下标，失败返回 -1。
+int linear_search(const std::vector<int> &values, int target)
+{
+    for (std::size_t index = 0; index < values.size(); ++index)
+    {
+        if (values[index] == target)
+        {
             return static_cast<int>(index);
         }
     }
     return -1;
 }
 
-int main() {
+// 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
+int main()
+{
     std::vector<int> values{4, 7, 2, 9, 1, 5};
     std::cout << "target 9 -> " << linear_search(values, 9) << '\n';
     std::cout << "target 1 -> " << linear_search(values, 1) << '\n';

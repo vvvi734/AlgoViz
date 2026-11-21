@@ -44,6 +44,7 @@ import { kmpLesson } from './kmpLesson';
 import { sparseTransposeLesson } from './sparseTransposeLesson';
 import { staticLinkedListLesson } from './staticLinkedList';
 import { polynomialAddLesson } from './polynomialAdd';
+import { infixToPostfixLesson, postfixEvalLesson } from './expressionLessons';
 import { validateLessonSet } from './schema';
 import type { Lesson, LessonValidationResult } from './types';
 
@@ -116,6 +117,8 @@ const BUNDLED: unknown[] = [
   sparseTransposeLesson,
   staticLinkedListLesson,
   polynomialAddLesson,
+  infixToPostfixLesson,
+  postfixEvalLesson,
 ];
 
 /** Courses shipped with the app itself (bubble, factorial, stack, queue, linked-list, binary-tree). */

@@ -1,3 +1,11 @@
+/*
+ * 中文导读：递归把数组分成两半，再把两个有序子数组合并成一个有序数组。
+ * 阅读顺序：先看递归终止条件；再看 merge 中两个指针如何取较小值；最后看临时数组什么时候拷回。
+ * 关键不变量：进入 merge 时左右两半各自有序；每取一个元素后，输出前缀仍有序。
+ * 易错点：临时数组下标算错；剩余元素忘记拷贝；递归边界导致死循环；合并时破坏稳定性。
+ * 复杂度：O(n log n) 时间，O(n) 额外空间，稳定。
+ */
+
 // AlgoViz reference implementation: merge sort (C++17).
 // std::sort / std::stable_sort are deliberately not used.
 //
@@ -14,39 +22,45 @@
 #include <vector>
 
 // The buffer is shared across recursive calls; ties take the left run, which keeps the merge stable.
-void merge_range(std::vector<int>& values,
-                 std::vector<int>& buffer,
-                 int left,
-                 int middle,
-                 int right) {
+// 作用：合并左右两段有序区间；每次取较小者写入 buffer，再拷回原数组。
+void merge_range(std::vector<int> &values, std::vector<int> &buffer, int left, int middle,
+                 int right)
+{
     int i = left;
     int j = middle + 1;
     int k = left;
 
-    while (i <= middle && j <= right) {
+    while (i <= middle && j <= right)
+    {
         // Take the left run on ties to preserve stability.
-        if (values[static_cast<std::size_t>(i)] <= values[static_cast<std::size_t>(j)]) {
+        if (values[static_cast<std::size_t>(i)] <= values[static_cast<std::size_t>(j)])
+        {
             buffer[static_cast<std::size_t>(k++)] = values[static_cast<std::size_t>(i++)];
-        } else {
+        }
+        else
+        {
             buffer[static_cast<std::size_t>(k++)] = values[static_cast<std::size_t>(j++)];
         }
     }
-    while (i <= middle) {
+    while (i <= middle)
+    {
         buffer[static_cast<std::size_t>(k++)] = values[static_cast<std::size_t>(i++)];
     }
-    while (j <= right) {
+    while (j <= right)
+    {
         buffer[static_cast<std::size_t>(k++)] = values[static_cast<std::size_t>(j++)];
     }
-    for (k = left; k <= right; ++k) {
+    for (k = left; k <= right; ++k)
+    {
         values[static_cast<std::size_t>(k)] = buffer[static_cast<std::size_t>(k)];
     }
 }
 
-void merge_sort_range(std::vector<int>& values,
-                      std::vector<int>& buffer,
-                      int left,
-                      int right) {
-    if (left >= right) {
+// 作用：递归拆分区间，排序两半后合并；终止条件是区间不足两个元素。
+void merge_sort_range(std::vector<int> &values, std::vector<int> &buffer, int left, int right)
+{
+    if (left >= right)
+    {
         return;
     }
     int middle = left + (right - left) / 2;
@@ -56,20 +70,26 @@ void merge_sort_range(std::vector<int>& values,
 }
 
 // Recursive divide-and-conquer; the merge step takes the smaller front element to stay stable.
-void merge_sort(std::vector<int>& values) {
-    if (values.size() < 2) {
+// 作用：归并排序入口：分配与数组等长的 buffer，只分配一次。
+void merge_sort(std::vector<int> &values)
+{
+    if (values.size() < 2)
+    {
         return;
     }
     std::vector<int> buffer(values.size());
     merge_sort_range(values, buffer, 0, static_cast<int>(values.size()) - 1);
 }
 
-int main() {
+// 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
+int main()
+{
     std::vector<int> values{9, 4, 7, 2, 6, 1, 3, 8, 5};
     merge_sort(values);
 
     std::cout << "sorted:";
-    for (int value : values) {
+    for (int value : values)
+    {
         std::cout << ' ' << value;
     }
     std::cout << '\n';

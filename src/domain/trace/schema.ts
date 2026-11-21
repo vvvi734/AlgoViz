@@ -16,6 +16,7 @@
 import { z } from 'zod';
 import { kmpSnapshotSchema } from './kmpSchema';
 import { sparseTransposeSnapshotSchema } from './sparseTransposeSchema';
+import { expressionSnapshotSchema } from './expressionSchema';
 export type { KmpSnapshot, KmpOperation, KmpPhase } from './kmpSchema';
 export type {
   SparseTransposeSnapshot,
@@ -34,6 +35,19 @@ export {
   sparseTranspose,
   sparseTransposeSnapshotSchema,
 } from './sparseTransposeSchema';
+export type {
+  ExpressionAlgorithm,
+  ExpressionOperation,
+  ExpressionOperands,
+  ExpressionSnapshot,
+  ExpressionStackItem,
+} from './expressionSchema';
+export {
+  EXPRESSION_ALGORITHMS,
+  EXPRESSION_OPERATIONS,
+  expressionOperandsSchema,
+  expressionStackItemSchema,
+} from './expressionSchema';
 
 /** Protocol version. Bump this only with a deliberate breaking change. */
 export const TRACE_SCHEMA_VERSION = 1 as const;
@@ -102,8 +116,25 @@ export const structureItemSchema = z.object({
     (value) => JSON.stringify(value).length <= LIMITS.MAX_VARIABLE_VALUE_JSON_BYTES,
     'structure element value too large',
   ),
+  /** Physical slot for an array-backed stack or circular queue (0-based). */
+  slot: z.number().int().min(0).max(39).optional(),
 });
 export type StructureItem = z.infer<typeof structureItemSchema>;
+
+/**
+ * Storage modes actually taught by chapter 3. The legacy stack/queue trace has
+ * no `storage` field and remains valid; new traces always declare one so the
+ * renderer never has to infer the representation from a shape.
+ */
+export const STRUCTURE_STORAGE_MODES = ['array', 'linked', 'circular'] as const;
+export type StructureStorageMode = (typeof STRUCTURE_STORAGE_MODES)[number];
+
+export const structureNodeSchema = z.object({
+  id: z.string().min(1).max(LIMITS.MAX_NAME_CHARS),
+  value: jsonValueSchema,
+  nextId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable(),
+});
+export type StructureNode = z.infer<typeof structureNodeSchema>;
 
 /**
  * Additive Stage 7B structure semantics. `items` is the container AFTER the
@@ -122,6 +153,20 @@ export const structureSnapshotSchema = z
     items: z.array(structureItemSchema).max(40),
     targetId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).optional(),
     removed: structureItemSchema.optional(),
+    /** Chapter 3 storage declaration; absent on legacy traces. */
+    storage: z.enum(STRUCTURE_STORAGE_MODES).optional(),
+    capacity: z.number().int().min(1).max(40).optional(),
+    /** Sequential stack: index of the current top, -1 when empty. */
+    top: z.number().int().min(-1).max(39).optional(),
+    /** Circular queue: index of the front element and next free rear slot. */
+    front: z.number().int().min(0).max(39).optional(),
+    rear: z.number().int().min(0).max(39).optional(),
+    count: z.number().int().min(0).max(40).optional(),
+    /** Linked stack/queue nodes, including the queue's dummy head. */
+    nodes: z.array(structureNodeSchema).max(40).optional(),
+    topId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable().optional(),
+    frontId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable().optional(),
+    rearId: z.string().min(1).max(LIMITS.MAX_NAME_CHARS).nullable().optional(),
   })
   .superRefine((snapshot, ctx) => {
     const ids = new Set<string>();
@@ -156,6 +201,102 @@ export const structureSnapshotSchema = z
           path: ['targetId'],
           message: 'targetId must identify the removed element',
         });
+      }
+    }
+
+    if (snapshot.storage === undefined) return;
+
+    if (snapshot.storage === 'array') {
+      if (snapshot.kind !== 'stack') {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['storage'], message: 'array storage is only valid for a stack' });
+      }
+      if (snapshot.capacity === undefined || snapshot.top === undefined) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['capacity'], message: 'array stack must declare capacity and top' });
+      }
+      const expectedTop = snapshot.items.length - 1;
+      if (snapshot.top !== undefined && snapshot.top !== expectedTop) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['top'], message: 'top must index the last live stack element' });
+      }
+    }
+
+    if (snapshot.storage === 'circular') {
+      if (snapshot.kind !== 'queue') {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['storage'], message: 'circular storage is only valid for a queue' });
+      }
+      if (
+        snapshot.capacity === undefined ||
+        snapshot.front === undefined ||
+        snapshot.rear === undefined ||
+        snapshot.count === undefined
+      ) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['capacity'], message: 'circular queue must declare capacity, front, rear and count' });
+        return;
+      }
+      const capacity = snapshot.capacity;
+      if (snapshot.front >= capacity || snapshot.rear >= capacity) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['rear'], message: 'front/rear must lie inside the array' });
+      }
+      if (snapshot.count !== snapshot.items.length) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['count'], message: 'count must equal the live item count' });
+      }
+      if (snapshot.count > capacity - 1) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['count'], message: 'the reserved-slot convention leaves at most capacity - 1 items' });
+      }
+      const empty = snapshot.front === snapshot.rear;
+      if ((snapshot.count === 0) !== empty) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['front'], message: 'front == rear must mean empty' });
+      }
+      const full = (snapshot.rear + 1) % capacity === snapshot.front;
+      if ((snapshot.count === capacity - 1) !== full) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['rear'], message: '(rear + 1) % capacity == front must mean full' });
+      }
+      const slots = new Set<number>();
+      snapshot.items.forEach((item, index) => {
+        if (item.slot === undefined) {
+          ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['items', index, 'slot'], message: 'circular queue items need physical slots' });
+          return;
+        }
+        if (item.slot >= capacity || slots.has(item.slot)) {
+          ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['items', index, 'slot'], message: 'slots must be unique and inside the array' });
+        }
+        slots.add(item.slot);
+      });
+    }
+
+    if (snapshot.storage === 'linked') {
+      if (!snapshot.nodes) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['nodes'], message: 'linked storage must snapshot its nodes' });
+        return;
+      }
+      const nodeIds = new Set<string>();
+      snapshot.nodes.forEach((node, index) => {
+        if (nodeIds.has(node.id)) {
+          ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['nodes', index, 'id'], message: `duplicate node id "${node.id}"` });
+        }
+        nodeIds.add(node.id);
+      });
+      snapshot.nodes.forEach((node, index) => {
+        if (node.nextId !== null && !nodeIds.has(node.nextId)) {
+          ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['nodes', index, 'nextId'], message: 'nextId must refer to a snapped node' });
+        }
+      });
+      if (snapshot.kind === 'stack') {
+        if (snapshot.topId === undefined) {
+          ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['topId'], message: 'linked stack must declare topId' });
+        }
+        if (snapshot.topId !== null && snapshot.topId !== undefined && !nodeIds.has(snapshot.topId)) {
+          ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['topId'], message: 'topId must refer to a node' });
+        }
+      } else {
+        if (snapshot.frontId === undefined || snapshot.rearId === undefined) {
+          ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['frontId'], message: 'linked queue must declare frontId and rearId' });
+        }
+        for (const field of ['frontId', 'rearId'] as const) {
+          const value = snapshot[field];
+          if (value !== null && value !== undefined && !nodeIds.has(value)) {
+            ctx.addIssue({ code: z.ZodIssueCode.custom, path: [field], message: `${field} must refer to a node` });
+          }
+        }
       }
     }
   });
@@ -7844,6 +7985,7 @@ export type PolynomialSnapshot = z.infer<typeof polynomialSnapshotSchema>;
 export const structureSchema = z.union([
   kmpSnapshotSchema,
   sparseTransposeSnapshotSchema,
+  expressionSnapshotSchema,
   sortingSnapshotSchema,
   searchSnapshotSchema,
   hashSnapshotSchema,

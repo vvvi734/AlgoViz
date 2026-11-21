@@ -1,5 +1,5 @@
 import { createTraceCollector } from '../../domain/trace/collector';
-import type { RunMode, TestCaseResult, TraceFrame } from '../../domain/trace/types';
+import type { RawTraceFrame, RunMode, TestCaseResult } from '../../domain/trace/types';
 
 export interface JsProgramRequest {
   mode: RunMode;
@@ -9,7 +9,7 @@ export interface JsProgramRequest {
 }
 
 export type JsProgramResult =
-  | { ok: true; mode: 'visual'; frames: TraceFrame[] }
+  | { ok: true; mode: 'visual'; frames: RawTraceFrame[] }
   | { ok: true; mode: 'test'; result: TestCaseResult[] }
   | { ok: false; error: string };
 

@@ -1,3 +1,13 @@
+/*
+ * 中文导读：利用左小右大的中序顺序，把查找、插入、删除限制在一条根到叶的路径上。
+ * 阅读顺序：先看 insert() 如何比较并下探；再看 search() 的循环/递归；最后看 delete() 的三种情况，尤其两个孩子的替换。
+ * 关键不变量：任意结点左子树所有键小于它，右子树所有键大于它；中序遍历得到升序。
+ * 易错点：删除双子结点时只改值却忘记删除后继；重复键处理不一致；用引用/指针更新父结点时接错边。
+ * 复杂度：平均 O(log n)，最坏 O(n)（退化成链）；额外空间 O(n)。
+ * 本文件是标准库对照版：重点看“库函数调用”与手写算法在接口、稳定性、边界上的差异。
+ * This is the standard-library comparison file: focus on interface, stability and boundary differences from the hand-written algorithm.
+ */
+
 // AlgoViz convenience implementation: ordered set with std::set (C++17).
 // std::set is a balanced binary search tree; iteration is ascending.
 //
@@ -11,19 +21,22 @@
 // Convention: Unique integer keys; ordering is ascending; no manual tree structure
 //   is exposed.
 
-
 #include <iostream>
 #include <set>
 
-int main() {
+// 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
+int main()
+{
     // `std::set` keeps unique keys ordered; `count` is membership, not an index lookup.
     std::set<int> tree;
-    for (int key : {5, 2, 7, 1, 4, 6, 8, 3}) {
+    for (int key : {5, 2, 7, 1, 4, 6, 8, 3})
+    {
         tree.insert(key);
     }
 
     std::cout << "inorder:";
-    for (int value : tree) {
+    for (int value : tree)
+    {
         std::cout << ' ' << value;
     }
     std::cout << '\n';
@@ -32,7 +45,8 @@ int main() {
 
     tree.erase(5);
     std::cout << "after remove 5:";
-    for (int value : tree) {
+    for (int value : tree)
+    {
         std::cout << ' ' << value;
     }
     std::cout << '\n';

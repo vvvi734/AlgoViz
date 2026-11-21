@@ -237,7 +237,11 @@ describe('INPUT-04 structured linear inputs', () => {
     const stackCapacity = randomGuidedDraft('stack', 'capacity', seeded(1));
     const stackBuilt = buildGuidedInput('stack', stackCapacity);
     expect(stackBuilt.ok).toBe(true);
-    expect(stackCapacity.rows.filter((item) => item.op === 'push')).toHaveLength(STRUCTURE_LIMITS.MAX_ITEMS);
+    // The default array stack reserves exactly four slots; the capacity
+    // scenario fills all of them, while linked storage may grow to ten.
+    expect(stackCapacity.rows.filter((item) => item.op === 'push')).toHaveLength(
+      STRUCTURE_LIMITS.STACK_CAPACITY,
+    );
 
     const stackClear = randomGuidedDraft('stack', 'clear', seeded(2));
     expect(stackClear.rows.slice(-3).map((item) => item.op)).toEqual(['pop', 'pop', 'pop']);

@@ -1,4 +1,12 @@
 /*
+ * 中文导读：只保存非零三元组；转置时交换行/列下标，并保持按行优先的顺序。
+ * 阅读顺序：先看 Triple 的 row/col/value 和 rows/cols/nonzero；再看普通转置如何扫描列；最后看快速转置的列计数与起始位置。
+ * 关键不变量：转置后三元组仍按行优先排列；行列维度互换但非零元素个数不变。
+ * 易错点：行列下标写反；快速转置的起始位置数组算错；零元素被保存；输出顺序不是行优先。
+ * 复杂度：普通转置 O(cols × nonzeros)，快速转置 O(cols + nonzeros)，空间 O(nonzeros)。
+ */
+
+/*
  * Sparse matrix fast transpose — original C implementation.
  *
  * Convention: 0-based matrix coordinates, triplet positions and cpot slots; input
@@ -21,26 +29,29 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct {
+typedef struct
+{
     int row;
     int col;
     int value;
 } Triple;
 
-typedef struct {
+typedef struct
+{
     int rows;
     int cols;
     int count;
     Triple *data;
 } TripletList;
 
+// 作用：按行优先输出三元组 (row, col, value)；只读。
 static void print_triplets(const TripletList *matrix)
 {
     int k;
     printf("shape = %d x %d, nnz = %d\n", matrix->rows, matrix->cols, matrix->count);
-    for (k = 0; k < matrix->count; ++k) {
-        printf("(%d, %d, %d)\n",
-               matrix->data[k].row, matrix->data[k].col, matrix->data[k].value);
+    for (k = 0; k < matrix->count; ++k)
+    {
+        printf("(%d, %d, %d)\n", matrix->data[k].row, matrix->data[k].col, matrix->data[k].value);
     }
 }
 
@@ -49,6 +60,7 @@ static void print_triplets(const TripletList *matrix)
  * invalid dimensions. dst must not alias src.
  */
 // `cpot[col]` is the next write position for that column; writing a triple increments it for the next entry.
+// 作用：快速转置：先统计每列非零个数，再累加得到每列起始位置，最后按原顺序填入目标三元组。
 static int fast_transpose(const TripletList *src, TripletList *dst)
 {
     int *num = NULL;
@@ -56,10 +68,12 @@ static int fast_transpose(const TripletList *src, TripletList *dst)
     int c;
     int k;
 
-    if (src->rows < 0 || src->cols < 0 || src->count < 0) {
+    if (src->rows < 0 || src->cols < 0 || src->count < 0)
+    {
         return 0;
     }
-    if (src->count > 0 && (src->data == NULL || src->cols == 0)) {
+    if (src->count > 0 && (src->data == NULL || src->cols == 0))
+    {
         return 0;
     }
 
@@ -67,20 +81,24 @@ static int fast_transpose(const TripletList *src, TripletList *dst)
     dst->cols = src->rows;
     dst->count = src->count;
     dst->data = NULL;
-    if (src->count > 0) {
+    if (src->count > 0)
+    {
         dst->data = (Triple *)malloc((size_t)src->count * sizeof(Triple));
-        if (dst->data == NULL) {
+        if (dst->data == NULL)
+        {
             return 0;
         }
     }
 
-    if (src->cols == 0) {
+    if (src->cols == 0)
+    {
         return 1;
     }
 
     num = (int *)calloc((size_t)src->cols, sizeof(int));
     cpot = (int *)calloc((size_t)src->cols, sizeof(int));
-    if (num == NULL || cpot == NULL) {
+    if (num == NULL || cpot == NULL)
+    {
         free(num);
         free(cpot);
         free(dst->data);
@@ -89,18 +107,21 @@ static int fast_transpose(const TripletList *src, TripletList *dst)
     }
 
     /* Phase 1: num[c] counts non-zeros in original column c. */
-    for (k = 0; k < src->count; ++k) {
+    for (k = 0; k < src->count; ++k)
+    {
         ++num[src->data[k].col];
     }
 
     /* Phase 2: cpot[c] is the first result slot of column c. */
     cpot[0] = 0;
-    for (c = 1; c < src->cols; ++c) {
+    for (c = 1; c < src->cols; ++c)
+    {
         cpot[c] = cpot[c - 1] + num[c - 1];
     }
 
     /* Phase 3: place each source triplet directly into its final slot. */
-    for (k = 0; k < src->count; ++k) {
+    for (k = 0; k < src->count; ++k)
+    {
         int q = cpot[src->data[k].col];
         dst->data[q].row = src->data[k].col;
         dst->data[q].col = src->data[k].row;
@@ -113,20 +134,17 @@ static int fast_transpose(const TripletList *src, TripletList *dst)
     return 1;
 }
 
+// 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main(void)
 {
     Triple source_data[] = {
-        {0, 0, 3},
-        {0, 2, 7},
-        {1, 2, 5},
-        {2, 1, 4},
-        {3, 0, 6},
-        {3, 2, 8},
+        {0, 0, 3}, {0, 2, 7}, {1, 2, 5}, {2, 1, 4}, {3, 0, 6}, {3, 2, 8},
     };
     TripletList source = {4, 5, 6, source_data};
     TripletList result = {0, 0, 0, NULL};
 
-    if (!fast_transpose(&source, &result)) {
+    if (!fast_transpose(&source, &result))
+    {
         fprintf(stderr, "transpose failed\n");
         return 1;
     }

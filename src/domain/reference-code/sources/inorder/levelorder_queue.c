@@ -1,3 +1,11 @@
+/*
+ * 中文导读：按访问根结点的时机区分前序、中序、后序；层序遍历则借助队列逐层访问。
+ * 阅读顺序：先看递归函数中 visit 放在两次递归的哪一侧；再看显式栈版本为什么要一路压左孩子；最后看层序队列的 size 分层。
+ * 关键不变量：递归栈保存的是尚未访问完的祖先；中序输出始终按左—根—右。
+ * 易错点：前/中/后序访问语句位置放错；显式栈弹栈后忘记右子树；层序不记录每层 size 导致分层错误；空树边界。
+ * 复杂度：O(n) 时间，递归 O(h) 栈 / 层序 O(width) 队列。
+ */
+
 // AlgoViz reference implementation: level-order traversal with a FIFO queue (C11).
 // This file adds the queue-based fourth traversal.
 //
@@ -15,27 +23,34 @@
 
 #define MAX_NODES 40
 
-typedef struct BiTNode {
+typedef struct BiTNode
+{
     int data;
-    struct BiTNode* left;
-    struct BiTNode* right;
+    struct BiTNode *left;
+    struct BiTNode *right;
 } BiTNode;
 
-typedef struct {
-    BiTNode* items[MAX_NODES];
+typedef struct
+{
+    BiTNode *items[MAX_NODES];
     int front;
     int rear;
     int count;
 } Queue;
 
-void queue_init(Queue* q) {
+// 作用：初始化顺序队列：front=rear=0，元素个数为 0。
+void queue_init(Queue *q)
+{
     q->front = 0;
     q->rear = 0;
     q->count = 0;
 }
 
-int queue_enqueue(Queue* q, BiTNode* node) {
-    if (q->count == MAX_NODES) {
+// 作用：把树结点指针放入顺序队列尾部；队列满返回 0。
+int queue_enqueue(Queue *q, BiTNode *node)
+{
+    if (q->count == MAX_NODES)
+    {
         return 0;
     }
     q->items[q->rear] = node;
@@ -44,11 +59,14 @@ int queue_enqueue(Queue* q, BiTNode* node) {
     return 1;
 }
 
-BiTNode* queue_dequeue(Queue* q) {
-    if (q->count == 0) {
+// 作用：从队首取出树结点指针；队列空返回 NULL。
+BiTNode *queue_dequeue(Queue *q)
+{
+    if (q->count == 0)
+    {
         return NULL;
     }
-    BiTNode* node = q->items[q->front];
+    BiTNode *node = q->items[q->front];
     q->front = (q->front + 1) % MAX_NODES;
     q->count--;
     return node;
@@ -56,8 +74,11 @@ BiTNode* queue_dequeue(Queue* q) {
 
 // Visit each node exactly once, level by level and left to right.
 // The FIFO queue holds pending nodes; enqueue children after visiting the parent to keep level order.
-void level_order(BiTNode* root) {
-    if (root == NULL) {
+// 作用：借助队列逐层访问二叉树：先根，出队后把左右孩子依次入队；用每层 size 分层输出。
+void level_order(BiTNode *root)
+{
+    if (root == NULL)
+    {
         return;
     }
 
@@ -65,20 +86,25 @@ void level_order(BiTNode* root) {
     queue_init(&q);
     queue_enqueue(&q, root);
 
-    while (q.count > 0) {
-        BiTNode* node = queue_dequeue(&q);
+    while (q.count > 0)
+    {
+        BiTNode *node = queue_dequeue(&q);
         printf("%d ", node->data);
 
-        if (node->left != NULL) {
+        if (node->left != NULL)
+        {
             queue_enqueue(&q, node->left);
         }
-        if (node->right != NULL) {
+        if (node->right != NULL)
+        {
             queue_enqueue(&q, node->right);
         }
     }
 }
 
-int main(void) {
+// 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
+int main(void)
+{
     BiTNode one = {1, NULL, NULL};
     BiTNode three = {3, NULL, NULL};
     BiTNode six = {6, NULL, NULL};

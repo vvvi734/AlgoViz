@@ -135,7 +135,11 @@ describe('INPUT-04 — structured linear operation sequences', () => {
     fireEvent.change(operationSelects()[1]!, { target: { value: 'pop' } });
     fireEvent.click(screen.getByTestId('run-btn'));
     await waitFor(() =>
-      expect(mockedRun.mock.calls.at(-1)?.[2]).toEqual([['push', 7], ['pop']]),
+      expect(mockedRun.mock.calls.at(-1)?.[2]).toEqual({
+        storage: 'array',
+        capacity: 4,
+        operations: [['push', 7], ['pop']],
+      }),
     );
 
     await openAlgorithm('queue');
@@ -145,7 +149,11 @@ describe('INPUT-04 — structured linear operation sequences', () => {
     fireEvent.change(operationSelects()[1]!, { target: { value: 'dequeue' } });
     fireEvent.click(screen.getByTestId('run-btn'));
     await waitFor(() =>
-      expect(mockedRun.mock.calls.at(-1)?.[2]).toEqual([['enqueue', 4], ['dequeue']]),
+      expect(mockedRun.mock.calls.at(-1)?.[2]).toEqual({
+        storage: 'circular',
+        capacity: 5,
+        operations: [['enqueue', 4], ['dequeue']],
+      }),
     );
   });
 

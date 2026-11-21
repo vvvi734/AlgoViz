@@ -6,7 +6,14 @@ import { runJsProgram } from '../../runtime/js/program';
 import type { TraceFrame } from '../trace/types';
 
 const expected = baseline as Record<string, TraceFrame[]>;
-const nonLegacyIds = new Set(['kmp', 'sparse-transpose', 'static-linked-list', 'polynomial-add']);
+const nonLegacyIds = new Set([
+  'kmp',
+  'sparse-transpose',
+  'static-linked-list',
+  'polynomial-add',
+  'infix-to-postfix',
+  'postfix-eval',
+]);
 const legacyIds = Object.keys(catalog).filter((id) => !nonLegacyIds.has(id));
 
 function visualFrames(code: string, input: unknown): TraceFrame[] {
@@ -15,9 +22,9 @@ function visualFrames(code: string, input: unknown): TraceFrame[] {
   return result.frames;
 }
 
-describe('algorithm catalogue (35 legacy presets plus four real-trace additions)', () => {
+describe('algorithm catalogue (35 legacy presets plus six real-trace additions)', () => {
   it('keeps all legacy presets and adds the real-trace additions', () => {
-    expect(algorithmIds()).toHaveLength(39);
+    expect(algorithmIds()).toHaveLength(41);
     expect(legacyIds).toHaveLength(35);
     expect(Object.keys(expected)).toHaveLength(35);
     expect(catalog.kmp.time).toBe('O(n + m)');

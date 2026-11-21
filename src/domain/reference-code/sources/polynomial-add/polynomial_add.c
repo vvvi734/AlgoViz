@@ -1,4 +1,12 @@
 /*
+ * 中文导读：用按指数递减的单链表保存非零项，合并同类项并释放不再需要的结点。
+ * 阅读顺序：先看 Term 的 coef/exp/next；再看两个链表按指数比较的三路分支；最后看相等指数相加为 0 时如何删除结点。
+ * 关键不变量：每条链表内部指数严格递减且无零系数项；结果链表同样保持这个不变量。
+ * 易错点：同指数相加为 0 仍保留结点；指针提前移动丢失后继；结果链表尾插未更新尾指针；释放了仍在使用的结点。
+ * 复杂度：O(m+n) 时间，O(1) 额外空间（复用原结点时）。
+ */
+
+/*
  * Univariate polynomial addition — independent C teaching implementation.
  * 一元多项式相加——独立 C 教学实现。
  *
@@ -17,15 +25,19 @@
 
 // Equal exponents add; a zero sum creates no result node.
 
-typedef struct PolyNode {
+typedef struct PolyNode
+{
     int coefficient;
     int exponent;
     struct PolyNode *next;
 } PolyNode;
 
-static PolyNode *make_node(int coefficient, int exponent) {
+// 作用：创建一个新结点并初始化值和指针；调用者负责释放。
+static PolyNode *make_node(int coefficient, int exponent)
+{
     PolyNode *node = (PolyNode *)malloc(sizeof(PolyNode));
-    if (node == NULL) {
+    if (node == NULL)
+    {
         fprintf(stderr, "out of memory\n");
         exit(1);
     }
@@ -35,8 +47,11 @@ static PolyNode *make_node(int coefficient, int exponent) {
     return node;
 }
 
-static void free_poly(PolyNode *head) {
-    while (head != NULL) {
+// 作用：释放多项式链表全部结点；先保存 next，再释放当前项。
+static void free_poly(PolyNode *head)
+{
+    while (head != NULL)
+    {
         PolyNode *next = head->next;
         free(head);
         head = next;
@@ -44,10 +59,14 @@ static void free_poly(PolyNode *head) {
 }
 
 /* Append a newly allocated term to the result tail. */
-static void append_term(PolyNode **head, PolyNode **tail, int coefficient, int exponent) {
+// 作用：在结果多项式尾部追加一项；维护 tail 指针，保证尾插 O(1)。
+static void append_term(PolyNode **head, PolyNode **tail, int coefficient, int exponent)
+{
     PolyNode *node = make_node(coefficient, exponent);
-    if (*head == NULL) *head = node;
-    else (*tail)->next = node;
+    if (*head == NULL)
+        *head = node;
+    else
+        (*tail)->next = node;
     *tail = node;
 }
 
@@ -55,30 +74,44 @@ static void append_term(PolyNode **head, PolyNode **tail, int coefficient, int e
  * Merge A and B. Both inputs stay owned by the caller.
  * Invariant: result is strictly descending and no zero-coefficient term exists.
  */
-static PolyNode *add_polynomials(const PolyNode *a, const PolyNode *b) {
+// 作用：按指数从高到低合并两条多项式：指数相等则系数相加，相加为 0 时不保留该项。
+static PolyNode *add_polynomials(const PolyNode *a, const PolyNode *b)
+{
     PolyNode *result = NULL;
     PolyNode *tail = NULL;
 
-    while (a != NULL || b != NULL) {
-        if (a != NULL && b != NULL) {
-            if (a->exponent == b->exponent) {
+    while (a != NULL || b != NULL)
+    {
+        if (a != NULL && b != NULL)
+        {
+            if (a->exponent == b->exponent)
+            {
                 int sum = a->coefficient + b->coefficient;
-                if (sum != 0) {                    /* cancellation drops the term */
+                if (sum != 0)
+                { /* cancellation drops the term */
                     append_term(&result, &tail, sum, a->exponent);
                 }
-                a = a->next;                       /* both cursors advance */
+                a = a->next; /* both cursors advance */
                 b = b->next;
-            } else if (a->exponent > b->exponent) {
-                append_term(&result, &tail, a->coefficient, a->exponent);
-                a = a->next;                       /* only A advances */
-            } else {
-                append_term(&result, &tail, b->coefficient, b->exponent);
-                b = b->next;                       /* only B advances */
             }
-        } else if (a != NULL) {
+            else if (a->exponent > b->exponent)
+            {
+                append_term(&result, &tail, a->coefficient, a->exponent);
+                a = a->next; /* only A advances */
+            }
+            else
+            {
+                append_term(&result, &tail, b->coefficient, b->exponent);
+                b = b->next; /* only B advances */
+            }
+        }
+        else if (a != NULL)
+        {
             append_term(&result, &tail, a->coefficient, a->exponent);
             a = a->next;
-        } else {
+        }
+        else
+        {
             append_term(&result, &tail, b->coefficient, b->exponent);
             b = b->next;
         }
@@ -86,35 +119,52 @@ static PolyNode *add_polynomials(const PolyNode *a, const PolyNode *b) {
     return result;
 }
 
-static void print_polynomial(const char *label, const PolyNode *head) {
+// 作用：按指数从高到低输出多项式；只读，不修改结点。
+static void print_polynomial(const char *label, const PolyNode *head)
+{
     const PolyNode *node;
     printf("%s = ", label);
-    if (head == NULL) {
+    if (head == NULL)
+    {
         printf("0\n");
         return;
     }
-    for (node = head; node != NULL; node = node->next) {
+    for (node = head; node != NULL; node = node->next)
+    {
         int coef = node->coefficient;
         int magnitude = coef < 0 ? -coef : coef;
-        if (node == head) {
-            if (coef < 0) printf("-");
-        } else {
+        if (node == head)
+        {
+            if (coef < 0)
+                printf("-");
+        }
+        else
+        {
             printf(coef < 0 ? " - " : " + ");
         }
-        if (node->exponent == 0) {
+        if (node->exponent == 0)
+        {
             printf("%d", magnitude);
-        } else if (node->exponent == 1) {
-            if (magnitude != 1) printf("%d", magnitude);
+        }
+        else if (node->exponent == 1)
+        {
+            if (magnitude != 1)
+                printf("%d", magnitude);
             printf("x");
-        } else {
-            if (magnitude != 1) printf("%d", magnitude);
+        }
+        else
+        {
+            if (magnitude != 1)
+                printf("%d", magnitude);
             printf("x^%d", node->exponent);
         }
     }
     printf("\n");
 }
 
-int main(void) {
+// 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
+int main(void)
+{
     /* A = 3x^4 + 2x^2 - 5, B = -3x^4 + 4x^3 + 7. */
     PolyNode *a = NULL;
     PolyNode *b = NULL;
@@ -133,7 +183,7 @@ int main(void) {
     result = add_polynomials(a, b);
     print_polynomial("A", a);
     print_polynomial("B", b);
-    print_polynomial("A+B", result);   /* 4x^3 + 2x^2 + 2 */
+    print_polynomial("A+B", result); /* 4x^3 + 2x^2 + 2 */
 
     free_poly(a);
     free_poly(b);

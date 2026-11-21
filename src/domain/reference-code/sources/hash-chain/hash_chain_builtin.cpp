@@ -1,3 +1,13 @@
+/*
+ * 中文导读：每个桶挂一条链表，冲突的元素共享同一个桶但保留为独立结点。
+ * 阅读顺序：先看 hash 函数和桶数组；再看 insert 为什么先查重；最后看 remove 如何跨过待删结点重接链表。
+ * 关键不变量：同一个键最多出现一次；每个结点只属于其哈希值对应的桶。
+ * 易错点：删除头结点不更新桶指针；哈希为负未取模；扩容后没有重新散列；比较键时只比哈希值。
+ * 复杂度：平均 O(1)，最坏 O(n)（全部冲突）；空间 O(n+buckets)。
+ * 本文件是标准库对照版：重点看“库函数调用”与手写算法在接口、稳定性、边界上的差异。
+ * This is the standard-library comparison file: focus on interface, stability and boundary differences from the hand-written algorithm.
+ */
+
 // AlgoViz convenience implementation: hash table with std::unordered_map.
 // unordered_map handles hashing, buckets and collision chains internally.
 //
@@ -10,13 +20,14 @@
 // Complexity: Expected time: O(1) per operation, O(n) worst; extra space O(n).
 // Convention: Unique integer keys; iteration order is unspecified.
 
-
 #include <iostream>
 #include <string>
 #include <unordered_map>
 #include <vector>
 
-int main() {
+// 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
+int main()
+{
     // `unordered_map` owns hashing and chains; iteration order is unspecified, so it is not sorted output.
     std::unordered_map<int, std::string> table;
     table[15] = "alpha";
@@ -24,7 +35,8 @@ int main() {
     table[8] = "gamma";
     table[29] = "delta";
 
-    for (const auto& [key, value] : table) {
+    for (const auto &[key, value] : table)
+    {
         std::cout << key << " -> " << value << '\n';
     }
     std::cout << "contains 29: " << (table.count(29) ? "yes" : "no") << '\n';

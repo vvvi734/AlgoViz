@@ -37,6 +37,8 @@ const COMPLEXITY_EN: Record<string, string> = {
     'Search O(n) · head/tail operations depend on how head/tail are maintained',
   '按值查找 O(n) · 已持有节点引用时局部改链 O(1)':
     'Search by value O(n) · local relinking O(1) when the node reference is already held',
+  '按位置定位 O(n) · 改游标 O(1) · 遍历 O(n)':
+    'Locate by position O(n) · relink cursors O(1) · traverse O(n)',
   '平均/期望 O(1 + α)；最坏 O(n)': 'Average/expected O(1 + α); worst O(n)',
   '平均/期望 O(1)；最坏 O(n)': 'Average/expected O(1); worst O(n)',
   '建堆 O(n) · 插删 O(log n) · 排序 O(n log n)':
@@ -54,6 +56,7 @@ const COMPLEXITY_EN: Record<string, string> = {
   'O(log_m n) 节点访问': 'O(log_m n) node visits',
   'O(log n) 节点访问': 'O(log n) node visits',
   '递归栈平均 O(log n)；最坏 O(n)': 'Recursion stack average O(log n); worst O(n)',
+  'O(m+n)（结果链新建结点）': 'O(m+n) (a new result chain is allocated)',
 };
 
 /** Translate the Chinese descriptor in a lesson complexity row. */

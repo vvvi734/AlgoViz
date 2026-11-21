@@ -17,6 +17,7 @@ import {
   guidedGraphSpec,
   guidedRandomScenarios,
   isArrayGuidedInputAlgorithm,
+  isExpressionGuidedInputAlgorithm,
   isGraphAlgorithmGuidedInput,
   isHashGuidedInputAlgorithm,
   isHeapGuidedInputAlgorithm,
@@ -35,6 +36,8 @@ import {
   type GuidedInputMode,
   type GuidedRandomScenario,
 } from '../../domain/algorithms/guidedInput';
+import type { ExpressionGuidedInputAlgorithm } from '../../domain/algorithms/expressionInput';
+import { ExpressionInputEditor } from './ExpressionInputEditor';
 import { emptySparseDraft } from '../../domain/algorithms/sparseInput';
 import {
   type StaticLinkedInputFields,
@@ -45,6 +48,7 @@ import type {
 import type {
   StructureGuidedInputAlgorithm,
   StructureOperationDraft,
+  StructureStorage,
 } from '../../domain/algorithms/structureInput';
 import { StructureOperationEditor } from './StructureOperationEditor';
 import { TreeInputEditor } from './TreeInputEditor';
@@ -96,6 +100,9 @@ const GRAPH_HINT_KEYS: Record<GraphGuidedInputAlgorithm, string> = {
 };
 
 function hintKeyFor(id: GuidedInputAlgorithm): string {
+  if (isExpressionGuidedInputAlgorithm(id)) {
+    return id === 'infix-to-postfix' ? 'expressionHintInfix' : 'expressionHintPostfix';
+  }
   if (isStaticLinkedGuidedInputAlgorithm(id)) return 'staticLinkedHint';
   if (isPolynomialGuidedInputAlgorithm(id)) return 'polynomialHint';
   if (isRecursionGuidedInputAlgorithm(id)) {
@@ -130,8 +137,8 @@ const STRUCTURE_HINT_KEYS: Record<StructureGuidedInputAlgorithm, string> = {
   doubly: 'structureHintDoubly',
   circular: 'structureHintCircular',
   seqlist: 'structureHintSeqlist',
-  stack: 'structureHintStack',
-  queue: 'structureHintQueue',
+  stack: 'structureHintStackStored',
+  queue: 'structureHintQueueStored',
 };
 
 /**
@@ -208,6 +215,13 @@ export function GuidedInputPanel({ lab }: { lab: LabController }) {
 
   const setStructureRows = (rows: StructureOperationDraft[]) => {
     setDraft((current) => ({ ...current, rows }));
+    setMode('custom');
+    setIssue(null);
+    setRandomFilled(false);
+  };
+
+  const setStructureStorage = (storage: StructureStorage) => {
+    setDraft((current) => ({ ...current, storage }));
     setMode('custom');
     setIssue(null);
     setRandomFilled(false);
@@ -374,6 +388,14 @@ export function GuidedInputPanel({ lab }: { lab: LabController }) {
         ) : null}
       </div>
 
+      {isExpressionGuidedInputAlgorithm(id) ? (
+        <ExpressionInputEditor
+          algorithm={id as ExpressionGuidedInputAlgorithm}
+          value={draft.text}
+          onChange={(value) => setField('text', value)}
+        />
+      ) : null}
+
       {isRecursionGuidedInputAlgorithm(id) ? (
         <RecursionInputEditor
           algorithm={id as RecursionGuidedInputAlgorithm}
@@ -387,8 +409,10 @@ export function GuidedInputPanel({ lab }: { lab: LabController }) {
           algorithm={id as StructureGuidedInputAlgorithm}
           rows={draft.rows}
           initialValues={draft.values}
+          storage={draft.storage}
           onChangeRows={setStructureRows}
           onChangeInitialValues={(value) => setField('values', value)}
+          onChangeStorage={setStructureStorage}
         />
       ) : null}
 

@@ -2,8 +2,11 @@ import { useEffect, useState } from 'react';
 import { useI18n } from '../../i18n/I18nProvider';
 import {
   STRUCTURE_LIMITS,
+  defaultStructureStorage,
   structureFieldLabelKey,
   structureOperationSpecs,
+  structureStorageOptions,
+  type StructureStorage,
   type StructureGuidedInputAlgorithm,
   type StructureOperationDraft,
 } from '../../domain/algorithms/structureInput';
@@ -12,8 +15,10 @@ interface StructureOperationEditorProps {
   algorithm: StructureGuidedInputAlgorithm;
   rows: StructureOperationDraft[];
   initialValues: string;
+  storage?: string;
   onChangeRows: (rows: StructureOperationDraft[]) => void;
   onChangeInitialValues: (value: string) => void;
+  onChangeStorage?: (storage: StructureStorage) => void;
 }
 
 function nextRowId(rows: StructureOperationDraft[]): string {
@@ -31,11 +36,17 @@ export function StructureOperationEditor({
   algorithm,
   rows,
   initialValues,
+  storage,
   onChangeRows,
   onChangeInitialValues,
+  onChangeStorage,
 }: StructureOperationEditorProps) {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const specs = structureOperationSpecs(algorithm);
+  const storageOptions = structureStorageOptions(algorithm);
+  const selectedStorage = storage && storageOptions.includes(storage as StructureStorage)
+    ? (storage as StructureStorage)
+    : defaultStructureStorage(algorithm);
   const [collapsed, setCollapsed] = useState(false);
 
   useEffect(() => {
@@ -95,6 +106,52 @@ export function StructureOperationEditor({
 
   return (
     <div className="structure-editor" data-testid="structure-editor" data-algorithm={algorithm}>
+      {storageOptions.length > 0 ? (
+        <div className="structure-storage-row">
+          <label className="structure-field structure-storage-field">
+            <span>{lang === 'zh' ? '存储方式' : 'Storage'}</span>
+            <select
+              className="input"
+              data-testid="structure-storage"
+              value={selectedStorage}
+              onChange={(event) => onChangeStorage?.(event.target.value as StructureStorage)}
+            >
+              {storageOptions.map((option) => (
+                <option key={option} value={option}>
+                  {option === 'array'
+                    ? lang === 'zh'
+                      ? '顺序栈 · 数组 + top'
+                      : 'Sequential stack · array + top'
+                    : option === 'linked'
+                      ? algorithm === 'stack'
+                        ? lang === 'zh'
+                          ? '链栈 · top 指针'
+                          : 'Linked stack · top pointer'
+                        : lang === 'zh'
+                          ? '链队列 · 头尾指针'
+                          : 'Linked queue · head/tail'
+                      : lang === 'zh'
+                        ? '循环队列 · 取模回绕'
+                        : 'Circular queue · modulo wrap'}
+                </option>
+              ))}
+            </select>
+          </label>
+          <span className="structure-capacity-note" data-testid="structure-storage-note">
+            {selectedStorage === 'circular'
+              ? lang === 'zh'
+                ? '牺牲一个单元：容量 5 的数组最多存 4 个元素。'
+                : 'One slot is reserved: a capacity-5 array stores at most 4 items.'
+              : selectedStorage === 'array'
+                ? lang === 'zh'
+                  ? `顺序栈容量 ${STRUCTURE_LIMITS.STACK_CAPACITY}，栈满后 push 会被拒绝。`
+                  : `Sequential stack capacity ${STRUCTURE_LIMITS.STACK_CAPACITY}; push is rejected when full.`
+                : lang === 'zh'
+                  ? '链式存储不预分配容量，只受操作数量限制。'
+                  : 'Linked storage allocates no fixed capacity; only the operation limit applies.'}
+          </span>
+        </div>
+      ) : null}
       {algorithm === 'seqlist' ? (
         <div className="structure-initial">
           <label className="structure-field structure-initial-field">

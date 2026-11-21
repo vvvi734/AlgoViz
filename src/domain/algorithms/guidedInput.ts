@@ -83,10 +83,20 @@ import {
   type StaticLinkedOperationRow,
   type PolynomialTermRow,
 } from './chapter2Input';
+import {
+  EXPRESSION_GUIDED_INPUT_ALGORITHMS,
+  EXPRESSION_RANDOM_SCENARIOS,
+  buildExpressionInput,
+  expressionDraftFromInput,
+  isExpressionGuidedInputAlgorithm,
+  randomExpressionDraft,
+} from './expressionInput';
 
 export { isStructureGuidedInputAlgorithm } from './structureInput';
 export { isSparseGuidedInputAlgorithm } from './sparseInput';
 export { isRecursionGuidedInputAlgorithm } from './recursionInput';
+export { isExpressionGuidedInputAlgorithm } from './expressionInput';
+export type { ExpressionGuidedInputAlgorithm } from './expressionInput';
 export type { StructureOperationDraft, StructureOperationSpec } from './structureInput';
 export type { TreeGuidedInputAlgorithm, TreeInputFields } from './treeInput';
 export type { HeapInputFields, HeapOperation } from './heapInput';
@@ -135,6 +145,7 @@ export const GUIDED_INPUT_ALGORITHMS = [
   ...RECURSION_GUIDED_INPUT_ALGORITHMS,
   STATIC_LINKED_GUIDED_INPUT,
   POLYNOMIAL_GUIDED_INPUT,
+  ...EXPRESSION_GUIDED_INPUT_ALGORITHMS,
 ] as const;
 export type GuidedInputAlgorithm = (typeof GUIDED_INPUT_ALGORITHMS)[number];
 
@@ -202,6 +213,8 @@ export const GUIDED_INPUT_LANGUAGE: Record<GuidedInputAlgorithm, CodeLanguage> =
   fib: 'python',
   'static-linked-list': 'python',
   'polynomial-add': 'python',
+  'infix-to-postfix': 'python',
+  'postfix-eval': 'python',
 };
 
 export interface GuidedInputDraft {
@@ -221,6 +234,8 @@ export interface GuidedInputDraft {
   operations: string;
   /** INPUT-04 structured rows for the linear-structure operation editor. */
   rows: StructureOperationDraft[];
+  /** Chapter 3 storage mode for stack/queue; empty for other structures. */
+  storage?: string;
   /** INPUT-05 traversal mode; tree/AVL/B-tree commands and heap operation. */
   mode: string;
   command: string;
@@ -357,6 +372,8 @@ const RANDOM_SCENARIOS: Record<GuidedInputAlgorithm, readonly GuidedRandomScenar
   ...RECURSION_RANDOM_SCENARIOS,
   [STATIC_LINKED_GUIDED_INPUT]: STATIC_LINKED_RANDOM_SCENARIOS,
   [POLYNOMIAL_GUIDED_INPUT]: POLYNOMIAL_RANDOM_SCENARIOS,
+  'infix-to-postfix': EXPRESSION_RANDOM_SCENARIOS,
+  'postfix-eval': EXPRESSION_RANDOM_SCENARIOS,
 };
 
 export function isGuidedInputAlgorithm(id: string): id is GuidedInputAlgorithm {
@@ -544,6 +561,9 @@ function formatHashOperations(input: unknown): string {
 }
 
 export function guidedDraftFromInput(id: GuidedInputAlgorithm, input: unknown): GuidedInputDraft {
+  if (isExpressionGuidedInputAlgorithm(id)) {
+    return { ...EMPTY_DRAFT, text: expressionDraftFromInput(input) };
+  }
   if (isStaticLinkedGuidedInputAlgorithm(id)) {
     const parts = staticLinkedDraftFromInput(input);
     return {
@@ -572,7 +592,7 @@ export function guidedDraftFromInput(id: GuidedInputAlgorithm, input: unknown): 
   }
   if (isStructureGuidedInputAlgorithm(id)) {
     const parts = structureDraftFromInput(id, input);
-    return { ...EMPTY_DRAFT, values: parts.values, rows: parts.rows };
+    return { ...EMPTY_DRAFT, values: parts.values, rows: parts.rows, storage: parts.storage };
   }
   if (isTreeGuidedInputAlgorithm(id)) {
     return { ...EMPTY_DRAFT, ...treeDraftFromInput(id, input) };
@@ -611,6 +631,9 @@ export function guidedDraftFromInput(id: GuidedInputAlgorithm, input: unknown): 
 }
 
 export function buildGuidedInput(id: GuidedInputAlgorithm, draft: GuidedInputDraft): GuidedBuildResult {
+  if (isExpressionGuidedInputAlgorithm(id)) {
+    return buildExpressionInput(id, draft.text);
+  }
   if (isStaticLinkedGuidedInputAlgorithm(id)) {
     return buildStaticLinkedInput({
       capacity: draft.capacity ?? '',
@@ -931,6 +954,9 @@ export function randomGuidedDraft(
   scenario: string,
   random: () => number = Math.random,
 ): GuidedInputDraft {
+  if (isExpressionGuidedInputAlgorithm(id)) {
+    return { ...EMPTY_DRAFT, text: randomExpressionDraft(id, scenario, random) };
+  }
   if (isStaticLinkedGuidedInputAlgorithm(id)) {
     const fields = randomStaticLinkedDraft(scenario, random);
     return {

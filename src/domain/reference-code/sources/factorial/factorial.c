@@ -1,4 +1,12 @@
 /*
+ * 中文导读：用最简递归展示“压栈—到达递归基—逐层返回”的调用栈过程。
+ * 阅读顺序：先看 base case；再看 n * factorial(n-1) 为什么必须先算出子调用；最后在 main 里跟 n=4 的返回顺序。
+ * 关键不变量：每次调用只负责当前的 n；更小的 n 由下一层负责，结果通过返回值交回。
+ * 易错点：缺少 base case；n 为负数未定义；把递归写成循环却忘了累乘；递归深度过大导致栈溢出。
+ * 复杂度：时间 O(n)，递归栈空间 O(n)。
+ */
+
+/*
  * AlgoViz reference implementation: factorial.
  * Recursive definition: n! = n * (n - 1)!, with 0! = 1.
  *
@@ -16,14 +24,19 @@
 #include <stdio.h>
 
 // Base cases collapse to 1; the unwind multiplies n by the already-computed (n-1)!.
-unsigned long long factorial(unsigned int number) {
-    if (number <= 1U) {
+// 作用：递归计算 n!；n=0/1 是递归基，其余情况等待 factorial(n-1) 返回后再相乘。
+unsigned long long factorial(unsigned int number)
+{
+    if (number <= 1U)
+    {
         return 1ULL;
     }
     return (unsigned long long)number * factorial(number - 1U);
 }
 
-int main(void) {
+// 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
+int main(void)
+{
     printf("5! = %llu\n", factorial(5U));
     printf("0! = %llu\n", factorial(0U));
     printf("10! = %llu\n", factorial(10U));

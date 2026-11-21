@@ -212,45 +212,93 @@ export const COURSE_GUIDES: Record<string, CourseGuide> = {
 
   stack: {
     intro: text(
-      '很多场景只需要在序列的一端追加和删除，例如撤销操作、括号匹配和函数调用。用数组在头部插入会把所有元素后移，成本 O(n)；栈把插入和删除都限制在栈顶，因此 push/pop/peek 都是 O(1)。代价是不能随机访问中间元素，查找仍需 O(n)。',
-      'Many tasks only append and remove at one end: undo, bracket matching, function calls. Inserting at the front of an array shifts every element, costing O(n); a stack restricts insertion and removal to the top, so push/pop/peek are O(1). The price is no random access to middle elements; searching still costs O(n).',
+      '很多场景只需要在序列的一端追加和删除，例如撤销操作、括号匹配和函数调用。栈把插入和删除都限制在栈顶，因此 push/pop/peek 都是 O(1)。顺序栈用一段连续槽位和 top 下标，链栈用结点指针；两种实现共享同一组栈顶操作，代价是不能随机访问中间元素。',
+      'Many tasks only append and remove at one end: undo, bracket matching, function calls. A stack restricts insertion and removal to the top, so push/pop/peek are O(1). A sequential stack uses contiguous slots plus a top index, while a linked stack uses node pointers; both implementations share the same top operations, at the cost of no random access to middle elements.',
     ),
     definition: text(
-      '栈是一种后进先出（LIFO）的线性结构，只允许在栈顶进行插入（push）、删除（pop）和读取（peek）。',
-      'A stack is a last-in-first-out (LIFO) linear structure that permits insertion (push), removal (pop) and inspection (peek) only at the top.',
+      '栈是一种后进先出（LIFO）的线性结构，只允许在栈顶进行插入（push）、删除（pop）和读取（peek）。顺序栈的 top 指向当前栈顶，top = -1 表示空栈；链栈的 top 指向首结点。',
+      'A stack is a last-in-first-out (LIFO) linear structure that permits insertion (push), removal (pop) and inspection (peek) only at the top. In a sequential stack, top indexes the live top and top = -1 means empty; in a linked stack, top points at the first node.',
     ),
     ...operations(
-      step('初始化空栈', 'Initialise an empty stack'),
-      step('push 入栈', 'Push onto the top', '课程使用 Python 列表，直接追加到尾部，没有固定容量检查。', 'The course uses a Python list and appends at the tail with no fixed-capacity check.'),
-      step('peek 读栈顶', 'Peek at the top'),
-      step('pop 出栈', 'Pop from the top'),
-      step('结束：栈顶始终是最后进入的元素', 'Finish: the top is always the last element in'),
+      step('选择存储方式', 'Choose the storage mode', '顺序栈用数组槽位与 top 下标；链栈用结点与 top 指针。', 'A sequential stack uses array slots and a top index; a linked stack uses nodes and a top pointer.'),
+      step('push 先检查栈满', 'Check for a full stack before push', '顺序栈看 top 是否已到 capacity − 1；链栈只要内存允许就能继续接结点。', 'The sequential stack checks whether top has reached capacity − 1; the linked stack can keep linking nodes while memory allows.'),
+      step('push 写入并移动栈顶', 'Push, write and move the top', '顺序栈先加一 top 再写入；链栈让新结点指向旧 top，再移动 top。', 'The sequential stack increments top before writing; the linked stack links the new node to the old top, then moves top.'),
+      step('peek 只读栈顶', 'Peek without moving the top'),
+      step('pop 读取后删除栈顶', 'Pop: read, then remove the top'),
+      step('空栈拒绝 pop 与 peek', 'Reject pop and peek on an empty stack'),
     ),
     conditions: list(
-      ['只能在栈顶插入、删除和读取。', '空栈 pop 或 peek 返回 None。', 'push/pop/peek 为 O(1)，查找中间元素仍需 O(n)。'],
-      ['Insert, remove and inspect only at the top.', 'Pop or peek on an empty stack returns None.', 'Push/pop/peek are O(1); searching the middle still costs O(n).'],
+      ['只能在栈顶插入、删除和读取。', '顺序栈的 top 指向当前栈顶，top = -1 表示空栈；链栈的 top 指向首结点。', 'push/pop/peek 为 O(1)，查找中间元素仍需 O(n)。'],
+      ['Insert, remove and inspect only at the top.', 'For the sequential stack, top indexes the live top and -1 means empty; for the linked stack, top points at the first node.', 'Push/pop/peek are O(1); searching the middle still costs O(n).'],
     ),
   },
 
   queue: {
     intro: text(
-      '当任务必须按到达顺序处理时，例如打印队列或 BFS 的待办列表，用普通数组的 pop(0) 每次都要搬移其余元素。链式队列或循环数组用队首、队尾两个端点，把 enqueue/dequeue 都做成 O(1)。它牺牲随机访问，换来严格的先进先出顺序。',
-      'When tasks must be processed in arrival order—print queues or the BFS frontier—calling pop(0) on an ordinary array shifts every remaining element. A linked queue or circular array uses separate front and rear endpoints to make enqueue/dequeue O(1). It gives up random access in exchange for strict first-in-first-out order.',
+      '当任务必须按到达顺序处理时，例如打印队列或 BFS 的待办列表，用普通数组的 pop(0) 每次都要搬移其余元素。循环队列用 front、rear 两个下标把 enqueue/dequeue 做成 O(1)，并用一个保留空槽区分队空与队满；链队列用头结点和 rear 指针达到同样目标，代价是额外的指针空间。',
+      'When tasks must be processed in arrival order—print queues or the BFS frontier—calling pop(0) on an ordinary array shifts every remaining element. A circular queue uses front and rear indices to make enqueue/dequeue O(1), reserving one empty slot to distinguish empty from full. A linked queue reaches the same goal with a head sentinel and a rear pointer, at the cost of extra pointer storage.',
     ),
     definition: text(
-      '队列是一种先进先出（FIFO）的线性结构，插入发生在队尾（enqueue），删除发生在队首（dequeue）。',
-      'A queue is a first-in-first-out (FIFO) linear structure: insertion (enqueue) happens at the rear and removal (dequeue) at the front.',
+      '队列是一种先进先出（FIFO）的线性结构，插入发生在队尾（enqueue），删除发生在队首（dequeue）。循环队列牺牲一个空槽：front == rear 为空，(rear + 1) % capacity == front 为满；链队列带头结点，front 指向头结点，rear 指向最后一个数据结点。',
+      'A queue is a first-in-first-out (FIFO) linear structure: insertion (enqueue) happens at the rear and removal (dequeue) at the front. A circular queue reserves one empty slot: front == rear means empty and (rear + 1) % capacity == front means full. A linked queue keeps a head sentinel: front points at the sentinel and rear at the last data node.',
     ),
     ...operations(
-      step('初始化空队列', 'Initialise an empty queue'),
-      step('enqueue 入队', 'Enqueue at the rear', '课程使用 collections.deque，直接追加到队尾，没有固定容量。', 'The course uses collections.deque and appends at the rear with no fixed capacity.'),
+      step('选择存储方式', 'Choose the storage mode', '循环队列用固定槽位与 front/rear 下标；链队列用头结点与 rear 指针。', 'A circular queue uses fixed slots with front/rear indices; a linked queue uses a head sentinel and a rear pointer.'),
+      step('enqueue 先判队满', 'Check for a full queue before enqueue', '循环队列检查 rear 的下一个位置是否追上 front；链队列只要内存允许就能继续接结点。', 'The circular queue checks whether the slot after rear has caught up with front; the linked queue can keep linking nodes while memory allows.'),
+      step('enqueue 写入并移动队尾', 'Enqueue, write and advance the rear', '循环队列把值写进 rear 所指空位后取模后移；链队列在 rear 之后接新结点。', 'The circular queue writes into the free slot at rear and advances modulo capacity; the linked queue links a new node after rear.'),
       step('front 读队首', 'Read the front'),
-      step('dequeue 出队', 'Dequeue from the front', '空队列返回 None；否则用 popleft 从队首移除。', 'An empty queue returns None; otherwise popleft removes the front element.'),
-      step('结束：元素严格按到达顺序离开', 'Finish: elements leave in strict arrival order'),
+      step('dequeue 读取并移动队首', 'Dequeue: read and advance the front', '链队列删除最后一个数据结点后，rear 要回到 head。', 'After the linked queue removes its last data node, rear returns to the head sentinel.'),
+      step('空队列拒绝 front 与 dequeue', 'Reject front and dequeue on an empty queue'),
     ),
     conditions: list(
-      ['只能在队尾插入、队首删除；空队列读取队首或出队时返回 None。两端操作均为 O(1)。'],
-      ['Insert only at the rear and remove only at the front; reading the front or dequeuing an empty queue returns None. Both endpoints operate in O(1).'],
+      ['只能在队尾插入、队首删除。', '循环队列用保留空槽判满，不能再用 count 充当主判据；链队列删除最后一个数据结点后 rear = head。', '两端操作均为 O(1)，但不能随机访问中间元素。'],
+      ['Insert only at the rear and remove only at the front.', 'A circular queue distinguishes full with the reserved slot and never uses count as the primary test; a linked queue moves rear back to head after removing its last data node.', 'Both endpoint operations are O(1), but middle elements cannot be accessed at random.'],
+    ),
+  },
+
+  'infix-to-postfix': {
+    intro: text(
+      '人习惯把运算符写在两个操作数中间，但计算机顺序扫描时很难直接判断先算哪一步。中缀转后缀用运算符栈暂存还没决定输出顺序的运算符：操作数立刻输出，优先级更高的运算符先算，左括号把栈内的运算符隔开。转换后得到的是后缀序列，后续求值不再需要括号和优先级规则。',
+      'People write operators between operands, but a left-to-right scanner cannot directly tell which operation comes first. Infix-to-postfix keeps undecided operators on an operator stack: operands are emitted immediately, higher-precedence operators are emitted first, and a left parenthesis separates the operators inside it. The result is a postfix sequence whose evaluation no longer needs parentheses or precedence rules.',
+    ),
+    definition: text(
+      '中缀转后缀（调度场算法）从左到右扫描 token：操作数直接加入输出；左括号入栈；右括号弹出运算符直到左括号；普通运算符先弹出所有优先级不低于自己的栈顶，再入栈；扫描结束后清空运算符栈。',
+      'Infix-to-postfix (shunting-yard) scans tokens left to right: operands go straight to the output; a left parenthesis is pushed; a right parenthesis pops operators back to the left parenthesis; an ordinary operator first pops every top with greater-or-equal precedence, then pushes itself; the stack is flushed after the scan.',
+    ),
+    ...algorithm(
+      step('切分 token', 'Tokenise the expression', '多位整数保持为一个整体，圆括号与四个运算符各自成为 token。', 'Keep multi-digit integers whole; parentheses and the four operators each become one token.'),
+      step('操作数直接输出', 'Emit operands immediately'),
+      step('左括号作为弹栈边界入栈', 'Push the left parenthesis as a barrier', '栈顶是左括号时，任何运算符都不能越过它弹出。', 'While a left parenthesis is on top, no operator may pop past it.'),
+      step('按优先级弹出旧运算符', 'Pop older operators by precedence', '同级运算符左结合，因此栈顶优先级不低于当前运算符时就先弹出。', 'Operators of equal precedence are left-associative, so a top with greater-or-equal precedence is popped first.'),
+      step('右括号回弹到左括号', 'Let the right parenthesis pop back', '弹出的运算符进入后缀，左括号本身只丢弃、不输出。', 'Popped operators enter the suffix; the left parenthesis itself is discarded, not emitted.'),
+      step('扫描结束清空栈', 'Flush the stack after the scan'),
+    ),
+    conditions: list(
+      ['只接受非负整数、+ − * / 与圆括号；空格可任意出现。', '不支持一元负号和隐式乘法，遇到非法字符或括号不匹配必须报错。', '每个 token 至多入栈、出栈一次，时间与空间均为 O(n)。'],
+      ['Only non-negative integers, + − * / and parentheses are accepted; spaces may appear anywhere.', 'Unary minus and implicit multiplication are rejected; invalid characters or unbalanced parentheses must report an error.', 'Every token is pushed and popped at most once, so time and space are O(n).'],
+    ),
+  },
+
+  'postfix-eval': {
+    intro: text(
+      '后缀表达式把运算符放在两个操作数之后，因此扫描到一个运算符时，它要用的两个值已经算好并保存在操作数栈里。求值只需从左到右压数字、弹两个值、算完压回结果，不需要括号，也不需要优先级表。关键顺序是第一次弹出右操作数、第二次弹出左操作数，否则减法和除法会算反。',
+      'A postfix expression places an operator after its two operands, so when the scanner reaches an operator, both values it needs are already computed and waiting on the operand stack. Evaluation only pushes numbers, pops two values, computes, and pushes the result back; it needs neither parentheses nor a precedence table. The critical order is to pop the right operand first and the left operand second, otherwise subtraction and division reverse their operands.',
+    ),
+    definition: text(
+      '后缀求值维护一个操作数栈：数字转换为整数后压栈；遇到运算符时要求栈中至少有两个值，先弹出 right、再弹出 left，按 left op right 计算并把结果压回；扫描结束后栈中必须恰好剩下一个值。',
+      'Postfix evaluation maintains an operand stack: numbers are converted to integers and pushed; an operator requires at least two values, pops right first and left second, computes left op right and pushes the result back; exactly one value must remain after the scan.',
+    ),
+    ...algorithm(
+      step('切分后缀 token', 'Tokenise the postfix expression', '按空格切分，多位整数保持为一个整体。', 'Split on spaces and keep multi-digit integers whole.'),
+      step('数字压入操作数栈', 'Push numbers onto the operand stack'),
+      step('运算符先检查两个操作数', 'Check for two operands before applying an operator'),
+      step('先弹右、再弹左', 'Pop right, then left', '顺序反过来会把 a − b 算成 b − a。', 'Reversing the order turns a − b into b − a.'),
+      step('按左 op 右计算并压回', 'Compute left op right and push it back', '除法使用整数除法，并向零截断，与 C/C++ 和课程 Trace 一致。', 'Division is integer division truncated toward zero, matching C/C++ and the course trace.'),
+      step('结束检查唯一结果', 'Require exactly one result at the end', '多于一个说明操作数过多，少于一个说明操作数不足。', 'More than one means too many operands; none means too few.'),
+    ),
+    conditions: list(
+      ['只接受非负整数与 + − * /，token 之间用空格分隔。', '每个运算符要求栈中至少有两个值；除数为零必须报错。', '结束后栈中恰好一个值；时间与空间均为 O(n)。'],
+      ['Only non-negative integers and + − * / are accepted, separated by spaces.', 'Every operator requires at least two values on the stack; division by zero must report an error.', 'Exactly one value must remain at the end; time and space are O(n).'],
     ),
   },
 

@@ -687,20 +687,20 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
   ],
   "queue.c": [
     {
-      en: "`head` is the next slot to remove, `tail` the next free slot, and `count` separates empty from full when indices wrap.",
-      zh: "`head` 是下一个要删除的槽位，`tail` 是下一个空槽，`count` 让下标回绕时仍能区分队空与队满。",
+      en: "front == rear means empty; one reserved slot makes (rear + 1) % capacity == front full.",
+      zh: "front == rear 表示队空；牺牲一个空槽后，(rear + 1) % capacity == front 表示队满。",
     },
   ],
   "queue.cpp": [
     {
-      en: "`head` is the next slot to remove, `tail` the next free slot, and `count` separates empty from full when indices wrap.",
-      zh: "`head` 是下一个要删除的槽位，`tail` 是下一个空槽，`count` 让下标回绕时仍能区分队空与队满。",
+      en: "front == rear means empty; one reserved slot makes (rear + 1) % capacity == front full.",
+      zh: "front == rear 表示队空；牺牲一个空槽后，(rear + 1) % capacity == front 表示队满。",
     },
   ],
   "queue.py": [
     {
-      en: "`head` is the next slot to remove, `tail` the next free slot, and `count` separates empty from full when indices wrap.",
-      zh: "`head` 是下一个要删除的槽位，`tail` 是下一个空槽，`count` 让下标回绕时仍能区分队空与队满。",
+      en: "front == rear means empty; one reserved slot makes (rear + 1) % capacity == front full.",
+      zh: "front == rear 表示队空；牺牲一个空槽后，(rear + 1) % capacity == front 表示队满。",
     },
   ],
   "quick_sort.c": [
@@ -883,20 +883,20 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
   ],
   "stack.c": [
     {
-      en: "`capacity` is the total number of slots; `size` is the live element count and the next free slot, so full and empty are distinct.",
-      zh: "`capacity` 是槽位总数；`size` 是有效元素数量，也是下一个空闲槽，因此栈满与栈空是不同状态。",
+      en: "top is the live top index; -1 means empty.",
+      zh: "top 指向当前栈顶而不是下一个空位；-1 表示空栈。",
     },
   ],
   "stack.cpp": [
     {
-      en: "`capacity` is the total number of slots; `size` is the live element count and the next free slot, so full and empty are distinct.",
-      zh: "`capacity` 是槽位总数；`size` 是有效元素数量，也是下一个空闲槽，因此栈满与栈空是不同状态。",
+      en: "top is the live top index; -1 means empty.",
+      zh: "top 指向当前栈顶而不是下一个空位；-1 表示空栈。",
     },
   ],
   "stack.py": [
     {
-      en: "`capacity` is the total number of slots; `size` is the live element count and the next free slot, so full and empty are distinct.",
-      zh: "`capacity` 是槽位总数；`size` 是有效元素数量，也是下一个空闲槽，因此栈满与栈空是不同状态。",
+      en: "top is the live top index; -1 means empty.",
+      zh: "top 指向当前栈顶而不是下一个空位；-1 表示空栈。",
     },
   ],
   "topological_sort.c": [
@@ -951,6 +951,42 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
     {
       en: "A zero coefficient sum must create no node: 0x^k is not a sparse term.",
       zh: "系数相加为 0 时不能建结点：0x^k 不是稀疏多项式的有效项。",
+    },
+  ],
+  "infix_to_postfix.c": [
+    {
+      en: "a left parenthesis blocks every pop until it is explicitly removed.",
+      zh: "左括号是弹栈边界：在它被显式弹出前，不能越过它弹出其他运算符。",
+    },
+  ],
+  "infix_to_postfix.cpp": [
+    {
+      en: "a left parenthesis blocks every pop until it is explicitly removed.",
+      zh: "左括号是弹栈边界：在它被显式弹出前，不能越过它弹出其他运算符。",
+    },
+  ],
+  "infix_to_postfix.py": [
+    {
+      en: "a left parenthesis blocks every pop until it is explicitly removed.",
+      zh: "左括号是弹栈边界：在它被显式弹出前，不能越过它弹出其他运算符。",
+    },
+  ],
+  "postfix_eval.c": [
+    {
+      en: "the first pop is the right operand; compute left op right.",
+      zh: "第一次弹出的是右操作数，必须按“左操作数 运算符 右操作数”的顺序计算。",
+    },
+  ],
+  "postfix_eval.cpp": [
+    {
+      en: "the first pop is the right operand; compute left op right.",
+      zh: "第一次弹出的是右操作数，必须按“左操作数 运算符 右操作数”的顺序计算。",
+    },
+  ],
+  "postfix_eval.py": [
+    {
+      en: "the first pop is the right operand; compute left op right.",
+      zh: "第一次弹出的是右操作数，必须按“左操作数 运算符 右操作数”的顺序计算。",
     },
   ],
 };

@@ -1,3 +1,11 @@
+/*
+ * 中文导读：按距离分层访问图，先访问所有距离为 d 的结点，再访问距离为 d+1 的结点。
+ * 阅读顺序：先看 visited[] 与队列；再看入队时为什么立刻标记；最后看 BFS 树如何由 parent[] 还原路径。
+ * 关键不变量：队列中的结点按距离非降排列；每个结点最多入队一次。
+ * 易错点：出队才标记导致重复入队；把队列写成栈；忽略不连通分量。
+ * 复杂度：邻接表 O(V+E) 时间，O(V) 额外空间。
+ */
+
 // AlgoViz reference implementation: breadth-first search (C++17).
 // Uses an adjacency list and std::queue; visits vertices level by level.
 //
@@ -12,14 +20,15 @@
 // Convention: Vertices are 0-based; each undirected edge is stored in both
 //   directions.
 
-
 #include <iostream>
 #include <queue>
 #include <vector>
 
 // Mark a neighbour before enqueueing it; the FIFO frontier then visits level by level.
 // Mark a vertex when it enters the queue, not when it leaves, so it cannot be enqueued twice.
-void bfs(const std::vector<std::vector<int>>& graph, int start) {
+// 作用：从 start 开始按距离分层遍历图；用队列保存待访问结点，入队时立即标记 visited。
+void bfs(const std::vector<std::vector<int>> &graph, int start)
+{
     std::vector<bool> visited(graph.size(), false);
     std::queue<int> pending;
 
@@ -27,12 +36,15 @@ void bfs(const std::vector<std::vector<int>>& graph, int start) {
     pending.push(start);
     std::cout << "order:";
 
-    while (!pending.empty()) {
+    while (!pending.empty())
+    {
         int vertex = pending.front();
         pending.pop();
         std::cout << ' ' << vertex;
-        for (int next : graph[vertex]) {
-            if (!visited[next]) {
+        for (int next : graph[vertex])
+        {
+            if (!visited[next])
+            {
                 visited[next] = true;
                 pending.push(next);
             }
@@ -41,9 +53,12 @@ void bfs(const std::vector<std::vector<int>>& graph, int start) {
     std::cout << '\n';
 }
 
-int main() {
+// 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
+int main()
+{
     std::vector<std::vector<int>> graph(6);
-    auto add_edge = [&graph](int a, int b) {
+    auto add_edge = [&graph](int a, int b)
+    {
         graph[a].push_back(b);
         graph[b].push_back(a);
     };
