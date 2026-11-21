@@ -1,4 +1,7 @@
 import type { AlgorithmFlow, FlowEdge, FlowSection } from './flowTypes';
+import { SORTING_SEARCH_FLOWS } from './flows/sortingSearchFlows';
+import { STRUCTURE_FLOWS } from './flows/structureFlows';
+import { GRAPH_FLOWS } from './flows/graphFlows';
 
 const text = (zh: string, en: string) => ({ zh, en });
 
@@ -11,11 +14,12 @@ const loop = (from: string, to: string, zh: string, en: string): FlowEdge => ({
 });
 
 /**
- * Structured guides for the four VISUAL-01 reference algorithms.
+ * Structured guides for the VISUAL-01 reference algorithms.
  *
- * These flows describe the control logic, not a particular Trace frame. They
- * are intentionally kept beside — not inside — the Python harness so the
- * teaching overview can never drift with an animation implementation detail.
+ * Flows for the rest of the formal curriculum live in ./flows/*.ts and are
+ * spread into ALGORITHM_FLOWS below. They describe control logic, not a
+ * particular Trace frame, so the teaching overview cannot drift with an
+ * animation implementation detail.
  */
 const KRUSKAL_FLOW: AlgorithmFlow = {
   algorithmId: 'kruskal',
@@ -24,8 +28,8 @@ const KRUSKAL_FLOW: AlgorithmFlow = {
       id: 'main',
       title: text('主流程', 'Main flow'),
       summary: text(
-        '每一轮只检查一条候选边；拒绝的边回到循环，接受的边检查是否已经选够。',
-        'Only one candidate edge is examined per round; rejected edges return to the loop, accepted edges check whether enough edges are already chosen.',
+        '每一轮只检查一条候选边；拒绝或接受的边都回到循环取下一条，全部边扫描完后按连通分量数返回 MST 或生成森林。',
+        'One candidate edge is examined per round; both rejected and accepted edges return to the loop for the next edge, and after all edges are scanned the result is an MST or a spanning forest depending on the component count.',
       ),
       nodes: [
         {
@@ -89,28 +93,13 @@ const KRUSKAL_FLOW: AlgorithmFlow = {
           lane: 0,
         },
         {
-          id: 'enough',
-          kind: 'decision',
-          label: text('已选够 V−1 条边？', 'Selected V−1 edges?'),
-          row: 7,
-          lane: 0,
-        },
-        {
-          id: 'mst',
-          kind: 'end',
-          tone: 'success',
-          label: text('得到最小生成树，返回所选边', 'Minimum spanning tree found; return the chosen edges'),
-          row: 8,
-          lane: 0,
-        },
-        {
-          id: 'forest',
+          id: 'done',
           kind: 'end',
           tone: 'neutral',
-          label: text('边已用尽：得到最小生成森林', 'Edges exhausted: minimum spanning forest'),
-          detail: text('选中的边不足 V−1 条', 'Fewer than V−1 edges were selected'),
+          label: text('所有边扫描完：返回 MST 或最小生成森林', 'All edges scanned: return the MST or a minimum spanning forest'),
+          detail: text('连通时只有一棵生成树；否则每个连通分量各有一棵', 'A connected graph yields one spanning tree; otherwise each component gets its own tree'),
           row: 3,
-          lane: -1,
+          lane: 1,
         },
       ],
       edges: [
@@ -118,14 +107,12 @@ const KRUSKAL_FLOW: AlgorithmFlow = {
         { from: 'sort', to: 'init', kind: 'next' },
         { from: 'init', to: 'edge-loop', kind: 'next' },
         { from: 'edge-loop', to: 'take-edge', kind: 'yes' },
-        { from: 'edge-loop', to: 'forest', kind: 'no' },
+        { from: 'edge-loop', to: 'done', kind: 'no' },
         { from: 'take-edge', to: 'connected', kind: 'next' },
         { from: 'connected', to: 'skip', kind: 'yes' },
         { from: 'connected', to: 'accept', kind: 'no' },
         loop('skip', 'edge-loop', '回到循环：检查下一条边', 'Loop back: examine the next edge'),
-        { from: 'accept', to: 'enough', kind: 'next' },
-        { from: 'enough', to: 'mst', kind: 'yes' },
-        { from: 'enough', to: 'edge-loop', kind: 'no', back: true },
+        loop('accept', 'edge-loop', '接受后继续扫描下一条边', 'After accepting, scan the next edge'),
       ],
     },
   ],
@@ -138,8 +125,8 @@ const BINARY_FLOW: AlgorithmFlow = {
       id: 'main',
       title: text('主流程', 'Main flow'),
       summary: text(
-        '闭区间每轮至少排除一半候选；命中立即返回，区间为空才返回 −1。',
-        'Each round removes at least half of the closed interval; a hit returns immediately, and only an empty interval returns −1.',
+        '先拒绝空数组与非升序输入；闭区间每轮至少排除一半候选，命中立即返回，区间为空才返回 −1。',
+        'Reject an empty array or unsorted input first; each round removes at least half of the closed interval, a hit returns immediately, and only an empty interval returns −1.',
       ),
       nodes: [
         {
@@ -150,10 +137,42 @@ const BINARY_FLOW: AlgorithmFlow = {
           lane: 0,
         },
         {
+          id: 'empty',
+          kind: 'decision',
+          label: text('n == 0 ？', 'Is n == 0?'),
+          detail: text('空数组没有候选', 'An empty array has no candidates'),
+          row: 1,
+          lane: 0,
+        },
+        {
+          id: 'empty-fail',
+          kind: 'end',
+          tone: 'failure',
+          label: text('返回 −1：空数组', 'Return −1: empty array'),
+          row: 1,
+          lane: -1,
+        },
+        {
+          id: 'sorted',
+          kind: 'decision',
+          label: text('A 是升序吗？', 'Is A sorted ascending?'),
+          detail: text('二分查找要求有序输入', 'Binary search requires sorted input'),
+          row: 2,
+          lane: 0,
+        },
+        {
+          id: 'invalid',
+          kind: 'end',
+          tone: 'failure',
+          label: text('拒绝搜索：输入不是升序', 'Refuse to search: input is not ascending'),
+          row: 2,
+          lane: -1,
+        },
+        {
           id: 'init',
           kind: 'operation',
           label: text('初始化闭区间 left = 0，right = n − 1', 'Initialise the closed interval: left = 0, right = n − 1'),
-          row: 1,
+          row: 3,
           lane: 0,
         },
         {
@@ -161,7 +180,7 @@ const BINARY_FLOW: AlgorithmFlow = {
           kind: 'decision',
           label: text('left ≤ right ？', 'left ≤ right?'),
           detail: text('区间仍可能包含目标', 'The interval may still contain the target'),
-          row: 2,
+          row: 4,
           lane: 0,
         },
         {
@@ -169,21 +188,21 @@ const BINARY_FLOW: AlgorithmFlow = {
           kind: 'end',
           tone: 'failure',
           label: text('返回 −1：未找到目标', 'Return −1: target not found'),
-          row: 2,
+          row: 4,
           lane: -1,
         },
         {
           id: 'mid',
           kind: 'operation',
-          label: text('计算 mid = left + (right − left) / 2', 'Compute mid = left + (right − left) / 2'),
-          row: 3,
+          label: text('计算 mid = (left + right) // 2', 'Compute mid = (left + right) // 2'),
+          row: 5,
           lane: 0,
         },
         {
           id: 'hit',
           kind: 'decision',
           label: text('A[mid] == target ？', 'A[mid] == target?'),
-          row: 4,
+          row: 6,
           lane: 0,
         },
         {
@@ -191,14 +210,14 @@ const BINARY_FLOW: AlgorithmFlow = {
           kind: 'end',
           tone: 'success',
           label: text('返回 mid：命中目标', 'Return mid: target found'),
-          row: 4,
+          row: 6,
           lane: 1,
         },
         {
           id: 'less',
           kind: 'decision',
           label: text('A[mid] < target ？', 'A[mid] < target?'),
-          row: 5,
+          row: 7,
           lane: 0,
         },
         {
@@ -206,7 +225,7 @@ const BINARY_FLOW: AlgorithmFlow = {
           kind: 'operation',
           label: text('left = mid + 1', 'left = mid + 1'),
           detail: text('目标只可能在右半区', 'The target can only be in the right half'),
-          row: 6,
+          row: 8,
           lane: -1,
         },
         {
@@ -214,12 +233,16 @@ const BINARY_FLOW: AlgorithmFlow = {
           kind: 'operation',
           label: text('right = mid − 1', 'right = mid − 1'),
           detail: text('目标只可能在左半区', 'The target can only be in the left half'),
-          row: 6,
+          row: 8,
           lane: 1,
         },
       ],
       edges: [
-        { from: 'start', to: 'init', kind: 'next' },
+        { from: 'start', to: 'empty', kind: 'next' },
+        { from: 'empty', to: 'empty-fail', kind: 'yes' },
+        { from: 'empty', to: 'sorted', kind: 'no' },
+        { from: 'sorted', to: 'invalid', kind: 'no' },
+        { from: 'sorted', to: 'init', kind: 'yes' },
         { from: 'init', to: 'valid', kind: 'next' },
         { from: 'valid', to: 'mid', kind: 'yes' },
         { from: 'valid', to: 'not-found', kind: 'no' },
@@ -471,8 +494,8 @@ const MERGE_FLOW: AlgorithmFlow = {
         {
           id: 'merge-base',
           kind: 'decision',
-          label: text('left ≥ right ？', 'left ≥ right?'),
-          detail: text('区间为空或只有一个元素', 'Empty range or a single element'),
+          label: text('left == right ？', 'left == right?'),
+          detail: text('区间只剩一个元素', 'The range has exactly one element'),
           row: 1,
           lane: 0,
         },
@@ -480,14 +503,14 @@ const MERGE_FLOW: AlgorithmFlow = {
           id: 'merge-base-return',
           kind: 'end',
           tone: 'success',
-          label: text('返回：空区间或单元素天然有序', 'Return: an empty range or one element is already sorted'),
+          label: text('返回：单元素天然有序', 'Return: a single element is already sorted'),
           row: 1,
           lane: 1,
         },
         {
           id: 'merge-split',
           kind: 'operation',
-          label: text('middle = left + (right − left) / 2', 'middle = left + (right − left) / 2'),
+          label: text('middle = (left + right) // 2', 'middle = (left + right) // 2'),
           row: 2,
           lane: 0,
         },
@@ -562,6 +585,9 @@ const MERGE_FLOW: AlgorithmFlow = {
 };
 
 export const ALGORITHM_FLOWS: Record<string, AlgorithmFlow> = {
+  ...SORTING_SEARCH_FLOWS,
+  ...STRUCTURE_FLOWS,
+  ...GRAPH_FLOWS,
   kruskal: KRUSKAL_FLOW,
   binary: BINARY_FLOW,
   kmp: KMP_FLOW,

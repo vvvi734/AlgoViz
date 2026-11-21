@@ -30,6 +30,7 @@ function edgeHasPath(
 export function validateAlgorithmFlow(flow: AlgorithmFlow): string[] {
   const errors: string[] = [];
   const globalNodeIds = new Set<string>();
+  const sectionIds = new Set<string>();
 
   if (!flow.algorithmId.trim()) errors.push('algorithmId must not be empty');
   if (flow.sections.length === 0) errors.push('a flow needs at least one section');
@@ -37,8 +38,13 @@ export function validateAlgorithmFlow(flow: AlgorithmFlow): string[] {
   for (const section of flow.sections) {
     const prefix = `${flow.algorithmId}/${section.id}`;
     const nodes = new Map<string, FlowNode>();
+    const occupiedSlots = new Map<string, string>();
 
     if (!section.id.trim()) errors.push(`${prefix}: empty section id`);
+    if (sectionIds.has(section.id)) {
+      errors.push(`${prefix}: duplicate section id ${section.id}`);
+    }
+    sectionIds.add(section.id);
     if (section.nodes.length === 0) errors.push(`${prefix}: no nodes`);
 
     for (const node of section.nodes) {
@@ -53,6 +59,13 @@ export function validateAlgorithmFlow(flow: AlgorithmFlow): string[] {
       }
       if (node.lane !== -1 && node.lane !== 0 && node.lane !== 1) {
         errors.push(`${prefix}/${node.id}: lane must be -1, 0 or 1`);
+      }
+      const slot = `${node.row}:${node.lane}`;
+      const occupying = occupiedSlots.get(slot);
+      if (occupying) {
+        errors.push(`${prefix}/${node.id}: shares row ${node.row}, lane ${node.lane} with ${occupying}`);
+      } else {
+        occupiedSlots.set(slot, node.id);
       }
       if (node.kind === 'end') {
         if (!node.tone) errors.push(`${prefix}/${node.id}: an end node needs a tone`);

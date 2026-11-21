@@ -221,14 +221,14 @@ export const COURSE_GUIDES: Record<string, CourseGuide> = {
     ),
     ...operations(
       step('初始化空栈', 'Initialise an empty stack'),
-      step('push 入栈', 'Push onto the top', '先检查容量，再把新元素写到栈顶。', 'Check capacity, then write the new element at the top.'),
+      step('push 入栈', 'Push onto the top', '课程使用 Python 列表，直接追加到尾部，没有固定容量检查。', 'The course uses a Python list and appends at the tail with no fixed-capacity check.'),
       step('peek 读栈顶', 'Peek at the top'),
       step('pop 出栈', 'Pop from the top'),
-      step('判空', 'Check emptiness'),
+      step('结束：栈顶始终是最后进入的元素', 'Finish: the top is always the last element in'),
     ),
     conditions: list(
-      ['只能在栈顶插入、删除和读取。', '空栈不能 pop 或 peek。', 'push/pop/peek 为 O(1)，查找中间元素仍需 O(n)。'],
-      ['Insert, remove and inspect only at the top.', 'An empty stack cannot be popped or peeked.', 'Push/pop/peek are O(1); searching the middle still costs O(n).'],
+      ['只能在栈顶插入、删除和读取。', '空栈 pop 或 peek 返回 None。', 'push/pop/peek 为 O(1)，查找中间元素仍需 O(n)。'],
+      ['Insert, remove and inspect only at the top.', 'Pop or peek on an empty stack returns None.', 'Push/pop/peek are O(1); searching the middle still costs O(n).'],
     ),
   },
 
@@ -243,14 +243,14 @@ export const COURSE_GUIDES: Record<string, CourseGuide> = {
     ),
     ...operations(
       step('初始化空队列', 'Initialise an empty queue'),
-      step('enqueue 入队', 'Enqueue at the rear', '尾指针后移，元素追加到队尾。', 'Advance the rear pointer and append at the rear.'),
+      step('enqueue 入队', 'Enqueue at the rear', '课程使用 collections.deque，直接追加到队尾，没有固定容量。', 'The course uses collections.deque and appends at the rear with no fixed capacity.'),
       step('front 读队首', 'Read the front'),
-      step('dequeue 出队', 'Dequeue from the front'),
-      step('判空', 'Check emptiness'),
+      step('dequeue 出队', 'Dequeue from the front', '空队列返回 None；否则用 popleft 从队首移除。', 'An empty queue returns None; otherwise popleft removes the front element.'),
+      step('结束：元素严格按到达顺序离开', 'Finish: elements leave in strict arrival order'),
     ),
     conditions: list(
-      ['只能在队尾插入、队首删除；不能从空队列取元素。普通数组头部删除会退化为 O(n)，双端队列或循环数组可保持 O(1)。'],
-      ['Insert only at the rear and remove only at the front; a queue cannot yield an element when empty. Removing from the head of a plain array costs O(n), while a double-ended queue or circular array keeps O(1).'],
+      ['只能在队尾插入、队首删除；空队列读取队首或出队时返回 None。两端操作均为 O(1)。'],
+      ['Insert only at the rear and remove only at the front; reading the front or dequeuing an empty queue returns None. Both endpoints operate in O(1).'],
     ),
   },
 
@@ -314,10 +314,11 @@ export const COURSE_GUIDES: Record<string, CourseGuide> = {
       step('正向遍历', 'Traverse forward'),
       step('反向遍历', 'Traverse backward'),
       step('删除节点', 'Delete a node', '前驱的 next 与后继的 prev 同时越过目标。', 'Both the predecessor’s next and the successor’s prev must skip the target.'),
+      step('删除头节点或尾节点', 'Delete the head or tail', '空表直接结束；否则调用统一的摘除逻辑修正 head/tail 与相邻链接。', 'An empty list ends immediately; otherwise the shared detach logic repairs head/tail and the neighbouring links.'),
     ),
     conditions: list(
-      ['每个节点必须同时维护 prev 和 next。', '按值查找仍需 O(n)；只有已持有节点引用时局部改链才是 O(1)。', '空表 head 与 tail 均为空。'],
-      ['Every node must maintain both prev and next.', 'Search by value is still O(n); O(1) relinking requires an existing node reference.', 'An empty list has null head and tail.'],
+      ['每个节点必须同时维护 prev 和 next。', '按值查找仍需 O(n)；只有已持有节点引用时局部改链才是 O(1)。', '空表 head 与 tail 均为空，删除头尾节点会直接结束。'],
+      ['Every node must maintain both prev and next.', 'Search by value is still O(n); O(1) relinking requires an existing node reference.', 'An empty list has null head and tail, so deleting either endpoint ends immediately.'],
     ),
   },
 
@@ -336,6 +337,7 @@ export const COURSE_GUIDES: Record<string, CourseGuide> = {
       step('遍历一圈', 'Traverse one full cycle', '再次回到 head 时必须主动停止。', 'Stop explicitly when traversal returns to the head.'),
       step('按值查找', 'Search by value'),
       step('删除节点', 'Delete a node'),
+      step('删除头节点或尾节点', 'Delete the head or tail', '空表直接结束；否则统一摘除并保持 tail.next 指回 head。', 'An empty list ends immediately; otherwise the shared detach keeps tail.next pointing back to head.'),
     ),
     conditions: list(
       ['遍历必须检测“回到 head”，不能等待 next 变空。', '空表 head=tail=null；单节点时该节点指向自己。', '单链表删除尾节点仍需 O(n) 找前驱，即使维护了 tail。'],

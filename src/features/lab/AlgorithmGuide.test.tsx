@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, within } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ALGORITHM_CATALOG } from '../../domain/algorithms/catalog.generated';
 import { buildAlgorithmGuide } from '../../domain/guides/buildGuide';
@@ -39,10 +39,11 @@ describe('algorithm review sheet UI', () => {
     expect(screen.getByTestId('guide-complexity').textContent).toContain('O((V + E) log V)');
     expect(screen.getByTestId('guide-conditions').textContent).toContain('边权必须非负');
 
-    const stages = within(screen.getByTestId('guide-stage-list')).getAllByRole('listitem');
-    expect(stages).toHaveLength(6);
-    expect(stages[0].textContent).toContain('初始化距离表');
-    expect(stages[4].textContent).toContain('重复至堆空');
+    const main = screen.getByTestId('algorithm-flow-section-main');
+    expect(main.querySelector('[data-node-id="dijkstra-init"]')?.textContent).toContain('dist[source] = 0');
+    expect(main.querySelector('[data-node-id="dijkstra-stale"]')).toBeTruthy();
+    expect(main.querySelector('[data-edge-from="dijkstra-skip"][data-edge-to="dijkstra-outer"]')).toBeTruthy();
+    expect(screen.queryByTestId('guide-stage-list')).toBeNull();
     expect(screen.getByTestId('guide-flow-title').textContent).toBe('算法整体流程');
     expect(screen.getByText('常见错误与记忆重点')).toBeTruthy();
     expect(screen.getByTestId('guide-pitfalls').textContent).toContain('discovered');
@@ -67,10 +68,17 @@ describe('algorithm review sheet UI', () => {
 
     expect(screen.getByTestId('guide-flow-title').textContent).toBe('核心操作');
     expect(screen.getByTestId('guide-flow-kind').textContent).toContain('按操作组织');
-    const stages = within(screen.getByTestId('guide-stage-list')).getAllByRole('listitem');
-    expect(stages).toHaveLength(5);
-    expect(screen.getByTestId('guide-stage-list').textContent).toContain('插入节点');
-    expect(screen.getByTestId('guide-stage-list').textContent).not.toContain('演示结束');
+    const sections = [
+      'algorithm-flow-section-insert-head',
+      'algorithm-flow-section-insert-tail',
+      'algorithm-flow-section-insert-after',
+      'algorithm-flow-section-delete',
+      'algorithm-flow-section-traverse',
+    ];
+    for (const id of sections) expect(screen.getByTestId(id)).toBeTruthy();
+    expect(screen.getByTestId('algorithm-flow-section-insert-head').textContent).toContain('操作：头插');
+    expect(screen.getByTestId('algorithm-flow').textContent).not.toContain('演示结束');
+    expect(screen.queryByTestId('guide-stage-list')).toBeNull();
   });
 
   it('renders the declarative flow for Kruskal instead of the linear stage cards', () => {
@@ -163,7 +171,8 @@ describe('algorithm review sheet UI', () => {
     expect(screen.getByTestId('guide-title').textContent).toContain('Dijkstra');
     expect(screen.getByTestId('guide-intro').textContent).toContain('BFS');
     expect(screen.getByTestId('guide-definition').textContent).toContain('non-negative');
-    expect(screen.getByTestId('guide-stage-list').textContent).toContain('Initialise the distance table');
+    expect(screen.getByTestId('algorithm-flow').textContent).toContain('dist[source] = 0');
+    expect(screen.queryByTestId('guide-stage-list')).toBeNull();
     expect(screen.getByText('Complexity and applicability')).toBeTruthy();
     expect(screen.getByText('Common mistakes & memory')).toBeTruthy();
     expect(screen.getByTestId('guide-memory').textContent).toContain('negative');

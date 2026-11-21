@@ -70,19 +70,15 @@ describe('algorithm review guide', () => {
     }
   });
 
-  it('attaches the new structured flow only to the four representative algorithms', () => {
+  it('attaches the structured flow to every formal course', () => {
     for (const lesson of lessonRegistry.lessons) {
       const guide = buildAlgorithmGuide(
         lesson.algorithmId,
         lesson,
         ALGORITHM_CATALOG[lesson.algorithmId],
       );
-      if (['kruskal', 'binary', 'kmp', 'merge'].includes(lesson.algorithmId)) {
-        expect(guide.flow?.algorithmId).toBe(lesson.algorithmId);
-        expect(guide.flow?.sections.length).toBeGreaterThan(0);
-      } else {
-        expect(guide.flow).toBeNull();
-      }
+      expect(guide.flow?.algorithmId, lesson.algorithmId).toBe(lesson.algorithmId);
+      expect(guide.flow?.sections.length, lesson.algorithmId).toBeGreaterThan(0);
     }
   });
 
