@@ -72,13 +72,15 @@ test.describe('UX-01B — simplified review sheet', () => {
     await expect(page.locator('[data-testid="guide-conditions"]')).toContainText('非负');
 
     await expect(page.locator('[data-testid="guide-flow-title"]')).toContainText('算法整体流程');
-    await expect(page.locator('[data-testid="guide-stage-list"] li')).toHaveCount(6);
-    const flowLayout = await page.locator('[data-testid="guide-stage-list"]').evaluate((node) => {
-      const style = getComputedStyle(node);
-      return { display: style.display, wrap: style.flexWrap, overflow: node.scrollWidth - node.clientWidth };
-    });
-    expect(flowLayout.display).toBe('flex');
-    expect(flowLayout.wrap).toBe('wrap');
+    const flow = page.getByTestId('algorithm-flow');
+    await expect(flow).toBeVisible();
+    await expect(flow.locator('.algorithm-flow-section')).toHaveCount(1);
+    await expect(flow.locator('details')).toHaveCount(0);
+    const flowLayout = await flow.evaluate((node) => ({
+      overflow: node.scrollWidth - node.clientWidth,
+      sections: node.querySelectorAll('.algorithm-flow-section').length,
+    }));
+    expect(flowLayout.sections).toBe(1);
     expect(flowLayout.overflow).toBeLessThanOrEqual(1);
 
     await expect(page.locator('[data-testid="guide-pitfalls"] li')).toHaveCount(3);
@@ -101,7 +103,7 @@ test.describe('UX-01B — simplified review sheet', () => {
     await selectAlgorithm(page, 'topological');
     await expect(page.locator('[data-testid="topo-stage"]')).toBeVisible({ timeout: 60_000 });
     await expect(page.locator('[data-testid="guide-title"]')).toContainText('拓扑');
-    await expect(page.locator('[data-testid="guide-stage-list"] li')).toHaveCount(6);
+    await expect(page.getByTestId('algorithm-flow').locator('.algorithm-flow-section')).toHaveCount(1);
     await expect(page.locator('[data-testid="guide-conditions"]')).toContainText('DAG');
 
     // The fold preference is per algorithm: folding Kahn must not fold Kosaraju.
@@ -112,7 +114,7 @@ test.describe('UX-01B — simplified review sheet', () => {
     await expect(page.locator('[data-testid="scc-stage"]')).toBeVisible({ timeout: 60_000 });
     await expect(page.locator('[data-testid="algorithm-guide"]')).toBeVisible();
     await expect(page.locator('[data-testid="guide-title"]')).toContainText('Kosaraju');
-    await expect(page.locator('[data-testid="guide-stage-list"] li')).toHaveCount(6);
+    await expect(page.getByTestId('algorithm-flow').locator('.algorithm-flow-section')).toHaveCount(5);
     await expectNoPageOverflow(page);
 
     await selectAlgorithm(page, 'topological');
@@ -126,22 +128,20 @@ test.describe('UX-01B — simplified review sheet', () => {
     await page.getByRole('button', { name: 'Switch language' }).click();
     await expect(page.locator('[data-testid="guide-title"]')).toContainText('Kosaraju');
     await expect(page.locator('[data-testid="guide-intro"]')).toContainText('Mutual reachability');
-    await expect(page.locator('[data-testid="guide-stage-list"]')).toContainText('Build the transposed graph');
+    await expect(flow.locator('.algorithm-flow-section-head h4').first()).toContainText('Stage 1');
     await expect(page.locator('[data-testid="guide-memory"]')).toContainText('transpose');
     await expectNoPageOverflow(page);
 
-    // A catalog-only algorithm has no authored flow and must not invent one.
-    // Select it through the mobile menu: at this point the directory is scrolled
-    // to the graph chapter and a direct desktop click can land on a stale node.
+    // Every curriculum algorithm now has an authored flow; Fibonacci's guide
+    // remains curated and the compact graph must render without a stage list.
     await page.setViewportSize({ width: 390, height: 844 });
     await page.selectOption('[data-testid="mobile-algo-select"]', 'fib');
     await expect(page.locator('[data-testid="lab-title"]')).toHaveText(/Fibonacci|斐波那契/);
-    await expect(page.locator('[data-testid="algorithm-guide"]')).toHaveAttribute('data-source', 'catalog');
-    await expect(page.locator('[data-testid="guide-no-steps"]')).toBeVisible();
-    await expect(page.locator('[data-testid="guide-catalog-note"]')).toBeVisible();
+    await expect(page.locator('[data-testid="algorithm-guide"]')).toHaveAttribute('data-source', 'curated');
+    await expect(page.locator('[data-testid="guide-no-steps"]')).toHaveCount(0);
+    await expect(page.locator('[data-testid="guide-catalog-note"]')).toHaveCount(0);
     await expect(page.locator('[data-testid="guide-stage-list"]')).toHaveCount(0);
-    await expect(page.locator('[data-testid="guide-pitfalls"]')).toHaveCount(0);
-    await expect(page.locator('[data-testid="guide-memory"]')).toHaveCount(0);
+    await expect(page.getByTestId('algorithm-flow').locator('.algorithm-flow-section')).toHaveCount(1);
     await expectNoPageOverflow(page);
   });
 
@@ -153,24 +153,22 @@ test.describe('UX-01B — simplified review sheet', () => {
     await expect(page.locator('[data-testid="scc-stage"]')).toBeVisible({ timeout: 60_000 });
     await expect(page.locator('[data-testid="algorithm-guide"]')).toBeVisible();
     await expect(page.locator('[data-testid="guide-title"]')).toContainText('Kosaraju');
-    await expect(page.locator('[data-testid="guide-stage-list"] li')).toHaveCount(6);
+    const flow = page.getByTestId('algorithm-flow');
+    await expect(flow.locator('.algorithm-flow-section')).toHaveCount(5);
+    await expect(page.locator('.algorithm-flow-desktop').first()).toBeHidden();
+    await expect(page.locator('.algorithm-flow-mobile').first()).toBeVisible();
 
     const mobile = await page.evaluate(() => {
-      const flow = document.querySelector('[data-testid="guide-stage-list"]') as HTMLElement;
+      const flow = document.querySelector('[data-testid="algorithm-flow"]') as HTMLElement;
       const intro = document.querySelector('[data-testid="guide-intro"]') as HTMLElement;
-      const step = document.querySelector('[data-testid="guide-stage-list"] li') as HTMLElement;
-      const flowStyle = getComputedStyle(flow);
+      const step = document.querySelector('.flow-mobile-node') as HTMLElement;
       return {
-        display: flowStyle.display,
-        wrap: flowStyle.flexWrap,
         introFont: parseFloat(getComputedStyle(intro).fontSize),
         stepWidth: step.getBoundingClientRect().width,
         stepHeight: step.getBoundingClientRect().height,
         flowOverflow: flow.scrollWidth - flow.clientWidth,
       };
     });
-    expect(mobile.display).toBe('flex');
-    expect(mobile.wrap).toBe('wrap');
     expect(mobile.introFont).toBeGreaterThanOrEqual(14);
     expect(mobile.stepWidth).toBeGreaterThan(100);
     expect(mobile.stepHeight).toBeGreaterThan(0);

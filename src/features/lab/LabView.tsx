@@ -131,6 +131,20 @@ export function LabView({
   // UX-01: folding is a per-algorithm presentation preference. It is derived
   // from the current algorithm and never stored in the LabController.
   const algorithmGuide = useAlgorithmGuidePreferences(lab.currentAlgo);
+  // A course is a fresh reading session. Keeping this key out of the playback
+  // state means language/theme changes never rewind a running trace, while an
+  // actual algorithm/concept switch always starts at frame 0 and at the top.
+  const navigationKey = concept ? `concept:${concept.id}` : `algorithm:${lab.currentAlgo}`;
+  const previousNavigationKey = useRef(navigationKey);
+  const restartPlayback = lab.playback.restart;
+  useEffect(() => {
+    if (previousNavigationKey.current === navigationKey) return;
+    previousNavigationKey.current = navigationKey;
+    setSelectedFrameId(null);
+    restartPlayback();
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+  }, [navigationKey, restartPlayback]);
 
   // UX-04: "start animation" only folds the guide and brings the existing
   // workbench/playback into view. It never seeks, reruns Python or owns a

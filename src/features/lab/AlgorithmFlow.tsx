@@ -7,17 +7,18 @@ import type {
   FlowNodeKind,
   FlowSection,
 } from '../../domain/guides/flowTypes';
+import { plainFlowLabel, plainFlowSummary } from '../../domain/guides/flowPlainLanguage';
 import '../../styles/algorithm-flow.css';
 
-const NODE_WIDTH = 252;
-const NODE_GAP = 44;
-const ROW_GAP = 36;
-const GRAPH_PAD_TOP = 24;
-const GRAPH_PAD_X = 22;
-const LOOP_CHANNEL_GAP = 15;
-const LOOP_LABEL_GAP = 24;
-const NODE_LINE = 20;
-const DETAIL_LINE = 18;
+const NODE_WIDTH = 168;
+const NODE_GAP = 16;
+const ROW_GAP = 9;
+const GRAPH_PAD_TOP = 9;
+const GRAPH_PAD_X = 11;
+const LOOP_CHANNEL_GAP = 10;
+const NODE_LINE = 17;
+const DETAIL_LINE = 16;
+const NODE_FONT = 13;
 
 interface TextBlock {
   lines: string[];
@@ -61,9 +62,9 @@ function characterUnits(value: string): number {
   return units;
 }
 
-function wrapText(value: string, maxUnits: number): TextBlock {
+function wrapText(value: string, maxUnits: number, lineHeight = NODE_LINE): TextBlock {
   const normalized = value.replace(/\s+/g, ' ').trim();
-  if (!normalized) return { lines: [''], height: NODE_LINE };
+  if (!normalized) return { lines: [''], height: lineHeight };
   const lines: string[] = [];
   let line = '';
   let used = 0;
@@ -74,7 +75,17 @@ function wrapText(value: string, maxUnits: number): TextBlock {
     used = 0;
   };
 
-  const tokens = normalized.includes(' ') ? (normalized.match(/\S+\s*/g) ?? [normalized]) : [...normalized];
+  // Split at natural punctuation before falling back to per-character wrapping.
+  // This keeps a long mixed token such as `ValueError：Dijkstra` from being cut
+  // through the middle of either word.
+  const rawTokens = normalized.includes(' ') ? (normalized.match(/\S+\s*/g) ?? [normalized]) : [normalized];
+  const tokens = rawTokens.flatMap((token) => {
+    const source = String(token);
+    return source.match(/[^，。！？；：、]+[，。！？；：、]?/g) ?? [source];
+  });
+  const closingPunctuation = '，。！？；：、）】》”’';
+  const openingPunctuation = '（【《“‘';
+
   for (const token of tokens) {
     const tokenText = String(token);
     const tokenUnits = characterUnits(tokenText);
@@ -89,52 +100,75 @@ function wrapText(value: string, maxUnits: number): TextBlock {
       used = characterUnits(line);
       continue;
     }
-    // A long unbroken token (CJK sentence or identifier) is split by character
-    // rather than shrunk: text may never disappear under a clip path.
+    // A long unbroken token is split by character rather than shrunk: text may
+    // never disappear under a clip path. Closing punctuation stays on the
+    // previous line, and opening punctuation moves to the next line, so a
+    // question mark never ends up alone on a line of its own.
     for (const char of tokenText) {
       const unit = characterUnits(char);
-      if (used + unit > maxUnits && line.trim()) flush();
+      if (used + unit > maxUnits && line.trim()) {
+        if (closingPunctuation.includes(char)) {
+          line += char;
+          used += unit;
+          flush();
+          continue;
+        }
+        let carry = '';
+        while (line && openingPunctuation.includes(line.at(-1) ?? '')) {
+          const last = line.at(-1) ?? '';
+          carry = last + carry;
+          line = line.slice(0, -1);
+          used -= characterUnits(last);
+        }
+        flush();
+        line = carry;
+        used = characterUnits(carry);
+      }
       line += char;
       used += unit;
     }
   }
   flush();
-  return { lines: lines.length > 0 ? lines : [''], height: Math.max(1, lines.length) * NODE_LINE };
+  return { lines: lines.length > 0 ? lines : [''], height: Math.max(1, lines.length) * lineHeight };
 }
 
 function nodeWidth(kind: FlowNodeKind): number {
-  if (kind === 'decision') return 218;
-  if (kind === 'start' || kind === 'end') return 212;
+  if (kind === 'decision') return 164;
+  if (kind === 'start' || kind === 'end') return 164;
   return NODE_WIDTH;
 }
 
 function nodeMaxUnits(node: FlowNode, width: number): number {
-  const usable = width - 30;
-  if (node.kind === 'decision') return Math.max(8, Math.floor((usable * 0.72) / 14));
-  return Math.max(10, Math.floor(usable / 14));
+  const usable = width - 24;
+  if (node.kind === 'decision') return Math.max(7, Math.floor((usable * 0.9) / NODE_FONT));
+  return Math.max(8, Math.floor(usable / NODE_FONT));
+}
+
+function nodeLabel(node: FlowNode, lang: 'zh' | 'en'): string {
+  return plainFlowLabel(node.label.zh, node.label.en, lang);
 }
 
 function nodeBlocks(node: FlowNode, lang: 'zh' | 'en', detail: boolean): TextBlock {
   const width = nodeWidth(node.kind);
   const maxUnits = nodeMaxUnits(node, width);
-  const value = detail ? node.detail?.[lang] ?? '' : node.label[lang];
-  return wrapText(value, maxUnits);
+  const value = detail ? node.detail?.[lang] ?? '' : nodeLabel(node, lang);
+  return wrapText(value, maxUnits, detail ? DETAIL_LINE : NODE_LINE);
 }
 
 function nodeHeight(node: FlowNode, lang: 'zh' | 'en'): number {
   const label = nodeBlocks(node, lang, false);
   const detail = node.detail ? nodeBlocks(node, lang, true) : null;
   if (node.kind === 'decision') {
-    return Math.max(92, label.height + 38 + (detail?.height ?? 0));
+    return Math.max(60, label.height + 20 + (detail?.height ?? 0));
   }
   if (node.kind === 'start' || node.kind === 'end') {
-    return Math.max(48, label.height + 22 + (detail?.height ?? 0));
+    return Math.max(32, label.height + 10 + (detail?.height ?? 0));
   }
-  return Math.max(60, label.height + 24 + (detail ? 6 + detail.height : 0));
+  return Math.max(38, label.height + 10 + (detail ? 3 + detail.height : 0));
 }
 
 function rotateLabel(edge: FlowEdge, lang: 'zh' | 'en', t: (key: string) => string): string {
-  if (edge.label) return edge.label[lang];
+  if (edge.label) return plainFlowLabel(edge.label.zh, edge.label.en, lang);
   if (edge.kind === 'yes') return t('flowYes');
   if (edge.kind === 'no') return t('flowNo');
   if (edge.back) return t('flowLoopBack');
@@ -166,8 +200,17 @@ function layoutSection(
   });
   const rightLoops = loops.filter((edge) => !leftLoops.includes(edge));
 
-  const leftGutter = leftLoops.length > 0 ? LOOP_LABEL_GAP + leftLoops.length * 12 : GRAPH_PAD_X;
-  const rightGutter = rightLoops.length > 0 ? LOOP_LABEL_GAP + rightLoops.length * 12 : GRAPH_PAD_X;
+  // Loop labels sit in a dedicated gutter so they cannot be covered by the
+  // node column. The gutter follows the current language and label length.
+  const labelWidth = (edge: FlowEdge) => characterUnits(rotateLabel(edge, lang, t)) * NODE_FONT;
+  const leftGutter = Math.max(
+    GRAPH_PAD_X,
+    ...leftLoops.map((edge) => GRAPH_PAD_X + 6 + labelWidth(edge) + 10),
+  );
+  const rightGutter = Math.max(
+    GRAPH_PAD_X,
+    ...rightLoops.map((edge) => GRAPH_PAD_X + 6 + labelWidth(edge) + 10),
+  );
   const laneCenters = new Map<number, number>();
   const contentWidth =
     lanes.length * NODE_WIDTH + Math.max(0, lanes.length - 1) * NODE_GAP;
@@ -209,7 +252,7 @@ function layoutSection(
   for (const node of section.nodes) {
     const width = nodeWidth(node.kind);
     const height = Math.max(
-      node.kind === 'decision' || node.kind === 'start' || node.kind === 'end' ? 48 : 60,
+      node.kind === 'decision' || node.kind === 'start' || node.kind === 'end' ? 32 : 38,
       nodeHeight(node, lang),
     );
     const label = nodeBlocks(node, lang, false);
@@ -265,7 +308,7 @@ function layoutSection(
       const order = loopLabelOrder.get(key) ?? 0;
       loopLabelOrder.set(key, order + 1);
       label = {
-        x: side === 'right' ? channelX - 6 : channelX + 6,
+        x: side === 'right' ? graphWidth - GRAPH_PAD_X - 6 : GRAPH_PAD_X + 6,
         y: approachY - 8 - order * 14,
         anchor: side === 'right' ? 'end' : 'start',
       };
@@ -312,9 +355,9 @@ function layoutSection(
     });
   }
 
-  // A single extra row at the bottom keeps the lowest loop channel from
+  // A single compact row at the bottom keeps the lowest loop channel from
   // touching the paragraph below the SVG.
-  const height = cursor - ROW_GAP + 18;
+  const height = cursor - ROW_GAP + 10;
 
   return { nodes: nodeMap, edges, width: graphWidth, height };
 }
@@ -360,7 +403,7 @@ function NodeGlyph({
       className={kindClass}
       data-node-id={node.id}
       data-node-kind={node.kind}
-      aria-label={node.label[lang]}
+      aria-label={nodeLabel(node, lang)}
       role="img"
     >
       <path className="flow-node-shape" d={shapeFor(geometry)} />
@@ -483,7 +526,7 @@ function MobileFlow({
               <div className="flow-mobile-body">
                 <div className="flow-mobile-title">
                   <span className="flow-mobile-kind">{kindLabel}</span>
-                  <strong>{node.label[lang]}</strong>
+                  <strong>{nodeLabel(node, lang)}</strong>
                 </div>
                 {node.detail ? <p className="flow-mobile-detail">{node.detail[lang]}</p> : null}
                 {outgoing.length > 0 ? (
@@ -496,7 +539,7 @@ function MobileFlow({
                           {branch ? <span className="flow-mobile-branch-label">{branch}</span> : null}
                           <span>
                             {edge.back ? '↩ ' : '→ '}
-                            {target?.label[lang] ?? edge.to}
+                            {target ? nodeLabel(target, lang) : edge.to}
                           </span>
                         </li>
                       );
@@ -544,11 +587,16 @@ export function AlgorithmFlowView({
           >
             <header className="algorithm-flow-section-head">
               <h4 id={`flow-section-title-${flow.algorithmId}-${section.id}`}>{section.title[lang]}</h4>
-              {section.summary ? <p>{section.summary[lang]}</p> : null}
+              {section.summary ? (
+                <p>{plainFlowSummary(section.summary.zh, section.summary.en, lang)}</p>
+              ) : null}
             </header>
             <div className="algorithm-flow-desktop">
               <svg
                 className="algorithm-flow-svg"
+                data-svg-text-floor="off"
+                width={layouts[index].width}
+                height={layouts[index].height}
                 viewBox={`0 0 ${layouts[index].width} ${layouts[index].height}`}
                 role="img"
                 aria-label={section.title[lang]}

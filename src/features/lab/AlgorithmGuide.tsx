@@ -10,9 +10,11 @@ export const ALGORITHM_GUIDE_ID = 'algorithm-guide';
  * Algorithm review sheet.
  *
  * Reading order: why the algorithm exists → formal/plain explanation →
- * complexity and limits → the structured control flow → mistakes. The flow is
- * the visual centre; the mistakes sit last and deliberately carry less weight.
- * Trace frame captions stay in the player below and are never copied here.
+ * complexity and limits → the natural-language control flow → mistakes. The
+ * graph is the visual centre: it stays fully expanded and uses compact cards,
+ * short prose labels and small arrows so a single-section algorithm can be read
+ * on one screen. Trace frame captions stay in the player below and are never
+ * copied here.
  */
 export function AlgorithmGuide({
   guide,

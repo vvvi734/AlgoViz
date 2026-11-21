@@ -64,7 +64,7 @@ test('VISUAL-02 theory and flow layout have no page overflow at desktop or mobil
     expect(metrics.pageOverflow, `flow page @${width}`).toBeLessThanOrEqual(2);
     expect(metrics.flowOverflow, `flow block @${width}`).toBeLessThanOrEqual(2);
     expect(metrics.nodeTextOverflow, `flow node text @${width}`).toEqual([]);
-    expect(metrics.desktopDisplay, `flow desktop @${width}`).toBe(width > 1100 ? 'block' : 'none');
+    expect(metrics.desktopDisplay, `flow desktop @${width}`).toBe(width > 1100 ? 'flex' : 'none');
     expect(metrics.mobileDisplay, `flow mobile @${width}`).toBe(width > 1100 ? 'none' : 'block');
   }
 });

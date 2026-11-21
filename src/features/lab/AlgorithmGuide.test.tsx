@@ -40,7 +40,7 @@ describe('algorithm review sheet UI', () => {
     expect(screen.getByTestId('guide-conditions').textContent).toContain('边权必须非负');
 
     const main = screen.getByTestId('algorithm-flow-section-main');
-    expect(main.querySelector('[data-node-id="dijkstra-init"]')?.textContent).toContain('dist[source] = 0');
+    expect(main.querySelector('[data-node-id="dijkstra-init"]')?.getAttribute('aria-label')).toContain('起点距离为零，其余暂定无穷');
     expect(main.querySelector('[data-node-id="dijkstra-stale"]')).toBeTruthy();
     expect(main.querySelector('[data-edge-from="dijkstra-skip"][data-edge-to="dijkstra-outer"]')).toBeTruthy();
     expect(screen.queryByTestId('guide-stage-list')).toBeNull();
@@ -54,6 +54,15 @@ describe('algorithm review sheet UI', () => {
     expect(screen.queryByTestId('guide-details-toggle')).toBeNull();
     expect(screen.queryByTestId('guide-details')).toBeNull();
     expect(screen.queryByText('完整执行步骤')).toBeNull();
+  });
+
+  it('keeps the full control flow expanded instead of hiding it in a disclosure', () => {
+    renderGuide();
+
+    const flow = screen.getByTestId('algorithm-flow');
+    expect(flow.closest('details')).toBeNull();
+    expect(screen.queryByTestId('guide-flow-details')).toBeNull();
+    expect(flow.querySelectorAll('.algorithm-flow-section').length).toBe(dijkstraGuide.flow?.sections.length);
   });
 
   it('uses “core operations” for a data-structure course and keeps stages abstract', () => {
@@ -171,7 +180,7 @@ describe('algorithm review sheet UI', () => {
     expect(screen.getByTestId('guide-title').textContent).toContain('Dijkstra');
     expect(screen.getByTestId('guide-intro').textContent).toContain('BFS');
     expect(screen.getByTestId('guide-definition').textContent).toContain('non-negative');
-    expect(screen.getByTestId('algorithm-flow').textContent).toContain('dist[source] = 0');
+    expect(screen.getByTestId('algorithm-flow').querySelector('[data-node-id="dijkstra-init"]')?.getAttribute('aria-label')).toContain('The source starts at zero and all others at infinity');
     expect(screen.queryByTestId('guide-stage-list')).toBeNull();
     expect(screen.getByText('Complexity and applicability')).toBeTruthy();
     expect(screen.getByText('Common mistakes & memory')).toBeTruthy();

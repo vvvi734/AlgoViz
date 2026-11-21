@@ -25,6 +25,10 @@ export function useSvgTextFloor(rootRef: RefObject<HTMLElement | null>) {
       const svgs = root.querySelectorAll<SVGSVGElement>('svg');
       for (const svg of svgs) {
         resizeObserver?.observe(svg);
+        // Dense editorial diagrams may opt out and set their own type scale.
+        // Their SVG is rendered at its intrinsic size, so user units already
+        // match CSS pixels and do not need a post-layout floor.
+        if (svg.dataset.svgTextFloor === 'off') continue;
         const ctm = typeof svg.getScreenCTM === 'function' ? svg.getScreenCTM() : null;
         if (!ctm) continue;
         const scale = Math.min(Math.abs(ctm.a), Math.abs(ctm.d));

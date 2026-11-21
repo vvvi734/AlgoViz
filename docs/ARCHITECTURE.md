@@ -74,6 +74,7 @@ VisualStage + 具体 Visual 组件
 ### `guides/`
 
 - `flowTypes.ts` / `algorithmFlows.ts`：声明式算法流程图数据。
+- `flowPlainLanguage.ts`：把节点、边和阶段说明中的代码式措辞映射为双语自然语言；只改表现层，不改分支结构。
 - `buildGuide.ts` / `courseGuides.ts`：从课程和安全回退构造导学。
 - `validateFlow.ts`：流程图数据校验；由流程图测试使用，不能因“只有测试引用”删除。
 
