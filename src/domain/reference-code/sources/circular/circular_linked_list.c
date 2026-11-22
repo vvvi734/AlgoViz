@@ -117,12 +117,33 @@ int main(void)
 {
     CircularList list;
     list_init(&list);
-    list_append(&list, 1);
-    list_append(&list, 2);
-    list_append(&list, 3);
+    if (!list_append(&list, 1))
+    {
+        fprintf(stderr, "append 1 failed\n");
+        list_free(&list);
+        return EXIT_FAILURE;
+    }
+    if (!list_append(&list, 2))
+    {
+        fprintf(stderr, "append 2 failed\n");
+        list_free(&list);
+        return EXIT_FAILURE;
+    }
+    if (!list_append(&list, 3))
+    {
+        fprintf(stderr, "append 3 failed\n");
+        list_free(&list);
+        return EXIT_FAILURE;
+    }
     printf("circular: ");
     list_print(&list);
+    if (list.tail == NULL)
+    {
+        fprintf(stderr, "tail is unexpectedly NULL\n");
+        list_free(&list);
+        return EXIT_FAILURE;
+    }
     printf("tail->next: %d\n", list.tail->next->value);
     list_free(&list);
-    return 0;
+    return EXIT_SUCCESS;
 }

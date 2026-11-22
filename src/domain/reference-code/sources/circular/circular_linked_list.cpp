@@ -120,11 +120,28 @@ class CircularList
 int main()
 {
     CircularList list;
-    list.append(1);
-    list.append(2);
-    list.append(3);
+    if (!list.append(1))
+    {
+        std::cerr << "append 1 failed\n";
+        return 1;
+    }
+    if (!list.append(2))
+    {
+        std::cerr << "append 2 failed\n";
+        return 1;
+    }
+    if (!list.append(3))
+    {
+        std::cerr << "append 3 failed\n";
+        return 1;
+    }
     std::cout << "circular: ";
     list.print();
+    if (!list.tail())
+    {
+        std::cerr << "tail is unexpectedly NULL\n";
+        return 1;
+    }
     std::cout << "tail->next: " << list.tail()->next->value << '\n';
     return 0;
 }
