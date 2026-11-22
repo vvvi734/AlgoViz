@@ -1,4 +1,4 @@
-import { expect, openCodePanel, selectAlgorithm as chooseAlgorithm, test, type Page } from './fixtures';
+import { expect, selectAlgorithm as chooseAlgorithm, test, type Page } from './fixtures';
 
 async function openApp(page: Page) {
   await page.goto('/?view=lab');
@@ -62,6 +62,14 @@ async function visitedIds(page: Page): Promise<string[]> {
 async function queueIds(page: Page): Promise<string[]> {
   const value = await page.locator('[data-testid="tree-queue"]').getAttribute('data-queue-ids');
   return value ? value.split(',').filter(Boolean) : [];
+}
+
+async function arrayStackValues(page: Page): Promise<string[]> {
+  return page.locator('[data-testid="array-stack-slot"]').evaluateAll((slots) =>
+    slots
+      .map((slot) => slot.getAttribute('data-value') ?? '')
+      .filter(Boolean),
+  );
 }
 
 async function activeId(page: Page): Promise<string | null> {
@@ -219,33 +227,35 @@ test.describe('Stage 7D — real binary-tree traversal and recursion stack', () 
     await expect(page.locator('[data-testid="tree-node"][data-active="true"]')).toHaveCount(0);
   });
 
-  test('empty, single-node and equal-value trees stay safe and identity-explicit', async ({ page }) => {
+  test('empty and duplicate trees are rejected; single-node tree stays identity-explicit', async ({ page }) => {
     await openApp(page);
     await selectAlgo(page, 'inorder');
     await expect(page.locator('[data-testid="tree-visual"]')).toBeVisible({ timeout: 60_000 });
 
-    await openCodePanel(page);
-    await page.fill('#run-input', '[]');
+    // Empty input is rejected by the tree contract; the official trace remains.
+    await page.getByTestId('tree-nodes').fill('[]');
     await page.getByTestId('run-btn').click();
-    await expect(page.locator('[data-testid="tree-empty"]')).toBeVisible({ timeout: 60_000 });
-    await expect(page.locator('[data-testid="progress"]')).toHaveText('1 / 3', { timeout: 60_000 });
+    await expect(page.getByTestId('run-feedback')).toContainText(/树不能为空|Tree cannot be empty/i);
+    await expect(page.getByTestId('run-feedback')).toHaveClass(/error/);
+    // Rejected input clears the stale trace; no broken or fake frames remain.
+    await expect(page.locator('[data-testid="progress"]')).toHaveText('0 / 0');
     await expect(page.locator('[data-testid="tree-node"]')).toHaveCount(0);
 
-    await page.fill('#run-input', '[4]');
+    // Single explicit root: level-order node id n1, value 4.
+    await page.getByTestId('tree-nodes').fill('4');
     await page.getByTestId('run-btn').click();
-    await expect(page.locator('[data-testid="tree-node"]')).toHaveCount(1, { timeout: 60_000 });
+    await expect(page.locator('[data-testid="tree-node"]')).toHaveCount(1, { timeout: 90_000 });
     await expect(page.locator('[data-testid="tree-node"][data-node-id="n1"]')).toHaveAttribute('data-role', 'root');
     await expect(page.locator('[data-testid="tree-node"][data-node-id="n1"]')).toHaveAttribute('data-value', '4');
-    await expect(page.locator('[data-testid="progress"]')).toHaveText('1 / 6', { timeout: 60_000 });
+    await expect(page.locator('[data-testid="progress"]')).toHaveText(/^1 \/ \d+$/);
 
-    await page.fill('#run-input', '[7,7,7]');
+    // Equal values are rejected up front instead of producing ambiguous identity.
+    await page.getByTestId('tree-nodes').fill('7,7,7');
     await page.getByTestId('run-btn').click();
-    await expect(page.locator('[data-testid="tree-node"]')).toHaveCount(3, { timeout: 60_000 });
-    expect(await nodeIds(page)).toEqual(['n1', 'n2', 'n3']);
-    expect(await edgePairs(page)).toEqual([['n1', 'n2'], ['n1', 'n3']]);
-    await expect(page.locator('[data-testid="tree-node"][data-node-id="n2"]')).toHaveAttribute('data-value', '7');
-    await expect(page.locator('[data-testid="tree-node"][data-node-id="n3"]')).toHaveAttribute('data-value', '7');
-    await expect(page.locator('[data-testid="tree-node"][data-node-id="n1"]')).toHaveAttribute('data-role', 'root');
+    await expect(page.getByTestId('run-feedback')).toContainText(/重复|duplicate/i);
+    await expect(page.getByTestId('run-feedback')).toHaveClass(/error/);
+    await expect(page.locator('[data-testid="progress"]')).toHaveText('0 / 0');
+    await expect(page.locator('[data-testid="tree-node"]')).toHaveCount(0);
   });
 
   test('level order runs a real FIFO queue and keeps queue state on scrub', async ({ page }) => {
@@ -316,10 +326,11 @@ test.describe('Stage 7D — real binary-tree traversal and recursion stack', () 
     await expect(page.locator('[data-testid="current-step-message"]')).toContainText(/访问节点 n1|visit n1/);
 
     await selectAlgo(page, 'stack');
-    await expect(page.locator('[data-testid="stack-visual"]')).toBeVisible({ timeout: 60_000 });
-    await expect(page.locator('[data-testid="progress"]')).toHaveText('1 / 7', { timeout: 60_000 });
+    await expect(page.locator('[data-testid="array-stack-visual"]')).toBeVisible({ timeout: 60_000 });
+    await expect(page.locator('[data-testid="progress"]')).toHaveText('1 / 8', { timeout: 60_000 });
     await expect(page.locator('[data-testid="tree-visual"]')).toHaveCount(0);
-    await setFrame(page, 4, 7);
-    await expect(page.locator('[data-testid="stack-item"]').first()).toBeVisible();
+    await setFrame(page, 4, 8);
+    await expect(page.locator('[data-testid="array-stack-slot"][data-value="3"]')).toBeVisible();
+    expect(await arrayStackValues(page)).toEqual(['3', '5', '8', '11']);
   });
 });

@@ -81,9 +81,12 @@ export type GraphE2EDraft = {
 export async function fillGraphDraft(page: Page, draft: GraphE2EDraft) {
   await expect(page.getByTestId('graph-input-editor')).toBeVisible({ timeout: 45_000 });
 
+  // The direction is fixed by the algorithm for directed/undirected lessons.
+  // Only an optional-direction graph exposes the checkbox; preserve its
+  // product default unless the test explicitly needs a direction.
   const directed = page.getByTestId('graph-directed');
-  if ((await directed.count()) > 0) {
-    await directed.setChecked(Boolean(draft.directed));
+  if (draft.directed !== undefined && (await directed.count()) > 0) {
+    await directed.setChecked(draft.directed);
   }
 
   const removeNode = page.getByTestId('graph-node-remove');
@@ -123,6 +126,24 @@ export async function runGraphDraft(page: Page, draft: GraphE2EDraft, total: num
 }
 
 /**
+ * Run a graph draft and read the real frame count. Use this when a fixture's
+ * trace length is a product result rather than a hard-coded test constant.
+ */
+export async function runGraphDraftResult(page: Page, draft: GraphE2EDraft): Promise<number> {
+  await fillGraphDraft(page, draft);
+  await page.getByTestId('run-btn').click();
+  await expect(page.locator('[data-testid="run-feedback"]')).toContainText(
+    /动画已生成|Visualization ready/,
+    { timeout: 90_000 },
+  );
+  await expect(page.locator('[data-testid="progress"]')).toHaveText(/^1 \/ \d+$/, {
+    timeout: 90_000,
+  });
+  const progress = (await page.locator('[data-testid="progress"]').textContent()) ?? '1 / 0';
+  return Number(progress.split('/')[1]?.trim());
+}
+
+/**
  * UX-03: the directory opens only the current algorithm's chapter/topic. A
  * desktop click must therefore find an algorithm's authored path and expand it
  * first. The mobile select remains a single, real `selectOption` call.
@@ -143,10 +164,25 @@ export async function openTextbookChapter(page: Page, chapterId: string) {
 
 export async function openTextbookTopic(page: Page, topicId: string) {
   const topic = page.getByTestId(`topic-${topicId}`);
+
+  // A third-level algorithm/concept row can only be visible after its parent
+  // group is open. Open that parent first instead of assuming every row is
+  // top-level (the textbook gained a third hierarchy level).
+  const parentId = await topic.getAttribute('data-parent-topic');
+  if (parentId) {
+    const parent = page.getByTestId(`topic-${parentId}`);
+    if ((await parent.count()) > 0 && (await parent.isVisible())) {
+      if ((await parent.getAttribute('aria-expanded')) === 'false') {
+        await parent.click();
+      }
+      await expect(parent).toHaveAttribute('aria-expanded', 'true');
+    }
+  }
+
   await expect(topic).toBeVisible();
-  // UX-03B: a one-algorithm topic is already a direct entry; there is no
-  // disclosure to open. Multi-algorithm topics keep the original contract.
-  if ((await topic.getAttribute('data-direct')) === 'true') return;
+  // Direct rows have no disclosure at all. Only real disclosure groups expose
+  // `aria-expanded`; both top-level and third-level direct rows simply return.
+  if ((await topic.getAttribute('aria-expanded')) === null) return;
   if ((await topic.getAttribute('aria-expanded')) !== 'true') {
     await topic.click();
   }

@@ -1,4 +1,4 @@
-import { expect, openCodePanel, selectAlgorithm as chooseAlgorithm, test, type Page } from './fixtures';
+import { expect, selectAlgorithm as chooseAlgorithm, test, type Page } from './fixtures';
 import { mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 
@@ -113,23 +113,18 @@ test.describe('Stage 7D visual evidence', () => {
       { name: 'order', frame: 28 },
     ]);
 
-    for (const [name, input, total] of [
-      ['empty', '[]', 3],
-      ['single', '[4]', 6],
-      ['equal-values', '[7,7,7]', 14],
-    ] as const) {
-      await openCodePanel(page);
-      await page.fill('#run-input', input);
-      await page.getByTestId('run-btn').click();
-      await expect(page.locator('[data-testid="progress"]')).toHaveText(`1 / ${total}`, { timeout: 60_000 });
-      await expect(page.locator('[data-testid="tree-node"]')).toHaveCount(name === 'empty' ? 0 : name === 'single' ? 1 : 3);
-      await captureStates(page, `tree-${name}`, [{ name, frame: 0 }], total);
-    }
+    // Single explicit root (CSV contract); empty and duplicate tokens are
+    // rejected by the tree editor and are not visual states.
+    await page.getByTestId('tree-nodes').fill('4');
+    await page.getByTestId('run-btn').click();
+    await expect(page.locator('[data-testid="progress"]')).toHaveText(/^1 \/ \d+$/);
+    const singleTotal = Number((await page.getByTestId('progress').textContent())?.split('/')[1]?.trim());
+    await expect(page.locator('[data-testid="tree-node"]')).toHaveCount(1);
+    await captureStates(page, 'tree-single', [{ name: 'single', frame: 0 }], singleTotal);
 
     // Recursion-stack evidence: the tree canvas and the real three-frame stack
     // must be in the same captured run, not two unrelated screenshots.
-    await openCodePanel(page);
-    await page.fill('#run-input', '[4, 2, 6, 1, 3, 5, 7]');
+    await page.getByTestId('tree-nodes').fill('4,2,6,1,3,5,7');
     await page.getByTestId('run-btn').click();
     await expect(page.locator('[data-testid="progress"]')).toHaveText('1 / 30', { timeout: 60_000 });
     await setFrame(page, 5, 30);

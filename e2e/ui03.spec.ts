@@ -59,7 +59,12 @@ test.describe('UI-03 — compact run bar', () => {
 
     expect(dock.y).toBeGreaterThan(primary.y + primary.height - 12);
     expect(dock.width).toBeGreaterThanOrEqual(primary.width - 2);
-    expect(dock.height).toBeLessThan(200);
+    // Graph algorithms have a real structured input table, so the dock is tall
+    // by design. Guard against a blank stretched card instead of a fixed height.
+    const editor = await page.locator('[data-testid="graph-input-editor"]').boundingBox();
+    expect(editor?.height ?? 0).toBeGreaterThan(300);
+    expect(dock.height).toBeGreaterThanOrEqual((editor?.height ?? 0));
+    expect((editor?.y ?? 0) + (editor?.height ?? 0)).toBeLessThanOrEqual(dock.y + dock.height + 1);
     await expect(page.locator('[data-testid="code-dock"]')).toHaveAttribute('data-expanded', 'true');
     await expect(page.locator('[data-testid="code-dock-toggle"]')).toHaveCount(0);
     await expect(page.locator('[data-testid="code-editor"]')).toHaveCount(0);

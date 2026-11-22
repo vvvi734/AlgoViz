@@ -1,4 +1,11 @@
-import { expect, openCodePanel, selectAlgorithm as chooseAlgorithm, test, type Page } from './fixtures';
+import {
+  expect,
+  fillGraphDraft,
+  selectAlgorithm as chooseAlgorithm,
+  test,
+  type GraphE2EDraft,
+  type Page,
+} from './fixtures';
 
 const TOTAL = 46;
 
@@ -35,11 +42,10 @@ function distanceRow(page: Page, nodeId: string) {
   return page.locator(`[data-testid="dijkstra-distance-row"][data-node-id="${nodeId}"]`);
 }
 
-async function runGraphInput(page: Page, input: unknown, total: number) {
-  await openCodePanel(page);
-  await page.fill('#run-input', JSON.stringify(input));
+async function runGraphInput(page: Page, input: GraphE2EDraft, total: number) {
+  await fillGraphDraft(page, input);
   await page.click('[data-testid="run-btn"]');
-  await expect(page.locator('[data-testid="progress"]')).toHaveText(`1 / ${total}`, { timeout: 60_000 });
+  await expect(page.locator('[data-testid="progress"]')).toHaveText(`1 / ${total}`, { timeout: 90_000 });
   await expect(page.locator('[data-testid="graph-visual"]')).toHaveAttribute('data-algorithm', 'dijkstra', { timeout: 60_000 });
 }
 
@@ -247,16 +253,18 @@ test.describe('Stage 7F — real heapq Dijkstra, weighted graph, distance table 
     await expect(page.locator('[data-testid="dijkstra-path"]')).toContainText('A');
     await expect(page.locator('[data-testid="dijkstra-path-distance"]')).toContainText('0');
 
-    await page.fill('#run-input', JSON.stringify({
-      start: 'A',
+    await fillGraphDraft(page, {
       target: 'B',
-      directed: false,
       nodes: ['A', 'B'],
       edges: [['A', 'B', -1]],
-    }));
-    await page.click('[data-testid="run-btn"]');
+    });
+    await page.getByTestId('run-btn').click();
     await expect(page.getByTestId('run-feedback')).toContainText(/non-negative|negative|非负|负权/i, { timeout: 60_000 });
-    await expect(page.locator('[data-testid="graph-node"]')).toHaveCount(0);
+    await expect(page.getByTestId('run-feedback')).toHaveClass(/error/);
+    // Rejected drafts clear the previous trace rather than leaving a stale
+    // Dijkstra canvas that looks like a valid result.
+    await expect(page.locator('[data-testid="progress"]')).toHaveText('0 / 0');
     await expect(page.locator('[data-testid="graph-visual"]')).toHaveCount(0);
+    await expect(page.locator('[data-testid="graph-node"]')).toHaveCount(0);
   });
 });

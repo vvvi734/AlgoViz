@@ -354,6 +354,7 @@ function ArrayStackVisual({
                 data-slot={slot}
                 data-value={item ? valueText(item.value) : ''}
                 data-status={item ? (isTop ? 'top' : 'filled') : 'free'}
+                data-active={item?.active ? 'true' : undefined}
               >
                 <span className="array-slot-index">[{slot}]</span>
                 <span className="array-slot-value">{item ? valueText(item.value) : ''}</span>
@@ -495,11 +496,13 @@ function CircularQueueVisual({
                 {isRear ? 'REAR ↓' : '\u00a0'}
               </div>
               <div
-                className={`array-slot circular-slot${item ? ' is-filled' : ' is-free'}${isFront ? ' is-front' : ''}${isRear ? ' is-rear' : ''}`}
+                className={`array-slot circular-slot${item ? ' is-filled' : ' is-free'}${isFront ? ' is-front' : ''}${isRear ? ' is-rear' : ''}${item?.state === 'entering' ? ' is-entering' : ''}${item?.active ? ' is-peek' : ''}`}
                 data-testid="circular-queue-slot"
                 data-slot={slot}
                 data-value={item ? valueText(item.value) : ''}
                 data-status={item ? (isFront ? 'front' : 'filled') : 'free'}
+                data-rear={isRear ? 'true' : undefined}
+                data-active={item?.active ? 'true' : undefined}
               >
                 <span className="array-slot-index">[{slot}]</span>
                 <span className="array-slot-value">{item ? valueText(item.value) : ''}</span>

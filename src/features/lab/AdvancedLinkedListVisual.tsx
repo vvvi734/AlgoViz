@@ -6,7 +6,7 @@ import type {
 
 const NODE_W = 96;
 const NODE_H = 100;
-const GAP = 28;
+const GAP = 27;
 const LEFT = 20;
 const NODE_TOP = 64;
 const NEXT_Y = NODE_TOP + 30;

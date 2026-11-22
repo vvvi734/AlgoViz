@@ -1,4 +1,4 @@
-import { expect, openCodePanel, selectAlgorithm as chooseAlgorithm, test, type Page } from './fixtures';
+import { expect, selectAlgorithm as chooseAlgorithm, test, type Page } from './fixtures';
 import { mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 
@@ -49,6 +49,39 @@ async function expectNoPageOverflow(page: Page) {
     clientWidth: document.documentElement.clientWidth,
   }));
   expect(sizes.scrollWidth).toBeLessThanOrEqual(sizes.clientWidth + 1);
+}
+
+async function resetToOneOperation(page: Page) {
+  while ((await page.getByTestId('structure-op-row').count()) > 1) {
+    await page.getByTestId('structure-row-remove').last().click();
+  }
+}
+
+async function setOperation(page: Page, index: number, op: string, value?: string) {
+  const row = page.getByTestId('structure-op-row').nth(index);
+  await row.getByTestId('structure-op-type').selectOption(op);
+  if (value !== undefined) await row.getByTestId('structure-op-value').fill(value);
+}
+
+async function addOperation(page: Page, op: string, value?: string) {
+  await page.getByTestId('structure-add').click();
+  await setOperation(page, (await page.getByTestId('structure-op-row').count()) - 1, op, value);
+}
+
+async function arrayStackValues(page: Page): Promise<string[]> {
+  return page.locator('[data-testid="array-stack-slot"]').evaluateAll((nodes) =>
+    nodes
+      .map((node) => node.getAttribute('data-value') ?? '')
+      .filter(Boolean),
+  );
+}
+
+async function circularQueueValues(page: Page): Promise<string[]> {
+  return page.locator('[data-testid="circular-queue-slot"]').evaluateAll((nodes) =>
+    nodes
+      .map((node) => node.getAttribute('data-value') ?? '')
+      .filter(Boolean),
+  );
 }
 
 async function captureStates(
@@ -177,14 +210,12 @@ test.describe('Stage 7C — real singly linked-list visualization', () => {
     await selectAlgo(page, 'linked');
     await expect(page.locator('[data-testid="linked-visual"]')).toBeVisible({ timeout: 60_000 });
 
-    await openCodePanel(page);
-    await page.fill('#run-input', JSON.stringify([
-      ['insert_head', 3],
-      ['insert_head', 5],
-      ['insert_head', 3],
-    ]));
+    await resetToOneOperation(page);
+    await setOperation(page, 0, 'insert_head', '3');
+    await addOperation(page, 'insert_head', '5');
+    await addOperation(page, 'insert_head', '3');
     await page.click('[data-testid="run-btn"]');
-    await expect(page.locator('[data-testid="progress"]')).toHaveText('1 / 10', { timeout: 60_000 });
+    await expect(page.locator('[data-testid="progress"]')).toHaveText('1 / 10', { timeout: 90_000 });
     await setFrame(page, 8, 10);
     expect(await nodeIds(page)).toEqual(['n3', 'n2', 'n1']);
     expect(await nodeValues(page)).toEqual(['3', '5', '3']);
@@ -194,21 +225,17 @@ test.describe('Stage 7C — real singly linked-list visualization', () => {
     await expect(page.locator('[data-testid="linked-node"][data-node-id="n3"]')).toHaveAttribute('data-next-id', 'n2');
 
     await selectAlgo(page, 'stack');
-    await expect(page.locator('[data-testid="stack-visual"]')).toBeVisible({ timeout: 60_000 });
+    await expect(page.locator('[data-testid="array-stack-visual"]')).toBeVisible({ timeout: 60_000 });
     await expect(page.locator('[data-testid="linked-visual"]')).toHaveCount(0);
-    await expect(page.locator('[data-testid="progress"]')).toHaveText('1 / 7', { timeout: 60_000 });
-    await setFrame(page, 4, 7);
-    expect(await page.locator('[data-testid="stack-item"]').evaluateAll((nodes) =>
-      nodes.map((node) => node.getAttribute('data-value') ?? ''),
-    )).toEqual(['8', '5', '3']);
+    await expect(page.locator('[data-testid="progress"]')).toHaveText('1 / 8', { timeout: 60_000 });
+    await setFrame(page, 4, 8);
+    expect(await arrayStackValues(page)).toEqual(['3', '5', '8', '11']);
 
     await selectAlgo(page, 'queue');
-    await expect(page.locator('[data-testid="queue-visual"]')).toBeVisible({ timeout: 60_000 });
-    await expect(page.locator('[data-testid="progress"]')).toHaveText('1 / 7', { timeout: 60_000 });
-    await setFrame(page, 5, 7);
-    expect(await page.locator('[data-testid="queue-item"]').evaluateAll((nodes) =>
-      nodes.map((node) => node.getAttribute('data-value') ?? ''),
-    )).toEqual(['5', '8']);
+    await expect(page.locator('[data-testid="circular-queue-visual"]')).toBeVisible({ timeout: 60_000 });
+    await expect(page.locator('[data-testid="progress"]')).toHaveText('1 / 10', { timeout: 60_000 });
+    await setFrame(page, 6, 10);
+    expect(await circularQueueValues(page)).toEqual(['5', '8', '11']);
   });
 
   test('1440/1024/390 light/dark screenshots for every linked-list teaching state', async ({ page }) => {

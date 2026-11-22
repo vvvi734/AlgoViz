@@ -644,8 +644,16 @@
   padding-top: 3px;
 }
 
+/* Grid children default to `min-width: auto`, so a narrow workspace can keep
+   the desktop-sized header/toolbar as their min-content width. Let each row
+   shrink and use its own wrapping rules instead. */
+.reference-code-panel > * {
+  min-width: 0;
+}
+
 .reference-code-head {
   display: flex;
+  flex-wrap: wrap;
   align-items: flex-start;
   justify-content: space-between;
   gap: 10px;

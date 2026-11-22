@@ -1,4 +1,11 @@
-import { expect, openCodePanel, selectAlgorithm as chooseAlgorithm, test, type Page } from './fixtures';
+import {
+  expect,
+  fillGraphDraft,
+  runGraphDraftResult,
+  selectAlgorithm as chooseAlgorithm,
+  test,
+  type Page,
+} from './fixtures';
 
 const BFS_TOTAL = 51;
 const DFS_TOTAL = 51;
@@ -282,55 +289,66 @@ test.describe('Stage 7E — real graph BFS/DFS, same-frame frontier and playback
     await expect(page.locator('[data-testid="graph-visit-list"] li')).toHaveCount(0);
   });
 
-  test('empty, single-node, disconnected and duplicate-edge graphs stay safe', async ({ page }) => {
+  test('empty and duplicate graph inputs are rejected; single-node and disconnected graphs stay safe', async ({ page }) => {
     await openApp(page);
     await selectAlgo(page, 'bfs');
     await waitForGraph(page, 'bfs', BFS_TOTAL);
 
-    await openCodePanel(page);
-    await page.fill('#run-input', '{"start":null,"nodes":[],"edges":[]}');
+    // The structured editor requires a node and a selected start; clearing the
+    // graph reports that contract locally instead of sending empty JSON to Python.
+    await fillGraphDraft(page, { nodes: [], edges: [] });
     await page.getByTestId('run-btn').click();
-    await expect(page.locator('[data-testid="graph-empty"]')).toBeVisible({ timeout: 60_000 });
+    await expect(page.getByTestId('run-feedback')).toContainText(/至少需要 1 个节点|At least one node is required/);
+    await expect(page.getByTestId('run-feedback')).toHaveClass(/error/);
+    // Rejected input clears the stale trace; the empty canvas is never shown as
+    // a valid BFS result.
+    await expect(page.locator('[data-testid="progress"]')).toHaveText('0 / 0');
     await expect(page.locator('[data-testid="graph-node"]')).toHaveCount(0);
-    await expect(page.locator('[data-testid="progress"]')).toHaveText('1 / 2', { timeout: 60_000 });
-    await expect(page.locator('[data-testid="queue-item"]')).toHaveCount(0);
-    await setFrame(page, 1, 2);
-    await expect(page.locator('[data-testid="graph-visual"]')).toHaveAttribute('data-operation', 'done');
 
-    await page.fill('#run-input', '{"start":"A","nodes":["A"],"edges":[]}');
-    await page.getByTestId('run-btn').click();
-    await expect(page.locator('[data-testid="graph-node"]')).toHaveCount(1, { timeout: 60_000 });
+    const single = await runGraphDraftResult(page, { nodes: ['A'], edges: [], start: 'A' });
+    await expect(page.locator('[data-testid="graph-node"]')).toHaveCount(1);
     await expect(page.locator('[data-testid="graph-node"][data-node-id="A"]')).toHaveAttribute('data-isolated', 'true');
     await expect(page.locator('[data-testid="graph-edge"]')).toHaveCount(0);
-    await expect(page.locator('[data-testid="progress"]')).toHaveText('1 / 5', { timeout: 60_000 });
+    await expect(page.locator('[data-testid="progress"]')).toHaveText(`1 / ${single}`);
 
-    await page.fill('#run-input', '{"start":"A","nodes":["A","B","C"],"edges":[["A","B"]]}');
-    await page.getByTestId('run-btn').click();
-    await expect(page.locator('[data-testid="graph-node"]')).toHaveCount(3, { timeout: 60_000 });
-    await setFrame(page, 11, 12);
+    const disconnected = await runGraphDraftResult(page, {
+      nodes: ['A', 'B', 'C'],
+      edges: [['A', 'B']],
+      start: 'A',
+    });
+    await expect(page.locator('[data-testid="graph-node"]')).toHaveCount(3);
+    await setFrame(page, disconnected - 1, disconnected);
     await expect(page.locator('[data-testid="graph-node"][data-node-id="C"]')).toHaveAttribute('data-state', 'undiscovered');
     await expect(page.locator('[data-testid="graph-node"][data-node-id="C"]')).toHaveAttribute('data-visit-index', '');
     await expect(page.locator('[data-testid="graph-node"][data-node-id="A"]')).toHaveAttribute('data-visit-index', '1');
     await expect(page.locator('[data-testid="graph-node"][data-node-id="B"]')).toHaveAttribute('data-visit-index', '2');
 
-    await page.fill('#run-input', '{"start":"A","nodes":["A","B","C"],"edges":[["A","B"],["A","B"],["B","C"]]}');
+    await fillGraphDraft(page, {
+      nodes: ['A', 'B'],
+      edges: [
+        { from: 'A', to: 'B' },
+        { from: 'B', to: 'A' },
+      ],
+      start: 'A',
+    });
     await page.getByTestId('run-btn').click();
-    await expect(page.locator('[data-testid="graph-node"]')).toHaveCount(3, { timeout: 60_000 });
-    await expect(page.locator('[data-testid="graph-edge"]')).toHaveCount(2);
-    await expect(page.locator('[data-testid="progress"]')).toHaveText('1 / 19', { timeout: 60_000 });
+    await expect(page.getByTestId('run-feedback')).toContainText(/重复边|Duplicate edge/i);
+    await expect(page.getByTestId('run-feedback')).toHaveClass(/error/);
+    await expect(page.locator('[data-testid="progress"]')).toHaveText('0 / 0');
+    await expect(page.locator('[data-testid="graph-edge"]')).toHaveCount(0);
   });
 
-  test('invalid graph input is reported and the previous valid graph is not faked', async ({ page }) => {
+  test('missing start is rejected and the previous valid graph is not faked', async ({ page }) => {
     await openApp(page);
     await selectAlgo(page, 'bfs');
     await waitForGraph(page, 'bfs', BFS_TOTAL);
-    await openCodePanel(page);
-    await page.fill('#run-input', '{"start":"Z","nodes":["A","B"],"edges":[["A","B"]]}');
+    await fillGraphDraft(page, { nodes: ['A', 'B'], edges: [['A', 'B']] });
+    await page.getByTestId('graph-start').selectOption('');
     await page.getByTestId('run-btn').click();
-    await expect(page.locator('[data-testid="run-feedback"]')).toContainText(/start must name an existing node/);
-    await expect(page.locator('[data-testid="run-feedback"]')).toHaveClass(/error/);
-    await expect(page.locator('[data-testid="graph-node"]')).toHaveCount(0);
+    await expect(page.getByTestId('run-feedback')).toContainText(/请选择起点|Choose a start node/i);
+    await expect(page.getByTestId('run-feedback')).toHaveClass(/error/);
     await expect(page.locator('[data-testid="progress"]')).toHaveText('0 / 0');
+    await expect(page.locator('[data-testid="graph-node"]')).toHaveCount(0);
   });
 
   test('1024/390 keep the graph readable, scroll inside the canvas, and reduced motion preserves state', async ({ page }) => {

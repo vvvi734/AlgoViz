@@ -63,7 +63,11 @@ test.describe('UI-02 — left animation, right synchronized explanation', () => 
     expect(rail.x).toBeGreaterThan(stage.x + stage.width - 10);
     expect(rail.width).toBeGreaterThanOrEqual(390);
     expect(lesson.width).toBeGreaterThanOrEqual(380);
-    expect(current.y).toBeLessThan(rail.y + 330);
+    // The rail can grow as the expanded guide renders; the current-step block
+    // must stay inside the rail and inside the 900px viewport, not at a fixed
+    // offset from the rail origin.
+    expect(current.y).toBeGreaterThanOrEqual(rail.y - 1);
+    expect(current.y + current.height).toBeLessThanOrEqual(Math.min(900, rail.y + rail.height) + 1);
     expect(current.y + current.height).toBeLessThanOrEqual(900);
     // UI-03: the source editor left the rail; the compact run bar sits below both columns.
     await expect(page.locator('[data-testid="explanation-rail"] .monaco-editor')).toHaveCount(0);
@@ -181,15 +185,19 @@ test.describe('UI-02 — left animation, right synchronized explanation', () => 
     await expectNoPageOverflow(page);
   });
 
-  test('E. an algorithm without a course shows the empty rail, not invented steps', async ({ page }) => {
+  test('E. every algorithm now has a real course; fib no longer falls back to an empty rail', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await openApp(page);
     await selectAlgo(page, 'fib');
     await expect(page.locator('[data-testid="lab-title"]')).toContainText('斐波那契');
     await expect(page.locator('[data-testid="visual-stage"]')).toBeVisible();
-    await expect(page.locator('[data-testid="lesson-no-lesson"]')).toBeVisible();
-    await expect(page.locator('[data-testid="lesson-unlinked"]')).toBeVisible();
-    await expect(page.locator('[data-testid="lesson-steps"]')).toHaveCount(0);
+    await expect(page.locator('[data-testid="lesson-no-lesson"]')).toHaveCount(0);
+    await expect(page.locator('[data-testid="lesson-unlinked"]')).toHaveCount(0);
+    await expect(page.locator('[data-testid="lesson-panel"]')).toBeVisible();
+    await expect(page.locator('[data-testid="lesson-title"]')).toBeVisible();
+    await expect(page.locator('[data-testid="rail-stage-jumps"]')).not.toHaveCount(0);
+    await expect(page.locator('[data-testid="lesson-active-step"]')).toBeVisible();
+    await expectNoPageOverflow(page);
   });
 
   test('F. 1366 stays two-column and 1024/390 stack without horizontal overflow', async ({ page }) => {

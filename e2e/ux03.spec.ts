@@ -61,19 +61,22 @@ test.describe('UX-03 — textbook navigation', () => {
       'chapter-ch12-files',
     ]);
 
-    // The current path is the only default expansion: chapter 9, then the
-    // single-algorithm bubble topic as one direct row.
+    // The current path is the only default expansion: chapter 10, the
+    // exchange-sort group, and bubble sort as one nested algorithm row.
     await expect(page.getByTestId('chapter-ch10-sort')).toHaveAttribute('aria-expanded', 'true');
-    await expect(page.getByTestId('topic-bubble-sort')).toHaveAttribute('data-direct', 'true');
+    await expect(page.getByTestId('topic-exchange-sort')).toHaveAttribute('aria-expanded', 'true');
+    await expect(page.getByTestId('topic-bubble-sort')).toHaveAttribute('data-parent-topic', 'exchange-sort');
     await expect(page.getByTestId('topic-bubble-sort')).toHaveAttribute('data-kind', 'algorithm');
+    expect(await page.getByTestId('topic-bubble-sort').getAttribute('data-direct')).toBeNull();
+    await expect(page.getByTestId('topic-bubble-sort').locator('[data-testid="algo-bubble"]')).toHaveCount(1);
     await expect(page.getByTestId('algo-bubble')).toHaveAttribute('aria-current', 'true');
     for (const id of ['ch7-graph', 'ch9-search', 'ch1-intro']) {
       await expect(page.getByTestId(`chapter-${id}`)).toHaveAttribute('aria-expanded', 'false');
     }
 
-    // 37 shipped algorithms, each rendered once with exactly one primary home.
+    // 60 shipped algorithms, each rendered once with exactly one primary home.
     const algorithms = page.locator('[data-testid^="algo-"]');
-    await expect(algorithms).toHaveCount(37);
+    await expect(algorithms).toHaveCount(60);
     const placements = await algorithms.evaluateAll((nodes) =>
       nodes.map((node) => ({
         id: node.getAttribute('data-testid'),
@@ -81,7 +84,7 @@ test.describe('UX-03 — textbook navigation', () => {
         topic: node.getAttribute('data-topic'),
       })),
     );
-    expect(new Set(placements.map((item) => item.id)).size).toBe(37);
+    expect(new Set(placements.map((item) => item.id)).size).toBe(60);
     for (const item of placements) {
       expect(item.chapter).toBeTruthy();
       expect(item.topic).toBeTruthy();
@@ -90,17 +93,16 @@ test.describe('UX-03 — textbook navigation', () => {
     // The graph chapter follows the book: connectivity, MST, DAG, shortest.
     await openTextbookChapter(page, 'ch7-graph');
     await expect(page.getByTestId('chapter-ch7-graph')).toHaveAttribute('data-has-current', 'false');
-    const graphTopics = page.locator('#chapter-ch7-graph-body [data-testid^="topic-"]');
-    const topicIds = await graphTopics.evaluateAll((nodes) => nodes.map((node) => node.getAttribute('data-testid')));
+    const graphTopics = page.locator('#chapter-ch7-graph-body .textbook-topic');
+    const topicIds = await graphTopics.evaluateAll((nodes) => nodes.map((node) => node.getAttribute('data-topic')));
     expect(topicIds).toEqual([
-      'topic-graph-basics',
-      'topic-graph-storage',
-      'topic-graph-traversal',
-      'topic-graph-connectivity',
-      'topic-mst',
-      'topic-topological',
-      'topic-critical-path',
-      'topic-shortest-path',
+      'graph-basics',
+      'graph-storage',
+      'graph-traversal',
+      'graph-connectivity',
+      'mst',
+      'dag',
+      'shortest-path',
     ]);
     const mstBox = await page.getByTestId('topic-mst').boundingBox();
     const shortestBox = await page.getByTestId('topic-shortest-path').boundingBox();
@@ -186,8 +188,8 @@ test.describe('UX-03 — textbook navigation', () => {
     await expect(page.getByTestId('topic-graph-basics')).toHaveAttribute('data-category', 'theory');
     await expect(page.getByTestId('topic-graph-basics')).toHaveAttribute('aria-label', /理论专题|Theory topic/i);
     await expect(page.getByTestId('topic-merge-sort')).toContainText('Merge sort');
-    await expect(page.getByTestId('topic-bubble-sort')).toContainText('Extension');
-    await expect(page.locator('.textbook-source')).toContainText('Yan Weimin');
+    await expect(page.getByTestId('topic-bubble-sort')).toContainText(/Bubble sort/i);
+    await expect(page.getByTestId('topic-graph-storage')).toContainText('Graph storage structures');
     await expectNoPageOverflow(page);
   });
 

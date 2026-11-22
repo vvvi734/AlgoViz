@@ -1,4 +1,12 @@
-import { expect, openCodePanel, selectAlgorithm as chooseAlgorithm, test, type Page } from './fixtures';
+import {
+  expect,
+  fillGraphDraft,
+  runGraphDraftResult,
+  selectAlgorithm as chooseAlgorithm,
+  test,
+  type GraphE2EDraft,
+  type Page,
+} from './fixtures';
 
 async function openApp(page: Page) {
   await page.goto('/?view=lab');
@@ -21,17 +29,9 @@ async function setFrame(page: Page, frame: number, total: number) {
   await expect(page.locator('[data-testid="progress"]')).toHaveText(`${frame + 1} / ${total}`);
 }
 
-/** Run a custom input and return the real frame count reported by the app. */
-async function runInput(page: Page, input: unknown): Promise<number> {
-  await openCodePanel(page);
-  const before = await page.locator('[data-testid="progress"]').textContent();
-  await page.fill('#run-input', JSON.stringify(input));
-  await page.click('[data-testid="run-btn"]');
-  await expect(page.locator('[data-testid="run-feedback"]')).toContainText('动画已生成', { timeout: 90_000 });
-  if (before) await expect(page.locator('[data-testid="progress"]')).not.toHaveText(before);
-  await expect(page.locator('[data-testid="progress"]')).toHaveText(/^1 \/ \d+$/, { timeout: 90_000 });
-  const text = await page.locator('[data-testid="progress"]').textContent();
-  return Number(text?.split('/')[1]?.trim());
+/** Run a custom graph draft through the current table editor. */
+async function runInput(page: Page, input: GraphE2EDraft): Promise<number> {
+  return runGraphDraftResult(page, input);
 }
 
 async function expectNoOverflow(page: Page) {
@@ -244,14 +244,20 @@ test.describe('G3 — Kahn topological sort and AOE critical path', () => {
     await expect(page.locator('[data-testid="critical-path-item"]')).toHaveCount(1);
     await expect(page.locator('[data-testid="critical-path-item"]')).toContainText('A → C');
 
-    await page.fill('#run-input', JSON.stringify({ nodes: ['A', 'B'], edges: [['A', 'B', -1]] }));
-    await page.click('[data-testid="run-btn"]');
-    await expect(page.locator('[data-testid="run-feedback"]')).toContainText('non-negative', { timeout: 90_000 });
-    await expect(page.locator('[data-testid="run-feedback"]')).toContainText('ValueError');
+    await fillGraphDraft(page, { nodes: ['A', 'B'], edges: [['A', 'B', -1]] });
+    await page.getByTestId('run-btn').click();
+    await expect(page.getByTestId('run-feedback')).toContainText(/持续时间必须非负|duration must be non-negative/i);
+    await expect(page.getByTestId('run-feedback')).toHaveClass(/error/);
 
-    await page.fill('#run-input', JSON.stringify({ directed: false, nodes: ['A', 'B'], edges: [['A', 'B']] }));
-    await page.click('[data-testid="run-btn"]');
-    await expect(page.locator('[data-testid="run-feedback"]')).toContainText('requires a directed graph', { timeout: 90_000 });
+    // AOE is a fixed directed lesson: the algorithm owns the direction, so the
+    // editor has no undirected toggle and cannot submit a plain undirected graph.
+    await expect(page.getByTestId('graph-directed-mode')).toContainText(/有向|Directed/);
+    await expect(page.getByTestId('graph-directed')).toHaveCount(0);
+    const directedTotal = await runInput(page, {
+      nodes: ['A', 'B'],
+      edges: [['A', 'B', 1]],
+    });
+    expect(directedTotal).toBeGreaterThanOrEqual(2);
     await expectNoOverflow(page);
   });
 });

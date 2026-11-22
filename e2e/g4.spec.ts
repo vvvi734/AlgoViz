@@ -1,4 +1,12 @@
-import { expect, openCodePanel, selectAlgorithm as chooseAlgorithm, test, type Page } from './fixtures';
+import {
+  expect,
+  fillGraphDraft,
+  runGraphDraftResult,
+  selectAlgorithm as chooseAlgorithm,
+  test,
+  type GraphE2EDraft,
+  type Page,
+} from './fixtures';
 
 async function openApp(page: Page) {
   await page.goto('/?view=lab');
@@ -21,14 +29,8 @@ async function setFrame(page: Page, frame: number, total: number) {
   await expect(page.locator('[data-testid="progress"]')).toHaveText(`${frame + 1} / ${total}`);
 }
 
-async function runInput(page: Page, input: unknown): Promise<number> {
-  await openCodePanel(page);
-  await page.fill('#run-input', JSON.stringify(input));
-  await page.click('[data-testid="run-btn"]');
-  await expect(page.locator('[data-testid="run-feedback"]')).toContainText('动画已生成', { timeout: 90_000 });
-  await expect(page.locator('[data-testid="progress"]')).toHaveText(/^1 \/ \d+$/, { timeout: 90_000 });
-  const text = await page.locator('[data-testid="progress"]').textContent();
-  return Number(text?.split('/')[1]?.trim());
+async function runInput(page: Page, input: GraphE2EDraft): Promise<number> {
+  return runGraphDraftResult(page, input);
 }
 
 async function expectNoOverflow(page: Page) {
@@ -229,19 +231,24 @@ test.describe('G4 — connected components and Kosaraju SCC', () => {
     }
   });
 
-  test('empty graphs render an explicit empty state instead of a broken canvas', async ({ page }) => {
+  test('empty graphs are rejected before execution instead of producing a broken canvas', async ({ page }) => {
     test.setTimeout(300_000);
     await openApp(page);
     await selectAlgorithm(page, 'components', 50);
-    const ccTotal = await runInput(page, { nodes: [], edges: [] });
-    expect(ccTotal).toBeGreaterThanOrEqual(2);
-    await expect(page.locator('[data-testid="g4-empty"]')).toBeVisible();
+    await fillGraphDraft(page, { nodes: [], edges: [] });
+    await page.getByTestId('run-btn').click();
+    await expect(page.getByTestId('run-feedback')).toContainText(/至少需要 1 个节点|At least one node is required/);
+    await expect(page.getByTestId('run-feedback')).toHaveClass(/error/);
+    // Rejected input clears the stale trace; no empty/fake graph canvas remains.
+    await expect(page.locator('[data-testid="progress"]')).toHaveText('0 / 0');
     await expect(page.locator('[data-testid="cc-stage"]')).toHaveCount(0);
 
     await selectAlgorithm(page, 'scc', 60);
-    const sccTotal = await runInput(page, { nodes: [], edges: [] });
-    expect(sccTotal).toBeGreaterThanOrEqual(2);
-    await expect(page.locator('[data-testid="g4-empty"]')).toBeVisible();
+    await fillGraphDraft(page, { nodes: [], edges: [] });
+    await page.getByTestId('run-btn').click();
+    await expect(page.getByTestId('run-feedback')).toContainText(/至少需要 1 个节点|At least one node is required/);
+    await expect(page.getByTestId('run-feedback')).toHaveClass(/error/);
+    await expect(page.locator('[data-testid="progress"]')).toHaveText('0 / 0');
     await expect(page.locator('[data-testid="scc-stage"]')).toHaveCount(0);
     await expectNoOverflow(page);
   });

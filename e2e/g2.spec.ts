@@ -1,4 +1,11 @@
-import { expect, openCodePanel, selectAlgorithm as chooseAlgorithm, test, type Page } from './fixtures';
+import {
+  expect,
+  runGraphDraftResult,
+  selectAlgorithm as chooseAlgorithm,
+  test,
+  type GraphE2EDraft,
+  type Page,
+} from './fixtures';
 
 async function openApp(page: Page) {
   await page.goto('/?view=lab');
@@ -21,17 +28,9 @@ async function setFrame(page: Page, frame: number, total: number) {
   await expect(page.locator('[data-testid="progress"]')).toHaveText(`${frame + 1} / ${total}`);
 }
 
-/** Run a custom input and return the real frame count reported by the app. */
-async function runInput(page: Page, input: unknown): Promise<number> {
-  await openCodePanel(page);
-  const before = await page.locator('[data-testid="progress"]').textContent();
-  await page.fill('#run-input', JSON.stringify(input));
-  await page.click('[data-testid="run-btn"]');
-  await expect(page.locator('[data-testid="run-feedback"]')).toContainText('动画已生成', { timeout: 90_000 });
-  if (before) await expect(page.locator('[data-testid="progress"]')).not.toHaveText(before);
-  await expect(page.locator('[data-testid="progress"]')).toHaveText(/^1 \/ \d+$/, { timeout: 90_000 });
-  const text = await page.locator('[data-testid="progress"]').textContent();
-  return Number(text?.split('/')[1]?.trim());
+/** Run a custom graph draft through the current table editor. */
+async function runInput(page: Page, input: GraphE2EDraft): Promise<number> {
+  return runGraphDraftResult(page, input);
 }
 
 async function expectNoOverflow(page: Page) {
@@ -248,12 +247,17 @@ test.describe('G2 — Prim and Kruskal minimum spanning trees', () => {
     await expect(page.locator('[data-testid="kruskal-result"]')).toContainText('连通分量: 2');
     await expect(page.locator('[data-testid="kruskal-result"]')).not.toContainText('单棵生成树');
 
-    await page.fill('#run-input', JSON.stringify({
-      start: 'A', directed: true, nodes: ['A', 'B'], edges: [['A', 'B', 1]],
-    }));
-    await page.click('[data-testid="run-btn"]');
-    await expect(page.locator('[data-testid="run-feedback"]')).toContainText('directed graphs are not supported', { timeout: 90_000 });
-    await expect(page.locator('[data-testid="run-feedback"]')).toContainText('ValueError');
+    // Prim/Kruskal are fixed undirected lessons. The table editor therefore
+    // prevents a directed graph from being submitted at all instead of sending
+    // invalid JSON to Python and reporting a late ValueError.
+    await expect(page.getByTestId('graph-directed-mode')).toContainText(/无向|Undirected/);
+    await expect(page.getByTestId('graph-directed')).toHaveCount(0);
+    const undirectedTotal = await runInput(page, {
+      nodes: ['A', 'B'],
+      edges: [['A', 'B', 1]],
+    });
+    expect(undirectedTotal).toBeGreaterThanOrEqual(2);
+    await expect(page.locator('[data-testid="run-feedback"]')).not.toHaveClass(/error/);
     await expectNoOverflow(page);
   });
 });

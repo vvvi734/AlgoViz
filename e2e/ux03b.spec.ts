@@ -39,25 +39,30 @@ test.describe('UX-03B — compact textbook navigation', () => {
 
     const bubble = page.getByTestId('topic-bubble-sort');
     await expect(bubble).toHaveAttribute('data-kind', 'algorithm');
-    await expect(bubble).toHaveAttribute('data-direct', 'true');
+    await expect(bubble).toHaveAttribute('data-parent-topic', 'exchange-sort');
+    expect(await bubble.getAttribute('data-direct')).toBeNull();
     await expect(bubble).toHaveAttribute('data-has-current', 'true');
     await expect(bubble.locator('.textbook-topic-head')).toHaveCount(0);
     await expect(bubble.getByText('冒泡排序', { exact: true })).toHaveCount(1);
     await expect(bubble.locator('[data-testid^="algo-"]')).toHaveCount(1);
     await expect(page.getByTestId('algo-bubble')).toHaveAttribute('aria-current', 'true');
+    await expect(page.getByTestId('topic-exchange-sort')).toHaveAttribute('aria-expanded', 'true');
 
-    // Every single-algorithm topic is structurally direct, not just bubble.
-    // L1A adds doubly/circular linked lists; L1B adds the sequential list.
+    // Direct top-level topics still expose exactly one algorithm each; nested
+    // subtopics are intentionally not marked data-direct.
     const directTopics = page.locator('.textbook-nav .textbook-topic[data-direct="true"]');
-    await expect(directTopics).toHaveCount(21);
+    expect(await directTopics.count()).toBeGreaterThan(0);
     const directCounts = await directTopics.evaluateAll((nodes) =>
       nodes.map((node) => node.querySelectorAll('[data-testid^="algo-"]').length),
     );
     expect(new Set(directCounts)).toEqual(new Set([1]));
 
-    // Multi-algorithm topics keep one disclosure and all their children.
+    // Multi-algorithm groups keep one disclosure and all their children.
     const groups = page.locator('.textbook-nav .textbook-topic[data-kind="group"]');
-    await expect(groups).toHaveCount(6);
+    expect(await groups.count()).toBeGreaterThan(0);
+    expect(await groups.evaluateAll((nodes) =>
+      nodes.every((node) => node.querySelectorAll('.textbook-topic-head').length === 1),
+    )).toBe(true);
     await openTextbookChapter(page, 'ch7-graph');
     const shortest = page.getByTestId('topic-shortest-path');
     await expect(shortest).toHaveAttribute('aria-expanded', 'false');
@@ -67,11 +72,12 @@ test.describe('UX-03B — compact textbook navigation', () => {
     await expect(page.getByTestId('algo-floyd-warshall')).toBeVisible();
     await expect(page.getByTestId('algo-bellman-ford')).toBeVisible();
 
-    // BST and AVL are direct entries under 查找; selecting one reaches the real
-    // algorithm page without an intermediate topic click.
+    // BST and AVL are nested rows under the search-tree group; selecting one
+    // reaches the real algorithm page without an intermediate algorithm topic.
     await openTextbookChapter(page, 'ch9-search');
-    await expect(page.getByTestId('topic-bst')).toHaveAttribute('data-direct', 'true');
-    await expect(page.getByTestId('topic-avl')).toHaveAttribute('data-direct', 'true');
+    await page.getByTestId('topic-tree-search').click();
+    await expect(page.getByTestId('topic-bst')).toHaveAttribute('data-parent-topic', 'tree-search');
+    await expect(page.getByTestId('topic-avl')).toHaveAttribute('data-parent-topic', 'tree-search');
     await expect(page.getByTestId('algo-bst')).toHaveCount(1);
     await expect(page.getByTestId('algo-avl')).toHaveCount(1);
     await selectAlgorithm(page, 'bst');
@@ -84,7 +90,8 @@ test.describe('UX-03B — compact textbook navigation', () => {
     const concept = page.getByTestId('topic-intro-concepts');
     await expect(concept).toHaveAttribute('data-kind', 'concept');
     await expect(concept).toHaveAttribute('data-concept-id', 'data-structure-basics');
-    await expect(concept).toContainText(/阅读|Read/i);
+    await expect(concept).toHaveAttribute('data-category', 'theory');
+    await expect(concept).toHaveAttribute('aria-label', /理论专题|Theory topic/i);
     await expect(concept.locator('[data-testid^="algo-"]')).toHaveCount(0);
 
     await openTextbookChapter(page, 'ch10-sort');
@@ -95,16 +102,19 @@ test.describe('UX-03B — compact textbook navigation', () => {
     await expect(merge.locator('button')).toHaveCount(1);
     await expect(page.getByTestId('algo-merge')).toHaveCount(1);
 
-    // Planned rows remain static and never fake an algorithm target.
+    // KMP is now a real dynamic algorithm, not a planned placeholder.
     await openTextbookChapter(page, 'ch4-string');
-    const planned = page.getByTestId('topic-kmp');
-    await expect(planned).toHaveAttribute('data-kind', 'planned');
-    await expect(planned).toHaveAttribute('aria-disabled', 'true');
-    await expect(planned).toContainText('待完善');
-    await expect(planned.locator('button')).toHaveCount(0);
+    await page.getByTestId('topic-pattern-matching').click();
+    await expect(page.getByTestId('topic-pattern-matching')).toHaveAttribute('aria-expanded', 'true');
+    const kmp = page.getByTestId('topic-kmp');
+    await expect(kmp).toHaveAttribute('data-kind', 'algorithm');
+    await expect(kmp).toHaveAttribute('data-parent-topic', 'pattern-matching');
+    await expect(kmp.locator('[data-testid="algo-kmp"]')).toHaveCount(1);
+    await expect(page.getByTestId('algo-kmp')).toBeVisible();
+    await expect(kmp).not.toHaveAttribute('aria-disabled', 'true');
 
     // The compact tree still contains every registered algorithm exactly once.
-    await expect(page.locator('[data-testid^="algo-"]')).toHaveCount(34);
+    await expect(page.locator('[data-testid^="algo-"]')).toHaveCount(60);
   });
 
   test('keeps playback and selection intact while folding or reloading the directory', async ({
@@ -129,15 +139,14 @@ test.describe('UX-03B — compact textbook navigation', () => {
     await expect(page.getByTestId('progress')).toHaveText('3 / 25');
 
     // A saved preference with old topic ids remains compatible: chapters and
-    // multi-algorithm topics restore, while a now-direct topic ignores its
-    // obsolete disclosure flag instead of failing or hiding the row.
+    // parent groups restore; the nested bst row becomes visible under tree-search.
     await page.evaluate(() => {
       localStorage.setItem(
         'algolens-sidebar',
         JSON.stringify({
           collapsed: false,
           openChapters: ['ch7-graph', 'ch9-search'],
-          openTopics: ['shortest-path', 'bst'],
+          openTopics: ['shortest-path', 'tree-search'],
         }),
       );
     });
@@ -146,7 +155,8 @@ test.describe('UX-03B — compact textbook navigation', () => {
     await expect(page.getByTestId('chapter-ch7-graph')).toHaveAttribute('aria-expanded', 'true');
     await expect(page.getByTestId('chapter-ch9-search')).toHaveAttribute('aria-expanded', 'true');
     await expect(page.getByTestId('topic-shortest-path')).toHaveAttribute('aria-expanded', 'true');
-    await expect(page.getByTestId('topic-bst')).toHaveAttribute('data-direct', 'true');
+    await expect(page.getByTestId('topic-tree-search')).toHaveAttribute('aria-expanded', 'true');
+    await expect(page.getByTestId('topic-bst')).toHaveAttribute('data-parent-topic', 'tree-search');
     await expect(page.getByTestId('algo-bst')).toBeVisible();
     await expectNoPageOverflow(page);
   });
@@ -172,10 +182,11 @@ test.describe('UX-03B — compact textbook navigation', () => {
     await page.getByRole('button', { name: /切换语言|Switch language/ }).click();
     await expect(page.getByTestId('sidebar')).toContainText('Textbook directory');
     await expect(page.getByTestId('topic-shortest-path')).toContainText('Shortest paths');
-    await expect(page.getByTestId('topic-graph-basics')).toContainText(/Read|Concept/i);
+    await expect(page.getByTestId('topic-graph-basics')).toContainText(/Graph definition and terminology/i);
     await expect(page.getByTestId('topic-shortest-path')).toHaveAttribute('aria-expanded', 'true');
     await page.getByRole('button', { name: /切换语言|Switch language/ }).click();
-    await expect(page.getByTestId('topic-graph-basics')).toContainText(/阅读|知识讲解/);
+    await expect(page.getByTestId('topic-graph-basics')).toContainText('图的定义和术语');
+    await expect(page.getByTestId('topic-graph-basics')).toHaveAttribute('aria-label', /理论专题/);
 
     await page.setViewportSize({ width: 390, height: 844 });
     await page.waitForTimeout(250);

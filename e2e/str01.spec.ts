@@ -46,8 +46,9 @@ test.describe('STR-01 — strings concept and real Python KMP', () => {
     await expect(page.getByTestId('concept-page')).toContainText('朴素匹配');
     await expect(page.getByTestId('concept-page')).toContainText('KMP');
     await expect(page.getByTestId('concept-diagram').locator('svg')).toBeVisible();
-    await expect(page.getByTestId('concept-diagram')).toContainText('ABABABC');
-    await expect(page.getByTestId('concept-diagram')).toContainText('lps[3] = 2');
+    await expect(page.getByTestId('concept-diagram')).toContainText('GOVI');
+    await expect(page.getByTestId('concept-diagram')).toContainText('SubString(T, 2, 4)');
+    await expect(page.getByTestId('concept-diagram')).toContainText('ALGOVIZ');
     await expect(page.getByTestId('play-btn')).toHaveCount(0);
     await expect(page.getByTestId('step-description')).toHaveCount(0);
     await expect(page.getByTestId('reference-code-panel')).toHaveCount(0);
