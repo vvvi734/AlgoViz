@@ -5,7 +5,6 @@
  * 易错点：只改指针却忘记更新 height；把“不平衡”误判成只要左右高度相等；删除时没有沿整条返回路径继续修复。
  * 复杂度：查找/插入/删除 O(log n)，单次旋转 O(1)，额外空间 O(n)。
  * 输入/输出：输入 main 中的整数键序列；插入/删除原地修改树，中序输出升序键；重复键被忽略。
- * 函数地图：先读 main 的调用顺序，再按需查看被调用的静态函数；每个函数前的“作用”注释给出职责、输入和返回。
 */
 
 // AlgoViz reference implementation: AVL tree (C++17).
@@ -41,15 +40,15 @@ class AVLTree
         std::unique_ptr<Node> right;
     };
 
-    // Purpose: Insert value into the AVL tree, ignore duplicates, and update heights and rotate while recursion unwinds.
-    // 作用：在 AVL 树中插入 value；重复键忽略，递归返回时更新高度并旋转修复平衡。
+    // Purpose: Start insertion at the root and publish the rebalanced subtree; height updates and rotations happen on the recursive return path.
+    // 作用：从根启动插入并接回重新平衡的子树；高度更新与旋转在递归返回路径上完成。
     void insert(int value)
     {
         root_ = insert(std::move(root_), value);
     }
 
-    // Purpose: Inorder traversal of the whole tree printing ascending keys; read-only.
-    // 作用：中序遍历整棵树并输出升序键值；只读。
+    // Purpose: Start the recursive inorder walk at the root and terminate the output line; read-only.
+    // 作用：从 root 启动递归中序遍历并在末尾换行；只读，不修改树。
     void inorder() const
     {
         inorder(root_.get());
@@ -92,6 +91,7 @@ class AVLTree
         auto x = std::move(y->left);
         y->left = std::move(x->right);
         x->right = std::move(y);
+        // y is now the lower node; refresh it before x, whose height depends on y's new height.
         update_height(x->right.get());
         update_height(x.get());
         return x;
@@ -104,6 +104,7 @@ class AVLTree
         auto y = std::move(x->right);
         x->right = std::move(y->left);
         y->left = std::move(x);
+        // x is now the lower node; refresh it before y, whose height depends on x's new height.
         update_height(y->left.get());
         update_height(y.get());
         return y;
@@ -176,8 +177,6 @@ class AVLTree
     std::unique_ptr<Node> root_;
 };
 
-// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
-// 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main()
 {
     AVLTree tree;

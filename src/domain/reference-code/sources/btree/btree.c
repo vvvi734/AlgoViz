@@ -5,7 +5,6 @@
  * 易错点：children 比 keys 多一个的索引关系；分裂后把中间键留在原结点；删除借位/合并后忘记恢复下界。
  * 复杂度：查找/插入/删除 O(log n)（以阶数为底），空间 O(n)。
  * 输入/输出：输入待插入的唯一整数键；查找返回是否命中，插入返回可能更新的根；main 按层打印键列表。
- * 函数地图：先读 main 的调用顺序，再按需查看被调用的静态函数；每个函数前的“作用”注释给出职责、输入和返回。
 */
 
 /*
@@ -33,8 +32,8 @@ typedef struct BTreeNode
     struct BTreeNode *children[MAX_CHILDREN];
 } BTreeNode;
 
-// Purpose: Allocate and initialize a B-tree node; set the leaf flag and key_count together.
-// 作用：分配并初始化一个 B 树结点；leaf 标记和 key_count 必须同时设置。
+// Purpose: Allocate a zero-initialized node; this implementation has no separate leaf field, so children[0] == NULL is the leaf test.
+// 作用：分配并清零结点；本实现没有单独的 leaf 字段，因此用 children[0] == NULL 判断叶子。
 static BTreeNode *NewNode(void)
 {
     BTreeNode *node = (BTreeNode *)calloc(1, sizeof(BTreeNode));
@@ -74,9 +73,11 @@ void split(BTreeNode *parent, int index, BTreeNode *full)
     BTreeNode *right = NewNode();
     if (right == NULL)
     {
+        // Failure path: this void helper only leaves the child untouched; it cannot report failure, while InsertNonFull continues as if the split happened. The teaching implementation registers this OOM limitation rather than changing control flow.
         return;
     }
 
+    // Keys after the median become the right node; their child slots must move with them, not stay under the left node.
     right->key_count = MAX_KEYS - middle - 1;
     for (int offset = 0; offset < right->key_count; ++offset)
     {
@@ -91,6 +92,7 @@ void split(BTreeNode *parent, int index, BTreeNode *full)
     }
     full->key_count = middle;
 
+    // Shift key and child slots right before inserting the promoted median and the new right child.
     for (int position = parent->key_count; position > index; --position)
     {
         parent->keys[position] = parent->keys[position - 1];
@@ -126,6 +128,7 @@ static void InsertNonFull(BTreeNode *node, int key)
     if (node->children[index]->key_count == MAX_KEYS)
     {
         split(node, index, node->children[index]);
+        // The promoted median now sits at index; if the new key is larger, it belongs to the new right child.
         if (key > node->keys[index])
         {
             ++index;
@@ -396,8 +399,6 @@ void FreeBTree(BTreeNode *node)
     free(node);
 }
 
-// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
-// 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main(void)
 {
     BTreeNode *root = NULL;

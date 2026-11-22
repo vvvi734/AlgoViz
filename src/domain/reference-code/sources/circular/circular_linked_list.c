@@ -1,26 +1,26 @@
 /*
  * 中文导读：让尾结点的 next 指回头结点，使“从任意结点出发都能绕一圈”。
- * 阅读顺序：先看 tail/head 的指向；再看插入/删除如何维护环；最后看遍历为什么必须用 do-while 或记录起点。
- * 关键不变量：最后一个结点的 next 永远指回第一个结点；空表时指针关系要单独定义。
- * 易错点：用 while(p != NULL) 遍历环导致死循环；删除时没有更新前驱/尾指针；空表和非空表分支不一致。
- * 复杂度：已知位置插入/删除 O(1)，查找 O(n)，空间 O(n)。
- * 输入/输出：输入 main 内置的演示操作序列；结构函数原地改链并返回成功/元素；main 打印遍历结果。
- * 函数地图：先读 main 的调用顺序，再按需查看被调用的静态函数；每个函数前的“作用”注释给出职责、输入和返回。
+ * 阅读顺序：先看 head/tail 如何表示空表；再看 append 的两条链接顺序；最后看遍历和释放怎样判断“绕回起点”。
+ * 关键不变量：tail 非空时 tail->next == head；空表时 head == tail == NULL；非空表中不存在以 NULL 结尾的结点。
+ * 易错点：把空表当成“有一个结点”而漏掉 head 赋值；先改 tail 再连边导致环断裂；用 while (p != NULL) 遍历造成死循环。
+ * 复杂度：append 为 O(1)（不查找位置），遍历 O(n)，释放 O(n)，额外空间 O(n)。
+ * 输入/输出：main 依次追加 1、2、3；append 返回是否分配成功，list_print 只读输出，失败路径释放已建结点。
 */
 
 /*
  * AlgoViz reference implementation: circular singly linked list.
- * The tail node links back to the head, so traversal stops when it returns.
+ * The tail node links back to the head, so a non-empty list has no NULL terminator.
  *
  * Reading guide:
- * 1. The list keeps a tail pointer and tail->next points back to the head.
- * 2. Appending inserts after tail and moves tail to the new node.
- * 3. Traversal starts at head and stops when it returns to head; an empty list has
- *    tail == NULL.
+ * 1. `CircularList` stores only `head` and `tail`; an empty list has both equal to
+ *    NULL. There is deliberately no `length` field.
+ * 2. The first node points to itself. Later appends point the new node at `head`,
+ *    join the old tail to it, and only then move `tail`.
+ * 3. Traversal starts at `head` and stops when it returns to `head`; an empty list
+ *    must be handled before entering the ring. Freeing saves `next` before each
+ *    `free`, because the link is unreadable afterwards.
  *
- * Complexity: O(1) append, O(n) traversal; extra space O(n).
- * Convention: There is no NULL terminator inside a non-empty list; emptiness is tail
- *   == NULL.
+ * Complexity: O(1) append, O(n) traversal and free; extra space O(n).
  */
 
 #include <stdbool.h>
@@ -39,18 +39,30 @@ typedef struct
     Node *tail;
 } CircularList;
 
-// Purpose: Initialize the list with null head/tail and zero length so an empty list traverses safely.
-// 作用：初始化链表：head/tail 置空、length 置 0；空表状态要能安全遍历。
+/*
+ * Empty state: both endpoints are NULL. `head` and `tail` describe the same
+ * empty ring from two sides, so initialization must clear both. There is no
+ * separate count to reset in this structure.
+ */
+// Purpose: Initialize the list as an empty ring by clearing both endpoints.
+// 作用：把链表初始化为空环：head 与 tail 同时置空，不维护并不存在的 length 字段。
 void list_init(CircularList *list)
 {
     list->head = NULL;
     list->tail = NULL;
 }
 
-// New node points at head; the old tail points at the new node, preserving the ring.
 // The tail's `next` points back to `head`, so traversal stops after returning to head, not at NULL.
-// Purpose: Append value at the circular-list tail; the tail's next must point back to the head.
-// 作用：在循环链表尾部追加 value；尾结点的 next 必须重新指回头结点。
+/*
+ * The first node closes the ring on itself, so `head` and `tail` become the same
+ * node. For a later node, `node->next = head` and `tail->next = node` must happen
+ * before `tail = node`: once `tail` moves, the old tail is no longer reachable
+ * through the tail pointer, and its link would be lost. Allocation failure returns
+ * before touching the list, so the existing ring stays valid.
+ *
+ * Purpose: Append one value at the tail while preserving the closing link.
+ * 作用：在尾部追加一个值；先接好新旧两条边，最后再移动 tail。
+ */
 bool list_append(CircularList *list, int value)
 {
     Node *node = (Node *)malloc(sizeof(Node));
@@ -73,8 +85,13 @@ bool list_append(CircularList *list, int value)
     return true;
 }
 
-// Purpose: Traverse and print the list without changing head or node links.
-// 作用：只读遍历并输出链表；不修改 head 或结点链接。
+/*
+ * A non-empty ring has no NULL node, so `while (node != NULL)` would never end.
+ * Handle the empty list first, then use do-while to print `head` before advancing.
+ * The loop stops when the next pointer returns to `head`, which proves one full lap.
+ */
+// Purpose: Print one full lap read-only; stop when traversal returns to the head.
+// 作用：只读打印一整圈；回到 head 即停止，不修改任何链接。
 void list_print(const CircularList *list)
 {
     if (list->head == NULL)
@@ -91,8 +108,15 @@ void list_print(const CircularList *list)
     printf("\n");
 }
 
-// Purpose: Free every circular-list node and restore the empty state; stop at the correct point in the ring.
-// 作用：释放循环链表全部结点，并恢复空表状态；注意环的终止条件。
+/*
+ * Freeing a node invalidates its `next`, so the successor is saved first. The loop
+ * uses `tail` as the stopping marker: following links until `head` would cycle
+ * forever, while stopping at `tail` also handles a one-node ring by skipping the
+ * loop. After the tail is freed, both endpoints are cleared so no dangling pointer
+ * can be mistaken for a valid empty list.
+ */
+// Purpose: Release every node safely and restore the two-pointer empty state.
+// 作用：逐个释放结点并恢复空表；释放前保存后继，最后把 head/tail 同时清空。
 void list_free(CircularList *list)
 {
     if (list->head == NULL)
@@ -111,8 +135,12 @@ void list_free(CircularList *list)
     list->tail = NULL;
 }
 
-// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
-// 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
+/*
+ * Each append reports whether node allocation succeeded. A caller that ignored the
+ * result could print a partial list or dereference a NULL tail; on failure this
+ * demo frees the nodes already created and exits. The final assertion checks the
+ * ring contract through `tail->next`, which is safe only after all appends passed.
+ */
 int main(void)
 {
     CircularList list;

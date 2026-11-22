@@ -1,11 +1,10 @@
 /*
  * 中文导读：用数组下标代替指针，在固定数组中维护数据链表和空闲链表。
- * 阅读顺序：先看 Node 的 data/next 与两个头游标；再看 malloc/salloc 如何从空闲链表取结点；最后看插入删除只改游标。
- * 关键不变量：数据链表和空闲链表互不重叠，合起来覆盖所有数组槽；next=-1 表示结束。
+ * 阅读顺序：先看 StaticNode 的 data/cur 与两个头游标；再看 static_init 如何串空闲链表、static_insert 如何借结点；最后看插入删除只改游标。
+ * 关键不变量：数据链表和空闲链表互不重叠，合起来覆盖所有数组槽；cur=NULL_INDEX（-1）表示结束。
  * 易错点：游标 -1/0 混用；分配后忘记更新空闲头；删除结点没回收；数组满仍分配；把下标当真实地址。
- * 复杂度：已知位置插删 O(1)，查找 O(n)，空间 O(capacity)。
- * 输入/输出：输入容量与演示操作序列；插入/删除返回成功，遍历返回逻辑顺序；main 打印 data/cur。
- * 函数地图：先读 main 的调用顺序，再按需查看被调用的静态函数；每个函数前的“作用”注释给出职责、输入和返回。
+ * 复杂度：按位置插删需先 O(n) 找前驱；已知前驱时改游标 O(1)，空间 O(capacity)。
+ * 输入/输出：输入固定容量 8 的初始值序列与演示操作；插入/删除返回成功，遍历返回逻辑顺序；main 打印 data/cur。
 */
 
 /*
@@ -26,8 +25,6 @@
 
 #define CAPACITY 8
 #define NULL_INDEX (-1)
-
-// Keep the successor first, then redirect the predecessor.
 
 typedef struct
 {
@@ -74,8 +71,8 @@ static void static_init(StaticList *list, const int *values, int count)
         list->free_head = count;
 }
 
-// Purpose: Count live elements by following next from the data-list head.
-// 作用：从数据链表头沿 next 计数，返回当前有效元素个数。
+// Purpose: Count live elements by following cur from the data-list head.
+// 作用：从数据链表头沿 cur 计数，返回当前有效元素个数。
 static int static_length(const StaticList *list)
 {
     int count = 0;
@@ -105,8 +102,9 @@ static int static_predecessor(const StaticList *list, int position)
 }
 
 /* Insert at 1-based logical position. Returns 0 on failure, 1 on success. */
-// Purpose: Insert value before position by allocating a free node, then relinking the predecessor's next; return success or failure.
-// 作用：在 position 前插入 value：先分配空闲结点，再改前驱 next；返回成功/失败。
+// Purpose: Insert value before position by allocating a free node, then relinking the predecessor's cur; return success or failure.
+// 作用：在 position 前插入 value：先分配空闲结点，再改前驱 cur；返回成功/失败。
+// Keep the successor first, then redirect the predecessor.
 static int static_insert(StaticList *list, int position, int value)
 {
     int length = static_length(list);
@@ -128,7 +126,6 @@ static int static_insert(StaticList *list, int position, int value)
     previous = static_predecessor(list, position);
     successor = (previous == NULL_INDEX) ? list->head : list->nodes[previous].cur;
 
-    /* Keep the successor first, then redirect the predecessor. */
     list->nodes[new_index].cur = successor;
     if (previous == NULL_INDEX)
     {
@@ -143,7 +140,7 @@ static int static_insert(StaticList *list, int position, int value)
 
 /* Delete at 1-based logical position. Returns 0 if the position is invalid. */
 // Purpose: Delete the node at position by linking its predecessor to its successor, then recycle the node into the free list.
-// 作用：删除 position 位置结点：把前驱 next 指向后继，再把结点归还空闲链表。
+// 作用：删除 position 位置结点：把前驱 cur 指向后继，再把结点归还空闲链表。
 static int static_delete(StaticList *list, int position, int *removed)
 {
     int length = static_length(list);
@@ -177,8 +174,8 @@ static int static_delete(StaticList *list, int position, int *removed)
     return 1;
 }
 
-// Purpose: Print every element along the data-list next cursors; read-only.
-// 作用：沿数据链表 next 游标输出全部元素；只读。
+// Purpose: Print every element along the data-list cur cursors; read-only.
+// 作用：沿数据链表 cur 游标输出全部元素；只读。
 static void static_traverse(const StaticList *list)
 {
     int current = list->head;
@@ -191,8 +188,6 @@ static void static_traverse(const StaticList *list)
     printf(" -> NULL\n");
 }
 
-// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
-// 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main(void)
 {
     const int values[] = {10, 20, 30};

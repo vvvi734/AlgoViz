@@ -124,6 +124,7 @@ static int MultiwayMerge(InputRun runs[MAX_K], int k, int bufferCapacity, int bl
         Refill(&runs[runIndex], blockSize, bufferCapacity, readBlocks);
     }
 
+    // Only buffer[0] of each run is a candidate; the run's unread tail stays invisible until Refill moves it in.
     // Every iteration selects one candidate. A run with an empty buffer after
     // its head leaves may refill immediately, but a fully consumed run stays out.
     while (1)

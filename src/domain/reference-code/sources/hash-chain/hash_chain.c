@@ -5,12 +5,11 @@
  * 易错点：删除头结点不更新桶指针；哈希为负未取模；扩容后没有重新散列；比较键时只比哈希值。
  * 复杂度：平均 O(1)，最坏 O(n)（全部冲突）；空间 O(n+buckets)。
  * 输入/输出：输入非负整数 key 的插入/查找/删除序列；操作返回布尔或值；main 打印桶链状态。
- * 函数地图：先读 main 的调用顺序，再按需查看被调用的静态函数；每个函数前的“作用”注释给出职责、输入和返回。
 */
 
 /*
  * AlgoViz reference implementation: hash table with chained buckets.
- * Each bucket is a singly linked list; collisions append to the same chain.
+ * Each bucket is a singly linked list; collisions share the same chain, and a new node is prepended at the bucket head.
  *
  * Reading guide:
  * 1. Map a key to bucket key % table_size.
@@ -129,8 +128,6 @@ void table_free(HashTable *table)
     }
 }
 
-// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
-// 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main(void)
 {
     HashTable table;

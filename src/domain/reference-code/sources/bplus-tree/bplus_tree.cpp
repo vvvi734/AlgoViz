@@ -5,7 +5,6 @@
  * 易错点：记录写进内部节点；叶分裂提升中间键；范围查询每次回到根；删除被误称为已支持。
  * 复杂度：点查找/插入 O(log_4 n)，范围查询 O(log_4 n + k)；空间 O(n)。
  * 输入/输出：唯一整数键、操作与范围；main 打印叶链、查找、插入与范围结果。
- * 函数地图：先读 main，再查看 splitLeaf、splitInternal、insertRec、findLeaf、rangeScan。
 */
 
 /*

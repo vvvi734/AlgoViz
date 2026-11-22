@@ -5,7 +5,6 @@
  * 易错点：把前缀直接当词；插入重复时仍改结构；字符大小写不统一。
  * 复杂度：查找/插入 O(L)，L 为词长；空间 O(总字符数)，共享前缀合并节点。
  * 输入/输出：输入小写单词集合、目标词与操作；main 打印词典、命中与插入结果。
- * 函数地图：先读 main，再查看 KeyNode、find、insert。
 */
 
 /*
@@ -30,8 +29,8 @@ struct KeyNode
     std::map<char, std::unique_ptr<KeyNode>> children;
 };
 
-// Purpose: Allocate a child for one character under its real parent edge.
-// 作用：为一个字符在真实父边下分配孩子节点。
+// Purpose: Allocate a standalone child node for one character; the caller inserts it under the real parent edge.
+// 作用：为一个字符分配独立孩子节点；真正挂到父边由调用方完成。
 std::unique_ptr<KeyNode> makeNode(char letter)
 {
     auto node = std::make_unique<KeyNode>();

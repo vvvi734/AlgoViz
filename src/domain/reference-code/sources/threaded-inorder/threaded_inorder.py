@@ -1,13 +1,13 @@
 # Threaded binary tree: in-order threading and traversal in Python 3.
-# A tree with n nodes has n+1 null links. Instead of allocating extra nodes, null
-# left links store predecessors and null right links store successors; ltag/rtag
-# distinguish a real child (0) from a thread (1). After threading, in-order
-# traversal needs no recursion stack. Time O(n), extra space O(1).
+# A tree with n nodes has n+1 null links. This implementation keeps child links
+# untouched and stores predecessor/successor in separate left_thread/right_thread
+# fields; ltag/rtag only say whether that thread field is valid. After threading,
+# in-order traversal needs no recursion stack. Time O(n), extra space O(1).
 """线索二叉树的中序线索化与线索遍历 — AlgoViz Python 参考实现。
 
-中文导读：普通二叉树的 n 个结点有 n+1 个空指针。这里不新增结点，而是把
-空左指针改写成指向前驱的线索，把空右指针改写成指向后继的线索，并用
-ltag / rtag 区分“真实孩子”与“线索”。线索建好后，中序遍历不再需要递归栈。
+中文导读：普通二叉树的 n 个结点有 n+1 个空指针。本实现不覆盖真实孩子指针，
+而是额外保存 left_thread / right_thread 两个线索字段；空 left / right 仍为
+None，由 ltag / rtag 标记线索是否有效。线索建好后，中序遍历不再需要递归栈。
 
 阅读顺序：先看 `Node` 的四个指针/标志字段，再看 `thread_inorder` 如何按
 “左 → 根 → 右”写入前驱与后继，最后看 `inorder_by_threads` 如何只靠当前
@@ -17,8 +17,8 @@ ltag / rtag 区分“真实孩子”与“线索”。线索建好后，中序�
 `inorder_by_threads` 返回中序值列表，顺序与递归中序完全一致。
 
 关键不变量：
-1. tag=0 时 left / right 必须指向真实孩子；tag=1 时它们只是线索字段的副本，
-   真实孩子为空。
+1. tag=0 时 left / right 必须指向真实孩子；tag=1 时 left / right 为 None，
+   前驱 / 后继分别保存在 left_thread / right_thread。
 2. 每个结点最多有一个父结点，树中不存在环。
 3. 中序第一个结点的左线索为空，最后一个结点的右线索为空，但两者的 tag
    都仍然是 1。
@@ -26,7 +26,7 @@ ltag / rtag 区分“真实孩子”与“线索”。线索建好后，中序�
 
 from __future__ import annotations
 
-# Thread null left pointers into predecessors and null right pointers into successors.
+# Thread targets live in left_thread/right_thread; the real child pointers stay None.
 
 
 # Purpose: A node stores a value, real child links, thread targets, and two tags.

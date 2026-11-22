@@ -1,32 +1,34 @@
 /* 线索二叉树的中序线索化与线索遍历 — AlgoViz C 参考实现。
  *
- * 中文导读：n 个结点的二叉树有 n+1 个空指针。本实现不新增结点，只把空左
- * 指针改写成指向前驱的线索、空右指针改写成指向后继的线索，并用 ltag /
- * rtag 区分“真实孩子”与“线索”。线索完成后，中序遍历不需要递归栈。
+ * 中文导读：n 个结点的二叉树有 n+1 个空指针。本实现不覆盖真实孩子指针，
+ * 而是为每个结点额外保存 left_thread / right_thread 两个线索字段；空 left /
+ * right 仍为 NULL，由 ltag / rtag 标记线索是否有效。线索完成后，中序遍历
+ * 不需要递归栈。
  *
  * 阅读顺序：先看 ThreadNode 的字段，再看 thread_walk 的“左 → 根 → 右”
  * 处理，最后看 inorder_by_threads 如何沿线索前进。
  *
  * 关键不变量：
- * 1. ltag==0 时 left 指向真实孩子；ltag==1 时 left 为空，left_thread 是线索。
- * 2. 右指针同理，rtag==1 时 right 为空，right_thread 是后继线索。
- * 3. 中序第一个结点的左线索为空，最后一个结点的右线索为空，但 tag 仍为 1。
+ * 1. ltag==0 时 left 是真实孩子；ltag==1 时 left 为 NULL，前驱保存在
+ *    left_thread 中。
+ * 2. 右指针同理：rtag==1 时 right 为 NULL，后继保存在 right_thread 中。
+ * 3. 中序第一个结点的前驱线索为空，最后一个结点的后继线索为空，但 tag 仍为 1。
  */
 
 /*
  * Threaded binary tree: in-order threading and traversal in C11.
  *
- * A binary tree with n nodes has n+1 null links. This implementation reuses
- * those links instead of adding fields: a null left pointer stores the in-order
- * predecessor and a null right pointer stores the in-order successor. ltag/rtag
- * tell a real child (0) from a thread (1), so traversal needs no recursion stack.
- * Threading is O(n); traversal is O(n) time and O(1) extra space.
+ * A binary tree with n nodes has n+1 null links. This implementation keeps the
+ * child links untouched and stores predecessor/successor in separate
+ * left_thread/right_thread fields; a null left/right pointer with a tag of 1
+ * means "use the thread field". Threading is O(n); traversal is O(n) time and
+ * O(1) extra space.
  */
 
 #include <stdio.h>
 #include <stdlib.h>
 
-// Thread null left pointers into predecessors and null right pointers into successors.
+// Thread targets live in left_thread/right_thread; the real child pointers stay NULL.
 
 typedef struct ThreadNode
 {
@@ -81,17 +83,17 @@ static void thread_walk(ThreadNode *node, ThreadState *state)
 
     if (node->left == NULL)
     {
-        // 空左指针变成前驱线索；真实 left 仍保持 NULL。
-        // Purpose: A null left link becomes a predecessor thread; real left stays null.
-        /* 空左指针变成前驱线索；真实 left 仍保持 NULL。 */
+        // 空 left 对应的前驱线索写入 left_thread；真实 left 仍为 NULL。
+        // Purpose: Store the predecessor in left_thread; the real left child stays null.
+        /* 空 left 对应的前驱线索写入 left_thread；真实 left 仍为 NULL。 */
         node->ltag = 1;
         node->left_thread = state->prev;
     }
     if (state->prev != NULL && state->prev->right == NULL)
     {
-        // 前驱右指针为空，当前结点正好是它的中序后继。
-        // Purpose: The predecessor has no right child, so node is its in-order successor.
-        /* 前驱右指针为空，当前结点正好是它的中序后继。 */
+        // 前驱没有右孩子，当前结点正好是它的中序后继；后继写入 right_thread。
+        // Purpose: The predecessor has no right child, so node is its successor and goes into right_thread.
+        /* 前驱没有右孩子，当前结点正好是它的中序后继；后继写入 right_thread。 */
         state->prev->rtag = 1;
         state->prev->right_thread = node;
     }
@@ -110,9 +112,9 @@ static void thread_inorder(ThreadNode *root)
     state.last = NULL;
     thread_walk(root, &state);
 
-    // 最后一个中序结点没有后继，但右指针仍标记为线索。
-    // Purpose: The last node has no successor, yet its right link is still tagged as a thread.
-    /* 最后一个中序结点没有后继，但右指针仍标记为线索。 */
+    // 最后一个中序结点没有后继；right 仍为 NULL，right_thread 置空且 rtag 为 1。
+    // Purpose: The last node has no successor; right stays null, right_thread is cleared and rtag is 1.
+    /* 最后一个中序结点没有后继；right 仍为 NULL，right_thread 置空且 rtag 为 1。 */
     if (state.last != NULL && state.last->right == NULL)
     {
         state.last->rtag = 1;
@@ -142,9 +144,9 @@ static void inorder_by_threads(ThreadNode *root)
         printf(" %d", node->value);
         if (node->rtag == 1)
         {
-            // 右指针是线索，直接跳到后继；后继为空则结束。
-            // Purpose: A right thread points straight at the successor; null ends traversal.
-            /* 右指针是线索，直接跳到后继；后继为空则结束。 */
+            // rtag==1 时 right 为空，right_thread 直接指向后继；后继为空则结束。
+            // Purpose: With rtag 1, right is null and right_thread points straight at the successor.
+            /* rtag==1 时 right 为空，right_thread 直接指向后继；后继为空则结束。 */
             node = node->right_thread;
         }
         else
@@ -158,7 +160,7 @@ static void inorder_by_threads(ThreadNode *root)
     printf("\n");
 }
 
-// 作用：统计被改写成线索的指针数；n 个结点应有 n+1 条线索。
+// 作用：统计被标记为线索的指针数；n 个结点应有 n+1 条线索。
 // Purpose: Count tagged links; an n-node tree has exactly n+1 threads.
 static int count_tags(ThreadNode *node)
 {

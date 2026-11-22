@@ -39,7 +39,8 @@ struct Io
     int blockReads = 0;
 };
 
-// 作用：按主关键字排序；相等键保持原输入次序。
+// Stable sorting keeps equal keys in input order, so the block layout is deterministic for the demo.
+// 作用：按主关键字排序；相等键保持原输入次序，使切块结果可重复。
 static void SortRecords(std::vector<Record> &records)
 {
     std::stable_sort(records.begin(), records.end(),
@@ -64,7 +65,8 @@ static std::vector<Block> BuildBlocks(const std::vector<Record> &records, int ca
     return blocks;
 }
 
-// 作用：dense=true 时每记录一项；否则每块最后一条记录的关键字作为上界。
+// Dense mode emits every record key; sparse mode emits each block's last key as an upper bound, not the next block's first key.
+// 作用：dense=true 时每记录一项；否则每块最后一条记录的关键字作为上界，上界属于被索引的块。
 static std::vector<Entry> BuildIndex(const std::vector<Block> &blocks, bool dense)
 {
     std::vector<Entry> index;
@@ -85,7 +87,8 @@ static std::vector<Entry> BuildIndex(const std::vector<Block> &blocks, bool dens
     return index;
 }
 
-// 作用：逐项检查索引，选择不大于目标的最后一项，读一块并在块内比较。
+// Choose the last entry not greater than target, then read exactly one block; a miss still counts that block read.
+// 作用：逐项检查索引，选择不大于目标的最后一项，读一块并在块内比较；失败同样计一次块读取。
 static int Lookup(const std::vector<Block> &blocks, const std::vector<Entry> &index, int target, Io &io)
 {
     std::size_t chosen = 0;

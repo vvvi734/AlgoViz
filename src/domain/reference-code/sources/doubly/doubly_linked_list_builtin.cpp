@@ -1,13 +1,12 @@
 /*
- * 中文导读：每个结点同时保存 prev 和 next，使已知结点两侧的插入/删除都为 O(1)。
- * 阅读顺序：先看 Node 的两个指针和 head/tail；再看插入时四条链接的赋值顺序；最后看删除时两侧如何互相接回。
- * 关键不变量：对任意相邻结点 a、b，必须同时有 a.next == b 与 b.prev == a。
- * 易错点：只改 next 不改 prev；删除尾结点不更新 tail；头尾边界空指针；释放后仍访问旧结点。
- * 复杂度：已知位置插删 O(1)，查找 O(n)，空间 O(n)（每结点多一个指针）。
+ * 中文导读：本文件用 std::list 作标准库对照；它是双向链表，已知迭代器位置的拼接或删除为 O(1)。
+ * 阅读顺序：先看 push_back 建立序列；再看正向/反向迭代；最后看 splice/erase 如何使用迭代器定位。
+ * 关键不变量：迭代器在无关拼接后仍有效；end() 是尾后位置；没有随机访问。
+ * 易错点：用下标访问；删除后继续使用失效迭代器；把 std::list 与手写 prev/next 混为一谈。
+ * 复杂度：已知位置拼接/删除 O(1)，查找 O(n)，空间 O(n)。
  * 本文件是标准库对照版：重点看“库函数调用”与手写算法在接口、稳定性、边界上的差异。
  * This is the standard-library comparison file: focus on interface, stability and boundary differences from the hand-written algorithm.
- * 输入/输出：输入 main 内置的演示操作序列；结构函数原地改 prev/next，返回成功/元素；main 双向打印。
- * 函数地图：先读 main 的调用顺序，再按需查看被调用的静态函数；每个函数前的“作用”注释给出职责、输入和返回。
+ * 输入/输出：输入 main 内置的演示序列；main 打印正向与反向遍历结果。
 */
 
 // AlgoViz convenience implementation: doubly linked list with std::list.
@@ -38,8 +37,6 @@ template <typename T> void print(const std::list<T> &values)
     std::cout << '\n';
 }
 
-// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
-// 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main()
 {
     std::list<int> values;

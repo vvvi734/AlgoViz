@@ -5,7 +5,6 @@
  * 易错点：先改指针后保存后继导致断链；删除头结点不更新 head；尾插不更新 tail；释放后访问；长度不同步。
  * 复杂度：头插 O(1)，按位置查找 O(n)，已知前驱插删 O(1)，空间 O(n)。
  * 输入/输出：输入 main 内置的演示操作序列；结构函数原地改 next 并返回成功/元素；main 打印遍历结果。
- * 函数地图：先读 main 的调用顺序，再按需查看被调用的静态函数；每个函数前的“作用”注释给出职责、输入和返回。
 */
 
 // AlgoViz reference implementation: singly linked list (C++17).
@@ -188,8 +187,6 @@ class SinglyLinkedList
     std::size_t length_;
 };
 
-// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
-// 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main()
 {
     SinglyLinkedList list;

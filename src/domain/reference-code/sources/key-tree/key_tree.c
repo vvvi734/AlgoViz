@@ -5,7 +5,6 @@
  * 易错点：把前缀节点直接当成单词；先设置 terminal 再判断重复；字符大小写未统一。
  * 复杂度：查找/插入 O(L)，L 为关键字长度；空间 O(总字符数)，共享前缀会合并节点。
  * 输入/输出：输入小写单词集合、目标词与操作；查找返回命中/失败，插入返回是否新增；main 打印词典。
- * 函数地图：先读 main，再查看 new_node、find_child、find_word、insert_word。
 */
 
 /*
@@ -35,8 +34,8 @@ static KeyNode nodes[MAX_NODES];
 static int node_count = 0;
 static int root = -1;
 
-// Purpose: Allocate one real node, link it to its parent edge, and keep sibling letters unique.
-// 作用：分配一个真实节点，接入父节点的字符边，并保证兄弟字符唯一。
+// Purpose: Allocate one node and initialize its letter, terminal flag and 26 child slots; the caller links the parent edge.
+// 作用：分配一个节点并初始化 letter、terminal 与 26 个孩子槽；父边由调用方接入，本函数不修改父节点。
 static int new_node(char letter)
 {
     if (node_count >= MAX_NODES)

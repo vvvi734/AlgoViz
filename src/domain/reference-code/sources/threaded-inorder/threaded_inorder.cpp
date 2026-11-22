@@ -1,7 +1,7 @@
 // 线索二叉树的中序线索化与线索遍历 — AlgoViz C++ 参考实现。
 //
-// 中文导读：用 unique_ptr 管理真实孩子，线索只是不拥有结点的裸指针。
-// 空左指针写入前驱、空右指针写入后继，并用 ltag / rtag 区分两者。
+// 中文导读：用 unique_ptr 管理真实孩子，线索保存在独立的 left_thread / right_thread 裸指针中，不拥有结点。
+// 空 left / right 仍为 NULL；ltag / rtag 只表示对应线索字段是否有效。
 // 线索完成后中序遍历只靠当前指针，额外空间 O(1)。
 //
 // 关键不变量：
@@ -12,10 +12,11 @@
 /*
  * Threaded binary tree: in-order threading and traversal in C++17.
  *
- * unique_ptr owns only real children. Null left/right links are reused to store
- * in-order predecessor/successor threads, and ltag/rtag distinguish a real child
- * (0) from a thread (1). Because threads are non-owning raw pointers, destruction
- * follows only real children and cannot double-free or form ownership cycles.
+ * unique_ptr owns only real children. Threads are stored in separate
+ * left_thread/right_thread raw pointers rather than overwriting child links;
+ * a real left/right pointer stays null, and ltag/rtag say whether the thread
+ * field is valid. Because threads are non-owning, destruction follows only real
+ * children and cannot double-free or form ownership cycles.
  * Threading O(n), traversal O(n) time and O(1) extra space.
  */
 
@@ -23,7 +24,7 @@
 #include <memory>
 #include <utility>
 
-// Thread null left pointers into predecessors and null right pointers into successors.
+// Thread targets live in left_thread/right_thread; the real child pointers stay null.
 
 struct Node
 {
@@ -106,7 +107,8 @@ static void inorder_by_threads(Node *root)
         std::cout << ' ' << node->value;
         if (node->rtag == 1)
         {
-            // 右指针是线索，直接跳到后继；空后继结束遍历。
+            // 右线索字段直接跳到后继；线索为空则结束遍历。
+        // Purpose: A right-thread field points straight at the successor; a null thread ends traversal.
             // Purpose: A right thread is the successor directly; null ends the walk.
             node = node->right_thread;
         }

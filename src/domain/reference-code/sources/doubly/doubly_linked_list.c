@@ -5,7 +5,6 @@
  * 易错点：只改 next 不改 prev；删除尾结点不更新 tail；头尾边界空指针；释放后仍访问旧结点。
  * 复杂度：已知位置插删 O(1)，查找 O(n)，空间 O(n)（每结点多一个指针）。
  * 输入/输出：输入 main 内置的演示操作序列；结构函数原地改 prev/next，返回成功/元素；main 双向打印。
- * 函数地图：先读 main 的调用顺序，再按需查看被调用的静态函数；每个函数前的“作用”注释给出职责、输入和返回。
 */
 
 /*
@@ -41,17 +40,28 @@ typedef struct
     Node *tail;
 } DoublyList;
 
-// Purpose: Initialize the list with null head/tail and zero length so an empty list traverses safely.
-// 作用：初始化链表：head/tail 置空、length 置 0；空表状态要能安全遍历。
+/*
+ * Empty means both endpoints are NULL. This structure has no count field, so the
+ * only work here is clearing `head` and `tail`; those two nulls are the complete
+ * empty-state invariant for later traversals and appends.
+ */
+// Purpose: Represent an empty list by clearing both endpoints.
+// 作用：用 head/tail 同时为空表示空表；本结构没有 length 字段需要复位。
 void list_init(DoublyList *list)
 {
     list->head = NULL;
     list->tail = NULL;
 }
 
-// Append wires prev and next first; only then does tail move to the new node.
-// Purpose: Append value at the doubly linked-list tail while maintaining prev, next, tail and length.
-// 作用：在双向链表尾部追加 value，同时维护 prev、next、tail 和 length。
+/*
+ * `node->prev` must be the old tail before `tail` moves, and the old tail's `next`
+ * must point to the new node before the new node becomes reachable as the tail.
+ * When the list is empty, there is no old tail to patch, so `head` must be set
+ * instead. Allocation failure returns before any link changes, leaving the list
+ * exactly as it was.
+ */
+// Purpose: Append one node while keeping prev/next mutually consistent.
+// 作用：在尾部追加结点，先接好 prev/next，再更新 tail；空表时同时设置 head。
 Node *list_append(DoublyList *list, int value)
 {
     Node *node = (Node *)malloc(sizeof(Node));
@@ -135,8 +145,6 @@ void list_free(DoublyList *list)
     list->tail = NULL;
 }
 
-// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
-// 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main(void)
 {
     DoublyList list;

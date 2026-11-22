@@ -5,7 +5,6 @@
  * 易错点：每轮都交换导致不稳定/多写；min_index 未初始化；边界写成 n；相等元素顺序被交换破坏稳定性。
  * 复杂度：O(n²) 时间，O(1) 空间，不稳定。
  * 输入/输出：输入 main 内置的整数数组；排序函数原地升序重排，无返回值；main 打印排序结果。
- * 函数地图：先读 main 的调用顺序，再按需查看被调用的静态函数；每个函数前的“作用”注释给出职责、输入和返回。
 */
 
 /*
@@ -42,8 +41,6 @@ void SelectionSort(int *values, int count)
     }
 }
 
-// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
-// 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main(void)
 {
     int values[] = {5, 1, 4, 2, 8, 0, 3, 7, 6, 9};

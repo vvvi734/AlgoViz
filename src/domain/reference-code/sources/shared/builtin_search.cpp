@@ -5,7 +5,6 @@
  * 易错点：比较器不满足严格弱序；忽略返回 -1/0/1 与布尔值的差异；对不稳定排序期待稳定结果；空区间边界。
  * 复杂度：取决于具体库函数；本文件只用于对照，不作为复杂度证明。
  * 输入/输出：输入 main 内置的数组或操作序列；标准库便捷实现返回排序/查找结果；main 打印输出。
- * 函数地图：先读 main 的调用顺序，再按需查看被调用的静态函数；每个函数前的“作用”注释给出职责、输入和返回。
 */
 
 // AlgoViz shared convenience implementation: binary search with lower_bound.
@@ -38,8 +37,6 @@ int binary_search_builtin(const std::vector<int> &values, int target)
     return static_cast<int>(position - values.begin());
 }
 
-// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
-// 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main()
 {
     std::vector<int> values{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};

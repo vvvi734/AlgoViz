@@ -1,11 +1,10 @@
 /*
- * 中文导读：对每个未访问结点启动一次遍历，给同一连通块的所有结点相同编号。
- * 阅读顺序：先看 visited/component 数组；再看外层为什么遍历所有结点；最后看内层 DFS/BFS 如何扩散。
+ * 中文导读：对每个未访问结点启动一次 DFS，统计并打印无向图的连通分量。
+ * 阅读顺序：先看 visited 数组；再看外层为什么遍历所有结点；最后看内层 DFS 如何扩散。
  * 关键不变量：一次内层遍历访问到的结点恰好属于同一个连通分量；外层保证不遗漏任何分量。
  * 易错点：只从 0 号点开始；把有向图弱连通当成强连通；visited 标记时机不一致。
- * 复杂度：O(V+E) 时间，O(V) 额外空间。
- * 输入/输出：输入无向图邻接表；返回每个连通分量的顶点集合；main 打印全部分量。
- * 函数地图：先读 main 的调用顺序，再按需查看被调用的静态函数；每个函数前的“作用”注释给出职责、输入和返回。
+ * 复杂度：本文件用邻接矩阵，O(V²) 时间；O(V) 额外空间。
+ * 输入/输出：输入无向邻接矩阵；DFS 原地打印同分量顶点，函数返回分量数量；main 打印总数。
 */
 
 /*
@@ -36,6 +35,7 @@ void add_edge(int graph[VERTEX_COUNT][VERTEX_COUNT], int a, int b)
     graph[b][a] = 1;
 }
 
+// Mark before recursing: an undirected edge leads back to the caller, and marking early prevents that cycle from recursing forever.
 // Purpose: DFS from vertex, marking every vertex in the same connected component as visited.
 // 作用：从 vertex 出发 DFS，把同一连通分量中的所有结点标记为已访问。
 void visit(int graph[VERTEX_COUNT][VERTEX_COUNT], int vertex, bool visited[VERTEX_COUNT])
@@ -51,7 +51,6 @@ void visit(int graph[VERTEX_COUNT][VERTEX_COUNT], int vertex, bool visited[VERTE
     }
 }
 
-// Every unvisited start opens a new component; one DFS marks all vertices reachable from it.
 // The outer scan opens a new component only at an unvisited vertex; one DFS marks its whole component.
 // Purpose: Scan all unvisited vertices; each new DFS start yields one connected component.
 // 作用：扫描所有未访问结点，每启动一次 DFS 就得到一个连通分量。
@@ -72,8 +71,6 @@ int count_components(int graph[VERTEX_COUNT][VERTEX_COUNT])
     return components;
 }
 
-// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
-// 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main(void)
 {
     int graph[VERTEX_COUNT][VERTEX_COUNT] = {{0}};

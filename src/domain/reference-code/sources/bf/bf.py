@@ -56,37 +56,25 @@ def bf_find_all(text: str, pattern: str) -> list[int]:
     m = len(pattern)
     starts: list[int] = []
 
-    # With n < m no alignment can hold the pattern; returning early also avoids
-    # a non-positive range bound, even though an empty range would also work.
-    # n < m 时连一次完整对齐都放不下，直接返回空列表；若继续算 n - m + 1
-    # 会得到非正上界，range 为空虽然也能工作，但显式分支更易读。
+    # If n < m no alignment can hold the pattern; the early return also avoids a non-positive range bound.
     if n < m:
         return starts
 
     candidate_count = n - m + 1
 
-    # 外层只枚举合法起点。s 是模式串首字符对齐到主串的位置，不是主串中
-    # 任意一个字符位置；s 的最大值是 n - m。
-    # Purpose: Enumerate only legal starts; start aligns pattern[0] with text[start],
-    # so its maximum is n - m, not any text index.
+    # Enumerate only legal starts; start aligns pattern[0] with text[start], so its maximum is n - m.
     for start in range(candidate_count):
         j = 0
 
-        # 内层逐个确认字符。j 同时表示“已经确认相等的前缀长度”和“下一个
-        # 待比较的模式下标”，真正的比较位置是 start + j。
-        # j is both the confirmed prefix length and the next pattern index;
-        # the text position compared is start + j, never j alone.
+        # j is both the confirmed prefix length and the next pattern index; the compared text position is start + j.
         while j < m and text[start + j] == pattern[j]:
             j += 1
 
-        # 循环自然结束时 j == m，说明 m 个字符全部相等，而不是某一对相等。
-        # Purpose: j == m means all m characters matched, not just the last pair.
+        # j == m proves all m characters matched, not just the last pair.
         if j == m:
             starts.append(start)
 
         # Do not break after a hit: start + 1 may still form an overlapping match.
-        # 这里不能 break 或 return：当前起点匹配成功后，start + 1 仍可能
-        # 形成一个重叠匹配，例如 AAAAA 中查找 AAA 的 0、1、2。
 
     return starts
 

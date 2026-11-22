@@ -5,7 +5,6 @@
  * 易错点：删除双子结点时只改值却忘记删除后继；重复键处理不一致；用引用/指针更新父结点时接错边。
  * 复杂度：平均 O(log n)，最坏 O(n)（退化成链）；额外空间 O(n)。
  * 输入/输出：输入整数键与待删除键；插入/删除原地修改树，中序输出升序键，查找返回是否存在。
- * 函数地图：先读 main 的调用顺序，再按需查看被调用的静态函数；每个函数前的“作用”注释给出职责、输入和返回。
 */
 
 // AlgoViz reference implementation: binary search tree (C++17).
@@ -43,8 +42,8 @@ class BST
 
     // Descend one branch by key comparison; duplicates are ignored by the insert contract.
     // BST invariant: left keys < root < right keys; duplicates are rejected, so search follows one path.
-    // Purpose: Insert value into the BST, ignore duplicates, and return the new subtree root.
-    // 作用：在 BST 中插入 value；重复键忽略，返回新的子树根。
+    // Purpose: Start an insertion at the root and publish the returned subtree; the static overload does the real insert.
+    // 作用：从根启动插入并接回返回的子树；真正的递归插入与去重由静态重载完成。
     void insert(int value)
     {
         root_ = insert(std::move(root_), value);
@@ -66,15 +65,15 @@ class BST
         return false;
     }
 
-    // Purpose: Delete value in three cases: leaf, one child, or two children; with two children, replace it with the minimum node of the right subtree.
-    // 作用：删除 value：分叶子、单孩子、双孩子三种情况；双孩子用右子树最小结点替换。
+    // Purpose: Start deletion at the root and publish the rebuilt subtree; the static overload handles leaf/one-child/two-child cases.
+    // 作用：从根启动删除并接回重建的子树；叶子、单孩子、双孩子三种情况由静态重载处理。
     void remove(int value)
     {
         root_ = remove(std::move(root_), value);
     }
 
-    // Purpose: Inorder traversal of the whole tree printing ascending keys; the static overload recurses left-root-right and is read-only.
-    // 作用：中序遍历整棵树并输出升序键值；静态重载负责递归左—根—右，只读。
+    // Purpose: Start the recursive inorder walk at the root and terminate the output line; read-only.
+    // 作用：从 root 启动递归中序遍历并在末尾换行；只读，不修改树。
     void inorder() const
     {
         inorder(root_.get());
@@ -160,8 +159,6 @@ class BST
     std::unique_ptr<Node> root_;
 };
 
-// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
-// 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main()
 {
     BST tree;

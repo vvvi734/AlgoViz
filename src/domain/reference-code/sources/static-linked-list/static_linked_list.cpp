@@ -1,11 +1,10 @@
 /*
  * 中文导读：用数组下标代替指针，在固定数组中维护数据链表和空闲链表。
- * 阅读顺序：先看 Node 的 data/next 与两个头游标；再看 malloc/salloc 如何从空闲链表取结点；最后看插入删除只改游标。
- * 关键不变量：数据链表和空闲链表互不重叠，合起来覆盖所有数组槽；next=-1 表示结束。
+ * 阅读顺序：先看 Cell 的 data/cur 与两个头游标；再看 initialise 如何串空闲链表、insert 如何借结点；最后看插入删除只改游标。
+ * 关键不变量：数据链表和空闲链表互不重叠，合起来覆盖所有数组槽；cur=kNull（-1）表示结束。
  * 易错点：游标 -1/0 混用；分配后忘记更新空闲头；删除结点没回收；数组满仍分配；把下标当真实地址。
- * 复杂度：已知位置插删 O(1)，查找 O(n)，空间 O(capacity)。
- * 输入/输出：输入容量与演示操作序列；插入/删除返回成功，遍历返回逻辑顺序；main 打印 data/cur。
- * 函数地图：先读 main 的调用顺序，再按需查看被调用的静态函数；每个函数前的“作用”注释给出职责、输入和返回。
+ * 复杂度：按位置插删需先 O(n) 找前驱；已知前驱时改游标 O(1)，空间 O(capacity)。
+ * 输入/输出：输入固定容量 8 的初始值序列与演示操作；插入/删除返回成功，遍历返回逻辑顺序；main 打印 data/cur。
 */
 
 // Static linked list — independent C++ teaching implementation.
@@ -21,7 +20,6 @@
 #include <optional>
 #include <vector>
 
-// Keep the successor first, then redirect the predecessor; reversing loses the tail.
 class StaticList
 {
   public:
@@ -37,6 +35,7 @@ class StaticList
 
     // Purpose: Insert value before position by taking a node from the free list and rewiring cursors; return false on failure.
     // 作用：在 position 前插入 value：先从空闲链表取结点，再重接游标；失败返回 false。
+    // Keep the successor first, then redirect the predecessor; reversing loses the tail.
     bool insert(int position, int value)
     {
         const int length = size();
@@ -159,8 +158,6 @@ class StaticList
     int freeHead_ = kNull;
 };
 
-// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
-// 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main()
 {
     StaticList list({10, 20, 30});

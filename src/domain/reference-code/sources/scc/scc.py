@@ -25,7 +25,7 @@ from __future__ import annotations
 
 
 # First pass appends a vertex only after all its outgoing neighbours are finished.
-# First pass records finish order; the reverse graph is then explored in decreasing finish order to isolate SCCs.
+# First pass appends a vertex only after all its outgoing neighbours are finished; the second pass reads this order backwards.
 # Purpose: DFS on the original graph and append finished vertices to order.
 # 作用：在原图上 DFS，把完成顶点追加到 order。
 def first_pass(graph: list[list[int]], vertex: int, visited: list[bool], order: list[int]) -> None:

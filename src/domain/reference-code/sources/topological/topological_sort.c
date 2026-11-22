@@ -2,10 +2,9 @@
  * 中文导读：在有向无环图中反复取出入度为 0 的结点，得到满足所有前驱关系的顺序。
  * 阅读顺序：先看入度数组和队列/栈；再看取出结点后如何减少邻居入度；最后看输出数量少于 V 说明有环。
  * 关键不变量：队列中的结点当前入度都是 0；已输出结点不会再影响后续。
- * 易错点：入度更新方向写反；有环仍输出部分序列并当成功；重复入队；邻接表漏边。
- * 复杂度：O(V+E) 时间，O(V+E) 空间。
+ * 易错点：入度更新方向写反；有环仍输出部分序列并当成功；重复入队；邻接矩阵漏边。
+ * 复杂度：O(V²) 时间（邻接矩阵每次扫描全部列），O(V) 空间。
  * 输入/输出：输入有向无环图；返回拓扑序；输出顶点数不足 V 时说明有环；main 打印序列。
- * 函数地图：先读 main 的调用顺序，再按需查看被调用的静态函数；每个函数前的“作用”注释给出职责、输入和返回。
 */
 
 /*
@@ -14,8 +13,7 @@
  * Compute each vertex's indegree. Vertices with indegree 0 enter a FIFO queue;
  * removing a vertex appends its neighbours whose last incoming edge disappears.
  * If the queue drains before all vertices are emitted, the graph contains a
- * directed cycle. Time O(V + E) with the adjacency matrix used below (O(V^2)),
- * space O(V).
+ * directed cycle. Time O(V^2) with the adjacency matrix used below, space O(V).
  */
 
 #include <stdio.h>
@@ -76,8 +74,6 @@ int TopologicalSort(int order[])
     return emitted;
 }
 
-// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
-// 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main(void)
 {
     int order[VERTEX_COUNT];

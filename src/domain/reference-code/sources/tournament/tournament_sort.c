@@ -5,7 +5,6 @@
  * 易错点：填充叶被当作 0；删除叶后重算整棵树；只比较 value 而丢掉 originalIndex；忘记过滤 inactive 记录。
  * 复杂度：建树 O(n)，每输出一个记录更新 O(log n)，总计 O(n log n)；选择树需要 O(n) 额外空间。
  * 输入/输出：输入 main 内置的整数数组；排序后原地输出有序记录；main 打印每条记录的关键字与原始下标。
- * 函数地图：先读 main 的调用顺序，再按需查看 BuildTree、RemoveWinner 和辅助函数。
  */
 
 /*

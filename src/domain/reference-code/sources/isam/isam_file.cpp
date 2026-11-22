@@ -44,7 +44,8 @@ class IsamFile
     int mainReads = 0;
     int overflowReads = 0;
 
-    // 作用：计算主块与全部溢出节点的真实最大键。
+    // The main block alone is insufficient: an overflow record can be the true maximum, so the chain is scanned.
+    // 作用：计算主块与全部溢出节点的真实最大键；索引上界不能只取主块末项。
     int BlockMaximum(int blockIndex) const
     {
         int maximum = blocks[blockIndex].records.back().key;
@@ -60,7 +61,8 @@ class IsamFile
         return maximum;
     }
 
-    // 作用：刷新每个块的上界，索引必须跟随真实记录。
+    // Bounds are derived data, so every mutation rebuilds them from the current blocks and chains.
+    // 作用：上界是派生数据；每次插入后按当前主块与溢出链重建，避免索引落后于真实记录。
     void RefreshBounds()
     {
         bounds.clear();
@@ -70,7 +72,8 @@ class IsamFile
         }
     }
 
-    // 作用：选第一个上界不小于目标的主块；目标超过全部上界时选最后一块。
+    // Select the first block whose bound is at least target; beyond all bounds, only the last block can contain it.
+    // 作用：选第一个上界不小于目标的主块；目标超过全部上界时选最后一块，保证下标有效。
     int ChooseBlock(int target) const
     {
         for (std::size_t block = 0; block < bounds.size(); block += 1)
@@ -83,7 +86,8 @@ class IsamFile
         return static_cast<int>(bounds.size()) - 1;
     }
 
-    // 作用：主块有空间按序插入；块满则追加到该块专属溢出链。
+    // The block is chosen before overflow is considered; a full block appends to its private chain, then bounds are rebuilt.
+    // 作用：先锁定主块；有空间就按序插入，块满则追加到该块专属溢出链，最后重建上界。
     void Insert(Record record)
     {
         int blockIndex = ChooseBlock(record.key);
@@ -133,7 +137,8 @@ class IsamFile
         RefreshBounds();
     }
 
-    // 作用：查主块与专属溢出链，分别统计两类读取。
+    // Scan the selected main block first; only a main-area miss follows that block's private overflow chain.
+    // 作用：先查主块，未命中再沿专属溢出链继续；主区与溢出节点分别计数。
     int Lookup(int target, bool &fromOverflow)
     {
         int blockIndex = ChooseBlock(target);

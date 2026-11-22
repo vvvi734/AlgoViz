@@ -7,7 +7,6 @@
  * 本文件是标准库对照版：重点看“库函数调用”与手写算法在接口、稳定性、边界上的差异。
  * This is the standard-library comparison file: focus on interface, stability and boundary differences from the hand-written algorithm.
  * 输入/输出：输入字符及其权值；构造哈夫曼树后输出每个字符的 0/1 编码；main 打印编码表。
- * 函数地图：先读 main 的调用顺序，再按需查看被调用的静态函数；每个函数前的“作用”注释给出职责、输入和返回。
 */
 
 // AlgoViz convenience implementation: Huffman tree with std::priority_queue.
@@ -86,8 +85,6 @@ void free_tree(Node *node)
     delete node;
 }
 
-// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
-// 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main()
 {
     std::vector<int> frequencies{5, 9, 12, 13, 16, 45};

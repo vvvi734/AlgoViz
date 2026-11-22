@@ -18,8 +18,6 @@ Run: python3 static_linked_list.py
 
 from __future__ import annotations
 
-# Follow cur from head; array order is not logical order.
-
 
 class StaticList:
     def __init__(self, capacity: int, values: list[int]) -> None:
@@ -39,6 +37,7 @@ class StaticList:
             self.cur[index] = index + 1 if index + 1 < capacity else None
         self.free_head = count if count < capacity else None
 
+    # Follow cur from head; array order is not logical order.
     def _order(self) -> list[int]:
         order: list[int] = []
         current = self.head

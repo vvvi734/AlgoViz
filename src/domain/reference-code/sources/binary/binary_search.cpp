@@ -5,7 +5,6 @@
  * 易错点：low/high 约定混用；mid 计算溢出；死循环（区间没有缩小）；把重复元素的第一个/最后一个位置混淆。
  * 复杂度：O(log n) 时间，O(1) 额外空间。
  * 输入/输出：输入有序整数数组与目标值；查找函数返回下标，未命中返回 -1；main 打印结果。
- * 函数地图：先读 main 的调用顺序，再按需查看被调用的静态函数；每个函数前的“作用”注释给出职责、输入和返回。
 */
 
 // AlgoViz reference implementation: binary search (C++17).
@@ -69,8 +68,6 @@ int binary_search_index(const std::vector<int> &values, int target)
     return -1;
 }
 
-// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
-// 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main()
 {
     const std::vector<int> sorted{1, 3, 5, 7, 9, 11, 13};

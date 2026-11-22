@@ -5,7 +5,6 @@
  * 易错点：把记录写进内部节点；叶分裂照搬 B 树把中间键整个移走；范围查询每次都从根重新开始。
  * 复杂度：点查找/插入 O(log_4 n)，范围查询 O(log_4 n + k)；空间 O(n)。
  * 输入/输出：输入唯一整数键、操作与范围上下界；main 打印叶链、点查找、插入与范围结果。
- * 函数地图：先读 main，再查看 split_leaf、split_internal、insert_rec、find_leaf、range_scan。
 */
 
 /*
@@ -107,6 +106,7 @@ static int contains(int target)
 
 // Purpose: Split a leaf 2/2, preserve the leaf chain, and promote the first key of the new right leaf.
 // 作用：把叶节点按 2/2 分裂，保持叶链，并提升新右叶的首键。
+// Failure path: `result` starts as {valid=1, right=-1}; if new_node fails this returns that unchanged, and callers do not reject right=-1, so exhausting the static pool can install an invalid separator. The teaching implementation records this limitation instead of changing insertion flow.
 static Split split_leaf(int node)
 {
     Split result = {1, 0, -1};
@@ -130,6 +130,8 @@ static Split split_leaf(int node)
 
 // Purpose: Split an internal node, promote and remove the middle separator, and move the right child range.
 // 作用：分裂内部节点，提升并移除中间分隔键，同时移动右半孩子范围。
+// The same failure convention applies here: a new_node failure still returns valid=1 and right=-1, and callers do not check it.
+// 同样的失败约定：new_node 失败时仍返回 valid=1、right=-1，调用方未检查。
 static Split split_internal(int node)
 {
     Split result = {1, 0, -1};

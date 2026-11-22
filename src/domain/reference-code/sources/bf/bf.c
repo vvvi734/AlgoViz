@@ -73,21 +73,18 @@ int bf_find_all(const char *text, const char *pattern, int *starts, int capacity
     int matches = 0;
     int candidate_count = n - m + 1;
 
-    // 外层只枚举合法起点；s 再大就会让 s + m - 1 越过主串末尾。
-    // Purpose: Enumerate legal starts only; a larger s would put s + m - 1 past the text end.
+    // Enumerate legal starts only: s <= n - m, otherwise s + m - 1 would pass the text end.
     for (int s = 0; s < candidate_count; ++s)
     {
         int j = 0;
 
-        // j 同时表示“已确认相等的前缀长度”和“下一个待比较的模式下标”。
-        // Purpose: j is both the confirmed prefix length and the next pattern index.
+        // j is both the confirmed prefix length and the next pattern index; text access is always s + j.
         while (j < m && text[s + j] == pattern[j])
         {
             ++j;
         }
 
-        // 内层自然结束时 j == m，表示 m 个字符全部相等，而不只是某一对相等。
-        // Purpose: j == m means all m characters matched, not just the last pair.
+        // j == m proves all m characters matched, not just the last pair.
         if (j == m)
         {
             if (matches == capacity)
@@ -98,8 +95,7 @@ int bf_find_all(const char *text, const char *pattern, int *starts, int capacity
             ++matches;
         }
 
-        // 这里不 break：一个起点成功后仍要检查 s + 1，才能保留重叠匹配。
-        // Purpose: No break here; checking s + 1 is what preserves overlapping matches.
+        // Do not break after a hit: advancing s is what preserves overlapping occurrences.
     }
 
     return matches;

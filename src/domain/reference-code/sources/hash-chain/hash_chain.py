@@ -31,7 +31,7 @@ class HashTable:
         return key % len(self._buckets)
 
     # Search the target bucket before appending; the chain holds only colliding keys.
-    # Each bucket owns a chain; inserting at the bucket head is O(1), and duplicates are rejected before allocation.
+    # Each bucket owns a list; a new key is appended to that bucket, and duplicates are rejected before append.
     # Purpose: Insert key into its bucket; return False if it already exists, otherwise append and return True.
     # 作用：把 key 插入对应桶；已存在返回 False，否则追加并返回 True。
     def insert(self, key: int) -> bool:

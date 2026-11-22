@@ -3,9 +3,8 @@
  * 阅读顺序：先看 key[]/in_mst[]；再看每次选最小 key 的顶点；最后看用它更新邻居的 key。
  * 关键不变量：已选顶点集合始终连成一棵树；key[v] 是 v 到该树的最小边权。
  * 易错点：没有跳过已选点；非连通图仍报成功；key 初始化成 0 而非 INF；更新条件写成小于等于。
- * 复杂度：邻接矩阵 O(V²)，堆 O(E log V)，空间 O(V+E)。
+ * 复杂度：邻接矩阵 O(V²)，堆 O(E log V)；辅助空间 O(V)，矩阵本身 O(V²)。
  * 输入/输出：输入无向带权图；输出选中的 MST 边与总权值；main 打印结果。
- * 函数地图：先读 main 的调用顺序，再按需查看被调用的静态函数；每个函数前的“作用”注释给出职责、输入和返回。
 */
 
 /*
@@ -46,6 +45,7 @@ void Prim(void)
     printf("mst edges:\n");
     for (int round = 0; round < VERTEX_COUNT; ++round)
     {
+        // Scanning every vertex to find the minimum key is why the matrix implementation is O(V^2).
         int best = -1;
         for (int vertex = 0; vertex < VERTEX_COUNT; ++vertex)
         {
@@ -66,6 +66,7 @@ void Prim(void)
         }
         for (int next = 0; next < VERTEX_COUNT; ++next)
         {
+            // Only an unselected vertex can still cross the cut; strict < keeps the first lightest edge.
             if (GRAPH[best][next] != 0 && !selected[next] && GRAPH[best][next] < key[next])
             {
                 key[next] = GRAPH[best][next];
@@ -76,8 +77,6 @@ void Prim(void)
     printf("total: %d\n", total);
 }
 
-// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
-// 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main(void)
 {
     Prim();

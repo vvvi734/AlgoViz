@@ -5,7 +5,6 @@
  * 易错点：内层边界写成 n 导致越界；每一轮都从 0 到 n-1 做无效比较；忘记提前退出只影响常数，不影响正确性。
  * 复杂度：最坏/平均 O(n²)，最好 O(n)（已有序且提前退出），原地 O(1)。
  * 输入/输出：输入 main 内置的整数数组；排序函数原地升序重排，无返回值；main 打印排序结果。
- * 函数地图：先读 main 的调用顺序，再按需查看被调用的静态函数；每个函数前的“作用”注释给出职责、输入和返回。
 */
 
 // AlgoViz reference implementation: bubble sort (C++17).
@@ -57,8 +56,6 @@ void bubble_sort(std::vector<int> &values)
     }
 }
 
-// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
-// 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main()
 {
     std::vector<int> values{5, 1, 4, 2, 8, 0, 3, 7, 6, 9};

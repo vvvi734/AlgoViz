@@ -5,7 +5,6 @@
  * 易错点：把朴素递归误认为 O(n)；n=0/1 边界；迭代时更新顺序写反覆盖旧值；结果溢出 int。
  * 复杂度：朴素递归 O(φⁿ) 时间、O(n) 栈；迭代 O(n) 时间、O(1) 空间。
  * 输入/输出：输入非负整数 n；返回第 n 个斐波那契数；main 打印结果并展示调用规模。
- * 函数地图：先读 main 的调用顺序，再按需查看被调用的静态函数；每个函数前的“作用”注释给出职责、输入和返回。
 */
 
 // AlgoViz reference implementation: naive Fibonacci.
@@ -33,8 +32,6 @@ unsigned long long fib(unsigned int n)
     return fib(n - 1U) + fib(n - 2U);
 }
 
-// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
-// 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main()
 {
     for (unsigned int n = 0U; n <= 10U; n += 1U)

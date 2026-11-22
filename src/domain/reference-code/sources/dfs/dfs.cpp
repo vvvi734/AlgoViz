@@ -4,8 +4,7 @@
  * 关键不变量：递归栈中保存的是当前根到当前结点的路径；已标记结点不会被再次展开。
  * 易错点：递归深度超过系统栈；无向图把父边当回边；只遍历一个分量；显式栈弹出顺序写反。
  * 复杂度：O(V+E) 时间，O(V) 额外空间（递归深度可达 V）。
- * 输入/输出：输入邻接表与起点；返回/打印 DFS 访问顺序；递归实现不修改图。
- * 函数地图：先读 main 的调用顺序，再按需查看被调用的静态函数；每个函数前的“作用”注释给出职责、输入和返回。
+ * 输入/输出：输入邻接表与起点；函数只打印 DFS 访问顺序，不返回数组；递归实现不修改图。
 */
 
 // AlgoViz reference implementation: depth-first search (C++17).
@@ -51,8 +50,6 @@ void dfs(const std::vector<std::vector<int>> &graph, int start)
     std::cout << '\n';
 }
 
-// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
-// 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main()
 {
     std::vector<std::vector<int>> graph(6);

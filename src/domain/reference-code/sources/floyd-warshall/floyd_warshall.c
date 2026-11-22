@@ -5,7 +5,6 @@
  * 易错点：把 k 放到内层；INF 相加溢出；无向边只填一个方向；负环仍当作有效结果。
  * 复杂度：O(V³) 时间，O(V²) 空间。
  * 输入/输出：输入邻接矩阵；原地更新为全源最短路径；main 打印最终矩阵。
- * 函数地图：先读 main 的调用顺序，再按需查看被调用的静态函数；每个函数前的“作用”注释给出职责、输入和返回。
 */
 
 /*
@@ -43,8 +42,6 @@ void FloydWarshall(int distance[VERTEX_COUNT][VERTEX_COUNT])
     }
 }
 
-// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
-// 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main(void)
 {
     int distance[VERTEX_COUNT][VERTEX_COUNT] = {

@@ -3,9 +3,8 @@
  * 阅读顺序：先看 dist/visited 初始化；再看待确定集合的最小值；最后看为什么一旦确定就不再改。
  * 关键不变量：已确定结点的 dist 是最终最短路；候选 dist 是经过已确定结点的一条路径长度。
  * 易错点：负权边下使用 Dijkstra；忘记跳过已确定点；多重边没有取最小；INF 溢出。
- * 复杂度：邻接矩阵 O(V²)，二叉堆 O((V+E)log V)，空间 O(V+E)。
- * 输入/输出：输入非负权邻接表与源点；返回最短距离和前驱；main 打印距离与一条路径。
- * 函数地图：先读 main 的调用顺序，再按需查看被调用的静态函数；每个函数前的“作用”注释给出职责、输入和返回。
+ * 复杂度：邻接矩阵 O(V²)，二叉堆 O((V+E)log V)；辅助空间 O(V)，矩阵本身 O(V²)。
+ * 输入/输出：输入非负权邻接矩阵与源点；函数计算并打印最短距离和一条前驱路径，不返回结果数组。
 */
 
 /*
@@ -27,8 +26,8 @@ static const int GRAPH[VERTEX_COUNT][VERTEX_COUNT] = {
     {0, 15, 11, 0, 6, 0}, {0, 0, 0, 6, 0, 9},   {14, 0, 2, 0, 9, 0},
 };
 
-// Purpose: Follow previous[] backward to print the path from source to vertex; read-only.
-// 作用：递归回溯 previous[]，打印 source 到 vertex 的路径；只读。
+// Purpose: Walk previous[] backward to collect the path, then print it in source-to-target order; read-only.
+// 作用：沿 previous[] 反向收集路径，再按源点到目标点的顺序打印；只读。
 static void PrintPath(const int previous[], int vertex)
 {
     int path[VERTEX_COUNT];
@@ -60,6 +59,7 @@ void Dijkstra(int source)
 
     for (int round = 0; round < VERTEX_COUNT; ++round)
     {
+        // This linear scan is why the matrix implementation costs O(V^2); a heap would avoid rescanning all vertices.
         int best = -1;
         for (int vertex = 0; vertex < VERTEX_COUNT; ++vertex)
         {
@@ -101,8 +101,6 @@ void Dijkstra(int source)
     }
 }
 
-// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
-// 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main(void)
 {
     Dijkstra(0);

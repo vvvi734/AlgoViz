@@ -52,8 +52,8 @@ typedef struct
     int overflowReads;
 } IsamFile;
 
-// Purpose: Insert one record into a sorted fixed array.
-// 作用：在有序定长数组中按关键字插入一条记录，保持块内顺序。
+// Fill the first free slot only after shifting larger keys right, so no sorted record is overwritten.
+// 作用：在有序定长数组中按关键字插入一条记录；只右移严格更大的键，保持块内顺序且不覆盖有效项。
 static int InsertSorted(Record *records, int *length, int capacity, Record record)
 {
     if (*length >= capacity)
@@ -71,8 +71,8 @@ static int InsertSorted(Record *records, int *length, int capacity, Record recor
     return 1;
 }
 
-// Purpose: Recompute a block's true maximum including its overflow chain.
-// 作用：计算主块与全部溢出节点的真实最大键；索引上界不能凭空取新插入值。
+// The main block alone is not enough: an overflow record may be the true maximum, so the chain must be scanned.
+// 作用：计算主块与全部溢出节点的真实最大键；索引上界不能只取主块末项，也不能凭空取新插入值。
 static int BlockMaximum(const IsamFile *file, int blockIndex)
 {
     int maximum = file->blocks[blockIndex].records[file->blocks[blockIndex].length - 1].key;
@@ -92,9 +92,8 @@ static int BlockMaximum(const IsamFile *file, int blockIndex)
     return maximum;
 }
 
-// Purpose: Choose the first block whose bound is not below the target; if the
-// target exceeds every bound, choose the last block.
-// 作用：按上界选择主块；目标超过所有上界时落到最后一块，保证有确定检查点。
+// Return the first block whose maximum is at least target; beyond every bound, the last block is the only candidate.
+// 作用：按上界选择第一个“最大值不低于目标”的主块；目标超过所有上界时落到最后一块，避免越界且有确定检查点。
 static int ChooseBlock(const IsamFile *file, int target)
 {
     for (int block = 0; block < file->blockCount; block += 1)
@@ -107,8 +106,8 @@ static int ChooseBlock(const IsamFile *file, int target)
     return file->blockCount - 1;
 }
 
-// Purpose: Maintain the index after an insertion changed a block's maximum.
-// 作用：插入后刷新索引上界；只在实际最大键变化时更新。
+// Recompute every bound after a mutation because an overflow append can change the block's maximum.
+// 作用：插入后重算每个块的索引上界；溢出链也可能改变最大键，不能只更新被插入的主块。
 static void RefreshBounds(IsamFile *file)
 {
     for (int block = 0; block < file->blockCount; block += 1)
@@ -117,8 +116,8 @@ static void RefreshBounds(IsamFile *file)
     }
 }
 
-// Purpose: Look up a key through the main block and its private overflow chain.
-// 作用：查找主块，未命中再沿专属溢出链继续，分别统计主区与溢出读取。
+// Check the selected main block first; only a main-area miss follows that block's private overflow chain.
+// 作用：先扫选中的主块，未命中再沿该块专属溢出链继续；主区与溢出读取分别计数。
 static int Lookup(IsamFile *file, int target, int *isOverflow)
 {
     int blockIndex = ChooseBlock(file, target);
@@ -156,9 +155,8 @@ static int Lookup(IsamFile *file, int target, int *isOverflow)
     return -1;
 }
 
-// Purpose: Insert a record into the main block, or append it to that block's
-// overflow chain when the main block is full.
-// 作用：主块有空间按序插入；否则追加到该块专属溢出链，必要时新建节点。
+// The chosen block is fixed before overflow is considered; a full block appends to its own chain and then the index is refreshed.
+// 作用：先按上界锁定主块；主块有空间按序插入，否则追加到该块专属溢出链，最后刷新真实上界。
 static void Insert(IsamFile *file, Record record)
 {
     int blockIndex = ChooseBlock(file, record.key);

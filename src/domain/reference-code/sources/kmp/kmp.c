@@ -5,7 +5,6 @@
  * 易错点：把 next[t] 说成 pattern[0..t] 的 border；把“回退位置”和“长度”混用；空模式串按匹配处理；下标从 0/1 混用。
  * 复杂度：预处理 O(m)，匹配 O(n)，总 O(n+m)，空间 O(m)。
  * 输入/输出：输入主串与非空模式串；返回全部 0 基匹配起点或匹配次数；main 打印结果。
- * 函数地图：先读 main 的调用顺序，再按需查看被调用的静态函数；每个函数前的“作用”注释给出职责、输入和返回。
 */
 
 /*
@@ -101,8 +100,6 @@ int KMP(const char *text, const char *pattern)
     return matches;
 }
 
-// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
-// 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main(void)
 {
     const char *text = "ababcabcacbab";

@@ -5,7 +5,6 @@
  * 易错点：同指数相加为 0 仍保留结点；指针提前移动丢失后继；结果链表尾插未更新尾指针；释放了仍在使用的结点。
  * 复杂度：O(m+n) 时间，O(1) 额外空间（复用原结点时）。
  * 输入/输出：输入两个按指数降序排列的稀疏多项式链；返回新链，输入不变；main 打印和式。
- * 函数地图：先读 main 的调用顺序，再按需查看被调用的静态函数；每个函数前的“作用”注释给出职责、输入和返回。
 */
 
 // Univariate polynomial addition — independent C++ teaching implementation.
@@ -159,8 +158,6 @@ class Polynomial
     Node *tail_ = nullptr;
 };
 
-// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
-// 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main()
 {
     Polynomial a;

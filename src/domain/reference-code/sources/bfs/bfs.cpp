@@ -4,8 +4,7 @@
  * 关键不变量：队列中的结点按距离非降排列；每个结点最多入队一次。
  * 易错点：出队才标记导致重复入队；把队列写成栈；忽略不连通分量。
  * 复杂度：邻接表 O(V+E) 时间，O(V) 额外空间。
- * 输入/输出：输入 main 内置的邻接表与起点；返回/打印从起点可达顶点的 BFS 顺序。
- * 函数地图：先读 main 的调用顺序，再按需查看被调用的静态函数；每个函数前的“作用”注释给出职责、输入和返回。
+ * 输入/输出：输入 main 内置的邻接表与起点；函数只打印从起点可达顶点的 BFS 顺序，不返回数组。
 */
 
 // AlgoViz reference implementation: breadth-first search (C++17).
@@ -56,8 +55,6 @@ void bfs(const std::vector<std::vector<int>> &graph, int start)
     std::cout << '\n';
 }
 
-// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
-// 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main()
 {
     std::vector<std::vector<int>> graph(6);

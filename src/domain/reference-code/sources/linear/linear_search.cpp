@@ -5,7 +5,6 @@
  * 易错点：返回 0 当作未找到与真实下标 0 混淆；越界；哨兵值覆盖原数据；重复元素返回哪一个不明确。
  * 复杂度：O(n) 时间，O(1) 空间。
  * 输入/输出：输入整数数组与目标值；返回首个匹配下标或 -1；main 打印命中/未命中。
- * 函数地图：先读 main 的调用顺序，再按需查看被调用的静态函数；每个函数前的“作用”注释给出职责、输入和返回。
 */
 
 // AlgoViz reference implementation: linear search (C++17).
@@ -38,8 +37,6 @@ int linear_search(const std::vector<int> &values, int target)
     return -1;
 }
 
-// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
-// 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main()
 {
     std::vector<int> values{4, 7, 2, 9, 1, 5};

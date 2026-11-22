@@ -13,6 +13,7 @@
 """
 
 
+# The tuple key falls back to input position, so equal values preserve their original order.
 def comes_before(left, right):
     return (left["value"], left["original_index"]) < (right["value"], right["original_index"])
 
@@ -53,8 +54,7 @@ def replacement_selection(values, capacity):
                 incoming = records[input_index]
                 input_index += 1
                 empty["item"] = incoming
-                # A key below the last output cannot preserve the current run's
-                # order, so it is frozen until the run closes.
+                # Equality is eligible: only a key below last_output would break the current run's sorted order.
                 empty["state"] = (
                     "eligible"
                     if last_output is None or incoming["value"] >= last_output
@@ -75,6 +75,7 @@ def replacement_selection(values, capacity):
             if input_index >= len(records):
                 break
             raise ValueError("remaining input without a resident record")
+        # A new run has no threshold; keeping the previous last_output would freeze records that are now valid.
         last_output = None
 
     for run in runs:

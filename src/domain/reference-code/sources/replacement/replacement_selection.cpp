@@ -39,6 +39,7 @@ struct Slot
     SlotState state = EMPTY;
 };
 
+// The originalIndex tie-break keeps equal keys in stable input order.
 static bool comes_before(const Item &left, const Item &right)
 {
     if (left.value != right.value)
@@ -134,6 +135,7 @@ static std::vector<std::vector<Item>> replacement_selection(const std::vector<It
             }
             throw "remaining input without a resident record";
         }
+        // A new run starts with no threshold; carrying lastOutput forward would freeze smaller keys incorrectly.
         hasLastOutput = false;
     }
 

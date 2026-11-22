@@ -5,7 +5,6 @@
  * 易错点：只改 next 不改 prev；删除尾结点不更新 tail；头尾边界空指针；释放后仍访问旧结点。
  * 复杂度：已知位置插删 O(1)，查找 O(n)，空间 O(n)（每结点多一个指针）。
  * 输入/输出：输入 main 内置的演示操作序列；结构函数原地改 prev/next，返回成功/元素；main 双向打印。
- * 函数地图：先读 main 的调用顺序，再按需查看被调用的静态函数；每个函数前的“作用”注释给出职责、输入和返回。
 */
 
 // AlgoViz reference implementation: doubly linked list (C++17).
@@ -35,8 +34,14 @@ class DoublyList
         std::unique_ptr<Node> next;
     };
 
-    // Purpose: Destructor: release every dynamic node, restore null head/tail and zero length, and save next before freeing each node.
-    // 作用：析构：释放容器中所有动态结点，并把头尾指针和长度恢复为空状态；先保存 next 再释放当前结点。
+    /*
+     * Ownership follows `head_->next`: repeatedly moving the next pointer into
+     * `head_` releases the previous head. No `length` is stored. The loop ends when
+     * `head_` becomes null; `tail_` is a non-owning observer and is not used after
+     * the object is destroyed.
+     */
+    // Purpose: Release the owning chain from the head; no count field is involved.
+    // 作用：从 head 沿 unique_ptr 链释放全部结点；本类没有 length，tail_ 不参与所有权。
     ~DoublyList()
     {
         while (head_)
@@ -45,9 +50,15 @@ class DoublyList
         }
     }
 
-    // Append wires prev and next first; only then does tail move to the new node.
-    // Purpose: Append value at the doubly linked-list tail while maintaining prev, next, tail and length.
-    // 作用：在双向链表尾部追加 value，同时维护 prev、next、tail 和 length。
+    /*
+     * `make_unique` establishes ownership before the node is linked; failure is
+     * reported by an exception, not by a null return. `raw` preserves the address
+     * because moving the unique_ptr into the old tail transfers ownership. For an
+     * empty list there is no old tail, so `head_` receives the node instead. The
+     * new links exist before `tail_` is moved, keeping prev/next symmetric.
+     */
+    // Purpose: Link a new owned node after the old tail, then publish it as tail_.
+    // 作用：先把新结点接入链并保持 prev/next 对称，最后再更新 tail_。
     Node *append(int value)
     {
         auto node = std::make_unique<Node>();
@@ -67,8 +78,19 @@ class DoublyList
     }
 
     // Removal repairs both `prev` and `next`; removing the head or tail must also update the external head/tail pointer.
-    // Purpose: Remove a known node by reconnecting its predecessor and successor before freeing it; handle head and tail boundaries.
-    // 作用：删除已知结点：让前驱与后继互相接回，再释放结点；注意头尾边界。
+    /*
+     * The local `next` takes ownership of the successor before the predecessor is
+     * rewired, so the rest of the list survives. Replacing `node->prev->next` (or
+     * `head_`) releases the old owner and therefore deletes `node` during that
+     * assignment. The subsequent `tail_ == node` check and `tail_ = node->prev`
+     * therefore touch a node that may already be freed when the removed node is the
+     * tail or the only node. This ordering is a known implementation risk recorded
+     * in the audit, not a pattern to copy; a safe version would capture `prev` and
+     * tail membership before releasing the owner. The demo removes a middle node,
+     * so it does not execute the dangling-tail path.
+     */
+    // Purpose: Remove a known node by reconnecting its neighbours with unique_ptr ownership.
+    // 作用：用 unique_ptr 转移所有权接回前驱/后继；尾结点删除顺序存在已登记的释放后访问风险。
     void remove(Node *node)
     {
         std::unique_ptr<Node> next = std::move(node->next);
@@ -116,8 +138,6 @@ class DoublyList
     Node *tail_ = nullptr;
 };
 
-// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
-// 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main()
 {
     DoublyList list;

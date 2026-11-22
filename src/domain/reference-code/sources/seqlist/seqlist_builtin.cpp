@@ -1,13 +1,12 @@
 /*
- * 中文导读：用连续数组和 length 保存线性表，随机访问 O(1)，中间插入删除要搬移元素。
- * 阅读顺序：先看 data/length/capacity；再看下标合法性检查；最后看插入时从后往前搬、删除时从前往后搬。
- * 关键不变量：有效元素在 data[0..length)，length <= capacity；下标 i 的合法范围由 length 决定。
- * 易错点：把 capacity 当 length；插入从前往后搬覆盖数据；删除漏搬最后一个；length 与搬移顺序不同步。
- * 复杂度：访问 O(1)，按位置插删 O(n)，空间 O(capacity)。
+ * 中文导读：本文件用 std::vector 作标准库对照；连续存储带来 O(1) 下标访问，中间插删由库搬移元素。
+ * 阅读顺序：先看 push_back；再看 insert/erase；最后核对 size 与下标范围。
+ * 关键不变量：元素在连续存储中；size 是有效元素数；capacity 不等于 size。
+ * 易错点：把 capacity 当 size；insert/erase 后继续使用失效迭代器；下标越界。
+ * 复杂度：下标访问 O(1)，中间插删 O(n)，push_back 均摊 O(1)，空间 O(n)。
  * 本文件是标准库对照版：重点看“库函数调用”与手写算法在接口、稳定性、边界上的差异。
  * This is the standard-library comparison file: focus on interface, stability and boundary differences from the hand-written algorithm.
- * 输入/输出：输入容量与演示操作序列；插入/删除返回成功，查找返回下标；main 打印表内容。
- * 函数地图：先读 main 的调用顺序，再按需查看被调用的静态函数；每个函数前的“作用”注释给出职责、输入和返回。
+ * 输入/输出：输入演示操作序列；main 插入、删除、按下标访问并打印表内容。
 */
 
 // AlgoViz convenience implementation: sequential list with std::vector.
@@ -37,8 +36,6 @@ template <typename T> void print(const std::vector<T> &values)
     std::cout << '\n';
 }
 
-// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
-// 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main()
 {
     // `std::vector::insert/erase` shift later elements and may invalidate iterators after the edit.

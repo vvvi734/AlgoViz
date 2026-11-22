@@ -52,6 +52,7 @@ def main() -> None:
     print("mst edges:")
     while candidates:
         weight, vertex = heapq.heappop(candidates)
+        # A vertex may be pushed once per incident edge; the selected check discards stale, heavier entries.
         if selected[vertex]:
             continue
         selected[vertex] = True

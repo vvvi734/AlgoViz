@@ -1,25 +1,24 @@
 /*
  * 中文导读：让尾结点的 next 指回头结点，使“从任意结点出发都能绕一圈”。
- * 阅读顺序：先看 tail/head 的指向；再看插入/删除如何维护环；最后看遍历为什么必须用 do-while 或记录起点。
- * 关键不变量：最后一个结点的 next 永远指回第一个结点；空表时指针关系要单独定义。
- * 易错点：用 while(p != NULL) 遍历环导致死循环；删除时没有更新前驱/尾指针；空表和非空表分支不一致。
- * 复杂度：已知位置插入/删除 O(1)，查找 O(n)，空间 O(n)。
- * 输入/输出：输入 main 内置的演示操作序列；结构函数原地改链并返回成功/元素；main 打印遍历结果。
- * 函数地图：先读 main 的调用顺序，再按需查看被调用的静态函数；每个函数前的“作用”注释给出职责、输入和返回。
+ * 阅读顺序：先看 head_/tail_ 如何表示空表；再看 append 的两条链接顺序；最后看析构函数如何安全释放整圈。
+ * 关键不变量：tail_ 非空时 tail_->next == head_；空表时 head_ == tail_ == nullptr；类中没有 length 字段。
+ * 易错点：把空表当成“有一个结点”而漏掉 head_ 赋值；先移动 tail_ 再连边导致环断裂；用 while (node != nullptr) 遍历造成死循环。
+ * 复杂度：append 为 O(1)，遍历 O(n)，析构 O(n)，额外空间 O(n)。
+ * 输入/输出：main 依次追加 1、2、3；append 返回是否分配成功，print 只读输出，异常路径返回非零退出码。
 */
 
 // AlgoViz reference implementation: circular singly linked list (C++17).
-// The tail node links back to the head, so traversal stops when it returns.
+// The tail node links back to the head, so a non-empty list has no nullptr terminator.
 //
 // Reading guide:
-// 1. The list keeps a tail pointer and tail->next points back to the head.
-// 2. Appending inserts after tail and moves tail to the new node.
-// 3. Traversal starts at head and stops when it returns to head; an empty list has
-//    tail == NULL.
+// 1. The class stores only `head_` and `tail_`; an empty list has both null. It
+//    intentionally has no `length_` member.
+// 2. `new (std::nothrow)` makes allocation failure observable as `false`. The first
+//    node self-links; later nodes are linked before `tail_` moves.
+// 3. Traversal and destruction stop by comparing with `head_`/`tail_`, never by
+//    waiting for nullptr. Destruction saves `next` before `delete`.
 //
-// Complexity: O(1) append, O(n) traversal; extra space O(n).
-// Convention: There is no NULL terminator inside a non-empty list; emptiness is tail
-//   == NULL.
+// Complexity: O(1) append, O(n) traversal and destruction; extra space O(n).
 
 #include <iostream>
 #include <new>
@@ -33,17 +32,30 @@ class CircularList
         Node *next = nullptr;
     };
 
-    // Purpose: Destructor: release every dynamic node, restore null head/tail and zero length, and save next before freeing each node.
-    // 作用：析构：释放容器中所有动态结点，并把头尾指针和长度恢复为空状态；先保存 next 再释放当前结点。
+    /*
+     * The destructor delegates to `clear` so normal cleanup and explicit clearing
+     * follow one code path. A ring never reaches nullptr, so `clear` must stop at
+     * `tail_`; saving `next` first is required because `delete node` invalidates
+     * the node's own link.
+     */
+    // Purpose: Release the whole ring through one shared cleanup path.
+    // 作用：析构时统一走 clear 的释放路径；本类只维护 head_/tail_，没有 length 需要复位。
     ~CircularList()
     {
         clear();
     }
 
-    // New node points at head; the old tail points at the new node, preserving the ring.
     // The tail's `next` points back to `head`, so traversal stops after returning to head, not at NULL.
-    // Purpose: Append value at the circular-list tail while maintaining tail and the closing link.
-    // 作用：在循环链表尾部追加 value，并维护 tail 与环的闭合关系。
+    /*
+     * `new (std::nothrow)` turns allocation failure into a null pointer instead of
+     * throwing, so `append` can return false without changing the existing ring.
+     * For the first node, `next` points to itself and `head_` must be set. For later
+     * nodes, both links are established before `tail_` moves; moving `tail_` first
+     * would lose the only pointer to the old tail.
+     *
+     * Purpose: Append one value and preserve the ring's closing link.
+     * 作用：在尾部追加一个值，并保持尾结点指回头结点；失败时原链表不变。
+     */
     bool append(int value)
     {
         Node *node = new (std::nothrow) Node{value, nullptr};
@@ -65,8 +77,13 @@ class CircularList
         return true;
     }
 
-    // Purpose: Traverse and print the current structure without modifying data, so each step can be checked.
-    // 作用：只读遍历并输出当前结构；不会修改数据，适合在每一步后核对状态。
+    /*
+     * A non-empty ring has no nullptr node, so traversal cannot wait for nullptr.
+     * The empty case is handled first; do-while prints `head_` before advancing; the
+     * comparison with `head_` after advancing detects a complete lap.
+     */
+    // Purpose: Print one full lap without mutating the ring.
+    // 作用：只读打印一整圈；回到 head_ 时停止。
     void print() const
     {
         if (!head_)
@@ -91,8 +108,15 @@ class CircularList
     }
 
   private:
-    // Purpose: Clear the container, release every dynamic node, and restore null head/tail and zero length.
-    // 作用：清空容器并释放所有动态结点，把头尾指针和长度恢复为空状态。
+    /*
+     * `tail_` is the exit marker: following links until `head_` would cycle forever.
+     * The loop therefore frees every node before the tail, saves each successor
+     * before `delete`, then frees the tail separately. A one-node ring skips the
+     * loop and still reaches the final delete. Both endpoints become null, which is
+     * this class's complete empty state.
+     */
+    // Purpose: Free every node once and restore the two-pointer empty state.
+    // 作用：每个结点只释放一次并恢复空表；释放前保存 next，最后清空 head_/tail_。
     void clear()
     {
         if (!head_)
@@ -115,8 +139,12 @@ class CircularList
     Node *tail_ = nullptr;
 };
 
-// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
-// 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
+/*
+ * Each append can fail independently. Returning immediately keeps the demo honest:
+ * no later operation assumes a node that was never allocated. Because the
+ * destructor runs when `list` leaves scope, earlier successful nodes are still
+ * released on an early return. The tail check runs only after all three appends.
+ */
 int main()
 {
     CircularList list;

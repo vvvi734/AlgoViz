@@ -64,7 +64,7 @@ static void SortRecords(Record *records, int count)
 }
 
 // Purpose: Split sorted records into fixed-capacity data blocks.
-// 作用：把有序记录按块容量切块；块号就是索引项要保存的真实地址。
+// 作用：把有序记录按块容量切块；块号就是索引项要保存的真实地址；块内顺序由排序保证。
 static int BuildBlocks(const Record *records, int count, DataBlock *blocks)
 {
     int blockCount = 0;
@@ -85,9 +85,9 @@ static int BuildBlocks(const Record *records, int count, DataBlock *blocks)
     return blockCount;
 }
 
-// Purpose: Build a dense index (one record per entry) or a sparse index
-// (one upper bound per block). 作用：稠密索引每记录一项；稀疏索引每块一项，
-// 使用该块最后一条记录的关键字作为上界。
+// Dense emits one entry per record; sparse emits each block's last key as an upper bound, not the next block's first key.
+// Purpose: Build a dense index (one record per entry) or a sparse index (one upper bound per block).
+// 作用：稠密索引每记录一项；稀疏索引每块一项，使用该块最后一条记录的关键字作为上界。
 static int BuildIndex(const DataBlock *blocks, int blockCount, int dense, IndexEntry *index)
 {
     int count = 0;
@@ -112,8 +112,10 @@ static int BuildIndex(const DataBlock *blocks, int blockCount, int dense, IndexE
     return count;
 }
 
+// Choose the last entry not greater than target: a sparse bound belongs to the block whose maximum it is.
+// A miss still reads the selected block once, so success and failure are measured with the same I/O unit.
 // Purpose: Probe entries, read exactly one block, and compare records inside.
-// 作用：逐项检查索引，选不大于目标的最后一项；读一个数据块并在块内比较。
+// 作用：逐项检查索引，选不大于目标的最后一项；读一个数据块并在块内比较；失败同样计一次块读取。
 static int Lookup(const DataBlock *blocks, const IndexEntry *index, int entryCount, int target, IoCounters *io)
 {
     int chosen = 0;

@@ -1,11 +1,10 @@
 /*
- * 中文导读：冲突时在表内继续探测空位；本文件使用线性探测并处理删除墓碑。
- * 阅读顺序：先看 EMPTY/OCCUPIED/DELETED 三种槽状态；再看 insert 如何从 hash 开始找空位；最后看 search 何时可以停止。
- * 关键不变量：查找路径上若目标存在，一定在第一个 EMPTY 之前被看到；DELETED 不能被当成空位截断查找。
+ * 中文导读：冲突时在表内继续探测空位；本文件使用线性探测，但教学版本不实现删除，因此没有墓碑状态。
+ * 阅读顺序：先看 EMPTY 与“非空键值”两种槽状态；再看 insert 如何从 hash 开始找空位；最后看 search 为何遇到 EMPTY 才停止。
+ * 关键不变量：查找路径上若目标存在，一定在第一个 EMPTY 之前被看到；本版本不删除，EMPTY 是唯一终止标记。
  * 易错点：删除直接置 EMPTY 截断后续查找；表满死循环；负载因子过高；负哈希下标。
  * 复杂度：平均 O(1)，最坏 O(n)；空间 O(capacity)。
  * 输入/输出：输入非负整数 key 的插入/查找序列；操作返回布尔；main 打印槽的空/占用状态。
- * 函数地图：先读 main 的调用顺序，再按需查看被调用的静态函数；每个函数前的“作用”注释给出职责、输入和返回。
 */
 
 // AlgoViz reference implementation: linear probing hash table (C++17).
@@ -58,8 +57,8 @@ class HashTable
         return false;
     }
 
-    // Purpose: Linear-probe from the initial slot and stop at EMPTY; a DELETED slot must not end the search.
-    // 作用：从初始槽位线性探测；遇到 EMPTY 停止，DELETED 不能截断查找。
+    // Purpose: Linear-probe from the initial slot and stop at EMPTY; without deletion, EMPTY alone proves absence.
+    // 作用：从初始槽位线性探测，遇到 EMPTY 停止；本版本没有删除，EMPTY 足以证明不存在。
     bool contains(int key) const
     {
         std::size_t start = hash_index(key);
@@ -78,8 +77,8 @@ class HashTable
         return false;
     }
 
-    // Purpose: Print each slot's state (empty, occupied or tombstone) and key; read-only.
-    // 作用：输出每个槽的状态（空/占用/墓碑）和键值；只读。
+    // Purpose: Print each slot as empty or occupied with its key; read-only.
+    // 作用：输出每个槽是空还是占用及其键值；只读。
     void print() const
     {
         for (std::size_t i = 0; i < slots_.size(); ++i)
@@ -111,8 +110,6 @@ class HashTable
     std::vector<int> slots_;
 };
 
-// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
-// 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main()
 {
     HashTable table(11);

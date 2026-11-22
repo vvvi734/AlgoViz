@@ -5,7 +5,6 @@
  * 易错点：缺少 base case；n 为负数未定义；把递归写成循环却忘了累乘；递归深度过大导致栈溢出。
  * 复杂度：时间 O(n)，递归栈空间 O(n)。
  * 输入/输出：输入非负整数 n；返回 n!；负数拒绝；main 打印递归结果。
- * 函数地图：先读 main 的调用顺序，再按需查看被调用的静态函数；每个函数前的“作用”注释给出职责、输入和返回。
 */
 
 // AlgoViz reference implementation: factorial (C++17).
@@ -35,8 +34,6 @@ std::uint64_t factorial(unsigned int number)
     return static_cast<std::uint64_t>(number) * factorial(number - 1U);
 }
 
-// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
-// 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main()
 {
     std::cout << "5! = " << factorial(5U) << '\n';

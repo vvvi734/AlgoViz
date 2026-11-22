@@ -76,6 +76,7 @@ static std::vector<Record> multiway_merge(std::vector<InputRun> runs, int buffer
         refill(run, blockSize, bufferCapacity, readBlocks);
     }
 
+    // Only buffer.front() of each run is a candidate; unread records behind the FIFO window are not compared.
     while (true)
     {
         int winnerRun = -1;

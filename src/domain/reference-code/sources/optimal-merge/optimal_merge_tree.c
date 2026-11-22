@@ -61,6 +61,7 @@ static int BuildOptimalMergeTree(const int *weights, int segmentCount, int k, No
 {
     int nodeCount = 0;
     int realCount = segmentCount;
+    // The forest must end with one root, so pad with d zero-weight leaves; they change shape, never the total weight.
     int missing = ((k - 1) - ((segmentCount - 1) % (k - 1))) % (k - 1);
     int totalLeaves = realCount + missing;
 
@@ -90,6 +91,7 @@ static int BuildOptimalMergeTree(const int *weights, int segmentCount, int k, No
         roots[rootCount++] = node;
     }
 
+    // Each internal weight is paid once in the schedule, so total cost is their sum, not the root weight alone.
     int totalCost = 0;
     int internalCount = 0;
     while (rootCount > 1)

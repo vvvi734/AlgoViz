@@ -4,8 +4,7 @@
  * 关键不变量：第一遍完成时间最晚的结点属于源分量；在反向图上从它出发只能到达同一强连通分量。
  * 易错点：忘记反向图；完成顺序存成进入顺序；递归深度溢出；把弱连通分量当强连通。
  * 复杂度：O(V+E) 时间，O(V+E) 空间。
- * 输入/输出：输入有向图邻接表；返回每个强连通分量的顶点集合；main 打印 SCC。
- * 函数地图：先读 main 的调用顺序，再按需查看被调用的静态函数；每个函数前的“作用”注释给出职责、输入和返回。
+ * 输入/输出：输入有向图邻接表；按 Kosaraju 顺序打印每个强连通分量；main 打印 SCC 与总数。
 */
 
 // AlgoViz reference implementation: strongly connected components (Kosaraju).
@@ -28,9 +27,9 @@
 #include <utility>
 #include <vector>
 
-// First pass records finish order; the reverse graph is then explored in decreasing finish order to isolate SCCs.
-// Purpose: First DFS pass: record each finish time while position increases, producing the reverse finish order.
-// 作用：第一遍 DFS：记录每个结点的完成时间；position 递增，最后得到逆完成顺序。
+// First pass appends a vertex only after all its outgoing neighbours are finished; the second pass reads this order backwards.
+// Purpose: First DFS pass: append each vertex after its DFS subtree finishes, producing increasing finish order.
+// 作用：第一遍 DFS：记录每个结点的完成时间；position 递增，得到递增的完成顺序，第二遍再从尾部倒着读。
 void first_pass(const std::vector<std::vector<int>> &graph, int vertex, std::vector<bool> &visited,
                 std::vector<int> &order)
 {
@@ -61,8 +60,6 @@ void collect(const std::vector<std::vector<int>> &reverse_graph, int vertex,
     }
 }
 
-// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
-// 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main()
 {
     std::vector<std::pair<int, int>> edges{{0, 1}, {1, 2}, {2, 0}, {2, 3}, {3, 4}, {4, 5}, {5, 3}};

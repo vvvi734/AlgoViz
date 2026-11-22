@@ -5,7 +5,6 @@
  * 易错点：删除头结点不更新桶指针；哈希为负未取模；扩容后没有重新散列；比较键时只比哈希值。
  * 复杂度：平均 O(1)，最坏 O(n)（全部冲突）；空间 O(n+buckets)。
  * 输入/输出：输入非负整数 key 的插入/查找/删除序列；操作返回布尔或值；main 打印桶链状态。
- * 函数地图：先读 main 的调用顺序，再按需查看被调用的静态函数；每个函数前的“作用”注释给出职责、输入和返回。
 */
 
 // AlgoViz reference implementation: hash table with chained buckets (C++17).
@@ -28,9 +27,9 @@ class HashTable
 {
   public:
     // Search the target bucket before appending; the chain holds only colliding keys.
-    // Each bucket owns a chain; inserting at the bucket head is O(1), and duplicates are rejected before allocation.
-    // Purpose: Insert at the bucket head after checking for duplicates; return false for an existing key.
-    // 作用：头插到对应桶；先查重，重复键返回 false。
+    // Each bucket owns a vector-backed chain; a new key is appended, and duplicates are rejected before push_back.
+    // Purpose: Append a new key after checking for duplicates; return false for an existing key.
+    // 作用：查重后把新键追加到桶尾；重复键返回 false。
     bool insert(int key)
     {
         std::size_t index = hash_index(key);
@@ -88,8 +87,6 @@ class HashTable
     std::vector<std::vector<int>> buckets_ = std::vector<std::vector<int>>(7);
 };
 
-// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
-// 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main()
 {
     HashTable table;

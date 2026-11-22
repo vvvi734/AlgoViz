@@ -54,6 +54,7 @@ static bool root_comes_before(const std::vector<Node> &nodes, int left, int righ
 static int build_optimal_merge_tree(const std::vector<int> &weights, int k, std::vector<Node> &nodes)
 {
     const int realCount = static_cast<int>(weights.size());
+    // The forest must end with one root, so pad with d zero-weight leaves; they change shape, never the total weight.
     const int missing = ((k - 1) - ((realCount - 1) % (k - 1))) % (k - 1);
 
     for (int index = 0; index < realCount; ++index)
@@ -78,6 +79,7 @@ static int build_optimal_merge_tree(const std::vector<int> &weights, int k, std:
         roots.push_back(index);
     }
 
+    // Every internal weight is paid once, so total cost is the sum of all internal weights, not the root.
     int totalCost = 0;
     int internalCount = 0;
     while (roots.size() > 1)

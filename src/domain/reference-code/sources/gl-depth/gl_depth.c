@@ -89,9 +89,8 @@ GLNode *make_list(void)
     return new_node(GL_LIST);
 }
 
-// 作用：把 child 追加到同层链尾；child 的 next 由这里重新接好。
-// Purpose: Append child to the sibling chain and set its next here.
-/* 把 child 追加到 list 同层链尾；child 的 next 由这里重新接好。 */
+// Append through a pointer-to-pointer tail, so an empty head is updated without a separate branch.
+// Purpose: Append child to the sibling chain; this function sets the child's next pointer.
 void append_child(GLNode *list, GLNode *child)
 {
     if (list == NULL || child == NULL || list->tag != GL_LIST)
@@ -106,13 +105,7 @@ void append_child(GLNode *list, GLNode *child)
     *tail = child;
 }
 
-// 作用：返回广义表深度；原子 0、空表 1、非空表 1 + 最大子深度。
-// Purpose: Return depth: 0 for an atom, 1 for (), or 1 plus the maximum child depth.
-/*
- * 求广义表深度。
- * node 是当前表节点；返回原子 0、空表 1、非空表 1 + 最大子深度。
- * 只读，不修改树，也不分配内存。
- */
+// Depth semantics: atom 0, empty list 1, non-empty list 1 + maximum child depth; null is only a defensive 0.
 int gl_depth(const GLNode *node)
 {
     if (node == NULL)
@@ -141,9 +134,8 @@ int gl_depth(const GLNode *node)
     return best + 1;
 }
 
-// 作用：递归释放整棵表；先保存 next，再释放当前节点和 head 链。
-// Purpose: Free the table recursively; save next before freeing the node and its head chain.
-/* 递归释放整棵表；先保存 next，再释放当前节点及其 head 链。 */
+// Save next before freeing, and release the head chain first so nested children are not lost.
+// Purpose: Free the table iteratively at each level and recursively through sublists.
 void free_gl(GLNode *node)
 {
     while (node != NULL)

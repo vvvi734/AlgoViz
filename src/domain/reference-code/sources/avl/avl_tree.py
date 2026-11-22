@@ -56,6 +56,7 @@ def rotate_right(y: Node) -> Node:
     middle = x.right
     x.right = y
     y.left = middle
+    # y is lower after the rotation; update it before x because x's height depends on y.
     update_height(y)
     update_height(x)
     return x
@@ -69,6 +70,7 @@ def rotate_left(x: Node) -> Node:
     middle = y.left
     y.left = x
     x.right = middle
+    # x is lower after the rotation; update it before y because y's height depends on x.
     update_height(x)
     update_height(y)
     return y

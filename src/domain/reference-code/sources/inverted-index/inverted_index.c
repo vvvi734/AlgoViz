@@ -35,7 +35,7 @@ typedef struct
 } PostingList;
 
 // Purpose: Find a term's list, creating an empty one when it is new.
-// 作用：按关键字查找倒排表；首次出现时建立空表，绝不把记录 ID 当作表键。
+// 作用：按关键字查找倒排表；首次出现时建立空表，表键是关键字而不是记录 ID。
 static int FindOrCreateTerm(PostingList *lists, int *listCount, const char *term)
 {
     for (int index = 0; index < *listCount; index += 1)
@@ -66,7 +66,8 @@ static void BuildIndex(const Record *records, int recordCount, PostingList *list
     }
 }
 
-// 作用：按关键字取倒排表；缺失关键字返回空表。
+// A missing term returns NULL; an empty posting list is a different state, though both contain no record.
+// 作用：按关键字取倒排表；缺失关键字返回 NULL，这与“表存在但暂未收录记录”不是同一状态。
 static const PostingList *FindTerm(const PostingList *lists, int listCount, const char *term)
 {
     for (int index = 0; index < listCount; index += 1)
@@ -79,7 +80,8 @@ static const PostingList *FindTerm(const PostingList *lists, int listCount, cons
     return NULL;
 }
 
-// 作用：判断记录编号是否在倒排表中。
+// Postings store record indices, so membership compares an integer position rather than an external ID string.
+// 作用：判断记录编号是否在倒排表中；倒排表保存的是记录下标，不是记录 ID 文本。
 static int Contains(const PostingList *list, int record)
 {
     if (list == NULL)
@@ -96,7 +98,8 @@ static int Contains(const PostingList *list, int record)
     return 0;
 }
 
-// 作用：按原记录顺序求 AND 交集或 OR 并集，天然去重。
+// Iterating records in storage order makes AND/OR results stable and naturally deduplicated.
+// 作用：按原记录顺序求 AND 交集或 OR 并集；同一条记录只检查一次，因此结果天然去重且顺序稳定。
 static int Query(int recordCount, const PostingList *lists,
                  int listCount, const char **terms, int termCount, int useAnd, int *result)
 {

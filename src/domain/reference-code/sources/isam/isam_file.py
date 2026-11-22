@@ -37,6 +37,7 @@ class IsamFile:
     main_reads: int = 0
     overflow_reads: int = 0
 
+    # Bounds are rebuilt from the main blocks plus overflow chains; they are never copied from the inserted key.
     def refresh_bounds(self) -> None:
         """作用：重算每块含溢出链的真实最大键，索引不盲目采用新插入值。"""
         self.bounds = [self.block_maximum(index)
@@ -53,6 +54,7 @@ class IsamFile:
             node = self.overflow[node].next
         return maximum
 
+    # The first bound >= target owns the candidate; if target exceeds every bound, the last block is still the only possible owner.
     def choose_block(self, target: int) -> int:
         """作用：选第一个上界不小于目标的主块；超过全部上界时选最后一块。"""
         for block_index, bound in enumerate(self.bounds):
@@ -62,6 +64,7 @@ class IsamFile:
 
     def insert(self, record: Record) -> None:
         """作用：主块有空间按序插入；块满则追加到该块专属溢出链。"""
+        # The block is fixed before overflow is considered, so a full block never sends the record to another block's chain.
         block_index = self.choose_block(record.key)
         block = self.blocks[block_index]
         if len(block.records) < self.capacity:
@@ -101,6 +104,7 @@ class IsamFile:
             if record.key == target:
                 return block_index * self.capacity + offset, False
 
+        # A main-area hit returns immediately; the private overflow chain is read only after the main block misses.
         node = block.overflow_head
         while node >= 0:
             self.overflow_reads += 1

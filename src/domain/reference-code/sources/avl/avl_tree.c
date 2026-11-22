@@ -5,7 +5,6 @@
  * 易错点：只改指针却忘记更新 height；把“不平衡”误判成只要左右高度相等；删除时没有沿整条返回路径继续修复。
  * 复杂度：查找/插入/删除 O(log n)，单次旋转 O(1)，额外空间 O(n)。
  * 输入/输出：输入 main 中的整数键序列；插入/删除原地修改树，中序输出升序键；重复键被忽略。
- * 函数地图：先读 main 的调用顺序，再按需查看被调用的静态函数；每个函数前的“作用”注释给出职责、输入和返回。
 */
 
 /*
@@ -57,6 +56,7 @@ static AVLNode *RotateRight(AVLNode *root)
     AVLNode *middle = pivot->right;
     pivot->right = root;
     root->left = middle;
+    // root is now the lower node; refresh it before pivot, whose height depends on root's new height.
     RefreshHeight(root);
     RefreshHeight(pivot);
     return pivot;
@@ -70,6 +70,7 @@ static AVLNode *RotateLeft(AVLNode *root)
     AVLNode *middle = pivot->left;
     pivot->left = root;
     root->right = middle;
+    // root is now the lower node; refresh it before pivot, whose height depends on root's new height.
     RefreshHeight(root);
     RefreshHeight(pivot);
     return pivot;
@@ -156,8 +157,6 @@ void FreeAVL(AVLNode *root)
     free(root);
 }
 
-// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
-// 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main(void)
 {
     AVLNode *root = NULL;

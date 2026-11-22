@@ -39,6 +39,7 @@ def build_blocks(records: list[Record], capacity: int) -> list[Block]:
             for start in range(0, len(records), capacity)]
 
 
+# Dense mode emits every record; sparse mode emits only the last key of each block as an upper bound.
 def build_index(blocks: list[Block], dense: bool) -> list[Entry]:
     """作用：稠密每记录一项；稀疏每块一项，使用块内最后键作为上界。"""
     index: list[Entry] = []
@@ -54,6 +55,7 @@ def build_index(blocks: list[Block], dense: bool) -> list[Entry]:
 def lookup(blocks: list[Block], index: list[Entry], target: int) -> tuple[int, Io]:
     """作用：选不大于目标的最后一项，读一个块，再在块内逐条比较。"""
     io = Io()
+    # chosen starts at 0 so a target above every entry still selects the last valid block.
     chosen = 0
     for position, entry in enumerate(index):
         io.probes += 1
@@ -64,6 +66,7 @@ def lookup(blocks: list[Block], index: list[Entry], target: int) -> tuple[int, I
             break
         chosen = position
 
+    # A miss still reads the selected block once; in-block comparisons are record checks, not extra block I/O.
     block_index = index[chosen].block_index
     io.block_reads = 1
     print(f"index chooses block B{block_index} (entry {index[chosen].key})")

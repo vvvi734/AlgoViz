@@ -19,6 +19,7 @@ class Record:
 def build_index(records: list[Record]) -> dict[str, list[str]]:
     """作用：逐记录、逐关键字把记录 ID 追加到对应倒排表。"""
     index: dict[str, list[str]] = {}
+    # setdefault creates a posting list on first sight, so build order does not need a separate term table.
     for record in records:
         for term in record.keywords:
             index.setdefault(term, []).append(record.record_id)
@@ -29,6 +30,7 @@ def query(records: list[Record], index: dict[str, list[str]],
           terms: list[str], mode: str) -> list[str]:
     """作用：按原记录顺序做 AND 交集或 OR 并集，同一条记录只返回一次。"""
     matched: list[str] = []
+    # Walk records, not posting lists, so AND and OR both keep storage order and return each record at most once.
     for record in records:
         if mode == "and":
             include = all(record.record_id in index.get(term, [])
@@ -54,6 +56,7 @@ def main() -> None:
         print(f"  {term} -> {' '.join(postings)}")
     print("algorithms AND sorting:", " ".join(query(records, index, ["algorithms", "sorting"], "and")))
     print("algorithms OR sorting:", " ".join(query(records, index, ["algorithms", "sorting"], "or")))
+    # A missing term falls back to an empty list: AND with it must fail, while OR can still match another term.
     print("missing term AND algorithms:", query(records, index, ["missing", "algorithms"], "and"))
 
 

@@ -28,6 +28,7 @@ def build_optimal_merge_tree(weights, k):
         raise ValueError("segment weights must be 1..999")
 
     real_count = len(weights)
+    # The forest must end with one root, so pad with d zero-weight leaves; they change shape, never total weight.
     missing = ((k - 1) - ((real_count - 1) % (k - 1))) % (k - 1)
     nodes = []
     for index, weight in enumerate(weights):
@@ -48,6 +49,7 @@ def build_optimal_merge_tree(weights, k):
         })
 
     roots = list(range(len(nodes)))
+    # Every internal weight is paid once, so total cost is their sum, not the root weight alone.
     total_cost = 0
     internal_count = 0
     while len(roots) > 1:

@@ -66,28 +66,24 @@ std::vector<int> bf_find_all(const std::string &text, const std::string &pattern
 
     std::size_t candidate_count = n - m + 1;
 
-    // 外层枚举起点；size_t 是无符号类型，上界只能写 candidate_count，不能写 s <= n - m + 1。
-    // Purpose: Enumerate starts below candidate_count; size_t is unsigned, so avoid s <= n - m + 1.
+    // Enumerate starts below candidate_count; size_t is unsigned, so s <= n - m + 1 would wrap at zero.
     for (std::size_t s = 0; s < candidate_count; ++s)
     {
         std::size_t j = 0;
 
-        // 逐个确认前缀；循环结束时 j 可能等于 m，也可能停在第一个失配字符。
-        // Purpose: Confirm the prefix; j ends at m on success or at the first mismatch.
+        // Confirm the prefix; j ends at m on success or at the first mismatch, while the text index is s + j.
         while (j < m && text[s + j] == pattern[j])
         {
             ++j;
         }
 
-        // 只有 j == m 才代表整个模式串匹配，不能只看最后一次比较是否相等。
-        // Purpose: Only j == m proves the whole pattern matched, not the last comparison.
+        // Only j == m proves the whole pattern matched, not merely the last comparison.
         if (j == m)
         {
             matches.push_back(static_cast<int>(s));
         }
 
-        // 成功分支也不提前退出：s 继续加一，重叠匹配才不会丢。
-        // Purpose: Do not stop after a hit; advancing s preserves overlapping matches.
+        // Do not stop after a hit; advancing s preserves overlapping matches.
     }
 
     return matches;

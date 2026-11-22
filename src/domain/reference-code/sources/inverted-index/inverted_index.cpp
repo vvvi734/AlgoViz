@@ -25,9 +25,11 @@ struct Record
 
 using PostingLists = std::map<std::string, std::vector<std::string>>;
 
-// 作用：逐记录、逐关键字把记录 ID 追加到对应倒排表。
+// `map[term]` creates the posting vector on first sight, so building needs no separate term directory.
+// 作用：逐记录、逐关键字把记录 ID 追加到对应倒排表；map 下标首次出现即创建表项，无需额外目录。
 static PostingLists BuildIndex(const std::vector<Record> &records)
 {
+    // The ordered map keeps terms unique and makes printed term order deterministic; it is not a relevance ranking.
     PostingLists lists;
     for (const Record &record : records)
     {
@@ -39,7 +41,8 @@ static PostingLists BuildIndex(const std::vector<Record> &records)
     return lists;
 }
 
-// 作用：按原记录顺序做 AND 交集或 OR 并集；同一条记录最多返回一次。
+// Walking records, not postings, makes AND/OR output follow storage order and deduplicate each record naturally.
+// 作用：按原记录顺序做 AND 交集或 OR 并集；每条记录只判断一次，因此结果稳定且不重复。
 static std::vector<std::string> Query(const std::vector<Record> &records,
                                       const PostingLists &lists,
                                       const std::vector<std::string> &terms,

@@ -1,13 +1,12 @@
 /*
- * 中文导读：用数组和一个栈顶下标实现后进先出；push/pop 只允许在栈顶发生。
- * 阅读顺序：先看 top 的含义（本文件 top 是下一个空位还是当前栈顶）；再看 push 的容量检查、pop 的空栈检查；最后看 peek 只读不弹。
- * 关键不变量：有效元素始终在数组的一端连续存放；top 指向的位置决定空/满与下一次读写。
- * 易错点：top 约定与 push/pop 顺序不一致；栈满仍写入；空栈仍读出；peek 修改了 top；容量与元素数混淆。
- * 复杂度：push/pop/peek O(1)，空间 O(capacity)。
+ * 中文导读：本文件用 std::stack 作标准库对照；它是 LIFO 适配器，默认底层 deque，不暴露栈顶下标。
+ * 阅读顺序：先看 push；再读 top；最后 pop。
+ * 关键不变量：top 是最后压入元素；pop 返回 void；top/pop 前必须非空。
+ * 易错点：把 stack 当数组；pop 返回 void 却想取值；空栈调用 top/pop。
+ * 复杂度：push/pop/top O(1)，空间 O(n)。
  * 本文件是标准库对照版：重点看“库函数调用”与手写算法在接口、稳定性、边界上的差异。
  * This is the standard-library comparison file: focus on interface, stability and boundary differences from the hand-written algorithm.
- * 输入/输出：输入 main 内置的演示操作序列；压栈/弹栈返回成功或栈顶；main 打印出栈顺序。
- * 函数地图：先读 main 的调用顺序，再按需查看被调用的静态函数；每个函数前的“作用”注释给出职责、输入和返回。
+ * 输入/输出：输入 main 内置的压栈序列；main 读取栈顶并按 LIFO 出栈。
 */
 
 // AlgoViz convenience implementation: stack with std::stack (C++17).
@@ -25,8 +24,6 @@
 #include <iostream>
 #include <stack>
 
-// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
-// 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main()
 {
     // `std::stack::pop()` returns void; read `top()` first and check emptiness before either call.

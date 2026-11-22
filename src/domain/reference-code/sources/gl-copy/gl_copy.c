@@ -91,9 +91,8 @@ GLNode *make_list(void)
     return new_node(GL_LIST);
 }
 
-// 作用：把 child 追加到同层链尾，由这里接好 child->next。
-// Purpose: Append child to the sibling chain; this function sets child->next.
-/* 把 child 追加到 list 同层链尾。 */
+// Append through a pointer-to-pointer tail, so a copy with no children starts cleanly and keeps sibling order.
+// Purpose: Append child to the sibling chain and set its next pointer.
 void append_child(GLNode *list, GLNode *child)
 {
     if (list == NULL || child == NULL || list->tag != GL_LIST)
@@ -108,12 +107,8 @@ void append_child(GLNode *list, GLNode *child)
     *tail = child;
 }
 
-// 作用：复制一个节点及其子树，但不复制 src 的 next；失败返回 NULL。
-// Purpose: Copy one node and its subtree but not src->next; return NULL on failure.
-/*
- * 复制一个节点及其子树，但不复制该节点的 next 后继。
- * src 是源节点；返回新节点，失败返回 NULL。调用方负责把返回值接到父链。
- */
+// A deep copy must allocate the new parent before descending; sharing a child would alias source and copy.
+// On child failure, free the partially built subtree instead of returning a half-connected list.
 GLNode *copy_one(const GLNode *src)
 {
     if (src == NULL)

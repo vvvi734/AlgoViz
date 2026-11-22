@@ -5,7 +5,6 @@
  * 易错点：1 基/0 基公式混用；下沉只比较一个孩子；删除堆顶后忘记把末尾元素放到根；建堆从根往下。
  * 复杂度：取最大 O(1)，插入/删除 O(log n)，建堆 O(n)，空间 O(n)。
  * 输入/输出：输入 push/pop 操作序列；push 无返回值，pop 返回当前最大值；main 打印堆数组与弹出值。
- * 函数地图：先读 main 的调用顺序，再按需查看被调用的静态函数；每个函数前的“作用”注释给出职责、输入和返回。
 */
 
 /*
@@ -33,15 +32,11 @@ typedef struct
     int size;
 } MaxHeap;
 
-// Purpose: Initialize the heap with size zero and a fixed array capacity.
-// 作用：初始化堆：size 置 0，数组容量固定。
 void heap_init(MaxHeap *heap)
 {
     heap->size = 0;
 }
 
-// Purpose: Swap two integers for reuse by heap sift-up and sift-down.
-// 作用：交换两个整数，供堆的上浮/下沉复用。
 void swap_int(int *a, int *b)
 {
     int temp = *a;
@@ -136,8 +131,6 @@ void heap_print(const MaxHeap *heap)
     printf("\n");
 }
 
-// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
-// 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main(void)
 {
     MaxHeap heap;

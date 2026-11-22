@@ -136,8 +136,7 @@ static int ReplacementSelection(const Item *input, int n, int capacity, RunResul
             hasLastOutput = 1;
             workspace.state[winner] = SLOT_EMPTY;
 
-            // The freed slot is refilled immediately; a below-threshold key waits
-            // in the workspace as frozen and cannot join this run.
+            // A refilled record joins the run only when key >= lastOutput; equality is allowed, smaller keys freeze.
             if (inputIndex < n)
             {
                 int empty = EmptySlot(&workspace, capacity);
@@ -174,7 +173,7 @@ static int ReplacementSelection(const Item *input, int n, int capacity, RunResul
             // remaining input means the refill invariant was violated.
             return -1;
         }
-        // A new run starts, so the previous run's threshold no longer applies.
+        // A new run starts with no threshold; keeping the old lastOutput would wrongly freeze smaller keys.
         hasLastOutput = 0;
     }
 

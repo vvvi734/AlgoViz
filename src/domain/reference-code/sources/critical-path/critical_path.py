@@ -7,7 +7,7 @@ Reading guide:
 1. Treat the AOE network as a DAG of events and weighted activities.
 2. Compute earliest event times in topological order.
 3. Compute latest event times in reverse topological order.
-4. An activity is critical when latest(head) - earliest(tail) - weight == 0.
+4. An activity is critical when latest[to] - weight - earliest[from] == 0.
 
 Complexity: O(V + E) for adjacency-list processing, O(V^2) when scanning a matrix;
   extra space O(V + E) for times, degrees and the queue.
@@ -26,7 +26,7 @@ from __future__ import annotations
 from collections import deque
 
 
-# Forward pass takes the maximum predecessor finish; backward pass the minimum successor start; activity slack is latest(head) - earliest(tail) - weight.
+# Forward pass takes the maximum predecessor finish; backward pass the minimum successor start; activity slack is latest[to] - weight - earliest[from].
 # Purpose: Build a demo AOE network and print critical-path information.
 # 作用：构造演示 AOE 网并打印关键路径信息。
 def main() -> None:

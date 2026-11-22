@@ -5,7 +5,6 @@
  * 易错点：临时数组下标算错；剩余元素忘记拷贝；递归边界导致死循环；合并时破坏稳定性。
  * 复杂度：O(n log n) 时间，O(n) 额外空间，稳定。
  * 输入/输出：输入 main 内置的整数数组；排序函数借助缓冲区原地归并，无返回值；main 打印排序结果。
- * 函数地图：先读 main 的调用顺序，再按需查看被调用的静态函数；每个函数前的“作用”注释给出职责、输入和返回。
 */
 
 // AlgoViz reference implementation: merge sort (C++17).
@@ -86,8 +85,6 @@ void merge_sort(std::vector<int> &values)
     merge_sort_range(values, buffer, 0, static_cast<int>(values.size()) - 1);
 }
 
-// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
-// 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main()
 {
     std::vector<int> values{9, 4, 7, 2, 6, 1, 3, 8, 5};

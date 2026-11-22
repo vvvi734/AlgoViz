@@ -13,6 +13,7 @@
 """
 
 
+# The tuple comparison falls back to the original input position, so equal keys remain stable.
 def comes_before(left, right):
     return (left["value"], left["original_index"]) < (right["value"], right["original_index"])
 
@@ -41,6 +42,7 @@ def merge_runs(runs, capacity, block_size):
         fill_run(run, block_size, capacity, counters)
 
     while True:
+        # Only the buffer front of each run enters candidates; records behind the FIFO window are not read yet.
         candidates = [
             (run_index, run["buffer"][0])
             for run_index, run in enumerate(runs)

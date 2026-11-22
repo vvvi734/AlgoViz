@@ -1,13 +1,12 @@
 /*
- * 中文导读：利用模式串自身的最长相等前后缀，匹配失败时不回退主串指针。
- * 阅读顺序：先看 next/prefix 数组每个位置的含义；再看构建时 j=next[j-1] 的回退；最后看匹配循环为何只前进 i。
- * 关键不变量：next[i] 是 pattern[0..i] 的最长相等前后缀长度；回退后已经匹配的前缀仍然成立。
- * 易错点：把 next 定义为“包含当前字符”还是“前一位”混用；回退条件写错；空模式串；下标从 0/1 混用。
- * 复杂度：预处理 O(m)，匹配 O(n)，总 O(n+m)，空间 O(m)。
+ * 中文导读：本文件用 std::string::find 作标准库对照；它反复查找子串，不保证内部使用 KMP。
+ * 阅读顺序：先看 find 的起点；再看命中后从 match+1 继续以保留重叠；最后与手写 KMP 比较复杂度。
+ * 关键不变量：每次 find 从上次命中后一位开始；命中位置是 0 基；空模式串单独处理。
+ * 易错点：把 std::string::find 当 KMP；命中后从 match+len 继续而漏掉重叠；忽略实现定义的复杂度。
+ * 复杂度：由标准库实现决定，不保证 KMP 的 O(n+m)。
  * 本文件是标准库对照版：重点看“库函数调用”与手写算法在接口、稳定性、边界上的差异。
  * This is the standard-library comparison file: focus on interface, stability and boundary differences from the hand-written algorithm.
  * 输入/输出：输入主串与非空模式串；返回全部 0 基匹配起点或匹配次数；main 打印结果。
- * 函数地图：先读 main 的调用顺序，再按需查看被调用的静态函数；每个函数前的“作用”注释给出职责、输入和返回。
 */
 
 /*
@@ -55,8 +54,6 @@ std::vector<std::size_t> find_all(const std::string &text, const std::string &pa
     return starts;
 }
 
-// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
-// 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main()
 {
     std::string text = "ABABABCABABABC";

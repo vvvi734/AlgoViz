@@ -5,7 +5,6 @@
  * 易错点：根也套用 low 判据；父边当返祖边；桥误用 >=；只从一个根开始。
  * 复杂度：本实现用邻接矩阵，逐行扫描为 O(V²) 时间；矩阵占 O(V²)，递归栈与状态数组占 O(V)。
  * 输入/输出：输入无向图的邻接矩阵；输出关节点编号和桥的端点对。
- * 函数地图：先读 main 的建图与根扫描，再读 dfs 的进入、边分类、返回判定。
  */
 
 /*
@@ -107,8 +106,8 @@ void find_articulation_points(int graph[VERTEX_COUNT][VERTEX_COUNT])
     }
 }
 
-// Purpose: Run the core operations and print the final cut vertices and bridges.
-// 作用：按顺序执行核心操作，打印最终关节点与桥。
+// Purpose: Build the demo undirected graph, run one DFS forest, then print cut vertices and bridges.
+// 作用：构造演示无向图，跑一次 DFS 森林，再打印关节点与桥。
 int main(void)
 {
     int graph[VERTEX_COUNT][VERTEX_COUNT] = {{0}};

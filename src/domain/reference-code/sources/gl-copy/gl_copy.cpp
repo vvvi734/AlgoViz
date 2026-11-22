@@ -83,9 +83,8 @@ GLNode *make_list()
     return new_node(GL_LIST);
 }
 
-// 作用：把 child 追加到 parent 的同层链尾。
-// Purpose: Append child to parent's sibling chain.
-/* 把 child 追加到 parent 的同层链尾。 */
+// Append through a pointer-to-pointer tail so an empty child list needs no special branch.
+// Purpose: Append child to the sibling chain and set its next pointer.
 void append_child(GLNode *parent, GLNode *child)
 {
     if (parent == nullptr || child == nullptr || parent->tag != GL_LIST)
@@ -100,12 +99,8 @@ void append_child(GLNode *parent, GLNode *child)
     *tail = child;
 }
 
-// 作用：复制一个节点及其子树，不复制 src->next；返回新节点，失败返回 nullptr。
-// Purpose: Copy one node and subtree without src->next; return nullptr on failure.
-/*
- * 复制一个节点及其子树；不复制 src->next。
- * 返回新节点，分配失败返回 nullptr。调用方负责连接同层后继。
- */
+// A deep copy allocates the new parent before descending; reusing a child would keep source and copy aliased.
+// On allocation failure, free the half-built subtree rather than returning a partially linked copy.
 GLNode *copy_one(const GLNode *src)
 {
     if (src == nullptr)
@@ -135,9 +130,8 @@ GLNode *copy_one(const GLNode *src)
     return dst;
 }
 
-// 作用：递归释放整棵树；先保存 next，避免释放后继续解引用。
-// Purpose: Free the tree recursively; save next before freeing to avoid use-after-free.
-/* 递归释放整棵表；先保存 next，避免释放后继续解引用。 */
+// Save next before delete and free the head chain first, so neither siblings nor children are lost.
+// Purpose: Free each sibling iteratively and each sublist recursively.
 void free_gl(GLNode *node)
 {
     while (node != nullptr)

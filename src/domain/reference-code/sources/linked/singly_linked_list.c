@@ -1,11 +1,10 @@
 /*
- * 中文导读：用结点和 next 指针保存线性序列，重点练习插入/删除时的断链与重接。
- * 阅读顺序：先看 Node 和 head/tail/length；再看头插、尾插、按位置插入；最后看删除时为什么要先保存前驱/目标。
- * 关键不变量：从 head 出发沿 next 能走完 length 个结点；尾结点的 next 为 NULL；每个结点只有一个前驱。
- * 易错点：先改指针后保存后继导致断链；删除头结点不更新 head；尾插不更新 tail；释放后访问；长度不同步。
- * 复杂度：头插 O(1)，按位置查找 O(n)，已知前驱插删 O(1)，空间 O(n)。
- * 输入/输出：输入 main 内置的演示操作序列；结构函数原地改 next 并返回成功/元素；main 打印遍历结果。
- * 函数地图：先读 main 的调用顺序，再按需查看被调用的静态函数；每个函数前的“作用”注释给出职责、输入和返回。
+ * 中文导读：用 Node 和 next 指针保存线性序列，重点练习插入/删除时的断链与重接。
+ * 阅读顺序：先看 Node 只有 value/next，调用方只持有 head；再看 index=0 的头插分支；最后看按位置删除为何要先找前驱。
+ * 关键不变量：从 head 出发沿 next 能走完整个序列；尾结点的 next 为 NULL；本实现没有 tail 和 length 字段。
+ * 易错点：先改 *head 再接新结点会丢失旧表；删除头结点不更新 head；先 free 再读 next；把 index==长度 的插入误当成独立尾插操作。
+ * 复杂度：头插 O(1)；按位置插入/删除需先走到 index-1，最坏 O(n)；已知前驱的改链本身 O(1)，空间 O(n)。
+ * 输入/输出：main 在 index 0、1、2 插入，删除 index 1，再尝试越界 index 9；函数以 bool 返回成功/失败，遍历只读输出。
 */
 
 /*
@@ -41,8 +40,15 @@ static struct Node *CreateNode(int value)
     return node;
 }
 
-// Purpose: Insert value before index; index 0 changes head, and an out-of-range index or allocation failure returns false.
-// 作用：在位置 index 前插入 value；index=0 时改 head；越界或分配失败返回 false。
+/*
+ * Index 0 is the only case that changes `*head`; the new node must point at the
+ * old head before `*head` moves, otherwise the rest of the list becomes unreachable.
+ * For index > 0 the loop stops at the predecessor (`index - 1`), so linking the new
+ * node needs no second traversal. If the predecessor is NULL, the index is past the
+ * end and the function returns false without allocating or modifying the list.
+ */
+// Purpose: Insert before `index`; index 0 changes the caller's head, invalid index returns false.
+// 作用：在 index 前插入；只有 index 0 改 *head；越界时在分配前返回 false。
 bool ListInsert(struct Node **head, int index, int value)
 {
     if (head == NULL || index < 0)
@@ -81,8 +87,14 @@ bool ListInsert(struct Node **head, int index, int value)
     return true;
 }
 
-// Purpose: Delete the node at index: find the predecessor, keep the target, relink next, then free the node.
-// 作用：删除位置 index 的结点；先找前驱并保存目标，再重接 next，最后释放。
+/*
+ * Deletion also has a head special case: `*head` must advance before the old head
+ * is freed. For later indices, the loop stops on the predecessor; if it has no
+ * successor, index is past the last node. The target's successor is copied into the
+ * predecessor's link before `free`, because the freed node must not be read again.
+ */
+// Purpose: Remove the node at `index`; save its value, relink, then free exactly once.
+// 作用：删除 index 处结点；先保存返回值与后继，再改链，最后释放目标。
 bool ListDelete(struct Node **head, int index, int *removed)
 {
     if (head == NULL || *head == NULL || index < 0)
@@ -142,8 +154,13 @@ void FreeList(struct Node **head)
     *head = NULL;
 }
 
-// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
-// 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
+/*
+ * With one, two, then three existing nodes, inserting at index 1 and 2 happens to
+ * place each node after the current last node. That is a consequence of the index
+ * matching the current length, not a dedicated tail-append routine; there is no
+ * tail pointer in this implementation. The final index 9 is deliberately past the
+ * end and must be rejected.
+ */
 int main(void)
 {
     struct Node *head = NULL;

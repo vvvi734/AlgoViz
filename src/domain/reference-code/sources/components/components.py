@@ -32,7 +32,6 @@ def visit(graph: list[list[int]], vertex: int, visited: list[bool], component: l
             visit(graph, neighbor, visited, component)
 
 
-# Every unvisited start opens a new component; one DFS marks all vertices reachable from it.
 # The outer scan opens a new component only at an unvisited vertex; one DFS marks its whole component.
 # Purpose: Return the vertex lists of all connected components without modifying graph.
 # 作用：返回所有连通分量的顶点列表；不修改 graph。

@@ -1,11 +1,10 @@
 /*
- * 中文导读：冲突时在表内继续探测空位；本文件使用线性探测并处理删除墓碑。
- * 阅读顺序：先看 EMPTY/OCCUPIED/DELETED 三种槽状态；再看 insert 如何从 hash 开始找空位；最后看 search 何时可以停止。
- * 关键不变量：查找路径上若目标存在，一定在第一个 EMPTY 之前被看到；DELETED 不能被当成空位截断查找。
+ * 中文导读：冲突时在表内继续探测空位；本文件使用线性探测，但教学版本不实现删除，因此没有墓碑状态。
+ * 阅读顺序：先看 EMPTY 与“非空键值”两种槽状态；再看 insert 如何从 hash 开始找空位；最后看 search 为何遇到 EMPTY 才停止。
+ * 关键不变量：查找路径上若目标存在，一定在第一个 EMPTY 之前被看到；本版本不删除，EMPTY 是唯一终止标记。
  * 易错点：删除直接置 EMPTY 截断后续查找；表满死循环；负载因子过高；负哈希下标。
  * 复杂度：平均 O(1)，最坏 O(n)；空间 O(capacity)。
  * 输入/输出：输入非负整数 key 的插入/查找序列；操作返回布尔；main 打印槽的空/占用状态。
- * 函数地图：先读 main 的调用顺序，再按需查看被调用的静态函数；每个函数前的“作用”注释给出职责、输入和返回。
 */
 
 /*
@@ -29,8 +28,8 @@ typedef struct
     int slots[HASH_CAPACITY];
 } HashTable;
 
-// Purpose: Initialize open addressing by marking every slot EMPTY and clearing the tombstone count.
-// 作用：初始化开放地址散列表：所有槽先标为 EMPTY，并清零墓碑计数。
+// Purpose: Initialize open addressing by marking every slot EMPTY; this version keeps no tombstone or deletion counter.
+// 作用：初始化开放地址散列表：所有槽标为 EMPTY；本版本没有墓碑，也没有删除计数字段。
 void InitHashTable(HashTable *table)
 {
     for (int index = 0; index < HASH_CAPACITY; ++index)
@@ -48,8 +47,8 @@ static int HomeSlot(int key)
 }
 
 // This teaching version has no deletion, so an empty slot ends the probe; adding tombstones would require lookup to continue past them.
-// Purpose: Find the first EMPTY slot by linear probing and write there; DELETED slots are reusable but must not terminate a search.
-// 作用：线性探测找第一个 EMPTY 槽写入；遇到 DELETED 可复用，但查找不能在此截断。
+// Purpose: Find the first EMPTY slot by linear probing and write there; duplicates are rejected, and no DELETED state exists here.
+// 作用：线性探测找第一个 EMPTY 槽写入；重复键拒绝；本版本没有 DELETED 状态。
 bool HashInsert(HashTable *table, int key)
 {
     int start = HomeSlot(key);
@@ -69,8 +68,8 @@ bool HashInsert(HashTable *table, int key)
     return false;
 }
 
-// Purpose: Start linear probing at HomeSlot and stop only at EMPTY; continue past DELETED slots.
-// 作用：从 HomeSlot 开始线性探测；遇到 EMPTY 才停止，DELETED 要继续向后找。
+// Purpose: Start linear probing at HomeSlot and stop only at EMPTY; without deletion, EMPTY alone proves absence.
+// 作用：从 HomeSlot 开始线性探测，遇到 EMPTY 才停止；本版本没有删除，因此 EMPTY 足以证明不存在。
 bool HashContains(const HashTable *table, int key)
 {
     int start = HomeSlot(key);
@@ -89,8 +88,8 @@ bool HashContains(const HashTable *table, int key)
     return false;
 }
 
-// Purpose: Print every hash slot's state and contents to observe collisions and tombstones.
-// 作用：输出散列表每个槽的状态和内容，用于观察冲突与墓碑。
+// Purpose: Print every slot as empty or occupied with its key to observe collisions; read-only.
+// 作用：输出每个槽是空还是占用及其键值，用于观察冲突；只读。
 void PrintHashTable(const HashTable *table)
 {
     for (int index = 0; index < HASH_CAPACITY; ++index)
@@ -107,8 +106,6 @@ void PrintHashTable(const HashTable *table)
     }
 }
 
-// Purpose: Run the core operations in order and print key states so abstract steps map to visible results.
-// 作用：按顺序调用核心操作并打印关键状态，便于把抽象步骤和可见结果对应起来。
 int main(void)
 {
     HashTable table;
