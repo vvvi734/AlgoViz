@@ -184,6 +184,36 @@ describe('reference code localization', () => {
     }
   });
 
+  it('does not leave adjacent duplicate Chinese teaching comments after annotation replacement', () => {
+    for (const [fileName, annotations] of Object.entries(REFERENCE_ANNOTATIONS)) {
+      if (annotations.length === 0) continue;
+      const source = sourceByName(fileName);
+      const language: ReferenceLanguage = fileName.endsWith('.py')
+        ? 'python'
+        : fileName.endsWith('.cpp')
+          ? 'cpp'
+          : 'c';
+      const zh = localizeReferenceSource(source, {
+        algorithmId: 'linked',
+        algorithmName: 'linked',
+        language,
+        implementation: 'principle',
+        fileName,
+        lang: 'zh',
+      });
+      const lines = zh
+        .split('\n')
+        .map((line) => line.trim())
+        .filter((line) => line.startsWith(language === 'python' ? '#' : '//'))
+        .map((line) => line.slice(1).trim());
+      for (let index = 1; index < lines.length; index += 1) {
+        expect(lines[index], `${fileName}: adjacent comment ${index}`).not.toBe(
+          lines[index - 1],
+        );
+      }
+    }
+  });
+
   it('never mixes teaching languages across the selected source', async () => {
     for (const algorithmId of REFERENCE_CODE_ALGORITHMS) {
       for (const language of ['c', 'cpp', 'python'] as const) {

@@ -667,6 +667,7 @@ function applyChineseAnnotations(
   if (annotations.length === 0) return source;
 
   const lines = source.split('\n');
+  const removedLines = new Set<number>();
   const marker = language === 'python' ? '#' : '//';
 
   for (const annotation of annotations) {
@@ -677,9 +678,21 @@ function applyChineseAnnotations(
     const line = lines[sourceIndex];
     const indent = line.slice(0, line.length - line.trimStart().length);
     lines[sourceIndex] = `${indent}${marker} ${annotation.zh}`;
+
+    // Sources may already carry the same Chinese line next to the English
+    // anchor. Replacing the anchor must not leave two identical teaching lines.
+    for (const neighbour of [sourceIndex - 1, sourceIndex + 1]) {
+      if (
+        neighbour >= 0 &&
+        neighbour < lines.length &&
+        lines[neighbour].trim() === `${marker} ${annotation.zh}`
+      ) {
+        removedLines.add(neighbour);
+      }
+    }
   }
 
-  return lines.join('\n');
+  return lines.filter((_, index) => !removedLines.has(index)).join('\n');
 }
 
 function hasLeadingHeader(source: string, language: ReferenceLanguage): boolean {
