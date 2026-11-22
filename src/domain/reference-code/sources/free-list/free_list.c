@@ -42,8 +42,13 @@ static void sync_tags(Block *block)
 }
 
 // Initial state is exactly one free descriptor [0, total); later allocations split this single hole.
-static void init_memory(int total)
+static int init_memory(int total)
 {
+    // The teaching contract is 8..128 bytes; reject without touching the current table so a bad call cannot install a negative or oversized root.
+    if (total < 8 || total > MAX_CAPACITY)
+    {
+        return 0;
+    }
     count = 0;
     capacity = total;
     blocks[count].start = 0;
@@ -53,13 +58,19 @@ static void init_memory(int total)
     sync_tags(&blocks[count]);
     // count becomes 1 only after start, size, free and tags are complete, so the first scan always sees a valid record.
     count = 1;
+    return 1;
 }
 
 // Inserting a split remainder must preserve address order, so every descriptor at and after index moves one slot right.
-// MAX_BLOCKS bounds this teaching table; the code does not reject overflow, so callers must keep count below the limit.
-static void insert_block(int index, int start, int size, int free, const char *label)
+// MAX_BLOCKS bounds this teaching table; insert_block returns 0 without moving records when the table is full.
+static int insert_block(int index, int start, int size, int free, const char *label)
 {
     int position;
+    // Reject an impossible insertion slot or a full table before the copy loop can write blocks[count].
+    if (index < 0 || index > count || count >= MAX_BLOCKS)
+    {
+        return 0;
+    }
     // The copy loop runs backwards from count to index; a forward loop would overwrite a record before it is moved.
     for (position = count; position > index; position -= 1)
     {
@@ -72,6 +83,7 @@ static void insert_block(int index, int start, int size, int free, const char *l
     sync_tags(&blocks[index]);
     // count increases last, after the new record and its tags are complete; no later loop can observe a half-written slot.
     count += 1;
+    return 1;
 }
 
 // Removing a descriptor closes the gap by moving every later record one slot left; this edits the simulation table only.
@@ -93,6 +105,24 @@ static int allocate_block(const char *id, int request)
     // chosen=-1 means "no candidate"; best_remainder starts at capacity+1 so any real remainder beats that sentinel.
     int chosen = -1;
     int best_remainder = capacity + 1;
+
+    // IDs are exact, non-empty labels of at most MAX_LABEL-1 characters; duplicates would make release ambiguous, so all three cases fail before mutation.
+    if (id == NULL || id[0] == '\0' || strlen(id) >= MAX_LABEL)
+    {
+        return 0;
+    }
+    // A non-positive request cannot describe a byte interval; rejecting it also prevents a negative or zero-sized allocation descriptor.
+    if (request <= 0)
+    {
+        return 0;
+    }
+    for (index = 0; index < count; index += 1)
+    {
+        if (blocks[index].free == 0 && strcmp(blocks[index].label, id) == 0)
+        {
+            return 0;
+        }
+    }
 
     for (index = 0; index < count; index += 1)
     {
@@ -131,7 +161,11 @@ static int allocate_block(const char *id, int request)
         // remainder_size is old size minus request, so [start, start+request) and the suffix are adjacent and never overlap.
         int remainder_size = blocks[chosen].size - request;
         // Insert the suffix before shrinking the chosen block: the split uses the old size, and chosen keeps its index.
-        insert_block(chosen + 1, remainder_start, remainder_size, 1, "");
+        // A full descriptor table rejects the split before any descriptor moves; the chosen block is still untouched here.
+        if (!insert_block(chosen + 1, remainder_start, remainder_size, 1, ""))
+        {
+            return 0;
+        }
         // Shrink the prefix only after the suffix exists, so the table always covers the original interval.
         blocks[chosen].size = request;
     }
@@ -180,6 +214,11 @@ static int release_block(const char *id)
     int index;
     int left_free;
     int right_free;
+    // An absent or empty ID cannot identify an allocation; return 0 before any strcmp or table access.
+    if (id == NULL || id[0] == '\0')
+    {
+        return 0;
+    }
     for (index = 0; index < count; index += 1)
     {
         if (blocks[index].free == 0 && strcmp(blocks[index].label, id) == 0)
@@ -239,7 +278,7 @@ static void print_blocks(void)
 // The demonstration assumes enough capacity and a correct fixed operation sequence; it is not a general input parser.
 int main(void)
 {
-    init_memory(64);
+    if (!init_memory(64)) return 1;
     if (!allocate_block("A", 12)) return 1;
     if (!allocate_block("B", 16)) return 1;
     if (!allocate_block("C", 10)) return 1;

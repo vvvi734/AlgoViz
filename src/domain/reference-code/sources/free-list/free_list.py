@@ -1,5 +1,9 @@
 """Free-space list with First Fit / Best Fit and boundary tags."""
 
+MIN_CAPACITY = 8
+MAX_CAPACITY = 128
+MAX_LABEL_LENGTH = 3
+
 # Free-space list: First Fit / Best Fit over one simulated address range.
 # A block owns half-open [start, start + size); size is a length, not an inclusive end address.
 # blocks is an address-ordered list of Block objects; adjacency is determined by list indices.
@@ -24,6 +28,9 @@ class Block:
 # The list starts with one free block [0, capacity); every later allocation splits an existing hole.
 class FreeList:
     def __init__(self, capacity):
+        # The teaching contract is 8..128 bytes; a negative or zero capacity would create an invalid root block.
+        if isinstance(capacity, bool) or not isinstance(capacity, int) or not MIN_CAPACITY <= capacity <= MAX_CAPACITY:
+            raise ValueError("free-list capacity must be an integer from 8 to 128")
         # capacity records the original simulated size; allocation still uses the current Block.size values.
         self.capacity = capacity
         self.blocks = [Block(0, capacity, True)]
@@ -31,6 +38,14 @@ class FreeList:
     # best_fit is a per-call policy switch; it does not mutate the list, so later calls may choose differently.
     # The scan follows list order, which is address order; First Fit may stop at the first adequate block.
     def allocate(self, block_id, request, best_fit=False):
+        # IDs are exact, non-empty labels of at most three characters; duplicates would make release ambiguous.
+        if not isinstance(block_id, str) or not block_id or len(block_id) > MAX_LABEL_LENGTH:
+            raise ValueError("free-list id must be a string of 1..3 characters")
+        # A non-positive request cannot describe a byte interval; reject it before it creates a negative or zero-sized block.
+        if isinstance(request, bool) or not isinstance(request, int) or request <= 0:
+            raise ValueError("free-list request must be a positive integer")
+        if any(not block.free and block.label == block_id for block in self.blocks):
+            raise ValueError("free-list id is already in use")
         # None is the sentinel for "no candidate"; best_remainder stays None until the first adequate block.
         chosen = None
         best_remainder = None

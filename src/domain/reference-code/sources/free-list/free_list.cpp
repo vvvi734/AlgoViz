@@ -3,8 +3,13 @@
 // The vector stays in address order, so adjacency is decided by neighbouring indices.
 // head/tail tags are teaching copies of size and occupancy, not independent allocator metadata.
 #include <iostream>
+#include <stdexcept>
 #include <string>
 #include <vector>
+
+constexpr int MIN_CAPACITY = 8;
+constexpr int MAX_CAPACITY = 128;
+constexpr std::size_t MAX_LABEL_LENGTH = 3;
 
 // start and size define [start, start + size); size is a length, not an inclusive address.
 // free and label are canonical occupancy state; the four tag fields only mirror them.
@@ -36,6 +41,11 @@ public:
     // The constructor creates one free block [0,total); capacity_ is kept as a sentinel bound and as the original memory size.
     explicit FreeList(int total) : capacity_(total), policy_(false)
     {
+        // The documented teaching range is 8..128; reject an invalid size before a negative or oversized root descriptor exists.
+        if (total < MIN_CAPACITY || total > MAX_CAPACITY)
+        {
+            throw std::invalid_argument("free-list capacity must be 8..128");
+        }
         Block root{0, total, true, "", 0, 0, true, true};
         root.sync_tags();
         blocks_.push_back(root);
@@ -47,6 +57,24 @@ public:
         // chosen<0 and capacity_+1 encode "no candidate"; any real remainder is smaller than the sentinel.
         int chosen = -1;
         int best_remainder = capacity_ + 1;
+
+        // The API contract accepts short, non-empty, unique IDs and positive requests; reject invalid arguments before scanning.
+        if (id.empty() || id.size() > MAX_LABEL_LENGTH)
+        {
+            throw std::invalid_argument("free-list id must be 1..3 characters");
+        }
+        if (request <= 0)
+        {
+            throw std::invalid_argument("free-list request must be positive");
+        }
+        for (const Block &block : blocks_)
+        {
+            if (!block.free && block.label == id)
+            {
+                throw std::invalid_argument("free-list id is already in use");
+            }
+        }
+
         for (int index = 0; index < static_cast<int>(blocks_.size()); ++index)
         {
             // block is a reference, not a copy; it must not survive vector::insert/erase, so later code re-indexes blocks_[chosen].
