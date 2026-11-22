@@ -23,39 +23,38 @@ from __future__ import annotations
 
 class Stack:
     def __init__(self, capacity: int = 8) -> None:
+        # A non-positive capacity makes the first push impossible, so reject it before allocating the backing list.
         if capacity <= 0:
             raise ValueError("capacity must be positive")
         self._data: list[int] = [0] * capacity
+        # _top is the live top index; -1 is the empty state, so the first push writes index 0.
         self._top = -1
 
     # top is the live top index; -1 means empty.
-    # Purpose: Push: check whether top is already capacity - 1, increment top, then write data[top].
-    # 作用：压栈。先检查 top 是否已到 capacity - 1，再 ++top 后写入。
     def push(self, value: int) -> bool:
+        # Check the last legal index before incrementing; this is the only thing preventing a write past the list.
         if self._top >= len(self._data) - 1:
             return False
+        # Increment before assigning data[_top]; the new top must exist before its value is stored.
         self._top += 1
         self._data[self._top] = value
         return True
 
-    # Purpose: Pop: read data[top], then decrement top; return None for an empty stack.
-    # 作用：弹栈。先读取当前栈顶，再 --top；空栈返回 None。
+    # None is the empty signal; a stored 0 is a valid value because the check is on _top, not on the returned value.
     def pop(self) -> int | None:
         if self._top == -1:
             return None
         value = self._data[self._top]
+        # Decrementing _top removes the element logically; the backing list keeps the old object but no operation reads it.
         self._top -= 1
         return value
 
-    # Purpose: Read the top without moving top; return None for an empty stack.
-    # 作用：只读栈顶，不移动 top；空栈返回 None。
+    # Peek is read-only: it returns data[_top] without changing the count or the top index.
     def peek(self) -> int | None:
         if self._top == -1:
             return None
         return self._data[self._top]
 
-    # Purpose: Test for an empty stack: the only condition is top == -1.
-    # 作用：判断空栈。唯一条件是 top == -1。
     def is_empty(self) -> bool:
         return self._top == -1
 

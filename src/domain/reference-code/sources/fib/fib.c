@@ -24,14 +24,15 @@
 #include <stdio.h>
 
 // The two recursive calls are independent and uncached, so identical subproblems are recomputed.
-// Purpose: Naive recursion for F(n): the two child calls are independent and uncached, so identical subproblems are recomputed.
-// 作用：朴素递归计算 F(n)；两个子调用彼此独立且没有缓存，因此会重复计算相同子问题。
+// The unsigned parameter excludes negative n; 64-bit results overflow quickly beyond the small teaching range.
 static unsigned long long fib(unsigned int n)
 {
+    // This single base branch returns 0 for n=0 and 1 for n=1, matching both definitions.
     if (n <= 1U)
     {
         return (unsigned long long)n;
     }
+    // Each call must finish before the addition; the live stack is only O(n) deep even though the call tree is exponential.
     return fib(n - 1U) + fib(n - 2U);
 }
 

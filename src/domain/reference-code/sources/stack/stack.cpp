@@ -27,57 +27,43 @@ public:
 
     // top is the live top index; -1 means empty.
 
-    // Purpose: Construct an empty stack with top_ = -1, matching the data-structure convention.
-    /*
-     * 作用：构造空栈。top_ = -1 表示还没有元素，与顶层数据结构约定一致。
-     */
     Stack() : top_(-1)
     {
     }
 
-    // Purpose: Read-only empty check; the only condition is top_ == -1.
-    /*
-     * 作用：只读判断栈是否为空。空栈的唯一条件是 top_ == -1。
-     */
     bool empty() const
     {
         return top_ == -1;
     }
 
-    // Purpose: Push value after checking capacity, increment top_, and write data_[top_]; return false when full.
-    /*
-     * 作用：压入 value。先检查容量，再 ++top_ 并写入 data_[top_]；栈满返回 false。
-     */
+    // The capacity check is on the live top, not on data_.size(); data_ is fixed and always has kCapacity slots.
     bool push(int value)
     {
+        // The signed cast is required because top_ uses -1; comparing directly with size_t would convert -1 to a huge value.
         if (top_ >= static_cast<int>(kCapacity) - 1)
         {
             return false;
         }
+        // Increment first so data_[top_] is the new element; the old top remains readable until the assignment.
         ++top_;
         data_[static_cast<std::size_t>(top_)] = value;
         return true;
     }
 
-    // Purpose: Pop: return std::nullopt when empty; otherwise read data_[top_] and decrement top_.
-    /*
-     * 作用：弹出栈顶。空栈返回 std::nullopt；否则读取 data_[top_] 后 --top_。
-     */
     std::optional<int> pop()
     {
         if (empty())
         {
             return std::nullopt;
         }
+        // top_ is non-negative here, so the cast is safe; the copy is taken before --top_ destroys the logical top.
         const int value = data_[static_cast<std::size_t>(top_)];
+        // Decrementing top_ is the pop; no element needs to be erased from std::array.
         --top_;
         return value;
     }
 
-    // Purpose: Read-only peek: return std::nullopt when empty, otherwise data_[top_], without moving top_.
-    /*
-     * 作用：只读栈顶。空栈返回 std::nullopt，成功时返回 data_[top_]，不移动 top_。
-     */
+    // optional distinguishes empty from a stored 0; the caller can test has_value without a sentinel.
     std::optional<int> peek() const
     {
         if (empty())
@@ -88,14 +74,11 @@ public:
     }
 
 private:
+    // The array size is compile-time state; top_ is the only runtime field that says how much is live.
     std::array<int, kCapacity> data_{};
     int top_;
 };
 
-// Purpose: Demonstrate stack creation, push, peek, pop and empty checks, printing each step.
-/*
- * 作用：演示建栈、压栈、peek、弹栈与空栈检测，并输出每一步结果。
- */
 int main()
 {
     Stack stack;

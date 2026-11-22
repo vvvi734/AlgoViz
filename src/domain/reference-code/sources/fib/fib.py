@@ -21,19 +21,18 @@ from __future__ import annotations
 
 
 # The two recursive calls are independent and uncached, so identical subproblems are recomputed.
-# Purpose: Return the n-th Fibonacci number; negative inputs raise ValueError.
-# 作用：返回第 n 个斐波那契数；负数抛 ValueError。
+# Python integers are unbounded, but this naive recursion still has exponential call growth and O(n) depth.
 def fib(n: int) -> int:
     """Return F(n) using the naive two-branch recurrence."""
+    # Reject negative n before the base cases; F(n) is undefined there.
     if n < 0:
         raise ValueError("fib is only defined for non-negative integers")
     if n <= 1:
         return n
+    # The two branches are evaluated independently; the same F(k) is recomputed many times because nothing is cached.
     return fib(n - 1) + fib(n - 2)
 
 
-# Purpose: Print the first few terms to show the call growth of naive recursion.
-# 作用：打印前若干项，展示朴素递归的调用规模。
 def main() -> None:
     assert fib(0) == 0
     assert fib(1) == 1

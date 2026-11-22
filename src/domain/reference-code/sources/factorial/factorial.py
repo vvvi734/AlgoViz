@@ -22,19 +22,18 @@ from __future__ import annotations
 
 
 # Base cases collapse to 1; the unwind multiplies n by the already-computed (n-1)!.
-# Purpose: Return n!; negative inputs raise ValueError, and 0! and 1! return 1.
-# 作用：返回 n!；负数抛 ValueError，0! 和 1! 返回 1。
+# Python integers do not overflow, but deep recursion still hits the interpreter's recursion limit.
 def factorial(number: int) -> int:
     """Return number! for a non-negative integer."""
+    # Reject negative input before the base case; factorial is undefined there and returning 1 would hide the error.
     if number < 0:
         raise ValueError("factorial is only defined for non-negative integers")
     if number <= 1:
         return 1
+    # The multiplication is evaluated after the child returns; each frame holds its own number until then.
     return number * factorial(number - 1)
 
 
-# Purpose: Demonstrate recursive factorial and print the result.
-# 作用：演示递归阶乘并打印结果。
 def main() -> None:
     assert factorial(0) == 1
     assert factorial(1) == 1

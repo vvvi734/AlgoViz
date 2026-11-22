@@ -25,43 +25,41 @@ from __future__ import annotations
 
 class Queue:
     def __init__(self, capacity: int = 8) -> None:
+        # A ring that reserves one slot needs at least two cells; capacity 1 could never hold an element and still distinguish full from empty.
         if capacity <= 1:
             raise ValueError("capacity must be at least 2")
         self._data: list[int] = [0] * capacity
         self._front = 0
         self._rear = 0
 
-    # Purpose: Test for an empty queue: front == rear.
-    # 作用：判断空队列。front == rear 即空。
     def is_empty(self) -> bool:
         return self._front == self._rear
 
     # front == rear means empty; one reserved slot makes (rear + 1) % capacity == front full.
-    # Purpose: Test for a full queue: the slot after rear meets front, leaving only the reserved slot.
-    # 作用：判断队满。rear 的下一个位置撞上 front 时，只剩保留空位。
     def is_full(self) -> bool:
+        # The spare slot sits immediately before front; the modulo makes the comparison work across the array boundary.
         return (self._rear + 1) % len(self._data) == self._front
 
-    # Purpose: Enqueue: check fullness, write data[rear], then advance rear modulo capacity.
-    # 作用：入队。先判满，再写 data[rear]，最后让 rear 取模后移。
     def enqueue(self, value: int) -> bool:
+        # Fullness is checked before the write, so a rejected value cannot overwrite the reserved slot.
         if self.is_full():
             return False
+        # rear is the next free slot, so store there and advance afterwards.
         self._data[self._rear] = value
+        # Modulo wraps rear to 0 without moving any existing item; front and rear encode the logical order.
         self._rear = (self._rear + 1) % len(self._data)
         return True
 
-    # Purpose: Dequeue: return None when empty; otherwise read data[front] and advance front modulo capacity.
-    # 作用：出队。空队列返回 None；否则读 data[front] 后让 front 取模后移。
+    # None signals an empty queue; a stored 0 is still valid because emptiness is tested on front == rear.
     def dequeue(self) -> int | None:
         if self.is_empty():
             return None
         value = self._data[self._front]
+        # Advancing front is the removal; the old list entry remains but is no longer between front and rear.
         self._front = (self._front + 1) % len(self._data)
         return value
 
-    # Purpose: Read the queue front without removing it; front does not move.
-    # 作用：读取队首但不删除；不移动 front。
+    # front() reads data[front] without moving front, so it is safe to call repeatedly.
     def front(self) -> int | None:
         if self.is_empty():
             return None

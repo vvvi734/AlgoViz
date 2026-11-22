@@ -29,45 +29,37 @@ typedef struct
 
 // top is the live top index; -1 means empty.
 
-// Purpose: Initialize an empty sequential stack; the shared convention is top = -1, meaning no elements yet.
-/*
- * 作用：初始化顺序栈为空。top = -1 是本题统一约定，表示还没有任何元素。
- */
 void InitStack(Stack *stack)
 {
     stack->top = -1;
 }
 
-// Purpose: Read-only empty check; the only condition is top == -1.
-/*
- * 作用：只读判断栈是否为空。空栈的唯一条件是 top == -1。
- */
 bool StackEmpty(const Stack *stack)
 {
     return stack->top == -1;
 }
 
-// Purpose: Push value after checking whether top has reached capacity - 1; a full stack returns false without overwriting.
 /*
- * 作用：把 value 压入栈顶。先判断 top 是否已到 capacity - 1，再 ++top 并写入
  * data[top]；栈满时不覆盖任何已有元素，直接返回 false。
  */
+// The full check uses top, not a count: top == capacity-1 means the next increment would write past the array.
 bool Push(Stack *stack, int value)
 {
+    // Return before changing top; rejecting a full push must leave every existing element untouched.
     if (stack->top >= STACK_CAPACITY - 1)
     {
         return false;
     }
+    // Increment before the write: data[top] must name the new live element, while the old top remains valid until then.
     ++stack->top;
     stack->data[stack->top] = value;
     return true;
 }
 
-// Purpose: Pop: return false when empty; otherwise pass data[top] to the caller, then decrement top.
 /*
- * 作用：弹出栈顶。空栈返回 false；否则先把 data[top] 交给调用者，再 --top，
  * 逻辑上删除该元素。数组里的旧值可以暂时保留，但已不属于栈。
  */
+// Pop copies the top out and only then decrements; the returned value must survive the state change.
 bool Pop(Stack *stack, int *value)
 {
     if (StackEmpty(stack))
@@ -75,14 +67,12 @@ bool Pop(Stack *stack, int *value)
         return false;
     }
     *value = stack->data[stack->top];
+    // The decrement is the removal: the old slot stays in the array but is outside [0, top].
     --stack->top;
     return true;
 }
 
-// Purpose: Read the stack top without removing it; access data[top] without changing top or the element count.
-/*
- * 作用：读取栈顶但不删除。只访问 data[top]，不改变 top，也不减少元素个数。
- */
+// Peek shares the read but omits the decrement, so it is observationally read-only even though it touches data[top].
 bool Peek(const Stack *stack, int *value)
 {
     if (StackEmpty(stack))
@@ -93,10 +83,6 @@ bool Peek(const Stack *stack, int *value)
     return true;
 }
 
-// Purpose: Demonstrate stack creation, push, peek, pop and empty checks, printing the observable result of each step.
-/*
- * 作用：演示建栈、压栈、读栈顶、弹栈与空栈检测，并打印每一步的可观察结果。
- */
 int main(void)
 {
     Stack stack;

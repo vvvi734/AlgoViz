@@ -237,5 +237,269 @@ export const BATCH_03_ANNOTATIONS: Record<
       "en": "Detach the removed node's own links after the list is repaired; stale links would keep the rest of the list reachable from a dead node.",
       "zh": "链表修好后清空被删结点自身的链接；残留链接会让死结点仍能到达链表其余部分。"
     }
+  ],
+  "stack.c": [
+    {
+      "en": "The full check uses top, not a count: top == capacity-1 means the next increment would write past the array.",
+      "zh": "判满依据是 top 而不是元素计数：top == capacity-1 时再自增就会写出数组边界。"
+    },
+    {
+      "en": "Return before changing top; rejecting a full push must leave every existing element untouched.",
+      "zh": "在修改 top 前返回；拒绝满栈压入时不能改动任何已有元素。"
+    },
+    {
+      "en": "Increment before the write: data[top] must name the new live element, while the old top remains valid until then.",
+      "zh": "先自增再写入：data[top] 必须指向新的栈顶元素，旧栈顶在此之前仍然有效。"
+    },
+    {
+      "en": "Pop copies the top out and only then decrements; the returned value must survive the state change.",
+      "zh": "弹栈先把栈顶复制出去，再减少 top；返回值不能随状态改变而丢失。"
+    },
+    {
+      "en": "The decrement is the removal: the old slot stays in the array but is outside [0, top].",
+      "zh": "递减 top 就是删除：旧槽仍留在数组中，但已不属于 [0, top] 的有效区间。"
+    },
+    {
+      "en": "Peek shares the read but omits the decrement, so it is observationally read-only even though it touches data[top].",
+      "zh": "Peek 复用同样的读取但不递减，因此虽然访问 data[top]，语义上仍是只读操作。"
+    }
+  ],
+  "stack.cpp": [
+    {
+      "en": "The capacity check is on the live top, not on data_.size(); data_ is fixed and always has kCapacity slots.",
+      "zh": "容量检查针对当前栈顶而不是 data_.size()；data_ 固定拥有 kCapacity 个槽位。"
+    },
+    {
+      "en": "The signed cast is required because top_ uses -1; comparing directly with size_t would convert -1 to a huge value.",
+      "zh": "必须转为有符号数，因为 top_ 用 -1 表示空；直接与 size_t 比较会把 -1 变成巨大值。"
+    },
+    {
+      "en": "Increment first so data_[top_] is the new element; the old top remains readable until the assignment.",
+      "zh": "先自增，使 data_[top_] 指向新元素；赋值前旧栈顶仍然可读。"
+    },
+    {
+      "en": "top_ is non-negative here, so the cast is safe; the copy is taken before --top_ destroys the logical top.",
+      "zh": "这里 top_ 已非负，转换安全；必须在 --top_ 撤销逻辑栈顶前完成复制。"
+    },
+    {
+      "en": "Decrementing top_ is the pop; no element needs to be erased from std::array.",
+      "zh": "递减 top_ 就完成弹栈；std::array 中的旧元素不需要擦除。"
+    },
+    {
+      "en": "optional distinguishes empty from a stored 0; the caller can test has_value without a sentinel.",
+      "zh": "optional 把空栈和真实值 0 区分开；调用者检查 has_value 即可，无需哨兵。"
+    },
+    {
+      "en": "The array size is compile-time state; top_ is the only runtime field that says how much is live.",
+      "zh": "数组大小是编译期状态；top_ 是唯一描述有效元素数量的运行期字段。"
+    }
+  ],
+  "stack.py": [
+    {
+      "en": "A non-positive capacity makes the first push impossible, so reject it before allocating the backing list.",
+      "zh": "容量非正会让第一次压栈就无法进行，因此在分配底层列表前直接拒绝。"
+    },
+    {
+      "en": "_top is the live top index; -1 is the empty state, so the first push writes index 0.",
+      "zh": "_top 是当前栈顶下标；-1 表示空栈，因此第一次压栈写入下标 0。"
+    },
+    {
+      "en": "Check the last legal index before incrementing; this is the only thing preventing a write past the list.",
+      "zh": "自增前检查最后一个合法下标；这是防止写出列表边界的唯一防线。"
+    },
+    {
+      "en": "Increment before assigning data[_top]; the new top must exist before its value is stored.",
+      "zh": "先增加 _top 再写 data[_top]；新栈顶必须先存在，随后才能存值。"
+    },
+    {
+      "en": "None is the empty signal; a stored 0 is a valid value because the check is on _top, not on the returned value.",
+      "zh": "None 表示空栈；真实值 0 仍然合法，因为判空看 _top 而不是返回值。"
+    },
+    {
+      "en": "Decrementing _top removes the element logically; the backing list keeps the old object but no operation reads it.",
+      "zh": "递减 _top 就在逻辑上删除元素；底层列表仍保留旧对象，但没有任何操作会再读它。"
+    },
+    {
+      "en": "Peek is read-only: it returns data[_top] without changing the count or the top index.",
+      "zh": "Peek 是只读操作：返回 data[_top]，不改变元素数量或栈顶下标。"
+    }
+  ],
+  "factorial.c": [
+    {
+      "en": "The unsigned parameter rules out negative input; the 64-bit return limits exact factorials to a small teaching range.",
+      "zh": "无符号参数排除负数输入；64 位返回值也把精确阶乘限制在较小的教学范围。"
+    },
+    {
+      "en": "The multiplication waits for the child call; each frame keeps its own number and pending product on the call stack.",
+      "zh": "乘法必须等子调用返回；每一帧都在调用栈上保存自己的 number 和待乘结果。"
+    }
+  ],
+  "factorial.cpp": [
+    {
+      "en": "The unsigned parameter rules out negative input; the 64-bit return limits exact factorials to a small teaching range.",
+      "zh": "无符号参数排除负数输入；64 位返回值也把精确阶乘限制在较小的教学范围。"
+    },
+    {
+      "en": "The multiplication waits for the child call; each frame keeps its own number and pending product on the call stack.",
+      "zh": "乘法必须等子调用返回；每一帧都在调用栈上保存自己的 number 和待乘结果。"
+    }
+  ],
+  "factorial.py": [
+    {
+      "en": "Python integers do not overflow, but deep recursion still hits the interpreter's recursion limit.",
+      "zh": "Python 整数不会溢出，但递归过深仍会触发解释器的递归深度限制。"
+    },
+    {
+      "en": "Reject negative input before the base case; factorial is undefined there and returning 1 would hide the error.",
+      "zh": "在递归基前拒绝负数；负数阶乘未定义，返回 1 会掩盖错误。"
+    },
+    {
+      "en": "The multiplication is evaluated after the child returns; each frame holds its own number until then.",
+      "zh": "乘法在子调用返回后才求值；在此之前每一帧都保存自己的 number。"
+    }
+  ],
+  "fib.c": [
+    {
+      "en": "The unsigned parameter excludes negative n; 64-bit results overflow quickly beyond the small teaching range.",
+      "zh": "无符号参数排除负 n；超出较小教学范围后，64 位结果会迅速溢出。"
+    },
+    {
+      "en": "This single base branch returns 0 for n=0 and 1 for n=1, matching both definitions.",
+      "zh": "这个递归基同时处理 n=0 和 n=1，分别返回 0 和 1，符合两条定义。"
+    },
+    {
+      "en": "Each call must finish before the addition; the live stack is only O(n) deep even though the call tree is exponential.",
+      "zh": "两次调用都返回后才做加法；虽然调用树指数增长，活动栈深度仍只有 O(n)。"
+    }
+  ],
+  "fib.cpp": [
+    {
+      "en": "The unsigned parameter excludes negative n; 64-bit results overflow quickly beyond the small teaching range.",
+      "zh": "无符号参数排除负 n；超出较小教学范围后，64 位结果会迅速溢出。"
+    },
+    {
+      "en": "This single base branch returns 0 for n=0 and 1 for n=1, matching both definitions.",
+      "zh": "这个递归基同时处理 n=0 和 n=1，分别返回 0 和 1，符合两条定义。"
+    },
+    {
+      "en": "Each call must finish before the addition; the live stack is only O(n) deep even though the call tree is exponential.",
+      "zh": "两次调用都返回后才做加法；虽然调用树指数增长，活动栈深度仍只有 O(n)。"
+    }
+  ],
+  "fib.py": [
+    {
+      "en": "Python integers are unbounded, but this naive recursion still has exponential call growth and O(n) depth.",
+      "zh": "Python 整数没有位宽上限，但朴素递归仍有指数级调用量，活动栈深度为 O(n)。"
+    },
+    {
+      "en": "Reject negative n before the base cases; F(n) is undefined there.",
+      "zh": "在递归基之前拒绝负 n；负下标处的 F(n) 未定义。"
+    },
+    {
+      "en": "The two branches are evaluated independently; the same F(k) is recomputed many times because nothing is cached.",
+      "zh": "两个分支独立求值；没有任何缓存，因此同一个 F(k) 会被重复计算多次。"
+    }
+  ],
+  "queue.c": [
+    {
+      "en": "front and rear start at the same index; that equality is the empty state, so no count field is needed.",
+      "zh": "front 与 rear 从同一位置开始；这个相等关系就是空队列，因此无需额外计数字段。"
+    },
+    {
+      "en": "The reserved slot is the one just before front: rear never writes there, so a capacity-8 array holds at most 7 items.",
+      "zh": "保留槽就是 front 前面那一格：rear 永不写入它，因此容量 8 的数组最多存 7 个元素。"
+    },
+    {
+      "en": "Fullness is tested before the write; a rejected enqueue must not overwrite the reserved slot or any live item.",
+      "zh": "写入前先判满；被拒绝的入队不能覆盖保留槽或任何有效元素。"
+    },
+    {
+      "en": "rear names the next free slot, so write there before advancing; advancing first would overwrite the following slot.",
+      "zh": "rear 指向下一个空槽，必须先写再后移；先移动会覆盖后面的槽。"
+    },
+    {
+      "en": "Modulo wraps the physical index without shifting elements; logical order is encoded by the front/rear offsets.",
+      "zh": "取模让物理下标回绕而不搬移元素；逻辑顺序由 front/rear 的相对位置编码。"
+    },
+    {
+      "en": "Dequeue reads front before advancing; the value must be copied out before that slot leaves the live range.",
+      "zh": "出队先读 front 再前移；必须在槽位离开有效区间前把值复制出去。"
+    },
+    {
+      "en": "Advancing front is the entire removal; the old bytes remain but are outside [front, rear).",
+      "zh": "前移 front 就完成删除；旧字节仍在数组中，但已不属于 [front, rear)。"
+    },
+    {
+      "en": "QueueFront is read-only and leaves front unchanged, so the same item can still be dequeued later.",
+      "zh": "QueueFront 只读且不移动 front，因此同一元素之后仍可正常出队。"
+    }
+  ],
+  "queue.cpp": [
+    {
+      "en": "front_ == rear_ is the only empty condition; starting both at zero avoids a separate count.",
+      "zh": "front_ == rear_ 是唯一的空队列条件；二者从 0 开始即可，无需额外计数。"
+    },
+    {
+      "en": "One slot is deliberately unused: the ring can hold kCapacity-1 values while still distinguishing full from empty.",
+      "zh": "刻意空出一格：环最多容纳 kCapacity-1 个值，同时仍能区分队满与队空。"
+    },
+    {
+      "en": "Check before writing; a full queue must reject the new value without disturbing any live slot.",
+      "zh": "写入前先检查；队满时必须拒绝新值，且不能扰动任何有效槽。"
+    },
+    {
+      "en": "rear_ is the next free slot, so the write happens before the modulo advance.",
+      "zh": "rear_ 指向下一个空槽，因此必须先写入，再做取模前移。"
+    },
+    {
+      "en": "The modulo is the wrap; without it a full ring would index past the array instead of returning to 0.",
+      "zh": "取模完成回绕；没有它，环会在数组末尾越界而不是回到 0。"
+    },
+    {
+      "en": "optional distinguishes an empty queue from a stored 0; the value is copied before front_ moves.",
+      "zh": "optional 把空队列和真实值 0 区分开；值在 front_ 移动前先被复制。"
+    },
+    {
+      "en": "Moving front_ is the dequeue; the slot becomes dead without any erase or shift.",
+      "zh": "移动 front_ 就是出队；该槽逻辑失效，无需擦除或搬移。"
+    },
+    {
+      "en": "front() is read-only; it observes data_[front_] and leaves the queue state unchanged.",
+      "zh": "front() 是只读操作；只观察 data_[front_]，不改变队列状态。"
+    }
+  ],
+  "queue.py": [
+    {
+      "en": "A ring that reserves one slot needs at least two cells; capacity 1 could never hold an element and still distinguish full from empty.",
+      "zh": "保留一格的回绕队列至少需要两个单元；容量 1 既存不了元素，也无法区分空满。"
+    },
+    {
+      "en": "The spare slot sits immediately before front; the modulo makes the comparison work across the array boundary.",
+      "zh": "保留槽位于 front 前一格；取模让比较在数组边界处也能成立。"
+    },
+    {
+      "en": "Fullness is checked before the write, so a rejected value cannot overwrite the reserved slot.",
+      "zh": "写入前先判满，因此被拒绝的值不会覆盖保留槽。"
+    },
+    {
+      "en": "rear is the next free slot, so store there and advance afterwards.",
+      "zh": "rear 指向下一个空槽，必须先存值再前移。"
+    },
+    {
+      "en": "Modulo wraps rear to 0 without moving any existing item; front and rear encode the logical order.",
+      "zh": "取模让 rear 回到 0 而不移动已有元素；front 与 rear 共同编码逻辑顺序。"
+    },
+    {
+      "en": "None signals an empty queue; a stored 0 is still valid because emptiness is tested on front == rear.",
+      "zh": "None 表示空队列；真实值 0 仍合法，因为判空依据是 front == rear。"
+    },
+    {
+      "en": "Advancing front is the removal; the old list entry remains but is no longer between front and rear.",
+      "zh": "前移 front 就完成删除；旧列表项仍在，但已不在 front 与 rear 之间。"
+    },
+    {
+      "en": "front() reads data[front] without moving front, so it is safe to call repeatedly.",
+      "zh": "front() 读取 data[front] 且不移动 front，因此可以安全地重复调用。"
+    }
   ]
 };
