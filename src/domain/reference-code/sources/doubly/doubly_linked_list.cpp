@@ -79,36 +79,33 @@ class DoublyList
 
     // Removal repairs both `prev` and `next`; removing the head or tail must also update the external head/tail pointer.
     /*
-     * The local `next` takes ownership of the successor before the predecessor is
-     * rewired, so the rest of the list survives. Replacing `node->prev->next` (or
-     * `head_`) releases the old owner and therefore deletes `node` during that
-     * assignment. The subsequent `tail_ == node` check and `tail_ = node->prev`
-     * therefore touch a node that may already be freed when the removed node is the
-     * tail or the only node. This ordering is a known implementation risk recorded
-     * in the audit, not a pattern to copy; a safe version would capture `prev` and
-     * tail membership before releasing the owner. The demo removes a middle node,
-     * so it does not execute the dangling-tail path.
+     * `prev` and `was_tail` are captured while the node is still alive. The local
+     * `next` then takes ownership of the successor, and the final assignment to
+     * `prev->next` or `head_` may delete `node`. Updating `tail_` before that
+     * assignment avoids reading a freed `node->prev`.
      */
     // Purpose: Remove a known node by reconnecting its neighbours with unique_ptr ownership.
-    // 作用：用 unique_ptr 转移所有权接回前驱/后继；尾结点删除顺序存在已登记的释放后访问风险。
+    // 作用：先保存 prev 与尾结点关系，再用 unique_ptr 转移所有权接回前驱/后继。
     void remove(Node *node)
     {
+        Node *prev = node->prev;
+        bool was_tail = (tail_ == node);
         std::unique_ptr<Node> next = std::move(node->next);
         if (next)
         {
-            next->prev = node->prev;
+            next->prev = prev;
         }
-        if (node->prev)
+        if (was_tail)
         {
-            node->prev->next = std::move(next);
+            tail_ = prev;
+        }
+        if (prev)
+        {
+            prev->next = std::move(next);
         }
         else
         {
             head_ = std::move(next);
-        }
-        if (tail_ == node)
-        {
-            tail_ = node->prev;
         }
     }
 
