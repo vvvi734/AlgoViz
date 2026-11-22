@@ -2929,8 +2929,8 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
       zh: "作用：把叶节点按 2/2 分裂，保持叶链，并提升新右叶的首键。",
     },
     {
-      en: "Failure path: `result` starts as {valid=1, right=-1}; if new_node fails this returns that unchanged, and callers do not reject right=-1, so exhausting the static pool can install an invalid separator. The teaching implementation records this limitation instead of changing insertion flow.",
-      zh: "失败路径：result 初值为 {valid=1, right=-1}；new_node 失败时原样返回，调用方又没有拒绝 right=-1，因此静态池耗尽可能写入无效分隔键。本教学实现登记该限制，不改变插入流程。",
+      en: "Failure path: new_node failures are reported as valid=-1 before any key or link changes; callers release preallocated nodes and return -1 to insert_key.",
+      zh: "失败路径：new_node 失败在改动任何键或链接前返回 valid=-1；调用方释放预分配节点并把 -1 传回 insert_key。",
     },
     {
       en: "Purpose: Split an internal node, promote and remove the middle separator, and move the right child range.",

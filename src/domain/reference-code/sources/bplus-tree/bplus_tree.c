@@ -36,7 +36,7 @@ typedef struct
 
 typedef struct
 {
-    int valid;
+    int valid; // -1 = allocation failure, 0 = no split, 1 = split with a valid right node
     int separator;
     int right;
 } Split;
@@ -59,6 +59,18 @@ static int new_node(int leaf)
     nodes[id].leaf = leaf;
     nodes[id].next = -1;
     return id;
+}
+
+// Purpose: Return the most recently allocated node to the pool only when it is still the last unused node; this is the LIFO undo used when a lower split fails.
+// 作用：仅当最近分配的节点仍是最后一个未使用节点时归还静态池；这是低层分裂失败时的后进先出回滚。
+static void release_node(int id)
+{
+    if (id >= 0 && id == node_count - 1 && nodes[id].key_count == 0 && nodes[id].child_count == 0)
+    {
+        nodes[id].leaf = 0;
+        nodes[id].next = -1;
+        node_count -= 1;
+    }
 }
 
 // Purpose: Locate the first edge whose separator is greater than the key; equality goes right because key i is the right minimum.
@@ -106,11 +118,12 @@ static int contains(int target)
 
 // Purpose: Split a leaf 2/2, preserve the leaf chain, and promote the first key of the new right leaf.
 // 作用：把叶节点按 2/2 分裂，保持叶链，并提升新右叶的首键。
-// Failure path: `result` starts as {valid=1, right=-1}; if new_node fails this returns that unchanged, and callers do not reject right=-1, so exhausting the static pool can install an invalid separator. The teaching implementation records this limitation instead of changing insertion flow.
-static Split split_leaf(int node)
+// Precondition: `right` was allocated before this call. The helper only moves existing keys and links, so a later allocation cannot leave a half-written leaf.
+// Failure path: new_node failures are reported as valid=-1 before any key or link changes; callers release preallocated nodes and return -1 to insert_key.
+// 失败路径：new_node 失败在改动任何键或链接前返回 valid=-1；调用方释放预分配节点并把 -1 传回 insert_key。
+static Split split_leaf(int node, int right)
 {
-    Split result = {1, 0, -1};
-    int right = new_node(1);
+    Split result = {0, 0, -1};
     if (right < 0)
     {
         return result;
@@ -123,6 +136,7 @@ static Split split_leaf(int node)
     nodes[right].next = nodes[node].next;
     nodes[node].next = right;
     nodes[node].key_count = 2;
+    result.valid = 1;
     result.separator = nodes[right].keys[0];
     result.right = right;
     return result;
@@ -130,12 +144,10 @@ static Split split_leaf(int node)
 
 // Purpose: Split an internal node, promote and remove the middle separator, and move the right child range.
 // 作用：分裂内部节点，提升并移除中间分隔键，同时移动右半孩子范围。
-// The same failure convention applies here: a new_node failure still returns valid=1 and right=-1, and callers do not check it.
-// 同样的失败约定：new_node 失败时仍返回 valid=1、right=-1，调用方未检查。
-static Split split_internal(int node)
+// Precondition: `right` is already allocated; this helper cannot fail after mutating the left node or its children.
+static Split split_internal(int node, int right)
 {
-    Split result = {1, 0, -1};
-    int right = new_node(0);
+    Split result = {0, 0, -1};
     if (right < 0)
     {
         return result;
@@ -153,17 +165,28 @@ static Split split_internal(int node)
     }
     nodes[node].key_count = 2;
     nodes[node].child_count = 3;
+    result.valid = 1;
     result.right = right;
     return result;
 }
 
-// Purpose: Insert into a subtree; only a split propagates upward, and records enter leaves only.
-// 作用：向子树插入；只有分裂会向上传播，记录只写入叶子。
+// Purpose: Insert into a subtree; allocations for a possible parent split happen before descending, and a failed child split is reported instead of being treated as a completed split.
+// 作用：向子树插入；父节点可能分裂所需的空间在下降前分配，孩子分裂失败会向上报告，而不是当作已分裂。
 static Split insert_rec(int node, int key)
 {
     Split none = {0, 0, -1};
     if (nodes[node].leaf)
     {
+        int right = -1;
+        if (nodes[node].key_count == MAX_KEYS)
+        {
+            right = new_node(1);
+            if (right < 0)
+            {
+                Split failure = {-1, 0, -1};
+                return failure;
+            }
+        }
         int position = nodes[node].key_count;
         while (position > 0 && nodes[node].keys[position - 1] > key)
         {
@@ -176,12 +199,28 @@ static Split insert_rec(int node, int key)
         {
             return none;
         }
-        return split_leaf(node);
+        return split_leaf(node, right);
     }
     int slot = child_slot(node, key);
+    int pending = -1;
+    if (nodes[node].key_count == MAX_KEYS && nodes[nodes[node].children[slot]].key_count == MAX_KEYS)
+    {
+        pending = new_node(0);
+        if (pending < 0)
+        {
+            Split failure = {-1, 0, -1};
+            return failure;
+        }
+    }
     Split child = insert_rec(nodes[node].children[slot], key);
+    if (child.valid < 0)
+    {
+        release_node(pending);
+        return child;
+    }
     if (!child.valid)
     {
+        release_node(pending);
         return none;
     }
     for (int position = nodes[node].key_count; position > slot; --position)
@@ -195,18 +234,30 @@ static Split insert_rec(int node, int key)
     ++nodes[node].child_count;
     if (nodes[node].key_count <= MAX_KEYS)
     {
+        release_node(pending);
         return none;
     }
-    return split_internal(node);
+    if (pending < 0)
+    {
+        // The preallocation above must cover this case; keep the failure explicit rather than returning valid with right=-1.
+        Split failure = {-1, 0, -1};
+        return failure;
+    }
+    return split_internal(node, pending);
 }
 
-// Purpose: Reject duplicates before mutation; a root split is the only way the tree grows taller.
-// 作用：修改前拒绝重复；根分裂是树唯一长高的方式。
+// Purpose: Reject duplicates before mutation; preallocate a new root before a taller tree is needed, so a static-pool failure leaves the old root and leaf chain untouched.
+// 作用：修改前拒绝重复；树需要长高前先分配新根，使静态池失败时旧根与叶链保持不变。
 static int insert_key(int key)
 {
     if (root < 0)
     {
-        root = new_node(1);
+        int fresh = new_node(1);
+        if (fresh < 0)
+        {
+            return -1;
+        }
+        root = fresh;
         nodes[root].keys[0] = key;
         nodes[root].key_count = 1;
         return 1;
@@ -215,13 +266,28 @@ static int insert_key(int key)
     {
         return 0;
     }
-    Split promoted = insert_rec(root, key);
-    if (promoted.valid)
+    int fresh = -1;
+    int root_will_split = nodes[root].leaf ||
+                          nodes[nodes[root].children[child_slot(root, key)]].key_count == MAX_KEYS;
+    if (nodes[root].key_count == MAX_KEYS && root_will_split)
     {
-        int fresh = new_node(0);
+        fresh = new_node(0);
         if (fresh < 0)
         {
-            return 0;
+            return -1;
+        }
+    }
+    Split promoted = insert_rec(root, key);
+    if (promoted.valid < 0)
+    {
+        release_node(fresh);
+        return -1;
+    }
+    if (promoted.valid)
+    {
+        if (fresh < 0)
+        {
+            return -1;
         }
         nodes[fresh].keys[0] = promoted.separator;
         nodes[fresh].key_count = 1;
@@ -229,6 +295,10 @@ static int insert_key(int key)
         nodes[fresh].children[1] = promoted.right;
         nodes[fresh].child_count = 2;
         root = fresh;
+    }
+    else
+    {
+        release_node(fresh);
     }
     return 1;
 }
@@ -293,8 +363,10 @@ int main(void)
     print_leaves();
     printf("find 15: %s\n", contains(15) ? "found" : "missing");
     printf("find 12: %s\n", contains(12) ? "found" : "missing");
-    printf("insert 12: %s\n", insert_key(12) ? "inserted" : "duplicate");
-    printf("insert 12 again: %s\n", insert_key(12) ? "inserted" : "duplicate");
+    int first_insert = insert_key(12);
+    printf("insert 12: %s\n", first_insert == 1 ? "inserted" : first_insert == 0 ? "duplicate" : "allocation failed");
+    int second_insert = insert_key(12);
+    printf("insert 12 again: %s\n", second_insert == 1 ? "inserted" : second_insert == 0 ? "duplicate" : "allocation failed");
     range_scan(10, 18);
     printf("find 12 after insertion: %s\n", contains(12) ? "found" : "missing");
     return 0;
