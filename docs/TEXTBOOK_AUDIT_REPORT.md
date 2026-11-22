@@ -1130,7 +1130,7 @@ Python 的注释密度低不必然是缺陷，因为 Python 代码更短；但�
 | 不存在的操作 | 循环链表 Python `main` 不再声称头插/删除；`hash_chain.c` 按真实桶头插、`hash_chain.cpp`/`.py` 按真实尾追加分别改写；`sparse_transpose` 只讲 `fast_transpose`，不再讲不存在的普通转置；`kruskal` 改为打印结果、返回 `void`；`components`/`scc` 改为“打印顶点并返回分量/分量数量”，不再声称返回顶点集合 |
 | 数据结构与输出语义 | 线索二叉树三语言均改为独立的 `left_thread`/`right_thread` 字段，不再说复用空 `left`/`right` 指针；`dijkstra` C 不再说“返回距离和前驱数组”；`bfs`/`dfs` C 改为只打印、`void`；标准库对照版分别写 `std::set`、`std::list`、`std::unordered_map`、`std::priority_queue`、`std::queue`、`std::vector`、`std::stack`、`std::string::find`，不再复制手写实现头 |
 | 复杂度错误 | 邻接矩阵版 `bfs.c`、`dfs.c`、`topological_sort.c`、`dijkstra.c`、`scc.c`、`prim.c` 改为 O(V²) 或明确“辅助空间 O(V)，矩阵本身 O(V²)”；静态链表按位置插删改为先 O(n) 找前驱，已知前驱时改游标 O(1)；标准库对照版按库函数真实复杂度描述 |
-| 失败路径与返回值 | 保留 AUDIT-02 对循环链表 C/C++ `append` 失败处理的修复；补充 `append` 返回 `bool` 的含义、调用方检查、失败后已分配结点清理、成功后访问 `tail->next` 的顺序。`btree.c` 的 `split` 明确登记“`void` 无法报告分配失败，`InsertNonFull` 仍按已分裂继续”的 OOM 限制；`bplus_tree.c` 明确登记 `split_leaf`/`split_internal` 失败时仍返回 `valid=1, right=-1`，调用方未检查 |
+| 失败路径与返回值 | 保留 AUDIT-02 对循环链表 C/C++ `append` 失败处理的修复；补充 `append` 返回 `bool` 的含义、调用方检查、失败后已分配结点清理、成功后访问 `tail->next` 的顺序。`btree.c` 与 `bplus_tree.c` 的 OOM 路径已在 SAFETY-01 修复：前者改为调用方预分配 `right`/`new_root` 并返回 `int`，后者改为 `valid=-1` 失败态并在改动结构前预分配；详细证据见第 12 节 |
 
 **测试证据。** `comment-fact.test.ts` 以 41 组维护性事实规则（25 条 absence、37 条 presence）锁定循环/单/双向链表字段、散列墓碑、标准库类型、`components`/`scc` 输出、快速转置、矩阵复杂度、Kruskal 返回值、线索字段、`hash_chain` 三语言插入方向、静态链表 `cur`/`Cell`、Dijkstra/BFS/DFS 矩阵语义；另断言全源 `静态函数`/`static function` 为零，`leaf flag` 只出现在真正有该字段的 B+ 树。
 
@@ -1145,7 +1145,7 @@ Python 的注释密度低不必然是缺陷，因为 Python 代码更短；但�
 - 为什么释放当前结点前先保存 `next`，为什么释放后不能继续解引用，为什么以 `tail` 作为退出标记，最后为何重置头尾指针。
 - `append` 的 `bool` 返回值代表什么；`main` 为什么逐次检查、失败后清理已建结点、成功后才访问 `tail->next`。AUDIT-02 的正确安全写法保持不变。
 
-`linked` 与 `doubly` 同步修正：单链表没有 `tail`/`length`，调用方只持有 `head`；双向链表的 `prev`/`next` 必须对称修复，失败时原链表保持不变；`doubly_linked_list.cpp::remove` 的 `unique_ptr` 释放后访问风险只登记、不重写算法，演示只删除中间结点。
+`linked` 与 `doubly` 同步修正：单链表没有 `tail`/`length`，调用方只持有 `head`；双向链表的 `prev`/`next` 必须对称修复，失败时原链表保持不变。`doubly_linked_list.cpp::remove` 的 `unique_ptr` 释放后访问已在 SAFETY-01 修复：释放前保存 `prev` 与 `was_tail`，先更新 `tail_`，最后才转移所有权释放结点；删除头/尾/单结点/中间结点均有回归覆盖（第 12 节）。
 
 **按类型推广。**
 
@@ -1212,7 +1212,7 @@ Python 的注释密度低不必然是缺陷，因为 Python 代码更短；但�
 | 12 | `bf_find_all`（`bf.c`） | 串 / C | 准确 | `j` 是模式偏移、主串下标 `s+j`；`j==m` 才是命中；命中后 `s+1` 保留重叠；`n<m` 返回 0 | 无重复“暴力匹配”套话 | 通过 |
 | 13 | `BST::insert`（`bst.cpp`） | 树 / C++ | 准确 | 公共 wrapper 从 `root_` 启动并接回返回子树；`unique_ptr` 所有权；重复键拒绝 | wrapper 与递归重载说明已拆分 | 通过 |
 | 14 | `RotateRight`（`avl_tree.c`） | 树 / C | 准确 | 先更新较低结点再更新新根；旋转后仍满足 BST 中序；高度由子树重算 | 未只写“执行右旋” | 通过 |
-| 15 | `split`（`btree.c`） | 树 / C | 准确 | 中位键上移、右半键与 child 槽一起迁移、父结点先右移再插入；`void` 失败无法报告的限制已登记 | 失败路径不再虚假声称“已报告” | 通过，保留 OOM 风险 |
+| 15 | `split`（`btree.c`） | 树 / C | 准确 | 中位键上移、右半键与 child 槽一起迁移、父结点先右移再插入；SAFETY-01 改为“调用方先分配 right，split 只搬移并返回 int”，OOM 返回 0 且旧树不变 | 失败路径不再依赖 void 返回 | 通过 |
 | 16 | `inorder_by_threads`（`threaded_inorder.c`） | 树 / C | 准确 | `ltag==0` 才是真实孩子；线索在 `left_thread`/`right_thread`；首尾空线索仍置 tag=1 | 不再说复用空孩子指针 | 通过 |
 | 17 | `Dijkstra`（`dijkstra.c`） | 图 / C | 准确 | 已确定点距离为最终值；矩阵每轮线性扫描 O(V²)；严格 `<` 保留首个前驱；函数打印不返回数组 | 复杂度与输出语义一致 | 通过 |
 | 18 | `Prim`（`prim.c`） | 图 / C | 准确 | 只对未选点更新 `key`；严格 `<` 保留最轻边；矩阵辅助 O(V)、矩阵本身 O(V²) | 不复制“堆优化”结论 | 通过 |
@@ -1229,7 +1229,7 @@ Python 的注释密度低不必然是缺陷，因为 Python 代码更短；但�
 | 29 | `copy_one`（`gl_copy.c`） | 广义表 / C | 准确 | 深复制先分配父、孩子不共享、失败回收半成品；`tail` 指针到指针统一空/非空表 | 无逐行翻译 | 通过 |
 | 30 | `BuildOptimalMergeTree`（`optimal_merge_tree.c`） | 外部排序 / C | 准确 | 虚拟叶权重 0、只补形状；总代价是所有内部结点权重之和，不是只看根 | 无泛化“哈夫曼式”套话 | 通过 |
 
-**抽查结论。** 未发现 30 个代表函数仍有已知事实错误；发现并登记的真实实现风险为 `doubly_linked_list.cpp::remove` 的释放后访问、`btree.c::split` 的分配失败无返回值、`bplus_tree.c::split_leaf/split_internal` 的失败仍返回 `valid=1, right=-1`。这三项均未在本轮改算法，只改注释说明。
+**抽查结论。** 未发现 30 个代表函数仍有已知事实错误；发现并登记的真实实现风险为 `doubly_linked_list.cpp::remove` 的释放后访问、`btree.c::split` 的分配失败无返回值、`bplus_tree.c::split_leaf/split_internal` 的失败仍返回 `valid=1, right=-1`。这三项已在后续 SAFETY-01 中复现、修复并加入失败注入回归（见第 12 节），不再把“只改注释”作为最终状态。
 
 ### 11.8 有效代码一致性与编译 / 运行验证
 
@@ -1259,9 +1259,9 @@ Python 的注释密度低不必然是缺陷，因为 Python 代码更短；但�
 
 | 项 | 状态 / 原因 |
 |---|---|
-| `doubly_linked_list.cpp::remove` | 真实实现风险：替换 `unique_ptr` 时可能先释放 `node`，随后再读 `node->prev`；本轮只登记注释，演示删除中间结点，不改算法 |
-| `btree.c::split` | `NewNode()` 失败时 `void` 函数无法报告，`InsertNonFull` 仍按已分裂继续；本轮只登记注释，不改控制流 |
-| `bplus_tree.c::split_leaf/split_internal` | `new_node` 失败时仍返回 `valid=1, right=-1`，调用方不检查；本轮只登记注释，不改插入流程 |
+| `doubly_linked_list.cpp::remove` | 已修复并验证（SAFETY-01）：释放前保存 `prev` 与尾关系，先更新 `tail_` 再转移所有权；覆盖空表、单结点、头、尾、中间、连续删除、删除后遍历/再插入与不存在值 |
+| `btree.c::split` | 已修复并验证（SAFETY-01）：`split` 改为 `int` 且不分配；调用方先分配 `right`/`new_root`，失败返回 0；覆盖空根、根第一次/第二次分配、孩子分裂、根分裂后更深层第三次分配失败 |
+| `bplus_tree.c::split_leaf/split_internal` | 已修复并验证（SAFETY-01）：`valid` 改为 `-1/0/1` 三态，分裂函数只接收预分配右结点；覆盖叶/内部/根分配失败、根满但不分裂与手工满根+满内部孩子失败注入 |
 | P2-04 | 32 条公式缺 `formulaEn`，保留给后续双语专项 |
 | P2-07 | 排序比较图解与多关键字/LSD/MSD/链式桶弱相关，保留给后续图解专项 |
 | P2-06 剩余模板 | 当前 631 条 `Purpose` / 605 条 `作用` 中仍有可继续精炼的条目；本轮已筛掉低价值重复，但没有做全源机械删除 |
@@ -1275,4 +1275,18 @@ Python 的注释密度低不必然是缺陷，因为 Python 代码更短；但�
 - 未创建 `v1.0.0` Tag，未部署正式网站，未处理 P2-04/P2-07。
 - 最终提交哈希以 `git log -1` 为准；本节不写死自引用哈希。
 
-**CODE-DOC-03 到此停止。** 后续只在明确授权时处理 P2-04、P2-07 或上述真实实现风险。
+**CODE-DOC-03 到此停止。** 后续 SAFETY-01 见第 12 节；再后续只在明确授权时处理 P2-04、P2-07 或新登记风险。
+
+## 12. SAFETY-01：B 树、B+ 树与双向链表安全整改
+
+本节记录三项曾被登记为“只改注释”的真实实现风险的处理结果。详细复现命令、测试矩阵与边界见 [`SAFETY-01-REPORT.md`](./SAFETY-01-REPORT.md)。
+
+| 项 | 原风险 | 处理结果 | 证据 |
+|---|---|---|---|
+| `doubly_linked_list.cpp::remove` | `unique_ptr` 重接时可能先释放 `node`，随后读取 `node->prev` | 已修复：释放前保存 `prev`/`was_tail`，先更新 `tail_`，最后释放 | 毒化释放旧代码退出 `-1073741819`；修复后退出 0；专项 harness `FAILURES=0/OUTSTANDING=0` |
+| `btree.c::split` | `void` 无法报告 `NewNode` 失败，调用方继续按已分裂下降 | 已修复：`split` 改为 `int` 且不分配；调用方预分配 `right`/`new_root`，失败返回 0 | 旧代码根 3 键、第 3 次分配失败时退出 `-1073741819`；修复后返回 0，旧键全在、目标键不存在、资源计数 0 |
+| `bplus_tree.c::split_leaf/split_internal` | `new_node` 失败仍返回 `valid=1,right=-1`，父结点写入 `0` 与 `-1` | 已修复：`valid=-1/0/1` 三态；分裂函数接收预分配右结点；根只在确实会分裂时预分配 | 旧代码 `1..69` + 池上限 71 插 70 返回 1，父键 `[61,0]`、孩子含 `-1`、`contains(70)=0`；修复后返回 `-1`，树形状不变 |
+
+**验证。** SAFETY-01 专项 3 文件 / 17 tests 通过；注释、本地化、注册表 3 文件 / 24 tests 通过；全量 150 文件 / 1342 tests 通过；`npm run typecheck` 与 `npm run build` 均退出 0；三份目标源码以 `-Werror` 编译通过。ASan/UBSan 在当前 MinGW 环境因缺少 `-lasan`/`-lubsan` 不可用，未虚报通过，改用失败注入、释放毒化、资源计数与不变量检查。
+
+**提交。** 三个功能提交 `3ed9b3f`、`2c462a6`、`2a4839d`，随后提交本审计更新与报告。未创建 Tag、未部署、未改版本号；`图论/` 始终保持未跟踪保护状态。
