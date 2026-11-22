@@ -33,12 +33,35 @@ int timer = 0;
 std::vector<bool> articulation(VERTEX_COUNT, false);
 bool bridges[VERTEX_COUNT][VERTEX_COUNT] = {};
 
+// A valid input matrix has VERTEX_COUNT rows and VERTEX_COUNT columns; every DFS index relies on this shape.
+bool hasGraphShape(const std::vector<std::vector<int>>& graph)
+{
+    if (static_cast<int>(graph.size()) != VERTEX_COUNT)
+    {
+        return false;
+    }
+    for (const auto& row : graph)
+    {
+        if (static_cast<int>(row.size()) != VERTEX_COUNT)
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
 // Purpose: Store both directions of an undirected edge in the adjacency matrix.
 // 作用：在邻接矩阵中保存无向边的两个方向。
-void addEdge(std::vector<std::vector<int>>& graph, int a, int b)
+bool addEdge(std::vector<std::vector<int>>& graph, int a, int b)
 {
+    // Reject an invalid endpoint or matrix shape before writing either cell.
+    if (!hasGraphShape(graph) || a < 0 || a >= VERTEX_COUNT || b < 0 || b >= VERTEX_COUNT)
+    {
+        return false;
+    }
     graph[a][b] = 1;
     graph[b][a] = 1;
+    return true;
 }
 
 // The cut test is low[child] >= disc[parent]; the bridge test is strict low[child] > disc[parent].
@@ -94,8 +117,23 @@ void dfs(const std::vector<std::vector<int>>& graph, int u, int root)
 
 // Purpose: Start DFS from every unseen vertex so disconnected graphs are fully covered.
 // 作用：从每个未访问顶点启动 DFS，完整覆盖非连通图。
-void findArticulationPoints(const std::vector<std::vector<int>>& graph)
+bool findArticulationPoints(const std::vector<std::vector<int>>& graph)
 {
+    // A wrong matrix shape cannot be scanned with fixed VERTEX_COUNT indices; reject it before resetting the previous result.
+    if (!hasGraphShape(graph))
+    {
+        return false;
+    }
+    // Repeated calls must start from a clean forest; stale disc values would suppress every root on the second call.
+    std::fill(disc.begin(), disc.end(), 0);
+    std::fill(low.begin(), low.end(), 0);
+    std::fill(parent.begin(), parent.end(), -1);
+    std::fill(articulation.begin(), articulation.end(), false);
+    for (int row = 0; row < VERTEX_COUNT; ++row)
+    {
+        std::fill(std::begin(bridges[row]), std::end(bridges[row]), false);
+    }
+    timer = 0;
     for (int start = 0; start < VERTEX_COUNT; ++start)
     {
         // Scan every unvisited start separately: disconnected components cannot be reached from one DFS root, while timer stays global.
@@ -104,6 +142,7 @@ void findArticulationPoints(const std::vector<std::vector<int>>& graph)
             dfs(graph, start, start);
         }
     }
+    return true;
 }
 
 // Purpose: Build the teaching graph, run the algorithm and print the final sets.
@@ -111,16 +150,16 @@ void findArticulationPoints(const std::vector<std::vector<int>>& graph)
 int main()
 {
     std::vector<std::vector<int>> graph(VERTEX_COUNT, std::vector<int>(VERTEX_COUNT, 0));
-    addEdge(graph, 0, 1);
-    addEdge(graph, 1, 2);
-    addEdge(graph, 2, 0);
-    addEdge(graph, 2, 3);
-    addEdge(graph, 3, 4);
-    addEdge(graph, 3, 5);
-    addEdge(graph, 4, 5);
-    addEdge(graph, 6, 7);
+    if (!addEdge(graph, 0, 1)) return 1;
+    if (!addEdge(graph, 1, 2)) return 1;
+    if (!addEdge(graph, 2, 0)) return 1;
+    if (!addEdge(graph, 2, 3)) return 1;
+    if (!addEdge(graph, 3, 4)) return 1;
+    if (!addEdge(graph, 3, 5)) return 1;
+    if (!addEdge(graph, 4, 5)) return 1;
+    if (!addEdge(graph, 6, 7)) return 1;
 
-    findArticulationPoints(graph);
+    if (!findArticulationPoints(graph)) return 1;
 
     std::cout << "articulation:";
     for (int v = 0; v < VERTEX_COUNT; ++v)

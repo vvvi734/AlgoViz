@@ -31,8 +31,49 @@ timer = 0
 
 def add_edge(a, b):
     """Store an undirected edge from both endpoints."""
+    # The graph has exactly VERTEX_COUNT slots; reject an out-of-range endpoint instead of growing or indexing past them.
+    if (
+        isinstance(a, bool) or not isinstance(a, int) or a < 0 or a >= VERTEX_COUNT
+        or isinstance(b, bool) or not isinstance(b, int) or b < 0 or b >= VERTEX_COUNT
+    ):
+        raise ValueError(f"edge endpoints must be integers in 0..{VERTEX_COUNT - 1}")
     graph[a].append(b)
     graph[b].append(a)
+
+
+def reset_state():
+    """Restore the module-level DFS state before a new run."""
+    global timer
+    timer = 0
+    for vertex in range(VERTEX_COUNT):
+        disc[vertex] = 0
+        low[vertex] = 0
+        parent[vertex] = -1
+        articulation[vertex] = False
+    bridges.clear()
+
+
+def find_articulation_points():
+    """Run a fresh DFS forest over the current graph and return whether the shape is valid."""
+    # Fixed VERTEX_COUNT indexing requires exactly eight rows; a malformed global graph is an input error, not empty output.
+    if len(graph) != VERTEX_COUNT or any(not isinstance(row, list) for row in graph):
+        raise ValueError("graph must contain eight adjacency lists")
+    for row in graph:
+        for neighbor in row:
+            if (
+                isinstance(neighbor, bool)
+                or not isinstance(neighbor, int)
+                or neighbor < 0
+                or neighbor >= VERTEX_COUNT
+            ):
+                raise ValueError(f"neighbors must be integers in 0..{VERTEX_COUNT - 1}")
+    # Repeated calls must not inherit discovery times, timers, cut vertices or bridges from the previous graph.
+    reset_state()
+    for start in range(VERTEX_COUNT):
+        # Start a new DFS at every undiscovered vertex; disconnected components need separate trees, while timer remains global.
+        if disc[start] == 0:
+            dfs(start, start)
+    return True
 
 
 # The cut test is low[child] >= disc[parent]; the bridge test is strict low[child] > disc[parent].
@@ -75,10 +116,7 @@ def main():
     for a, b in [(0, 1), (1, 2), (2, 0), (2, 3), (3, 4), (3, 5), (4, 5), (6, 7)]:
         add_edge(a, b)
 
-    for start in range(VERTEX_COUNT):
-        # Start a new DFS at every undiscovered vertex; disconnected components need separate trees, while timer remains global.
-        if disc[start] == 0:
-            dfs(start, start)
+    find_articulation_points()
 
     print("articulation:", [v for v in range(VERTEX_COUNT) if articulation[v]])
     print("bridges:", sorted(bridges))

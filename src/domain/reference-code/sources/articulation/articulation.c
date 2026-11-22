@@ -36,10 +36,16 @@ bool bridge[VERTEX_COUNT][VERTEX_COUNT];
 
 // Purpose: Write both directions of an undirected edge so either endpoint can inspect it.
 // 作用：写入无向边的两个方向，使任一端点都能检查这条边。
-void add_edge(int graph[VERTEX_COUNT][VERTEX_COUNT], int a, int b)
+int add_edge(int graph[VERTEX_COUNT][VERTEX_COUNT], int a, int b)
 {
+    // VERTEX_COUNT is a fixed matrix bound; reject an absent matrix or an endpoint outside 0..VERTEX_COUNT-1 before indexing.
+    if (graph == NULL || a < 0 || a >= VERTEX_COUNT || b < 0 || b >= VERTEX_COUNT)
+    {
+        return 0;
+    }
     graph[a][b] = 1;
     graph[b][a] = 1;
+    return 1;
 }
 
 // The cut test is low[child] >= disc[parent]; the bridge test is strict low[child] > disc[parent].
@@ -101,17 +107,35 @@ void dfs(int graph[VERTEX_COUNT][VERTEX_COUNT], int u, int root)
 
 // Purpose: Scan every unseen vertex as a new DFS root, covering disconnected graphs.
 // 作用：扫描每个未访问顶点作为新 DFS 根，覆盖非连通图。
-void find_articulation_points(int graph[VERTEX_COUNT][VERTEX_COUNT])
+int find_articulation_points(int graph[VERTEX_COUNT][VERTEX_COUNT])
 {
+    // A null matrix cannot be scanned; fail before resetting or entering DFS.
+    if (graph == NULL)
+    {
+        return 0;
+    }
+    // Every call is a fresh DFS forest: stale disc/low/answers or a nonzero timer would make a second call skip all roots.
+    for (int vertex = 0; vertex < VERTEX_COUNT; ++vertex)
+    {
+        disc[vertex] = 0;
+        low[vertex] = 0;
+        parent[vertex] = -1;
+        articulation[vertex] = false;
+        for (int other = 0; other < VERTEX_COUNT; ++other)
+        {
+            bridge[vertex][other] = false;
+        }
+    }
+    timer = 0;
     for (int start = 0; start < VERTEX_COUNT; ++start)
     {
-        parent[start] = -1;
         // A disconnected graph has several DFS roots; each unvisited start opens a new tree while timer continues globally.
         if (!disc[start])
         {
             dfs(graph, start, start);
         }
     }
+    return 1;
 }
 
 // Purpose: Build the demo undirected graph, run one DFS forest, then print cut vertices and bridges.
@@ -119,16 +143,16 @@ void find_articulation_points(int graph[VERTEX_COUNT][VERTEX_COUNT])
 int main(void)
 {
     int graph[VERTEX_COUNT][VERTEX_COUNT] = {{0}};
-    add_edge(graph, 0, 1);
-    add_edge(graph, 1, 2);
-    add_edge(graph, 2, 0);
-    add_edge(graph, 2, 3);
-    add_edge(graph, 3, 4);
-    add_edge(graph, 3, 5);
-    add_edge(graph, 4, 5);
-    add_edge(graph, 6, 7);
+    if (!add_edge(graph, 0, 1)) return 1;
+    if (!add_edge(graph, 1, 2)) return 1;
+    if (!add_edge(graph, 2, 0)) return 1;
+    if (!add_edge(graph, 2, 3)) return 1;
+    if (!add_edge(graph, 3, 4)) return 1;
+    if (!add_edge(graph, 3, 5)) return 1;
+    if (!add_edge(graph, 4, 5)) return 1;
+    if (!add_edge(graph, 6, 7)) return 1;
 
-    find_articulation_points(graph);
+    if (!find_articulation_points(graph)) return 1;
 
     printf("articulation:");
     for (int v = 0; v < VERTEX_COUNT; ++v)
