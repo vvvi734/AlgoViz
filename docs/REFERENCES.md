@@ -42,11 +42,16 @@
 | TypeScript | 类型检查 | Apache-2.0 |
 | Zod | 运行时 Schema 校验 | MIT |
 | Monaco Editor | 只读代码查看器与高亮 | MIT |
+| DOMPurify（Monaco 的嵌套依赖） | 上游依赖，AlgoViz 未直接调用 | MPL-2.0 OR Apache-2.0 |
 | Pyodide | 浏览器内真实 Python 执行 | MPL-2.0 |
 | Vitest / Testing Library / jsdom | 单测与 DOM 测试 | MIT |
 | Playwright | 真实浏览器 E2E | Apache-2.0 |
+| `@axe-core/playwright` / `axe-core` | WCAG 自动扫描（仅开发验收） | MPL-2.0 |
+| `caniuse-lite` | 浏览器目标数据（开发构建的传递依赖） | CC-BY-4.0 |
 
-依赖版本以 `package.json` 与 `package-lock.json` 为准。升级依赖时应重新核对许可证，不得删除依赖自带的版权与许可文件。
+依赖版本以 `package.json` 与 `package-lock.json` 为准。升级依赖时应重新核对许可证，不得删除依赖自带的版权与许可文件。`package.json` 的 `overrides` 将 Monaco 固定依赖的 DOMPurify 提升到 3.4.18（同一 3.x 补丁线），用于消除已知的净化器安全告警；未修改 Monaco 的公开 API。
+
+Pyodide、`@axe-core/playwright`、`axe-core` 和 DOMPurify 使用 MPL-2.0（DOMPurify 亦可按 Apache-2.0 使用），`caniuse-lite` 使用 CC-BY-4.0。AlgoViz 不修改这些 npm 包；其许可证文本保留在各自包内。若发布产物包含这些库的代码，应同时保留本节归属说明、许可证名称与上游链接。上游来源：<https://github.com/pyodide/pyodide>、<https://github.com/dequelabs/axe-core>、<https://github.com/cure53/DOMPurify>、<https://github.com/browserslist/caniuse-lite>。
 
 ## 明确没有做的事
 

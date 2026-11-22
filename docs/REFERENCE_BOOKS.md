@@ -166,5 +166,5 @@ python -c "import pymupdf; d=pymupdf.open('大话数据结构.pdf'); d[301].get_
 ## 11. 相关文档
 
 - [`REFERENCES.md`](REFERENCES.md)：教材、设计借鉴和许可证边界。
-- [`TEXTBOOK_COVERAGE.md`](TEXTBOOK_COVERAGE.md)：12 章、32 个理论专题、44 个动态算法的当前覆盖状态。
+- [`TEXTBOOK_COVERAGE.md`](TEXTBOOK_COVERAGE.md)：12 章、56 个理论专题、60 个动态算法的当前覆盖状态。
 - [`reference-books/index.json`](reference-books/index.json)：机器可读目录与页码索引。

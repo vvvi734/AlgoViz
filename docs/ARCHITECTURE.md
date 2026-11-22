@@ -61,13 +61,13 @@ VisualStage + 具体 Visual 组件
 ### `lessons/`
 
 - `types.ts` + `schema.ts`：课程、步骤和双语文本。
-- `registry.ts` + `catalog.ts`：37 门内置课程的注册与查询；不存在外部包安装层。
+- `registry.ts` + `catalog.ts`：60 门内置课程的注册与查询；不存在外部包安装层。
 - 各 `*Lesson*.ts`：课程正文。新增课程应注册一次，避免在多个 UI 文件里重复元数据。
 
 ### `concepts/`
 
 - `types.ts`：理论页、双语段落、`ConceptDiagramKind`。
-- `catalog.ts`：`BASE_CONCEPT_PAGES + STORAGE_CONCEPT_PAGES`，共 28 页。
+- `catalog.ts`：`BASE_CONCEPT_PAGES`、存储/图论/查找/文件等专题数组，共 56 页。
 - `storageConcepts.ts`：TEXTBOOK-01 新增的静态链表、栈与递归、串的存储结构。
 - 理论页不含 Trace、播放器或编辑器。
 
@@ -80,7 +80,7 @@ VisualStage + 具体 Visual 组件
 
 ### `reference-code/`
 
-- `registry.ts` + `sources/**`：37 个算法的 C / C++ / Python 参考实现和双语内部注释，只读加载。
+- `registry.ts` + `sources/**`：60 个算法的 C / C++ / Python 参考实现和双语内部注释，只读加载。
 - `localization.ts` / `annotations.ts`：注释本地化与来源检查。
 
 ## 4. 功能层（`src/features/`）
