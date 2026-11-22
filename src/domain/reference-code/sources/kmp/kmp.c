@@ -58,13 +58,18 @@ void get_next(const char *pattern, int next[])
 // Purpose: Count occurrences of pattern in text, including overlapping matches.
 /*
  * 作用：统计 pattern 在 text 中出现的次数，包含重叠出现。
- * 参数：text 可为空串；pattern 为空串或 malloc 失败时按 0 次处理。
- * 返回：匹配次数，不是首个匹配下标。
+ * 参数：text 可为空串；pattern 可为空串；任一指针为 NULL 时返回 -1。
+ * 返回：匹配次数，不是首个匹配下标；空模式串返回 0；分配失败返回 -1，与合法的“无匹配”区分。
  * 副作用：临时分配并释放 next 表；不修改输入字符串。
  * 不变量：text_index 只增不减；pattern_index 等于已匹配前缀长度，最大为 m。
  */
 int KMP(const char *text, const char *pattern)
 {
+    // A reference API must reject absent strings before strlen; -1 is the documented failure value.
+    if (text == NULL || pattern == NULL)
+    {
+        return -1;
+    }
     int text_length = (int)strlen(text);
     int pattern_length = (int)strlen(pattern);
     // This C demo defines an empty pattern as zero matches; there is no start position to return, so it does not use the usual matches-everywhere convention.
@@ -75,10 +80,10 @@ int KMP(const char *text, const char *pattern)
 
     // The table needs m+1 entries: next[m] is reused after a full match to keep the longest overlap.
     int *next = (int *)malloc((size_t)(pattern_length + 1) * sizeof(int));
-    // This teaching API maps allocation failure to zero matches; callers cannot distinguish it from a real no-match result.
+    // Allocation failure is an error, not a legitimate zero-match result; return -1 so callers can distinguish them.
     if (next == NULL)
     {
-        return 0;
+        return -1;
     }
     get_next(pattern, next);
 
@@ -116,7 +121,13 @@ int main(void)
     const char *text = "ababcabcacbab";
     const char *pattern = "abcac";
 
-    printf("text: %s\npattern: %s\nmatches: %d\n", text, pattern, KMP(text, pattern));
+    int matches = KMP(text, pattern);
+    if (matches < 0)
+    {
+        fprintf(stderr, "KMP failed: invalid string or allocation failure\n");
+        return 1;
+    }
+    printf("text: %s\npattern: %s\nmatches: %d\n", text, pattern, matches);
     printf("overlapping: %d\n", KMP("aaaaa", "aa"));
     printf("missing: %d\n", KMP("abcdef", "xyz"));
     return 0;
