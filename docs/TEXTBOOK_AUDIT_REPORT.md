@@ -1290,3 +1290,21 @@ Python 的注释密度低不必然是缺陷，因为 Python 代码更短；但�
 **验证。** SAFETY-01 专项 3 文件 / 17 tests 通过；注释、本地化、注册表 3 文件 / 24 tests 通过；全量 150 文件 / 1342 tests 通过；`npm run typecheck` 与 `npm run build` 均退出 0；三份目标源码以 `-Werror` 编译通过。ASan/UBSan 在当前 MinGW 环境因缺少 `-lasan`/`-lubsan` 不可用，未虚报通过，改用失败注入、释放毒化、资源计数与不变量检查。
 
 **提交。** 三个功能提交 `3ed9b3f`、`2c462a6`、`2a4839d`，随后提交本审计更新与报告。未创建 Tag、未部署、未改版本号；`图论/` 始终保持未跟踪保护状态。
+
+## 13. SAFETY-02：五算法输入边界与错误路径专项核查
+
+本节记录此前注释审查登记的实现风险。详细旧行为、修复证据、合法差异与保留限制见 [`SAFETY-02-REPORT.md`](./SAFETY-02-REPORT.md)。核查从 `c0adbaec8d80cbb8b125224f6e7120b6fb321667` 的 `main` 开始，只修确认风险，未做全项目重构。
+
+| 算法 | 确认缺陷 | 边界保护 / 合法差异 | 证据 |
+|---|---|---|---|
+| free-list | C `insert_block` 在 24 描述符满时写 `blocks[24]`；C 4 字符 ID 被静默截断 | 非法容量、`request <= 0`、重复 ID 三语言入口拒绝；C++/Python 动态容器无 `MAX_BLOCKS` 数组越界 | 第 24 次 1 字节分配旧代码 `count=25`；修复后 `ALLOCATED=23 COUNT=24 COVERS=1`；`LONG_ID=0`、`DUP1=1 DUP2=0` |
+| KMP | C `malloc` 失败返回 0，与正常零匹配混淆 | C 空模式返回 0、C++ 空列表、Python `ValueError` 是合理 API 差异；C `NULL` 参数返回 -1 | 失败注入 `ALLOCATION_FAILURE=-1`、`NO_MATCH=0`、`EMPTY_PATTERN=0`、`NULL_TEXT=-1` |
+| articulation | 三语言全局 `disc/low/timer/articulation/bridge` 不重置，第二次调用继承旧状态 | C/C++ 固定 8 顶点；C 矩阵与 Python 邻接表是合法存储差异；非法端点/错误形状/非法邻居入口拒绝 | 旧第二次调用 `timer=8` 且保留旧关节点/桥；修复后 `SECOND_ART=00110000`、`SINGLE_ART=00000000`、`OLD_BRIDGE_23=0`、星形根为关节点 |
+| radix | C/C++ 参考函数绕过 `main` 校验，超量/负数越界写固定桶或数组 | 空输入、超量、负数三语言均拒绝；C/C++ 返回状态、Python 抛 `ValueError` 属 API 差异；合法 0..9999 不溢出 | `NEGATIVE=0`、`TOO_LARGE=0`、`EMPTY=0`、`TOO_MANY=0`、`MAX_BATCH_RESULT=1`；`(45,1)` 在 `(45,2)` 前 |
+| replacement | C 固定数组在 `capacity > 6` / `n > 20` 时越界或丢记录；C++ 字符串字面量异常未被捕获 | Python `StopIteration` 在当前 2..6/1..20 契约下静态不可达，改为显式 `ValueError`；`EmptySlot` 返回 -1 已有检查，属误报 | 旧 capacity 7 + n 9 只输出 7 条；修复后非法输入 `-1` / `invalid_argument`；n20/cap2 `MAX_BATCH_RUNS=10` 且覆盖有序 |
+
+**验证。** SAFETY-02 专项 1 文件 / 37 tests 通过；注释、本地化相关 5 文件 / 66 tests 通过；全量 151 文件 / 1379 tests 通过；`npm run typecheck` 与 `npm run build` 退出 0；10 份 C/C++ demo 与 10 份 C/C++ harness 以 `-Werror` 编译通过。ASan/UBSan 在当前 MinGW 环境缺 `-lasan` / `-lubsan`，未宣称通过，改用失败注入、边界检查与不变量验证。
+
+**保留限制。** C `MAX_BLOCKS=24` 仍是教学描述符上限，表满拒绝分裂；C/C++ articulation 固定 8 顶点，与 UI 动态课最多 10 顶点不是同一契约；C++ `hasGraphShape` 只校验形状；C KMP `-1` 同时表示 `NULL` 与分配失败；Python replacement 空槽守卫为防御性保护。
+
+**提交。** 按 free-list、KMP、articulation、radix、replacement 拆分功能提交，随后提交测试、双语说明与本节/报告。最终 `HEAD` 以 `git log -1` 为准；`图论/` 始终保持未跟踪保护状态。本轮停止，不自动进入 CODE-DOC-04。

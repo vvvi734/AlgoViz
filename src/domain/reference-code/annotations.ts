@@ -1303,8 +1303,8 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
       zh: "表需要 m+1 个槽：完整命中后还要使用 next[m] 来保留最长重叠。",
     },
     {
-      en: "This teaching API maps allocation failure to zero matches; callers cannot distinguish it from a real no-match result.",
-      zh: "这个教学 API 把分配失败也映射成 0 次匹配；调用方无法区分它与真正的“没有匹配”。",
+      en: "Allocation failure is an error, not a legitimate zero-match result; return -1 so callers can distinguish them.",
+      zh: "分配失败是错误，不是合法的“零次匹配”；返回 -1，调用方可以据此区分两种结果。",
     },
     {
       en: "pattern_index is the length of the matched prefix, not the index of the last compared pattern character.",
@@ -2337,8 +2337,8 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
       zh: "插入分裂出的剩余块必须保持地址顺序，因此从 index 开始的所有描述符都要右移一位。",
     },
     {
-      en: "MAX_BLOCKS bounds this teaching table; the code does not reject overflow, so callers must keep count below the limit.",
-      zh: "MAX_BLOCKS 限制这张教学块表的大小；代码没有拒绝溢出的检查，调用方必须保证 count 不超过上限。",
+      en: "MAX_BLOCKS bounds this teaching table; insert_block returns 0 without moving records when the table is full.",
+      zh: "MAX_BLOCKS 限制这张教学块表的大小；表满时 insert_block 返回 0，不移动任何描述符。",
     },
     {
       en: "The copy loop runs backwards from count to index; a forward loop would overwrite a record before it is moved.",
