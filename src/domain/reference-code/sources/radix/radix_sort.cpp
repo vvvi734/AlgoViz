@@ -18,6 +18,9 @@
 #include <cstdio>
 #include <vector>
 
+constexpr int MAX_RECORDS = 16;
+constexpr int MAX_VALUE = 9999;
+
 struct Record
 {
     int value;
@@ -34,8 +37,23 @@ static int DigitAt(int value, int power)
 
 // Purpose: Run LSD passes over order, using stable FIFO buckets and a fresh order each pass.
 // 作用：按 LSD 顺序处理每一趟；桶保持 FIFO，收集后整体替换 order。
-static void RadixSort(std::vector<Record> &records)
+// Returns false for an empty/oversized batch or an out-of-range key; all checks precede vector allocation and sorting.
+static bool RadixSort(std::vector<Record> &records)
 {
+    // The teaching contract is 1..MAX_RECORDS records; reject empty or oversized input before deriving n.
+    if (records.empty() || static_cast<int>(records.size()) > MAX_RECORDS)
+    {
+        return false;
+    }
+    // DigitAt uses `%` and buckets[10]; negative or five-digit values would index outside that bucket array.
+    for (const Record &record : records)
+    {
+        if (record.value < 0 || record.value > MAX_VALUE)
+        {
+            return false;
+        }
+    }
+
     const int n = static_cast<int>(records.size());
     std::vector<int> order(n);
     for (int index = 0; index < n; ++index)
@@ -92,6 +110,7 @@ static void RadixSort(std::vector<Record> &records)
         sorted.push_back(records[recordIndex]);
     }
     records.swap(sorted);
+    return true;
 }
 
 int main()
@@ -100,14 +119,18 @@ int main()
         {170, 0}, {45, 1}, {75, 2}, {90, 3}, {802, 4}, {24, 5}, {2, 6}, {66, 7}};
     for (const Record &record : records)
     {
-        if (record.value < 0 || record.value > 9999)
+        if (record.value < 0 || record.value > MAX_VALUE)
         {
             std::puts("radix input must be in 0..9999");
             return 1;
         }
     }
 
-    RadixSort(records);
+    if (!RadixSort(records))
+    {
+        std::puts("radix input must contain 1..16 records in 0..9999");
+        return 1;
+    }
     for (int index = 0; index < static_cast<int>(records.size()); ++index)
     {
         std::printf("(%d,%c)%s", records[index].value, 'A' + records[index].originalIndex,

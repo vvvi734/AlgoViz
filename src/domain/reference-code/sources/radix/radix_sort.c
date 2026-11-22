@@ -37,8 +37,23 @@ static int DigitAt(int value, int power)
 
 // Purpose: Run LSD passes over order, using stable FIFO buckets and a fresh order each pass.
 // 作用：按 LSD 顺序处理每一趟；桶保持 FIFO，收集后整体替换 order。
-static void RadixSort(Record *records, int n)
+// 返回 1 表示已排序，0 表示参数、数量或关键字非法；所有校验都在写 order/buckets 之前完成。
+static int RadixSort(Record *records, int n)
 {
+    // MAX_RECORDS bounds every fixed array below; reject absent storage, empty input and overflow before indexing.
+    if (records == NULL || n < 1 || n > MAX_RECORDS)
+    {
+        return 0;
+    }
+    // DigitAt uses `%` and buckets[10]; negative or five-digit values would produce an invalid bucket index.
+    for (int index = 0; index < n; ++index)
+    {
+        if (records[index].value < 0 || records[index].value > MAX_VALUE)
+        {
+            return 0;
+        }
+    }
+
     int order[MAX_RECORDS];
     int next_order[MAX_RECORDS];
     int buckets[RADIX][MAX_RECORDS];
@@ -111,6 +126,7 @@ static void RadixSort(Record *records, int n)
     {
         records[position] = sorted[position];
     }
+    return 1;
 }
 
 int main(void)
@@ -127,7 +143,11 @@ int main(void)
             return 1;
         }
     }
-    RadixSort(records, n);
+    if (!RadixSort(records, n))
+    {
+        printf("radix input must contain 1..%d records in 0..%d\n", MAX_RECORDS, MAX_VALUE);
+        return 1;
+    }
     for (int index = 0; index < n; ++index)
     {
         printf("(%d,%c)%s", records[index].value, 'A' + records[index].originalIndex,
