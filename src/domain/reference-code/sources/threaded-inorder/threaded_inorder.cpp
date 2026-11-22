@@ -31,6 +31,7 @@ struct Node
     int value;
     std::unique_ptr<Node> left;
     std::unique_ptr<Node> right;
+    // unique_ptr owns only real children; thread targets are non-owning raw pointers. Keeping them separate prevents ownership cycles and accidental deletion of a threaded target.
     Node *left_thread = nullptr;
     Node *right_thread = nullptr;
     int ltag = 0;
@@ -65,17 +66,20 @@ static void thread_walk(Node *node, Node *&prev, Node *&last)
     // Purpose: Finish the left subtree first so prev is the current predecessor.
     thread_walk(node->left.get(), prev, last);
 
+    // A null real left child is the exact place to store the predecessor. prev is null only for the first in-order node, and that null is the correct end-of-thread value.
     if (node->left == nullptr)
     {
         node->ltag = 1;
         node->left_thread = prev;
     }
+    // The current node is the predecessor's successor only if the predecessor has no real right child. When a real right subtree exists, its leftmost node is the successor instead.
     if (prev != nullptr && prev->right == nullptr)
     {
         prev->rtag = 1;
         prev->right_thread = node;
     }
 
+    // Move prev after both connections. The next visit must use this node as its predecessor, and this node's successor link may be filled when the next node is processed.
     prev = node;
     last = node;
     thread_walk(node->right.get(), prev, last);
@@ -89,6 +93,7 @@ static void thread_inorder(Node *root)
     Node *last = nullptr;
     thread_walk(root, prev, last);
 
+    // The final in-order node has no successor. rtag=1 plus a null thread says the empty link is intentional, not a real child that was lost.
     if (last != nullptr && last->right == nullptr)
     {
         last->rtag = 1;
@@ -105,6 +110,7 @@ static void inorder_by_threads(Node *root)
     while (node != nullptr)
     {
         std::cout << ' ' << node->value;
+        // A tagged right link already points at the successor. Otherwise right is a real child, and the successor is the leftmost node of that subtree.
         if (node->rtag == 1)
         {
             // 右线索字段直接跳到后继；线索为空则结束遍历。

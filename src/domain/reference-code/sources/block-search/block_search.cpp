@@ -45,6 +45,7 @@ std::vector<IndexEntry> build_index(const std::vector<int> &data, int blockSize)
     {
         throw std::invalid_argument("block size is outside 1..8");
     }
+    // Ceiling division includes the tail block even when its length is smaller than blockSize; truncating division would silently lose that suffix.
     int blocks = (static_cast<int>(data.size()) + blockSize - 1) / blockSize;
     if (blocks > MAX_BLOCKS)
     {
@@ -61,6 +62,7 @@ std::vector<IndexEntry> build_index(const std::vector<int> &data, int blockSize)
         {
             maximum = std::max(maximum, data[start + offset]);
         }
+        // Later blocks must have strictly larger maxima and every element above the previous maximum. Without both checks, selecting by max could enter a block that does not contain the target.
         if (block > 0)
         {
             if (maximum <= index.back().max)
@@ -89,12 +91,14 @@ int search(const std::vector<int> &data, int blockSize, int target, SearchStats 
     for (int block = 0; block < static_cast<int>(index.size()); ++block)
     {
         ++stats.indexComparisons;
+        // Earlier blocks have smaller maxima, so this first satisfying block is the only one that can contain target; all later blocks lie strictly above the previous maximum.
         if (target <= index[block].max)
         {
             selected = block;
             break;
         }
     }
+    // If no maximum reaches target, target exceeds every record. Return -1 before doing any block scan.
     if (selected < 0)
     {
         return -1;
@@ -103,6 +107,7 @@ int search(const std::vector<int> &data, int blockSize, int target, SearchStats 
     for (int offset = 0; offset < entry.length; ++offset)
     {
         ++stats.blockComparisons;
+        // The block is scanned linearly because its internal order is not part of the index contract. Only equality can guide this stage; binary search would require sorted data.
         if (data[entry.start + offset] == target)
         {
             return entry.start + offset;
@@ -117,6 +122,7 @@ int main()
 {
     std::vector<int> data{22, 8, 14, 35, 41, 57, 66, 38, 73, 81, 94, 69};
     auto index = build_index(data, 4);
+    // The index is probed sequentially because its maxima increase. The first block whose max reaches target is the unique candidate; a later block starts above it and cannot hold a smaller target.
     for (int block = 0; block < static_cast<int>(index.size()); ++block)
     {
         std::cout << "block " << block + 1 << ": [" << index[block].start << ", "

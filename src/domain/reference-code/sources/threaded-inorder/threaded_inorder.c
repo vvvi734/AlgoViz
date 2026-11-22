@@ -35,6 +35,7 @@ typedef struct ThreadNode
     int value;
     struct ThreadNode *left;
     struct ThreadNode *right;
+    // Thread targets live in separate fields, so a real left/right child is never overwritten. ltag/rtag tell traversal which pointer is meaningful.
     struct ThreadNode *left_thread;
     struct ThreadNode *right_thread;
     int ltag;
@@ -81,6 +82,7 @@ static void thread_walk(ThreadNode *node, ThreadState *state)
     /* 左子树必须先完成，state->prev 才是当前结点的中序前驱。 */
     thread_walk(node->left, state);
 
+    // A missing real left child is exactly the slot that can store the predecessor. prev is NULL only for the first in-order node, and that NULL is itself the correct no-predecessor thread.
     if (node->left == NULL)
     {
         // 空 left 对应的前驱线索写入 left_thread；真实 left 仍为 NULL。
@@ -89,6 +91,7 @@ static void thread_walk(ThreadNode *node, ThreadState *state)
         node->ltag = 1;
         node->left_thread = state->prev;
     }
+    // The current node is the predecessor's successor only when the predecessor has no real right child. If it has a right child, the successor lies inside that subtree, so this thread must not be written.
     if (state->prev != NULL && state->prev->right == NULL)
     {
         // 前驱没有右孩子，当前结点正好是它的中序后继；后继写入 right_thread。
@@ -98,6 +101,7 @@ static void thread_walk(ThreadNode *node, ThreadState *state)
         state->prev->right_thread = node;
     }
 
+    // Advance prev only after both links are handled. The next node must see this node as its predecessor, while this node's successor may be written when the next node is visited.
     state->prev = node;
     state->last = node;
     thread_walk(node->right, state);
@@ -115,6 +119,7 @@ static void thread_inorder(ThreadNode *root)
     // 最后一个中序结点没有后继；right 仍为 NULL，right_thread 置空且 rtag 为 1。
     // Purpose: The last node has no successor; right stays null, right_thread is cleared and rtag is 1.
     /* 最后一个中序结点没有后继；right 仍为 NULL，right_thread 置空且 rtag 为 1。 */
+    // The in-order tail has no successor, but its right link is still a thread. Setting rtag=1 with a NULL thread records that the absence is intentional, not a forgotten real child.
     if (state.last != NULL && state.last->right == NULL)
     {
         state.last->rtag = 1;
@@ -142,6 +147,7 @@ static void inorder_by_threads(ThreadNode *root)
     while (node != NULL)
     {
         printf(" %d", node->value);
+        // rtag==1 means right is not a real child, so right_thread is the successor. rtag==0 means descend into the real right subtree and take its leftmost node.
         if (node->rtag == 1)
         {
             // rtag==1 时 right 为空，right_thread 直接指向后继；后继为空则结束。

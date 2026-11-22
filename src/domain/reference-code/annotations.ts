@@ -1064,17 +1064,89 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
       en: "Thread targets live in left_thread/right_thread; the real child pointers stay NULL.",
       zh: "线索目标保存在 left_thread/right_thread；真实孩子指针保持 NULL，未被覆盖。",
     },
+    {
+      en: "Thread targets live in separate fields, so a real left/right child is never overwritten. ltag/rtag tell traversal which pointer is meaningful.",
+      zh: "线索目标放在独立字段中，真实左/右孩子永不被覆盖；ltag/rtag 告诉遍历哪个指针才是有效的。",
+    },
+    {
+      en: "A missing real left child is exactly the slot that can store the predecessor. prev is NULL only for the first in-order node, and that NULL is itself the correct no-predecessor thread.",
+      zh: "缺少真实左孩子，正好可以用这个位置保存前驱；只有中序第一个结点的 prev 为 NULL，而这个 NULL 本身就是正确的“无前驱”线索。",
+    },
+    {
+      en: "The current node is the predecessor's successor only when the predecessor has no real right child. If it has a right child, the successor lies inside that subtree, so this thread must not be written.",
+      zh: "只有前驱没有真实右孩子时，当前结点才是它的中序后继；若前驱有右子树，后继在右子树内部，不能在这里写后继线索。",
+    },
+    {
+      en: "Advance prev only after both links are handled. The next node must see this node as its predecessor, while this node's successor may be written when the next node is visited.",
+      zh: "两条线索都处理完才推进 prev；下一个结点要把当前结点当作前驱，而当前结点的后继可能在下一次访问时才写入。",
+    },
+    {
+      en: "The in-order tail has no successor, but its right link is still a thread. Setting rtag=1 with a NULL thread records that the absence is intentional, not a forgotten real child.",
+      zh: "中序尾结点没有后继，但它的右链接仍应标记为线索；用 rtag=1 和空线索记录“这里本来就是空”，而不是漏掉真实孩子。",
+    },
+    {
+      en: "rtag==1 means right is not a real child, so right_thread is the successor. rtag==0 means descend into the real right subtree and take its leftmost node.",
+      zh: "rtag==1 表示 right 不是真实孩子，应直接走 right_thread；rtag==0 表示进入真实右子树并取它的最左结点。",
+    },
   ],
   "threaded_inorder.cpp": [
     {
       en: "Thread targets live in left_thread/right_thread; the real child pointers stay null.",
       zh: "线索目标保存在 left_thread/right_thread；真实孩子指针保持空，未被覆盖。",
     },
+    {
+      en: "unique_ptr owns only real children; thread targets are non-owning raw pointers. Keeping them separate prevents ownership cycles and accidental deletion of a threaded target.",
+      zh: "unique_ptr 只拥有真实孩子，线索目标是非拥有裸指针；分开保存可避免所有权环和误删线索目标。",
+    },
+    {
+      en: "A null real left child is the exact place to store the predecessor. prev is null only for the first in-order node, and that null is the correct end-of-thread value.",
+      zh: "真实左孩子为空时，正好在这里保存前驱；只有中序首结点的 prev 为空，而这个空值就是正确的线索终点。",
+    },
+    {
+      en: "The current node is the predecessor's successor only if the predecessor has no real right child. When a real right subtree exists, its leftmost node is the successor instead.",
+      zh: "只有前驱没有真实右孩子时，当前结点才是它的后继；若存在真实右子树，后继应是该子树的最左结点。",
+    },
+    {
+      en: "Move prev after both connections. The next visit must use this node as its predecessor, and this node's successor link may be filled when the next node is processed.",
+      zh: "两条连接完成后再移动 prev；下一次访问要把当前结点当作前驱，而当前结点的后继可能在下个结点处理时才填写。",
+    },
+    {
+      en: "The final in-order node has no successor. rtag=1 plus a null thread says the empty link is intentional, not a real child that was lost.",
+      zh: "中序最后一个结点没有后继；rtag=1 加空线索表示这个空链接是刻意的，而不是丢失的真实孩子。",
+    },
+    {
+      en: "A tagged right link already points at the successor. Otherwise right is a real child, and the successor is the leftmost node of that subtree.",
+      zh: "右链接已标记为线索时，它直接指向后继；否则 right 是真实孩子，后继就是该子树的最左结点。",
+    },
   ],
   "threaded_inorder.py": [
     {
       en: "Thread targets live in left_thread/right_thread; the real child pointers stay None.",
       zh: "线索目标保存在 left_thread/right_thread；真实孩子指针保持 None，未被覆盖。",
+    },
+    {
+      en: "Threads are separate from real child links. The tag, not the pointer's truthiness alone, decides whether left_thread/right_thread is valid.",
+      zh: "线索与真实孩子链接分开保存；判断线索是否有效要看 tag，而不能只看指针是否为空。",
+    },
+    {
+      en: "A missing real left child is the slot that stores the predecessor. For the first in-order node PRE is None, which is the correct no-predecessor thread.",
+      zh: "真实左孩子为空时，这个位置用于保存前驱；中序首结点的 PRE 为 None，正是正确的“无前驱”线索。",
+    },
+    {
+      en: "The current node is the predecessor's successor only when the predecessor has no real right child. If pre[0].right exists, the successor lies in that subtree.",
+      zh: "只有前驱没有真实右孩子时，当前结点才是它的后继；若 pre[0].right 存在，后继在该子树内部。",
+    },
+    {
+      en: "Advance PRE after both links. The next node must treat this node as its predecessor, while this node's own successor may be linked during the next visit.",
+      zh: "两条线索处理完再推进 PRE；下一结点要把当前结点当作前驱，而当前结点的后继可能在下一次访问时才链接。",
+    },
+    {
+      en: "The in-order tail has no successor, yet its right pointer is still a thread. Marking rtag=1 with None records an intentional empty successor.",
+      zh: "中序尾结点没有后继，但其右指针仍是一条线索；用 rtag=1 和 None 记录“刻意没有后继”。",
+    },
+    {
+      en: "A right thread is already the successor. With rtag==0, right is a real subtree, so the walk must descend to its leftmost node.",
+      zh: "右线索已经直接指向后继；rtag==0 时 right 是真实子树，必须下降到它的最左结点。",
     },
   ],
   "inorder.c": [
@@ -2682,6 +2754,30 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
       en: "Purpose: Probe the index, then scan exactly the selected block; comparisons reports both stage counts.",
       zh: "作用：先顺序探测索引，再只扫描被选中的块；comparisons 分别报告索引与块内比较次数。",
     },
+    {
+      en: "Ceiling division counts the final short block. Floor division would omit it whenever count is not a multiple of block_size.",
+      zh: "向上取整会计入最后一个短块；若用向下取整，count 不是 block_size 整数倍时就会漏掉该块。",
+    },
+    {
+      en: "The index is valid only if maxima strictly increase and every value in this block exceeds the previous maximum. Otherwise a later block could contain a value smaller than an earlier block's max, so max-based selection would be unsafe.",
+      zh: "只有块最大值严格递增且本块所有值都大于前一块最大值时索引才有效；否则后块可能含更小值，按最大值选块就不安全。",
+    },
+    {
+      en: "The index is scanned from the first block. Because maxima increase, stopping at the first max >= target gives the only candidate; a later block cannot contain an earlier value.",
+      zh: "索引从第一块开始顺序扫描；由于最大值递增，遇到第一个 max≥target 的块即可停止，后面块不可能包含更早的值。",
+    },
+    {
+      en: "The first block whose maximum reaches target is the only possible block: earlier maxima are too small, and later blocks all start above this maximum.",
+      zh: "第一个最大值达到 target 的块就是唯一候选：更早的块最大值太小，而更晚的块所有值都大于这个最大值。",
+    },
+    {
+      en: "No maximum reaches target means target is larger than every value in the array; return -1 before scanning any block.",
+      zh: "没有任何块最大值达到 target，说明目标大于数组中所有值；应在扫描任何块之前返回 −1。",
+    },
+    {
+      en: "Inside a block the values are not promised sorted, so only a linear equality scan is valid. A binary search here would assume an ordering the index never guarantees.",
+      zh: "块内并未保证有序，因此只能线性扫描判等；在这里用二分会假设一种索引从未承诺过的顺序。",
+    },
   ],
   "block_search.cpp": [
     {
@@ -2692,6 +2788,30 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
       en: "Purpose: Probe the index, then scan the selected block; stats separates the two stages.",
       zh: "作用：先探测索引，再扫描选中的块；stats 分开记录两个阶段的比较次数。",
     },
+    {
+      en: "Ceiling division includes the tail block even when its length is smaller than blockSize; truncating division would silently lose that suffix.",
+      zh: "向上取整把长度不足 blockSize 的尾块也计入；截断除法会悄悄丢掉这段后缀。",
+    },
+    {
+      en: "Later blocks must have strictly larger maxima and every element above the previous maximum. Without both checks, selecting by max could enter a block that does not contain the target.",
+      zh: "后续块必须最大值严格更大且每个元素都大于前一块最大值；缺少任一检查，按最大值选块都可能进入不含目标的块。",
+    },
+    {
+      en: "The index is probed sequentially because its maxima increase. The first block whose max reaches target is the unique candidate; a later block starts above it and cannot hold a smaller target.",
+      zh: "索引最大值递增，因此顺序探测；第一个 max 达到 target 的块就是唯一候选，后面的块起点更大，不可能包含更小的目标。",
+    },
+    {
+      en: "Earlier blocks have smaller maxima, so this first satisfying block is the only one that can contain target; all later blocks lie strictly above the previous maximum.",
+      zh: "更早块的最大值更小，因此第一个满足条件的块才是唯一可能包含 target 的块；后续块都严格高于前一最大值。",
+    },
+    {
+      en: "If no maximum reaches target, target exceeds every record. Return -1 before doing any block scan.",
+      zh: "若没有任何最大值达到 target，目标就大于所有记录；应在扫描块之前返回 −1。",
+    },
+    {
+      en: "The block is scanned linearly because its internal order is not part of the index contract. Only equality can guide this stage; binary search would require sorted data.",
+      zh: "块内顺序不属于索引契约，因此只能线性扫描；本阶段只能用相等判断，二分则需要数据有序。",
+    },
   ],
   "block_search.py": [
     {
@@ -2701,6 +2821,34 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
     {
       en: "Purpose: Probe the index sequentially, then scan only the selected real block.",
       zh: "作用：顺序探测索引，然后只扫描被选中的真实块。",
+    },
+    {
+      en: "Ceiling division allocates an index entry for the final short block; floor division would omit the tail whenever the length is not an exact multiple.",
+      zh: "向上取整会为最后一个短块建立索引项；长度不是整数倍时，向下取整会漏掉尾部。",
+    },
+    {
+      en: "Slice only the current block; the last chunk may be shorter than block_size, and max(chunk) must use its real length rather than a fixed width.",
+      zh: "只切出当前块；最后一块可能短于 block_size，max(chunk) 必须使用真实长度而不是固定宽度。",
+    },
+    {
+      en: "The index contract requires both strictly increasing maxima and every value above the previous maximum. Checking only the maximum would miss a small value hidden in a later block.",
+      zh: "索引契约要求最大值严格递增，且每个值都高于前一块最大值；只检查最大值会漏掉后块中隐藏的小值。",
+    },
+    {
+      en: "Scan index entries from the first block. Since maxima increase, the first entry whose max reaches target is the unique candidate; later blocks start above it.",
+      zh: "从第一块开始扫描索引项；最大值递增，所以第一个 max 达到 target 的项就是唯一候选，后面的块起点更高。",
+    },
+    {
+      en: "The first block whose maximum is at least target is the only possible block: earlier maxima are too small, and later blocks all start above this maximum.",
+      zh: "第一个最大值不小于 target 的块就是唯一候选：更早的最大值太小，而后块所有值都高于这个最大值。",
+    },
+    {
+      en: "No maximum reaches target means the value exceeds every record; return -1 without scanning a block.",
+      zh: "没有任何最大值达到 target，说明目标大于所有记录；不再扫描块，直接返回 −1。",
+    },
+    {
+      en: "The selected block is scanned linearly because the index never promises sorted values inside a block. Only equality is a valid test here.",
+      zh: "被选块只能线性扫描，因为索引从未承诺块内有序；这里只能做相等判断。",
     },
   ],
   "bplus_tree.c": [

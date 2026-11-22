@@ -25,14 +25,17 @@ MAX_BLOCK_SIZE = 8
 def build_index(data, block_size):
     if not data or not 1 <= block_size <= MAX_BLOCK_SIZE:
         raise ValueError("block size must be within 1..8")
+    # Ceiling division allocates an index entry for the final short block; floor division would omit the tail whenever the length is not an exact multiple.
     blocks = (len(data) + block_size - 1) // block_size
     if blocks > MAX_BLOCKS:
         raise ValueError("too many blocks")
     index = []
     for block in range(blocks):
         start = block * block_size
+        # Slice only the current block; the last chunk may be shorter than block_size, and max(chunk) must use its real length rather than a fixed width.
         chunk = data[start:start + block_size]
         maximum = max(chunk)
+        # The index contract requires both strictly increasing maxima and every value above the previous maximum. Checking only the maximum would miss a small value hidden in a later block.
         if block > 0:
             if maximum <= index[-1]["max"]:
                 raise ValueError("block maxima must strictly increase")
@@ -48,17 +51,21 @@ def block_search(data, block_size, target):
     index = build_index(data, block_size)
     index_comparisons = 0
     selected = None
+    # Scan index entries from the first block. Since maxima increase, the first entry whose max reaches target is the unique candidate; later blocks start above it.
     for block, entry in enumerate(index):
         index_comparisons += 1
+        # The first block whose maximum is at least target is the only possible block: earlier maxima are too small, and later blocks all start above this maximum.
         if target <= entry["max"]:
             selected = block
             break
+    # No maximum reaches target means the value exceeds every record; return -1 without scanning a block.
     if selected is None:
         return -1, index_comparisons, 0
     entry = index[selected]
     block_comparisons = 0
     for offset in range(entry["length"]):
         block_comparisons += 1
+        # The selected block is scanned linearly because the index never promises sorted values inside a block. Only equality is a valid test here.
         if data[entry["start"] + offset] == target:
             return entry["start"] + offset, index_comparisons, block_comparisons
     return -1, index_comparisons, block_comparisons

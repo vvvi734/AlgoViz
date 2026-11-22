@@ -37,6 +37,7 @@ static int build_index(const int *data, int count, int block_size, IndexEntry *i
     {
         return -1;
     }
+    // Ceiling division counts the final short block. Floor division would omit it whenever count is not a multiple of block_size.
     int blocks = (count + block_size - 1) / block_size;
     if (blocks > MAX_BLOCKS)
     {
@@ -54,6 +55,7 @@ static int build_index(const int *data, int count, int block_size, IndexEntry *i
                 maximum = data[start + offset];
             }
         }
+        // The index is valid only if maxima strictly increase and every value in this block exceeds the previous maximum. Otherwise a later block could contain a value smaller than an earlier block's max, so max-based selection would be unsafe.
         if (block > 0)
         {
             if (maximum <= index[block - 1].max)
@@ -93,12 +95,14 @@ static int block_search(const int *data, int count, int block_size, int target,
     for (int block = 0; block < blocks; ++block)
     {
         ++*index_comparisons;
+        // The first block whose maximum reaches target is the only possible block: earlier maxima are too small, and later blocks all start above this maximum.
         if (target <= index[block].max)
         {
             selected = block;
             break;
         }
     }
+    // No maximum reaches target means target is larger than every value in the array; return -1 before scanning any block.
     if (selected < 0)
     {
         return -1;
@@ -108,6 +112,7 @@ static int block_search(const int *data, int count, int block_size, int target,
     for (int offset = 0; offset < length; ++offset)
     {
         ++*block_comparisons;
+        // Inside a block the values are not promised sorted, so only a linear equality scan is valid. A binary search here would assume an ordering the index never guarantees.
         if (data[start + offset] == target)
         {
             return start + offset;
@@ -124,6 +129,7 @@ int main(void)
     int count = (int)(sizeof(data) / sizeof(data[0]));
     IndexEntry index[MAX_BLOCKS];
     int blocks = build_index(data, count, 4, index);
+    // The index is scanned from the first block. Because maxima increase, stopping at the first max >= target gives the only candidate; a later block cannot contain an earlier value.
     for (int block = 0; block < blocks; ++block)
     {
         printf("block %d: [%d, %d) max=%d\n", block + 1, index[block].start,

@@ -39,6 +39,7 @@ class Node:
         self.right: Node | None = None
         self.ltag = 0
         self.rtag = 0
+        # Threads are separate from real child links. The tag, not the pointer's truthiness alone, decides whether left_thread/right_thread is valid.
         self.left_thread: Node | None = None
         self.right_thread: Node | None = None
 
@@ -83,17 +84,20 @@ def thread_inorder(root: Node | None) -> Node | None:
         # Purpose: Finish the left subtree first; only then is PRE the true predecessor.
         walk(node.left)
 
+        # A missing real left child is the slot that stores the predecessor. For the first in-order node PRE is None, which is the correct no-predecessor thread.
         if node.left is None:
             # 空左指针改造成前驱线索，tag 单独保存，真实 left 仍是 None。
             # Purpose: A null left link becomes a predecessor thread; real left stays None.
             node.ltag = 1
             node.left_thread = pre[0]
+        # The current node is the predecessor's successor only when the predecessor has no real right child. If pre[0].right exists, the successor lies in that subtree.
         if pre[0] is not None and pre[0].right is None:
             # 前驱的右指针为空，当前结点正好是它的中序后继。
             # Purpose: The predecessor lacks a right child, so node is its successor.
             pre[0].rtag = 1
             pre[0].right_thread = node
 
+        # Advance PRE after both links. The next node must treat this node as its predecessor, while this node's own successor may be linked during the next visit.
         pre[0] = node
         last[0] = node
         walk(node.right)
@@ -102,6 +106,7 @@ def thread_inorder(root: Node | None) -> Node | None:
 
     # 中序最后一个结点没有后继，但它的右指针仍应标记为线索。
     # Purpose: The in-order tail has no successor, yet its right link is still tagged.
+    # The in-order tail has no successor, yet its right pointer is still a thread. Marking rtag=1 with None records an intentional empty successor.
     if last[0] is not None and last[0].right is None:
         last[0].rtag = 1
         last[0].right_thread = None
@@ -124,6 +129,7 @@ def inorder_by_threads(root: Node | None) -> list[int]:
     while node is not None:
         result.append(node.value)
 
+        # A right thread is already the successor. With rtag==0, right is a real subtree, so the walk must descend to its leftmost node.
         if node.rtag == 1:
             # 右指针是线索，直接跳到中序后继；后继为空表示遍历结束。
             # Purpose: A right thread is the successor directly; None ends the walk.
