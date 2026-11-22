@@ -31,20 +31,25 @@
  */
 void get_next(const char *pattern, int next[])
 {
+    // position is the prefix length being extended; border is that prefix's longest proper border length.
     int position = 0;
     int border = -1;
+    // -1 is a sentinel, not a real border: at the first pattern character there is no shorter prefix to fall back to.
     next[0] = -1;
+    // Build one table entry per prefix: position is also the next pattern character to compare against pattern[border].
     while (pattern[position] != '\0')
     {
+        // The border can be extended when border is -1 (start fresh) or the two next characters match; either way the new length grows by one.
         if (border == -1 || pattern[position] == pattern[border])
         {
             ++position;
             ++border;
+            // After extension, next[position] records the border length of the prefix ending at position-1, which is exactly one-based next.
             next[position] = border;
         }
         else
         {
-            // next[] is a one-based failure table; follow its chain instead of restarting the pattern.
+            // The current border cannot be extended, so try the border of that border; next[border] stores that shorter length, not a character index.
             border = next[border];
         }
     }
@@ -62,12 +67,15 @@ int KMP(const char *text, const char *pattern)
 {
     int text_length = (int)strlen(text);
     int pattern_length = (int)strlen(pattern);
+    // This C demo defines an empty pattern as zero matches; there is no start position to return, so it does not use the usual matches-everywhere convention.
     if (pattern_length == 0)
     {
         return 0;
     }
 
+    // The table needs m+1 entries: next[m] is reused after a full match to keep the longest overlap.
     int *next = (int *)malloc((size_t)(pattern_length + 1) * sizeof(int));
+    // This teaching API maps allocation failure to zero matches; callers cannot distinguish it from a real no-match result.
     if (next == NULL)
     {
         return 0;
@@ -76,9 +84,11 @@ int KMP(const char *text, const char *pattern)
 
     int matches = 0;
     int text_index = 0;
+    // pattern_index is the length of the matched prefix, not the index of the last compared pattern character.
     int pattern_index = 0;
     while (text_index < text_length)
     {
+        // -1 means no usable border is left; in that case advance both pointers, so the text pointer still never moves backwards.
         if (pattern_index == -1 || text[text_index] == pattern[pattern_index])
         {
             ++text_index;
@@ -86,6 +96,7 @@ int KMP(const char *text, const char *pattern)
         }
         else
         {
+            // A mismatch falls back to the longest border of the matched prefix; the text index stays put because that prefix is already known to match.
             pattern_index = next[pattern_index];
         }
         if (pattern_index == pattern_length)

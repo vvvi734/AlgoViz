@@ -40,19 +40,22 @@ def build_lps(pattern: str) -> list[int]:
     pattern[0..i-1], and every lps[0..i-1] entry is final.
     """
     m = len(pattern)
+    # build_lps accepts an empty pattern and returns []; the public search function rejects it separately because there is no match-start convention.
     if m == 0:
         return []
 
     lps = [0] * m
+    # i is the prefix end being filled; j is the current border length. The first character needs no proper border, so lps[0] stays 0.
     i = 1
     j = 0
     while i < m:
         if pattern[i] == pattern[j]:
             j += 1
+            # A successful extension raises the border length by one and records it at the current prefix end.
             lps[i] = j
             i += 1
         elif j > 0:
-            # Fall back to the longest border that can still be extended.
+            # j is a length, so j-1 is the last matched character; lps[j-1] gives the next shorter border to try.
             j = lps[j - 1]
         else:
             lps[i] = 0
@@ -79,6 +82,7 @@ def kmp_find_all(text: str, pattern: str) -> list[int]:
 
     Side effects: none; the inputs are not modified.
     """
+    # This API rejects an empty pattern with ValueError; returning [] would be ambiguous with a legitimate no-match result.
     if not pattern:
         raise ValueError("pattern must not be empty")
 
@@ -86,6 +90,7 @@ def kmp_find_all(text: str, pattern: str) -> list[int]:
     n = len(text)
     m = len(pattern)
     starts: list[int] = []
+    # Here i is the text position and j is the matched prefix length, not a character index into pattern.
     i = 0
     j = 0
 
@@ -93,9 +98,11 @@ def kmp_find_all(text: str, pattern: str) -> list[int]:
         if text[i] == pattern[j]:
             i += 1
             j += 1
+            # A full match ends at i-1, so i-m is the start; then j falls back to the whole pattern's border for overlaps.
             if j == m:
                 # i is already past the match; i - m is the start, then j falls back for overlaps.
                 starts.append(i - m)
+                # The text pointer stays after a hit; only j rewinds so the next search can reuse the longest suffix that is also a prefix.
                 j = lps[j - 1]
         elif j > 0:
             j = lps[j - 1]

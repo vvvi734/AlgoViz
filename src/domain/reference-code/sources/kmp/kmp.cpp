@@ -40,6 +40,7 @@ std::vector<std::size_t> build_lps(const std::string &pattern)
 {
     std::size_t m = pattern.size();
     std::vector<std::size_t> lps(m, 0);
+    // i is the prefix end being filled; j is the border length. lps[0] stays 0 because a one-character prefix has no proper border.
     std::size_t i = 1;
     std::size_t j = 0;
 
@@ -47,16 +48,18 @@ std::vector<std::size_t> build_lps(const std::string &pattern)
     {
         if (pattern[i] == pattern[j])
         {
+            // Extending by one character succeeds; the new border length is the old j plus one, stored at the current prefix end.
             lps[i] = ++j;
             ++i;
         }
         else if (j > 0)
         {
-            // lps stores lengths, not positions; j - 1 is the last matched prefix index.
+            // j is a length, so the last matched character is at j-1; lps[j-1] is the next shorter border to try.
             j = lps[j - 1];
         }
         else
         {
+            // No border can be extended and j is already zero, so this prefix has no non-empty proper border.
             lps[i] = 0;
             ++i;
         }
@@ -70,6 +73,7 @@ std::vector<std::size_t> build_lps(const std::string &pattern)
 std::vector<std::size_t> kmp_find_all(const std::string &text, const std::string &pattern)
 {
     std::vector<std::size_t> starts;
+    // An empty pattern has no meaningful start positions in this implementation; return no matches rather than inventing a convention.
     if (pattern.empty())
     {
         return starts;
@@ -78,6 +82,7 @@ std::vector<std::size_t> kmp_find_all(const std::string &text, const std::string
     std::vector<std::size_t> lps = build_lps(pattern);
     std::size_t n = text.size();
     std::size_t m = pattern.size();
+    // In the scan, i is the next text position and j is the number of pattern characters already matched.
     std::size_t i = 0;
     std::size_t j = 0;
 
@@ -87,6 +92,7 @@ std::vector<std::size_t> kmp_find_all(const std::string &text, const std::string
         {
             ++i;
             ++j;
+            // A full match ends at i-1, so i-m is its start; j then falls back to lps[m-1] to preserve the longest overlap.
             if (j == m)
             {
                 // i has already moved past the match; subtract m to report its start.
@@ -96,6 +102,7 @@ std::vector<std::size_t> kmp_find_all(const std::string &text, const std::string
         }
         else if (j > 0)
         {
+            // Only the pattern pointer rewinds here; j-1 is the last matched character and lps[j-1] is the longest border that can still extend.
             j = lps[j - 1];
         }
         else

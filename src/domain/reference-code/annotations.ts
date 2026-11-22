@@ -851,32 +851,144 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
   ],
   "kmp.c": [
     {
-      en: "next[] is a one-based failure table; follow its chain instead of restarting the pattern.",
-      zh: "next[] 是一基失败表；失配时沿它的链回退，而不是从头重新匹配。",
+      en: "The current border cannot be extended, so try the border of that border; next[border] stores that shorter length, not a character index.",
+      zh: "当前 border 无法延长，就改试“这个 border 的 border”；next[border] 存的是更短的长度，而不是字符下标。",
     },
     {
       en: "After a full match, reuse the border table so overlapping occurrences are still found.",
       zh: "完整匹配后继续复用边界表，才能找出重叠出现的位置。",
     },
+    {
+      en: "position is the prefix length being extended; border is that prefix's longest proper border length.",
+      zh: "position 是当前正在延伸的前缀长度；border 是该前缀的最长真 border 长度。",
+    },
+    {
+      en: "-1 is a sentinel, not a real border: at the first pattern character there is no shorter prefix to fall back to.",
+      zh: "next[0] = -1 是哨兵而不是真实 border：模式串首字符之前没有更短前缀可以回退。",
+    },
+    {
+      en: "Build one table entry per prefix: position is also the next pattern character to compare against pattern[border].",
+      zh: "每个前缀都要生成一个表项：position 同时就是下一个要与 pattern[border] 比较的字符位置。",
+    },
+    {
+      en: "The border can be extended when border is -1 (start fresh) or the two next characters match; either way the new length grows by one.",
+      zh: "border 为 -1（从头开始）或两个待比较字符相等时，当前 border 可以延长一位；两种情况下新长度都加一。",
+    },
+    {
+      en: "After extension, next[position] records the border length of the prefix ending at position-1, which is exactly one-based next.",
+      zh: "延长后，next[position] 记录的是以 position-1 结尾的那个前缀的 border 长度，这正是 1 基 next 的定义。",
+    },
+    {
+      en: "This C demo defines an empty pattern as zero matches; there is no start position to return, so it does not use the usual matches-everywhere convention.",
+      zh: "本 C 示例把空模式串定义为 0 次匹配；它没有起点可返回，因此不采用“在每个位置都匹配”的约定。",
+    },
+    {
+      en: "The table needs m+1 entries: next[m] is reused after a full match to keep the longest overlap.",
+      zh: "表需要 m+1 个槽：完整命中后还要使用 next[m] 来保留最长重叠。",
+    },
+    {
+      en: "This teaching API maps allocation failure to zero matches; callers cannot distinguish it from a real no-match result.",
+      zh: "这个教学 API 把分配失败也映射成 0 次匹配；调用方无法区分它与真正的“没有匹配”。",
+    },
+    {
+      en: "pattern_index is the length of the matched prefix, not the index of the last compared pattern character.",
+      zh: "pattern_index 是已匹配前缀的长度，不是最后比较过的模式字符下标。",
+    },
+    {
+      en: "-1 means no usable border is left; in that case advance both pointers, so the text pointer still never moves backwards.",
+      zh: "-1 表示已无可用 border；此时两个指针一起前进，因此主串指针始终不会后退。",
+    },
+    {
+      en: "A mismatch falls back to the longest border of the matched prefix; the text index stays put because that prefix is already known to match.",
+      zh: "失配时回退到已匹配前缀的最长 border；主串下标保持不动，因为这段前缀已经确认匹配。",
+    },
   ],
   "kmp.cpp": [
     {
-      en: "lps stores lengths, not positions; j - 1 is the last matched prefix index.",
-      zh: "lps 存的是长度而不是位置；j - 1 才是最后已匹配前缀的下标。",
+      en: "lps[i] is a length, not a position: on mismatch fall back to lps[j - 1].",
+      zh: "lps[i] 存的是长度而不是位置；失配时回退到 lps[j - 1]。",
+    },
+    {
+      en: "All starts, including overlapping occurrences.",
+      zh: "返回全部起点，包括重叠出现的位置。",
     },
     {
       en: "i has already moved past the match; subtract m to report its start.",
       zh: "此时 i 已越过整个匹配；减去 m 才是匹配起点。",
     },
+    {
+      en: "i is the prefix end being filled; j is the border length. lps[0] stays 0 because a one-character prefix has no proper border.",
+      zh: "i 是正在填写的前缀末端；j 是当前 border 长度。单字符前缀没有真 border，所以 lps[0] 保持 0。",
+    },
+    {
+      en: "Extending by one character succeeds; the new border length is the old j plus one, stored at the current prefix end.",
+      zh: "延长一个字符成功，新 border 长度就是旧 j 加一，并写在这个前缀末端。",
+    },
+    {
+      en: "j is a length, so the last matched character is at j-1; lps[j-1] is the next shorter border to try.",
+      zh: "j 是长度，所以最后匹配的字符在 j-1；lps[j-1] 才是下一个可尝试的更短 border。",
+    },
+    {
+      en: "No border can be extended and j is already zero, so this prefix has no non-empty proper border.",
+      zh: "没有 border 可以延长且 j 已为 0，因此这个前缀没有非空真 border。",
+    },
+    {
+      en: "An empty pattern has no meaningful start positions in this implementation; return no matches rather than inventing a convention.",
+      zh: "本实现不为空模式串定义起点；直接返回无匹配，而不是临时发明一种约定。",
+    },
+    {
+      en: "In the scan, i is the next text position and j is the number of pattern characters already matched.",
+      zh: "扫描阶段 i 是下一个主串位置，j 是已经匹配的模式字符数。",
+    },
+    {
+      en: "A full match ends at i-1, so i-m is its start; j then falls back to lps[m-1] to preserve the longest overlap.",
+      zh: "完整匹配结束于 i-1，因此 i-m 是起点；随后 j 回退到 lps[m-1]，保留最长重叠。",
+    },
+    {
+      en: "Only the pattern pointer rewinds here; j-1 is the last matched character and lps[j-1] is the longest border that can still extend.",
+      zh: "这里只回退模式指针；j-1 是最后已匹配字符，lps[j-1] 是仍可能继续延伸的最长 border。",
+    },
   ],
   "kmp.py": [
     {
-      en: "Fall back to the longest border that can still be extended.",
-      zh: "回退到仍有可能继续延伸的最长 border。",
+      en: "lps[i] is a length, not a position: on mismatch fall back to lps[j - 1].",
+      zh: "lps[i] 是长度而不是位置：失配时回退到 lps[j - 1]。",
     },
     {
       en: "i is already past the match; i - m is the start, then j falls back for overlaps.",
       zh: "i 已越过匹配；i - m 是起点，随后让 j 回退以寻找重叠匹配。",
+    },
+    {
+      en: "i is the prefix end being filled; j is the current border length. The first character needs no proper border, so lps[0] stays 0.",
+      zh: "i 是正在填写的前缀末端；j 是当前 border 长度。首字符不需要真 border，所以 lps[0] 保持 0。",
+    },
+    {
+      en: "A successful extension raises the border length by one and records it at the current prefix end.",
+      zh: "一次成功延长会把 border 长度加一，并记录在当前前缀末端。",
+    },
+    {
+      en: "j is a length, so j-1 is the last matched character; lps[j-1] gives the next shorter border to try.",
+      zh: "j 是长度，因此 j-1 是最后匹配字符；lps[j-1] 给出下一个可尝试的更短 border。",
+    },
+    {
+      en: "build_lps accepts an empty pattern and returns []; the public search function rejects it separately because there is no match-start convention.",
+      zh: "build_lps 接受空模式串并返回 []；公开搜索函数会单独拒绝它，因为没有可定义的匹配起点。",
+    },
+    {
+      en: "This API rejects an empty pattern with ValueError; returning [] would be ambiguous with a legitimate no-match result.",
+      zh: "这个 API 用 ValueError 拒绝空模式串；若返回 []，就会与合法的“没有匹配”混淆。",
+    },
+    {
+      en: "Here i is the text position and j is the matched prefix length, not a character index into pattern.",
+      zh: "这里 i 是主串位置，j 是已匹配前缀长度，而不是模式串中的字符下标。",
+    },
+    {
+      en: "A full match ends at i-1, so i-m is the start; then j falls back to the whole pattern's border for overlaps.",
+      zh: "完整匹配结束于 i-1，因此 i-m 是起点；随后 j 回退到整个模式串的 border，以寻找重叠。",
+    },
+    {
+      en: "The text pointer stays after a hit; only j rewinds so the next search can reuse the longest suffix that is also a prefix.",
+      zh: "命中后主串指针不动，只让 j 回退，使下一次搜索复用“最长的既是后缀又是前缀”的部分。",
     },
   ],
   "kruskal.c": [
