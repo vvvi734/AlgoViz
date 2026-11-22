@@ -1082,3 +1082,197 @@ Python 的注释密度低不必然是缺陷，因为 Python 代码更短；但�
 - 最终提交哈希以 `git log -1` 为准；本节不写死自引用哈希。
 
 **AUDIT-02 第一批整改到此停止。** 后续从 CODE-DOC-03 或剩余 P2 专项继续。
+
+---
+
+## 11. CODE-DOC-03 参考代码注释整改状态（2026-11-22）
+
+> 本节只追加 CODE-DOC-03 的整改结果，不删除、不改写第 0–10 节的 AUDIT-01 原始结论和 AUDIT-02 记录，也不把 AUDIT-02 已完成的 SVG/安全修复重新计入本轮。
+
+### 11.1 整改基线、数量与保护项
+
+| 项 | 实际值 |
+|---|---|
+| 整改开始 HEAD | `9757782f0145d1ed1db376f82be6b9db6df76bdc` |
+| 分支 / 工作区 | 直接在最新 `main` 开发；未创建分支或 worktree |
+| 注册表 | 60 个正式算法，`REFERENCE_CODE_BACKLOG` 为 0 |
+| 唯一参考源码 | 211 份：63 份 C、74 份 C++、74 份 Python；与 AUDIT-01 一致 |
+| 实际纳入机器校验 | 211/211 份：注册表/annotation 校验、有效代码比较、编译或语法检查 |
+| 实际发生文本变更 | 147 份源码；均只涉及注释、注释性文档或既有模块 docstring 的事实文本 |
+| 受保护未跟踪目录 | `图论/`；未删除、移动、覆盖、暂存或提交 |
+| 本轮范围 | P1-12、P1-13、P2-05、P2-06 |
+| 明确不处理 | P2-04 英文公式、P2-07 排序图解 |
+| 版本与发布 | 未创建 `v1.0.0` Tag，未部署正式网站 |
+
+本轮不是“把注释数量清零”，而是先把事实错误归零，再让复杂操作的设计理由、状态不变量、失败路径和复杂度结论可读；简单赋值、普通循环和常规库调用不强行逐行注释。
+
+### 11.2 状态总表
+
+| 编号 | 状态 | 结论 |
+|---|---|---|
+| P1-12 | 已修复并验证 | 审计点名 56 个 stale 文件全部复核；53 个文件完成定向事实改写，99 个文件删除不针对具体函数签名的“静态函数”通用措辞（两者有重叠）；全源当前不存在 `静态函数`、`static function` 字样 |
+| P1-13 | 已修复并验证 | 循环链表校准样本完成；线性表、栈队列、串、树、图、排序、外部排序、文件索引的代表函数补齐“为什么”和失败路径说明；人工抽查 30 个函数 |
+| P2-05 | 已修复并验证 | 9 个算法、27 个文件全部有 3–6 条人工 `en`/`zh` annotation；211 个 key、323 条映射均非空，全部通过精确锚点和语言一致性测试 |
+| P2-06 | 已处理并验证 | 删除 111 条函数地图模板、92 组主程序 `Purpose`/`作用` 对及若干简单 helper 重复说明；保留解释职责、参数、边界、返回值和不变量的有效模板，不以“保留行数”冒充质量 |
+| P2-04 | 未处理，保留原问题 | 英文公式缺口不属于参考代码注释轮次 |
+| P2-07 | 未处理，保留原问题 | 排序比较图解弱相关不属于本轮，且本轮禁止修改理论 SVG |
+
+### 11.3 P1-12：事实性错误注释
+
+**实际检查数量。** 注册表 60 个算法、211 份源码全部进入机器校验；审计点名的 56 个文件全部人工复核。最终形成 53 个文件的定向事实改写；另有 99 个文件移除了“按需查看被调用的静态函数”这类通用文案，但其中并非每个函数都真的声明为 `static`。两组文件有 41 个重叠，去重后 111 个文件至少含一项事实或 `static` 措辞修正。
+
+**修正类别与代表项。**
+
+| 类别 | 本轮处理 |
+|---|---|
+| “静态函数”误称 | 逐文件检查函数声明；99 个文件删除不针对具体签名的通用“静态函数”行。只改注释，不给函数强行补 `static`。当前全源 `静态函数` / `static function` 计数为 0 |
+| 不存在的字段 | 循环链表删除 `length`/`length_` 假声明，只保留 `head`/`tail` 或 `head_`/`tail_`；单链表删除 `tail`/`length`；双向链表删除 `length`/`length_`；静态链表把 `next` 改为真实 `cur`，C++ 单元类型改为 `Cell`；B 树 `NewNode` 不再说“设置 leaf flag”，改用真实的 `children[0] == NULL` 叶子判据 |
+| 不存在的操作 | 循环链表 Python `main` 不再声称头插/删除；`hash_chain.c` 按真实桶头插、`hash_chain.cpp`/`.py` 按真实尾追加分别改写；`sparse_transpose` 只讲 `fast_transpose`，不再讲不存在的普通转置；`kruskal` 改为打印结果、返回 `void`；`components`/`scc` 改为“打印顶点并返回分量/分量数量”，不再声称返回顶点集合 |
+| 数据结构与输出语义 | 线索二叉树三语言均改为独立的 `left_thread`/`right_thread` 字段，不再说复用空 `left`/`right` 指针；`dijkstra` C 不再说“返回距离和前驱数组”；`bfs`/`dfs` C 改为只打印、`void`；标准库对照版分别写 `std::set`、`std::list`、`std::unordered_map`、`std::priority_queue`、`std::queue`、`std::vector`、`std::stack`、`std::string::find`，不再复制手写实现头 |
+| 复杂度错误 | 邻接矩阵版 `bfs.c`、`dfs.c`、`topological_sort.c`、`dijkstra.c`、`scc.c`、`prim.c` 改为 O(V²) 或明确“辅助空间 O(V)，矩阵本身 O(V²)”；静态链表按位置插删改为先 O(n) 找前驱，已知前驱时改游标 O(1)；标准库对照版按库函数真实复杂度描述 |
+| 失败路径与返回值 | 保留 AUDIT-02 对循环链表 C/C++ `append` 失败处理的修复；补充 `append` 返回 `bool` 的含义、调用方检查、失败后已分配结点清理、成功后访问 `tail->next` 的顺序。`btree.c` 的 `split` 明确登记“`void` 无法报告分配失败，`InsertNonFull` 仍按已分裂继续”的 OOM 限制；`bplus_tree.c` 明确登记 `split_leaf`/`split_internal` 失败时仍返回 `valid=1, right=-1`，调用方未检查 |
+
+**测试证据。** `comment-fact.test.ts` 以 41 组维护性事实规则（25 条 absence、37 条 presence）锁定循环/单/双向链表字段、散列墓碑、标准库类型、`components`/`scc` 输出、快速转置、矩阵复杂度、Kruskal 返回值、线索字段、`hash_chain` 三语言插入方向、静态链表 `cur`/`Cell`、Dijkstra/BFS/DFS 矩阵语义；另断言全源 `静态函数`/`static function` 为零，`leaf flag` 只出现在真正有该字段的 B+ 树。
+
+### 11.4 P1-13：关键算法教学解释
+
+**校准样本：循环链表。** `circular_linked_list.c/.cpp/.py` 已解释：
+
+- 空表为什么用 `head`/`tail` 双空表示，而不是虚构 `length` 字段。
+- 单结点时 `next` 为什么指向自身；非空表中原 `tail->next` 怎样接到新结点。
+- 为什么必须先接 `node->next` 与旧尾结点的 `next`，最后才移动 `tail`；顺序反了会丢链。
+- 为什么环形遍历不能用 `NULL`/`None` 作常规终止条件，为什么用 `do-while` 或 `while True`，为什么回到 `head` 才停止，空表为什么先单独返回。
+- 为什么释放当前结点前先保存 `next`，为什么释放后不能继续解引用，为什么以 `tail` 作为退出标记，最后为何重置头尾指针。
+- `append` 的 `bool` 返回值代表什么；`main` 为什么逐次检查、失败后清理已建结点、成功后才访问 `tail->next`。AUDIT-02 的正确安全写法保持不变。
+
+`linked` 与 `doubly` 同步修正：单链表没有 `tail`/`length`，调用方只持有 `head`；双向链表的 `prev`/`next` 必须对称修复，失败时原链表保持不变；`doubly_linked_list.cpp::remove` 的 `unique_ptr` 释放后访问风险只登记、不重写算法，演示只删除中间结点。
+
+**按类型推广。**
+
+| 类型 | 代表性教学解释 |
+|---|---|
+| 栈与队列 | 栈顶 `top` 是最后一个有效下标，先判满再 `++top`；循环队列先写 `rear` 再取模回绕，队头/队尾约定不混用 |
+| 字符串 | KMP 的 1 基 `next` 表表示 `pattern[0..t-1]` 的最长真 border；失配沿 border 回退，匹配成功后继续找重叠；BF 解释 `j` 是模式偏移、主串下标是 `s+j`、`j==m` 才是完整命中 |
+| 树与查找 | AVL 旋转先更新较低结点、再更新新子树根；B 树分裂把中位键上移并把右半键与 child 槽一起迁移；线索树区分真实孩子与独立线索字段；BST/AVL 公共 wrapper 与 private 递归重载不再复制同一说明 |
+| 图 | Dijkstra 矩阵版每轮线性扫描导致 O(V²)，严格 `<` 保留首个前驱；Prim 只对未选点更新 key，严格 `<` 保留最轻边；SCC 第一遍记录递增完成顺序、第二遍倒序读取；关键路径活动余量是 `latest[to] - weight - earliest[from]` |
+| 排序 | Lomuto 分区维护 `<= pivot` 边界，基准落到最终位置后递归排除该位置；归并相等时取左段保持稳定；堆下沉与较大孩子交换；基数排序桶保持 FIFO，逐位稳定收集 |
+| 外部排序与文件 | 多路归并只有各段缓冲区队首是候选，最后不满输出块也必须写出；置换选择用阈值判定 eligible，相等仍可输出，封段后清阈值；索引文件区分稠密/稀疏，稀疏上界属于当前块并选“不大于目标的最后一项”；ISAM 先主区再专属溢出链，上界必须包含溢出链最大键；倒排索引 postings 存记录 ID，按记录扫描使 AND/OR 稳定且天然去重 |
+
+不设统一注释行数配额。Python 注释行数仍少于 C/C++，但递归终止、`None`、可变对象、下标语义、堆/队列状态更新等关键设计均已解释；不以“Python 代码短”为由省略算法理由。
+
+### 11.5 P2-05：9 个算法、27 个文件的双语 annotation
+
+| 算法 | 文件 | annotation 条数 | 主要覆盖 |
+|---|---|---:|---|
+| BF | `bf.c/.cpp/.py` | 3/3/4 | 合法起点上界、`s+j` 主串下标、`j==m` 完整命中、重叠匹配继续右移、空模式/短主串边界 |
+| 广义表深度 | `gl_depth.c/.cpp/.py` | 4/4/3 | 指针到指针尾插、原子深度 0、空表 1、非空表 1+最大子深度、同层取最大不求和、释放先存 next |
+| 广义表复制 | `gl_copy.c/.cpp/.py` | 4/4/3 | 先分配父再递归、孩子不能共享、失败回收半成品、`tail` 指针到指针统一空/非空表 |
+| 多路归并 | `multiway_merge.c/.cpp/.py` | 4/4/4 | 只有各段缓冲区队首是候选、稳定次序、最后不满输出块必须写出 |
+| 置换选择 | `replacement_selection.c/.cpp/.py` | 5/3/4 | 阈值规则、相等 eligible、封段清阈值、`(value, originalIndex)` 稳定比较 |
+| 最佳归并树 | `optimal_merge_tree.c/.cpp/.py` | 4/3/3 | 虚拟零权重叶只补形状、不改总权重、总代价是所有内部结点权重之和 |
+| 索引文件 | `indexed_file.c/.cpp/.py` | 4/3/3 | 稠密/稀疏索引、稀疏上界属于当前块、选“不大于目标的最后一项”、命中或失败都只读一个块 |
+| ISAM | `isam_file.c/.cpp/.py` | 6/5/4 | 主块与专属溢出链、索引上界必须包含溢出链最大键、上界是派生数据需重建、先主块后溢出链 |
+| 倒排索引 | `inverted_index.c/.cpp/.py` | 3/3/3 | postings 存记录下标、缺失关键字与空表状态区别、按记录顺序扫描使 AND/OR 稳定且去重 |
+
+全量 `REFERENCE_ANNOTATIONS` 现有 211 个 key、323 条 `en`/`zh` 映射，0 个空数组；9 个 P2-05 算法 27 个 key 全部存在且最少 3 条。`localization.test.ts` 对每个 key 检查：`en` 在对应源码中是唯一独立 `//`/`#` 行、中文替换后 `en` 锚点消失、替换前后有效代码一致；另对 60 算法 × 3 语言 × 2 实现的英文/中文展示检查不混入另一语言。
+
+### 11.6 P2-06：模板降噪
+
+**已删除或合并。**
+
+- 111 条“函数地图：……静态函数……”整行。
+- 92 组 `Purpose: Run the core operations...` + `作用：按顺序调用核心操作...` 主程序模板对（中文措辞有 1 处不同，实际删除 91 条中文对应行）。
+- 简单 `heap_init`、`swap_int`、哈夫曼初始化等只复述函数名的模板。
+- BST/AVL 公共 wrapper 与 private 递归重载完全重复的说明；改为“从根启动并接回子树”与递归职责分开。
+
+**保留。**
+
+- 解释参数特殊语义、输入前置条件、返回错误含义、关键副作用、循环/结构不变量、失败路径的 `Purpose`/`作用` 对。
+- 简短但真实的复杂度、边界与所有权说明。
+
+当前仍有 631 条 `Purpose`、605 条 `作用`，分布于 183 / 186 个文件（并集 190 个文件）。这不是遗漏计数，而是有意保留：其中大量内容承担参数、返回值和边界教学，不能按“模板”一概删除。P2-06 的验收标准是“低价值模板被筛选、有效信息被保留”，不是行数归零。
+
+### 11.7 人工教学质量抽查（30 个函数）
+
+抽查覆盖 C/C++/Python、线性结构、栈队列、串、查找、树、图、排序、外部排序、文件与索引、TEXTBOOK 新增算法。结论按“准确性 / 参数与状态 / 设计理由 / 模板与逐行”记录；未把注释行数当作质量指标。
+
+| # | 函数（文件） | 类别 | 准确性 | 参数、状态与关键理由 | 模板 / 逐行 | 结论 |
+|---:|---|---|---|---|---|---|
+| 1 | `list_append`（`circular_linked_list.c`） | 线性 / C | 准确 | `list` 只有 `head`/`tail`；解释单结点自环、旧尾 `next`、最后移 `tail`、失败不改原表 | 无空泛套话；未逐行翻译 | 通过 |
+| 2 | `list_free`（`circular_linked_list.c`） | 线性 / C | 准确 | 先存 `next` 再 `free`；以 `tail` 为退出标记；最后清空头尾；解释释放后不可解引用 | 无重复长文 | 通过 |
+| 3 | `append` / `to_list`（`circular_linked_list.py`） | 线性 / Python | 准确 | 说明 `head`/`tail` 双 `None`、`while True` 回到 `head` 才停、空表先返回、断言只暴露损坏链接 | 简洁但保留关键不变量 | 通过 |
+| 4 | `ListInsert`（`singly_linked_list.c`） | 线性 / C | 准确 | `index 0` 改调用方 `head`；越界在分配前返回；文件头已删除不存在的 `tail`/`length` | 参数语义明确 | 通过 |
+| 5 | `DoublyList::append`（`doubly_linked_list.cpp`） | 线性 / C++ | 准确 | `prev`/`next` 对称接线；失败不改原链表；删除 `length_` 假声明 | 无重复 ownership 套话 | 通过 |
+| 6 | `hash_insert`（`hash_chain.c`） | 散列 / C | 准确 | 桶头插入的真实顺序；不伪装成尾插；平均 O(1) 依赖装填因子 | 未给每行加注释 | 通过 |
+| 7 | `hash_insert`（`hash_chain.py`） | 散列 / Python | 准确 | `list.append` 是尾追加；与 C 版头插区别已写明 | 无跨语言误抄 | 通过 |
+| 8 | `Push`（`stack.c`） | 栈 / C | 准确 | `top` 是最后有效下标；先判满再 `++top`；栈满不覆盖旧元素 | 简单赋值不注释 | 通过 |
+| 9 | `Enqueue`（`queue.c`） | 队列 / C | 准确 | 先写 `data[rear]` 再取模；说明物理回绕；判满先于写入 | 无“队头队尾”混用 | 通过 |
+| 10 | `Precedence` / `InfixToPostfix`（`infix_to_postfix.c`） | 栈 / C | 准确 | 左结合运算符弹出 `>=` 优先级；右括号弹到左括号；操作数整 token 输出 | 简洁，无逐行 | 通过 |
+| 11 | `KMP` / LPS 构造（`kmp.c`） | 串 / C | 准确 | `next[i]` 是 1 基失败表；失配沿 border 回退；文本指针不回退；匹配后继续找重叠 | 关键状态解释充分 | 通过 |
+| 12 | `bf_find_all`（`bf.c`） | 串 / C | 准确 | `j` 是模式偏移、主串下标 `s+j`；`j==m` 才是命中；命中后 `s+1` 保留重叠；`n<m` 返回 0 | 无重复“暴力匹配”套话 | 通过 |
+| 13 | `BST::insert`（`bst.cpp`） | 树 / C++ | 准确 | 公共 wrapper 从 `root_` 启动并接回返回子树；`unique_ptr` 所有权；重复键拒绝 | wrapper 与递归重载说明已拆分 | 通过 |
+| 14 | `RotateRight`（`avl_tree.c`） | 树 / C | 准确 | 先更新较低结点再更新新根；旋转后仍满足 BST 中序；高度由子树重算 | 未只写“执行右旋” | 通过 |
+| 15 | `split`（`btree.c`） | 树 / C | 准确 | 中位键上移、右半键与 child 槽一起迁移、父结点先右移再插入；`void` 失败无法报告的限制已登记 | 失败路径不再虚假声称“已报告” | 通过，保留 OOM 风险 |
+| 16 | `inorder_by_threads`（`threaded_inorder.c`） | 树 / C | 准确 | `ltag==0` 才是真实孩子；线索在 `left_thread`/`right_thread`；首尾空线索仍置 tag=1 | 不再说复用空孩子指针 | 通过 |
+| 17 | `Dijkstra`（`dijkstra.c`） | 图 / C | 准确 | 已确定点距离为最终值；矩阵每轮线性扫描 O(V²)；严格 `<` 保留首个前驱；函数打印不返回数组 | 复杂度与输出语义一致 | 通过 |
+| 18 | `Prim`（`prim.c`） | 图 / C | 准确 | 只对未选点更新 `key`；严格 `<` 保留最轻边；矩阵辅助 O(V)、矩阵本身 O(V²) | 不复制“堆优化”结论 | 通过 |
+| 19 | `first_pass`（`scc.c`） | 图 / C | 准确 | 后序追加得到递增完成顺序；第二遍倒序读取；矩阵版 O(V²) | 不再写“反向完成顺序” | 通过 |
+| 20 | `Partition`（`quick_sort.c`） | 排序 / C | 准确 | Lomuto 边界 `<= pivot`；基准换到最终槽；递归排除基准；不稳定 | 不把平均复杂度写成最坏 | 通过 |
+| 21 | `MergeRange`（`merge_sort.c`） | 排序 / C | 准确 | 相等取左段保持稳定；共享缓冲区；O(n log n)、O(n) 额外空间 | 不逐行解释 `while` | 通过 |
+| 22 | `sift_down`（`max_heap.c`） | 堆 / C | 准确 | 与较大孩子交换；到叶子停止；O(log n)；0 基孩子下标 | 简单 swap 不另写模板 | 通过 |
+| 23 | `RadixSort`（`radix_sort.c`） | 排序 / C | 准确 | 10 个 FIFO 桶；每趟稳定收集；LSD 依赖低位已有序；O(d(n+10)) | 桶与数位解释清楚 | 通过 |
+| 24 | `MultiwayMerge`（`multiway_merge.c`） | 外部排序 / C | 准确 | 只有各段队首是候选；稳定 tie-break；最后不满块必须写出；返回写出记录数 | 无泛化“多路归并”套话 | 通过 |
+| 25 | `ReplacementSelection`（`replacement_selection.c`） | 外部排序 / C | 准确 | 不小于阈值才 eligible；相等仍可输出；封段后重置阈值；稳定比较 | 阈值与冻结状态明确 | 通过 |
+| 26 | `Lookup`（`indexed_file.c`） | 文件索引 / C | 准确 | 稠密/稀疏约定；稀疏上界属于当前块；选“不大于目标的最后一项”；失败也读 1 块 | 无“二分索引”错误暗示 | 通过 |
+| 27 | `Lookup`（`isam_file.c`） | 文件索引 / C | 准确 | 先主块后专属溢出链；上界必须包含溢出链最大键；`RefreshBounds` 从真实最大键重算 | 旧“只在最大键变化时更新”假声明已删除 | 通过 |
+| 28 | `Query`（`inverted_index.c`） | 文件索引 / C | 准确 | postings 是记录下标；按记录顺序扫描使 AND/OR 稳定且去重；缺失词回退空表 | 不把关键字当记录 | 通过 |
+| 29 | `copy_one`（`gl_copy.c`） | 广义表 / C | 准确 | 深复制先分配父、孩子不共享、失败回收半成品；`tail` 指针到指针统一空/非空表 | 无逐行翻译 | 通过 |
+| 30 | `BuildOptimalMergeTree`（`optimal_merge_tree.c`） | 外部排序 / C | 准确 | 虚拟叶权重 0、只补形状；总代价是所有内部结点权重之和，不是只看根 | 无泛化“哈夫曼式”套话 | 通过 |
+
+**抽查结论。** 未发现 30 个代表函数仍有已知事实错误；发现并登记的真实实现风险为 `doubly_linked_list.cpp::remove` 的释放后访问、`btree.c::split` 的分配失败无返回值、`bplus_tree.c::split_leaf/split_internal` 的失败仍返回 `valid=1, right=-1`。这三项均未在本轮改算法，只改注释说明。
+
+### 11.8 有效代码一致性与编译 / 运行验证
+
+| 检查 | 结果 |
+|---|---|
+| 语言感知有效代码比较 | 211/211 通过，差异列表为空。C/C++ 用词法 tokenizer 保留字符串/字符字面量并跳过注释；Python 用 `ast` 比较，忽略 module/function/class docstring 文本 |
+| C/C++ 编译 | 137/137 目标文件编译通过；63 份 C 用 `gcc -std=c11 -O0`，74 份 C++ 用 `g++ -std=c++17 -O0`，另做 `-Wall -Wextra -fsyntax-only` 检查，137/137 无错误 |
+| Python 语法 | 74/74 通过内存 `compile()`，未生成 `__pycache__` |
+| Python 代表性运行 | 15/15 退出 0：`circular`、`bf`、`gl-depth`、`gl-copy`、`multiway`、`replacement`、`optimal-merge`、`file-index`、`isam`、`inverted-index`、`avl`、`btree`、`threaded-inorder`、`scc`、`critical-path` |
+| docstring 说明 | 3 个既有模块 docstring 的事实文本被更新：`circular_linked_list.py`、`critical_path.py`、`threaded_inorder.py`。没有新增 docstring，没有执行语句变化；项目中没有代码读取 `__doc__`。若未来要求 `__doc__` 字节级不变，需要把这三处事实校正移回独立 `#` 注释 |
+| 未重跑 | 60 算法完整 Pyodide 矩阵、AUDIT-02 完整 SVG 视觉回归；本轮不涉及 SVG/动画/Trace，且用户明确不要求全矩阵 |
+
+### 11.9 测试、双语显示与构建
+
+| 检查 | 结果 |
+|---|---|
+| 参考代码单测 | 4 个文件 32/32 通过：`comment-fact` 4、`localization` 12、`circular-memory-safety` 8、`registry` 8 |
+| 双语查看器组件测试 | `ReferenceCodePanel.test.tsx` 11/11 通过，覆盖展示与复制的中英文内容 |
+| Playwright 代表性查看器 | `e2e/matrix01.spec.ts` 的 “real Python fast transpose” 1/1 通过，约 3.1s；真实浏览器加载参考代码面板并切换三种语言 |
+| 中文界面 | `applyChineseAnnotations` 逐条匹配 `en` 并替换 `zh`；若源码已有紧邻的同一中文行，替换时同时删除重复行，避免“翻译一次、原文一次”重叠；未列入 annotation 的英文行注释按现有机制省略，不出现中文文件头 + 内部英文残留 |
+| 英文界面 | `selectReferenceComments` 保留英文注释；`localization` 测试对全部算法/语言/实现断言英文侧不出现 CJK 字符 |
+| 复制 | 复制按钮使用 `displaySource`，与查看器同源；组件测试断言复制中文时无英文教学注释、复制英文时无中文模板 |
+| TypeScript | `npm run typecheck`（`tsc -b --pretty false`）退出 0 |
+| 生产构建 | `npm run build` 退出 0，约 26.66s；Monaco 与主 chunk 仍有既有体积 warning，不是错误 |
+
+### 11.10 明确保留的问题与边界
+
+| 项 | 状态 / 原因 |
+|---|---|
+| `doubly_linked_list.cpp::remove` | 真实实现风险：替换 `unique_ptr` 时可能先释放 `node`，随后再读 `node->prev`；本轮只登记注释，演示删除中间结点，不改算法 |
+| `btree.c::split` | `NewNode()` 失败时 `void` 函数无法报告，`InsertNonFull` 仍按已分裂继续；本轮只登记注释，不改控制流 |
+| `bplus_tree.c::split_leaf/split_internal` | `new_node` 失败时仍返回 `valid=1, right=-1`，调用方不检查；本轮只登记注释，不改插入流程 |
+| P2-04 | 32 条公式缺 `formulaEn`，保留给后续双语专项 |
+| P2-07 | 排序比较图解与多关键字/LSD/MSD/链式桶弱相关，保留给后续图解专项 |
+| P2-06 剩余模板 | 当前 631 条 `Purpose` / 605 条 `作用` 中仍有可继续精炼的条目；本轮已筛掉低价值重复，但没有做全源机械删除 |
+| 事实校验边界 | `comment-fact` 是 41 组维护性规则，不是“理解全部中文注释”的形式化证明；本轮结论是“已发现问题归零”，不宣称对未来任意语义错误免疫 |
+
+### 11.11 Git 与发布边界
+
+- 从 `9757782f0145d1ed1db376f82be6b9db6df76bdc` 开始在 `main` 直接提交并推送。
+- 暂存只使用显式 `git add src docs` 或明确文件列表；从未执行 `git add -A`、`git clean`、`git reset --hard`。
+- `图论/` 始终为未跟踪状态，未删除、移动、覆盖、暂存或提交。
+- 未创建 `v1.0.0` Tag，未部署正式网站，未处理 P2-04/P2-07。
+- 最终提交哈希以 `git log -1` 为准；本节不写死自引用哈希。
+
+**CODE-DOC-03 到此停止。** 后续只在明确授权时处理 P2-04、P2-07 或上述真实实现风险。
