@@ -237,7 +237,7 @@ def bfs(graph: list[list[int]], start: int) -> list[int]:
 | BATCH-03 专项测试 | `batch-03-teaching.test.ts` 35/35 通过 |
 | 查看器显示与复制 | `batch-03-reference-code.test.tsx` 4/4 通过（顺序表、栈、哈夫曼、BFS） |
 | 相关单测 | 7 files / 105 tests 通过（localization、comment-fact、batch-01/02/03、两批 viewer） |
-| 全量单测 | 153 files / 1418 tests 通过 |
+| 全量单测 | 153 files / 1418 tests 通过（最终注释顺序校正前）；校正后重跑 localization、comment-fact、batch-03 共 51 tests 通过 |
 | 代表性 Playwright | `code-doc-04-batch-03.spec.ts` 1 passed（5.5s，顺序表/栈/哈夫曼/BFS 的中英显示与剪贴板复制） |
 | `npm run typecheck` | 通过 |
 | `npm run build` | 通过（Vite 生产构建；仅有 zod 依赖注释的 Rollup 非阻断提示） |
