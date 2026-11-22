@@ -60,13 +60,16 @@ def bf_find_all(text: str, pattern: str) -> list[int]:
     if n < m:
         return starts
 
+    # The n < m case has already returned, so candidate_count is at least one and range(candidate_count) always has a valid first start.
     candidate_count = n - m + 1
 
     # Enumerate only legal starts; start aligns pattern[0] with text[start], so its maximum is n - m.
     for start in range(candidate_count):
+        # j is reset for every start because BF does not reuse a matched prefix. The same text character can be compared in several alignments, which is why the worst case is O(nm).
         j = 0
 
         # j is both the confirmed prefix length and the next pattern index; the compared text position is start + j.
+        # The legal-start bound keeps start+j within text; the loop therefore only checks the pattern index and character equality.
         while j < m and text[start + j] == pattern[j]:
             j += 1
 

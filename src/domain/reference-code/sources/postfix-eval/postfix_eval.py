@@ -23,24 +23,28 @@ class PostfixError(ValueError):
     """Raised for operand shortage/surplus, invalid tokens or division by zero."""
 
 
-# Purpose: Evaluate the postfix expression and return its integer result; the caller guarantees valid input.
-# 作用：计算后缀表达式并返回整数结果；非法表达式由调用方保证。
+# Purpose: Evaluate the postfix expression and return its integer result; raise PostfixError for malformed input.
+# 作用：计算后缀表达式并返回整数结果；非法输入抛出 PostfixError。
 def evaluate(tokens: list[str]) -> int:
     """Evaluate a tokenised postfix expression or raise PostfixError."""
+    # The list is an operand stack, not a call stack. Its only job is to hold values whose operator has not appeared yet.
     stack: list[int] = []
 
     for token in tokens:
+        # Only a whole digit token is pushed. The evaluator does not accept a leading minus or a decimal point, so negative values must come from subtraction.
         if token.isdigit():
             stack.append(int(token))
             continue
         if token not in ("+", "-", "*", "/"):
             raise PostfixError(f"invalid token: {token}")
+        # A binary operator needs two operands. Check length before pop so an empty or one-item stack raises PostfixError instead of IndexError.
         if len(stack) < 2:
             raise PostfixError("operand shortage")
 
         # the first pop is the right operand; compute left op right.
         right = stack.pop()   # first pop = right operand
         left = stack.pop()    # second pop = left operand
+        # Reject a zero divisor before computing. The operands have already been popped, but the local stack is discarded on error, so no partial result escapes.
         if token == "/" and right == 0:
             raise PostfixError("division by zero")
 
@@ -55,8 +59,10 @@ def evaluate(tokens: list[str]) -> int:
             value = int(left / right)
         stack.append(value)
 
+    # No remaining value means operands were missing; the input never formed one complete expression.
     if not stack:
         raise PostfixError("operand shortage")
+    # Extra values mean the input left operands unused. Raising is safer than returning the top and hiding the malformed expression.
     if len(stack) > 1:
         raise PostfixError("operand surplus")
     return stack[0]

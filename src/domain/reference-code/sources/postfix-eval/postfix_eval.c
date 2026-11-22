@@ -50,11 +50,13 @@ static bool IsNumber(const char *token)
  */
 bool EvalPostfix(char *expression, int *value, char *error, size_t error_capacity)
 {
+    // The stack holds values already computed from the processed prefix. A binary operator consumes two values and returns one, so its height never exceeds the token count.
     int stack[MAX_TOKENS];
     int top = -1;
     char *token = strtok(expression, " \t");
     while (token != NULL)
     {
+        // Only an all-digit token is a number. A leading minus is not accepted here, so negative literals must be produced by subtraction rather than written directly.
         if (IsNumber(token))
         {
             if (top + 1 >= MAX_TOKENS)
@@ -62,6 +64,7 @@ bool EvalPostfix(char *expression, int *value, char *error, size_t error_capacit
                 snprintf(error, error_capacity, "operand stack overflow");
                 return false;
             }
+            // The token has already passed the digit check; atoi converts the same text to an integer and pushes it as one complete operand.
             stack[++top] = atoi(token);
             token = strtok(NULL, " \t");
             continue;
@@ -69,6 +72,7 @@ bool EvalPostfix(char *expression, int *value, char *error, size_t error_capacit
 
         if (token[0] == '+' || token[0] == '-' || token[0] == '*' || token[0] == '/')
         {
+            // top is an index, so top < 1 means fewer than two operands. Check before popping; otherwise the second read would use a negative index.
             if (top < 1)
             {
                 snprintf(error, error_capacity, "operand shortage");
@@ -77,6 +81,7 @@ bool EvalPostfix(char *expression, int *value, char *error, size_t error_capacit
             // the first pop is the right operand; compute left op right.
             const int right = stack[top--];
             const int left = stack[top--];
+            // Check the divisor before dividing. Returning false with an error message leaves the caller's output value untouched.
             if (token[0] == '/' && right == 0)
             {
                 snprintf(error, error_capacity, "division by zero");
@@ -101,6 +106,7 @@ bool EvalPostfix(char *expression, int *value, char *error, size_t error_capacit
                 // Python trace's int(left / right).
                 result = left / right;
             }
+            // The two popped operands are replaced by one result. Each binary operator therefore reduces stack height by exactly one.
             stack[++top] = result;
         }
         else
@@ -111,6 +117,7 @@ bool EvalPostfix(char *expression, int *value, char *error, size_t error_capacit
         token = strtok(NULL, " \t");
     }
 
+    // A valid postfix expression leaves exactly one value. top < 0 means missing operands; top > 0 means extra operands were never consumed.
     if (top != 0)
     {
         snprintf(error, error_capacity, top < 0 ? "operand shortage" : "operand surplus");

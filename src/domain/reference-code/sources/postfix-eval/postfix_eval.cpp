@@ -55,11 +55,13 @@ bool is_number(const std::string &token)
 std::variant<int, EvalError> evaluate(const std::string &expression)
 {
     std::istringstream input(expression);
+    // This stack stores computed values, not tokens. Every operator pops two values and pushes one, so the stack is the only state the scan needs.
     std::vector<int> stack;
     std::string token;
 
     while (input >> token)
     {
+        // The all-digit predicate rejects signs and mixed tokens such as 12a before stoi is called; only a genuine operand is pushed.
         if (is_number(token))
         {
             stack.push_back(std::stoi(token));
@@ -69,6 +71,7 @@ std::variant<int, EvalError> evaluate(const std::string &expression)
         if (token.size() == 1 &&
             (token[0] == '+' || token[0] == '-' || token[0] == '*' || token[0] == '/'))
         {
+            // Two operands are required before an operator can run. Checking size avoids back() on an empty vector.
             if (stack.size() < 2)
             {
                 return EvalError{"operand shortage"};
@@ -78,6 +81,7 @@ std::variant<int, EvalError> evaluate(const std::string &expression)
             stack.pop_back();
             const int left = stack.back();
             stack.pop_back();
+            // Division by zero is detected before the division expression runs; return an EvalError rather than relying on undefined behavior.
             if (token[0] == '/' && right == 0)
             {
                 return EvalError{"division by zero"};
@@ -101,6 +105,7 @@ std::variant<int, EvalError> evaluate(const std::string &expression)
                 // C++ integer division truncates toward zero, matching the trace.
                 result = left / right;
             }
+            // The result replaces the two consumed operands, so each binary operator reduces the stack by exactly one element.
             stack.push_back(result);
             continue;
         }
@@ -108,10 +113,12 @@ std::variant<int, EvalError> evaluate(const std::string &expression)
         return EvalError{"invalid token: " + token};
     }
 
+    // An empty final stack means the expression had too few operands; this is a syntax error, not a zero result.
     if (stack.empty())
     {
         return EvalError{"operand shortage"};
     }
+    // More than one final value means operands were left unconsumed; returning the top value silently would hide the malformed input.
     if (stack.size() > 1)
     {
         return EvalError{"operand surplus"};

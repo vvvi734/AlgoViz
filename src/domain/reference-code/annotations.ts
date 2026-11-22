@@ -78,6 +78,18 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
       en: "Do not break after a hit: advancing s is what preserves overlapping occurrences.",
       zh: "命中后不能 break；继续令 s 前进，才能保留重叠出现。",
     },
+    {
+      en: "Reset j for every candidate. BF keeps no prefix state, so characters already compared under one alignment may be compared again under the next; that is the source of its O(nm) worst case.",
+      zh: "每个候选起点都把 j 重置为 0。BF 不保存前缀状态，上一对齐比较过的字符可能在下一起点再次比较，这正是 O(nm) 最坏情况的来源。",
+    },
+    {
+      en: "The candidate bound s <= n-m makes every s+j a valid text index, so the loop can run to m without a separate bounds check inside.",
+      zh: "候选上界 s ≤ n−m 保证每个 s+j 都是合法主串下标，因此循环可一直走到 m，无需在内部再加边界检查。",
+    },
+    {
+      en: "The output array is caller-owned and fixed. Fail before writing past capacity rather than silently dropping a match and returning a smaller count.",
+      zh: "输出数组由调用方提供且容量固定；写越界前必须失败，不能静默丢掉匹配却返回更小的计数。",
+    },
   ],
   "bf.cpp": [
     {
@@ -95,6 +107,18 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
     {
       en: "Do not stop after a hit; advancing s preserves overlapping matches.",
       zh: "命中后不要停止；继续推进 s 才能保留重叠匹配。",
+    },
+    {
+      en: "j restarts at 0 for each start because BF intentionally keeps no matched-prefix state. Previously compared characters may be compared again, giving O(nm) worst-case time.",
+      zh: "每个起点都把 j 重置为 0，因为 BF 刻意不保存已匹配前缀；旧字符可能再次比较，导致 O(nm) 最坏时间。",
+    },
+    {
+      en: "The legal-start bound makes s+j stay inside text, so the inner loop only needs to test j < m and character equality.",
+      zh: "合法起点上界保证 s+j 不越过主串，因此内层只需判断 j < m 和字符是否相等。",
+    },
+    {
+      en: "candidate_count is computed only after the n < m guard, so it is at least one and the unsigned loop has a safe stop.",
+      zh: "candidate_count 只在 n < m 的提前返回之后计算，因此至少为 1，无符号循环也有安全终点。",
     },
   ],
   "bf.py": [
@@ -117,6 +141,18 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
     {
       en: "Do not break after a hit: start + 1 may still form an overlapping match.",
       zh: "命中后不能 break：start + 1 仍可能形成重叠匹配。",
+    },
+    {
+      en: "j is reset for every start because BF does not reuse a matched prefix. The same text character can be compared in several alignments, which is why the worst case is O(nm).",
+      zh: "每个起点都重置 j，因为 BF 不复用已匹配前缀；同一主串字符可能在多次对齐中重复比较，故最坏为 O(nm)。",
+    },
+    {
+      en: "The legal-start bound keeps start+j within text; the loop therefore only checks the pattern index and character equality.",
+      zh: "合法起点上界保证 start+j 不越过主串；循环只需检查模式下标和字符是否相等。",
+    },
+    {
+      en: "The n < m case has already returned, so candidate_count is at least one and range(candidate_count) always has a valid first start.",
+      zh: "n < m 的情况已提前返回，因此 candidate_count 至少为 1，range(candidate_count) 总有合法首起点。",
     },
   ],
   "gl_depth.c": [
@@ -1704,11 +1740,67 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
       en: "a left parenthesis blocks every pop until it is explicitly removed.",
       zh: "左括号是弹栈边界：在它被显式弹出前，不能越过它弹出其他运算符。",
     },
+    {
+      en: "Operators wait in this stack until their right context is known; operands never enter the stack because their final output position is already fixed.",
+      zh: "运算符在栈中等待右侧上下文确定；操作数从不入栈，因为它在输出中的最终位置已经确定。",
+    },
+    {
+      en: "Read the whole digit run before emitting it. Splitting 12 into 1 and 2 would change the value and make later postfix evaluation wrong.",
+      zh: "输出前要先读完整的连续数字；把 12 拆成 1 和 2 会改变数值，使后续后缀求值出错。",
+    },
+    {
+      en: "A right parenthesis closes one group: emit operators until the matching left parenthesis, then discard the parenthesis itself.",
+      zh: "右括号结束一个分组：先弹出并输出运算符直到匹配的左括号，再丢弃这对括号本身。",
+    },
+    {
+      en: "An empty stack before the matching left parenthesis means this right parenthesis is unmatched; return false instead of reading below the array.",
+      zh: "在找到匹配左括号前栈已空，说明这个右括号没有配对；应返回 false，不能继续读取数组下界之外。",
+    },
+    {
+      en: "Push the incoming operator only after the while has emitted every greater-or-equal top; pushing first would reverse its operands.",
+      zh: "只有 while 已输出所有优先级不低于自己的栈顶后才压入新运算符；先压栈会颠倒操作数顺序。",
+    },
+    {
+      en: "After the scan no later token can decide the remaining order; flush the stack so lower-priority operators still reach the output.",
+      zh: "扫描结束后不会再有 token 决定剩余顺序；必须清空栈，让低优先级运算符也进入输出。",
+    },
+    {
+      en: "A remaining left parenthesis means its right partner never appeared; report failure rather than printing a parenthesis as an operator.",
+      zh: "栈中残留左括号说明它没有右括号配对；应报告失败，不能把括号当运算符输出。",
+    },
   ],
   "infix_to_postfix.cpp": [
     {
       en: "a left parenthesis blocks every pop until it is explicitly removed.",
       zh: "左括号是弹栈边界：在它被显式弹出前，不能越过它弹出其他运算符。",
+    },
+    {
+      en: "The vector is an operator stack: operators are delayed until their right context is known, while operands can be emitted immediately.",
+      zh: "这个 vector 是运算符栈：运算符要等右侧上下文确定后才输出，而操作数可以立即写出。",
+    },
+    {
+      en: "Consume the entire digit run before appending the token. The token boundary is not known until a non-digit appears.",
+      zh: "追加 token 前要消费整段连续数字；在看到非数字字符之前，token 的边界并未确定。",
+    },
+    {
+      en: "A right parenthesis pops and emits operators back to its matching left parenthesis, then removes the left parenthesis without emitting it.",
+      zh: "右括号会不断弹出并输出运算符直到匹配左括号，然后删除左括号但不输出它。",
+    },
+    {
+      en: "An empty stack here means there is no matching left parenthesis; never call back() on an empty vector.",
+      zh: "此处栈空说明没有匹配的左括号；绝不能对空 vector 调用 back()。",
+    },
+    {
+      en: "Push the current operator only after the while has emitted every top with greater-or-equal precedence; this is the left-associative ordering.",
+      zh: "只有 while 已输出所有优先级不低于当前运算符的栈顶后才压入；这正是左结合要求的顺序。",
+    },
+    {
+      en: "The scan has no more input to resolve the remaining operators; flush them now so the output contains every operator exactly once.",
+      zh: "输入已经扫描完，没有 token 再决定剩余运算符的顺序；现在清栈，确保每个运算符恰好输出一次。",
+    },
+    {
+      en: "A left parenthesis left at the end never found its right partner; return nullopt instead of treating it as an operator.",
+      zh: "扫描结束时仍留在栈中的左括号没有右括号配对；应返回 nullopt，不能把它当运算符。",
     },
   ],
   "infix_to_postfix.py": [
@@ -1716,11 +1808,63 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
       en: "a left parenthesis blocks every pop until it is explicitly removed.",
       zh: "左括号是弹栈边界：在它被显式弹出前，不能越过它弹出其他运算符。",
     },
+    {
+      en: "Tokenization happens before conversion so the converter sees whole numbers and explicit parentheses, not individual characters.",
+      zh: "先分词再转换，使转换器看到完整数字和显式括号，而不是单个字符。",
+    },
+    {
+      en: "This list is the operator stack. Operands go straight to output; only operators whose output order is still unsettled wait here.",
+      zh: "这个列表是运算符栈；操作数直接进入输出，只有输出顺序尚未确定的运算符才在此等待。",
+    },
+    {
+      en: "A right parenthesis drains operators to its matching left parenthesis and discards both parentheses; an empty stack means it is unmatched.",
+      zh: "右括号把运算符弹到匹配左括号并丢弃这对括号；若栈为空则说明右括号没有配对。",
+    },
+    {
+      en: "The left-parenthesis test short-circuits the precedence test; `>=` is required for left associativity, so 8-3-2 emits the first minus first.",
+      zh: "左括号判断会短路优先级判断；`>=` 是左结合所必需的，因此 8−3−2 会先输出第一个减号。",
+    },
+    {
+      en: "No token remains to settle the stack order. Pop everything, but treat a leftover left parenthesis as an unmatched-parenthesis error.",
+      zh: "已无 token 能决定栈中顺序；应全部弹出，但残留左括号要作为括号不匹配错误处理。",
+    },
+    {
+      en: "Only digits, the four binary operators and parentheses are accepted. A unary minus, exponentiation or variable is rejected instead of assigned a guessed precedence.",
+      zh: "这里只接受数字、四个二元运算符和括号；一元负号、幂运算或变量会直接报错，而不是猜测优先级。",
+    },
   ],
   "postfix_eval.c": [
     {
       en: "the first pop is the right operand; compute left op right.",
       zh: "第一次弹出的是右操作数，必须按“左操作数 运算符 右操作数”的顺序计算。",
+    },
+    {
+      en: "The stack holds values already computed from the processed prefix. A binary operator consumes two values and returns one, so its height never exceeds the token count.",
+      zh: "栈保存已处理前缀算出的值；每个二元运算符消费两个值并产出一个，因此栈高不会超过 token 数。",
+    },
+    {
+      en: "Only an all-digit token is a number. A leading minus is not accepted here, so negative literals must be produced by subtraction rather than written directly.",
+      zh: "只有全数字 token 才算操作数；这里不接受前导负号，因此负数应由减法产生，而不是直接写成字面量。",
+    },
+    {
+      en: "The token has already passed the digit check; atoi converts the same text to an integer and pushes it as one complete operand.",
+      zh: "token 已通过全数字检查；atoi 把同一段文本转成整数并作为一个完整操作数压栈。",
+    },
+    {
+      en: "top is an index, so top < 1 means fewer than two operands. Check before popping; otherwise the second read would use a negative index.",
+      zh: "top 是下标，top < 1 表示不足两个操作数；必须在弹栈前检查，否则第二次读取会访问负下标。",
+    },
+    {
+      en: "Check the divisor before dividing. Returning false with an error message leaves the caller's output value untouched.",
+      zh: "除法前先检查除数；返回 false 并写入错误信息，同时不改动调用方的结果值。",
+    },
+    {
+      en: "The two popped operands are replaced by one result. Each binary operator therefore reduces stack height by exactly one.",
+      zh: "弹出的两个操作数被一个结果替代；因此每个二元运算符都让栈高恰好减少一。",
+    },
+    {
+      en: "A valid postfix expression leaves exactly one value. top < 0 means missing operands; top > 0 means extra operands were never consumed.",
+      zh: "合法后缀表达式最后恰好剩一个值；top < 0 表示操作数不足，top > 0 表示还有多余操作数未被消费。",
     },
   ],
   "postfix_eval.cpp": [
@@ -1728,11 +1872,63 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
       en: "the first pop is the right operand; compute left op right.",
       zh: "第一次弹出的是右操作数，必须按“左操作数 运算符 右操作数”的顺序计算。",
     },
+    {
+      en: "This stack stores computed values, not tokens. Every operator pops two values and pushes one, so the stack is the only state the scan needs.",
+      zh: "这个栈保存已计算的值而不是 token；每个运算符弹出两个、压回一个，因此扫描只需维护这一个状态。",
+    },
+    {
+      en: "The all-digit predicate rejects signs and mixed tokens such as 12a before stoi is called; only a genuine operand is pushed.",
+      zh: "全数字判断会在调用 stoi 前拒绝符号和 12a 这类混合 token；只有真正的操作数才会入栈。",
+    },
+    {
+      en: "Two operands are required before an operator can run. Checking size avoids back() on an empty vector.",
+      zh: "运算符执行前必须有两个操作数；先检查 size，避免对空 vector 调用 back()。",
+    },
+    {
+      en: "Division by zero is detected before the division expression runs; return an EvalError rather than relying on undefined behavior.",
+      zh: "除零在真正执行除法前就被发现；应返回 EvalError，而不是依赖未定义行为。",
+    },
+    {
+      en: "The result replaces the two consumed operands, so each binary operator reduces the stack by exactly one element.",
+      zh: "结果替代两个已消费的操作数，因此每个二元运算符都让栈恰好减少一个元素。",
+    },
+    {
+      en: "An empty final stack means the expression had too few operands; this is a syntax error, not a zero result.",
+      zh: "最终栈为空说明表达式操作数不足；这是语法错误，不是结果 0。",
+    },
+    {
+      en: "More than one final value means operands were left unconsumed; returning the top value silently would hide the malformed input.",
+      zh: "最终多于一个值说明还有操作数未被消费；若静默返回栈顶，就会掩盖非法输入。",
+    },
   ],
   "postfix_eval.py": [
     {
       en: "the first pop is the right operand; compute left op right.",
       zh: "第一次弹出的是右操作数，必须按“左操作数 运算符 右操作数”的顺序计算。",
+    },
+    {
+      en: "The list is an operand stack, not a call stack. Its only job is to hold values whose operator has not appeared yet.",
+      zh: "这个列表是操作数栈而不是调用栈；它只保存尚未遇到运算符的值。",
+    },
+    {
+      en: "Only a whole digit token is pushed. The evaluator does not accept a leading minus or a decimal point, so negative values must come from subtraction.",
+      zh: "只有完整数字 token 才入栈；求值器不接受前导负号或小数点，因此负数必须由减法产生。",
+    },
+    {
+      en: "A binary operator needs two operands. Check length before pop so an empty or one-item stack raises PostfixError instead of IndexError.",
+      zh: "二元运算符需要两个操作数；先检查长度，使空栈或单元素栈抛出 PostfixError 而不是 IndexError。",
+    },
+    {
+      en: "Reject a zero divisor before computing. The operands have already been popped, but the local stack is discarded on error, so no partial result escapes.",
+      zh: "计算前先拒绝零除数；此时操作数已弹出，但出错会丢弃局部栈，因此不会有部分结果泄漏。",
+    },
+    {
+      en: "No remaining value means operands were missing; the input never formed one complete expression.",
+      zh: "最终没有值说明操作数不足；输入从未形成一条完整表达式。",
+    },
+    {
+      en: "Extra values mean the input left operands unused. Raising is safer than returning the top and hiding the malformed expression.",
+      zh: "剩余多个值说明输入有操作数未被使用；抛错比返回栈顶、掩盖非法表达式更安全。",
     },
   ],
   "free_list.c": [

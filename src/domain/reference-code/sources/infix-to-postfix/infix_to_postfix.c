@@ -76,6 +76,7 @@ bool InfixToPostfix(const char *expression, char *out, size_t capacity)
     }
     out[0] = '\0';
 
+    // Operators wait in this stack until their right context is known; operands never enter the stack because their final output position is already fixed.
     char operators[MAX_EXPR];
     int top = -1;
     const char *cursor = expression;
@@ -88,6 +89,7 @@ bool InfixToPostfix(const char *expression, char *out, size_t capacity)
             continue;
         }
 
+        // Read the whole digit run before emitting it. Splitting 12 into 1 and 2 would change the value and make later postfix evaluation wrong.
         if (*cursor >= '0' && *cursor <= '9')
         {
             char number[32];
@@ -114,6 +116,7 @@ bool InfixToPostfix(const char *expression, char *out, size_t capacity)
             }
             operators[++top] = token;
         }
+        // A right parenthesis closes one group: emit operators until the matching left parenthesis, then discard the parenthesis itself.
         else if (token == ')')
         {
             while (top >= 0 && operators[top] != '(')
@@ -124,6 +127,7 @@ bool InfixToPostfix(const char *expression, char *out, size_t capacity)
                     return false;
                 }
             }
+            // An empty stack before the matching left parenthesis means this right parenthesis is unmatched; return false instead of reading below the array.
             if (top < 0)
             {
                 return false;
@@ -146,6 +150,7 @@ bool InfixToPostfix(const char *expression, char *out, size_t capacity)
             {
                 return false;
             }
+            // Push the incoming operator only after the while has emitted every greater-or-equal top; pushing first would reverse its operands.
             operators[++top] = token;
         }
         else
@@ -154,8 +159,10 @@ bool InfixToPostfix(const char *expression, char *out, size_t capacity)
         }
     }
 
+    // After the scan no later token can decide the remaining order; flush the stack so lower-priority operators still reach the output.
     while (top >= 0)
     {
+        // A remaining left parenthesis means its right partner never appeared; report failure rather than printing a parenthesis as an operator.
         if (operators[top] == '(')
         {
             return false;

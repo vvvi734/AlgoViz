@@ -52,16 +52,19 @@ def tokenize(expression: str) -> list[str]:
             tokens.append(char)
             index += 1
             continue
+        # Only digits, the four binary operators and parentheses are accepted. A unary minus, exponentiation or variable is rejected instead of assigned a guessed precedence.
         raise ValueError(f"unsupported character: {char}")
     return tokens
 
 
-# Purpose: Return the postfix expression; the caller guarantees that parentheses are balanced.
-# 作用：返回后缀表达式；括号不匹配时由调用方保证输入合法。
+# Purpose: Return the postfix expression; raise ValueError when parentheses are unbalanced or a character is unsupported.
+# 作用：返回后缀表达式；括号不匹配或出现不支持的字符时抛出 ValueError。
 def infix_to_postfix(expression: str) -> str:
     """Convert an infix expression; raise ValueError on unbalanced parentheses."""
+    # Tokenization happens before conversion so the converter sees whole numbers and explicit parentheses, not individual characters.
     tokens = tokenize(expression)
     output: list[str] = []
+    # This list is the operator stack. Operands go straight to output; only operators whose output order is still unsettled wait here.
     operators: list[str] = []
 
     for token in tokens:
@@ -70,6 +73,7 @@ def infix_to_postfix(expression: str) -> str:
         # a left parenthesis blocks every pop until it is explicitly removed.
         elif token == "(":
             operators.append(token)
+        # A right parenthesis drains operators to its matching left parenthesis and discards both parentheses; an empty stack means it is unmatched.
         elif token == ")":
             while operators and operators[-1] != "(":
                 output.append(operators.pop())
@@ -79,11 +83,13 @@ def infix_to_postfix(expression: str) -> str:
         else:
             # `>=` (not `>`) is required for left associativity: 8 - 3 - 2 must
             # emit the first minus before pushing the second one.
+            # The left-parenthesis test short-circuits the precedence test; `>=` is required for left associativity, so 8-3-2 emits the first minus first.
             while (operators and operators[-1] != "(" and
                    precedence(operators[-1]) >= precedence(token)):
                 output.append(operators.pop())
             operators.append(token)
 
+    # No token remains to settle the stack order. Pop everything, but treat a leftover left parenthesis as an unmatched-parenthesis error.
     while operators:
         operator = operators.pop()
         if operator == "(":

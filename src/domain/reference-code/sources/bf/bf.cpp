@@ -64,14 +64,17 @@ std::vector<int> bf_find_all(const std::string &text, const std::string &pattern
         return matches;
     }
 
+    // candidate_count is computed only after the n < m guard, so it is at least one and the unsigned loop has a safe stop.
     std::size_t candidate_count = n - m + 1;
 
     // Enumerate starts below candidate_count; size_t is unsigned, so s <= n - m + 1 would wrap at zero.
     for (std::size_t s = 0; s < candidate_count; ++s)
     {
+        // j restarts at 0 for each start because BF intentionally keeps no matched-prefix state. Previously compared characters may be compared again, giving O(nm) worst-case time.
         std::size_t j = 0;
 
         // Confirm the prefix; j ends at m on success or at the first mismatch, while the text index is s + j.
+        // The legal-start bound makes s+j stay inside text, so the inner loop only needs to test j < m and character equality.
         while (j < m && text[s + j] == pattern[j])
         {
             ++j;

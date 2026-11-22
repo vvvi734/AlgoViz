@@ -76,9 +76,11 @@ int bf_find_all(const char *text, const char *pattern, int *starts, int capacity
     // Enumerate legal starts only: s <= n - m, otherwise s + m - 1 would pass the text end.
     for (int s = 0; s < candidate_count; ++s)
     {
+        // Reset j for every candidate. BF keeps no prefix state, so characters already compared under one alignment may be compared again under the next; that is the source of its O(nm) worst case.
         int j = 0;
 
         // j is both the confirmed prefix length and the next pattern index; text access is always s + j.
+        // The candidate bound s <= n-m makes every s+j a valid text index, so the loop can run to m without a separate bounds check inside.
         while (j < m && text[s + j] == pattern[j])
         {
             ++j;
@@ -87,6 +89,7 @@ int bf_find_all(const char *text, const char *pattern, int *starts, int capacity
         // j == m proves all m characters matched, not just the last pair.
         if (j == m)
         {
+            // The output array is caller-owned and fixed. Fail before writing past capacity rather than silently dropping a match and returning a smaller count.
             if (matches == capacity)
             {
                 return -1;

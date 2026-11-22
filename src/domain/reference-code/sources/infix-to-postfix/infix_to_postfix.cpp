@@ -59,6 +59,7 @@ void append_token(std::string &output, const std::string &token)
 std::optional<std::string> to_postfix(const std::string &expression)
 {
     std::string output;
+    // The vector is an operator stack: operators are delayed until their right context is known, while operands can be emitted immediately.
     std::vector<char> operators;
     std::size_t index = 0;
 
@@ -71,6 +72,7 @@ std::optional<std::string> to_postfix(const std::string &expression)
             continue;
         }
 
+        // Consume the entire digit run before appending the token. The token boundary is not known until a non-digit appears.
         if (std::isdigit(static_cast<unsigned char>(current)))
         {
             std::string number;
@@ -91,6 +93,7 @@ std::optional<std::string> to_postfix(const std::string &expression)
             continue;
         }
 
+        // A right parenthesis pops and emits operators back to its matching left parenthesis, then removes the left parenthesis without emitting it.
         if (current == ')')
         {
             while (!operators.empty() && operators.back() != '(')
@@ -98,6 +101,7 @@ std::optional<std::string> to_postfix(const std::string &expression)
                 append_token(output, std::string(1, operators.back()));
                 operators.pop_back();
             }
+            // An empty stack here means there is no matching left parenthesis; never call back() on an empty vector.
             if (operators.empty())
             {
                 return std::nullopt;
@@ -117,6 +121,7 @@ std::optional<std::string> to_postfix(const std::string &expression)
                 append_token(output, std::string(1, operators.back()));
                 operators.pop_back();
             }
+            // Push the current operator only after the while has emitted every top with greater-or-equal precedence; this is the left-associative ordering.
             operators.push_back(current);
             ++index;
             continue;
@@ -125,8 +130,10 @@ std::optional<std::string> to_postfix(const std::string &expression)
         return std::nullopt;
     }
 
+    // The scan has no more input to resolve the remaining operators; flush them now so the output contains every operator exactly once.
     while (!operators.empty())
     {
+        // A left parenthesis left at the end never found its right partner; return nullopt instead of treating it as an operator.
         if (operators.back() == '(')
         {
             return std::nullopt;
