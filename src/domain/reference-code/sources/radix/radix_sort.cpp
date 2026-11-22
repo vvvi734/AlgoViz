@@ -28,6 +28,7 @@ struct Record
 // 作用：按当前位权取出一个十进制数位；不足位自然得到 0。
 static int DigitAt(int value, int power)
 {
+    // The place value selects one decimal digit; a shorter number has implicit leading zeros, so division naturally yields 0 beyond its top digit.
     return (value / power) % 10;
 }
 
@@ -47,6 +48,7 @@ static void RadixSort(std::vector<Record> &records)
     {
         maximum = record.value > maximum ? record.value : maximum;
     }
+    // At least one pass handles zero; repeatedly dividing the maximum by ten counts how many decimal positions exist.
     int maxDigits = 1;
     for (int rest = maximum; rest >= 10; rest /= 10)
     {
@@ -54,13 +56,16 @@ static void RadixSort(std::vector<Record> &records)
     }
 
     int power = 1;
+    // At the start of pass p, order is already stable for all lower digits; this pass adds digit p as the next key.
     for (int pass = 0; pass < maxDigits; ++pass)
     {
         std::array<std::vector<int>, 10> buckets;
         for (int position = 0; position < n; ++position)
         {
+            // Distribute the current stable sequence, not raw input: the order from previous passes decides insertion order inside each bucket.
             int recordIndex = order[position];
             int digit = DigitAt(records[recordIndex].value, power);
+            // push_back appends at the bucket tail; when buckets are collected front-to-back, this preserves FIFO order.
             buckets[digit].push_back(recordIndex);
         }
 
@@ -70,13 +75,16 @@ static void RadixSort(std::vector<Record> &records)
         {
             for (int recordIndex : buckets[digit])
             {
+                // Append buckets 0..9 in order; the current digit is now the primary key, while the bucket sequence retains lower digits.
                 nextOrder.push_back(recordIndex);
             }
         }
+        // Swap only after nextOrder is complete; the old order then becomes the discarded buffer for the next pass.
         order.swap(nextOrder);
         power *= 10;
     }
 
+    // Once the highest digit has been processed, all digits have acted from least to most significant; stability preserved lower digits, so order is fully sorted.
     std::vector<Record> sorted;
     sorted.reserve(n);
     for (int recordIndex : order)

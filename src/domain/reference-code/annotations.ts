@@ -2242,6 +2242,42 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
       en: "Purpose: Run LSD passes over order, using stable FIFO buckets and a fresh order each pass.",
       zh: "作用：按 LSD 顺序处理各趟，使用稳定的 FIFO 桶，并在每趟生成新的序列。",
     },
+    {
+      en: "Dividing by the current place value removes lower digits; %10 keeps this pass's digit. Missing higher positions naturally yield 0.",
+      zh: "先除以当前位权去掉更低的数位，再对 10 取余得到本趟数位；不存在的高位自然得到 0。",
+    },
+    {
+      en: "Start with one pass so the value 0 still gets a units pass; divide the maximum until it is below 10 to count decimal positions.",
+      zh: "至少保留一趟，使 0 也能处理个位；用最大值反复除以 10 直到小于 10，从而数出十进制位数。",
+    },
+    {
+      en: "Before pass p, order is stable for digits below p; this pass adds digit p as the next key without discarding that lower-digit order.",
+      zh: "第 p 趟开始前，order 已按低于 p 的数位稳定有序；本趟只是把第 p 位作为新的比较键，同时保留低位次序。",
+    },
+    {
+      en: "Reset counts every pass; stale bucket cells beyond counts are never read, so they need no clearing.",
+      zh: "每趟都要清零 counts；桶中超过 counts 的旧槽不会再被读取，因此不需要整体清空桶。",
+    },
+    {
+      en: "Walk the current stable order, not the raw input: earlier passes determine the order in which records enter each bucket.",
+      zh: "按当前稳定序列扫描，而不是按原始输入：前几趟的结果决定记录进入各桶的先后。",
+    },
+    {
+      en: "Write at each bucket's tail. Collecting from slot 0 upward then makes the bucket FIFO, which is the stability requirement.",
+      zh: "把记录写到桶尾；收集时从 0 号槽向上读，桶就保持 FIFO，这正是稳定性的要求。",
+    },
+    {
+      en: "Collect buckets 0..9 in ascending digit order; this digit is now the primary key, while each bucket's FIFO retains lower-digit order.",
+      zh: "按 0..9 升序收集桶；当前数位成为主键，而桶内 FIFO 次序保留低位数已排好的顺序。",
+    },
+    {
+      en: "Replace order only after the whole new sequence is built; mixing reads and writes in one array would corrupt unread records.",
+      zh: "等整条新序列收集完才替换 order；若在同一个数组里边读边写，会覆盖尚未读取的记录。",
+    },
+    {
+      en: "After the most significant pass, every decimal digit has been applied from least to most significant; stability carried lower-digit order forward, so order is fully sorted.",
+      zh: "最高位处理完后，所有十进制位都按从低到高参与过排序；稳定性把低位次序一路带过来，因此 order 已经整体有序。",
+    },
   ],
   "radix_sort.cpp": [
     {
@@ -2252,6 +2288,38 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
       en: "Purpose: Run LSD passes over order, using stable FIFO buckets and a fresh order each pass.",
       zh: "作用：按 LSD 顺序处理各趟，使用稳定的 FIFO 桶，并在每趟生成新的序列。",
     },
+    {
+      en: "The place value selects one decimal digit; a shorter number has implicit leading zeros, so division naturally yields 0 beyond its top digit.",
+      zh: "位权选出当前十进制数位；较短整数相当于高位补零，超过最高位后除法自然得到 0。",
+    },
+    {
+      en: "At least one pass handles zero; repeatedly dividing the maximum by ten counts how many decimal positions exist.",
+      zh: "至少一趟处理 0；把最大值不断除以 10，就能数出共有多少个十进制位。",
+    },
+    {
+      en: "At the start of pass p, order is already stable for all lower digits; this pass adds digit p as the next key.",
+      zh: "第 p 趟开始时，order 已按所有更低数位稳定有序；本趟再把第 p 位作为新的键。",
+    },
+    {
+      en: "Distribute the current stable sequence, not raw input: the order from previous passes decides insertion order inside each bucket.",
+      zh: "分配的是当前稳定序列而不是原始输入：前几趟得到的顺序决定记录在桶内的插入次序。",
+    },
+    {
+      en: "push_back appends at the bucket tail; when buckets are collected front-to-back, this preserves FIFO order.",
+      zh: "push_back 把记录追加到桶尾；按从前到后收集时，FIFO 次序因此得以保持。",
+    },
+    {
+      en: "Append buckets 0..9 in order; the current digit is now the primary key, while the bucket sequence retains lower digits.",
+      zh: "按 0..9 顺序追加桶内容；当前数位成为主键，而桶内序列保留低位结果。",
+    },
+    {
+      en: "Swap only after nextOrder is complete; the old order then becomes the discarded buffer for the next pass.",
+      zh: "等 nextOrder 完整后才交换；旧 order 随即成为下一趟可丢弃的缓冲。",
+    },
+    {
+      en: "Once the highest digit has been processed, all digits have acted from least to most significant; stability preserved lower digits, so order is fully sorted.",
+      zh: "最高位处理完后，所有数位都已从低到高参与排序；稳定性保留了低位数结果，因此 order 已整体有序。",
+    },
   ],
   "radix_sort.py": [
     {
@@ -2261,6 +2329,34 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
     {
       en: "Purpose: Run stable LSD passes; the result is built only by distribution and collection.",
       zh: "作用：执行稳定的 LSD 各趟；最终结果只由分配和收集产生。",
+    },
+    {
+      en: "Integer division removes lower digits and %10 selects this pass's digit; a short number behaves as if its missing high digits were zero.",
+      zh: "整除去掉低位，再对 10 取余得到本趟数位；较短整数相当于缺失的高位都是 0。",
+    },
+    {
+      en: "One pass is always needed for the units digit; dividing the maximum until it is below ten counts the remaining decimal positions.",
+      zh: "个位至少需要一趟；把最大值除到小于 10，就数出了剩余十进制位。",
+    },
+    {
+      en: "Before pass p, order is stable for digits below p; this pass adds digit p without discarding the lower-digit ordering.",
+      zh: "第 p 趟前，order 已按低于 p 的数位稳定有序；本趟加入第 p 位，同时不丢弃低位次序。",
+    },
+    {
+      en: "Scan the current stable order, not the original input: previous passes define the order in which records enter buckets.",
+      zh: "扫描当前稳定序列而不是原始输入：前几趟决定记录进入桶的先后。",
+    },
+    {
+      en: "append puts the record at the bucket tail; reading each bucket from the front then gives FIFO collection and stability.",
+      zh: "append 把记录放在桶尾；从桶头读取就得到 FIFO 收集顺序和稳定性。",
+    },
+    {
+      en: "Rebuild order by buckets 0..9: the current digit is the primary key, while each bucket keeps the lower-digit order.",
+      zh: "按 0..9 重建 order：当前数位成为主键，而每个桶内部保留低位数结果。",
+    },
+    {
+      en: "After the highest digit, every position has been applied; stable passes preserve lower digits, so the returned order is fully sorted.",
+      zh: "处理完最高位后，每个数位都已参与排序；稳定各趟保留了低位结果，因此返回的序列已经整体有序。",
     },
   ],
   "multiway_merge.c": [

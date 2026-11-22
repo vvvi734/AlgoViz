@@ -31,6 +31,7 @@ typedef struct
 // 作用：按当前位权取出一个十进制数位；不足位自然得到 0。
 static int DigitAt(int value, int power)
 {
+    // Dividing by the current place value removes lower digits; %10 keeps this pass's digit. Missing higher positions naturally yield 0.
     return (value / power) % RADIX;
 }
 
@@ -56,6 +57,7 @@ static void RadixSort(Record *records, int n)
             maximum = records[index].value;
         }
     }
+    // Start with one pass so the value 0 still gets a units pass; divide the maximum until it is below 10 to count decimal positions.
     int maxDigits = 1;
     for (int rest = maximum; rest >= RADIX; rest /= RADIX)
     {
@@ -63,16 +65,20 @@ static void RadixSort(Record *records, int n)
     }
 
     int power = 1;
+    // Before pass p, order is stable for digits below p; this pass adds digit p as the next key without discarding that lower-digit order.
     for (int pass = 0; pass < maxDigits; ++pass)
     {
         for (int digit = 0; digit < RADIX; ++digit)
         {
+            // Reset counts every pass; stale bucket cells beyond counts are never read, so they need no clearing.
             counts[digit] = 0;
         }
         for (int position = 0; position < n; ++position)
         {
+            // Walk the current stable order, not the raw input: earlier passes determine the order in which records enter each bucket.
             int recordIndex = order[position];
             int digit = DigitAt(records[recordIndex].value, power);
+            // Write at each bucket's tail. Collecting from slot 0 upward then makes the bucket FIFO, which is the stability requirement.
             buckets[digit][counts[digit]] = recordIndex;
             counts[digit] += 1;
         }
@@ -82,17 +88,20 @@ static void RadixSort(Record *records, int n)
         {
             for (int slot = 0; slot < counts[digit]; ++slot)
             {
+                // Collect buckets 0..9 in ascending digit order; this digit is now the primary key, while each bucket's FIFO retains lower-digit order.
                 next_order[write] = buckets[digit][slot];
                 write += 1;
             }
         }
         for (int position = 0; position < n; ++position)
         {
+            // Replace order only after the whole new sequence is built; mixing reads and writes in one array would corrupt unread records.
             order[position] = next_order[position];
         }
         power *= RADIX;
     }
 
+    // After the most significant pass, every decimal digit has been applied from least to most significant; stability carried lower-digit order forward, so order is fully sorted.
     Record sorted[MAX_RECORDS];
     for (int position = 0; position < n; ++position)
     {

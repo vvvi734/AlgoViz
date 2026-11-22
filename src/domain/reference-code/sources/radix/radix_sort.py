@@ -13,6 +13,7 @@
 # Purpose: Extract the decimal digit selected by the current place value.
 # 作用：按当前位权取出一个十进制数位；不足位自然得到 0。
 def digit_at(value, power):
+    # Integer division removes lower digits and %10 selects this pass's digit; a short number behaves as if its missing high digits were zero.
     return (value // power) % 10
 
 
@@ -32,6 +33,7 @@ def radix_sort(values):
         for index, value in enumerate(values)
     ]
     maximum = max(record["value"] for record in records)
+    # One pass is always needed for the units digit; dividing the maximum until it is below ten counts the remaining decimal positions.
     max_digits = 1
     while maximum >= 10:
         maximum //= 10
@@ -39,13 +41,18 @@ def radix_sort(values):
 
     order = list(range(len(records)))
     power = 1
+    # Before pass p, order is stable for digits below p; this pass adds digit p without discarding the lower-digit ordering.
     for _pass in range(max_digits):
         buckets = [[] for _ in range(10)]
+        # Scan the current stable order, not the original input: previous passes define the order in which records enter buckets.
         for record_index in order:
             digit = digit_at(records[record_index]["value"], power)
+            # append puts the record at the bucket tail; reading each bucket from the front then gives FIFO collection and stability.
             buckets[digit].append(record_index)
+        # Rebuild order by buckets 0..9: the current digit is the primary key, while each bucket keeps the lower-digit order.
         order = [record_index for bucket in buckets for record_index in bucket]
         power *= 10
+    # After the highest digit, every position has been applied; stable passes preserve lower digits, so the returned order is fully sorted.
     return [records[record_index] for record_index in order]
 
 
