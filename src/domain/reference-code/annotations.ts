@@ -61,15 +61,172 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
       zh: "V-1 轮完整松弛足以确定所有简单最短路；再扫一遍仍能松弛就说明存在可达负环。",
     },
   ],
-  "bf.c": [],
-  "bf.cpp": [],
-  "bf.py": [],
-  "gl_depth.c": [],
-  "gl_depth.cpp": [],
-  "gl_depth.py": [],
-  "gl_copy.c": [],
-  "gl_copy.cpp": [],
-  "gl_copy.py": [],
+  "bf.c": [
+    {
+      en: "Enumerate legal starts only: s <= n - m, otherwise s + m - 1 would pass the text end.",
+      zh: "只枚举合法起点 s ≤ n−m；再大就会让 s + m − 1 越过主串末尾。",
+    },
+    {
+      en: "j is both the confirmed prefix length and the next pattern index; text access is always s + j.",
+      zh: "j 既表示已确认相等的前缀长度，也是下一个模式下标；访问主串必须用 s + j，不能直接用 j。",
+    },
+    {
+      en: "j == m proves all m characters matched, not just the last pair.",
+      zh: "只有 j == m 才证明整个模式串的 m 个字符都匹配，不能只看最后一次比较。",
+    },
+    {
+      en: "Do not break after a hit: advancing s is what preserves overlapping occurrences.",
+      zh: "命中后不能 break；继续令 s 前进，才能保留重叠出现。",
+    },
+  ],
+  "bf.cpp": [
+    {
+      en: "Enumerate starts below candidate_count; size_t is unsigned, so s <= n - m + 1 would wrap at zero.",
+      zh: "起点必须小于 candidate_count；size_t 是无符号类型，写成 s <= n−m+1 会在零附近回绕。",
+    },
+    {
+      en: "Confirm the prefix; j ends at m on success or at the first mismatch, while the text index is s + j.",
+      zh: "逐字符确认前缀；成功时 j 到 m，失败时停在首个失配处；主串下标始终是 s + j。",
+    },
+    {
+      en: "Only j == m proves the whole pattern matched, not merely the last comparison.",
+      zh: "只有 j == m 才证明整个模式串匹配，不能只看最后一次比较是否相等。",
+    },
+    {
+      en: "Do not stop after a hit; advancing s preserves overlapping matches.",
+      zh: "命中后不要停止；继续推进 s 才能保留重叠匹配。",
+    },
+  ],
+  "bf.py": [
+    {
+      en: "If n < m no alignment can hold the pattern; the early return also avoids a non-positive range bound.",
+      zh: "n < m 时没有任何对齐能容纳模式串；提前返回也避免 range 上界变成非正数。",
+    },
+    {
+      en: "Enumerate only legal starts; start aligns pattern[0] with text[start], so its maximum is n - m.",
+      zh: "只枚举合法起点；start 把 pattern[0] 对齐到 text[start]，最大值是 n−m。",
+    },
+    {
+      en: "j is both the confirmed prefix length and the next pattern index; the compared text position is start + j.",
+      zh: "j 同时是已确认前缀长度和下一个模式下标；真正比较的主串位置是 start + j。",
+    },
+    {
+      en: "j == m proves all m characters matched, not just the last pair.",
+      zh: "j == m 说明 m 个字符全部匹配，而不是某一对字符相等。",
+    },
+    {
+      en: "Do not break after a hit: start + 1 may still form an overlapping match.",
+      zh: "命中后不能 break：start + 1 仍可能形成重叠匹配。",
+    },
+  ],
+  "gl_depth.c": [
+    {
+      en: "Append through a pointer-to-pointer tail, so an empty head is updated without a separate branch.",
+      zh: "用指向指针的尾指针追加，空表 head 也走同一条赋值路径，不需要单独分支。",
+    },
+    {
+      en: "Depth semantics: atom 0, empty list 1, non-empty list 1 + maximum child depth; null is only a defensive 0.",
+      zh: "深度约定：原子为 0，空表为 1，非空表为 1 + 子表最大深度；NULL 仅作防御性返回 0。",
+    },
+    {
+      en: "Purpose: Sibling sublists are alternatives, so take the maximum depth, never the sum.",
+      zh: "同层子表是并列关系，深度取最大值而不是相加；相加会得到元素总数而非嵌套层数。",
+    },
+    {
+      en: "Save next before freeing, and release the head chain first so nested children are not lost.",
+      zh: "释放前先保存 next，并先释放 head 子链，否则释放当前节点后既无法继续同层，也会泄漏子表。",
+    },
+  ],
+  "gl_depth.cpp": [
+    {
+      en: "Append through a pointer-to-pointer tail, so an empty head is updated without a separate branch.",
+      zh: "用指向指针的尾指针追加，空表 head 也走同一条赋值路径，不需要单独分支。",
+    },
+    {
+      en: "Depth semantics: atom 0, empty list 1, non-empty list 1 + maximum child depth; null is only a defensive 0.",
+      zh: "深度约定：原子为 0，空表为 1，非空表为 1 + 子表最大深度；nullptr 仅作防御性返回 0。",
+    },
+    {
+      en: "Purpose: Sibling sublists are alternatives; take the maximum, not the sum.",
+      zh: "同层子表是并列关系，深度取最大值而不是相加。",
+    },
+    {
+      en: "Save next before delete, and release the head chain first so nested children are not lost.",
+      zh: "delete 前先保存 next，并先释放 head 子链，避免释放后失联或泄漏嵌套孩子。",
+    },
+  ],
+  "gl_depth.py": [
+    {
+      en: "Purpose: A node stores its tag plus either an atom value or a child head.",
+      zh: "节点同时保存 tag 和 atom/head 两支字段，但按 tag 只有一支有效；next 只指向同层后继。",
+    },
+    {
+      en: "Purpose: Append child to the sibling chain; this function owns child.next.",
+      zh: "把 child 接到同层链尾；parent.head 为空时直接成为首孩子，否则沿 next 找到末尾再接入。",
+    },
+    {
+      en: "Purpose: Return 0 for an atom, 1 for (), or 1 + the maximum child depth.",
+      zh: "原子返回 0，空表返回 1，非空表对每个孩子递归取最大值后加当前层；None 只是防御值。",
+    },
+    {
+      en: "Siblings are alternatives, so take the maximum child depth, not the sum.",
+      zh: "同层兄弟是并列分支，应取最大孩子深度，不能把各分支深度累加。",
+    },
+  ],
+  "gl_copy.c": [
+    {
+      en: "A deep copy must allocate the new parent before descending; sharing a child would alias source and copy.",
+      zh: "深复制必须先分配新父节点再递归孩子；直接共享孩子会让源表与副本别名同一块内存。",
+    },
+    {
+      en: "On child failure, free the partially built subtree instead of returning a half-connected list.",
+      zh: "孩子复制失败时要释放已建好的半棵子树，不能返回半连接结构而泄漏内存。",
+    },
+    {
+      en: "Append through a pointer-to-pointer tail, so a copy with no children starts cleanly and keeps sibling order.",
+      zh: "用指向指针的尾指针追加；新副本没有孩子时也能直接接入，并保持同层顺序。",
+    },
+    {
+      en: "Purpose: Append child to the sibling chain and set its next pointer.",
+      zh: "把 child 接到同层链尾，并由本函数负责设置它的 next。",
+    },
+  ],
+  "gl_copy.cpp": [
+    {
+      en: "A deep copy allocates the new parent before descending; reusing a child would keep source and copy aliased.",
+      zh: "深复制先分配新父节点再进入子树；复用孩子指针会让源表与副本共享节点。",
+    },
+    {
+      en: "On allocation failure, free the half-built subtree rather than returning a partially linked copy.",
+      zh: "分配失败时释放半成品子树，不能返回部分连接的副本。",
+    },
+    {
+      en: "Append through a pointer-to-pointer tail so an empty child list needs no special branch.",
+      zh: "用指向指针的尾指针追加，空孩子链也无需特殊分支。",
+    },
+    {
+      en: "Save next before delete and free the head chain first, so neither siblings nor children are lost.",
+      zh: "delete 前保存 next 并先释放 head 子链，保证同层与子表都不会丢失。",
+    },
+  ],
+  "gl_copy.py": [
+    {
+      en: "Purpose: One node carries a tag and either atom text or a child head.",
+      zh: "每个节点用 tag 区分原子文本与子表 head；next 只表示同层后继。",
+    },
+    {
+      en: "Purpose: Copy one node and its subtree; src.next is intentionally not copied.",
+      zh: "复制当前节点及其子树，但故意不复制 src.next；同层后继由调用方连接。",
+    },
+    {
+      en: "Purpose: Link copies one by one; dst.head holds the first child and next holds the rest.",
+      zh: "逐个接入复制孩子：第一个放 dst.head，其余沿 next 串联，避免只剩第一个孩子。",
+    },
+    {
+      en: "Purpose: Append child to parent's sibling chain and set its next to None.",
+      zh: "把 child 追加到 parent 的同层链尾，并把 child.next 显式置为 None。",
+    },
+  ],
   "bfs.c": [
     {
       en: "Mark a vertex when it enters the queue, not when it leaves, so it cannot be enqueued twice.",
@@ -140,6 +297,10 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
     {
       en: "A full child is split before descending; its median moves into the parent, so insertion never needs to back up.",
       zh: "下降前先分裂已满的孩子；中位键上移到父节点，因此插入不需要回溯。",
+    },
+    {
+      en: "Failure path: this void helper only leaves the child untouched; it cannot report failure, while InsertNonFull continues as if the split happened. The teaching implementation registers this OOM limitation rather than changing control flow.",
+      zh: "失败路径：这个 void 辅助函数只是不修改原结点，无法向调用方报告失败；InsertNonFull 仍会按“已分裂”继续。本教学实现登记该 OOM 限制，不改变控制流。",
     },
   ],
   "btree.cpp": [
@@ -264,20 +425,20 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
   ],
   "critical_path.c": [
     {
-      en: "Forward pass takes the maximum predecessor finish; backward pass the minimum successor start; activity slack is latest(head) - earliest(tail) - weight.",
-      zh: "正推取前驱完成时间的最大值；逆推取后继开始时间的最小值；活动的时间余量是 latest(head) - earliest(tail) - weight。",
+      en: "Forward pass takes the maximum predecessor finish; backward pass the minimum successor start; activity slack is latest[to] - weight - earliest[from].",
+      zh: "正推取前驱完成时间的最大值；逆推取后继最迟时间减边权的最小值；活动时间余量是 latest[to] − weight − earliest[from]。",
     },
   ],
   "critical_path.cpp": [
     {
-      en: "Forward pass takes the maximum predecessor finish; backward pass the minimum successor start; activity slack is latest(head) - earliest(tail) - weight.",
-      zh: "正推取前驱完成时间的最大值；逆推取后继开始时间的最小值；活动的时间余量是 latest(head) - earliest(tail) - weight。",
+      en: "Forward pass takes the maximum predecessor finish; backward pass the minimum successor start; activity slack is latest[to] - weight - earliest[from].",
+      zh: "正推取前驱完成时间的最大值；逆推取后继最迟时间减边权的最小值；活动时间余量是 latest[to] − weight − earliest[from]。",
     },
   ],
   "critical_path.py": [
     {
-      en: "Forward pass takes the maximum predecessor finish; backward pass the minimum successor start; activity slack is latest(head) - earliest(tail) - weight.",
-      zh: "正推取前驱完成时间的最大值；逆推取后继开始时间的最小值；活动的时间余量是 latest(head) - earliest(tail) - weight。",
+      en: "Forward pass takes the maximum predecessor finish; backward pass the minimum successor start; activity slack is latest[to] - weight - earliest[from].",
+      zh: "正推取前驱完成时间的最大值；逆推取后继最迟时间减边权的最小值；活动时间余量是 latest[to] − weight − earliest[from]。",
     },
   ],
   "dfs.c": [
@@ -432,14 +593,14 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
   ],
   "hash_chain.cpp": [
     {
-      en: "Each bucket owns a chain; inserting at the bucket head is O(1), and duplicates are rejected before allocation.",
-      zh: "每个桶维护一条链；插入桶头是 O(1)，重复键在分配节点前就被拒绝。",
+      en: "Each bucket owns a vector-backed chain; a new key is appended, and duplicates are rejected before push_back.",
+      zh: "每个桶用 vector 维护一条链；新键追加到桶尾，重复键在 push_back 前被拒绝。",
     },
   ],
   "hash_chain.py": [
     {
-      en: "Each bucket owns a chain; inserting at the bucket head is O(1), and duplicates are rejected before allocation.",
-      zh: "每个桶维护一条链；插入桶头是 O(1)，重复键在分配节点前就被拒绝。",
+      en: "Each bucket owns a list; a new key is appended to that bucket, and duplicates are rejected before append.",
+      zh: "每个桶用列表维护一条链；新键追加到该桶，重复键在 append 前先被拒绝。",
     },
   ],
   "hash_probe_builtin.cpp": [
@@ -504,20 +665,20 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
   ],
   "threaded_inorder.c": [
     {
-      en: "Thread null left pointers into predecessors and null right pointers into successors.",
-      zh: "空左指针线索化为前驱，空右指针线索化为后继。",
+      en: "Thread targets live in left_thread/right_thread; the real child pointers stay NULL.",
+      zh: "线索目标保存在 left_thread/right_thread；真实孩子指针保持 NULL，未被覆盖。",
     },
   ],
   "threaded_inorder.cpp": [
     {
-      en: "Thread null left pointers into predecessors and null right pointers into successors.",
-      zh: "空左指针线索化为前驱，空右指针线索化为后继。",
+      en: "Thread targets live in left_thread/right_thread; the real child pointers stay null.",
+      zh: "线索目标保存在 left_thread/right_thread；真实孩子指针保持空，未被覆盖。",
     },
   ],
   "threaded_inorder.py": [
     {
-      en: "Thread null left pointers into predecessors and null right pointers into successors.",
-      zh: "空左指针线索化为前驱，空右指针线索化为后继。",
+      en: "Thread targets live in left_thread/right_thread; the real child pointers stay None.",
+      zh: "线索目标保存在 left_thread/right_thread；真实孩子指针保持 None，未被覆盖。",
     },
   ],
   "inorder.c": [
@@ -768,20 +929,20 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
   ],
   "scc.c": [
     {
-      en: "First pass records finish order; the reverse graph is then explored in decreasing finish order to isolate SCCs.",
-      zh: "第一轮记录完成顺序；随后在反向图上按完成顺序的逆序搜索，从而分离出各个强连通分量。",
+      en: "First pass appends a vertex only after all its outgoing neighbours are finished; the second pass reads this order backwards.",
+      zh: "第一遍只在顶点的所有出边邻居都完成后才追加该顶点；第二遍按这个完成顺序的逆序处理。",
     },
   ],
   "scc.cpp": [
     {
-      en: "First pass records finish order; the reverse graph is then explored in decreasing finish order to isolate SCCs.",
-      zh: "第一轮记录完成顺序；随后在反向图上按完成顺序的逆序搜索，从而分离出各个强连通分量。",
+      en: "First pass appends a vertex only after all its outgoing neighbours are finished; the second pass reads this order backwards.",
+      zh: "第一遍只在顶点的所有出边邻居都完成后才追加该顶点；第二遍按这个完成顺序的逆序处理。",
     },
   ],
   "scc.py": [
     {
-      en: "First pass records finish order; the reverse graph is then explored in decreasing finish order to isolate SCCs.",
-      zh: "第一轮记录完成顺序；随后在反向图上按完成顺序的逆序搜索，从而分离出各个强连通分量。",
+      en: "First pass appends a vertex only after all its outgoing neighbours are finished; the second pass reads this order backwards.",
+      zh: "第一遍只在顶点的所有出边邻居都完成后才追加该顶点；第二遍按这个完成顺序的逆序处理。",
     },
   ],
   "selection_sort.c": [
@@ -1124,6 +1285,10 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
       zh: "作用：把叶节点按 2/2 分裂，保持叶链，并提升新右叶的首键。",
     },
     {
+      en: "Failure path: `result` starts as {valid=1, right=-1}; if new_node fails this returns that unchanged, and callers do not reject right=-1, so exhausting the static pool can install an invalid separator. The teaching implementation records this limitation instead of changing insertion flow.",
+      zh: "失败路径：result 初值为 {valid=1, right=-1}；new_node 失败时原样返回，调用方又没有拒绝 right=-1，因此静态池耗尽可能写入无效分隔键。本教学实现登记该限制，不改变插入流程。",
+    },
+    {
       en: "Purpose: Split an internal node, promote and remove the middle separator, and move the right child range.",
       zh: "作用：分裂内部节点，提升并移除中间分隔键，同时移动右半孩子范围。",
     },
@@ -1258,22 +1423,308 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
       zh: "作用：执行稳定的 LSD 各趟；最终结果只由分配和收集产生。",
     },
   ],
-  "multiway_merge.c": [],
-  "multiway_merge.cpp": [],
-  "multiway_merge.py": [],
-  "replacement_selection.c": [],
-  "replacement_selection.cpp": [],
-  "replacement_selection.py": [],
-  "optimal_merge_tree.c": [],
-  "optimal_merge_tree.cpp": [],
-  "optimal_merge_tree.py": [],
-  "indexed_file.c": [],
-  "indexed_file.cpp": [],
-  "indexed_file.py": [],
-  "isam_file.c": [],
-  "isam_file.cpp": [],
-  "isam_file.py": [],
-  "inverted_index.c": [],
-  "inverted_index.cpp": [],
-  "inverted_index.py": [],
+  "multiway_merge.c": [
+    {
+      en: "Stable candidate order: smaller value wins, then the earlier original record.",
+      zh: "候选比较先看关键字，关键字相等时取原始下标更小者，保证稳定次序。",
+    },
+    {
+      en: "Only buffer[0] of each run is a candidate; the run's unread tail stays invisible until Refill moves it in.",
+      zh: "每段只有缓冲区队首 buffer[0] 能参加比较；段内尚未读入的尾部记录必须等 Refill 搬进缓冲区后才可见。",
+    },
+    {
+      en: "The last partial output block is still a block and must not be dropped.",
+      zh: "循环结束后输出缓冲区可能未满，但残余记录仍构成一个模拟块，必须写出。",
+    },
+  ],
+  "multiway_merge.cpp": [
+    {
+      en: "Only buffer.front() of each run is a candidate; unread records behind the FIFO window are not compared.",
+      zh: "每段只有缓冲区队首能参加比较；FIFO 窗口之后的未读记录不能提前比较。",
+    },
+    {
+      en: "A trailing partial buffer is still one simulated output block.",
+      zh: "最后不满的输出缓冲区仍算一个模拟输出块，不能丢弃。",
+    },
+    {
+      en: "Purpose: Fill the free tail of one input buffer from the run's unread prefix.",
+      zh: "从该段尚未读入的前缀补满输入缓冲区空位，并累计一次模拟读块。",
+    },
+    {
+      en: "Purpose: Merge k runs and print the stable output plus simulated block counts.",
+      zh: "执行一趟 k 路归并，输出稳定结果与模拟读写块数。",
+    },
+  ],
+  "multiway_merge.py": [
+    {
+      en: "The tuple comparison falls back to the original input position, so equal keys remain stable.",
+      zh: "元组比较在关键字相等时回退到原始输入位置，因此重复关键字仍保持稳定次序。",
+    },
+    {
+      en: "Only the buffer front of each run enters candidates; records behind the FIFO window are not read yet.",
+      zh: "只有各段缓冲区队首进入候选集；FIFO 窗口后的记录尚未读入，不能参与比较。",
+    },
+    {
+      en: "The final partial block still counts as one simulated write.",
+      zh: "最后残余的不完整输出块仍计一次模拟写块。",
+    },
+    {
+      en: "Purpose: Read one simulated block into the free tail of a run's FIFO buffer.",
+      zh: "向某段 FIFO 缓冲区尾部读入一个模拟块；没有空位或没有剩余记录时不读。",
+    },
+  ],
+  "replacement_selection.c": [
+    {
+      en: "Stable order: smaller value first, then the earlier original record.",
+      zh: "置换选择按关键字升序；关键字相等时用原始下标决胜，保持稳定。",
+    },
+    {
+      en: "Purpose: Find an empty slot; frozen records keep occupying their slots.",
+      zh: "寻找空槽读入新记录；冻结记录仍占着槽位，不能被覆盖或删除。",
+    },
+    {
+      en: "A refilled record joins the run only when key >= lastOutput; equality is allowed, smaller keys freeze.",
+      zh: "补读记录只有在关键字不小于上次输出时才可加入当前段；相等允许，较小者冻结。",
+    },
+    {
+      en: "A new run starts with no threshold; keeping the old lastOutput would wrongly freeze smaller keys.",
+      zh: "新段开始时没有阈值；若沿用上一段的 lastOutput，会把本可输出的较小关键字错误冻结。",
+    },
+  ],
+  "replacement_selection.cpp": [
+    {
+      en: "The originalIndex tie-break keeps equal keys in stable input order.",
+      zh: "用 originalIndex 决胜，使关键字相等的记录保持原始输入次序。",
+    },
+    {
+      en: "Only keys below the threshold are frozen; equality remains eligible.",
+      zh: "只有严格小于阈值的键被冻结；等于阈值仍属于当前段可输出记录。",
+    },
+    {
+      en: "A new run starts with no threshold; carrying lastOutput forward would freeze smaller keys incorrectly.",
+      zh: "新段不继承阈值；把旧 lastOutput 带过去会错误冻结更小的键。",
+    },
+    {
+      en: "Purpose: Run replacement selection and return the generated initial runs.",
+      zh: "实际运行置换选择，返回生成的各初始归并段。",
+    },
+  ],
+  "replacement_selection.py": [
+    {
+      en: "The tuple key falls back to input position, so equal values preserve their original order.",
+      zh: "元组键在值相等时回退到输入位置，使重复值保持原始次序。",
+    },
+    {
+      en: "Equality is eligible: only a key below last_output would break the current run's sorted order.",
+      zh: "等于阈值仍可输出；只有小于 last_output 的键才会破坏当前段的有序性。",
+    },
+    {
+      en: "A new run has no threshold; keeping the previous last_output would freeze records that are now valid.",
+      zh: "新段没有阈值；继续保留上一段的 last_output 会冻结本应可输出的记录。",
+    },
+    {
+      en: "Purpose: Run replacement selection over a fixed workspace and return the runs.",
+      zh: "在固定大小工作区上运行置换选择，返回全部初始段。",
+    },
+  ],
+  "optimal_merge_tree.c": [
+    {
+      en: "Greedy order: lightest first; real leaves before virtual leaves, then node id.",
+      zh: "森林根按权重最轻优先；同权时真实叶优先于虚拟叶，再按节点编号，保证结果可复现。",
+    },
+    {
+      en: "The forest must end with one root, so pad with d zero-weight leaves; they change shape, never the total weight.",
+      zh: "森林最终必须只剩一个根，因此补 d 个零权重虚拟叶；它们只改变树形，不改变总权重和总代价。",
+    },
+    {
+      en: "Each internal weight is paid once in the schedule, so total cost is their sum, not the root weight alone.",
+      zh: "每个内部节点的权重在归并计划中支付一次，总代价是所有内部权重之和，不能只看根权重。",
+    },
+    {
+      en: "Purpose: Build the optimal merge tree and return its total merge cost.",
+      zh: "构造 k 路最佳归并树，并返回所有内部节点权重之和。",
+    },
+  ],
+  "optimal_merge_tree.cpp": [
+    {
+      en: "The forest must end with one root, so pad with d zero-weight leaves; they change shape, never the total weight.",
+      zh: "森林最终必须只剩一个根，因此补 d 个零权重虚拟叶；它们只改变树形，不改变总权重和总代价。",
+    },
+    {
+      en: "Every internal weight is paid once, so total cost is the sum of all internal weights, not the root.",
+      zh: "每个内部权重只支付一次，总代价是所有内部权重之和，不是根权重。",
+    },
+    {
+      en: "Purpose: Build the full k-ary greedy tree and return the total merge cost.",
+      zh: "构造满 k 叉的贪心归并树，并返回总归并代价。",
+    },
+  ],
+  "optimal_merge_tree.py": [
+    {
+      en: "The forest must end with one root, so pad with d zero-weight leaves; they change shape, never total weight.",
+      zh: "森林最终必须只剩一个根，因此补 d 个零权重虚拟叶；它们只补形状，不改变总权重。",
+    },
+    {
+      en: "Every internal weight is paid once, so total cost is their sum, not the root weight alone.",
+      zh: "每个内部权重只支付一次，总代价是内部权重之和，而不是根权重。",
+    },
+    {
+      en: "Purpose: Build a full k-ary greedy merge tree and return total cost plus nodes.",
+      zh: "构造满 k 叉贪心归并树，返回总代价与全部节点。",
+    },
+  ],
+  "indexed_file.c": [
+    {
+      en: "Purpose: Split sorted records into fixed-capacity data blocks.",
+      zh: "把有序记录按块容量切块；块号就是索引项保存的物理地址，块内顺序由排序保证。",
+    },
+    {
+      en: "Dense emits one entry per record; sparse emits each block's last key as an upper bound, not the next block's first key.",
+      zh: "稠密索引每记录一项；稀疏索引每块只存最后一条记录的关键字作为上界，这个上界不是下一块的首键。",
+    },
+    {
+      en: "Choose the last entry not greater than target: a sparse bound belongs to the block whose maximum it is.",
+      zh: "选择不大于目标的最后一项；稀疏上界属于它所描述的那个块，不能误选第一个更大项。",
+    },
+    {
+      en: "A miss still reads the selected block once, so success and failure are measured with the same I/O unit.",
+      zh: "即使失败也要读取被选中的块一次，使成功与失败使用同一个 I/O 计量单位。",
+    },
+  ],
+  "indexed_file.cpp": [
+    {
+      en: "Stable sorting keeps equal keys in input order, so the block layout is deterministic for the demo.",
+      zh: "稳定排序让相等键保持输入次序，使演示中的切块结果可重复。",
+    },
+    {
+      en: "Dense mode emits every record key; sparse mode emits each block's last key as an upper bound, not the next block's first key.",
+      zh: "稠密模式为每条记录建项；稀疏模式只存每块最后键作为上界，而不是下一块首键。",
+    },
+    {
+      en: "Choose the last entry not greater than target, then read exactly one block; a miss still counts that block read.",
+      zh: "选不大于目标的最后一项，只读一个数据块；失败仍计一次块读取。",
+    },
+  ],
+  "indexed_file.py": [
+    {
+      en: "Dense mode emits every record; sparse mode emits only the last key of each block as an upper bound.",
+      zh: "稠密模式为每条记录建项；稀疏模式只为每块最后键建一个上界项。",
+    },
+    {
+      en: "chosen starts at 0 so a target above every entry still selects the last valid block.",
+      zh: "chosen 从 0 开始，目标大于所有索引项时仍会落到最后一个有效块，不会越界。",
+    },
+    {
+      en: "A miss still reads the selected block once; in-block comparisons are record checks, not extra block I/O.",
+      zh: "失败也要读选中块一次；块内逐条比较属于记录检查，不额外计块 I/O。",
+    },
+  ],
+  "isam_file.c": [
+    {
+      en: "Fill the first free slot only after shifting larger keys right, so no sorted record is overwritten.",
+      zh: "先把严格更大的键右移，再写第一个空位；否则会覆盖仍有效的有序记录。",
+    },
+    {
+      en: "The main block alone is not enough: an overflow record may be the true maximum, so the chain must be scanned.",
+      zh: "只算主块不够：溢出记录可能是真正最大键，必须把专属溢出链一起扫描。",
+    },
+    {
+      en: "Return the first block whose maximum is at least target; beyond every bound, the last block is the only candidate.",
+      zh: "返回第一个“最大键不小于目标”的块；目标超过所有上界时，最后一块是唯一候选。",
+    },
+    {
+      en: "Check the selected main block first; only a main-area miss follows that block's private overflow chain.",
+      zh: "先检查选中的主块；只有主区未命中，才沿该块专属溢出链继续。",
+    },
+    {
+      en: "Recompute every bound after a mutation because an overflow append can change the block's maximum.",
+      zh: "每次修改后都要重算全部上界；向溢出链追加记录也可能改变该块的最大键。",
+    },
+    {
+      en: "The chosen block is fixed before overflow is considered; a full block appends to its own chain and then the index is refreshed.",
+      zh: "先锁定主块再考虑溢出；块满时只追加到它自己的链，最后刷新索引上界。",
+    },
+  ],
+  "isam_file.cpp": [
+    {
+      en: "The main block alone is insufficient: an overflow record can be the true maximum, so the chain is scanned.",
+      zh: "只看主块不够：溢出记录可能是真正最大键，因此必须扫描整条专属链。",
+    },
+    {
+      en: "Bounds are derived data, so every mutation rebuilds them from the current blocks and chains.",
+      zh: "上界是派生数据；每次插入后都按当前主块与溢出链重建，避免索引落后。",
+    },
+    {
+      en: "Select the first block whose bound is at least target; beyond all bounds, only the last block can contain it.",
+      zh: "选第一个上界不小于目标的块；超过全部上界时，只有最后一块可能包含目标。",
+    },
+    {
+      en: "The block is chosen before overflow is considered; a full block appends to its private chain, then bounds are rebuilt.",
+      zh: "先选块再处理溢出；主块满时追加到它自己的链，随后重建上界。",
+    },
+    {
+      en: "Scan the selected main block first; only a main-area miss follows that block's private overflow chain.",
+      zh: "先扫选中主块；只有主区未命中，才沿该块专属溢出链继续。",
+    },
+  ],
+  "isam_file.py": [
+    {
+      en: "The first bound >= target owns the candidate; if target exceeds every bound, the last block is still the only possible owner.",
+      zh: "第一个上界不小于目标的块承接候选；目标超过所有上界时，最后一块仍是唯一可能的归属。",
+    },
+    {
+      en: "The block is fixed before overflow is considered, so a full block never sends the record to another block's chain.",
+      zh: "先锁定块再考虑溢出，因此块满也不会把记录送到别的块链。",
+    },
+    {
+      en: "A main-area hit returns immediately; the private overflow chain is read only after the main block misses.",
+      zh: "主区命中立即返回；只有主块未命中后才读取专属溢出链。",
+    },
+    {
+      en: "Bounds are rebuilt from the main blocks plus overflow chains; they are never copied from the inserted key.",
+      zh: "上界由主块与溢出链共同重建，不能直接把新插入键复制成上界。",
+    },
+  ],
+  "inverted_index.c": [
+    {
+      en: "A missing term returns NULL; an empty posting list is a different state, though both contain no record.",
+      zh: "缺失关键字返回 NULL；这与“表存在但暂时没有记录”不同，虽然两者都查不到记录。",
+    },
+    {
+      en: "Postings store record indices, so membership compares an integer position rather than an external ID string.",
+      zh: "倒排表保存记录下标，因此成员判断比较整数位置，而不是外部记录 ID 字符串。",
+    },
+    {
+      en: "Iterating records in storage order makes AND/OR results stable and naturally deduplicated.",
+      zh: "按原记录顺序遍历，使 AND/OR 结果顺序稳定，并且每条记录只判断一次而天然去重。",
+    },
+  ],
+  "inverted_index.cpp": [
+    {
+      en: "`map[term]` creates the posting vector on first sight, so building needs no separate term directory.",
+      zh: "`map[term]` 在关键字首次出现时创建倒排表，因此构建阶段不需要额外维护词项目录。",
+    },
+    {
+      en: "The ordered map keeps terms unique and makes printed term order deterministic; it is not a relevance ranking.",
+      zh: "有序 map 保证词项唯一并使打印顺序确定；它只是字典序，不是相关性排名。",
+    },
+    {
+      en: "Walking records, not postings, makes AND/OR output follow storage order and deduplicate each record naturally.",
+      zh: "遍历记录而不是遍历倒排表，使 AND/OR 结果遵循存储顺序，并自然去重。",
+    },
+  ],
+  "inverted_index.py": [
+    {
+      en: "setdefault creates a posting list on first sight, so build order does not need a separate term table.",
+      zh: "setdefault 在关键字首次出现时创建倒排表，构建阶段无需单独维护词项目录。",
+    },
+    {
+      en: "Walk records, not posting lists, so AND and OR both keep storage order and return each record at most once.",
+      zh: "遍历记录而非倒排表，使 AND 与 OR 都保持存储顺序，并让每条记录最多返回一次。",
+    },
+    {
+      en: "A missing term falls back to an empty list: AND with it must fail, while OR can still match another term.",
+      zh: "缺失关键字回退为空列表：与它做 AND 必然失败，但 OR 仍可能由另一个关键字命中。",
+    },
+  ],
 };
