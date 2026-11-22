@@ -98,7 +98,6 @@ class StaticList:
         removed = self.data[target]
         successor = self.cur[target]
 
-        # Unlink, then recycle the cell to the front of the free chain.
         if previous is None:
             self.head = successor
         else:

@@ -26,7 +26,7 @@
 | static-linked-list | 10 | 10 | 9 | 29 |
 | polynomial-add | 8 | 8 | 8 | 24 |
 | infix-to-postfix | 8 | 8 | 7 | 23 |
-| postfix-eval | 8 | 8 | 7 | 23 |
+| postfix-eval | 9 | 8 | 8 | 25 |
 | bf | 7 | 7 | 8 | 22 |
 | sparse-transpose | 8 | 8 | 7 | 23 |
 | gl-depth | 9 | 9 | 9 | 27 |
@@ -355,6 +355,15 @@ thread_walk(node->right, state);
 
 三个语言的主体逻辑一致，但注释按各自实现写，没有把 C 注释批量复制到 Python。中文与英文共用同一份算法源码，annotation 只替换注释，不维护第二份算法逻辑。
 
+### 5.1 注释映射与显示覆盖审计
+
+逐文件已对比三类来源：双语行注释对、独立英文行注释、以及 Python/C++ 的块注释与模块说明。`applyChineseAnnotations` 只处理独立 `//`/`#` 行，块注释与双语邻接行由 `selectReferenceComments` 按语言筛选，因此“未进入 annotation”不一定等于显示遗漏。
+
+- 直接写在源码中的中英文成对注释、混合语言块注释和 Python 模块 docstring 都能按 UI 语言保留对应语言，不属于丢失。
+- 审计发现并删除了若干重复的函数头短句：`static_linked_list.cpp`、`static_linked_list.py`、`polynomial_add.py`、`infix_to_postfix.py`、`gl_depth.c/.cpp`、`gl_copy.cpp`。删除的只是与相邻详细注释重复的英文行，算法代码未变。
+- 为此前只有英文的实质说明补了中文映射：`postfix_eval.c` 的“C 向零截断”、`postfix_eval.py` 的“Python // 向下取整”和 `threaded_inorder.c` 的“线索边不拥有目标结点”。这三处现在在中英文视图中都有对应说明。
+- 仍为源文独有、未加 annotation 的行注释限于：文件头/编译命令、演示输入数据、`main` 打印说明、以及已被相邻详细注释覆盖的短函数头。它们不承载关键算法步骤；关键插入/合并/优先级/求值/匹配/转置/深度/复制/线索/查找分支均有当前语言的解释。
+
 ## 6. 验证结果
 
 ### 6.1 有效代码一致性
@@ -442,7 +451,8 @@ find 60: index=-1, index comparisons=2, block comparisons=4
 - `39edf5e`：group 3，sparse-transpose + gl-depth + gl-copy
 - `05ccb1a`：group 4，threaded-inorder + block-search
 - `9a1ac72`：模板标签与重复函数头清理
-
-最后的双语测试、查看器测试、Playwright 用例和本报告单独提交。最终 HEAD 以本轮交付回复中的 `git rev-parse HEAD` 为准。
+- `433c7a4`：双语专项测试、查看器测试、Playwright 用例与本报告
+- `e2592a2`：逐算法中文注释锚点审计
+- 最终清理提交：删除重复函数头短句，补齐 postfix 整除语义与 threaded 释放所有权的中文映射，并更新本报告的显示覆盖审计。哈希见本轮最终交付回复。
 
 本轮到此停止：不处理剩余 44 个算法，不进入 SAFETY-01 或 TEACHING-FINAL，不创建 v1.0.0 Tag，不执行部署。

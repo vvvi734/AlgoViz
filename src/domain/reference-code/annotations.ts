@@ -1109,8 +1109,8 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
       zh: "每个结点贡献两个标记；沿真实孩子求和会把每条线索恰好计一次，总数应为 n+1。",
     },
     {
-      en: "Recursing only through real children visits every node exactly once; thread edges are aliases and must not be followed or freed.",
-      zh: "只沿真实孩子递归，每个结点恰好访问一次；线索边只是别名，不能沿它遍历或释放。",
+      en: "Each node is freed once through the real edge that owns it; thread edges do not own their targets.",
+      zh: "每个结点只通过拥有它的真实边释放一次；线索边不拥有目标结点，不能据此重复释放。",
     },
     {
       en: "The demo builds only real child edges; threading then creates non-owning aliases that traversal reads.",
@@ -2206,6 +2206,10 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
       en: "A valid postfix expression leaves exactly one value. top < 0 means missing operands; top > 0 means extra operands were never consumed.",
       zh: "合法后缀表达式最后恰好剩一个值；top < 0 表示操作数不足，top > 0 表示还有多余操作数未被消费。",
     },
+    {
+      en: "C integer division truncates toward zero, matching the Python trace's int(left / right).",
+      zh: "C 整数除法向零截断，与 Python Trace 中的 int(left / right) 一致。",
+    },
   ],
   "postfix_eval.cpp": [
     {
@@ -2269,6 +2273,10 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
     {
       en: "Extra values mean the input left operands unused. Raising is safer than returning the top and hiding the malformed expression.",
       zh: "剩余多个值说明输入有操作数未被使用；抛错比返回栈顶、掩盖非法表达式更安全。",
+    },
+    {
+      en: "Python's // floors negative results; C truncates toward zero.",
+      zh: "Python 的 // 对负数向下取整，而 C 向零截断。",
     },
   ],
   "free_list.c": [

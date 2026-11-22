@@ -55,7 +55,6 @@ class StaticList
         const int previous = predecessor(position);
         const int successor = previous == kNull ? head_ : cells_[previous].cur;
 
-        // The new node keeps the successor before the predecessor is changed.
         // Link the fresh cell to its successor before changing `head_` or the predecessor's cur. The reverse order would overwrite the only pointer to the remaining tail.
         cells_[fresh].cur = successor;
         if (previous == kNull)

@@ -90,7 +90,6 @@ GLNode *make_list(void)
 }
 
 // Append through a pointer-to-pointer tail, so an empty head is updated without a separate branch.
-// Append child to the sibling chain; this function sets the child's next pointer.
 void append_child(GLNode *list, GLNode *child)
 {
     if (list == NULL || child == NULL || list->tag != GL_LIST)
@@ -139,7 +138,6 @@ int gl_depth(const GLNode *node)
 }
 
 // Save next before freeing, and release the head chain first so nested children are not lost.
-// Free the table iteratively at each level and recursively through sublists.
 void free_gl(GLNode *node)
 {
     while (node != NULL)

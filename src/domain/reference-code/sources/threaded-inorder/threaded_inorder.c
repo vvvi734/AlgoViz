@@ -151,7 +151,6 @@ static int count_tags(ThreadNode *node)
     return node->ltag + node->rtag + count_tags(node->left) + count_tags(node->right);
 }
 
-// Recursing only through real children visits every node exactly once; thread edges are aliases and must not be followed or freed.
 static void free_tree(ThreadNode *node)
 {
     if (node == NULL)

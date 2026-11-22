@@ -84,7 +84,6 @@ GLNode *make_list()
 }
 
 // Append through a pointer-to-pointer tail so an empty child list needs no special branch.
-// Append child to the sibling chain and set its next pointer.
 void append_child(GLNode *parent, GLNode *child)
 {
     if (parent == nullptr || child == nullptr || parent->tag != GL_LIST)
@@ -136,7 +135,6 @@ GLNode *copy_one(const GLNode *src)
 }
 
 // Save next before delete and free the head chain first, so neither siblings nor children are lost.
-// Free each sibling iteratively and each sublist recursively.
 void free_gl(GLNode *node)
 {
     while (node != nullptr)

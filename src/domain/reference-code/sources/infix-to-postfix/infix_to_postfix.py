@@ -81,8 +81,6 @@ def infix_to_postfix(expression: str) -> str:
                 raise ValueError("unmatched )")
             operators.pop()
         else:
-            # `>=` (not `>`) is required for left associativity: 8 - 3 - 2 must
-            # emit the first minus before pushing the second one.
             # The left-parenthesis test short-circuits the precedence test; `>=` is required for left associativity, so 8-3-2 emits the first minus first.
             while (operators and operators[-1] != "(" and
                    precedence(operators[-1]) >= precedence(token)):

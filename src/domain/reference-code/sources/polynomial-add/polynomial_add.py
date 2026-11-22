@@ -86,7 +86,6 @@ def add_polynomials(a: Polynomial, b: Polynomial) -> Polynomial:
             if left.exponent == right.exponent:
                 total = left.coefficient + right.coefficient
                 if total != 0:
-                    # A zero sum is simply omitted: 0x^k is not a sparse term.
                     result.append(total, left.exponent)
                 left = left.next          # equal exponents advance both
                 right = right.next
@@ -99,11 +98,9 @@ def add_polynomials(a: Polynomial, b: Polynomial) -> Polynomial:
                 right = right.next        # only B advances
         # Once right is exhausted, the rest of left is already in descending order; appending each node preserves the invariant instead of re-sorting.
         elif left is not None:
-            # B is exhausted; the rest of A is already ordered.
             result.append(left.coefficient, left.exponent)
             left = left.next
         else:
-            # A is exhausted; append the rest of B.
             result.append(right.coefficient, right.exponent)
             right = right.next
     return result

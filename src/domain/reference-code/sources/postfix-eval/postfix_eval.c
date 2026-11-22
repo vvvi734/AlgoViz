@@ -102,8 +102,7 @@ bool EvalPostfix(char *expression, int *value, char *error, size_t error_capacit
             }
             else
             {
-                // C integer division truncates toward zero; consistent with the
-                // Python trace's int(left / right).
+                // C integer division truncates toward zero, matching the Python trace's int(left / right).
                 result = left / right;
             }
             // The two popped operands are replaced by one result. Each binary operator therefore reduces stack height by exactly one.
