@@ -128,7 +128,7 @@ STAR_ART=1000
 ROOT_STAR_BRIDGES=1,1,1
 ```
 
-C 空图返回 0，Python 形状错误抛 `ValueError`；C++ 错误 8×8 形状 `WRONG_SHAPE_FIND=0` 且保留星形结果 `WRONG_SHAPE_KEEPS=1`。
+C `NULL` 图返回 0，Python 形状错误抛 `ValueError`；C++ 错误 8×8 形状 `WRONG_SHAPE_FIND=0` 且保留星形结果 `WRONG_SHAPE_KEEPS=1`。
 
 ### 3.6 articulation 输入边界
 
