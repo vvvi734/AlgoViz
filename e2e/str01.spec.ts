@@ -52,10 +52,10 @@ test.describe('STR-01 — strings concept and real Python KMP', () => {
     await expect(page.getByTestId('step-description')).toHaveCount(0);
     await expect(page.getByTestId('reference-code-panel')).toHaveCount(0);
 
-    await page.getByRole('button', { name: 'Switch language' }).click();
+    await page.getByRole('button', { name: /切换语言|Switch language/ }).click();
     await expect(page.getByTestId('concept-title')).toContainText('Strings and the foundations of pattern matching');
     await expect(page.getByTestId('concept-page')).toContainText('Naive matching');
-    await page.getByRole('button', { name: 'Switch language' }).click();
+    await page.getByRole('button', { name: /切换语言|Switch language/ }).click();
   });
 
   test('KMP: real Python lps build, fallback, two matches and all three reference languages', async ({ page }) => {

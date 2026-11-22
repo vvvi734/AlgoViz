@@ -125,7 +125,7 @@ test.describe('UX-01B — simplified review sheet', () => {
 
     await selectAlgorithm(page, 'scc');
     await expect(page.locator('[data-testid="scc-stage"]')).toBeVisible({ timeout: 60_000 });
-    await page.getByRole('button', { name: 'Switch language' }).click();
+    await page.getByRole('button', { name: /切换语言|Switch language/ }).click();
     await expect(page.locator('[data-testid="guide-title"]')).toContainText('Kosaraju');
     await expect(page.locator('[data-testid="guide-intro"]')).toContainText('Mutual reachability');
     await expect(flow.locator('.algorithm-flow-section-head h4').first()).toContainText('Stage 1');

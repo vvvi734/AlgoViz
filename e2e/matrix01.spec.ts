@@ -1,4 +1,4 @@
-import { expect, openAdvancedPanels, openTextbookChapter, selectAlgorithm, test, type Page } from './fixtures';
+import { expect, openAdvancedPanels, openTextbookChapter, openTextbookTopic, selectAlgorithm, test, type Page } from './fixtures';
 
 async function setFrame(page: Page, frame: number, total: number) {
   await page.locator('[data-testid="scrub"]').evaluate((node, value) => {
@@ -25,14 +25,16 @@ test.describe('MATRIX-01 — arrays, special matrices and sparse fast transpose'
     await page.goto('/?view=lab');
     await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
     await openTextbookChapter(page, 'ch5-array');
-
+    await openTextbookTopic(page, 'array-matrix');
     await page.getByTestId('topic-array-basics').click();
     await expect(page.getByTestId('concept-title')).toContainText('数组与多维数组');
     await expect(page.getByTestId('concept-definition')).toContainText('顺序存储');
     await expect(page.getByTestId('concept-page')).toContainText('行优先');
     await expect(page.getByTestId('concept-page')).toContainText('列优先');
-    await expect(page.getByTestId('concept-diagram')).toContainText('(i*C+j)*w');
-    await expect(page.getByTestId('concept-diagram')).toContainText('(j*R+i)*w');
+    await expect(page.getByTestId('concept-diagram')).toContainText('1000 + (i*4 + j)*4');
+    await page.getByTestId('array-order-column').click();
+    await expect(page.getByTestId('concept-diagram')).toContainText('1000 + (j*3 + i)*4');
+    await page.getByTestId('array-order-row').click();
     await expect(page.getByTestId('play-btn')).toHaveCount(0);
 
     await page.getByTestId('topic-special-matrices').click();
@@ -50,10 +52,10 @@ test.describe('MATRIX-01 — arrays, special matrices and sparse fast transpose'
     await expect(page.getByTestId('concept-diagram')).toContainText('CSR');
     await expect(page.getByTestId('play-btn')).toHaveCount(0);
 
-    await page.getByRole('button', { name: 'Switch language' }).click();
+    await page.getByRole('button', { name: /切换语言|Switch language/ }).click();
     await expect(page.getByTestId('concept-title')).toContainText('Sparse matrices and triplet representation');
     await expect(page.getByTestId('concept-page')).toContainText('Compressed sparse row');
-    await page.getByRole('button', { name: 'Switch language' }).click();
+    await page.getByRole('button', { name: /切换语言|Switch language/ }).click();
     await expectNoPageOverflow(page);
   });
 

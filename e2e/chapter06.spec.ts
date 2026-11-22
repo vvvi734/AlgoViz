@@ -12,7 +12,7 @@ async function seekLast(page: Page) {
   const progress = page.getByTestId('progress');
   let current = Number(((await progress.textContent()) ?? '0 / 0').split('/')[0].trim()) - 1;
   if (current < 0) {
-    await page.locator('[aria-label="Reset"]').click();
+    await page.getByTestId('restart-btn').click();
     current = 0;
   }
   while (current < total - 1) {

@@ -21,7 +21,7 @@ async function currentFrame(page: Page): Promise<number> {
 async function seekFrame(page: Page, frame: number, total: number) {
   let current = await currentFrame(page);
   if (frame < current || current < 0) {
-    await page.locator('[aria-label="Reset"]').click();
+    await page.getByTestId('restart-btn').click();
     current = 0;
   }
   while (current < frame) {

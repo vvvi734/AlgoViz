@@ -179,7 +179,7 @@ test.describe('UX-03 — textbook navigation', () => {
     await expect(page.getByTestId('chapter-ch7-graph')).toHaveAttribute('aria-expanded', 'true');
     await expect(page.getByTestId('progress')).toHaveText('1 / 25');
 
-    await page.getByRole('button', { name: 'Switch language' }).click();
+    await page.getByRole('button', { name: /切换语言|Switch language/ }).click();
     await expect(page.getByTestId('sidebar')).toContainText('Textbook directory');
     await expect(page.getByTestId('chapter-ch7-graph')).toContainText('Graphs');
     await expect(page.getByTestId('chapter-ch10-sort')).toContainText('Internal sorting');
@@ -240,7 +240,7 @@ test.describe('UX-03 — textbook navigation', () => {
     await openTextbookChapter(page, 'ch7-graph');
 
     await page.selectOption('[data-testid="theme-select"]', 'dark');
-    await page.getByRole('button', { name: 'Switch language' }).click();
+    await page.getByRole('button', { name: /切换语言|Switch language/ }).click();
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
     await page.getByTestId('chapter-ch7-graph').scrollIntoViewIfNeeded();
     await page.waitForTimeout(200);

@@ -1,4 +1,4 @@
-import { expect, openCodePanel, selectAlgorithm as chooseAlgorithm, test, type Page } from './fixtures';
+import { expect, runGraphDraft, selectAlgorithm as chooseAlgorithm, test, type Page } from './fixtures';
 
 async function openApp(page: Page) {
   await page.goto('/?view=lab');
@@ -19,13 +19,6 @@ async function setFrame(page: Page, frame: number, total: number) {
     input.dispatchEvent(new Event('change', { bubbles: true }));
   }, frame);
   await expect(page.locator('[data-testid="progress"]')).toHaveText(`${frame + 1} / ${total}`);
-}
-
-async function runInput(page: Page, input: unknown, total: number) {
-  await openCodePanel(page);
-  await page.fill('#run-input', JSON.stringify(input));
-  await page.click('[data-testid="run-btn"]');
-  await expect(page.locator('[data-testid="progress"]')).toHaveText(`1 / ${total}`, { timeout: 60_000 });
 }
 
 async function expectNoOverflow(page: Page) {
@@ -79,7 +72,7 @@ test.describe('G1 — Floyd-Warshall and Bellman-Ford', () => {
     await selectAlgorithm(page, 'floyd-warshall', 87);
     await expect(page.locator('[data-testid="floyd-stage"]')).toBeVisible({ timeout: 60_000 });
 
-    await runInput(page, {
+    await runGraphDraft(page, {
       start: 'A', target: 'C', directed: true,
       nodes: ['A', 'B', 'C'],
       edges: [['A', 'B', 2], ['B', 'C', -3], ['C', 'B', 1], ['A', 'C', 5]],
@@ -91,7 +84,7 @@ test.describe('G1 — Floyd-Warshall and Bellman-Ford', () => {
     await expect(page.locator('[data-testid="floyd-path"]')).toContainText('负权环');
     await expect(page.locator('[data-testid="floyd-cell"][data-row-node-id="B"][data-column-node-id="B"]')).toHaveAttribute('data-value', '-2');
 
-    await runInput(page, {
+    await runGraphDraft(page, {
       start: 'A', target: 'D', directed: true,
       nodes: ['A', 'B', 'C', 'D'],
       edges: [['A', 'B', 3], ['C', 'D', 1]],
@@ -131,7 +124,7 @@ test.describe('G1 — Floyd-Warshall and Bellman-Ford', () => {
     await expect(page.locator('[data-testid="bellman-path"]')).toContainText('E');
     await expect(page.locator('[data-testid="bellman-path"]')).toContainText('2');
 
-    await runInput(page, {
+    await runGraphDraft(page, {
       start: 'A', target: 'D', directed: true,
       nodes: ['A', 'B', 'C', 'D'],
       edges: [['A', 'B', 2], ['C', 'D', -2], ['D', 'C', 1]],

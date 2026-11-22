@@ -174,7 +174,7 @@ test.describe('UX-02 — compact, frame-synchronised teaching rail', () => {
     await openApp(page);
     await selectAlgorithm(page, 'dijkstra', 46);
 
-    await page.getByRole('button', { name: 'Switch language' }).click();
+    await page.getByRole('button', { name: /切换语言|Switch language/ }).click();
     await expect(page.getByTestId('current-step-title')).toContainText(/Initialise weighted graph|Relax/i);
     await setFrame(page, 27, 46);
     await expect(page.getByTestId('current-step-title')).toContainText(/Relax/i);

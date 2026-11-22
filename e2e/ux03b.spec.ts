@@ -169,12 +169,12 @@ test.describe('UX-03B — compact textbook navigation', () => {
     });
 
     // Bilingual status labels remain explicit in the compact tree.
-    await page.getByRole('button', { name: 'Switch language' }).click();
+    await page.getByRole('button', { name: /切换语言|Switch language/ }).click();
     await expect(page.getByTestId('sidebar')).toContainText('Textbook directory');
     await expect(page.getByTestId('topic-shortest-path')).toContainText('Shortest paths');
     await expect(page.getByTestId('topic-graph-basics')).toContainText(/Read|Concept/i);
     await expect(page.getByTestId('topic-shortest-path')).toHaveAttribute('aria-expanded', 'true');
-    await page.getByRole('button', { name: 'Switch language' }).click();
+    await page.getByRole('button', { name: /切换语言|Switch language/ }).click();
     await expect(page.getByTestId('topic-graph-basics')).toContainText(/阅读|知识讲解/);
 
     await page.setViewportSize({ width: 390, height: 844 });

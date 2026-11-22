@@ -2,6 +2,7 @@ import {
   expect,
   openCodePanel,
   openTextbookChapter,
+  openTextbookTopic,
   selectAlgorithm as chooseAlgorithm,
   test,
   type Page,
@@ -28,7 +29,7 @@ async function currentFrame(page: Page): Promise<number> {
 async function seekFrame(page: Page, frame: number, total: number) {
   let current = await currentFrame(page);
   if (frame < current || current < 0) {
-    await page.locator('[aria-label="Reset"]').click();
+    await page.getByTestId('restart-btn').click();
     current = 0;
   }
   while (current < frame) {
@@ -135,7 +136,7 @@ test.describe('CHAPTER-05 — arrays, compressed matrices and generalized lists'
     await expect(page.getByTestId('gl-done-banner')).toContainText('(a,(b,c),((d),e))');
     await page.getByTestId('gl-visual').screenshot({ path: 'test-results/chapter05-gl-copy.png' });
 
-    await page.locator('[aria-label="Reset"]').click();
+    await page.getByTestId('restart-btn').click();
     await expect(page.getByTestId('gl-copy-empty')).toBeVisible();
     await expect(page.getByTestId('gl-visual')).toHaveAttribute('data-copied', '0');
 
@@ -163,6 +164,7 @@ test.describe('CHAPTER-05 — arrays, compressed matrices and generalized lists'
     await page.goto('/?view=lab');
     await expect(page.getByTestId('code-dock')).toBeVisible({ timeout: 45_000 });
     await openTextbookChapter(page, 'ch5-array');
+    await openTextbookTopic(page, 'array-matrix');
     await page.getByTestId('topic-array-basics').click();
     await expect(page.getByTestId('array-memory')).toBeVisible({ timeout: 45_000 });
     await expect(page.getByTestId('array-memory')).toHaveAttribute('data-order', 'row');
@@ -174,6 +176,7 @@ test.describe('CHAPTER-05 — arrays, compressed matrices and generalized lists'
     await expect(page.getByTestId('array-address')).toContainText('1024');
     await page.getByTestId('array-memory').screenshot({ path: 'test-results/chapter05-array-memory.png' });
 
+    await openTextbookTopic(page, 'generalized-list-group');
     await page.getByTestId('topic-generalized-list').click();
     await expect(page.getByTestId('concept-page')).toContainText('表尾');
     await page.getByTestId('concept-diagram').screenshot({ path: 'test-results/chapter05-gl-definition.png' });

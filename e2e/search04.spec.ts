@@ -41,6 +41,9 @@ test.describe('SEARCH-04 — B-tree concept pages and real order-4 trace', () =>
     await page.goto('/?view=lab');
     await expect(page.locator('[data-testid="code-dock"]')).toBeVisible({ timeout: 45_000 });
     await openTextbookChapter(page, 'ch9-search');
+    // Chapter 9 groups dynamic search structures under "tree-search"; the
+    // nested B-tree page is hidden until that parent topic is expanded.
+    await page.getByTestId('topic-tree-search').click();
 
     await page.getByTestId('topic-multiway-tree').click();
     await expect(page.getByTestId('concept-title')).toContainText('B 树（B-Tree）');
@@ -66,10 +69,10 @@ test.describe('SEARCH-04 — B-tree concept pages and real order-4 trace', () =>
     await expect(page.getByTestId('play-btn')).toHaveCount(0);
     await expect(page.getByTestId('step-description')).toHaveCount(0);
 
-    await page.getByRole('button', { name: 'Switch language' }).click();
+    await page.getByRole('button', { name: /切换语言|Switch language/ }).click();
     await expect(page.getByTestId('concept-title')).toContainText('B+ tree');
     await expect(page.getByTestId('concept-page')).toContainText('range query');
-    await page.getByRole('button', { name: 'Switch language' }).click();
+    await page.getByRole('button', { name: /切换语言|Switch language/ }).click();
     await expectNoPageOverflow(page);
   });
 

@@ -329,7 +329,7 @@ test.describe('L1A — real doubly and circular linked-list visualization', () =
     await expect(page.getByTestId('adv-linked-visual')).toBeVisible({ timeout: 60_000 });
     await expect(page.getByTestId('progress')).toHaveText('1 / 89', { timeout: 60_000 });
     await setFrame(page, 22, 89);
-    const language = page.getByRole('button', { name: 'Switch language' });
+    const language = page.getByRole('button', { name: /切换语言|Switch language/ });
     await language.click();
     await expect(page.locator('html')).toHaveAttribute('lang', 'en');
     await expect(page.getByTestId('adv-phase')).toContainText('Complete frame');

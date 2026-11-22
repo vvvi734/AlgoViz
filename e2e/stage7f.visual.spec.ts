@@ -173,7 +173,7 @@ test.describe('Stage 7F visual evidence', () => {
     // Bilingual acceptance: one English, done-state series through the same course.
     await setFrame(page, 45);
     await expect(page.getByTestId('lesson-active-step')).toHaveAttribute('data-step-id', 'done');
-    await page.getByLabel('Switch language').click();
+    await page.getByLabel(/切换语言|Switch language/).click();
     await expect(page.getByTestId('lesson-title')).toContainText(/Dijkstra|shortest/i);
     await capture(page, 'dijkstra-en', [
       {

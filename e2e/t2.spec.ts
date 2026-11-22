@@ -218,7 +218,7 @@ test.describe('T2 — AVL insert, delete, imbalance detection and four rotations
     await expect(page.locator('[data-testid="avl-node"]')).toHaveCount(6);
     await expect(page.getByTestId('lesson-active-step')).toHaveAttribute('data-step-id', 'done');
 
-    await page.getByRole('button', { name: 'Switch language' }).click();
+    await page.getByRole('button', { name: /切换语言|Switch language/ }).click();
     await expect(page.locator('[data-testid="avl-op-label"]')).toContainText('operation complete');
     await expect(page.locator('[data-testid="avl-result"]')).toContainText('Delete failed');
     await expect(page.getByTestId('lesson-active-step')).toContainText('AVL operation complete');

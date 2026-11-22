@@ -103,13 +103,12 @@ test.describe('Stage 7A — workspace UX (UI-03 layout)', () => {
     await page.selectOption('[data-testid="mobile-algo-select"]', 'fib');
     await expect(page.locator('[data-testid="lab-title"]')).toContainText('斐波那契');
     await expect(page.locator('[data-testid="visual-stage"]')).toBeVisible();
-    // UI-SIMPLIFY-02: `fib` has no built-in course, so the rail shows the
-    // explicit empty state plus the frame-level current operation, never a
-    // fabricated lesson-linked step.
-    await expect(page.locator('[data-testid="lesson-no-lesson"]')).toBeVisible();
+    // RECUR-01 added a real Fibonacci lesson; the rail must show its linked
+    // step, not the old "no lesson" empty state. This remains a mobile layout
+    // assertion, not a fabricated lesson check.
+    await expect(page.locator('[data-testid="lesson-no-lesson"]')).toHaveCount(0);
     await expect(page.locator('[data-testid="current-step"]')).toBeVisible();
-    await expect(page.locator('[data-testid="lesson-unlinked"]')).toBeVisible();
-    await expect(page.locator('[data-testid="lesson-active-step"]')).toHaveCount(0);
+    await expect(page.locator('[data-testid="lesson-active-step"]')).toBeVisible();
 
     await page.selectOption('[data-testid="mobile-algo-select"]', 'bubble');
     await expect(page.locator('[data-testid="lab-title"]')).toContainText('冒泡排序');

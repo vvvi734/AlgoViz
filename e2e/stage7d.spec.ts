@@ -201,9 +201,9 @@ test.describe('Stage 7D — real binary-tree traversal and recursion stack', () 
     await expect(page.locator('[data-testid="tree-mode-picker"]')).toHaveAttribute('data-actual', 'inorder');
     await expect(page.locator('[data-testid="progress"]')).toHaveText('15 / 30');
 
-    await page.getByRole('button', { name: 'Switch language' }).click();
+    await page.getByRole('button', { name: /切换语言|Switch language/ }).click();
     await expect(page.getByTestId('lesson-active-step')).toContainText('Visit a node');
-    await page.getByRole('button', { name: 'Switch language' }).click();
+    await page.getByRole('button', { name: /切换语言|Switch language/ }).click();
 
     await runCurrentMode(page);
     await expect(page.locator('[data-testid="tree-visual"]')).toHaveAttribute('data-traversal', 'postorder');

@@ -65,6 +65,63 @@ export async function openAdvancedPanels(page: Page) {
   await expect(page.getByTestId('workspace-tabs')).toHaveAttribute('data-expanded', 'true');
 }
 
+export type GraphE2EDraft = {
+  nodes: string[];
+  edges: Array<[string, string] | [string, string, number] | { from: string; to: string; weight?: number }>;
+  start?: string;
+  target?: string;
+  directed?: boolean;
+};
+
+/**
+ * INPUT-06 replaced the graph JSON textarea with a node/edge table. Exercise the
+ * same controls a learner uses instead of writing JSON into the first node label
+ * (which is what `#run-input` now points at for graph courses).
+ */
+export async function fillGraphDraft(page: Page, draft: GraphE2EDraft) {
+  await expect(page.getByTestId('graph-input-editor')).toBeVisible({ timeout: 45_000 });
+
+  const directed = page.getByTestId('graph-directed');
+  if ((await directed.count()) > 0) {
+    await directed.setChecked(Boolean(draft.directed));
+  }
+
+  const removeNode = page.getByTestId('graph-node-remove');
+  while ((await removeNode.count()) > 0) {
+    await removeNode.first().click();
+  }
+
+  for (const node of draft.nodes) {
+    await page.getByTestId('graph-add-node').click();
+    await page.getByTestId('graph-node-input').last().fill(node);
+  }
+
+  for (const edge of draft.edges) {
+    const from = Array.isArray(edge) ? edge[0] : edge.from;
+    const to = Array.isArray(edge) ? edge[1] : edge.to;
+    const weight = Array.isArray(edge) ? edge[2] : edge.weight;
+    await page.getByTestId('graph-add-edge').click();
+    await page.getByTestId('graph-edge-from').last().selectOption(from);
+    await page.getByTestId('graph-edge-to').last().selectOption(to);
+    if (weight !== undefined) {
+      await page.getByTestId('graph-input-edge-weight').last().fill(String(weight));
+    }
+  }
+
+  if (draft.start !== undefined && (await page.getByTestId('graph-start').count()) > 0) {
+    await page.getByTestId('graph-start').selectOption(draft.start);
+  }
+  if (draft.target !== undefined && (await page.getByTestId('graph-target').count()) > 0) {
+    await page.getByTestId('graph-target').selectOption(draft.target);
+  }
+}
+
+export async function runGraphDraft(page: Page, draft: GraphE2EDraft, total: number) {
+  await fillGraphDraft(page, draft);
+  await page.getByTestId('run-btn').click();
+  await expect(page.locator('[data-testid="progress"]')).toHaveText(`1 / ${total}`, { timeout: 60_000 });
+}
+
 /**
  * UX-03: the directory opens only the current algorithm's chapter/topic. A
  * desktop click must therefore find an algorithm's authored path and expand it

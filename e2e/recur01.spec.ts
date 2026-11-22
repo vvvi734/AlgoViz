@@ -212,7 +212,7 @@ test.describe('RECUR-01 — real recursive Python, shared input pipeline', () =>
     await runN(page, 3, 3);
     await jumpToEnd(page);
 
-    await page.getByRole('button', { name: 'Switch language' }).click();
+    await page.getByRole('button', { name: /切换语言|Switch language/ }).click();
     await expect(page.getByText('Factorial recursion · call graph')).toBeVisible();
     await expect(page.getByTestId('recursion-n')).toHaveValue('3');
     await expect(page.getByTestId('recursion-result')).toContainText('6');

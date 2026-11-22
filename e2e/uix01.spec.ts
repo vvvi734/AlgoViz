@@ -191,8 +191,8 @@ test.describe('UIX-V01 — shared array canvas utilization', () => {
     await setFrame(page, 0, TOTALS.bubble);
     await expectPlaybackWorks(page);
 
-    await page.getByRole('button', { name: 'Switch language' }).click();
-    await expect(page.getByRole('button', { name: 'Switch language' })).toHaveText(/中文 \/ EN/);
+    await page.getByRole('button', { name: /切换语言|Switch language/ }).click();
+    await expect(page.getByRole('button', { name: /切换语言|Switch language/ })).toHaveText(/中文 \/ EN/);
     let metrics = await readCanvas(page);
     expect(metrics.pageOverflow).toBe(false);
     expect(metrics.clipped).toEqual([]);

@@ -183,8 +183,8 @@ test.describe('T1 — BST search, insert and three delete cases', () => {
     await page.screenshot({ path: resolve(SHOT_DIR, 'bst-delete-two-done-390-light.png'), fullPage: true });
 
     await page.setViewportSize({ width: 1440, height: 1000 });
-    await expect(page.getByRole('button', { name: 'Switch language' })).toBeVisible();
-    await page.getByRole('button', { name: 'Switch language' }).click();
+    await expect(page.getByRole('button', { name: /切换语言|Switch language/ })).toBeVisible();
+    await page.getByRole('button', { name: /切换语言|Switch language/ }).click();
     await expect(page.locator('[data-testid="bst-op-label"]')).toContainText('operation complete');
     await expect(page.locator('[data-testid="bst-result"]')).toContainText('Deleted');
     await expect(page.getByTestId('lesson-active-step')).toContainText('BST operation complete');
