@@ -62,6 +62,7 @@ static int ComesBefore(Item left, Item right)
 // 作用：在工作区中找出当前可输出的最小记录槽位；没有可输出记录时返回 -1。
 static int SmallestEligible(const Workspace *workspace, int capacity)
 {
+    // This selection is a linear scan; a heap would reduce the O(M) choice to O(log M), but the teaching version keeps every slot state visible.
     int best = -1;
     for (int slot = 0; slot < capacity; ++slot)
     {
@@ -83,6 +84,7 @@ static int EmptySlot(const Workspace *workspace, int capacity)
 {
     for (int slot = 0; slot < capacity; ++slot)
     {
+        // Only EMPTY slots can receive a new record; a FROZEN slot is still resident and must keep its record for the next run.
         if (workspace->state[slot] == SLOT_EMPTY)
         {
             return slot;
@@ -112,12 +114,15 @@ static void CloseRun(RunResult *runs, int *runCount, Item *current, int *current
 // 作用：生成全部初始归并段，并返回段数。
 static int ReplacementSelection(const Item *input, int n, int capacity, RunResult *runs)
 {
+    // The workspace holds only resident candidates; current is a separate run buffer, so a run may grow beyond the workspace capacity.
     Workspace workspace = {0};
+    // The run buffer is appended in nondecreasing key order: after the first output, every eligible refill is checked against lastOutput.
     Item current[MAX_RECORDS];
     int currentLength = 0;
     int runCount = 0;
     int inputIndex = 0;
     int lastOutput = 0;
+    // hasLastOutput separates no-output-yet from a real threshold of 0; without it, key 0 would be mistaken for a previous output.
     int hasLastOutput = 0;
 
     for (int slot = 0; slot < capacity && inputIndex < n; ++slot)
@@ -128,18 +133,22 @@ static int ReplacementSelection(const Item *input, int n, int capacity, RunResul
 
     while (1)
     {
+        // The winner is the smallest eligible key; choosing it next is what keeps the current run nondecreasing.
         int winner = SmallestEligible(&workspace, capacity);
         if (winner >= 0)
         {
+            // Append the winner to the run buffer before replacing it; the record leaves the workspace, so this output can be longer than M.
             current[currentLength++] = workspace.items[winner];
             lastOutput = workspace.items[winner].value;
             hasLastOutput = 1;
+            // Mark the output slot empty so exactly one replacement can be read into it; frozen records must not be overwritten.
             workspace.state[winner] = SLOT_EMPTY;
 
             // A refilled record joins the run only when key >= lastOutput; equality is allowed, smaller keys freeze.
             if (inputIndex < n)
             {
                 int empty = EmptySlot(&workspace, capacity);
+                // If input remains but no slot is empty, the one-output-one-refill invariant has been broken; return -1 instead of reusing a frozen slot.
                 if (empty < 0)
                 {
                     return -1;
@@ -153,10 +162,12 @@ static int ReplacementSelection(const Item *input, int n, int capacity, RunResul
             continue;
         }
 
+        // No eligible key means the current run cannot grow; close and copy it before unfreezing candidates for the next run.
         CloseRun(runs, &runCount, current, &currentLength);
         int unfrozen = 0;
         for (int slot = 0; slot < capacity; ++slot)
         {
+            // Frozen records still occupy their slots; unfreezing changes only eligibility, not their keys or storage positions.
             if (workspace.state[slot] == SLOT_FROZEN)
             {
                 workspace.state[slot] = SLOT_ELIGIBLE;

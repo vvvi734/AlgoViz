@@ -54,11 +54,14 @@ static bool comes_before(const Item &left, const Item &right)
 static std::vector<std::vector<Item>> replacement_selection(const std::vector<Item> &input,
                                                             int capacity)
 {
+    // workspace holds resident candidates only; current is a separate vector, so an output run can be larger than the workspace.
     std::vector<Slot> workspace(capacity);
     std::vector<std::vector<Item>> runs;
+    // current is appended in nondecreasing key order: every eligible refill must be at least the last output of this run.
     std::vector<Item> current;
     int inputIndex = 0;
     int lastOutput = 0;
+    // This flag distinguishes no output yet from a genuine threshold of 0; a plain int would misclassify key 0.
     bool hasLastOutput = false;
 
     for (int slot = 0; slot < capacity && inputIndex < static_cast<int>(input.size()); ++slot)
@@ -69,6 +72,7 @@ static std::vector<std::vector<Item>> replacement_selection(const std::vector<It
 
     while (true)
     {
+        // The selection loop is linear in M; a heap would make it O(log M), but this teaching version keeps all slot states visible.
         int winner = -1;
         for (int slot = 0; slot < capacity; ++slot)
         {
@@ -84,9 +88,11 @@ static std::vector<std::vector<Item>> replacement_selection(const std::vector<It
 
         if (winner >= 0)
         {
+            // Copy the winner into the run buffer before refilling the slot; this is why the run may exceed the workspace size.
             current.push_back(workspace[winner].item);
             lastOutput = workspace[winner].item.value;
             hasLastOutput = true;
+            // The output slot becomes empty so one replacement can enter; a frozen slot is never reused for a different record.
             workspace[winner].state = EMPTY;
 
             if (inputIndex < static_cast<int>(input.size()))
@@ -100,6 +106,7 @@ static std::vector<std::vector<Item>> replacement_selection(const std::vector<It
                         break;
                     }
                 }
+                // Remaining input with no empty slot violates the refill invariant; throw instead of overwriting a frozen record.
                 if (empty < 0)
                 {
                     throw "no empty workspace slot";
@@ -112,6 +119,7 @@ static std::vector<std::vector<Item>> replacement_selection(const std::vector<It
             continue;
         }
 
+        // No eligible record ends the current run; copy the buffer into runs before unfreezing the next candidates.
         if (!current.empty())
         {
             runs.push_back(current);
@@ -121,6 +129,7 @@ static std::vector<std::vector<Item>> replacement_selection(const std::vector<It
         int unfrozen = 0;
         for (Slot &slot : workspace)
         {
+            // Unfreezing changes eligibility only; the record still occupies the same slot and keeps its key.
             if (slot.state == FROZEN)
             {
                 slot.state = ELIGIBLE;

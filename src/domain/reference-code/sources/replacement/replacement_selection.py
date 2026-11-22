@@ -30,6 +30,7 @@ def replacement_selection(values, capacity):
         {"value": value, "original_index": index}
         for index, value in enumerate(values)
     ]
+    # workspace stores resident candidates; current is a separate list, so the emitted run can grow beyond capacity.
     workspace = [
         {"item": records[index], "state": "eligible"} if index < min(capacity, len(records))
         else {"item": None, "state": "empty"}
@@ -37,16 +38,21 @@ def replacement_selection(values, capacity):
     ]
     input_index = min(capacity, len(records))
     runs = []
+    # current is appended in nondecreasing key order: every eligible refill is checked against last_output.
     current = []
+    # None is the no-threshold sentinel; it distinguishes the first output from a real threshold value of 0.
     last_output = None
 
     while True:
+        # Only eligible slots compete; frozen records remain resident but are invisible to the selector.
         eligible = [slot for slot in workspace if slot["state"] == "eligible"]
         if eligible:
             winner = min(eligible, key=lambda slot: (slot["item"]["value"], slot["item"]["original_index"]))
+            # Append the winner to the run buffer before refilling; the run is outside workspace and may exceed capacity.
             current.append(winner["item"])
             last_output = winner["item"]["value"]
             winner["item"] = None
+            # The winner's slot becomes empty and can receive exactly one replacement; a frozen slot is never overwritten.
             winner["state"] = "empty"
 
             if input_index < len(records):
@@ -62,12 +68,14 @@ def replacement_selection(values, capacity):
                 )
             continue
 
+        # No eligible record ends the run; append the completed buffer before unfreezing records for the next run.
         if current:
             runs.append(current)
             current = []
 
         unfrozen = 0
         for slot in workspace:
+            # Unfreezing only changes state to eligible; the same record stays in the same slot with the same key.
             if slot["state"] == "frozen":
                 slot["state"] = "eligible"
                 unfrozen += 1

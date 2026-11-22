@@ -2426,6 +2426,58 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
       en: "A new run starts with no threshold; keeping the old lastOutput would wrongly freeze smaller keys.",
       zh: "新段开始时没有阈值；若沿用上一段的 lastOutput，会把本可输出的较小关键字错误冻结。",
     },
+    {
+      en: "The workspace holds only resident candidates; current is a separate run buffer, so a run may grow beyond the workspace capacity.",
+      zh: "工作区只保存驻留候选记录；current 是独立的归并段缓冲，因此一段可以长于工作区容量。",
+    },
+    {
+      en: "hasLastOutput separates no-output-yet from a real threshold of 0; without it, key 0 would be mistaken for a previous output.",
+      zh: "hasLastOutput 用来区分“尚未输出”和真实阈值 0；否则关键字 0 会被误当成上一次输出。",
+    },
+    {
+      en: "The winner is the smallest eligible key; choosing it next is what keeps the current run nondecreasing.",
+      zh: "winner 是当前最小的可输出键；下一次输出它，当前段才能保持非降序。",
+    },
+    {
+      en: "Append the winner to the run buffer before replacing it; the record leaves the workspace, so this output can be longer than M.",
+      zh: "先把 winner 追加到段缓冲，再补读新记录；记录已离开工作区，所以整段长度可以超过 M。",
+    },
+    {
+      en: "Mark the output slot empty so exactly one replacement can be read into it; frozen records must not be overwritten.",
+      zh: "把输出槽标为空，才能在其中补读恰好一条记录；冻结记录绝不能被覆盖。",
+    },
+    {
+      en: "If input remains but no slot is empty, the one-output-one-refill invariant has been broken; return -1 instead of reusing a frozen slot.",
+      zh: "如果还有输入却找不到空槽，说明“输出一条、补读一条”的不变量已破坏；应返回 -1，而不是覆盖冻结槽。",
+    },
+    {
+      en: "No eligible key means the current run cannot grow; close and copy it before unfreezing candidates for the next run.",
+      zh: "没有可输出键说明当前段无法继续增长；先封段并复制，再解冻下一段的候选。",
+    },
+    {
+      en: "Frozen records still occupy their slots; unfreezing changes only eligibility, not their keys or storage positions.",
+      zh: "冻结记录仍占着槽位；解冻只改变可输出性，不改变关键字或存储位置。",
+    },
+    {
+      en: "This selection is a linear scan; a heap would reduce the O(M) choice to O(log M), but the teaching version keeps every slot state visible.",
+      zh: "这里用线性扫描选择；堆可以把 O(M) 的选择降到 O(log M)，但教学版保留了每个槽的可见状态。",
+    },
+    {
+      en: "Only EMPTY slots can receive a new record; a FROZEN slot is still resident and must keep its record for the next run.",
+      zh: "只有 EMPTY 槽能接收新记录；FROZEN 槽仍有驻留记录，必须留给下一段使用。",
+    },
+    {
+      en: "The run buffer is appended in nondecreasing key order: after the first output, every eligible refill is checked against lastOutput.",
+      zh: "段缓冲按非降序追加：第一次输出之后，每条可补读记录都要与 lastOutput 比较。",
+    },
+    {
+      en: "With no eligible and no frozen record, every slot should be empty;",
+      zh: "当没有可输出记录也没有冻结记录时，所有槽位都应当是空的；",
+    },
+    {
+      en: "remaining input means the refill invariant was violated.",
+      zh: "若仍有输入，说明补读不变量已被破坏。",
+    },
   ],
   "replacement_selection.cpp": [
     {
@@ -2444,6 +2496,42 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
       en: "Purpose: Run replacement selection and return the generated initial runs.",
       zh: "实际运行置换选择，返回生成的各初始归并段。",
     },
+    {
+      en: "workspace holds resident candidates only; current is a separate vector, so an output run can be larger than the workspace.",
+      zh: "workspace 只保存驻留候选；current 是独立 vector，因此输出段可以大于工作区。",
+    },
+    {
+      en: "This flag distinguishes no output yet from a genuine threshold of 0; a plain int would misclassify key 0.",
+      zh: "该标志区分“尚未输出”和真实阈值 0；只用 int 会把关键字 0 误判。",
+    },
+    {
+      en: "The selection loop is linear in M; a heap would make it O(log M), but this teaching version keeps all slot states visible.",
+      zh: "选择循环对 M 线性；堆可做到 O(log M)，但教学版保留所有槽状态的可见性。",
+    },
+    {
+      en: "Copy the winner into the run buffer before refilling the slot; this is why the run may exceed the workspace size.",
+      zh: "先把 winner 复制进段缓冲，再补读槽位；这就是段长可以超过工作区大小的原因。",
+    },
+    {
+      en: "The output slot becomes empty so one replacement can enter; a frozen slot is never reused for a different record.",
+      zh: "输出槽变空后只能补入一条替换记录；冻结槽不会被换成别的记录。",
+    },
+    {
+      en: "Remaining input with no empty slot violates the refill invariant; throw instead of overwriting a frozen record.",
+      zh: "仍有输入却没有空槽，违反补读不变量；应抛出错误，而不是覆盖冻结记录。",
+    },
+    {
+      en: "No eligible record ends the current run; copy the buffer into runs before unfreezing the next candidates.",
+      zh: "没有可输出记录就结束当前段；先复制缓冲，再解冻下一批候选。",
+    },
+    {
+      en: "Unfreezing changes eligibility only; the record still occupies the same slot and keeps its key.",
+      zh: "解冻只改变可输出性；记录仍占同一槽位并保留原关键字。",
+    },
+    {
+      en: "current is appended in nondecreasing key order: every eligible refill must be at least the last output of this run.",
+      zh: "current 按非降序追加：每条可补读记录都不得小于本段上一次输出。",
+    },
   ],
   "replacement_selection.py": [
     {
@@ -2461,6 +2549,38 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
     {
       en: "Purpose: Run replacement selection over a fixed workspace and return the runs.",
       zh: "在固定大小工作区上运行置换选择，返回全部初始段。",
+    },
+    {
+      en: "workspace stores resident candidates; current is a separate list, so the emitted run can grow beyond capacity.",
+      zh: "workspace 保存驻留候选；current 是独立列表，因此输出的段可以超过容量。",
+    },
+    {
+      en: "None is the no-threshold sentinel; it distinguishes the first output from a real threshold value of 0.",
+      zh: "None 是“尚无阈值”的哨兵；它把第一次输出与真实阈值 0 区分开。",
+    },
+    {
+      en: "Only eligible slots compete; frozen records remain resident but are invisible to the selector.",
+      zh: "只有 eligible 槽参与选择；冻结记录仍在工作区，但对选择器不可见。",
+    },
+    {
+      en: "Append the winner to the run buffer before refilling; the run is outside workspace and may exceed capacity.",
+      zh: "先把 winner 加入段缓冲，再补读；段缓冲位于工作区之外，所以可超过容量。",
+    },
+    {
+      en: "The winner's slot becomes empty and can receive exactly one replacement; a frozen slot is never overwritten.",
+      zh: "winner 的槽变空，只能接收一条替换记录；冻结槽绝不会被覆盖。",
+    },
+    {
+      en: "No eligible record ends the run; append the completed buffer before unfreezing records for the next run.",
+      zh: "没有可输出记录就结束本段；先把完整缓冲加入结果，再解冻下一段的记录。",
+    },
+    {
+      en: "Unfreezing only changes state to eligible; the same record stays in the same slot with the same key.",
+      zh: "解冻只把状态改成 eligible；同一条记录仍留在原槽并使用原关键字。",
+    },
+    {
+      en: "current is appended in nondecreasing key order: every eligible refill is checked against last_output.",
+      zh: "current 按非降序追加：每条可补读记录都要与 last_output 比较。",
     },
   ],
   "optimal_merge_tree.c": [
