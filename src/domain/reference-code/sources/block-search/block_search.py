@@ -20,8 +20,7 @@ MAX_BLOCKS = 8
 MAX_BLOCK_SIZE = 8
 
 
-# Purpose: Build one index entry per consecutive block after validating the real range prerequisite.
-# 作用：校验真实块范围前提后，为每个连续块建立一个索引项。
+# Reject an unusable block size before building entries; otherwise slicing and max() would describe a partition the index cannot guarantee.
 def build_index(data, block_size):
     if not data or not 1 <= block_size <= MAX_BLOCK_SIZE:
         raise ValueError("block size must be within 1..8")
@@ -45,13 +44,11 @@ def build_index(data, block_size):
     return index
 
 
-# Purpose: Probe the index sequentially, then scan only the selected real block.
-# 作用：顺序探测索引，然后只扫描被选中的真实块。
+# Index probing and block scanning are separate stages; the returned counts keep their costs visible instead of collapsing them.
 def block_search(data, block_size, target):
     index = build_index(data, block_size)
     index_comparisons = 0
     selected = None
-    # Scan index entries from the first block. Since maxima increase, the first entry whose max reaches target is the unique candidate; later blocks start above it.
     for block, entry in enumerate(index):
         index_comparisons += 1
         # The first block whose maximum is at least target is the only possible block: earlier maxima are too small, and later blocks all start above this maximum.

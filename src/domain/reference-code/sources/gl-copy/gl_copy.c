@@ -54,8 +54,8 @@ typedef struct GLNode
 
 void free_gl(GLNode *node);
 
-// 作用：分配零初始化节点，tag 必须从源节点继承。
-// Purpose: Allocate a zero-initialized node; the copy must inherit the source tag.
+// 分配零初始化节点，tag 必须从源节点继承。
+// Allocate a zero-initialized node; the copy must inherit the source tag.
 /* 分配零初始化节点；复制时 tag 必须从源节点继承。 */
 static GLNode *new_node(int tag)
 {
@@ -68,8 +68,8 @@ static GLNode *new_node(int tag)
     return node;
 }
 
-// 作用：构造原子节点，供示例树使用。
-// Purpose: Construct an atom node for the demo tree.
+// 构造原子节点，供示例树使用。
+// Construct an atom node for the demo tree.
 /* 构造原子节点，供示例树使用。 */
 GLNode *make_atom(const char *text)
 {
@@ -83,8 +83,8 @@ GLNode *make_atom(const char *text)
     return node;
 }
 
-// 作用：构造空表节点；head 为 NULL，但节点本身必须真实存在。
-// Purpose: Construct an empty-list node; head is NULL, but the node itself is a real ().
+// 构造空表节点；head 为 NULL，但节点本身必须真实存在。
+// Construct an empty-list node; head is NULL, but the node itself is a real ().
 /* 构造空表节点；空表的 head 为 NULL，但节点本身必须真实存在。 */
 GLNode *make_list(void)
 {
@@ -92,7 +92,7 @@ GLNode *make_list(void)
 }
 
 // Append through a pointer-to-pointer tail, so a copy with no children starts cleanly and keeps sibling order.
-// Purpose: Append child to the sibling chain and set its next pointer.
+// Append child to the sibling chain and set its next pointer.
 void append_child(GLNode *list, GLNode *child)
 {
     if (list == NULL || child == NULL || list->tag != GL_LIST)
@@ -133,7 +133,7 @@ GLNode *copy_one(const GLNode *src)
     {
         GLNode *child_copy = copy_one(child);
         // 新副本一旦分配失败，必须回收已经建好的部分，避免半成品泄漏。
-        // Purpose: If a child copy fails, free the partially built subtree to avoid a leak.
+        // If a child copy fails, free the partially built subtree to avoid a leak.
         // A failed recursive copy leaves a partially linked subtree. Free it through the real child edges before returning NULL, so the caller never receives a half-built list.
         if (child_copy == NULL)
         {
@@ -147,8 +147,8 @@ GLNode *copy_one(const GLNode *src)
     return dst;
 }
 
-// 作用：递归释放整棵表；先保存 next，再释放当前节点和 head 链。
-// Purpose: Free the table recursively; save next before freeing the node and its head chain.
+// 递归释放整棵表；先保存 next，再释放当前节点和 head 链。
+// Free the table recursively; save next before freeing the node and its head chain.
 /* 递归释放整棵表；先保存 next，再释放当前节点及其 head 链。 */
 void free_gl(GLNode *node)
 {
@@ -164,8 +164,8 @@ void free_gl(GLNode *node)
     }
 }
 
-// 作用：按括号形式打印，用于比较源表与副本的文本是否一致。
-// Purpose: Print the parenthesized form to compare source and copy text.
+// 按括号形式打印，用于比较源表与副本的文本是否一致。
+// Print the parenthesized form to compare source and copy text.
 /* 打印标准括号形式，用于核对复制前后的文本是否一致。 */
 void print_gl(const GLNode *node)
 {
@@ -190,8 +190,8 @@ void print_gl(const GLNode *node)
     printf(")");
 }
 
-// 作用：构造示例树，复制后分别打印并释放源树与副本。
-// Purpose: Build the demo tree, then print and free both the source and the copy.
+// 构造示例树，复制后分别打印并释放源树与副本。
+// Build the demo tree, then print and free both the source and the copy.
 int main(void)
 {
     GLNode *root = make_list();

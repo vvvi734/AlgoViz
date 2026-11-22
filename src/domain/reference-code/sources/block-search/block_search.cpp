@@ -37,8 +37,7 @@ struct SearchStats
     int blockComparisons = 0;
 };
 
-// Purpose: Validate the range prerequisite and build one entry per consecutive block.
-// 作用：校验块范围递增前提，并为每个连续块建立索引项。
+// Before creating entries, reject a block size that cannot partition the vector; otherwise the loop has no well-defined block boundaries.
 std::vector<IndexEntry> build_index(const std::vector<int> &data, int blockSize)
 {
     if (data.empty() || blockSize < 1 || blockSize > MAX_BLOCK_SIZE)
@@ -82,8 +81,7 @@ std::vector<IndexEntry> build_index(const std::vector<int> &data, int blockSize)
     return index;
 }
 
-// Purpose: Probe the index, then scan the selected block; stats separates the two stages.
-// 作用：先探测索引，再扫描选中的块；stats 分开记录两个阶段的比较次数。
+// The two comparison counters stay separate because index probing and block scanning are different searches; a merged count would hide the cost split.
 int search(const std::vector<int> &data, int blockSize, int target, SearchStats &stats)
 {
     auto index = build_index(data, blockSize);
@@ -116,13 +114,11 @@ int search(const std::vector<int> &data, int blockSize, int target, SearchStats 
     return -1;
 }
 
-// Purpose: Run the documented example and show that both stages report real counts.
-// 作用：运行文档示例，展示两个阶段各自的真实比较次数。
+// The demo keeps the original order: block search indexes range maxima and must not silently sort the data.
 int main()
 {
     std::vector<int> data{22, 8, 14, 35, 41, 57, 66, 38, 73, 81, 94, 69};
     auto index = build_index(data, 4);
-    // The index is probed sequentially because its maxima increase. The first block whose max reaches target is the unique candidate; a later block starts above it and cannot hold a smaller target.
     for (int block = 0; block < static_cast<int>(index.size()); ++block)
     {
         std::cout << "block " << block + 1 << ": [" << index[block].start << ", "

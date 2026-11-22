@@ -32,7 +32,7 @@ s + j 定位主串；最后看命中后为什么不 return。
 from __future__ import annotations
 
 
-# Purpose: Return every 0-based occurrence start, overlaps included; empty pattern raises.
+# Return every 0-based occurrence start, overlaps included; empty pattern raises.
 def bf_find_all(text: str, pattern: str) -> list[int]:
     """返回 pattern 在 text 中的全部匹配起点，允许重叠。
 
@@ -47,7 +47,7 @@ def bf_find_all(text: str, pattern: str) -> list[int]:
         ValueError：pattern 为空。空模式串没有定义好的匹配语义，不能
         当作“在每个位置都匹配”。
 
-    副作用：只读取两个参数并构造返回值，不修改输入。
+    副只读取两个参数并构造返回值，不修改输入。
     """
     if not pattern:
         raise ValueError("pattern must be a non-empty string")
@@ -91,15 +91,15 @@ if __name__ == "__main__":
         print(f"start[{index}] = {start}")
 
     # 重叠检查：AAA 在 AAAAA 中应得到 0、1、2。
-    # Purpose: Overlap check: AAA in AAAAA must yield 0, 1, 2.
+    # Overlap check: AAA in AAAAA must yield 0, 1, 2.
     print(f"overlapping = {bf_find_all('AAAAA', 'AAA')}")
 
     # 主串短于模式串是合法输入，只返回空列表。
-    # Purpose: A shorter text is valid input and yields an empty list.
+    # A shorter text is valid input and yields an empty list.
     print(f"shorter text = {bf_find_all('AB', 'ABC')}")
 
     # 空模式串必须被拒绝，而不是返回所有下标。
-    # Purpose: An empty pattern must be rejected, not treated as matching all indices.
+    # An empty pattern must be rejected, not treated as matching all indices.
     try:
         bf_find_all("ABC", "")
     except ValueError as error:

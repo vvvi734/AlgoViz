@@ -35,8 +35,8 @@ class Triple:
 
 
 # `cpot[col]` is the next write position for that column; writing a triple increments it for the next entry.
-# Purpose: Return (rows, cols, transposed triplets) without modifying the input triplets.
-# 作用：返回 (行数, 列数, 转置三元组)；不修改输入 triples。
+# Return (rows, cols, transposed triplets) without modifying the input triplets.
+# 返回 (行数, 列数, 转置三元组)；不修改输入 triples。
 def fast_transpose(rows: int, cols: int, triples: List[Triple]) -> Tuple[int, int, List[Triple]]:
     """Return (transposed_rows, transposed_cols, transposed_triplets)."""
     if rows < 0 or cols < 0:
@@ -84,8 +84,8 @@ def fast_transpose(rows: int, cols: int, triples: List[Triple]) -> Tuple[int, in
     return new_rows, new_cols, result
 
 
-# Purpose: Build a demo sparse matrix and print the fast-transpose result.
-# 作用：构造演示稀疏矩阵并打印快速转置结果。
+# Build a demo sparse matrix and print the fast-transpose result.
+# 构造演示稀疏矩阵并打印快速转置结果。
 def main() -> None:
     rows, cols = 4, 5
     triples = [

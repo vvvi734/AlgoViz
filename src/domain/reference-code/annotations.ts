@@ -165,7 +165,7 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
       zh: "深度约定：原子为 0，空表为 1，非空表为 1 + 子表最大深度；NULL 仅作防御性返回 0。",
     },
     {
-      en: "Purpose: Sibling sublists are alternatives, so take the maximum depth, never the sum.",
+      en: "Sibling sublists are alternatives, so take the maximum depth, never the sum.",
       zh: "同层子表是并列关系，深度取最大值而不是相加；相加会得到元素总数而非嵌套层数。",
     },
     {
@@ -203,7 +203,7 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
       zh: "深度约定：原子为 0，空表为 1，非空表为 1 + 子表最大深度；nullptr 仅作防御性返回 0。",
     },
     {
-      en: "Purpose: Sibling sublists are alternatives; take the maximum, not the sum.",
+      en: "Sibling sublists are alternatives; take the maximum, not the sum.",
       zh: "同层子表是并列关系，深度取最大值而不是相加。",
     },
     {
@@ -233,15 +233,15 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
   ],
   "gl_depth.py": [
     {
-      en: "Purpose: A node stores its tag plus either an atom value or a child head.",
+      en: "A node stores its tag plus either an atom value or a child head.",
       zh: "节点同时保存 tag 和 atom/head 两支字段，但按 tag 只有一支有效；next 只指向同层后继。",
     },
     {
-      en: "Purpose: Append child to the sibling chain; this function owns child.next.",
+      en: "Append child to the sibling chain; this function owns child.next.",
       zh: "把 child 接到同层链尾；parent.head 为空时直接成为首孩子，否则沿 next 找到末尾再接入。",
     },
     {
-      en: "Purpose: Return 0 for an atom, 1 for (), or 1 + the maximum child depth.",
+      en: "Return 0 for an atom, 1 for (), or 1 + the maximum child depth.",
       zh: "原子返回 0，空表返回 1，非空表对每个孩子递归取最大值后加当前层；None 只是防御值。",
     },
     {
@@ -283,7 +283,7 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
       zh: "用指向指针的尾指针追加；新副本没有孩子时也能直接接入，并保持同层顺序。",
     },
     {
-      en: "Purpose: Append child to the sibling chain and set its next pointer.",
+      en: "Append child to the sibling chain and set its next pointer.",
       zh: "把 child 接到同层链尾，并由本函数负责设置它的 next。",
     },
     {
@@ -347,19 +347,19 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
   ],
   "gl_copy.py": [
     {
-      en: "Purpose: One node carries a tag and either atom text or a child head.",
+      en: "One node carries a tag and either atom text or a child head.",
       zh: "每个节点用 tag 区分原子文本与子表 head；next 只表示同层后继。",
     },
     {
-      en: "Purpose: Copy one node and its subtree; src.next is intentionally not copied.",
+      en: "Copy one node and its subtree; src.next is intentionally not copied.",
       zh: "复制当前节点及其子树，但故意不复制 src.next；同层后继由调用方连接。",
     },
     {
-      en: "Purpose: Link copies one by one; dst.head holds the first child and next holds the rest.",
+      en: "Link copies one by one; dst.head holds the first child and next holds the rest.",
       zh: "逐个接入复制孩子：第一个放 dst.head，其余沿 next 串联，避免只剩第一个孩子。",
     },
     {
-      en: "Purpose: Append child to parent's sibling chain and set its next to None.",
+      en: "Append child to parent's sibling chain and set its next to None.",
       zh: "把 child 追加到 parent 的同层链尾，并把 child.next 显式置为 None。",
     },
     {
@@ -1061,10 +1061,6 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
   ],
   "threaded_inorder.c": [
     {
-      en: "Thread targets live in left_thread/right_thread; the real child pointers stay NULL.",
-      zh: "线索目标保存在 left_thread/right_thread；真实孩子指针保持 NULL，未被覆盖。",
-    },
-    {
       en: "Thread targets live in separate fields, so a real left/right child is never overwritten. ltag/rtag tell traversal which pointer is meaningful.",
       zh: "线索目标放在独立字段中，真实左/右孩子永不被覆盖；ltag/rtag 告诉遍历哪个指针才是有效的。",
     },
@@ -1088,12 +1084,40 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
       en: "rtag==1 means right is not a real child, so right_thread is the successor. rtag==0 means descend into the real right subtree and take its leftmost node.",
       zh: "rtag==1 表示 right 不是真实孩子，应直接走 right_thread；rtag==0 表示进入真实右子树并取它的最左结点。",
     },
+    {
+      en: "Tags start at 0 because both child pointers begin as NULL; a thread is written only after the real child is known to be absent.",
+      zh: "ltag/rtag 初始为 0，因为两个真实孩子指针此时都是 NULL；只有确认真实孩子不存在后，才会改写为线索。",
+    },
+    {
+      en: "One prev pointer is enough: in-order recursion visits exactly one predecessor immediately before each node, so threading never needs an ancestor stack.",
+      zh: "一个 prev 指针就够了：中序递归在访问每个结点前恰好访问它的前驱，因此线索化不需要祖先栈。",
+    },
+    {
+      en: "The whole walk must finish before the tail is patched: only then is last the true in-order tail whose right thread is empty.",
+      zh: "必须走完整棵树才能修补尾结点：只有这时 last 才是真正的中序尾结点，其右线索为空。",
+    },
+    {
+      en: "ltag==0 means left is a real child; stopping at the first tag==1 node returns this subtree's first in-order node.",
+      zh: "ltag==0 表示 left 是真实孩子；在第一个 tag==1 的结点停下，正好得到该子树中序第一个结点。",
+    },
+    {
+      en: "The walk needs no recursion stack: a right thread jumps directly to the successor, otherwise the successor is the leftmost node of the real right subtree.",
+      zh: "遍历不需要递归栈：右线索直接跳到后继，否则后继就是真实右子树的最左结点。",
+    },
+    {
+      en: "Each node contributes its two tags; summing over real children counts every thread once and should equal n+1.",
+      zh: "每个结点贡献两个标记；沿真实孩子求和会把每条线索恰好计一次，总数应为 n+1。",
+    },
+    {
+      en: "Recursing only through real children visits every node exactly once; thread edges are aliases and must not be followed or freed.",
+      zh: "只沿真实孩子递归，每个结点恰好访问一次；线索边只是别名，不能沿它遍历或释放。",
+    },
+    {
+      en: "The demo builds only real child edges; threading then creates non-owning aliases that traversal reads.",
+      zh: "演示只建立真实孩子边；线索化随后生成不拥有结点的别名，遍历读取这些别名。",
+    },
   ],
   "threaded_inorder.cpp": [
-    {
-      en: "Thread targets live in left_thread/right_thread; the real child pointers stay null.",
-      zh: "线索目标保存在 left_thread/right_thread；真实孩子指针保持空，未被覆盖。",
-    },
     {
       en: "unique_ptr owns only real children; thread targets are non-owning raw pointers. Keeping them separate prevents ownership cycles and accidental deletion of a threaded target.",
       zh: "unique_ptr 只拥有真实孩子，线索目标是非拥有裸指针；分开保存可避免所有权环和误删线索目标。",
@@ -1118,12 +1142,32 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
       en: "A tagged right link already points at the successor. Otherwise right is a real child, and the successor is the leftmost node of that subtree.",
       zh: "右链接已标记为线索时，它直接指向后继；否则 right 是真实孩子，后继就是该子树的最左结点。",
     },
+    {
+      en: "ltag==0 proves the left link is a real child; the loop stops as soon as it meets a thread, which marks the subtree's first in-order node.",
+      zh: "ltag==0 证明 left 是真实孩子；一旦遇到线索就停止，该结点正是子树中序第一个结点。",
+    },
+    {
+      en: "prev and last are reference outputs so every recursive frame updates one shared threading state; in-order order makes prev the true predecessor.",
+      zh: "prev 与 last 用引用回传，使每层递归共享同一线索化状态；中序顺序保证 prev 就是真正前驱。",
+    },
+    {
+      en: "After the walk, last is the true in-order tail; only it still needs an explicit empty successor tag.",
+      zh: "走完整棵树后，last 才是真正的中序尾结点；只有它还缺一条显式的空后继线索。",
+    },
+    {
+      en: "Each step either follows a ready successor thread or descends to the leftmost node of a real right subtree; no call stack is involved.",
+      zh: "每一步要么沿现成的后继线索前进，要么下降到真实右子树的最左结点；整个过程不使用调用栈。",
+    },
+    {
+      en: "Tagging every null child link once gives n+1 threads for n nodes; the count is a structural self-check.",
+      zh: "n 个结点的 n+1 个空孩子链接各被标记一次；这个计数是结构自检。",
+    },
+    {
+      en: "Owning unique_ptr links build the demo tree; traversal later reads only non-owning thread fields.",
+      zh: "unique_ptr 拥有真实孩子来构建演示树；遍历随后只读取不拥有结点的线索字段。",
+    },
   ],
   "threaded_inorder.py": [
-    {
-      en: "Thread targets live in left_thread/right_thread; the real child pointers stay None.",
-      zh: "线索目标保存在 left_thread/right_thread；真实孩子指针保持 None，未被覆盖。",
-    },
     {
       en: "Threads are separate from real child links. The tag, not the pointer's truthiness alone, decides whether left_thread/right_thread is valid.",
       zh: "线索与真实孩子链接分开保存；判断线索是否有效要看 tag，而不能只看指针是否为空。",
@@ -1147,6 +1191,30 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
     {
       en: "A right thread is already the successor. With rtag==0, right is a real subtree, so the walk must descend to its leftmost node.",
       zh: "右线索已经直接指向后继；rtag==0 时 right 是真实子树，必须下降到它的最左结点。",
+    },
+    {
+      en: "A node keeps real child links and thread fields separate; only the tags decide whether a thread field is valid.",
+      zh: "结点把真实孩子链接与线索字段分开保存；字段是否有效只由 tag 决定。",
+    },
+    {
+      en: "Level-order indices are only a demo construction rule; the real shape is still determined by the child links that build_tree assigns.",
+      zh: "层序下标只是演示建树规则；真正的树形仍由 build_tree 赋值的真实孩子链接决定。",
+    },
+    {
+      en: "The nested walk updates PRE exactly in in-order order, so one shared pointer is enough; last records the tail for the final empty-thread patch.",
+      zh: "嵌套遍历严格按中序推进 PRE，因此一个共享指针就够；last 记录尾结点，供最后补空线索。",
+    },
+    {
+      en: "The loop descends only while ltag==0; the first tagged link marks this subtree's first in-order node, exactly where the walk must start.",
+      zh: "循环只在 ltag==0 时下降；第一条线索处就是子树中序第一个结点，也是遍历起点。",
+    },
+    {
+      en: "Each iteration follows either a successor thread or the leftmost node of a real right subtree, so no recursion stack is needed.",
+      zh: "每次迭代要么沿后继线索，要么进入真实右子树的最左结点，因此不需要递归栈。",
+    },
+    {
+      en: "This recursive walk is an oracle: it follows real children only and never reads the threads it is checking.",
+      zh: "这个递归遍历只作为对照：它只走真实孩子，完全不读取待验证的线索。",
     },
   ],
   "inorder.c": [
@@ -2747,12 +2815,12 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
   ],
   "block_search.c": [
     {
-      en: "Purpose: Validate the index prerequisite and build one entry per real block; returns the block count or -1.",
-      zh: "作用：校验索引前提并逐块建立索引项；合法返回块数，非法返回 -1。",
+      en: "Before any entry exists, reject a size that cannot partition the array; otherwise the ceiling division and later maximum lookup have no defined block boundary.",
+      zh: "在建立任何索引项之前先拒绝无法切分数组的块大小；否则向上取整与后续最大值查询都没有明确的块边界。",
     },
     {
-      en: "Purpose: Probe the index, then scan exactly the selected block; comparisons reports both stage counts.",
-      zh: "作用：先顺序探测索引，再只扫描被选中的块；comparisons 分别报告索引与块内比较次数。",
+      en: "Index and block comparisons are counted separately because they measure two different searches; merging them would hide which stage dominates.",
+      zh: "索引比较与块内比较分开计数，因为它们度量两种不同搜索；合并会掩盖哪一阶段占主导。",
     },
     {
       en: "Ceiling division counts the final short block. Floor division would omit it whenever count is not a multiple of block_size.",
@@ -2761,10 +2829,6 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
     {
       en: "The index is valid only if maxima strictly increase and every value in this block exceeds the previous maximum. Otherwise a later block could contain a value smaller than an earlier block's max, so max-based selection would be unsafe.",
       zh: "只有块最大值严格递增且本块所有值都大于前一块最大值时索引才有效；否则后块可能含更小值，按最大值选块就不安全。",
-    },
-    {
-      en: "The index is scanned from the first block. Because maxima increase, stopping at the first max >= target gives the only candidate; a later block cannot contain an earlier value.",
-      zh: "索引从第一块开始顺序扫描；由于最大值递增，遇到第一个 max≥target 的块即可停止，后面块不可能包含更早的值。",
     },
     {
       en: "The first block whose maximum reaches target is the only possible block: earlier maxima are too small, and later blocks all start above this maximum.",
@@ -2778,15 +2842,19 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
       en: "Inside a block the values are not promised sorted, so only a linear equality scan is valid. A binary search here would assume an ordering the index never guarantees.",
       zh: "块内并未保证有序，因此只能线性扫描判等；在这里用二分会假设一种索引从未承诺过的顺序。",
     },
+    {
+      en: "The sample deliberately keeps the data unsorted: the index contract concerns block ranges and maxima, not reordering the array.",
+      zh: "示例刻意保持数据原序：索引契约针对块的区间与最大值，并不要求重排数组。",
+    },
   ],
   "block_search.cpp": [
     {
-      en: "Purpose: Validate the range prerequisite and build one entry per consecutive block.",
-      zh: "作用：校验块范围递增前提，并为每个连续块建立索引项。",
+      en: "Before creating entries, reject a block size that cannot partition the vector; otherwise the loop has no well-defined block boundaries.",
+      zh: "建立索引项前先拒绝无法切分 vector 的块大小；否则循环没有明确的块边界。",
     },
     {
-      en: "Purpose: Probe the index, then scan the selected block; stats separates the two stages.",
-      zh: "作用：先探测索引，再扫描选中的块；stats 分开记录两个阶段的比较次数。",
+      en: "The two comparison counters stay separate because index probing and block scanning are different searches; a merged count would hide the cost split.",
+      zh: "两个比较计数器保持分离，因为索引探测与块内扫描是不同搜索；合并计数会掩盖成本构成。",
     },
     {
       en: "Ceiling division includes the tail block even when its length is smaller than blockSize; truncating division would silently lose that suffix.",
@@ -2795,10 +2863,6 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
     {
       en: "Later blocks must have strictly larger maxima and every element above the previous maximum. Without both checks, selecting by max could enter a block that does not contain the target.",
       zh: "后续块必须最大值严格更大且每个元素都大于前一块最大值；缺少任一检查，按最大值选块都可能进入不含目标的块。",
-    },
-    {
-      en: "The index is probed sequentially because its maxima increase. The first block whose max reaches target is the unique candidate; a later block starts above it and cannot hold a smaller target.",
-      zh: "索引最大值递增，因此顺序探测；第一个 max 达到 target 的块就是唯一候选，后面的块起点更大，不可能包含更小的目标。",
     },
     {
       en: "Earlier blocks have smaller maxima, so this first satisfying block is the only one that can contain target; all later blocks lie strictly above the previous maximum.",
@@ -2812,15 +2876,19 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
       en: "The block is scanned linearly because its internal order is not part of the index contract. Only equality can guide this stage; binary search would require sorted data.",
       zh: "块内顺序不属于索引契约，因此只能线性扫描；本阶段只能用相等判断，二分则需要数据有序。",
     },
+    {
+      en: "The demo keeps the original order: block search indexes range maxima and must not silently sort the data.",
+      zh: "演示保持原始顺序：分块查找为块最大值建索引，不能悄悄排序数据。",
+    },
   ],
   "block_search.py": [
     {
-      en: "Purpose: Build one index entry per consecutive block after validating the real range prerequisite.",
-      zh: "作用：校验真实块范围前提后，为每个连续块建立一个索引项。",
+      en: "Reject an unusable block size before building entries; otherwise slicing and max() would describe a partition the index cannot guarantee.",
+      zh: "建立索引项前先拒绝不可用的块大小；否则切片与 max() 描述的划分并非索引能够保证。",
     },
     {
-      en: "Purpose: Probe the index sequentially, then scan only the selected real block.",
-      zh: "作用：顺序探测索引，然后只扫描被选中的真实块。",
+      en: "Index probing and block scanning are separate stages; the returned counts keep their costs visible instead of collapsing them.",
+      zh: "索引探测与块内扫描是两个阶段；返回的计数让两部分成本保持可见而不是被合并。",
     },
     {
       en: "Ceiling division allocates an index entry for the final short block; floor division would omit the tail whenever the length is not an exact multiple.",
@@ -2833,10 +2901,6 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
     {
       en: "The index contract requires both strictly increasing maxima and every value above the previous maximum. Checking only the maximum would miss a small value hidden in a later block.",
       zh: "索引契约要求最大值严格递增，且每个值都高于前一块最大值；只检查最大值会漏掉后块中隐藏的小值。",
-    },
-    {
-      en: "Scan index entries from the first block. Since maxima increase, the first entry whose max reaches target is the unique candidate; later blocks start above it.",
-      zh: "从第一块开始扫描索引项；最大值递增，所以第一个 max 达到 target 的项就是唯一候选，后面的块起点更高。",
     },
     {
       en: "The first block whose maximum is at least target is the only possible block: earlier maxima are too small, and later blocks all start above this maximum.",

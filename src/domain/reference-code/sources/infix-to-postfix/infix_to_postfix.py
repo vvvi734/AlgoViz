@@ -19,8 +19,8 @@ Complexity: O(n) time, O(n) space.
 from __future__ import annotations
 
 
-# Purpose: Return operator precedence: + and - are 1, * and / are 2, everything else is 0.
-# 作用：返回运算符优先级；+/- 为 1，*// 为 2，其他为 0。
+# Return operator precedence: + and - are 1, * and / are 2, everything else is 0.
+# 返回运算符优先级；+/- 为 1，*// 为 2，其他为 0。
 def precedence(operator: str) -> int:
     """Return 1 for +/-, 2 for */, and 0 for anything else."""
     if operator in ("+", "-"):
@@ -30,8 +30,8 @@ def precedence(operator: str) -> int:
     return 0
 
 
-# Purpose: Split the expression into numbers and multi-character operators while skipping whitespace.
-# 作用：把表达式拆成数字和多字符运算符，跳过空白。
+# Split the expression into numbers and multi-character operators while skipping whitespace.
+# 把表达式拆成数字和多字符运算符，跳过空白。
 def tokenize(expression: str) -> list[str]:
     """Split into numbers, parentheses and single-character operators."""
     tokens: list[str] = []
@@ -57,8 +57,8 @@ def tokenize(expression: str) -> list[str]:
     return tokens
 
 
-# Purpose: Return the postfix expression; raise ValueError when parentheses are unbalanced or a character is unsupported.
-# 作用：返回后缀表达式；括号不匹配或出现不支持的字符时抛出 ValueError。
+# Return the postfix expression; raise ValueError when parentheses are unbalanced or a character is unsupported.
+# 返回后缀表达式；括号不匹配或出现不支持的字符时抛出 ValueError。
 def infix_to_postfix(expression: str) -> str:
     """Convert an infix expression; raise ValueError on unbalanced parentheses."""
     # Tokenization happens before conversion so the converter sees whole numbers and explicit parentheses, not individual characters.
@@ -98,8 +98,8 @@ def infix_to_postfix(expression: str) -> str:
     return " ".join(output)
 
 
-# Purpose: Demonstrate the conversion of (3 + 4) * 2.
-# 作用：演示 (3 + 4) * 2 的转换结果。
+# Demonstrate the conversion of (3 + 4) * 2.
+# 演示 (3 + 4) * 2 的转换结果。
 def main() -> None:
     print("infix:  (3 + 4) * 2")
     print("postfix:", infix_to_postfix("(3 + 4) * 2"))

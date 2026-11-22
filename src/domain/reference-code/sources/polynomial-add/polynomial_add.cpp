@@ -40,8 +40,8 @@ class Polynomial
         std::unique_ptr<Node> next;
     };
 
-    // Purpose: Append a term at the polynomial tail and maintain tail so exponents stay linked in order.
-    // 作用：在多项式尾部追加一项；维护尾指针，保证按指数顺序链接。
+    // Append a term at the polynomial tail and maintain tail so exponents stay linked in order.
+    // 在多项式尾部追加一项；维护尾指针，保证按指数顺序链接。
     // `unique_ptr` owns each node, while `tail_` is a non-owning cursor. Updating `tail_` after linking keeps appends O(1) and avoids a second owning pointer.
     void append(const Term &term)
     {
@@ -54,15 +54,15 @@ class Polynomial
         tail_ = raw;
     }
 
-    // Purpose: Return the polynomial head pointer for read-only access.
-    // 作用：返回多项式头指针供只读访问。
+    // Return the polynomial head pointer for read-only access.
+    // 返回多项式头指针供只读访问。
     const Node *head() const
     {
         return head_.get();
     }
 
-    // Purpose: Merge two exponent-descending polynomials; add coefficients of equal exponents and drop zero sums.
-    // 作用：按指数从高到低合并两条多项式；相等指数相加，零系数项丢弃。
+    // Merge two exponent-descending polynomials; add coefficients of equal exponents and drop zero sums.
+    // 按指数从高到低合并两条多项式；相等指数相加，零系数项丢弃。
     static Polynomial add(const Polynomial &a, const Polynomial &b)
     {
         Polynomial result;
@@ -112,8 +112,8 @@ class Polynomial
         return result;
     }
 
-    // Purpose: Traverse and print the current structure without modifying data, so each step can be checked.
-    // 作用：只读遍历并输出当前结构；不会修改数据，适合在每一步后核对状态。
+    // Traverse and print the current structure without modifying data, so each step can be checked.
+    // 只读遍历并输出当前结构；不会修改数据，适合在每一步后核对状态。
     void print(const std::string &label) const
     {
         std::cout << label << " = ";

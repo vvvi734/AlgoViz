@@ -55,8 +55,8 @@ struct GLNode
 
 void free_gl(GLNode *node);
 
-// 作用：分配零初始化节点，tag 从源节点继承。
-// Purpose: Allocate a zero-initialized node; inherit the tag from the source.
+// 分配零初始化节点，tag 从源节点继承。
+// Allocate a zero-initialized node; inherit the tag from the source.
 /* 分配零初始化节点，tag 从源节点继承。 */
 GLNode *new_node(int tag)
 {
@@ -65,8 +65,8 @@ GLNode *new_node(int tag)
     return node;
 }
 
-// 作用：构造原子节点，供示例树使用。
-// Purpose: Construct an atom node for the demo tree.
+// 构造原子节点，供示例树使用。
+// Construct an atom node for the demo tree.
 /* 构造原子节点，供示例树使用。 */
 GLNode *make_atom(const char *text)
 {
@@ -75,8 +75,8 @@ GLNode *make_atom(const char *text)
     return node;
 }
 
-// 作用：构造空表节点；head 为空，但节点本身代表真实的 ()。
-// Purpose: Construct an empty list; head is null, but the node represents a real ().
+// 构造空表节点；head 为空，但节点本身代表真实的 ()。
+// Construct an empty list; head is null, but the node represents a real ().
 /* 构造空表节点；head 为空，但节点本身代表真实的 ()。 */
 GLNode *make_list()
 {
@@ -84,7 +84,7 @@ GLNode *make_list()
 }
 
 // Append through a pointer-to-pointer tail so an empty child list needs no special branch.
-// Purpose: Append child to the sibling chain and set its next pointer.
+// Append child to the sibling chain and set its next pointer.
 void append_child(GLNode *parent, GLNode *child)
 {
     if (parent == nullptr || child == nullptr || parent->tag != GL_LIST)
@@ -121,7 +121,7 @@ GLNode *copy_one(const GLNode *src)
     {
         GLNode *child_copy = copy_one(child);
         // 分配失败时回收已建好的半棵副本，避免内存泄漏。
-        // Purpose: On allocation failure, free the half-built copy instead of leaking it.
+        // On allocation failure, free the half-built copy instead of leaking it.
         // A throw from a deeper allocation is not caught here, but this null check still guards the contract. Freeing the half-built subtree keeps ownership clean on failure.
         if (child_copy == nullptr)
         {
@@ -136,7 +136,7 @@ GLNode *copy_one(const GLNode *src)
 }
 
 // Save next before delete and free the head chain first, so neither siblings nor children are lost.
-// Purpose: Free each sibling iteratively and each sublist recursively.
+// Free each sibling iteratively and each sublist recursively.
 void free_gl(GLNode *node)
 {
     while (node != nullptr)
@@ -151,8 +151,8 @@ void free_gl(GLNode *node)
     }
 }
 
-// 作用：按括号形式打印，用于比较源表与副本。
-// Purpose: Print the parenthesized form to compare source and copy.
+// 按括号形式打印，用于比较源表与副本。
+// Print the parenthesized form to compare source and copy.
 /* 打印标准括号形式，用于比较源表与副本。 */
 void print_gl(const GLNode *node)
 {
@@ -177,8 +177,8 @@ void print_gl(const GLNode *node)
     std::cout << ")";
 }
 
-// 作用：构造示例树，验证副本与源树根节点互相独立后分别释放。
-// Purpose: Build the demo, verify the two roots are independent, then free both trees.
+// 构造示例树，验证副本与源树根节点互相独立后分别释放。
+// Build the demo, verify the two roots are independent, then free both trees.
 int main()
 {
     GLNode *root = make_list();

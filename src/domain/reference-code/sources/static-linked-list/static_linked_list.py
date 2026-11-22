@@ -58,8 +58,8 @@ class StaticList:
             previous = self.cur[previous]
         return previous
 
-    # Purpose: Insert value at the 1-based logical position; return True on success.
-    # 作用：在 1 基逻辑位置 position 插入 value；成功返回 True。
+    # Insert value at the 1-based logical position; return True on success.
+    # 在 1 基逻辑位置 position 插入 value；成功返回 True。
     def insert(self, position: int, value: int) -> bool:
         length = len(self._order())
         if position < 1 or position > length + 1:
@@ -86,8 +86,8 @@ class StaticList:
             self.cur[previous] = fresh
         return True
 
-    # Purpose: Delete the node at 1-based logical position and return its slot to the free chain.
-    # 作用：删除 1 基逻辑位置 position 的结点并把槽归还 free 链。
+    # Delete the node at 1-based logical position and return its slot to the free chain.
+    # 删除 1 基逻辑位置 position 的结点并把槽归还 free 链。
     def delete(self, position: int) -> int | None:
         length = len(self._order())
         if position < 1 or position > length:
@@ -109,8 +109,8 @@ class StaticList:
         self.free_head = target
         return removed
 
-    # Purpose: Return the elements in logical order by following the head chain.
-    # 作用：按 head 链返回逻辑顺序的元素列表。
+    # Return the elements in logical order by following the head chain.
+    # 按 head 链返回逻辑顺序的元素列表。
     def traverse(self) -> list[int]:
         return [self.data[index] for index in self._order()]
 

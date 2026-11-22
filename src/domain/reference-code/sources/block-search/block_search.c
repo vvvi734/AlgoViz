@@ -29,8 +29,7 @@ typedef struct
     int length;
 } IndexEntry;
 
-// Purpose: Validate the index prerequisite and build one entry per real block; returns the block count or -1.
-// 作用：校验索引前提并逐块建立索引项；合法返回块数，非法返回 -1。
+// Before any entry exists, reject a size that cannot partition the array; otherwise the ceiling division and later maximum lookup have no defined block boundary.
 static int build_index(const int *data, int count, int block_size, IndexEntry *index)
 {
     if (count <= 0 || block_size <= 0 || block_size > MAX_BLOCK_SIZE)
@@ -78,8 +77,7 @@ static int build_index(const int *data, int count, int block_size, IndexEntry *i
     return blocks;
 }
 
-// Purpose: Probe the index, then scan exactly the selected block; comparisons reports both stage counts.
-// 作用：先顺序探测索引，再只扫描被选中的块；comparisons 分别报告索引与块内比较次数。
+// Index and block comparisons are counted separately because they measure two different searches; merging them would hide which stage dominates.
 static int block_search(const int *data, int count, int block_size, int target,
                         int *index_comparisons, int *block_comparisons)
 {
@@ -121,15 +119,13 @@ static int block_search(const int *data, int count, int block_size, int target,
     return -1;
 }
 
-// Purpose: Run the documented example, print the real index and both comparison counts.
-// 作用：运行文档示例，打印真实索引与两阶段比较次数。
+// The sample deliberately keeps the data unsorted: the index contract concerns block ranges and maxima, not reordering the array.
 int main(void)
 {
     int data[] = {22, 8, 14, 35, 41, 57, 66, 38, 73, 81, 94, 69};
     int count = (int)(sizeof(data) / sizeof(data[0]));
     IndexEntry index[MAX_BLOCKS];
     int blocks = build_index(data, count, 4, index);
-    // The index is scanned from the first block. Because maxima increase, stopping at the first max >= target gives the only candidate; a later block cannot contain an earlier value.
     for (int block = 0; block < blocks; ++block)
     {
         printf("block %d: [%d, %d) max=%d\n", block + 1, index[block].start,

@@ -23,9 +23,9 @@
 
 #define MAX_EXPR 128
 
-// Purpose: Return operator precedence: + and - are 1, * and / are 2, other characters are 0.
+// Return operator precedence: + and - are 1, * and / are 2, other characters are 0.
 /*
- * 作用：返回运算符优先级。+、- 为 1，*、/ 为 2；其他字符返回 0。
+ * 返回运算符优先级。+、- 为 1，*、/ 为 2；其他字符返回 0。
  */
 static int Precedence(char op)
 {
@@ -40,9 +40,9 @@ static int Precedence(char op)
     return 0;
 }
 
-// Purpose: Append a whole token to the output with one separating space; return false when capacity is insufficient.
+// Append a whole token to the output with one separating space; return false when capacity is insufficient.
 /*
- * 作用：把一个完整 token 追加到输出，token 之间补一个空格；容量不足时返回 false。
+ * 把一个完整 token 追加到输出，token 之间补一个空格；容量不足时返回 false。
  */
 static bool AppendToken(char *out, size_t capacity, const char *token)
 {
@@ -61,9 +61,9 @@ static bool AppendToken(char *out, size_t capacity, const char *token)
     return true;
 }
 
-// Purpose: Main conversion routine; return false for mismatched parentheses, an invalid character or an undersized output buffer.
+// Main conversion routine; return false for mismatched parentheses, an invalid character or an undersized output buffer.
 /*
- * 作用：转换主函数。返回 false 表示括号不匹配、非法字符或输出缓冲区不足。
+ * 转换主函数。返回 false 表示括号不匹配、非法字符或输出缓冲区不足。
  *
  * 关键顺序：遇到操作数立即输出；遇到运算符先弹出所有“优先级不低于自己”的
  * 栈顶，再把自己压入；遇到右括号弹到左括号；扫描结束清空剩余运算符。
@@ -137,7 +137,7 @@ bool InfixToPostfix(const char *expression, char *out, size_t capacity)
         else if (token == '+' || token == '-' || token == '*' || token == '/')
         {
             // 同级运算符左结合：>= 而不是 >，否则 8 - 3 - 2 会算错。
-            // Purpose: Use >= for left associativity; > would make 8 - 3 - 2 wrong.
+            // Use >= for left associativity; > would make 8 - 3 - 2 wrong.
             while (top >= 0 && operators[top] != '(' && Precedence(operators[top]) >= Precedence(token))
             {
                 char popped[2] = {operators[top--], '\0'};
@@ -176,9 +176,9 @@ bool InfixToPostfix(const char *expression, char *out, size_t capacity)
     return true;
 }
 
-// Purpose: Demonstrate conversion with the official example (3 + 4) * 2, expecting 3 4 + 2 *.
+// Demonstrate conversion with the official example (3 + 4) * 2, expecting 3 4 + 2 *.
 /*
- * 作用：用官方示例 (3 + 4) * 2 演示转换，期望输出 3 4 + 2 *。
+ * 用官方示例 (3 + 4) * 2 演示转换，期望输出 3 4 + 2 *。
  */
 int main(void)
 {

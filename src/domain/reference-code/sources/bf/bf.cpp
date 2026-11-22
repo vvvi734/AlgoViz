@@ -35,7 +35,7 @@
 #include <string>
 #include <vector>
 
-// Purpose: Return every 0-based match start; text may be empty, and an empty pattern throws std::invalid_argument.
+// Return every 0-based match start; text may be empty, and an empty pattern throws std::invalid_argument.
 /*
  * 返回 text 中 pattern 的全部匹配起点。
  *
@@ -44,7 +44,7 @@
  *   pattern  模式串，不能为空；空模式串抛出 std::invalid_argument。
  *
  * 返回值：全部 0 基起点的 vector，按递增顺序排列。
- * 副作用：只读取输入并构造返回值，不修改 text 或 pattern。
+ * 副只读取输入并构造返回值，不修改 text 或 pattern。
  */
 std::vector<int> bf_find_all(const std::string &text, const std::string &pattern)
 {
@@ -58,7 +58,7 @@ std::vector<int> bf_find_all(const std::string &text, const std::string &pattern
     std::size_t m = pattern.size();
 
     // 当 n < m 时，没有任何对齐能容纳整个模式串，空结果就是正确答案。
-    // Purpose: If n < m no alignment can hold the pattern, so the empty result is correct.
+    // If n < m no alignment can hold the pattern, so the empty result is correct.
     if (n < m)
     {
         return matches;
@@ -92,7 +92,7 @@ std::vector<int> bf_find_all(const std::string &text, const std::string &pattern
     return matches;
 }
 
-// Purpose: Demo normal, overlapping, too-short and empty-pattern cases; catch the exception.
+// Demo normal, overlapping, too-short and empty-pattern cases; catch the exception.
 /*
  * 演示入口：打印匹配数量与每个起点，并覆盖重叠、主串过短和空模式串。
  * 空模式串的异常在这里被捕获，避免程序直接终止。

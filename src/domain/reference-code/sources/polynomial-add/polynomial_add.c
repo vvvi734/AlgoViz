@@ -34,8 +34,8 @@ typedef struct PolyNode
     struct PolyNode *next;
 } PolyNode;
 
-// Purpose: Create a new node with its value and pointer initialized; the caller owns the release.
-// 作用：创建一个新结点并初始化值和指针；调用者负责释放。
+// Create a new node with its value and pointer initialized; the caller owns the release.
+// 创建一个新结点并初始化值和指针；调用者负责释放。
 static PolyNode *make_node(int coefficient, int exponent)
 {
     PolyNode *node = (PolyNode *)malloc(sizeof(PolyNode));
@@ -50,8 +50,8 @@ static PolyNode *make_node(int coefficient, int exponent)
     return node;
 }
 
-// Purpose: Free every polynomial node, saving next before releasing the current term.
-// 作用：释放多项式链表全部结点；先保存 next，再释放当前项。
+// Free every polynomial node, saving next before releasing the current term.
+// 释放多项式链表全部结点；先保存 next，再释放当前项。
 static void free_poly(PolyNode *head)
 {
     while (head != NULL)
@@ -63,8 +63,8 @@ static void free_poly(PolyNode *head)
 }
 
 /* Append a newly allocated term to the result tail. */
-// Purpose: Append a term at the result polynomial's tail and maintain tail for O(1) insertion.
-// 作用：在结果多项式尾部追加一项；维护 tail 指针，保证尾插 O(1)。
+// Append a term at the result polynomial's tail and maintain tail for O(1) insertion.
+// 在结果多项式尾部追加一项；维护 tail 指针，保证尾插 O(1)。
 static void append_term(PolyNode **head, PolyNode **tail, int coefficient, int exponent)
 {
     PolyNode *node = make_node(coefficient, exponent);
@@ -80,8 +80,8 @@ static void append_term(PolyNode **head, PolyNode **tail, int coefficient, int e
  * Merge A and B. Both inputs stay owned by the caller.
  * Invariant: result is strictly descending and no zero-coefficient term exists.
  */
-// Purpose: Merge two exponent-descending polynomials: add coefficients of equal exponents and omit a term when the sum is zero.
-// 作用：按指数从高到低合并两条多项式：指数相等则系数相加，相加为 0 时不保留该项。
+// Merge two exponent-descending polynomials: add coefficients of equal exponents and omit a term when the sum is zero.
+// 按指数从高到低合并两条多项式：指数相等则系数相加，相加为 0 时不保留该项。
 static PolyNode *add_polynomials(const PolyNode *a, const PolyNode *b)
 {
     PolyNode *result = NULL;
@@ -131,8 +131,8 @@ static PolyNode *add_polynomials(const PolyNode *a, const PolyNode *b)
     return result;
 }
 
-// Purpose: Print the polynomial from high to low exponent without modifying any node.
-// 作用：按指数从高到低输出多项式；只读，不修改结点。
+// Print the polynomial from high to low exponent without modifying any node.
+// 按指数从高到低输出多项式；只读，不修改结点。
 static void print_polynomial(const char *label, const PolyNode *head)
 {
     const PolyNode *node;

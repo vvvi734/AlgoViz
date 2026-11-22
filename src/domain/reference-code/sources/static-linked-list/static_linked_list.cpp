@@ -26,15 +26,15 @@ class StaticList
     static constexpr int kCapacity = 8;
     static constexpr int kNull = -1;
 
-    // Purpose: Build a static list from the given values, linking the data list and chaining leftover slots into the free list.
-    // 作用：用给定值构造静态链表：建立数据链表并把剩余槽串成空闲链表。
+    // Build a static list from the given values, linking the data list and chaining leftover slots into the free list.
+    // 用给定值构造静态链表：建立数据链表并把剩余槽串成空闲链表。
     explicit StaticList(const std::vector<int> &values)
     {
         initialise(values);
     }
 
-    // Purpose: Insert value before position by taking a node from the free list and rewiring cursors; return false on failure.
-    // 作用：在 position 前插入 value：先从空闲链表取结点，再重接游标；失败返回 false。
+    // Insert value before position by taking a node from the free list and rewiring cursors; return false on failure.
+    // 在 position 前插入 value：先从空闲链表取结点，再重接游标；失败返回 false。
     // Keep the successor first, then redirect the predecessor; reversing loses the tail.
     bool insert(int position, int value)
     {
@@ -66,8 +66,8 @@ class StaticList
         return true;
     }
 
-    // Purpose: Delete the node at position, recycle it into the free list, and return the removed value.
-    // 作用：删除 position 位置结点，把结点归还空闲链表，并返回被删值。
+    // Delete the node at position, recycle it into the free list, and return the removed value.
+    // 删除 position 位置结点，把结点归还空闲链表，并返回被删值。
     std::optional<int> remove(int position)
     {
         if (position < 1 || position > size())
@@ -89,8 +89,8 @@ class StaticList
         return removed;
     }
 
-    // Purpose: Traverse and print the current structure without modifying data, so each step can be checked.
-    // 作用：只读遍历并输出当前结构；不会修改数据，适合在每一步后核对状态。
+    // Traverse and print the current structure without modifying data, so each step can be checked.
+    // 只读遍历并输出当前结构；不会修改数据，适合在每一步后核对状态。
     void print() const
     {
         std::cout << "physical rows:\n";
@@ -115,8 +115,8 @@ class StaticList
         int cur = kNull;
     };
 
-    // Purpose: Rebuild the static list from the given values and reset both the data-list head and the free-list head.
-    // 作用：按给定值重建静态链表，并重置数据链表头与空闲链表头。
+    // Rebuild the static list from the given values and reset both the data-list head and the free-list head.
+    // 按给定值重建静态链表，并重置数据链表头与空闲链表头。
     void initialise(const std::vector<int> &values)
     {
         int count = static_cast<int>(values.size());
@@ -137,8 +137,8 @@ class StaticList
         freeHead_ = count < kCapacity ? count : kNull;
     }
 
-    // Purpose: Count live nodes by walking cur from head; this class keeps no length field.
-    // 作用：从 head 沿 cur 计数；本类没有维护 length 字段。
+    // Count live nodes by walking cur from head; this class keeps no length field.
+    // 从 head 沿 cur 计数；本类没有维护 length 字段。
     int size() const
     {
         // There is no `length_` field: this O(n) walk from `head_` is the authoritative size and always agrees with the actual cur chain after inserts and deletes.
@@ -148,8 +148,8 @@ class StaticList
         return count;
     }
 
-    // Purpose: Return the array index of 1-based position's predecessor; position 1 returns the head sentinel.
-    // 作用：返回 1 基位置 position 的前驱数组下标；position=1 返回头哨兵。
+    // Return the array index of 1-based position's predecessor; position 1 returns the head sentinel.
+    // 返回 1 基位置 position 的前驱数组下标；position=1 返回头哨兵。
     int predecessor(int position) const
     {
         if (position == 1)

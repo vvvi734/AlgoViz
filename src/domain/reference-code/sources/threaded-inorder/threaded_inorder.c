@@ -28,8 +28,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// Thread targets live in left_thread/right_thread; the real child pointers stay NULL.
-
 typedef struct ThreadNode
 {
     int value;
@@ -48,8 +46,7 @@ typedef struct
     ThreadNode *last;
 } ThreadState;
 
-// 作用：分配节点并初始化；ltag/rtag 先为 0，表示孩子指针暂时都是真实指针。
-// Purpose: Allocate a node; tags start at 0 so both links read as real children.
+// Tags start at 0 because both child pointers begin as NULL; a thread is written only after the real child is known to be absent.
 static ThreadNode *make_node(int value)
 {
     ThreadNode *node = (ThreadNode *)malloc(sizeof(ThreadNode));
@@ -68,8 +65,7 @@ static ThreadNode *make_node(int value)
     return node;
 }
 
-// 作用：中序递归线索化；利用中序顺序，让 prev 恰好是当前结点的前驱。
-// Purpose: Thread in order; in-order order makes state->prev the current predecessor.
+// One prev pointer is enough: in-order recursion visits exactly one predecessor immediately before each node, so threading never needs an ancestor stack.
 static void thread_walk(ThreadNode *node, ThreadState *state)
 {
     if (node == NULL)
@@ -77,26 +73,17 @@ static void thread_walk(ThreadNode *node, ThreadState *state)
         return;
     }
 
-    // 左子树必须先完成，state->prev 才是当前结点的中序前驱。
-    // Purpose: Finish the left subtree first so state->prev is the true predecessor.
-    /* 左子树必须先完成，state->prev 才是当前结点的中序前驱。 */
     thread_walk(node->left, state);
 
     // A missing real left child is exactly the slot that can store the predecessor. prev is NULL only for the first in-order node, and that NULL is itself the correct no-predecessor thread.
     if (node->left == NULL)
     {
-        // 空 left 对应的前驱线索写入 left_thread；真实 left 仍为 NULL。
-        // Purpose: Store the predecessor in left_thread; the real left child stays null.
-        /* 空 left 对应的前驱线索写入 left_thread；真实 left 仍为 NULL。 */
         node->ltag = 1;
         node->left_thread = state->prev;
     }
     // The current node is the predecessor's successor only when the predecessor has no real right child. If it has a right child, the successor lies inside that subtree, so this thread must not be written.
     if (state->prev != NULL && state->prev->right == NULL)
     {
-        // 前驱没有右孩子，当前结点正好是它的中序后继；后继写入 right_thread。
-        // Purpose: The predecessor has no right child, so node is its successor and goes into right_thread.
-        /* 前驱没有右孩子，当前结点正好是它的中序后继；后继写入 right_thread。 */
         state->prev->rtag = 1;
         state->prev->right_thread = node;
     }
@@ -107,8 +94,7 @@ static void thread_walk(ThreadNode *node, ThreadState *state)
     thread_walk(node->right, state);
 }
 
-// 作用：线索化整棵树；最后单独给中序尾结点补一条空后继线索。
-// Purpose: Thread the whole tree and give the in-order tail an empty successor thread.
+// The whole walk must finish before the tail is patched: only then is last the true in-order tail whose right thread is empty.
 static void thread_inorder(ThreadNode *root)
 {
     ThreadState state;
@@ -116,9 +102,6 @@ static void thread_inorder(ThreadNode *root)
     state.last = NULL;
     thread_walk(root, &state);
 
-    // 最后一个中序结点没有后继；right 仍为 NULL，right_thread 置空且 rtag 为 1。
-    // Purpose: The last node has no successor; right stays null, right_thread is cleared and rtag is 1.
-    /* 最后一个中序结点没有后继；right 仍为 NULL，right_thread 置空且 rtag 为 1。 */
     // The in-order tail has no successor, but its right link is still a thread. Setting rtag=1 with a NULL thread records that the absence is intentional, not a forgotten real child.
     if (state.last != NULL && state.last->right == NULL)
     {
@@ -127,8 +110,7 @@ static void thread_inorder(ThreadNode *root)
     }
 }
 
-// 作用：沿真实左孩子一直走到最左下结点，即该子树中序第一个结点。
-// Purpose: Follow real left children to the first node of this subtree in order.
+// ltag==0 means left is a real child; stopping at the first tag==1 node returns this subtree's first in-order node.
 static ThreadNode *leftmost(ThreadNode *node)
 {
     while (node != NULL && node->ltag == 0)
@@ -138,8 +120,7 @@ static ThreadNode *leftmost(ThreadNode *node)
     return node;
 }
 
-// 作用：不使用递归栈，靠右线索或右子树最左结点求中序后继。
-// Purpose: Traverse without a stack; use a successor thread or the leftmost node of the right subtree.
+// The walk needs no recursion stack: a right thread jumps directly to the successor, otherwise the successor is the leftmost node of the real right subtree.
 static void inorder_by_threads(ThreadNode *root)
 {
     ThreadNode *node = leftmost(root);
@@ -150,24 +131,17 @@ static void inorder_by_threads(ThreadNode *root)
         // rtag==1 means right is not a real child, so right_thread is the successor. rtag==0 means descend into the real right subtree and take its leftmost node.
         if (node->rtag == 1)
         {
-            // rtag==1 时 right 为空，right_thread 直接指向后继；后继为空则结束。
-            // Purpose: With rtag 1, right is null and right_thread points straight at the successor.
-            /* rtag==1 时 right 为空，right_thread 直接指向后继；后继为空则结束。 */
             node = node->right_thread;
         }
         else
         {
-            // 右指针是真实孩子，后继是右子树的最左结点。
-            // Purpose: With a real right child, the successor is that subtree's leftmost node.
-            /* 右指针是真实孩子，后继是右子树的最左结点。 */
             node = leftmost(node->right);
         }
     }
     printf("\n");
 }
 
-// 作用：统计被标记为线索的指针数；n 个结点应有 n+1 条线索。
-// Purpose: Count tagged links; an n-node tree has exactly n+1 threads.
+// Each node contributes its two tags; summing over real children counts every thread once and should equal n+1.
 static int count_tags(ThreadNode *node)
 {
     if (node == NULL)
@@ -177,17 +151,14 @@ static int count_tags(ThreadNode *node)
     return node->ltag + node->rtag + count_tags(node->left) + count_tags(node->right);
 }
 
-// 作用：只沿真实孩子递归释放；线索边不能再次释放，否则会重复 free。
-// Purpose: Recurse only through real child links; following threads would double-free.
+// Recursing only through real children visits every node exactly once; thread edges are aliases and must not be followed or freed.
 static void free_tree(ThreadNode *node)
 {
     if (node == NULL)
     {
         return;
     }
-    // 只释放真实孩子；线索指向的结点由别的真实边负责释放，不能重复 free。
-    // Purpose: Only real children are owned by this edge; thread targets are owned elsewhere.
-    /* 只释放真实孩子；线索指向的结点由别的真实边负责释放，不能重复 free。 */
+    // Each node is freed once through the real edge that owns it; thread edges do not own their targets.
     if (node->ltag == 0)
     {
         free_tree(node->left);
@@ -199,8 +170,7 @@ static void free_tree(ThreadNode *node)
     free(node);
 }
 
-// 作用：构造教学树，中序线索化后用线索遍历核对输出。
-// Purpose: Build the sample tree, thread it, then verify the stack-free traversal.
+// The demo builds only real child edges; threading then creates non-owning aliases that traversal reads.
 int main(void)
 {
     /* 教学树：4 为根，2/6 为第二层，1/3 为 2 的左右孩子，中序为 1 2 3 4 6。 */

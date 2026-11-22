@@ -45,8 +45,8 @@ struct SparseMatrix
 };
 
 // `cpot[col]` is the next write position for that column; writing a triple increments it for the next entry.
-// Purpose: Fast transpose: count nonzeros per column, prefix-sum the counts into column starts, then fill the target triplets in the original order.
-// 作用：快速转置：先统计每列非零个数，再累加得到每列起始位置，最后按原顺序填入目标三元组。
+// Fast transpose: count nonzeros per column, prefix-sum the counts into column starts, then fill the target triplets in the original order.
+// 快速转置：先统计每列非零个数，再累加得到每列起始位置，最后按原顺序填入目标三元组。
 SparseMatrix fast_transpose(const SparseMatrix &source)
 {
     SparseMatrix result;
@@ -94,8 +94,8 @@ SparseMatrix fast_transpose(const SparseMatrix &source)
     return result;
 }
 
-// Purpose: Print triplets (row, col, value) in row-major order; read-only.
-// 作用：按行优先输出三元组 (row, col, value)；只读。
+// Print triplets (row, col, value) in row-major order; read-only.
+// 按行优先输出三元组 (row, col, value)；只读。
 void print_triplets(const SparseMatrix &matrix)
 {
     std::cout << "shape = " << matrix.rows << " x " << matrix.cols

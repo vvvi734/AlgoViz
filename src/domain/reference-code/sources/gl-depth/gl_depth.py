@@ -30,7 +30,7 @@ None；空表节点真实存在，只是 head == None；next 不跨越层级。
 from __future__ import annotations
 
 
-# Purpose: A node stores its tag plus either an atom value or a child head.
+# A node stores its tag plus either an atom value or a child head.
 class GLNode:
     """广义表节点：原子或子表，next 指向同层后继。"""
 
@@ -43,19 +43,19 @@ class GLNode:
         self.next: GLNode | None = None
 
 
-# Purpose: Construct an atom node; the caller keeps text within the length limit.
+# Construct an atom node; the caller keeps text within the length limit.
 def make_atom(text: str) -> GLNode:
     """构造原子节点；text 由调用方保证长度不超过 8。"""
     return GLNode("atom", text)
 
 
-# Purpose: Construct an empty list node; head is None, but () is a real node.
+# Construct an empty list node; head is None, but () is a real node.
 def make_list() -> GLNode:
     """构造空表节点；head 为空但节点本身代表真实的 ()。"""
     return GLNode("list")
 
 
-# Purpose: Append child to the sibling chain; this function owns child.next.
+# Append child to the sibling chain; this function owns child.next.
 def append_child(parent: GLNode, child: GLNode) -> None:
     """把 child 追加到 parent 同层链尾；child.next 由这里接好。"""
     if parent.tag != "list":
@@ -69,7 +69,7 @@ def append_child(parent: GLNode, child: GLNode) -> None:
     tail.next = child
 
 
-# Purpose: Return 0 for an atom, 1 for (), or 1 + the maximum child depth.
+# Return 0 for an atom, 1 for (), or 1 + the maximum child depth.
 def gl_depth(node: GLNode | None) -> int:
     """返回广义表深度：原子 0，空表 1，非空表 1 + 最大子深度。"""
     if node is None:
@@ -93,7 +93,7 @@ def gl_depth(node: GLNode | None) -> int:
     return best + 1
 
 
-# Purpose: Render the list in parenthesized form for demo verification only.
+# Render the list in parenthesized form for demo verification only.
 def format_gl(node: GLNode | None) -> str:
     """输出无空格的括号表达式，仅用于核对示例。"""
     if node is None:
@@ -109,7 +109,7 @@ def format_gl(node: GLNode | None) -> str:
     return "(" + ",".join(parts) + ")"
 
 
-# Purpose: Build (a,(b,c),((d),e)) for the demo.
+# Build (a,(b,c),((d),e)) for the demo.
 def build_demo() -> GLNode:
     """构造 (a,(b,c),((d),e))，其中 ((d),e) 是第三棵子表。"""
     root = make_list()
