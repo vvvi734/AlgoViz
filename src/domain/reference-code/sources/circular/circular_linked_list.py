@@ -30,33 +30,43 @@ class Node:
     next: "Node | None" = None
 
 
+# Nodes point to one another, so this ring is reclaimed by Python's cyclic garbage collector after the list becomes unreachable; there is no manual free step.
 class CircularList:
     def __init__(self) -> None:
         self.head: Node | None = None
+        # An empty ring has no node: both head and tail are None; neither points at a sentinel.
         self.tail: Node | None = None
 
     # 单结点时 tail 为空：让 node.next 指向自己，并同时设 head。非空时先把新结点接到
     # head，再让旧 tail 接到新结点，最后才移动 tail；顺序反过来会失去旧尾结点。
     # The tail's `next` points back to `head`, so traversal stops after returning to head, not at NULL.
+    # Python allocation failure raises MemoryError; unlike the C/C++ demos, append has no false return value to check.
     def append(self, value: int) -> None:
         node = Node(value)
         if self.tail is None:
+            # The first node points to itself: it is simultaneously head and tail, so the one-node ring is already closed.
             node.next = node
             self.head = node
         else:
+            # Link the new node to the old head before changing the old tail; the old ring stays intact until this edge exists.
             node.next = self.head
+            # Only now let the old tail point to the new node; then tail can move without losing the old tail.
             self.tail.next = node
+        # Move tail last: after both links exist, the new node is the only node whose next points back to head.
         self.tail = node
 
     # 空环必须先返回，否则无法进入循环。`while True` 不是等 None：非空环没有 None，
     # 每次前进后与 head 比较，回到起点才说明正好走完一圈。断言只用于暴露损坏的链接。
     def to_list(self) -> list[int]:
         values: list[int] = []
+        # Handle the empty ring before the loop: None means there is no first node, not a terminator inside a live ring.
         if self.head is None:
             return values
         node = self.head
+        # The loop is not waiting for None: a non-empty ring has no None terminator, so it stops by comparing the advanced pointer with head.
         while True:
             values.append(node.value)
+            # The assertion documents the link contract only; it does not create a None terminator or define the empty state.
             assert node.next is not None
             node = node.next
             if node is self.head:

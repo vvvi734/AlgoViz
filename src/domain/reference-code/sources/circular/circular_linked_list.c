@@ -49,6 +49,7 @@ typedef struct
 void list_init(CircularList *list)
 {
     list->head = NULL;
+    // Both endpoints must be NULL: an empty ring has no sentinel node, and head/tail are two views of the same absence.
     list->tail = NULL;
 }
 
@@ -73,12 +74,15 @@ bool list_append(CircularList *list, int value)
     node->value = value;
     if (list->tail == NULL)
     {
+        // For the first node, next must point to itself: this single node is immediately both head and tail, so it already closes the ring.
         node->next = node;
         list->head = node;
     }
     else
     {
+        // Set the new node's next to the old head before touching the old tail; the old ring stays intact until this link exists.
         node->next = list->head;
+        // Only now join the old tail to the new node, and only after both links exist move tail; moving tail first would lose the only handle to the old tail.
         list->tail->next = node;
     }
     list->tail = node;
@@ -94,12 +98,14 @@ bool list_append(CircularList *list, int value)
 // 作用：只读打印一整圈；回到 head 即停止，不修改任何链接。
 void list_print(const CircularList *list)
 {
+    // Check emptiness before entering the ring: a non-empty ring has no NULL node, so the first legal node must be handled separately.
     if (list->head == NULL)
     {
         printf("(empty)\n");
         return;
     }
     const Node *node = list->head;
+    // Do-while prints head first, advances, and stops only when the pointer returns to head after one full lap.
     do
     {
         printf("%d%s", node->value, node->next == list->head ? "" : " ");
@@ -117,6 +123,7 @@ void list_print(const CircularList *list)
  */
 // Purpose: Release every node safely and restore the two-pointer empty state.
 // 作用：逐个释放结点并恢复空表；释放前保存后继，最后把 head/tail 同时清空。
+// This is whole-ring cleanup, not a single-node delete: no predecessor relinking is needed, but every node must still be released exactly once.
 void list_free(CircularList *list)
 {
     if (list->head == NULL)
@@ -124,13 +131,16 @@ void list_free(CircularList *list)
         return;
     }
     Node *node = list->head;
+    // Stop at tail, not at NULL: a one-node ring should skip this loop, and following links until head would never terminate.
     while (node != list->tail)
     {
+        // Save next before free: once the node is released, reading node->next would touch invalid memory.
         Node *next = node->next;
         free(node);
         node = next;
     }
     free(list->tail);
+    // After the last free, clear both head and tail; otherwise one stale endpoint could make a freed node look like a live ring.
     list->head = NULL;
     list->tail = NULL;
 }
@@ -145,6 +155,7 @@ int main(void)
 {
     CircularList list;
     list_init(&list);
+    // A failed append leaves the ring unchanged; free the nodes already built before returning, so no allocation is leaked.
     if (!list_append(&list, 1))
     {
         fprintf(stderr, "append 1 failed\n");

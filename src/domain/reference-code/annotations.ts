@@ -374,17 +374,137 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
       en: "The tail's `next` points back to `head`, so traversal stops after returning to head, not at NULL.",
       zh: "尾节点的 `next` 指回 `head`，因此遍历要在回到 head 时停止，而不是等待 NULL。",
     },
+    {
+      en: "This is whole-ring cleanup, not a single-node delete: no predecessor relinking is needed, but every node must still be released exactly once.",
+      zh: "这里做的是整环清理，不是单结点删除：无需改前驱的 next，但每个结点仍必须且只能释放一次。",
+    },
+    {
+      en: "Both endpoints must be NULL: an empty ring has no sentinel node, and head/tail are two views of the same absence.",
+      zh: "空环没有任何结点：head 与 tail 必须同时为 NULL；它们只是空表的两个入口，不是哨兵结点。",
+    },
+    {
+      en: "For the first node, next must point to itself: this single node is immediately both head and tail, so it already closes the ring.",
+      zh: "插入第一个结点时，next 必须指向自己：它同时是 head 和 tail，自环就是最小的非空循环链表。",
+    },
+    {
+      en: "Set the new node's next to the old head before touching the old tail; the old ring stays intact until this link exists.",
+      zh: "先把新结点的 next 指向原 head，再去改旧 tail；在新边建立之前，旧环仍然完整。",
+    },
+    {
+      en: "Only now join the old tail to the new node, and only after both links exist move tail; moving tail first would lose the only handle to the old tail.",
+      zh: "这时才让旧尾结点指向新结点；两条边都接好后才移动 tail。若先移动 tail，就再也找不到旧尾结点了。",
+    },
+    {
+      en: "Check emptiness before entering the ring: a non-empty ring has no NULL node, so the first legal node must be handled separately.",
+      zh: "进入环之前先判断空表：非空环里没有 NULL 结点，所以必须单独处理“还没有第一个结点”的情况。",
+    },
+    {
+      en: "Do-while prints head first, advances, and stops only when the pointer returns to head after one full lap.",
+      zh: "do-while 先打印 head 再前进，只有指针绕回 head 时才说明正好走完一圈。",
+    },
+    {
+      en: "Stop at tail, not at NULL: a one-node ring should skip this loop, and following links until head would never terminate.",
+      zh: "循环以 tail 为终点而不是等 NULL：单结点环会直接跳过循环，而沿链追到 head 则永远不会结束。",
+    },
+    {
+      en: "Save next before free: once the node is released, reading node->next would touch invalid memory.",
+      zh: "free 之前先保存 next；结点释放后再读 node->next 就是访问已失效内存。",
+    },
+    {
+      en: "After the last free, clear both head and tail; otherwise one stale endpoint could make a freed node look like a live ring.",
+      zh: "最后一个结点释放后要把 head 与 tail 一起清空；否则残留端点会让已释放结点看起来仍是一条有效环。",
+    },
+    {
+      en: "A failed append leaves the ring unchanged; free the nodes already built before returning, so no allocation is leaked.",
+      zh: "append 失败时原环不变；返回前释放已建好的结点，避免把已分配内存泄漏。",
+    },
   ],
   "circular_linked_list.cpp": [
     {
       en: "The tail's `next` points back to `head`, so traversal stops after returning to head, not at NULL.",
       zh: "尾节点的 `next` 指回 `head`，因此遍历要在回到 head 时停止，而不是等待 NULL。",
     },
+    {
+      en: "The destructor delegates to clear, so normal scope exit and explicit cleanup share the same release path; there is no separate length member to reset.",
+      zh: "析构统一调用 clear，正常离开作用域与主动清理走同一条释放路径；本类没有单独的 length 字段需要复位。",
+    },
+    {
+      en: "nothrow makes allocation failure a null pointer, allowing append to return false before the existing ring is touched.",
+      zh: "nothrow 把分配失败变成空指针，因此 append 可以在改动现有环之前返回 false。",
+    },
+    {
+      en: "For the first node, next must point to itself: this node is both head and tail and already closes the ring.",
+      zh: "插入第一个结点时，next 必须指向自己：它同时是 head 和 tail，本身就已经把环闭合。",
+    },
+    {
+      en: "Point the new node at the old head before changing the old tail; the old ring remains valid until this link exists.",
+      zh: "先把新结点的 next 指向原 head，再去改旧 tail；在新边建立之前，旧环仍然有效。",
+    },
+    {
+      en: "Join the old tail to the new node before moving tail_; moving first would lose the only pointer to the old tail.",
+      zh: "先让旧 tail_ 指向新结点，再移动 tail_；顺序反过来会失去旧尾结点的唯一指针。",
+    },
+    {
+      en: "Do-while prints head_ first, advances, and stops when the pointer returns to head_ after a complete lap.",
+      zh: "do-while 先打印 head_ 再前进，指针完整绕回 head_ 时停止。",
+    },
+    {
+      en: "Use tail_ as the exit marker: a one-node ring skips the loop, and chasing links until head_ would cycle forever.",
+      zh: "用 tail_ 作为释放终点：单结点环会跳过循环，而追到 head_ 会无限绕圈。",
+    },
+    {
+      en: "Save next before delete: deleting the node makes its own next link unreadable.",
+      zh: "delete 之前先保存 next；结点删除后它自己的 next 就不能再读了。",
+    },
+    {
+      en: "Clear both endpoints after the last delete; a stale head_ or tail_ would look like a live ring over freed nodes.",
+      zh: "最后一个结点删除后清空两个端点；残留的 head_ 或 tail_ 会让已释放结点看起来仍是一条有效环。",
+    },
   ],
   "circular_linked_list.py": [
     {
       en: "The tail's `next` points back to `head`, so traversal stops after returning to head, not at NULL.",
       zh: "尾节点的 `next` 指回 `head`，因此遍历要在回到 head 时停止，而不是等待 NULL。",
+    },
+    {
+      en: "Nodes point to one another, so this ring is reclaimed by Python's cyclic garbage collector after the list becomes unreachable; there is no manual free step.",
+      zh: "结点之间互相引用，因此链表不可达后由 Python 的循环垃圾回收器回收，没有显式 free 步骤。",
+    },
+    {
+      en: "An empty ring has no node: both head and tail are None; neither points at a sentinel.",
+      zh: "空环没有结点：head 与 tail 都是 None，二者都不指向哨兵。",
+    },
+    {
+      en: "Python allocation failure raises MemoryError; unlike the C/C++ demos, append has no false return value to check.",
+      zh: "Python 分配失败会抛 MemoryError；与 C/C++ 示例不同，append 没有可检查的 false 返回值。",
+    },
+    {
+      en: "The first node points to itself: it is simultaneously head and tail, so the one-node ring is already closed.",
+      zh: "第一个结点指向自己：它同时是 head 和 tail，单结点环已经闭合。",
+    },
+    {
+      en: "Link the new node to the old head before changing the old tail; the old ring stays intact until this edge exists.",
+      zh: "先把新结点接到原 head，再去改旧 tail；在这条边建立前旧环仍然完整。",
+    },
+    {
+      en: "Only now let the old tail point to the new node; then tail can move without losing the old tail.",
+      zh: "这时才让旧 tail 指向新结点；随后移动 tail 不会丢失旧尾结点。",
+    },
+    {
+      en: "Move tail last: after both links exist, the new node is the only node whose next points back to head.",
+      zh: "最后才移动 tail：两条边都存在后，新结点才是唯一 next 指回 head 的结点。",
+    },
+    {
+      en: "Handle the empty ring before the loop: None means there is no first node, not a terminator inside a live ring.",
+      zh: "进入循环前先处理空环：None 表示根本没有第一个结点，而不是有效环内部的终止标记。",
+    },
+    {
+      en: "The loop is not waiting for None: a non-empty ring has no None terminator, so it stops by comparing the advanced pointer with head.",
+      zh: "这个循环不是在等 None：非空环没有 None 终止符，而是每次前进后与 head 比较。",
+    },
+    {
+      en: "The assertion documents the link contract only; it does not create a None terminator or define the empty state.",
+      zh: "断言只用于说明链接契约；它既不创建 None 终止符，也不定义空表状态。",
     },
   ],
   "components.c": [

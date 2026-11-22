@@ -40,6 +40,7 @@ class CircularList
      */
     // Purpose: Release the whole ring through one shared cleanup path.
     // 作用：析构时统一走 clear 的释放路径；本类只维护 head_/tail_，没有 length 需要复位。
+    // The destructor delegates to clear, so normal scope exit and explicit cleanup share the same release path; there is no separate length member to reset.
     ~CircularList()
     {
         clear();
@@ -58,6 +59,7 @@ class CircularList
      */
     bool append(int value)
     {
+        // nothrow makes allocation failure a null pointer, allowing append to return false before the existing ring is touched.
         Node *node = new (std::nothrow) Node{value, nullptr};
         if (!node)
         {
@@ -65,12 +67,15 @@ class CircularList
         }
         if (!tail_)
         {
+            // For the first node, next must point to itself: this node is both head and tail and already closes the ring.
             node->next = node;
             head_ = node;
         }
         else
         {
+            // Point the new node at the old head before changing the old tail; the old ring remains valid until this link exists.
             node->next = head_;
+            // Join the old tail to the new node before moving tail_; moving first would lose the only pointer to the old tail.
             tail_->next = node;
         }
         tail_ = node;
@@ -92,6 +97,7 @@ class CircularList
             return;
         }
         const Node *node = head_;
+        // Do-while prints head_ first, advances, and stops when the pointer returns to head_ after a complete lap.
         do
         {
             std::cout << node->value << (node->next == head_ ? "" : " ");
@@ -124,13 +130,16 @@ class CircularList
             return;
         }
         Node *node = head_;
+        // Use tail_ as the exit marker: a one-node ring skips the loop, and chasing links until head_ would cycle forever.
         while (node != tail_)
         {
+            // Save next before delete: deleting the node makes its own next link unreadable.
             Node *next = node->next;
             delete node;
             node = next;
         }
         delete tail_;
+        // Clear both endpoints after the last delete; a stale head_ or tail_ would look like a live ring over freed nodes.
         head_ = nullptr;
         tail_ = nullptr;
     }
