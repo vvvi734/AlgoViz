@@ -23,6 +23,7 @@ import { useAlgorithmGuidePreferences } from './useAlgorithmGuidePreferences';
 import { buildAlgorithmGuide } from '../../domain/guides/buildGuide';
 import { WorkspaceTabs } from './WorkspaceTabs';
 import { useSidebarPreferences } from './useSidebarPreferences';
+import { resetScrollToTop } from '../../app/viewport';
 import {
   buildTextbookNavigation,
   findConceptPath,
@@ -49,7 +50,7 @@ import { useI18n } from '../../i18n/I18nProvider';
  *  1. primary: sidebar → [animation + playback | learning rail]; the compact
  *     run bar sits below both columns and never hides its actions;
  *  2. the rail owns current operation, variables and the optional call stack;
- *  3. the advanced panel owns only read-only C / C++ / Python reference code;
+ *  3. the reference-code panel owns only read-only C / C++ / Python code;
  *  4. a concept entry replaces the animation workspace with a static lesson,
  *     never an empty player.
  *
@@ -144,9 +145,13 @@ export function LabView({
     () => (concept ? findConceptPath(textbookNav, concept.id) : null),
     [concept, textbookNav],
   );
-  // UI-01/UX-03: the directory's folded/collapsed layout is a persisted
-  // presentation preference. It never owns the algorithm, the trace or the playhead.
-  const sidebar = useSidebarPreferences(conceptPath ?? textbookPath);
+  // UI-01/UX-03: a reader entering or reloading the textbook sees the directory
+  // panel open, but only the twelve chapter headings. Persisted chapter/topic
+  // expansion is ignored for that fresh session until the learner navigates.
+  const sidebar = useSidebarPreferences(conceptPath ?? textbookPath, {
+    initialCollapsed: initialConceptId !== null ? false : undefined,
+    initialFirstLevelOnly: initialConceptId !== null,
+  });
   // UX-01: folding is a per-algorithm presentation preference. It is derived
   // from the current algorithm and never stored in the LabController.
   const algorithmGuide = useAlgorithmGuidePreferences(lab.currentAlgo);
@@ -161,8 +166,7 @@ export function LabView({
     previousNavigationKey.current = navigationKey;
     setSelectedFrameId(null);
     restartPlayback();
-    document.documentElement.scrollTop = 0;
-    document.body.scrollTop = 0;
+    resetScrollToTop();
   }, [navigationKey, restartPlayback]);
 
   // UX-04: "start animation" only folds the guide and brings the existing

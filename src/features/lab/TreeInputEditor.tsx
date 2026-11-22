@@ -1,6 +1,7 @@
 import { useI18n } from '../../i18n/I18nProvider';
 import { TREE_COMMANDS, type TreeGuidedInputAlgorithm } from '../../domain/algorithms/treeInput';
 import type { GuidedInputDraft } from '../../domain/algorithms/guidedInput';
+import { AutoGrowTextarea } from './AutoGrowTextarea';
 
 const COMMAND_LABELS: Record<string, string> = {
   find: 'treeCommandFind',
@@ -72,15 +73,14 @@ export function TreeInputEditor({
 
       <label className="guided-field tree-sequence-field">
         <span>{sequenceLabel}</span>
-        <input
+        <AutoGrowTextarea
           id="run-input"
-          className="input code-dock-input"
           data-testid={traversal ? 'tree-nodes' : 'tree-sequence'}
           value={draft.values}
           onChange={(event) => onChange('values', event.target.value)}
           placeholder={sequencePlaceholder}
-          spellCheck={false}
-          autoComplete="off"
+          minRows={1}
+          maxRows={6}
         />
       </label>
     </div>

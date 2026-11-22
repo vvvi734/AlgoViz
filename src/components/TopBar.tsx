@@ -39,13 +39,14 @@ export function TopBar() {
   return (
     <header className="topbar" ref={headerRef}>
       <div className="brand">
-        <span className="logo" aria-hidden="true">
-          <svg viewBox="0 0 32 32" width="24" height="24" focusable="false">
-            <rect x="4" y="20" width="24" height="6" rx="2" fill="currentColor" opacity="0.95" />
-            <rect x="7" y="12" width="18" height="6" rx="2" fill="currentColor" opacity="0.75" />
-            <rect x="10" y="4" width="12" height="6" rx="2" fill="currentColor" opacity="0.55" />
-          </svg>
-        </span>
+        <img
+          className="logo"
+          data-testid="brand-mark"
+          src={`${import.meta.env.BASE_URL}favicon.svg`}
+          alt=""
+          aria-hidden="true"
+          draggable={false}
+        />
         <span data-testid="brand-name">AlgoViz<small>{t('brandTagline')}</small></span>
       </div>
       <div className="topright">

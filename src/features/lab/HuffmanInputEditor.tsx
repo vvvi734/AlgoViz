@@ -1,5 +1,6 @@
 import { useI18n } from '../../i18n/I18nProvider';
 import type { GuidedInputDraft } from '../../domain/algorithms/guidedInput';
+import { AutoGrowTextarea } from './AutoGrowTextarea';
 
 export function HuffmanInputEditor({
   draft,
@@ -12,16 +13,15 @@ export function HuffmanInputEditor({
   return (
     <label className="guided-hash-field huffman-symbol-field">
       <span>{t('huffmanSymbolsLabel')}</span>
-      <textarea
+      <AutoGrowTextarea
         id="run-input"
-        className="input code-dock-input guided-hash-ops huffman-symbols"
         data-testid="huffman-symbols"
-        rows={5}
         value={draft.symbols}
         onChange={(event) => onChange('symbols', event.target.value)}
         placeholder={'A: 5\nB: 9\nC: 12\nD: 13'}
-        spellCheck={false}
-        autoComplete="off"
+        className="guided-hash-ops huffman-symbols"
+        minRows={5}
+        maxRows={10}
       />
     </label>
   );

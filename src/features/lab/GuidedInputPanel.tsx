@@ -22,6 +22,7 @@ import {
   type FileStructureGuidedInputAlgorithm,
   type FileStructureInputFields,
 } from '../../domain/algorithms/fileStructureInput';
+import { AutoGrowTextarea } from './AutoGrowTextarea';
 import { ExternalSortInputEditor } from './ExternalSortInputEditor';
 import { FileStructureInputEditor } from './FileStructureInputEditor';
 import {
@@ -629,15 +630,14 @@ export function GuidedInputPanel({ lab }: { lab: LabController }) {
       {isArrayGuidedInputAlgorithm(id) ? (
         <div className="guided-field-row">
           <label className="guided-field-label" htmlFor="run-input">{t('guidedValuesLabel')}</label>
-          <input
+          <AutoGrowTextarea
             id="run-input"
-            className="input code-dock-input"
             data-testid="run-input"
             value={draft.values}
             onChange={(event) => setField('values', event.target.value)}
             placeholder="8, 3, 5, 1, 7"
-            spellCheck={false}
-            autoComplete="off"
+            minRows={1}
+            maxRows={8}
           />
         </div>
       ) : null}
@@ -646,15 +646,14 @@ export function GuidedInputPanel({ lab }: { lab: LabController }) {
         <div className="guided-field-grid">
           <label className="guided-field">
             <span>{id === 'binary' ? t('guidedBinaryNumsLabel') : t('guidedValuesLabel')}</span>
-            <input
+            <AutoGrowTextarea
               id="run-input"
-              className="input code-dock-input"
               data-testid="run-input"
               value={draft.nums}
               onChange={(event) => setField('nums', event.target.value)}
               placeholder={id === 'binary' ? '1, 3, 5, 7, 9' : '6, 3, 9, 2, 7, 4'}
-              spellCheck={false}
-              autoComplete="off"
+              minRows={1}
+              maxRows={6}
             />
           </label>
           <label className="guided-field guided-field-target">
@@ -677,16 +676,15 @@ export function GuidedInputPanel({ lab }: { lab: LabController }) {
       {isHashGuidedInputAlgorithm(id) ? (
         <label className="guided-hash-field">
           <span>{t('guidedHashOperationsLabel')}</span>
-          <textarea
+          <AutoGrowTextarea
             id="run-input"
-            className="input code-dock-input guided-hash-ops"
             data-testid="hash-operations"
-            rows={4}
             value={draft.operations}
             onChange={(event) => setField('operations', event.target.value)}
             placeholder={'insert 1\ninsert 8\nfind 8\ndelete 8'}
-            spellCheck={false}
-            autoComplete="off"
+            className="guided-hash-ops"
+            minRows={4}
+            maxRows={10}
           />
         </label>
       ) : null}
@@ -695,15 +693,14 @@ export function GuidedInputPanel({ lab }: { lab: LabController }) {
         <div className="guided-field-grid">
           <label className="guided-field">
             <span>{t('guidedKmpTextLabel')}</span>
-            <input
+            <AutoGrowTextarea
               id="run-input"
-              className="input code-dock-input"
               data-testid="run-input"
               value={draft.text}
               onChange={(event) => setField('text', event.target.value)}
               placeholder="ABABABCABABABC"
-              spellCheck={false}
-              autoComplete="off"
+              minRows={1}
+              maxRows={6}
             />
           </label>
           <label className="guided-field guided-field-pattern">

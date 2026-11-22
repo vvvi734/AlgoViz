@@ -3,6 +3,7 @@ import type {
   FileStructureGuidedInputAlgorithm,
   FileStructureInputFields,
 } from '../../domain/algorithms/fileStructureInput';
+import { AutoGrowTextarea } from './AutoGrowTextarea';
 import '../../styles/fileStructures.css';
 
 const EMPTY: FileStructureInputFields = {
@@ -38,29 +39,27 @@ export function FileStructureInputEditor({
             {t('guidedInvertedRecordsLabel')}
             <small>{fields.records.split(/\r?\n/).filter(Boolean).length} / 9</small>
           </span>
-          <textarea
-            className="input code-dock-input file-records-input"
+          <AutoGrowTextarea
             id="run-input"
             data-testid="inverted-records"
-            rows={5}
             value={fields.records}
             onChange={(event) => set('records', event.target.value)}
             placeholder={'R1: 数据结构, 算法\nR2: 算法, 排序'}
-            spellCheck={false}
-            autoComplete="off"
+            className="file-records-input"
+            minRows={5}
+            maxRows={10}
           />
         </label>
         <div className="guided-field-grid">
           <label className="guided-field">
             <span>{t('guidedInvertedQueryLabel')}</span>
-            <input
-              className="input code-dock-input"
+            <AutoGrowTextarea
               data-testid="inverted-query-terms"
               value={fields.queryTerms}
               onChange={(event) => set('queryTerms', event.target.value)}
               placeholder="算法, 排序"
-              spellCheck={false}
-              autoComplete="off"
+              minRows={1}
+              maxRows={4}
             />
           </label>
           <label className="guided-field">
@@ -89,16 +88,15 @@ export function FileStructureInputEditor({
           {t('guidedFileRecordsLabel')}
           <small>{fields.records.split(/\r?\n/).filter(Boolean).length} / {isIsam ? 18 : 12}</small>
         </span>
-        <textarea
-          className="input code-dock-input file-records-input"
+        <AutoGrowTextarea
           id="run-input"
           data-testid={isIsam ? 'isam-records' : 'file-index-records'}
-          rows={5}
           value={fields.records}
           onChange={(event) => set('records', event.target.value)}
           placeholder={'101, A\n102, B\n103, C'}
-          spellCheck={false}
-          autoComplete="off"
+          className="file-records-input"
+          minRows={5}
+          maxRows={10}
         />
       </label>
       <div className="guided-field-grid">

@@ -2,7 +2,7 @@ import { useId, useState, type ReactNode } from 'react';
 import { useI18n } from '../../i18n/I18nProvider';
 
 /**
- * UI-02 / CORE-REFINE-01 — advanced reference-code panel.
+ * UI-02 / CORE-REFINE-01 — read-only reference-code panel.
  *
  * Variables and the call stack live in the always-visible learning rail, so this
  * collapsed-by-default panel owns exactly one thing: read-only C / C++ / Python

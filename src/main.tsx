@@ -36,6 +36,12 @@ import './styles/global-scroll.css';
 import './styles/textbook02.css';
 import './styles/memory08.css';
 
+// A reload is a fresh reading session. Without this, Chrome/Firefox may restore
+// the previous nested scroller position before React mounts the concept hero.
+if (typeof window !== 'undefined' && 'scrollRestoration' in window.history) {
+  window.history.scrollRestoration = 'manual';
+}
+
 const container = document.getElementById('root');
 if (!container) throw new Error('Missing #root element');
 

@@ -33,7 +33,7 @@ async function copyText(text: string): Promise<void> {
 }
 
 /**
- * Algorithm reference-code section inside the advanced panel.
+ * Algorithm reference-code section inside the read-only reference-code panel.
  *
  * - Only registered algorithms/languages are shown as available; anything
  *   else says “not collected” instead of falling back to another algorithm.

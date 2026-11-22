@@ -1,10 +1,12 @@
 import { useI18n } from '../../i18n/I18nProvider';
 import type { ExpressionGuidedInputAlgorithm } from '../../domain/algorithms/expressionInput';
+import { AutoGrowTextarea } from './AutoGrowTextarea';
 
 /**
- * One-line expression editor. `infix-to-postfix` accepts ordinary infix with
+ * Single-expression editor. `infix-to-postfix` accepts ordinary infix with
  * optional spaces; `postfix-eval` requires spaces between operands/operators
- * so a multi-digit number is never split into digits.
+ * so a multi-digit number is never split into digits. The field grows with
+ * wrapped content instead of clipping a long expression on one line.
  */
 export function ExpressionInputEditor({
   algorithm,
@@ -21,15 +23,14 @@ export function ExpressionInputEditor({
     <div className="expression-input-editor" data-testid="expression-input-editor">
       <label className="expression-input-label">
         <span>{conversion ? (lang === 'zh' ? '中缀表达式' : 'Infix expression') : lang === 'zh' ? '后缀表达式' : 'Postfix expression'}</span>
-        <input
+        <AutoGrowTextarea
           id="run-input"
-          className="input code-dock-input"
           data-testid="expression-input"
           value={value}
           onChange={(event) => onChange(event.target.value)}
-          spellCheck={false}
-          autoComplete="off"
           placeholder={conversion ? '(3 + 4) * 2' : '3 4 + 2 *'}
+          minRows={1}
+          maxRows={6}
         />
       </label>
       <span className="expression-input-hint">

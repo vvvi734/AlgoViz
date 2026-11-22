@@ -1,6 +1,7 @@
 import { useI18n } from '../../i18n/I18nProvider';
 import { HEAP_OPERATIONS, type HeapOperation } from '../../domain/algorithms/heapInput';
 import type { GuidedInputDraft } from '../../domain/algorithms/guidedInput';
+import { AutoGrowTextarea } from './AutoGrowTextarea';
 
 const OPERATION_LABELS: Record<HeapOperation, string> = {
   build: 'heapOperationBuild',
@@ -58,15 +59,14 @@ export function HeapInputEditor({
 
       <label className="guided-field tree-sequence-field">
         <span>{t('heapValuesLabel')}</span>
-        <input
+        <AutoGrowTextarea
           id="run-input"
-          className="input code-dock-input"
           data-testid="heap-values"
           value={draft.values}
           onChange={(event) => onChange('values', event.target.value)}
           placeholder="9, 8, 6, 3, 7, 2, 5"
-          spellCheck={false}
-          autoComplete="off"
+          minRows={1}
+          maxRows={6}
         />
       </label>
     </div>

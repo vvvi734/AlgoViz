@@ -14,7 +14,7 @@ function renderHarness() {
 }
 
 describe('WorkspaceTabs (CORE-REFINE-01)', () => {
-  it('collapses the advanced panel by default and mounts reference code on expand', () => {
+  it('starts with reference code collapsed and exposes a reference-code label', () => {
     renderHarness();
     const tabs = screen.getByTestId('workspace-tabs');
     const toggle = screen.getByTestId('workspace-tabs-toggle');
@@ -22,11 +22,14 @@ describe('WorkspaceTabs (CORE-REFINE-01)', () => {
     expect(tabs.getAttribute('data-expanded')).toBe('false');
     expect(body?.hidden).toBe(true);
     expect(toggle.getAttribute('aria-expanded')).toBe('false');
+    expect(toggle.textContent).toContain('展开参考代码');
+    expect(toggle.textContent).not.toContain('高级面板');
     expect(screen.queryByTestId('reference-panel')).toBeNull();
 
     fireEvent.click(toggle);
     expect(tabs.getAttribute('data-expanded')).toBe('true');
     expect(toggle.getAttribute('aria-expanded')).toBe('true');
+    expect(toggle.textContent).toContain('收起参考代码');
     expect(body?.hidden).toBe(false);
     expect(screen.getByTestId('reference-panel')).toBeTruthy();
   });

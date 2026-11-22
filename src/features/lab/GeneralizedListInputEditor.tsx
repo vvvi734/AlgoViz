@@ -1,5 +1,6 @@
 import { useI18n } from '../../i18n/I18nProvider';
 import type { GeneralizedListInputFields, GeneralizedListGuidedInputAlgorithm } from '../../domain/algorithms/generalizedListInput';
+import { AutoGrowTextarea } from './AutoGrowTextarea';
 
 /**
  * 广义表课程的唯一输入控件：一个表达式输入框。
@@ -20,15 +21,15 @@ export function GeneralizedListInputEditor({
       <label className="guided-field-label" htmlFor="run-input">
         {t(algorithm === 'gl-depth' ? 'guidedGLDepthExpressionLabel' : 'guidedGLCopyExpressionLabel')}
       </label>
-      <input
+      <AutoGrowTextarea
         id="run-input"
-        className="input code-dock-input guided-gl-expression"
         data-testid="gl-expression"
         value={value.expression}
         onChange={(event) => onChange({ expression: event.target.value })}
         placeholder="(a, (b, c), ((d), e))"
-        spellCheck={false}
-        autoComplete="off"
+        className="guided-gl-expression"
+        minRows={1}
+        maxRows={6}
       />
       <span className="gl-expression-count note muted">
         {value.expression.length}/80

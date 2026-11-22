@@ -16,9 +16,10 @@ import {
  * Only *open* ids are stored. This is deliberately additive to the UI-01 key
  * (`algolens-sidebar`), whose `collapsed` flag is still honoured. The legacy
  * `closedGroups` field cannot be mapped one-to-one onto chapters (one old group
- * could span two book chapters), so it is ignored; the current algorithm's path
- * is opened on mount, and every other chapter starts folded. No other learner
- * key is read, rewritten or cleared.
+ * could span two book chapters), so it is ignored. By default the current
+ * algorithm's path is opened on mount and every other chapter starts folded.
+ * A textbook reload can instead request a first-level-only directory. No other
+ * learner key is read, rewritten or cleared.
  */
 const STORAGE_KEY = 'algolens-sidebar';
 
@@ -64,6 +65,20 @@ export function parseSidebarPreferences(raw: string | null): SidebarPreferences 
   }
 }
 
+export interface SidebarPreferenceOptions {
+  /**
+   * Force the directory panel itself open or folded on mount. Legacy
+   * `?view=lab` deep links leave this undefined and keep the persisted layout.
+   */
+  initialCollapsed?: boolean;
+  /**
+   * Start with only the twelve first-level chapters visible: ignore persisted
+   * chapter/topic expansion and do not auto-open the initial concept path.
+   * Selecting another course during the session still reveals its path.
+   */
+  initialFirstLevelOnly?: boolean;
+}
+
 export interface SidebarPreferenceController {
   collapsed: boolean;
   toggleCollapsed: () => void;
@@ -92,21 +107,30 @@ function withId(current: ReadonlySet<string>, id: string, open: boolean): Readon
   return next;
 }
 
-export function useSidebarPreferences(currentPath?: TextbookPath | null): SidebarPreferenceController {
+export function useSidebarPreferences(
+  currentPath?: TextbookPath | null,
+  options: SidebarPreferenceOptions = {},
+): SidebarPreferenceController {
   const initial = useRef<{
     collapsed: boolean;
     openChapters: ReadonlySet<string>;
     openTopics: ReadonlySet<string>;
   } | null>(null);
+  // If the first paint is first-level-only, remember the current path once so
+  // the mount effect below does not immediately expand it again.
+  const suppressInitialPath = useRef<string | null>(null);
 
   if (initial.current === null) {
     const stored = parseSidebarPreferences(safeGet(STORAGE_KEY));
+    const firstLevelOnly = options.initialFirstLevelOnly === true;
     initial.current = {
-      collapsed: stored.collapsed,
-      openChapters: new Set(stored.openChapters),
-      openTopics: new Set(stored.openTopics),
+      collapsed: options.initialCollapsed ?? stored.collapsed,
+      openChapters: new Set(firstLevelOnly ? [] : stored.openChapters),
+      openTopics: new Set(firstLevelOnly ? [] : stored.openTopics),
     };
-    if (currentPath) {
+    if (currentPath && firstLevelOnly) {
+      suppressInitialPath.current = `${currentPath.chapterId}\u0000${currentPath.topicId}`;
+    } else if (currentPath) {
       (initial.current.openChapters as Set<string>).add(currentPath.chapterId);
       (initial.current.openTopics as Set<string>).add(currentPath.topicId);
     }
@@ -123,6 +147,11 @@ export function useSidebarPreferences(currentPath?: TextbookPath | null): Sideba
   const topicId = currentPath?.topicId ?? null;
   useEffect(() => {
     if (!chapterId || !topicId) return;
+    const pathKey = `${chapterId}\u0000${topicId}`;
+    if (suppressInitialPath.current !== null && suppressInitialPath.current !== pathKey) {
+      suppressInitialPath.current = null;
+    }
+    if (suppressInitialPath.current === pathKey) return;
     setOpenChapters((current) => withId(current, chapterId, true));
     setOpenTopics((current) => withId(current, topicId, true));
   }, [chapterId, topicId]);

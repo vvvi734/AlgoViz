@@ -1,8 +1,10 @@
+import { useLayoutEffect } from 'react';
 import { TopBar } from '../components/TopBar';
 import { LabView } from '../features/lab/LabView';
 import { useLabController } from '../features/lab/useLabController';
 import { builtinLessonCatalog } from '../domain/lessons/catalog';
 import { useI18n } from '../i18n/I18nProvider';
+import { resetScrollToTop } from './viewport';
 
 const DEFAULT_CONCEPT_ID = 'data-structure-basics';
 
@@ -25,6 +27,17 @@ export function App({
 } = {}) {
   const { t } = useI18n();
   const lab = useLabController();
+
+  // Reloads are fresh reading sessions: the first paint must show the concept
+  // hero's top edge, not a browser-restored or nested-scroller position.
+  useLayoutEffect(() => {
+    resetScrollToTop();
+    if (typeof window === 'undefined' || typeof window.requestAnimationFrame !== 'function') {
+      return;
+    }
+    const frame = window.requestAnimationFrame(resetScrollToTop);
+    return () => window.cancelAnimationFrame(frame);
+  }, []);
 
   return (
     <div className="app" data-view="learn">

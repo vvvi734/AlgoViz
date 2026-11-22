@@ -158,6 +158,27 @@
   font-size: var(--font-code);
 }
 
+/* Run-example fields grow with their content instead of clipping long lists. */
+.auto-grow-input {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  align-self: start;
+  padding: 7px 9px;
+  color: var(--txt);
+  background: var(--input-bg);
+  border: 1px solid var(--edge);
+  border-radius: 9px;
+  outline: none;
+  overflow-y: hidden;
+  resize: none;
+  line-height: 1.5;
+}
+
+.auto-grow-input:focus {
+  border-color: var(--accent);
+}
+
 .code-dock-random {
   white-space: nowrap;
 }

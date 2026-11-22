@@ -10,6 +10,7 @@ import {
   type StructureGuidedInputAlgorithm,
   type StructureOperationDraft,
 } from '../../domain/algorithms/structureInput';
+import { AutoGrowTextarea } from './AutoGrowTextarea';
 
 interface StructureOperationEditorProps {
   algorithm: StructureGuidedInputAlgorithm;
@@ -156,14 +157,13 @@ export function StructureOperationEditor({
         <div className="structure-initial">
           <label className="structure-field structure-initial-field">
             <span>{t('structureInitialValues')}</span>
-            <input
-              className="input code-dock-input"
+            <AutoGrowTextarea
               data-testid="structure-initial-values"
               value={initialValues}
               onChange={(event) => onChangeInitialValues(event.target.value)}
               placeholder="10, 20, 30, 40, 50"
-              spellCheck={false}
-              autoComplete="off"
+              minRows={1}
+              maxRows={6}
             />
           </label>
           <span className="structure-capacity-note">

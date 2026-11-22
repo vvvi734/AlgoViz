@@ -24,6 +24,19 @@
   background: var(--panel-2);
 }
 
+/* Below 1280px the directory column is 200px wide. Keep the title row and the
+   expand/collapse-all control on separate rows so neither label breaks into
+   vertical fragments when the panel is open. */
+@media (max-width: 1279px) {
+  .textbook-sidebar .sidebar-head {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .sidebar-actions {
+    width: 100%;
+  }
+}
+
 .sidebar-head-row {
   display: flex;
   align-items: center;

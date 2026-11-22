@@ -3,6 +3,7 @@ import type {
   ExternalSortGuidedInputAlgorithm,
   ExternalSortInputFields,
 } from '../../domain/algorithms/externalSortInput';
+import { AutoGrowTextarea } from './AutoGrowTextarea';
 import '../../styles/externalSort.css';
 
 export function ExternalSortInputEditor({
@@ -76,16 +77,15 @@ export function ExternalSortInputEditor({
             {t('guidedMultiwayRunsLabel')}
             <small>{runLines.length} / {fields.k || '?'}</small>
           </span>
-          <textarea
-            className="input code-dock-input external-runs-input"
+          <AutoGrowTextarea
             id="run-input"
             data-testid="multiway-runs-input"
-            rows={4}
             value={fields.runs}
             onChange={(event) => set('runs', event.target.value)}
             placeholder={'2, 5, 9\n1, 6, 10'}
-            spellCheck={false}
-            autoComplete="off"
+            className="external-runs-input"
+            minRows={4}
+            maxRows={10}
           />
         </label>
         <p className="guided-hint note muted">{t('guidedMultiwayHint')}</p>
@@ -99,15 +99,14 @@ export function ExternalSortInputEditor({
         <div className="guided-field-grid">
           <label className="guided-field">
             <span>{t('guidedReplacementValuesLabel')}</span>
-            <input
-              className="input code-dock-input"
+            <AutoGrowTextarea
               id="run-input"
               data-testid="run-input"
               value={draft.values}
               onChange={(event) => onValuesChange(event.target.value)}
               placeholder="7, 3, 9, 1, 8, 2, 6, 4, 5"
-              spellCheck={false}
-              autoComplete="off"
+              minRows={1}
+              maxRows={8}
             />
           </label>
           <label className="guided-field">
@@ -132,15 +131,14 @@ export function ExternalSortInputEditor({
       <div className="guided-field-grid">
         <label className="guided-field">
           <span>{t('guidedOptimalWeightsLabel')}</span>
-          <input
-            className="input code-dock-input"
+          <AutoGrowTextarea
             id="run-input"
             data-testid="run-input"
             value={fields.weights}
             onChange={(event) => set('weights', event.target.value)}
             placeholder="3, 5, 8, 11"
-            spellCheck={false}
-            autoComplete="off"
+            minRows={1}
+            maxRows={6}
           />
         </label>
         <label className="guided-field">

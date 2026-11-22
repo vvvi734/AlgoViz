@@ -2,6 +2,7 @@ import { useId } from 'react';
 import { useI18n } from '../../i18n/I18nProvider';
 import { isGuidedInputAlgorithm } from '../../domain/algorithms/guidedInput';
 import { GuidedInputPanel } from './GuidedInputPanel';
+import { AutoGrowTextarea } from './AutoGrowTextarea';
 import type { LabController } from './useLabController';
 
 /**
@@ -52,13 +53,13 @@ export function CodeDock({ lab }: { lab: LabController }) {
           <>
             <div className="code-dock-input-row">
               <label className="code-dock-input-label" htmlFor="run-input">{t('input')}</label>
-              <input
+              <AutoGrowTextarea
                 id="run-input"
-                className="input code-dock-input"
                 data-testid="run-input"
                 value={lab.inputJson}
                 onChange={(event) => lab.setInputJson(event.target.value)}
-                spellCheck={false}
+                minRows={1}
+                maxRows={8}
               />
               <button className="btn small code-dock-random" type="button" onClick={lab.randomizeInput} data-testid="random-btn">
                 {t('random')}

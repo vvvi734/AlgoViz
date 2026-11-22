@@ -33,6 +33,15 @@ describe('AlgoViz brand migration and storage compatibility', () => {
     expect(document.body.textContent).not.toContain('AlgoLens');
   });
 
+  it('uses the same favicon asset as the browser page icon', async () => {
+    renderApp();
+    await waitFor(() => expect(screen.getByTestId('brand-mark')).toBeTruthy());
+    const mark = screen.getByTestId('brand-mark') as HTMLImageElement;
+    expect(mark.tagName).toBe('IMG');
+    expect(mark.getAttribute('src')).toContain('favicon.svg');
+    expect(mark.getAttribute('alt')).toBe('');
+  });
+
   it('ignores legacy drafts and runs the built-in example', async () => {
     window.localStorage.setItem('algolens.code.bubble.js', 'const LEGACY_DRAFT = 1;');
     renderApp();

@@ -5,6 +5,7 @@ import {
   type StaticLinkedInputFields,
   type StaticLinkedOperation,
 } from '../../domain/algorithms/chapter2Input';
+import { AutoGrowTextarea } from './AutoGrowTextarea';
 
 /**
  * TEXTBOOK-02 structured editor for the static list. It exposes capacity,
@@ -61,13 +62,13 @@ export function StaticLinkedInputEditor({
         </label>
         <label className="structure-field structure-initial-field">
           <span>{b('初始值（按逻辑顺序）', 'Initial values (logical order)')}</span>
-          <input
-            className="input code-dock-input"
+          <AutoGrowTextarea
             data-testid="static-values"
             value={fields.values}
             onChange={(event) => onChange({ ...fields, values: event.target.value })}
             placeholder="10, 20, 30"
-            spellCheck={false}
+            minRows={1}
+            maxRows={5}
           />
         </label>
         <span className="structure-capacity-note">

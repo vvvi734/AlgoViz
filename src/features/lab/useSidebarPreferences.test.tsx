@@ -105,6 +105,33 @@ describe('useSidebarPreferences', () => {
     expect(result.current.isTopicOpen('bubble-sort')).toBe(false);
   });
 
+  it('starts a textbook session with the panel open and only first-level chapters', () => {
+    window.localStorage.setItem(
+      'algolens-sidebar',
+      JSON.stringify({ collapsed: true, openChapters: ['ch7-graph'], openTopics: ['mst'] }),
+    );
+    const { result, rerender } = renderHook(
+      ({ chapterId, topicId }: { chapterId: string; topicId: string }) =>
+        useSidebarPreferences(
+          { chapterId, topicId },
+          { initialCollapsed: false, initialFirstLevelOnly: true },
+        ),
+      { initialProps: { chapterId: 'ch1-intro', topicId: 'intro-concepts' } },
+    );
+
+    expect(result.current.collapsed).toBe(false);
+    expect(result.current.isChapterOpen('ch1-intro')).toBe(false);
+    expect(result.current.isChapterOpen('ch7-graph')).toBe(false);
+    expect(result.current.isTopicOpen('intro-concepts')).toBe(false);
+    expect(result.current.isTopicOpen('mst')).toBe(false);
+
+    // Navigation after the first paint still reveals the selected path.
+    rerender({ chapterId: 'ch7-graph', topicId: 'mst' });
+    expect(result.current.isChapterOpen('ch7-graph')).toBe(true);
+    expect(result.current.isTopicOpen('mst')).toBe(true);
+    expect(result.current.isChapterOpen('ch1-intro')).toBe(false);
+  });
+
   it('opens the current path once, without fighting a later manual close', () => {
     const { result, rerender } = renderHook(
       ({ chapterId, topicId }: { chapterId: string; topicId: string }) =>

@@ -1,6 +1,7 @@
 import { useI18n } from '../../i18n/I18nProvider';
 import type { GuidedInputDraft } from '../../domain/algorithms/guidedInput';
 import type { SearchGuidedInputAlgorithm } from '../../domain/algorithms/searchInput';
+import { AutoGrowTextarea } from './AutoGrowTextarea';
 
 type FieldChange = (key: keyof GuidedInputDraft, value: string) => void;
 
@@ -20,15 +21,14 @@ export function SearchInputEditor({
       <div className="guided-field-grid search-input-grid">
         <label className="guided-field">
           <span>{t('guidedSearchDataLabel')}</span>
-          <input
+          <AutoGrowTextarea
             id="run-input"
-            className="input code-dock-input"
             data-testid="run-input"
             value={draft.values}
             onChange={(event) => onChange('values', event.target.value)}
             placeholder="22, 8, 14, 35, 41, 57, 66, 38, 73, 81, 94, 69"
-            spellCheck={false}
-            autoComplete="off"
+            minRows={1}
+            maxRows={6}
           />
           <small>{t('searchBlockDataHint')}</small>
         </label>
@@ -69,15 +69,14 @@ export function SearchInputEditor({
       <div className="guided-field-grid search-input-grid">
         <label className="guided-field search-input-wide">
           <span>{t('guidedBplusKeysLabel')}</span>
-          <input
+          <AutoGrowTextarea
             id="run-input"
-            className="input code-dock-input"
             data-testid="run-input"
             value={draft.values}
             onChange={(event) => onChange('values', event.target.value)}
             placeholder="5, 10, 15, 20, 25, 30, 35, 40"
-            spellCheck={false}
-            autoComplete="off"
+            minRows={1}
+            maxRows={6}
           />
           <small>{t('searchBplusKeysHint')}</small>
         </label>
@@ -133,15 +132,14 @@ export function SearchInputEditor({
     <div className="guided-field-grid search-input-grid">
       <label className="guided-field search-input-wide">
         <span>{t('guidedKeyWordsLabel')}</span>
-        <input
+        <AutoGrowTextarea
           id="run-input"
-          className="input code-dock-input"
           data-testid="run-input"
           value={draft.values}
           onChange={(event) => onChange('values', event.target.value)}
           placeholder="car, card, care, cat, dog, do"
-          spellCheck={false}
-          autoComplete="off"
+          minRows={1}
+          maxRows={6}
         />
         <small>{t('searchKeyWordsHint')}</small>
       </label>
