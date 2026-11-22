@@ -1,8 +1,8 @@
 /*
- * 中文导读：沿一条路径尽可能深入，走不通再回溯；递归和显式栈是两种等价写法。
- * 阅读顺序：先看 visited 标记发生在进入还是出边时；再看递归/栈的推进与回退；最后看时间戳或 parent。
+ * 中文导读：沿一条路径尽可能深入，走不通再回溯；本文件用递归调用栈实现。
+ * 阅读顺序：先看 visited 标记发生在进入顶点时；再看邻接矩阵枚举与递归返回；最后看单分量限制。
  * 关键不变量：递归栈中保存的是当前根到当前结点的路径；已标记结点不会被再次展开。
- * 易错点：递归深度超过系统栈；无向图把父边当回边；只遍历一个分量；显式栈弹出顺序写反。
+ * 易错点：递归深度超过系统栈；无向图把父边当回边；只遍历一个分量。
  * 复杂度：本文件用邻接矩阵，O(V²) 时间；O(V) 额外空间（递归深度可达 V）。
  * 输入/输出：输入邻接矩阵与起点；函数只打印 DFS 访问顺序，不返回数组；递归实现不修改图。
 */
@@ -24,28 +24,32 @@ static const int GRAPH[VERTEX_COUNT][VERTEX_COUNT] = {
     {0, 1, 1, 0, 1, 1}, {0, 0, 0, 1, 0, 0}, {0, 0, 0, 1, 0, 0},
 };
 
-// Mark a vertex on entry; the recursion then visits every unvisited neighbour before returning.
-// Purpose: Recursively visit vertex and its unvisited neighbours; mark visited on entry so back edges are not expanded twice.
-// 作用：递归访问 vertex 及其未访问邻居；进入时立即标记 visited，避免回边重复展开。
+// visited is shared across recursive calls; the caller owns its storage and initial zeroes.
 static void Visit(int vertex, int visited[VERTEX_COUNT])
 {
+    // Mark on entry, before scanning neighbors; this is what stops a cycle from recursing forever.
     visited[vertex] = 1;
+    // Printing on entry makes this a preorder DFS; moving the print after the loop would produce postorder.
     printf(" %d", vertex);
+    // The matrix row is scanned left to right; recursion goes as deep as possible before the next sibling.
     for (int next = 0; next < VERTEX_COUNT; ++next)
     {
+        // Only unvisited neighbors recurse; the visited check is what turns a cyclic graph into a tree of calls.
         if (GRAPH[vertex][next] != 0 && !visited[next])
         {
+            // The call returns only after the entire branch below next is exhausted, then the loop continues with the next sibling.
             Visit(next, visited);
         }
     }
 }
 
-// Purpose: Depth-first traverse from start; the recursion stack holds the current root-to-node path.
-// 作用：从 start 开始深度优先遍历；递归栈保存当前根到当前结点的路径。
+// One call covers exactly the connected component containing start.
 void DFS(int start)
 {
+    // The array is zero-initialized once; every recursive call receives the same array, not a copy.
     int visited[VERTEX_COUNT] = {0};
     printf("dfs:");
+    // The entry call marks and prints every vertex reachable from start; other components keep their zero flags.
     Visit(start, visited);
     printf("\n");
 }

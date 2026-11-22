@@ -24,28 +24,34 @@ from __future__ import annotations
 from collections import deque
 
 
-# Mark a neighbour before enqueueing it; the FIFO frontier then visits level by level.
-# Mark a vertex when it enters the queue, not when it leaves, so it cannot be enqueued twice.
-# Purpose: Return the BFS order of vertices reachable from start without modifying graph.
-# 作用：返回从 start 可达顶点的 BFS 顺序；不修改 graph。
+# Visited is set on enqueue, not on dequeue, so a vertex with several predecessors enters the queue once.
 def bfs(graph: list[list[int]], start: int) -> list[int]:
+    # One boolean per vertex; the list length also fixes the valid index range.
     visited = [False] * len(graph)
+    # Mark the start before the loop; the invariant is 'queued implies visited'.
     visited[start] = True
+    # deque gives O(1) popleft; a list pop(0) would shift the remaining frontier.
     pending: deque[int] = deque([start])
+    # Order records dequeue order, which is also nondecreasing distance order for an unweighted graph.
     order: list[int] = []
 
+    # The loop ends when the frontier is empty, meaning the start component has been exhausted.
     while pending:
+        # popleft removes the oldest discovery; this FIFO step is what distinguishes BFS from DFS.
         vertex = pending.popleft()
+        # Record on removal, not on discovery, so the output matches the processing order.
         order.append(vertex)
+        # Only stored neighbors are scanned; absent entries mean no edge.
         for neighbor in graph[vertex]:
+            # The guard prevents a second enqueue; without it the queue can grow without bound on cycles.
             if not visited[neighbor]:
+                # Mark before append; the mark must be visible to any later neighbor scan.
                 visited[neighbor] = True
+                # Append at the right end; the vertex waits behind everything discovered earlier.
                 pending.append(neighbor)
     return order
 
 
-# Purpose: Build a demo graph and print its BFS sequence.
-# 作用：构造演示图并打印 BFS 序列。
 def main() -> None:
     graph: list[list[int]] = [[] for _ in range(6)]
 

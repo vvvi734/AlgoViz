@@ -1,6 +1,6 @@
 /*
  * 中文导读：按距离分层访问图，先访问所有距离为 d 的结点，再访问距离为 d+1 的结点。
- * 阅读顺序：先看 visited[] 与队列；再看入队时为什么立刻标记；最后看 BFS 树如何由 parent[] 还原路径。
+ * 阅读顺序：先看 visited[] 与队列；再看入队时为什么立刻标记；最后看邻接矩阵如何枚举邻居。
  * 关键不变量：队列中的结点按距离非降排列；每个结点最多入队一次。
  * 易错点：出队才标记导致重复入队；把队列写成栈；忽略不连通分量。
  * 复杂度：本文件用邻接矩阵，O(V²) 时间；O(V) 额外空间。
@@ -25,29 +25,40 @@ static const int GRAPH[VERTEX_COUNT][VERTEX_COUNT] = {
     {0, 1, 1, 0, 1, 1}, {0, 0, 0, 1, 0, 0}, {0, 0, 0, 1, 0, 0},
 };
 
-// Mark a vertex when it enters the queue, not when it leaves, so it cannot be enqueued twice.
-// Purpose: Traverse from start in distance layers; mark visited on enqueue so the queue finishes nearer layers first.
-// 作用：从 start 开始按距离分层遍历；入队时标记 visited，队列保证先访问近层。
+// The queue holds only discovered vertices; visited is set at enqueue time, so no vertex can enter twice.
 void BFS(int start)
 {
+    // One zeroed mark per vertex; zero means undiscovered before the start is inserted.
     int visited[VERTEX_COUNT] = {0};
+    // The array is a FIFO ring: head removes, tail inserts, and VERTEX_COUNT bounds the frontier because each vertex is enqueued at most once.
     int queue[VERTEX_COUNT];
+    // head names the next vertex to remove; tail names the next free slot.
     int head = 0;
+    // Both indices start at zero, so the queue begins empty and no reserved slot is needed.
     int tail = 0;
 
+    // Mark the start before enqueueing; the invariant is 'queued implies visited'.
     visited[start] = 1;
+    // Store at tail and post-increment it; the old tail slot now holds the first frontier vertex.
     queue[tail++] = start;
 
     printf("bfs:");
+    // head < tail means live elements remain; the gap between them is the queue length.
     while (head < tail)
     {
+        // Copy the oldest vertex and advance head; post-increment leaves head at the next live slot.
         int vertex = queue[head++];
+        // Print on removal, so the output is the BFS processing order rather than discovery order.
         printf(" %d", vertex);
+        // The matrix row is scanned left to right; this fixes neighbor order but costs O(V) even for sparse rows.
         for (int next = 0; next < VERTEX_COUNT; ++next)
         {
+            // An edge alone is not enough; the visited guard prevents duplicate discovery and repeated queue insertion.
             if (GRAPH[vertex][next] != 0 && !visited[next])
             {
+                // Mark before storing next; a later row that also reaches next must see the mark.
                 visited[next] = 1;
+                // Discover at the back; next waits behind every vertex already in the queue.
                 queue[tail++] = next;
             }
         }

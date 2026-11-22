@@ -385,24 +385,9 @@ const BASE_REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[]>
       zh: "接好孩子后再推进 tail；若先移动，就会丢掉“下一个兄弟应接在哪里”的唯一引用。",
     },
   ],
-  "bfs.c": [
-    {
-      en: "Mark a vertex when it enters the queue, not when it leaves, so it cannot be enqueued twice.",
-      zh: "顶点入队时就标记，而不是出队时才标记，否则同一顶点可能重复入队。",
-    },
-  ],
-  "bfs.cpp": [
-    {
-      en: "Mark a vertex when it enters the queue, not when it leaves, so it cannot be enqueued twice.",
-      zh: "顶点入队时就标记，而不是出队时才标记，否则同一顶点可能重复入队。",
-    },
-  ],
-  "bfs.py": [
-    {
-      en: "Mark a vertex when it enters the queue, not when it leaves, so it cannot be enqueued twice.",
-      zh: "顶点入队时就标记，而不是出队时才标记，否则同一顶点可能重复入队。",
-    },
-  ],
+  "bfs.c": [],
+  "bfs.cpp": [],
+  "bfs.py": [],
   "binary_search.c": [
     {
       en: "The window is inclusive: low == high still leaves one candidate, and mid is computed without overflow.",
@@ -839,24 +824,9 @@ const BASE_REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[]>
       zh: "正推取前驱完成时间的最大值；逆推取后继最迟时间减边权的最小值；活动时间余量是 latest[to] − weight − earliest[from]。",
     },
   ],
-  "dfs.c": [
-    {
-      en: "Mark a vertex on entry; the recursion then visits every unvisited neighbour before returning.",
-      zh: "进入顶点时立即标记；随后递归访问所有未访问邻居，再返回上一层。",
-    },
-  ],
-  "dfs.cpp": [
-    {
-      en: "Mark a vertex on entry; the recursion then visits every unvisited neighbour before returning.",
-      zh: "进入顶点时立即标记；随后递归访问所有未访问邻居，再返回上一层。",
-    },
-  ],
-  "dfs.py": [
-    {
-      en: "Mark a vertex on entry; the recursion then visits every unvisited neighbour before returning.",
-      zh: "进入顶点时立即标记；随后递归访问所有未访问邻居，再返回上一层。",
-    },
-  ],
+  "dfs.c": [],
+  "dfs.cpp": [],
+  "dfs.py": [],
   "dijkstra.c": [
     {
       en: "best has the smallest tentative distance; with non-negative weights this value is final.",

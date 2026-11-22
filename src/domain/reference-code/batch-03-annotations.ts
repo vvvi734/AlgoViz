@@ -669,5 +669,281 @@ export const BATCH_03_ANNOTATIONS: Record<
       "en": "Two pops and one push reduce the forest by one tree; the final root carries the sum of all frequencies.",
       "zh": "两次 pop 加一次 push 使森林减少一棵树；最终根结点保存所有频率之和。"
     }
+  ],
+  "bfs.c": [
+    {
+      "en": "The queue holds only discovered vertices; visited is set at enqueue time, so no vertex can enter twice.",
+      "zh": "队列中只保存已发现的顶点；visited 在入队时置位，所以同一顶点不可能再次入队。"
+    },
+    {
+      "en": "One zeroed mark per vertex; zero means undiscovered before the start is inserted.",
+      "zh": "每个顶点一个清零标记；起点入队前，0 表示尚未发现。"
+    },
+    {
+      "en": "The array is a FIFO ring: head removes, tail inserts, and VERTEX_COUNT bounds the frontier because each vertex is enqueued at most once.",
+      "zh": "数组作为 FIFO 环形队列：head 删除、tail 插入；每个顶点最多入队一次，因此 VERTEX_COUNT 足够。"
+    },
+    {
+      "en": "head names the next vertex to remove; tail names the next free slot.",
+      "zh": "head 指向下一个要删除的顶点，tail 指向下一个空槽。"
+    },
+    {
+      "en": "Both indices start at zero, so the queue begins empty and no reserved slot is needed.",
+      "zh": "两个下标都从 0 开始，队列初始为空，不需要额外保留槽。"
+    },
+    {
+      "en": "Mark the start before enqueueing; the invariant is 'queued implies visited'.",
+      "zh": "先把起点标记再入队；循环不变量是“在队列中即已标记”。"
+    },
+    {
+      "en": "Store at tail and post-increment it; the old tail slot now holds the first frontier vertex.",
+      "zh": "写入 tail 位置后自增；旧 tail 槽现在保存第一个前沿顶点。"
+    },
+    {
+      "en": "head < tail means live elements remain; the gap between them is the queue length.",
+      "zh": "head < tail 表示仍有有效元素；两者之间的差就是队列长度。"
+    },
+    {
+      "en": "Copy the oldest vertex and advance head; post-increment leaves head at the next live slot.",
+      "zh": "先复制队首顶点再自增 head；自增后 head 指向下一个有效槽。"
+    },
+    {
+      "en": "Print on removal, so the output is the BFS processing order rather than discovery order.",
+      "zh": "出队时才打印，因此输出是 BFS 处理顺序，而不是发现顺序。"
+    },
+    {
+      "en": "The matrix row is scanned left to right; this fixes neighbor order but costs O(V) even for sparse rows.",
+      "zh": "按列从左到右扫描矩阵行；这固定了邻居次序，但稀疏行也要 O(V) 时间。"
+    },
+    {
+      "en": "An edge alone is not enough; the visited guard prevents duplicate discovery and repeated queue insertion.",
+      "zh": "有边还不够；visited 守卫阻止重复发现和重复入队。"
+    },
+    {
+      "en": "Mark before storing next; a later row that also reaches next must see the mark.",
+      "zh": "先标记 next 再写入队列；之后扫描到同一 next 的其他行必须能看到标记。"
+    },
+    {
+      "en": "Discover at the back; next waits behind every vertex already in the queue.",
+      "zh": "从队尾发现；next 排在所有已在队列中的顶点之后。"
+    }
+  ],
+  "bfs.cpp": [
+    {
+      "en": "The queue holds only discovered vertices; visited is set at enqueue time, so each vertex enters at most once.",
+      "zh": "队列保存前沿顶点；visited 在入队时置位，因此每个顶点最多进入一次。"
+    },
+    {
+      "en": "One boolean mark per vertex, sized from the adjacency list; false means undiscovered.",
+      "zh": "每个顶点一个布尔标记，大小由邻接表顶点数决定；false 表示尚未发现。"
+    },
+    {
+      "en": "The FIFO discipline of std::queue is what makes BFS level ordered; the container order defines the traversal order.",
+      "zh": "std::queue 的 FIFO 次序就是 BFS 的层序；容器顺序本身决定访问顺序。"
+    },
+    {
+      "en": "The start is discovered before the loop, so the invariant already includes it.",
+      "zh": "起点在循环前就标记并进入前沿，因此循环不变量一开始成立。"
+    },
+    {
+      "en": "Mark before push; marking at pop time would let several predecessors enqueue the same vertex.",
+      "zh": "先标记再 push；若等到 pop 才标记，多个前驱会把同一顶点重复入队。"
+    },
+    {
+      "en": "Each iteration consumes exactly one frontier vertex, so the queue eventually drains.",
+      "zh": "每轮恰好消费一个前沿顶点，队列最终会排空。"
+    },
+    {
+      "en": "front() observes the oldest vertex; the queue itself decides the breadth-first order.",
+      "zh": "front() 只读取最老的顶点；队列本身决定广度优先顺序。"
+    },
+    {
+      "en": "Remove only after copying vertex; pop alone would discard the value before the neighbor scan.",
+      "zh": "先复制 vertex 再 pop；单独 pop 会在扫描邻居前丢掉值。"
+    },
+    {
+      "en": "Adjacency lists visit only real neighbors, so this loop is O(deg(vertex)) instead of O(V).",
+      "zh": "邻接表只遍历真实邻居，因此这一步是 O(deg(vertex))，而不是 O(V)。"
+    },
+    {
+      "en": "The visited guard is checked before push; an already discovered neighbor is skipped even if another edge reaches it.",
+      "zh": "先检查 visited 再入队；即使另一条边也到达同一邻居，已发现的顶点仍被跳过。"
+    },
+    {
+      "en": "Mark before push so a later neighbor scan cannot enqueue the same vertex again.",
+      "zh": "先置位再 push，使后续任何邻居扫描都不能再次入队。"
+    },
+    {
+      "en": "Push at the back; all vertices already in the queue are processed first.",
+      "zh": "压到队尾；所有已在队列中的顶点都先于它被处理。"
+    }
+  ],
+  "bfs.py": [
+    {
+      "en": "Visited is set on enqueue, not on dequeue, so a vertex with several predecessors enters the queue once.",
+      "zh": "visited 在入队时置位，而不是出队时；有多个前驱的顶点只进入队列一次。"
+    },
+    {
+      "en": "One boolean per vertex; the list length also fixes the valid index range.",
+      "zh": "每个顶点一个布尔值；列表长度同时限定合法下标范围。"
+    },
+    {
+      "en": "Mark the start before the loop; the invariant is 'queued implies visited'.",
+      "zh": "循环前先标记起点；不变量是“已入队即已标记”。"
+    },
+    {
+      "en": "deque gives O(1) popleft; a list pop(0) would shift the remaining frontier.",
+      "zh": "deque 让 popleft 为 O(1)；若用 list.pop(0)，剩余前沿会整体搬移。"
+    },
+    {
+      "en": "Order records dequeue order, which is also nondecreasing distance order for an unweighted graph.",
+      "zh": "order 记录出队顺序；在无权图中这也是距离非降的顺序。"
+    },
+    {
+      "en": "The loop ends when the frontier is empty, meaning the start component has been exhausted.",
+      "zh": "队列为空时结束，表示起点所在连通分量已经全部处理。"
+    },
+    {
+      "en": "popleft removes the oldest discovery; this FIFO step is what distinguishes BFS from DFS.",
+      "zh": "弹出最早发现的顶点；这个 FIFO 步骤正是 BFS 与 DFS 的分界。"
+    },
+    {
+      "en": "Record on removal, not on discovery, so the output matches the processing order.",
+      "zh": "在出队时记录，而不是发现时，输出才与处理顺序一致。"
+    },
+    {
+      "en": "Only stored neighbors are scanned; absent entries mean no edge.",
+      "zh": "只扫描实际存储的邻居；缺失项表示没有边。"
+    },
+    {
+      "en": "The guard prevents a second enqueue; without it the queue can grow without bound on cycles.",
+      "zh": "守卫阻止第二次入队；在环上缺少它会令队列无限增长。"
+    },
+    {
+      "en": "Mark before append; the mark must be visible to any later neighbor scan.",
+      "zh": "先标记再 append；之后任何邻居扫描都必须看到这个标记。"
+    },
+    {
+      "en": "Append at the right end; the vertex waits behind everything discovered earlier.",
+      "zh": "追加到右端；它排在此前发现的所有顶点之后。"
+    }
+  ],
+  "dfs.c": [
+    {
+      "en": "visited is shared across recursive calls; the caller owns its storage and initial zeroes.",
+      "zh": "visited 由所有递归帧共享；调用者分配并清零，函数只读写不复制。"
+    },
+    {
+      "en": "Mark on entry, before scanning neighbors; this is what stops a cycle from recursing forever.",
+      "zh": "进入顶点后立刻标记，再扫描邻居；这是环不会无限递归的原因。"
+    },
+    {
+      "en": "Printing on entry makes this a preorder DFS; moving the print after the loop would produce postorder.",
+      "zh": "进入时打印，得到前序 DFS；若把打印移到循环之后就是后序。"
+    },
+    {
+      "en": "The matrix row is scanned left to right; recursion goes as deep as possible before the next sibling.",
+      "zh": "矩阵行从左到右扫描；递归会先走完一个邻居的整条分支，再考虑下一个兄弟。"
+    },
+    {
+      "en": "Only unvisited neighbors recurse; the visited check is what turns a cyclic graph into a tree of calls.",
+      "zh": "只有未访问邻居才递归；visited 检查把环图变成一棵调用树。"
+    },
+    {
+      "en": "The call returns only after the entire branch below next is exhausted, then the loop continues with the next sibling.",
+      "zh": "该调用返回时 next 以下的整条分支已穷尽，外层循环才继续下一个邻居。"
+    },
+    {
+      "en": "One call covers exactly the connected component containing start.",
+      "zh": "每次调用从 start 开始，只覆盖 start 所在的一个连通分量。"
+    },
+    {
+      "en": "The array is zero-initialized once; every recursive call receives the same array, not a copy.",
+      "zh": "数组只清零一次；每个递归帧接收同一块存储，而不是各自的副本。"
+    },
+    {
+      "en": "The entry call marks and prints every vertex reachable from start; other components keep their zero flags.",
+      "zh": "入口调用把起点及其可达顶点全部标记并打印；其他分量保持 0。"
+    }
+  ],
+  "dfs.cpp": [
+    {
+      "en": "visited is passed by reference so all recursive frames share one set of marks.",
+      "zh": "visited 以引用传递，所有递归帧共享同一组标记。"
+    },
+    {
+      "en": "Mark before iterating neighbors; an unmarked vertex on a cycle would be re-entered.",
+      "zh": "先标记再遍历邻居；环上未标记的顶点会被再次进入。"
+    },
+    {
+      "en": "Preorder output: the vertex is reported before any of its descendants.",
+      "zh": "前序输出：顶点先于它的所有后代被报告。"
+    },
+    {
+      "en": "The range loop visits real neighbors only; recursion explores one neighbor's entire branch before the next.",
+      "zh": "范围循环只访问真实邻居；递归会先穷尽一个邻居的分支，再处理下一个。"
+    },
+    {
+      "en": "The guard is evaluated at the parent level; an already visited neighbor is skipped without a call.",
+      "zh": "守卫在父层判断；已访问邻居被直接跳过，不产生调用。"
+    },
+    {
+      "en": "Depth is bounded by the number of vertices; on a path graph the stack reaches V frames.",
+      "zh": "递归深度以顶点数为上限；路径图上调用栈可达 V 帧。"
+    },
+    {
+      "en": "One call covers exactly the connected component containing start.",
+      "zh": "每次从 start 开始，只覆盖该起点可达的一个分量。"
+    },
+    {
+      "en": "The vector is sized to the graph and zero-filled; all frames index the same storage.",
+      "zh": "向量按图大小分配并全部清零；所有帧索引同一存储。"
+    },
+    {
+      "en": "Only vertices reachable from start are marked; other components keep their false flags.",
+      "zh": "只有起点可达的顶点会被标记；其他分量保持 false。"
+    }
+  ],
+  "dfs.py": [
+    {
+      "en": "visited and order are shared mutable objects, so recursive calls append to the same result.",
+      "zh": "visited 与 order 是共享的可变对象，递归调用都追加到同一个结果。"
+    },
+    {
+      "en": "Mark on entry; the mark must precede the neighbor loop so back edges see it.",
+      "zh": "进入时置位；标记必须先于邻居循环，回边才能看到它。"
+    },
+    {
+      "en": "Append on entry gives preorder; the vertex precedes all descendants in the output.",
+      "zh": "进入时追加得到前序；顶点在输出中先于所有后代。"
+    },
+    {
+      "en": "Each neighbor is considered once, but recursion may run to the bottom before the next sibling.",
+      "zh": "每个邻居只考虑一次，但递归可能先走到底，再返回处理下一个兄弟。"
+    },
+    {
+      "en": "Only unmarked neighbors recurse; marked ones are either ancestors or already finished branches.",
+      "zh": "只有未标记邻居才递归；已标记的邻居要么是祖先，要么是已完成分支。"
+    },
+    {
+      "en": "Recursive depth can reach V; Python's recursion limit is the practical constraint on long chains.",
+      "zh": "递归深度可达 V；Python 的递归上限是长链上的实际约束。"
+    },
+    {
+      "en": "The wrapper allocates marks and the result list; traversal itself stays in dfs_visit.",
+      "zh": "包装函数只负责分配标记与结果，遍历逻辑集中在 dfs_visit。"
+    },
+    {
+      "en": "One False per vertex; the list length is also the valid index boundary.",
+      "zh": "每个顶点一个 False；列表长度同时是合法下标边界。"
+    },
+    {
+      "en": "The result list is filled by recursion; the wrapper does not know the order in advance.",
+      "zh": "结果列表由递归填充；包装函数不预先知道访问顺序。"
+    },
+    {
+      "en": "One call covers only the component containing start; other components are never touched.",
+      "zh": "一次调用只覆盖 start 所在分量；其他分量不会被触碰。"
+    }
   ]
 };

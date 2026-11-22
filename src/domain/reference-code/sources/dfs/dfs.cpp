@@ -1,8 +1,8 @@
 /*
- * 中文导读：沿一条路径尽可能深入，走不通再回溯；递归和显式栈是两种等价写法。
- * 阅读顺序：先看 visited 标记发生在进入还是出边时；再看递归/栈的推进与回退；最后看时间戳或 parent。
+ * 中文导读：沿一条路径尽可能深入，走不通再回溯；本文件用递归调用栈实现。
+ * 阅读顺序：先看 visited 标记发生在进入顶点时；再看邻接表枚举与递归返回；最后看单分量限制。
  * 关键不变量：递归栈中保存的是当前根到当前结点的路径；已标记结点不会被再次展开。
- * 易错点：递归深度超过系统栈；无向图把父边当回边；只遍历一个分量；显式栈弹出顺序写反。
+ * 易错点：递归深度超过系统栈；无向图把父边当回边；只遍历一个分量。
  * 复杂度：O(V+E) 时间，O(V) 额外空间（递归深度可达 V）。
  * 输入/输出：输入邻接表与起点；函数只打印 DFS 访问顺序，不返回数组；递归实现不修改图。
 */
@@ -23,29 +23,32 @@
 #include <iostream>
 #include <vector>
 
-// Mark on entry, then recurse into every unvisited neighbour before backtracking.
-// Mark a vertex on entry; the recursion then visits every unvisited neighbour before returning.
-// Purpose: Recursively visit unvisited neighbours of vertex; mark visited on entry so back edges are not expanded twice.
-// 作用：递归访问 vertex 的未访问邻居；进入时立即标记 visited，避免回边重复展开。
+// visited is passed by reference so all recursive frames share one set of marks.
 void dfs_visit(const std::vector<std::vector<int>> &graph, int vertex, std::vector<bool> &visited)
 {
+    // Mark before iterating neighbors; an unmarked vertex on a cycle would be re-entered.
     visited[vertex] = true;
+    // Preorder output: the vertex is reported before any of its descendants.
     std::cout << ' ' << vertex;
+    // The range loop visits real neighbors only; recursion explores one neighbor's entire branch before the next.
     for (int next : graph[vertex])
     {
+        // The guard is evaluated at the parent level; an already visited neighbor is skipped without a call.
         if (!visited[next])
         {
+            // Depth is bounded by the number of vertices; on a path graph the stack reaches V frames.
             dfs_visit(graph, next, visited);
         }
     }
 }
 
-// Purpose: Depth-first traverse from start; the recursion stack holds the current path.
-// 作用：从 start 开始深度优先遍历；递归栈保存当前路径。
+// One call covers exactly the connected component containing start.
 void dfs(const std::vector<std::vector<int>> &graph, int start)
 {
+    // The vector is sized to the graph and zero-filled; all frames index the same storage.
     std::vector<bool> visited(graph.size(), false);
     std::cout << "order:";
+    // Only vertices reachable from start are marked; other components keep their false flags.
     dfs_visit(graph, start, visited);
     std::cout << '\n';
 }
