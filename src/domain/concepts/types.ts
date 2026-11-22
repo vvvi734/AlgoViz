@@ -22,6 +22,7 @@ export type ConceptDiagramKind =
   | 'string-index'
   | 'array'
   | 'array-memory'
+  | 'sequential-capacity'
   | 'matrix-compression'
   | 'sparse-matrix'
   | 'generalized-list'

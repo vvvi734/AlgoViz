@@ -150,7 +150,7 @@ export const STORAGE_CONCEPT_PAGES: readonly ConceptPage[] = [
       '顺序表用一段连续的存储单元保存元素。length 是当前有效元素个数，capacity 是这段空间最多能容纳多少个；两者不是同一个量。固定数组在 length 达到 capacity 后无法再插入，动态扩容通过申请更大的连续空间、复制旧元素、释放旧空间来继续增长。',
       'A sequential list stores elements in one contiguous block. length counts live elements, while capacity is how many the block can hold; they are different quantities. A fixed array cannot insert once length reaches capacity. Dynamic growth allocates a larger contiguous block, copies the old elements, releases the old block, and continues.',
     ],
-    diagram: 'array',
+    diagram: 'sequential-capacity',
     definitions: [
       {
         term: ['表长 length', 'Length'],

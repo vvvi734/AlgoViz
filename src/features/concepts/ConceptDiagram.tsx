@@ -11,6 +11,7 @@ import {
 } from './GeneralizedListDiagram';
 import { DynamicStorageDiagram } from './DynamicStorageDiagram';
 import { SearchConceptDiagram } from './SearchConceptDiagram';
+import { SequentialCapacityDiagram } from './SequentialCapacityDiagram';
 
 /**
  * Large, static SVG diagrams for concept lessons. They never animate and never
@@ -25,6 +26,10 @@ export function ConceptDiagram({ kind, lang }: { kind: ConceptDiagramKind; lang:
 
   if (kind === 'array-memory') {
     return <ArrayMemoryDiagram lang={lang} />;
+  }
+
+  if (kind === 'sequential-capacity') {
+    return <SequentialCapacityDiagram lang={lang} />;
   }
 
   if (kind === 'generalized-list') {
