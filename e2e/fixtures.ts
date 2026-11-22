@@ -1,4 +1,4 @@
-import { test as base, expect, type Page } from '@playwright/test';
+import { test as base, expect, type Locator, type Page } from '@playwright/test';
 import { useLocalPyodide } from './pyodide-local';
 
 /**
@@ -144,6 +144,28 @@ export async function runGraphDraftResult(page: Page, draft: GraphE2EDraft): Pro
 }
 
 /**
+ * Expand one real disclosure button. Chapter/topic bodies animate from 0fr to
+ * 1fr; a click issued while the surrounding layout is still moving can miss the
+ * button and leave `aria-expanded="false"`. Retry once, then wait for the 200 ms
+ * open transition so the next row is physically stable before it is clicked.
+ * The expanded state is still asserted; this does not relax a test.
+ */
+async function expandDisclosure(page: Page, control: Locator) {
+  if ((await control.getAttribute('aria-expanded')) === 'true') return;
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    await control.click();
+    try {
+      await expect(control).toHaveAttribute('aria-expanded', 'true', { timeout: 2_000 });
+      await page.waitForTimeout(250);
+      return;
+    } catch (error) {
+      if (attempt === 1) throw error;
+      await page.waitForTimeout(250);
+    }
+  }
+}
+
+/**
  * UX-03: the directory opens only the current algorithm's chapter/topic. A
  * desktop click must therefore find an algorithm's authored path and expand it
  * first. The mobile select remains a single, real `selectOption` call.
@@ -156,9 +178,7 @@ export async function openTextbookChapter(page: Page, chapterId: string) {
   }
   const chapter = page.getByTestId(`chapter-${chapterId}`);
   await expect(chapter).toBeVisible();
-  if ((await chapter.getAttribute('aria-expanded')) !== 'true') {
-    await chapter.click();
-  }
+  await expandDisclosure(page, chapter);
   await expect(chapter).toHaveAttribute('aria-expanded', 'true');
 }
 
@@ -172,9 +192,7 @@ export async function openTextbookTopic(page: Page, topicId: string) {
   if (parentId) {
     const parent = page.getByTestId(`topic-${parentId}`);
     if ((await parent.count()) > 0 && (await parent.isVisible())) {
-      if ((await parent.getAttribute('aria-expanded')) === 'false') {
-        await parent.click();
-      }
+      await expandDisclosure(page, parent);
       await expect(parent).toHaveAttribute('aria-expanded', 'true');
     }
   }
@@ -183,9 +201,7 @@ export async function openTextbookTopic(page: Page, topicId: string) {
   // Direct rows have no disclosure at all. Only real disclosure groups expose
   // `aria-expanded`; both top-level and third-level direct rows simply return.
   if ((await topic.getAttribute('aria-expanded')) === null) return;
-  if ((await topic.getAttribute('aria-expanded')) !== 'true') {
-    await topic.click();
-  }
+  await expandDisclosure(page, topic);
   await expect(topic).toHaveAttribute('aria-expanded', 'true');
 }
 
