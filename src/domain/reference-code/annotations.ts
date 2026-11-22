@@ -530,17 +530,137 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
       en: "The cut test is low[child] >= disc[parent]; the bridge test is strict low[child] > disc[parent].",
       zh: "关节点判据是 low[child] >= disc[parent]；桥判据是严格的 low[child] > disc[parent]。",
     },
+    {
+      en: "disc is the DFS discovery order; low starts at disc[u], then becomes the earliest discovery time reachable from u's subtree.",
+      zh: "disc 是 DFS 发现次序；low 先记为 disc[u]，随后变成 u 子树能够到达的最早发现时间。",
+    },
+    {
+      en: "children counts DFS tree children, not all neighbours; the root's cut test uses this count.",
+      zh: "children 统计 DFS 树中的孩子，而不是所有邻居；根的关节点判据用的正是这个数量。",
+    },
+    {
+      en: "disc==0 means v is unvisited: this edge becomes a DFS tree edge, and v's subtree result will return through low[v].",
+      zh: "disc==0 表示 v 尚未访问：这条边成为 DFS 树边，v 子树的结果会通过 low[v] 回传。",
+    },
+    {
+      en: "The child subtree may reach an ancestor of u; propagate its earliest reachable time upward.",
+      zh: "孩子子树可能绕过 u 到达更早的祖先；把它能到达的最早时间向上回传。",
+    },
+    {
+      en: "For a non-root u, low[v] >= disc[u] means no back edge from v's subtree can bypass u, so removing u separates that subtree.",
+      zh: "对非根 u，low[v] >= disc[u] 表示 v 子树没有任何返祖边能绕过 u；删除 u 就会把这棵子树分离出去。",
+    },
+    {
+      en: "The strict > identifies a bridge: even v's subtree cannot reach u's discovery time, so edge u-v is the only connection.",
+      zh: "严格的 > 用来识别桥：连 v 子树都无法回到 u 的发现时间，说明边 u-v 是两边唯一的连接。",
+    },
+    {
+      en: "Skip the parent edge explicitly: it is the tree edge that discovered u, not a cycle back to an ancestor.",
+      zh: "显式排除父边：它是发现 u 的那条树边，不是指回祖先的环。",
+    },
+    {
+      en: "Use disc[v], not low[v]: the edge u-v directly touches ancestor v; low[v] may describe a larger subtree and mix in another reachability set.",
+      zh: "这里应使用 disc[v] 而不是 low[v]：边 u-v 直接碰到的是祖先 v；low[v] 描述的是更大的子树，可能混入另一组可达关系。",
+    },
+    {
+      en: "The root has no parent to bypass it, so it is a cut vertex only when two DFS children would become disconnected.",
+      zh: "根没有父边可以绕过它，因此只有当至少两棵 DFS 子树会彼此断开时，根才是关节点。",
+    },
+    {
+      en: "A disconnected graph has several DFS roots; each unvisited start opens a new tree while timer continues globally.",
+      zh: "非连通图有多个 DFS 根；每个未访问起点都会开启一棵新树，而 timer 在整个森林中持续递增。",
+    },
   ],
   "articulation.cpp": [
     {
       en: "The cut test is low[child] >= disc[parent]; the bridge test is strict low[child] > disc[parent].",
       zh: "关节点判据是 low[child] >= disc[parent]；桥判据是严格的 low[child] > disc[parent]。",
     },
+    {
+      en: "disc records DFS discovery order; low begins at disc[u] and later stores the earliest time reachable from this subtree.",
+      zh: "disc 记录 DFS 发现次序；low 先等于 disc[u]，随后保存该子树能到达的最早时间。",
+    },
+    {
+      en: "children is the number of DFS tree children; only the root uses this count, while non-root vertices use low[child] >= disc[u].",
+      zh: "children 是 DFS 树孩子数；只有根使用这个计数，非根顶点使用 low[child] >= disc[u] 判据。",
+    },
+    {
+      en: "disc[v]==0 means the edge is a tree edge to an unvisited vertex; the recursive result will be carried back by low[v].",
+      zh: "disc[v]==0 表示这是一条通向未访问顶点的树边；递归结果会通过 low[v] 带回。",
+    },
+    {
+      en: "After the child returns, propagate the earliest ancestor its subtree can reach; this is the only update from a tree edge.",
+      zh: "孩子返回后，把它子树能到达的最早祖先回传；这是树边对 low 的唯一更新。",
+    },
+    {
+      en: "For non-root u, low[v] >= disc[u] means v's subtree has no bypass around u, so u becomes a cut vertex.",
+      zh: "对非根 u，low[v] >= disc[u] 说明 v 子树无法绕过 u，因此 u 成为关节点。",
+    },
+    {
+      en: "The strict > detects a bridge: v's subtree cannot even reach u, so the tree edge u-v is its only exit.",
+      zh: "严格的 > 检测桥：v 子树连 u 都到不了，因此树边 u-v 是它唯一的出口。",
+    },
+    {
+      en: "The parent edge is the tree edge that discovered u; treating it as a back edge would give every non-root a false bypass.",
+      zh: "父边是发现 u 的树边；若把它当返祖边，每个非根顶点都会多出一条假的可绕过路径。",
+    },
+    {
+      en: "A back edge reaches an ancestor directly, so its contribution is disc[v], not low[v]; low[v] belongs to a different subtree scope.",
+      zh: "返祖边直接到达祖先，所以贡献值是 disc[v] 而不是 low[v]；low[v] 属于另一层子树的范围。",
+    },
+    {
+      en: "The root has no parent bypass; two DFS children mean removing the root separates those branches.",
+      zh: "根没有父边可绕过；有两棵 DFS 子树就意味着删除根会使这些分支彼此断开。",
+    },
+    {
+      en: "Scan every unvisited start separately: disconnected components cannot be reached from one DFS root, while timer stays global.",
+      zh: "分别扫描每个未访问起点：非连通分量无法从单一 DFS 根到达，而 timer 仍保持全局递增。",
+    },
   ],
   "articulation.py": [
     {
       en: "The cut test is low[child] >= disc[parent]; the bridge test is strict low[child] > disc[parent].",
       zh: "关节点判据是 low[child] >= disc[parent]；桥判据是严格的 low[child] > disc[parent]。",
+    },
+    {
+      en: "timer has already advanced; low starts at disc[u] and later becomes the earliest discovery time reachable from this subtree.",
+      zh: "timer 已经先自增；low 先等于 disc[u]，随后变成该子树能够到达的最早发现时间。",
+    },
+    {
+      en: "children counts DFS tree children, not every entry in graph[u]; the root's condition uses this count.",
+      zh: "children 统计 DFS 树孩子，而不是 graph[u] 中的每个邻居；根的判据用的是这个数量。",
+    },
+    {
+      en: "disc==0 means v is unvisited, so this edge is a tree edge and its subtree result will flow back through low[v].",
+      zh: "disc==0 表示 v 尚未访问，因此这条边是树边，它的子树结果会通过 low[v] 回传。",
+    },
+    {
+      en: "Propagate the earliest ancestor reachable from the child's subtree; this keeps low[u] valid after the child returns.",
+      zh: "把孩子子树能到达的最早祖先回传，使 child 返回后 low[u] 仍然正确。",
+    },
+    {
+      en: "For non-root u, low[v] >= disc[u] means no back edge from v's subtree can bypass u, so removing u separates that subtree.",
+      zh: "对非根 u，low[v] >= disc[u] 表示 v 子树没有返祖边能绕过 u；删除 u 就会分离这棵子树。",
+    },
+    {
+      en: "The strict > marks a bridge: v's subtree cannot reach u's discovery time, so edge u-v is the only connection.",
+      zh: "严格的 > 标记桥：v 子树无法回到 u 的发现时间，因此边 u-v 是唯一连接。",
+    },
+    {
+      en: "Exclude the parent edge explicitly: it is the tree edge that discovered u, not a back edge to an ancestor.",
+      zh: "显式排除父边：它是发现 u 的树边，不是指回祖先的返祖边。",
+    },
+    {
+      en: "For a back edge, use the ancestor's discovery time disc[v]; low[v] describes a larger subtree and can mix another reachability set.",
+      zh: "遇到返祖边应使用祖先的发现时间 disc[v]；low[v] 描述更大的子树，可能混入另一组可达关系。",
+    },
+    {
+      en: "The root has no parent bypass, so it is a cut vertex only when at least two DFS branches would be separated.",
+      zh: "根没有父边可绕过，因此只有当至少两棵 DFS 分支会被分开时，根才是关节点。",
+    },
+    {
+      en: "Start a new DFS at every undiscovered vertex; disconnected components need separate trees, while timer remains global.",
+      zh: "每个未发现顶点都要启动新的 DFS；非连通分量需要独立的树，而 timer 保持全局。",
     },
   ],
   "critical_path.c": [

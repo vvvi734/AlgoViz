@@ -47,7 +47,9 @@ void addEdge(std::vector<std::vector<int>>& graph, int a, int b)
 // 作用：从 u 递归，回传 low，并标记非根关节点与桥。
 void dfs(const std::vector<std::vector<int>>& graph, int u, int root)
 {
+    // disc records DFS discovery order; low begins at disc[u] and later stores the earliest time reachable from this subtree.
     disc[u] = low[u] = ++timer;
+    // children is the number of DFS tree children; only the root uses this count, while non-root vertices use low[child] >= disc[u].
     int children = 0;
 
     for (int v = 0; v < VERTEX_COUNT; ++v)
@@ -56,29 +58,34 @@ void dfs(const std::vector<std::vector<int>>& graph, int u, int root)
         {
             continue;
         }
+        // disc[v]==0 means the edge is a tree edge to an unvisited vertex; the recursive result will be carried back by low[v].
         if (!disc[v])
         {
             parent[v] = u;
             ++children;
             dfs(graph, v, root);
+            // After the child returns, propagate the earliest ancestor its subtree can reach; this is the only update from a tree edge.
             low[u] = std::min(low[u], low[v]);
+            // For non-root u, low[v] >= disc[u] means v's subtree has no bypass around u, so u becomes a cut vertex.
             if (u != root && low[v] >= disc[u])
             {
                 articulation[u] = true;
             }
+            // The strict > detects a bridge: v's subtree cannot even reach u, so the tree edge u-v is its only exit.
             if (low[v] > disc[u])
             {
                 bridges[u][v] = bridges[v][u] = true;
             }
         }
+        // The parent edge is the tree edge that discovered u; treating it as a back edge would give every non-root a false bypass.
         else if (v != parent[u] && disc[v] < disc[u])
         {
-            // A back edge reaches an ancestor; use disc[v], never low[v].
-            // 返祖边指向祖先，应使用 disc[v]，而不是 low[v]。
+            // A back edge reaches an ancestor directly, so its contribution is disc[v], not low[v]; low[v] belongs to a different subtree scope.
             low[u] = std::min(low[u], disc[v]);
         }
     }
 
+    // The root has no parent bypass; two DFS children mean removing the root separates those branches.
     if (u == root && children >= 2)
     {
         articulation[root] = true;
@@ -91,6 +98,7 @@ void findArticulationPoints(const std::vector<std::vector<int>>& graph)
 {
     for (int start = 0; start < VERTEX_COUNT; ++start)
     {
+        // Scan every unvisited start separately: disconnected components cannot be reached from one DFS root, while timer stays global.
         if (!disc[start])
         {
             dfs(graph, start, start);

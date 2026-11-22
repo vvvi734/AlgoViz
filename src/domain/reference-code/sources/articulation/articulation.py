@@ -41,24 +41,31 @@ def dfs(u, root):
     """DFS from u, propagate low, and mark cut vertices and bridges."""
     global timer
     timer += 1
+    # timer has already advanced; low starts at disc[u] and later becomes the earliest discovery time reachable from this subtree.
     disc[u] = low[u] = timer
+    # children counts DFS tree children, not every entry in graph[u]; the root's condition uses this count.
     children = 0
 
     for v in graph[u]:
+        # disc==0 means v is unvisited, so this edge is a tree edge and its subtree result will flow back through low[v].
         if disc[v] == 0:
             parent[v] = u
             children += 1
             dfs(v, root)
+            # Propagate the earliest ancestor reachable from the child's subtree; this keeps low[u] valid after the child returns.
             low[u] = min(low[u], low[v])
+            # For non-root u, low[v] >= disc[u] means no back edge from v's subtree can bypass u, so removing u separates that subtree.
             if u != root and low[v] >= disc[u]:
                 articulation[u] = True
+            # The strict > marks a bridge: v's subtree cannot reach u's discovery time, so edge u-v is the only connection.
             if low[v] > disc[u]:
                 bridges.add(tuple(sorted((u, v))))
+        # Exclude the parent edge explicitly: it is the tree edge that discovered u, not a back edge to an ancestor.
         elif v != parent[u] and disc[v] < disc[u]:
-            # A back edge reaches an ancestor; use disc[v], never low[v].
-            # 返祖边指向祖先，应使用 disc[v]，而不是 low[v]。
+            # For a back edge, use the ancestor's discovery time disc[v]; low[v] describes a larger subtree and can mix another reachability set.
             low[u] = min(low[u], disc[v])
 
+    # The root has no parent bypass, so it is a cut vertex only when at least two DFS branches would be separated.
     if u == root and children >= 2:
         articulation[root] = True
 
@@ -69,6 +76,7 @@ def main():
         add_edge(a, b)
 
     for start in range(VERTEX_COUNT):
+        # Start a new DFS at every undiscovered vertex; disconnected components need separate trees, while timer remains global.
         if disc[start] == 0:
             dfs(start, start)
 

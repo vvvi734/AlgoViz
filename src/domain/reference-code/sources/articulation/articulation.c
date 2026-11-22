@@ -48,7 +48,9 @@ void add_edge(int graph[VERTEX_COUNT][VERTEX_COUNT], int a, int b)
 // 作用：从 u 开始 DFS，把 low 回传给父节点，并标记关节点与桥。
 void dfs(int graph[VERTEX_COUNT][VERTEX_COUNT], int u, int root)
 {
+    // disc is the DFS discovery order; low starts at disc[u], then becomes the earliest discovery time reachable from u's subtree.
     disc[u] = low[u] = ++timer;
+    // children counts DFS tree children, not all neighbours; the root's cut test uses this count.
     int children = 0;
 
     for (int v = 0; v < VERTEX_COUNT; ++v)
@@ -57,28 +59,32 @@ void dfs(int graph[VERTEX_COUNT][VERTEX_COUNT], int u, int root)
         {
             continue;
         }
+        // disc==0 means v is unvisited: this edge becomes a DFS tree edge, and v's subtree result will return through low[v].
         if (!disc[v])
         {
             parent[v] = u;
             ++children;
             dfs(graph, v, root);
+            // The child subtree may reach an ancestor of u; propagate its earliest reachable time upward.
             if (low[v] < low[u])
             {
                 low[u] = low[v];
             }
+            // For a non-root u, low[v] >= disc[u] means no back edge from v's subtree can bypass u, so removing u separates that subtree.
             if (u != root && low[v] >= disc[u])
             {
                 articulation[u] = true;
             }
+            // The strict > identifies a bridge: even v's subtree cannot reach u's discovery time, so edge u-v is the only connection.
             if (low[v] > disc[u])
             {
                 bridge[u][v] = bridge[v][u] = true;
             }
         }
+        // Skip the parent edge explicitly: it is the tree edge that discovered u, not a cycle back to an ancestor.
         else if (v != parent[u] && disc[v] < disc[u])
         {
-            // A back edge reaches an ancestor; use its disc, not low[v].
-            // 返祖边指向祖先，应使用 disc[v]，而不是 low[v]。
+            // Use disc[v], not low[v]: the edge u-v directly touches ancestor v; low[v] may describe a larger subtree and mix in another reachability set.
             if (disc[v] < low[u])
             {
                 low[u] = disc[v];
@@ -86,6 +92,7 @@ void dfs(int graph[VERTEX_COUNT][VERTEX_COUNT], int u, int root)
         }
     }
 
+    // The root has no parent to bypass it, so it is a cut vertex only when two DFS children would become disconnected.
     if (u == root && children >= 2)
     {
         articulation[root] = true;
@@ -99,6 +106,7 @@ void find_articulation_points(int graph[VERTEX_COUNT][VERTEX_COUNT])
     for (int start = 0; start < VERTEX_COUNT; ++start)
     {
         parent[start] = -1;
+        // A disconnected graph has several DFS roots; each unvisited start opens a new tree while timer continues globally.
         if (!disc[start])
         {
             dfs(graph, start, start);
