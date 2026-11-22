@@ -4,6 +4,40 @@ import { I18nProvider, useI18n } from '../../i18n/I18nProvider';
 import { ThemeProvider } from '../../theme/ThemeProvider';
 import { ReferenceCodePanel } from './ReferenceCodePanel';
 
+const batchAlgorithms = [
+  {
+    id: 'circular',
+    name: '循环链表',
+    zh: '空环没有任何结点：head 与 tail 必须同时为 NULL；它们只是空表的两个入口，不是哨兵结点。',
+    en: 'Both endpoints must be NULL: an empty ring has no sentinel node, and head/tail are two views of the same absence.',
+  },
+  {
+    id: 'kmp',
+    name: 'KMP 字符串匹配',
+    zh: 'next[0] = -1 是哨兵而不是真实 border：模式串首字符之前没有更短前缀可以回退。',
+    en: '-1 is a sentinel, not a real border: at the first pattern character there is no shorter prefix to fall back to.',
+  },
+  {
+    id: 'articulation',
+    name: '图的关节点',
+    zh: '对非根 u，low[v] >= disc[u] 表示 v 子树没有任何返祖边能绕过 u；删除 u 就会把这棵子树分离出去。',
+    en: "For a non-root u, low[v] >= disc[u] means no back edge from v's subtree can bypass u, so removing u separates that subtree.",
+  },
+  {
+    id: 'radix',
+    name: '基数排序',
+    zh: '最高位处理完后，所有十进制位都按从低到高参与过排序；稳定性把低位次序一路带过来，因此 order 已经整体有序。',
+    en: 'After the most significant pass, every decimal digit has been applied from least to most significant; stability carried lower-digit order forward, so order is fully sorted.',
+  },
+  {
+    id: 'replacement',
+    name: '置换选择排序',
+    zh: '工作区只保存驻留候选记录；current 是独立的归并段缓冲，因此一段可以长于工作区容量。',
+    en: 'The workspace holds only resident candidates; current is a separate run buffer, so a run may grow beyond the workspace capacity.',
+  },
+] as const;
+
+
 function LanguageToggle() {
   const { toggleLang, lang } = useI18n();
   return (
@@ -142,6 +176,37 @@ describe('ReferenceCodePanel', () => {
     expect(enCopy).toContain('After a left merge the unified block sits at index-1');
     expect(enCopy).not.toMatch(/[\u3400-\u9fff]/);
   });
+
+  for (const algorithm of batchAlgorithms) {
+    it(`shows and copies ${algorithm.id} internals in both UI languages`, async () => {
+      renderPanel(algorithm.id, algorithm.name);
+      await waitForCode();
+      const zhCode = screen.getByTestId('reference-code-fallback').textContent ?? '';
+      expect(zhCode).toContain(algorithm.zh);
+      expect(zhCode).not.toContain(algorithm.en);
+
+      fireEvent.click(screen.getByTestId('reference-copy'));
+      await waitFor(() => expect(screen.getByTestId('reference-copy').textContent).toContain('已复制'));
+      const writeText = navigator.clipboard.writeText as unknown as ReturnType<typeof vi.fn>;
+      const zhCopy = String(writeText.mock.calls[0][0]);
+      expect(zhCopy).toContain(algorithm.zh);
+      expect(zhCopy).not.toContain(algorithm.en);
+
+      fireEvent.click(screen.getByTestId('test-toggle-language'));
+      await waitFor(() =>
+        expect(screen.getByTestId('reference-code-fallback').textContent).toContain(algorithm.en),
+      );
+      const enCode = screen.getByTestId('reference-code-fallback').textContent ?? '';
+      expect(enCode).toContain(algorithm.en);
+      expect(enCode).not.toMatch(/[\u3400-\u9fff]/);
+
+      fireEvent.click(screen.getByTestId('reference-copy'));
+      await waitFor(() => expect(writeText).toHaveBeenCalledTimes(2));
+      const enCopy = String(writeText.mock.calls[1][0]);
+      expect(enCopy).toContain(algorithm.en);
+      expect(enCopy).not.toMatch(/[\u3400-\u9fff]/);
+    });
+  }
 
   it('switches between the principle and shared convenience implementations', async () => {
     renderPanel('bubble', '冒泡排序');
