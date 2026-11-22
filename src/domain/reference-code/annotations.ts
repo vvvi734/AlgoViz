@@ -7,12 +7,14 @@
  * shown when the UI language is Chinese. Comments that are not listed here are
  * treated as source-only documentation and are omitted from the Chinese view.
  */
+import { BATCH_03_ANNOTATIONS } from './batch-03-annotations';
+
 export interface ReferenceAnnotation {
   en: string;
   zh: string;
 }
 
-export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[]> = {
+const BASE_REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[]> = {
   "avl_tree.c": [
     {
       en: "The balance factor is height(left) - height(right); values outside {-1, 0, 1} need rotation.",
@@ -1631,14 +1633,14 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
   ],
   "seqlist.cpp": [
     {
-      en: "`length` is the live element count, not capacity; insert/erase shift only the live range and then update it.",
-      zh: "`length` 是有效元素数量，不是容量；插入/删除只搬移有效区间，最后再更新它。",
+      en: "`size_` is the live element count, not capacity; insert/erase shift only the live range and then update it.",
+      zh: "`size_` 是有效元素数量，不是容量；插入/删除只搬移有效区间，最后再更新它。",
     },
   ],
   "seqlist.py": [
     {
-      en: "`length` is the live element count, not capacity; insert/erase shift only the live range and then update it.",
-      zh: "`length` 是有效元素数量，不是容量；插入/删除只搬移有效区间，最后再更新它。",
+      en: "`_size` is the live element count, not capacity; insert/erase shift only the live range and then update it.",
+      zh: "`_size` 是有效元素数量，不是容量；插入/删除只搬移有效区间，最后再更新它。",
     },
   ],
   "shell_sort.c": [
@@ -3588,3 +3590,16 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
     },
   ],
 };
+
+const MERGED_REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[]> = {
+  ...BASE_REFERENCE_ANNOTATIONS,
+};
+
+for (const [fileName, annotations] of Object.entries(BATCH_03_ANNOTATIONS)) {
+  MERGED_REFERENCE_ANNOTATIONS[fileName] = [
+    ...(MERGED_REFERENCE_ANNOTATIONS[fileName] ?? []),
+    ...annotations,
+  ];
+}
+
+export const REFERENCE_ANNOTATIONS = MERGED_REFERENCE_ANNOTATIONS;

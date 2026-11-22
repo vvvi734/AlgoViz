@@ -27,40 +27,39 @@ typedef struct
     int length;
 } SeqList;
 
-// Purpose: Initialize the sequential list by setting length to zero while keeping capacity.
-// 作用：初始化顺序表：把 length 置 0，容量保持不变。
 void InitList(SeqList *list)
 {
     list->length = 0;
 }
 
 // `length` is the live element count, not capacity; insert/erase shift only the live range and then update it.
-// Purpose: Insert value before index after checking the index range and capacity, shifting elements from back to front.
-// 作用：在下标 index 前插入 value；先检查 index 范围和容量，再从后往前搬移。
 bool ListInsert(SeqList *list, int index, int value)
 {
+    // Insertion accepts index == length as append, but rejects length == capacity: the legal range is bounded by both the live count and the physical array.
     if (list->length == LIST_CAPACITY || index < 0 || index > list->length)
     {
         return false;
     }
+    // Copy backwards from the tail; moving from index upward would overwrite values that still have to be shifted.
     for (int position = list->length; position > index; --position)
     {
         list->values[position] = list->values[position - 1];
     }
     list->values[index] = value;
+    // Publish the new element only after values[index] is written; length is the boundary every traversal trusts.
     ++list->length;
     return true;
 }
 
-// Purpose: Remove the element at index: save its value, shift later elements forward to fill the gap, and decrement length.
-// 作用：删除下标 index 的元素；先保存值，再从前往后搬移覆盖空位并减小 length。
 bool ListErase(SeqList *list, int index, int *removed)
 {
     if (index < 0 || index >= list->length)
     {
         return false;
     }
+    // Save the removed value before the shift overwrites its slot; the caller still receives the original element.
     *removed = list->values[index];
+    // Copy forward from index+1; each write fills the hole left by the previous copy, and the last slot becomes dead.
     for (int position = index; position + 1 < list->length; ++position)
     {
         list->values[position] = list->values[position + 1];
@@ -69,10 +68,9 @@ bool ListErase(SeqList *list, int index, int *removed)
     return true;
 }
 
-// Purpose: Traverse and print the list without changing head or node links.
-// 作用：只读遍历并输出链表；不修改 head 或结点链接。
 void PrintList(const SeqList *list)
 {
+    // Print exactly [0, length): slots from length to capacity-1 are allocated but not part of the list.
     for (int index = 0; index < list->length; ++index)
     {
         printf("%d%s", list->values[index], index + 1 == list->length ? "\n" : " ");

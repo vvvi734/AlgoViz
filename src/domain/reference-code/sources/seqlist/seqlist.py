@@ -23,6 +23,7 @@ from __future__ import annotations
 
 class SeqList:
     def __init__(self, capacity: int = 8) -> None:
+        # A non-positive capacity would make every insert fail and every erase index invalid, so reject it at construction.
         if capacity <= 0:
             raise ValueError("capacity must be positive")
         self._items: list[int] = [0] * capacity
@@ -32,13 +33,16 @@ class SeqList:
         return self._size
 
     # Insert shifts [index, length) one slot right, then writes the new value.
-    # `length` is the live element count, not capacity; insert/erase shift only the live range and then update it.
+    # `_size` is the live element count, not capacity; insert/erase shift only the live range and then update it.
     def insert(self, index: int, value: int) -> bool:
+        # The chained bound accepts index == _size for append and rejects negative indices before any list access.
         if self._size == len(self._items) or not 0 <= index <= self._size:
             return False
+        # range starts at _size and stops above index, so each assignment consumes a slot that was already copied.
         for i in range(self._size, index, -1):
             self._items[i] = self._items[i - 1]
         self._items[index] = value
+        # The new value is visible before _size grows; no reader can treat an unwritten slot as live.
         self._size += 1
         return True
 
@@ -46,17 +50,17 @@ class SeqList:
         if not 0 <= index < self._size:
             return None
         removed = self._items[index]
+        # This loop touches pairs (i, i+1) inside the live prefix; the old last element is left beyond the new _size.
         for i in range(index, self._size - 1):
             self._items[i] = self._items[i + 1]
         self._size -= 1
         return removed
 
     def to_list(self) -> list[int]:
+        # Slicing copies only the live prefix, so callers cannot mutate the backing capacity or see dead slots.
         return self._items[: self._size]
 
 
-# Purpose: Build a sequential list and demonstrate insertion, deletion and search.
-# 作用：构造顺序表并演示插入、删除和查找。
 def main() -> None:
     seq = SeqList()
     seq.insert(0, 1)

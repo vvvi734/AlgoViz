@@ -38,24 +38,30 @@ class DoublyList:
 
     # Append wires prev and next first; only then does tail move to the new node.
     def append(self, value: int) -> Node:
+        # The constructor records the old tail as prev; next remains None because the new node is about to become the last node.
         node = Node(value, prev=self.tail)
+        # An empty list has no old tail, so the new node is both head and tail; otherwise only the old tail's next changes.
         if self.tail is None:
             self.head = node
         else:
             self.tail.next = node
+        # tail moves last, after the forward link exists; moving it first would lose the attachment point.
         self.tail = node
         return node
 
     # Removal repairs both `prev` and `next`; removing the head or tail must also update the external head/tail pointer.
     def remove(self, node: Node) -> None:
+        # Head removal replaces self.head; there is no predecessor whose next could be rewritten.
         if node.prev is None:
             self.head = node.next
         else:
             node.prev.next = node.next
+        # Tail removal moves self.tail back to node.prev; the successor branch handles every non-tail node.
         if node.next is None:
             self.tail = node.prev
         else:
             node.next.prev = node.prev
+        # Detach the removed node's own links after the list is repaired; stale links would keep the rest of the list reachable from a dead node.
         node.prev = None
         node.next = None
 
@@ -76,8 +82,6 @@ class DoublyList:
         return values
 
 
-# Purpose: Build a doubly linked list and demonstrate insertion, deletion and traversal in both directions.
-# 作用：构造双向链表并演示插入、删除和双向遍历。
 def main() -> None:
     lst = DoublyList()
     lst.append(1)

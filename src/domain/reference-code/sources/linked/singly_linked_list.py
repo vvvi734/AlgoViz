@@ -41,11 +41,13 @@ class SinglyLinkedList:
 
     def find_prev(self, target: Node | None) -> Node | None:
         """Return the node before target, or None for the head / a miss."""
+        # None is overloaded here: it means no list, no target, or the target is the head. Callers must not treat it as a generic predecessor.
         if self.head is None or target is None or target is self.head:
             return None
         prev = self.head
         while prev.next is not None and prev.next is not target:
             prev = prev.next
+        # A full walk that never finds target returns None; the caller rejects that value instead of linking after an unknown node.
         return prev if prev.next is target else None
 
     def insert_after(self, prev: Node | None, value: int) -> bool:
@@ -54,6 +56,7 @@ class SinglyLinkedList:
             return False
         node = Node(value)
         # Point the new node at the old successor before relinking prev.
+        # Attach the new node to the old successor before changing prev.next; this preserves the tail of the list.
         node.next = prev.next
         prev.next = node
         self.length += 1
@@ -68,9 +71,11 @@ class SinglyLinkedList:
         if current is None:
             return False
         if prev is None:
+            # The head has no predecessor, so removal must replace self.head rather than rewrite a prev.next field.
             self.head = current.next
         else:
             prev.next = current.next
+        # The unlink is complete before the count shrinks; no state is observed with a reachable node missing from length.
         self.length -= 1
         return True
 
@@ -83,8 +88,6 @@ class SinglyLinkedList:
         return values
 
 
-# Purpose: Build a singly linked list and demonstrate insertion, deletion and traversal.
-# 作用：构造单链表并演示插入、删除和遍历。
 def main() -> None:
     linked = SinglyLinkedList()
     linked.insert_head(5)

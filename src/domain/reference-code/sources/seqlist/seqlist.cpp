@@ -27,26 +27,26 @@ template <typename T, std::size_t Capacity> class SeqList
 {
   public:
     // Insert shifts [index, length) one slot right, then writes the new value.
-    // `length` is the live element count, not capacity; insert/erase shift only the live range and then update it.
-    // Purpose: Insert value before index after checking range and capacity, shifting elements from back to front.
-    // 作用：在下标 index 前插入 value；先检查范围和容量，再从后往前搬移。
+    // `size_` is the live element count, not capacity; insert/erase shift only the live range and then update it.
     bool insert(std::size_t index, const T &value)
     {
+        // size_t cannot be negative, so only the upper bound is needed here; index == size_ is a legal append position.
         if (size_ >= Capacity || index > size_)
         {
             return false;
         }
+        // Shift the live suffix right from the end; i starts at size_, the first unused slot, so each write happens before its source is read.
         for (std::size_t i = size_; i > index; --i)
         {
             items_[i] = items_[i - 1];
         }
         items_[index] = value;
+        // Update size_ after items_[index] is assigned; until then the new slot is not part of the live range.
         ++size_;
         return true;
     }
 
-    // Purpose: Remove and return the element at index by shifting later elements forward into the gap.
-    // 作用：删除下标 index 的元素并返回它；从前往后搬移覆盖空位。
+    // optional<T> separates no element from a stored value such as 0; erase can return any T without a sentinel.
     std::optional<T> erase(std::size_t index)
     {
         if (index >= size_)
@@ -54,16 +54,16 @@ template <typename T, std::size_t Capacity> class SeqList
             return std::nullopt;
         }
         T removed = items_[index];
+        // Fill the hole left to right; after the last copy, slot size_-1 is outside the live range and may be overwritten later.
         for (std::size_t i = index; i + 1 < size_; ++i)
         {
             items_[i] = items_[i + 1];
         }
+        // Decrement only after the gap is closed; removed still holds a copy of the erased value.
         --size_;
         return removed;
     }
 
-    // Purpose: Print the current live elements of the sequential list read-only.
-    // 作用：只读输出顺序表当前有效元素。
     void print() const
     {
         for (std::size_t i = 0; i < size_; ++i)

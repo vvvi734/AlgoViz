@@ -45,8 +45,7 @@ typedef struct
  * only work here is clearing `head` and `tail`; those two nulls are the complete
  * empty-state invariant for later traversals and appends.
  */
-// Purpose: Represent an empty list by clearing both endpoints.
-// 作用：用 head/tail 同时为空表示空表；本结构没有 length 字段需要复位。
+// Both endpoints are cleared together; this implementation keeps no count, so those two nulls fully describe the empty state.
 void list_init(DoublyList *list)
 {
     list->head = NULL;
@@ -60,8 +59,6 @@ void list_init(DoublyList *list)
  * instead. Allocation failure returns before any link changes, leaving the list
  * exactly as it was.
  */
-// Purpose: Append one node while keeping prev/next mutually consistent.
-// 作用：在尾部追加结点，先接好 prev/next，再更新 tail；空表时同时设置 head。
 Node *list_append(DoublyList *list, int value)
 {
     Node *node = (Node *)malloc(sizeof(Node));
@@ -70,14 +67,17 @@ Node *list_append(DoublyList *list, int value)
         return NULL;
     }
     node->value = value;
+    // The new node's prev is the old tail before tail moves; next stays NULL because append always creates the new last node.
     node->prev = list->tail;
     node->next = NULL;
     if (list->tail != NULL)
     {
+        // Patch the old tail's next before publishing the new tail; otherwise the backward chain would end at a node with no forward partner.
         list->tail->next = node;
     }
     else
     {
+        // Only an empty list reaches this branch: the new node is both head and tail, so head must be set explicitly.
         list->head = node;
     }
     list->tail = node;
@@ -85,10 +85,9 @@ Node *list_append(DoublyList *list, int value)
 }
 
 // Removal repairs both `prev` and `next`; removing the head or tail must also update the external head/tail pointer.
-// Purpose: Remove a known node by linking its predecessor to its successor and its successor back to its predecessor, then freeing it.
-// 作用：删除已知结点 node：让前驱的 next 指向后继，后继的 prev 指回前驱，再释放结点。
 void list_remove(DoublyList *list, Node *node)
 {
+    // Head removal has no predecessor to patch, so it must move list->head to node->next instead.
     if (node->prev != NULL)
     {
         node->prev->next = node->next;
@@ -97,6 +96,7 @@ void list_remove(DoublyList *list, Node *node)
     {
         list->head = node->next;
     }
+    // Tail removal has no successor to patch, so list->tail retreats to node->prev.
     if (node->next != NULL)
     {
         node->next->prev = node->prev;
@@ -108,8 +108,6 @@ void list_remove(DoublyList *list, Node *node)
     free(node);
 }
 
-// Purpose: Print the list forward from head along next; read-only and does not alter links.
-// 作用：从 head 沿 next 正向输出链表；只读，不改变结构。
 void list_print_forward(const DoublyList *list)
 {
     for (const Node *node = list->head; node != NULL; node = node->next)
@@ -119,8 +117,6 @@ void list_print_forward(const DoublyList *list)
     printf("\n");
 }
 
-// Purpose: Print the list backward from tail along prev; read-only and does not alter links.
-// 作用：从 tail 沿 prev 反向输出链表；只读，不改变结构。
 void list_print_backward(const DoublyList *list)
 {
     for (const Node *node = list->tail; node != NULL; node = node->prev)
@@ -130,10 +126,9 @@ void list_print_backward(const DoublyList *list)
     printf("\n");
 }
 
-// Purpose: Free every circular-list node and restore the empty state; stop at the correct point in the ring.
-// 作用：释放循环链表全部结点，并恢复空表状态；注意环的终止条件。
 void list_free(DoublyList *list)
 {
+    // This is a linear doubly linked list, not a ring: following next from head reaches NULL exactly once per node.
     Node *node = list->head;
     while (node != NULL)
     {

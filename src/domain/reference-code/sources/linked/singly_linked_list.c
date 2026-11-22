@@ -26,8 +26,7 @@ struct Node
     struct Node *next;
 };
 
-// Purpose: Create a singly linked-list node holding value with a null next pointer.
-// 作用：创建一个单链表结点，保存 value 并把 next 置空。
+// Allocate before linking; next is set to NULL so a partially built node never exposes an uninitialized link.
 static struct Node *CreateNode(int value)
 {
     struct Node *node = (struct Node *)malloc(sizeof(struct Node));
@@ -47,8 +46,6 @@ static struct Node *CreateNode(int value)
  * node needs no second traversal. If the predecessor is NULL, the index is past the
  * end and the function returns false without allocating or modifying the list.
  */
-// Purpose: Insert before `index`; index 0 changes the caller's head, invalid index returns false.
-// 作用：在 index 前插入；只有 index 0 改 *head；越界时在分配前返回 false。
 bool ListInsert(struct Node **head, int index, int value)
 {
     if (head == NULL || index < 0)
@@ -69,10 +66,12 @@ bool ListInsert(struct Node **head, int index, int value)
     }
 
     struct Node *previous = *head;
+    // Stop on the predecessor at index-1; walking to index itself would leave no node to relink.
     for (int position = 0; previous != NULL && position < index - 1; ++position)
     {
         previous = previous->next;
     }
+    // The predecessor search failed past the end; return before allocating so a rejected index cannot leak a node.
     if (previous == NULL)
     {
         return false;
@@ -93,8 +92,6 @@ bool ListInsert(struct Node **head, int index, int value)
  * successor, index is past the last node. The target's successor is copied into the
  * predecessor's link before `free`, because the freed node must not be read again.
  */
-// Purpose: Remove the node at `index`; save its value, relink, then free exactly once.
-// 作用：删除 index 处结点；先保存返回值与后继，再改链，最后释放目标。
 bool ListDelete(struct Node **head, int index, int *removed)
 {
     if (head == NULL || *head == NULL || index < 0)
@@ -128,8 +125,6 @@ bool ListDelete(struct Node **head, int index, int *removed)
     return true;
 }
 
-// Purpose: Traverse and print the list without changing head or node links.
-// 作用：只读遍历并输出链表；不修改 head 或结点链接。
 void PrintList(const struct Node *head)
 {
     printf("list:");
@@ -140,13 +135,12 @@ void PrintList(const struct Node *head)
     printf("\n");
 }
 
-// Purpose: Traverse and free every node, then clear head; save next before calling free.
-// 作用：遍历释放链表全部结点，并把 head 置空；先保存 next 再 free。
 void FreeList(struct Node **head)
 {
     struct Node *node = *head;
     while (node != NULL)
     {
+        // Save next before free; after the free the node's fields are no longer readable.
         struct Node *next = node->next;
         free(node);
         node = next;

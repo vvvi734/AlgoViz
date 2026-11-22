@@ -40,10 +40,9 @@ class DoublyList
      * `head_` becomes null; `tail_` is a non-owning observer and is not used after
      * the object is destroyed.
      */
-    // Purpose: Release the owning chain from the head; no count field is involved.
-    // 作用：从 head 沿 unique_ptr 链释放全部结点；本类没有 length，tail_ 不参与所有权。
     ~DoublyList()
     {
+        // Moving head_->next into head_ releases the old head; tail_ is only an observer and is never dereferenced after destruction.
         while (head_)
         {
             head_ = std::move(head_->next);
@@ -57,14 +56,15 @@ class DoublyList
      * empty list there is no old tail, so `head_` receives the node instead. The
      * new links exist before `tail_` is moved, keeping prev/next symmetric.
      */
-    // Purpose: Link a new owned node after the old tail, then publish it as tail_.
-    // 作用：先把新结点接入链并保持 prev/next 对称，最后再更新 tail_。
     Node *append(int value)
     {
+        // make_unique establishes ownership before any link is changed; unlike the C version, allocation failure throws instead of returning null.
         auto node = std::make_unique<Node>();
         node->value = value;
         node->prev = tail_;
+        // Keep the raw address because moving the unique_ptr transfers ownership; tail_ must observe the node, not own it.
         Node *raw = node.get();
+        // A non-empty list attaches through the old tail's owning next; an empty list must install the node as head_ instead.
         if (tail_)
         {
             tail_->next = std::move(node);
@@ -73,6 +73,7 @@ class DoublyList
         {
             head_ = std::move(node);
         }
+        // tail_ moves only after the new node is reachable from head_; updating early would expose a node with no inbound link.
         tail_ = raw;
         return raw;
     }
@@ -84,17 +85,18 @@ class DoublyList
      * `prev->next` or `head_` may delete `node`. Updating `tail_` before that
      * assignment avoids reading a freed `node->prev`.
      */
-    // Purpose: Remove a known node by reconnecting its neighbours with unique_ptr ownership.
-    // 作用：先保存 prev 与尾结点关系，再用 unique_ptr 转移所有权接回前驱/后继。
     void remove(Node *node)
     {
+        // Capture prev and the tail relation before moving node->next: the move may destroy node once ownership is reassigned.
         Node *prev = node->prev;
         bool was_tail = (tail_ == node);
+        // Moving next out of node makes the successor owned by the local variable; the later assignment transfers it to prev or head_.
         std::unique_ptr<Node> next = std::move(node->next);
         if (next)
         {
             next->prev = prev;
         }
+        // tail_ must retreat before the final owning assignment may delete node; after deletion node->prev is unreadable.
         if (was_tail)
         {
             tail_ = prev;
@@ -109,8 +111,6 @@ class DoublyList
         }
     }
 
-    // Purpose: Print the list forward from head along next; read-only and does not alter links.
-    // 作用：从 head 沿 next 正向输出链表；只读，不改变结构。
     void print_forward() const
     {
         for (Node *node = head_.get(); node; node = node->next.get())
@@ -120,8 +120,6 @@ class DoublyList
         std::cout << '\n';
     }
 
-    // Purpose: Print the list backward from tail along prev; read-only and does not alter links.
-    // 作用：从 tail 沿 prev 反向输出链表；只读，不改变结构。
     void print_backward() const
     {
         for (Node *node = tail_; node; node = node->prev)
