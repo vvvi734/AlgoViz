@@ -212,7 +212,7 @@ export function StorageConceptDiagram({
   return (
     <svg
       className="concept-svg concept-svg-wide"
-      viewBox="0 0 900 630"
+      viewBox="0 0 900 650"
       role="img"
       aria-label={L('定长顺序、堆分配与块链三种串存储结构', 'Fixed, heap-allocated and block-chain string storage')}
     >
@@ -231,79 +231,79 @@ export function StorageConceptDiagram({
           <rect
             className={`diagram-cell ${index >= 6 ? 'diagram-cell-free' : index === 5 ? 'diagram-accent' : ''}`}
             x={180 + index * 56}
-            y="96"
+            y="120"
             width="52"
             height="46"
             rx="3"
           />
-          <text className="diagram-label" x={206 + index * 56} y="124" textAnchor="middle">
+          <text className="diagram-label" x={206 + index * 56} y="148" textAnchor="middle">
             {char}
           </text>
-          <text className="diagram-note" x={206 + index * 56} y="156" textAnchor="middle">
+          <text className="diagram-note" x={206 + index * 56} y="180" textAnchor="middle">
             {index}
           </text>
         </g>
       ))}
-      <text className="diagram-label" x="34" y="118">
+      <text className="diagram-label" x="34" y="148">
         {L('MAXLEN = 8', 'MAXLEN = 8')}
       </text>
-      <text className="diagram-label" x="180" y="86">
+      <text className="diagram-label" x="180" y="108" data-testid="string-c-terminator">
         {L("C 字符串：ch[5] = '\\0'", "C string: ch[5] = '\\0'")}
       </text>
-      <text className="diagram-note" x="180" y="176">
+      <text className="diagram-note" x="180" y="200">
         {L('教材串 ADT：S.length = 5，第 5 格及以后仍算容量', 'String ADT: S.length = 5; slot 5 and later remain capacity')}
       </text>
-      <text className="diagram-note" x="180" y="200">
+      <text className="diagram-note" x="180" y="224">
         {L("C 字符串没有 length 字段，靠 '\\0' 判断结束，strlen 需要扫描", "A C string has no length field; '\\0' ends it and strlen scans for it")}
       </text>
 
-      <text className="diagram-label diagram-label-strong" x="34" y="238">
+      <text className="diagram-label diagram-label-strong" x="34" y="248">
         {L('② 堆分配存储', '② Heap-allocated storage')}
       </text>
-      <text className="diagram-note" x="34" y="260">
+      <text className="diagram-note" x="34" y="270">
         {L('base 指向连续堆块，length 记录有效字符，capacity 记录可写槽位', 'base points at a contiguous heap block; length counts valid characters and capacity counts writable slots')}
       </text>
-      <rect className="diagram-box diagram-accent" x="150" y="274" width="96" height="42" rx="6" />
-      <text className="diagram-label" x="198" y="300" textAnchor="middle">
+      <rect className="diagram-box diagram-accent" x="150" y="284" width="96" height="42" rx="6" />
+      <text className="diagram-label" x="198" y="310" textAnchor="middle">
         base
       </text>
-      <line className="diagram-line" x1="246" y1="295" x2="286" y2="295" />
-      <polygon className="diagram-arrow" points="294,295 285,290 285,300" />
+      <line className="diagram-line" x1="246" y1="305" x2="286" y2="305" />
+      <polygon className="diagram-arrow" points="294,305 285,300 285,310" />
       {['A', 'L', 'G', 'O', 'V', 'I', 'Z', '—', '—'].map((char, index) => (
         <g key={`heap-${index}`} >
           <rect
             className={`diagram-cell ${index >= 7 ? 'diagram-cell-free' : ''}`}
             x={300 + index * 46}
-            y="274"
+            y="284"
             width="42"
             height="42"
             rx="3"
           />
-          <text className="diagram-label" x={321 + index * 46} y="300" textAnchor="middle">
+          <text className="diagram-label" x={321 + index * 46} y="310" textAnchor="middle">
             {char}
           </text>
         </g>
       ))}
-      <text className="diagram-note" x="34" y="326">
+      <text className="diagram-note" x="34" y="336">
         {L('S.length = 7，S.capacity = 9；有效字符只到下标 6', 'S.length = 7, S.capacity = 9; valid characters stop at index 6')}
       </text>
-      <text className="diagram-note" x="34" y="350">
+      <text className="diagram-note" x="34" y="360">
         {L('扩容：申请新块 → 复制旧字符 → 释放旧块 → 更新 base；realloc 可能搬动地址', 'Grow: allocate → copy → free old → update base; realloc may move the block')}
       </text>
 
-      <text className="diagram-label diagram-label-strong" x="34" y="386">
+      <text className="diagram-label diagram-label-strong" x="34" y="396">
         {L('③ 块链存储', '③ Block-chain storage')}
       </text>
-      <text className="diagram-note" x="34" y="408">
+      <text className="diagram-note" x="34" y="418">
         {L('每块存固定个字符，next 串起下一块；最后一块可以不满', 'Each block stores a fixed number of characters; next links blocks; the last block may be partial')}
       </text>
       {[0, 1, 2].map((block) => {
         const x = 100 + block * 270;
         const chars = block === 0 ? ['D', 'A', 'T', 'A'] : block === 1 ? ['S', 'T', 'R', 'U'] : ['C', 'T', '—', '—'];
         return (
-          <g key={`block-${block}`}>
-            <rect className="diagram-box" x={x} y="418" width="228" height="92" rx="7" />
-            <text className="diagram-note" x={x + 10} y="440">
+          <g key={`block-${block}`} data-testid="string-block" data-block-index={block}>
+            <rect className="diagram-box" x={x} y="428" width="228" height="92" rx="7" />
+            <text className="diagram-note" x={x + 10} y="450">
               {L(`结点 ${block + 1} · 容量 4`, `Block ${block + 1} · capacity 4`)}
             </text>
             {chars.map((char, index) => (
@@ -311,44 +311,44 @@ export function StorageConceptDiagram({
                 <rect
                   className={`diagram-cell ${char === '—' ? 'diagram-cell-free' : ''}`}
                   x={x + 10 + index * 43}
-                  y="448"
+                  y="458"
                   width="39"
                   height="32"
                   rx="3"
                 />
-                <text className="diagram-label" x={x + 29.5 + index * 43} y="470" textAnchor="middle">
+                <text className="diagram-label" x={x + 29.5 + index * 43} y="480" textAnchor="middle">
                   {char}
                 </text>
               </g>
             ))}
             {block < 2 ? (
               <>
-                <text className="diagram-note" x={x + 180} y="482">
+                <text className="diagram-note" x={x + 180} y="492">
                   next
                 </text>
-                <line className="diagram-line" x1={x + 228} y1="476" x2={x + 252} y2="476" />
-                <polygon className="diagram-arrow" points={`${x + 260},476 ${x + 251},471 ${x + 251},481`} />
+                <line className="diagram-line" x1={x + 228} y1="486" x2={x + 252} y2="486" />
+                <polygon className="diagram-arrow" points={`${x + 260},486 ${x + 251},481 ${x + 251},491`} />
               </>
             ) : (
-              <text className="diagram-note" x={x + 180} y="482">
+              <text className="diagram-note" x={x + 218} y="492" textAnchor="end" data-testid="string-tail-pointer">
                 next = NULL
               </text>
             )}
-            <text className="diagram-note" x={x + 10} y="504">
+            <text className="diagram-note" x={x + 10} y="514">
               {L('块内字符数组', 'in-block character array')}
             </text>
           </g>
         );
       })}
-      <text className="diagram-note" x="100" y="538">
+      <text className="diagram-note" x="100" y="548">
         {L('length = 10；第三块只有 2 个有效字符，遍历到 length 就停止', 'length = 10; the third block has only 2 valid characters, so traversal stops at length')}
       </text>
-      <text className="diagram-note" x="100" y="562">
+      <text className="diagram-note" x="100" y="572">
         {L('存储密度 = 有效字符空间 / 全部结点空间；next 指针与末块空位都会降低密度', 'Storage density = valid-character space / total node space; next pointers and final-block gaps reduce it')}
       </text>
 
-      <rect className="diagram-band" x="34" y="582" width="832" height="34" rx="8" />
-      <text className="diagram-label" x="450" y="604" textAnchor="middle">
+      <rect className="diagram-band" x="34" y="592" width="832" height="34" rx="8" />
+      <text className="diagram-label" x="450" y="614" textAnchor="middle">
         {L('定长：容量固定 · 堆分配：连续可扩 · 块链：按块拼接，指针开销换灵活连接', 'Fixed: bounded capacity · Heap: contiguous and growable · Block chain: link blocks, trading pointer overhead for flexible joins')}
       </text>
     </svg>

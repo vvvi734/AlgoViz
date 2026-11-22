@@ -60,12 +60,12 @@ export function FileStructureConceptDiagram({
         <text className="diagram-label diagram-label-strong" x="28" y="30">{title}</text>
         <text className="diagram-note" x="932" y="30" textAnchor="end">{L('教学模型：不实现操作系统文件系统', 'teaching model: not an OS file system')}</text>
 
-        <rect className="diagram-band" x="24" y="56" width="404" height="210" rx="12" />
+        <rect className="diagram-band" x="24" y="56" width="404" height="220" rx="12" />
         <text className="diagram-label" x="44" y="82">{L('逻辑层：文件由同类记录组成', 'Logical layer: a file is a set of records')}</text>
         <rect className="diagram-cell" x="44" y="98" width="360" height="38" rx="7" />
         <text className="diagram-node-text" x="224" y="122" textAnchor="middle">{L('文件：学生记录文件', 'File: student records')}</text>
         {[0, 1, 2].map((row) => (
-          <g key={row}>
+          <g key={row} data-testid={row === 2 ? 'file-basics-r3' : undefined}>
             <rect className={row === 0 ? 'diagram-chip diagram-accent' : 'diagram-chip'} x="44" y={150 + row * 34} width="360" height="28" rx="5" />
             <text className="diagram-node-text" x="224" y={168 + row * 34} textAnchor="middle">
               {L(['记录 R1：101 | A | X', '记录 R2：102 | B | Y', '记录 R3：103 | C | X'][row],
@@ -73,12 +73,14 @@ export function FileStructureConceptDiagram({
             </text>
           </g>
         ))}
-        <text className="diagram-note" x="44" y="250">{L('字段：ID（主关键字） | 姓名 | 类别（次关键字）', 'fields: ID (primary key) | name | category (secondary key)')}</text>
+        <text className="diagram-note" data-testid="file-basics-fields" x="44" y="266">
+          {L('字段：ID（主关键字） | 姓名 | 类别（次关键字）', 'fields: ID (primary key) | name | category (secondary key)')}
+        </text>
 
         <path className="diagram-line" d="M432 160 C476 160, 486 160, 524 160" markerEnd="url(#file-arrow-basics)" />
         <text className="diagram-note" x="478" y="146" textAnchor="middle">{L('按块写入', 'write by block')}</text>
 
-        <rect className="diagram-band" x="528" y="56" width="408" height="210" rx="12" />
+        <rect className="diagram-band" x="528" y="56" width="408" height="220" rx="12" />
         <text className="diagram-label" x="548" y="82">{L('物理层：外存按文件块传输', 'Physical layer: external storage moves blocks')}</text>
         {['块 B0', '块 B1', '块 B2'].map((label, index) => (
           <g key={label}>
@@ -108,93 +110,159 @@ export function FileStructureConceptDiagram({
   }
 
   if (kind === 'sequential-file') {
+    const orderedBlocks = [
+      { id: 'B0', keys: ['101', '102', '103'], bound: '103' },
+      { id: 'B1', keys: ['104', '105', '106'], bound: '106' },
+      { id: 'B2', keys: ['107', '108'], bound: '108' },
+    ] as const;
+    const blockX = [24, 334, 644];
+    const blockWidth = 300;
+    const blockY = 74;
+    const recordY = 104;
+    const recordStart = 24;
+    const recordStep = 88;
+    const recordWidth = 76;
+    const recordCenter = (block: number, index: number) =>
+      blockX[block] + recordStart + index * recordStep + recordWidth / 2;
+    const currentX = recordCenter(1, 1);
     return (
-      <svg className="concept-svg file-concept-svg" viewBox="0 0 960 480" role="img" aria-label={title}>
+      <svg className="concept-svg file-concept-svg" viewBox="0 0 960 600" role="img" aria-label={title}>
         {arrow('file-arrow-seq')}
         <text className="diagram-label diagram-label-strong" x="28" y="30">{title}</text>
         <text className="diagram-note" x="932" y="30" textAnchor="end">{L('块内/块间有序才能剪枝', 'block order enables pruning')}</text>
 
         <text className="diagram-label" x="28" y="62">{L('有序顺序文件（按主关键字 101…108）', 'Ordered sequential file (primary keys 101…108)')}</text>
-        {[
-          ['B0', '101,102,103'],
-          ['B1', '104,105,106'],
-          ['B2', '107,108'],
-        ].map(([block, keys], index) => (
-          <g key={block}>
-            <rect className={index === 1 ? 'diagram-band diagram-accent' : 'diagram-band'} x={28 + index * 300} y="78" width="276" height="90" rx="10" />
-            <text className="diagram-label" x={42 + index * 300} y="102">{block}</text>
-            <text className="diagram-node-text" x={166 + index * 300} y="132" textAnchor="middle">{keys}</text>
-            <text className="diagram-note" x={166 + index * 300} y="154" textAnchor="middle">
-              {L(['上界 103', '上界 106', '上界 108'][index], ['bound 103', 'bound 106', 'bound 108'][index])}
-            </text>
-          </g>
-        ))}
-        <path className="diagram-line" d="M28 194 L316 194" markerEnd="url(#file-arrow-seq)" />
-        <text className="diagram-note" x="30" y="214">{L('当前读取位置：B1 + 块内第 2 条（关键字 105）', 'current position: B1 + second record (key 105)')}</text>
-        <rect className="diagram-chip diagram-accent" x="666" y="78" width="266" height="90" rx="10" />
-        <text className="diagram-label" x="799" y="103" textAnchor="middle">{L('范围扫描 [104,107]', 'range scan [104,107]')}</text>
-        <text className="diagram-note" x="799" y="127" textAnchor="middle">{L('定位 104 起点 → 连续读 B1、B2', 'locate 104 → read B1 then B2')}</text>
-        <text className="diagram-note" x="799" y="147" textAnchor="middle">{L('不能只返回第一条命中', 'never stop at the first hit')}</text>
+        {orderedBlocks.map((block, blockIndex) => {
+          const x = blockX[blockIndex];
+          return (
+            <g key={block.id} data-file-block={block.id}>
+              <rect
+                className={block.id === 'B1' ? 'diagram-band diagram-accent' : 'diagram-band'}
+                x={x}
+                y={blockY}
+                width={blockWidth}
+                height="104"
+                rx="10"
+              />
+              <text className="diagram-label" x={x + 14} y={96}>{block.id}</text>
+              {block.keys.map((key, recordIndex) => {
+                const recordX = x + recordStart + recordIndex * recordStep;
+                return (
+                  <g key={key}>
+                    <rect
+                      className={key === '105' ? 'diagram-chip diagram-accent' : 'diagram-chip'}
+                      x={recordX}
+                      y={recordY}
+                      width={recordWidth}
+                      height="34"
+                      rx="6"
+                      data-file-key={key}
+                      data-block={block.id}
+                    />
+                    <text className="diagram-node-text" x={recordX + recordWidth / 2} y="126" textAnchor="middle">{key}</text>
+                  </g>
+                );
+              })}
+              <text className="diagram-note" x={x + blockWidth - 14} y="164" textAnchor="end">
+                {L(`上界 ${block.bound}`, `bound ${block.bound}`)}
+              </text>
+            </g>
+          );
+        })}
+        <path
+          className="diagram-line"
+          data-testid="sequential-current-arrow"
+          data-current-key="105"
+          d={`M${currentX} 200 L${currentX} 138`}
+          markerEnd="url(#file-arrow-seq)"
+        />
+        <text className="diagram-note" x="28" y="214">
+          {L('当前读取位置：B1 + 块内第 2 条（关键字 105）', 'current position: B1 + second record (key 105)')}
+        </text>
 
-        <text className="diagram-label" x="28" y="258">{L('无序顺序文件（按插入顺序连续存放）', 'Unordered sequential file (contiguous in insertion order)')}</text>
+        <rect className="diagram-band" data-testid="sequential-range-card" x="28" y="226" width="904" height="76" rx="10" />
+        <text className="diagram-label" x="48" y="250">{L('范围扫描 [104,107]：独立说明区', 'Range scan [104,107]: dedicated explanation area')}</text>
+        <text className="diagram-note" x="48" y="272">
+          {L('定位 104 起点 → 连续读 B1、B2；不能只返回第一条命中。', 'locate 104 → read B1 then B2; never stop at the first hit.')}
+        </text>
+        <text className="diagram-note" x="48" y="292">
+          {L('块 B0/B1/B2 的边界分别是 103/106/108，[104,107] 可以据此剪掉 B0。', 'block bounds 103/106/108 let the scan skip B0 for [104,107].')}
+        </text>
+
+        <text className="diagram-label" x="28" y="322">{L('无序顺序文件（按插入顺序连续存放）', 'Unordered sequential file (contiguous in insertion order)')}</text>
         {['B0：105,101,108', 'B1：102,107,104', 'B2：103,106'].map((keys, index) => (
-          <g key={keys}>
-            <rect className="diagram-band" x={28 + index * 300} y="274" width="276" height="58" rx="9" />
-            <text className="diagram-node-text" x={166 + index * 300} y="307" textAnchor="middle">{keys}</text>
+          <g key={keys} data-unordered-block={`B${index}`}>
+            <rect className="diagram-band" x={blockX[index]} y="338" width={blockWidth} height="54" rx="9" />
+            <text className="diagram-node-text" x={blockX[index] + blockWidth / 2} y="371" textAnchor="middle">{keys}</text>
           </g>
         ))}
-        <rect className="diagram-cell" x="666" y="274" width="266" height="78" rx="9" />
-        <text className="diagram-label" x="799" y="297" textAnchor="middle">{L('按关键字找 106：只能扫描', 'find 106 by key: scan required')}</text>
-        <text className="diagram-note" x="799" y="319" textAnchor="middle">{L('块上界不能帮助剪枝', 'block bounds cannot prune')}</text>
-        <text className="diagram-note" x="799" y="337" textAnchor="middle">{L('尾部追加便宜，但失去范围能力', 'cheap append, but no range capability')}</text>
+        <rect className="diagram-band" x="28" y="404" width="904" height="80" rx="9" />
+        <text className="diagram-label" x="48" y="428">{L('按关键字找 106：只能扫描', 'find 106 by key: scan required')}</text>
+        <text className="diagram-note" x="48" y="450">{L('块上界不能帮助剪枝；必须检查到命中或文件结束。', 'block bounds cannot prune; scan to a hit or EOF.')}</text>
+        <text className="diagram-note" x="48" y="470">{L('尾部追加便宜，但失去范围能力。', 'cheap append, but no range capability.')}</text>
 
-        <rect className="diagram-band" x="28" y="380" width="904" height="72" rx="10" />
-        <text className="diagram-label" x="48" y="404">{L('代价要点', 'Cost notes')}</text>
-        <text className="diagram-note" x="48" y="425">{L('有序：插入可能后移/分裂块并更新边界；查找与范围扫描受益。', 'Ordered: insert may shift/split blocks and update bounds; lookup and ranges benefit.')}</text>
-        <text className="diagram-note" x="48" y="443">{L('无序：追加简单；按关键字查找必须检查到命中或文件结束。', 'Unordered: append is simple; key lookup scans to a hit or EOF.')}</text>
+        <rect className="diagram-band" x="28" y="502" width="904" height="86" rx="10" />
+        <text className="diagram-label" x="48" y="526">{L('代价要点', 'Cost notes')}</text>
+        <text className="diagram-note" x="48" y="548">{L('有序：插入可能后移/分裂块并更新边界；查找与范围扫描受益。', 'Ordered: insert may shift/split blocks and update bounds; lookup and ranges benefit.')}</text>
+        <text className="diagram-note" x="48" y="568">{L('无序：追加简单；按关键字查找必须检查到命中或文件结束。', 'Unordered: append is simple; key lookup scans to a hit or EOF.')}</text>
       </svg>
     );
   }
 
   if (kind === 'indexed-file') {
+    const denseEntries = [
+      ['101', 'B0'],
+      ['102', 'B0'],
+      ['103', 'B0'],
+      ['104', 'B1'],
+      ['105', 'B1'],
+      ['106', 'B1'],
+      ['107', 'B2'],
+      ['108', 'B2'],
+    ] as const;
     return (
       <svg className="concept-svg file-concept-svg" viewBox="0 0 960 540" role="img" aria-label={title}>
         {arrow('file-arrow-index')}
         <text className="diagram-label diagram-label-strong" x="28" y="30">{title}</text>
         <text className="diagram-note" x="932" y="30" textAnchor="end">{L('索引项与数据块地址必须一致', 'entries must match data-block addresses')}</text>
 
-        <rect className="diagram-band" x="24" y="54" width="524" height="178" rx="11" />
+        <rect className="diagram-band" x="24" y="54" width="524" height="200" rx="11" />
         <text className="diagram-label" x="44" y="78">{L('稠密索引：每条记录一个索引项', 'Dense index: one entry per record')}</text>
-        {[
-          ['101', '→ B0'],
-          ['102', '→ B0'],
-          ['…', '…'],
-          ['106', '→ B1'],
-          ['107', '→ B2'],
-        ].map(([key, target], index) => (
-          <g key={`${key}-${target}`}>
-            <rect className={key === '106' ? 'diagram-chip diagram-accent' : 'diagram-chip'} x={44 + index * 100} y="94" width="88" height="34" rx="6" />
-            <text className="diagram-node-text" x={88 + index * 100} y="116" textAnchor="middle">{key}</text>
-            <text className="diagram-note" x={88 + index * 100} y="148" textAnchor="middle">{target}</text>
+        {denseEntries.map(([key, block], index) => (
+          <g key={`dense-${key}`} data-dense-entry data-key={key} data-block={block}>
+            <rect
+              className={key === '105' ? 'diagram-chip diagram-accent' : 'diagram-chip'}
+              x={44 + (index % 4) * 118}
+              y={94 + Math.floor(index / 4) * 58}
+              width="104"
+              height="40"
+              rx="6"
+            />
+            <text className="diagram-node-text" x={96 + (index % 4) * 118} y={112 + Math.floor(index / 4) * 58} textAnchor="middle">
+              {key}
+            </text>
+            <text className="diagram-note" x={96 + (index % 4) * 118} y={128 + Math.floor(index / 4) * 58} textAnchor="middle">
+              → {block}
+            </text>
           </g>
         ))}
-        <text className="diagram-note" x="44" y="190">{L('索引项数量 O(n)；可直接确认记录所在块。', 'O(n) entries; directly confirms the record’s block.')}</text>
-        <text className="diagram-note" x="44" y="210">{L('多级索引：对索引块再建一层索引；上层若常驻内存可减少外存索引读。', 'Multilevel index: index the index blocks; memory-resident upper levels reduce external reads.')}</text>
+        <text className="diagram-note" x="44" y="216">{L('8 条记录 → 8 个索引项；可直接确认记录所在块。', '8 records → 8 entries; directly confirms the record’s block.')}</text>
+        <text className="diagram-note" x="44" y="236">{L('多级索引：对索引块再建一层；上层常驻内存可减少外存索引读。', 'Multilevel index: index the index blocks; resident upper levels reduce external reads.')}</text>
 
         <rect className="diagram-band" x="572" y="54" width="364" height="178" rx="11" />
-        <text className="diagram-label" x="592" y="78">{L('稀疏索引：每块只保留首键/上界', 'Sparse index: one start key/bound per block')}</text>
+        <text className="diagram-label" x="592" y="78">{L('稀疏索引：每块只保留首键/上界', 'Sparse index: one start key per block')}</text>
         {[
-          ['101', '→ B0'],
-          ['104', '→ B1'],
-          ['107', '→ B2'],
-        ].map(([key, target], index) => (
-          <g key={key}>
+          ['101', 'B0'],
+          ['104', 'B1'],
+          ['107', 'B2'],
+        ].map(([key, block], index) => (
+          <g key={`sparse-${key}`} data-sparse-entry data-key={key} data-block={block}>
             <rect className={key === '104' ? 'diagram-chip diagram-accent' : 'diagram-chip'} x="592" y={94 + index * 40} width="96" height="30" rx="6" />
             <text className="diagram-node-text" x="640" y={114 + index * 40} textAnchor="middle">{key}</text>
-            <text className="diagram-note" x="704" y={114 + index * 40}>{target}</text>
+            <text className="diagram-note" x="704" y={114 + index * 40}>→ {block}</text>
           </g>
         ))}
-        <text className="diagram-note" x="592" y="214">{L('选“不大于目标的最后一项”，再块内扫描。', 'Choose the last entry not above the target, then scan the block.')}</text>
+        <text className="diagram-note" x="592" y="214">{L('选“不大于目标的最后一项”，再块内扫描。', 'last entry ≤ target; then scan block.')}</text>
 
         <text className="diagram-label" x="28" y="268">{L('数据文件：索引项指向块，块内仍有真实记录', 'Data file: entries point to blocks that still hold real records')}</text>
         {[
@@ -202,21 +270,27 @@ export function FileStructureConceptDiagram({
           ['B1', '104 | 105 | 106'],
           ['B2', '107 | 108'],
         ].map(([block, keys], index) => (
-          <g key={block}>
+          <g key={block} data-data-block={block}>
             <rect className={index === 1 ? 'diagram-band diagram-accent' : 'diagram-band'} x={28 + index * 300} y="284" width="276" height="82" rx="9" />
             <text className="diagram-label" x={44 + index * 300} y="309">{block}</text>
             <text className="diagram-node-text" x={166 + index * 300} y="338" textAnchor="middle">{keys}</text>
             <text className="diagram-note" x={166 + index * 300} y="357" textAnchor="middle">{L('块内仍需比较关键字', 'keys still compared inside')}</text>
           </g>
         ))}
-        <path className="diagram-line" d="M640 128 C640 240, 478 240, 478 282" markerEnd="url(#file-arrow-index)" />
-        <text className="diagram-note" x="600" y="244">{L('稀疏索引命中 B1 → 读块 → 比较 104/105/106', 'sparse entry selects B1 → read → compare 104/105/106')}</text>
+        <path
+          className="diagram-line"
+          data-testid="indexed-sparse-arrow"
+          data-target-block="B1"
+          d="M688 164 C688 248, 466 248, 466 282"
+          markerEnd="url(#file-arrow-index)"
+        />
+        <text className="diagram-note" x="600" y="244">{L('稀疏项 104 → B1 → 块内比较', 'sparse 104 → B1 → compare inside')}</text>
 
         <rect className="diagram-band" x="28" y="398" width="904" height="112" rx="10" />
         <text className="diagram-label" x="48" y="422">{L('查找路径与维护', 'Lookup path and maintenance')}</text>
         <text className="diagram-note" x="48" y="445">{L('① 检查索引项 → ② 选定数据块 → ③ 读块并块内比较 → ④ 命中/失败。', '① probe entries → ② select a block → ③ read and compare → ④ hit/miss.')}</text>
         <text className="diagram-note" x="48" y="465">{L('插入/删除：稠密索引增删记录项；稀疏索引更新块首键或边界；块分裂会改变索引结构。', 'Insert/delete: dense changes record entries; sparse updates start keys or bounds; splits change the index.')}</text>
-        <text className="diagram-note" x="48" y="485">{L('本课程模拟一级索引；多级索引只作结构说明，不声称已有独立播放器。', 'The course models a one-level index; multilevel indexing is explained structurally, not claimed as another player.')}</text>
+        <text className="diagram-note" x="48" y="485">{L('本课程模拟一级索引；多级索引只作结构说明，不声称已有独立播放器。', 'The course models one index level; multilevel indexing is structural only, not another player.')}</text>
       </svg>
     );
   }
@@ -251,10 +325,11 @@ export function FileStructureConceptDiagram({
         <text className="diagram-node-text" x="702" y="143" textAnchor="middle">O0：109</text>
         <path className="diagram-line" d="M558 219 L638 138" markerEnd="url(#file-arrow-isam)" />
         <text className="diagram-note" x="640" y="178">{L('溢出记录仍属于 B2', 'overflow still belongs to B2')}</text>
-        <text className="diagram-note" x="640" y="198">{L('查找：索引选块 → 扫主块 → 沿链继续', 'lookup: select block → scan → follow chain')}</text>
-        <text className="diagram-note" x="640" y="218">{L('链过长 → 重组，把溢出记录回填主区', 'long chain → reorganize overflow back into main area')}</text>
-        <text className="diagram-note" x="640" y="238">{L('索引相对静态：没有 B+ 树自动分裂/平衡', 'relatively static: no B+ tree splits/balancing')}</text>
-        <text className="diagram-note" x="44" y="268">{L('主区内部有序；溢出链可能破坏块间顺序，因此 ISAM 适合相对静态文件。', 'Main blocks are ordered; overflow can disrupt block order, so ISAM suits relatively static files.')}</text>
+        <text className="diagram-note" x="640" y="198">{L('查找：索引选块 → 扫主块 → 沿链', 'lookup: select block → scan → follow chain')}</text>
+        <text className="diagram-note" x="640" y="218">{L('链过长 → 重组，回填主区', 'long chain → reorganize back into main area')}</text>
+        <text className="diagram-note" x="640" y="238">{L('索引相对静态：无自动分裂/平衡', 'relatively static: no automatic splits/balancing')}</text>
+        <text className="diagram-note" x="44" y="258">{L('主区内部有序；溢出链会破坏块间顺序。', 'Main blocks are ordered; overflow chains can disrupt block order.')}</text>
+        <text className="diagram-note" x="44" y="276">{L('因此 ISAM 更适合更新较少、相对静态的文件。', 'ISAM therefore suits relatively static files with few updates.')}</text>
 
         <rect className="diagram-band" x="24" y="300" width="912" height="248" rx="12" />
         <text className="diagram-label" x="44" y="324">{L('VSAM（教材模型）：索引区域定位顺序数据区域，支持连续范围读取', 'VSAM (textbook model): index region locates sequence data for contiguous ranges')}</text>
@@ -358,62 +433,76 @@ export function FileStructureConceptDiagram({
   }
 
   if (kind === 'multi-table-file') {
+    const records = [
+      { id: 'R1', fields: '101 | A | X | 东', category: 'X', categoryNext: 'R3', region: '东', regionNext: 'R2' },
+      { id: 'R2', fields: '102 | B | Y | 东', category: 'Y', categoryNext: '∅', region: '东', regionNext: '∅' },
+      { id: 'R3', fields: '103 | C | X | 西', category: 'X', categoryNext: '∅', region: '西', regionNext: '∅' },
+    ] as const;
+    const chainHeads = [
+      ['类别 X', 'R1 → R3', '类别X:R1,R3'],
+      ['类别 Y', 'R2', '类别Y:R2'],
+      ['地区 东', 'R1 → R2', '地区东:R1,R2'],
+      ['地区 西', 'R3', '地区西:R3'],
+    ] as const;
     return (
       <svg className="concept-svg file-concept-svg" viewBox="0 0 960 520" role="img" aria-label={title}>
         {arrow('file-arrow-multi')}
         <text className="diagram-label diagram-label-strong" x="28" y="30">{title}</text>
         <text className="diagram-note" x="932" y="30" textAnchor="end">{L('链指针属于记录，不是普通单链表', 'links live in records, not an ordinary list')}</text>
 
-        <rect className="diagram-band" x="24" y="54" width="424" height="208" rx="11" />
-        <text className="diagram-label" x="44" y="78">{L('记录节点：每条记录携带多个链指针', 'Record nodes: each record carries several links')}</text>
-        {[
-          ['R1', '101 | A | X | 东', '类别X·next→R3 | 地区东·next→R2'],
-          ['R2', '102 | B | Y | 东', '类别Y·next→∅ | 地区东·next→∅'],
-          ['R3', '103 | C | X | 西', '类别X·next→∅ | 地区西·next→∅'],
-        ].map(([id, record, links], index) => (
-          <g key={id}>
-            <rect className={index === 0 ? 'diagram-chip diagram-accent' : 'diagram-chip'} x="44" y={96 + index * 54} width="384" height="42" rx="7" />
-            <text className="diagram-label" x="60" y={121 + index * 54}>{id}</text>
-            <text className="diagram-node-text" x="230" y={121 + index * 54} textAnchor="middle">{record}</text>
-            <text className="diagram-note" x="412" y={121 + index * 54} textAnchor="end">{links}</text>
+        <rect className="diagram-band" x="24" y="54" width="480" height="260" rx="11" />
+        <text className="diagram-label" x="44" y="78">{L('记录节点：字段行 + 两条次关键字链', 'Record nodes: field row + two secondary-key chains')}</text>
+        {records.map((record, index) => (
+          <g
+            key={record.id}
+            data-record-id={record.id}
+            data-category-next={record.categoryNext}
+            data-region-next={record.regionNext}
+          >
+            <rect className={index === 0 ? 'diagram-chip diagram-accent' : 'diagram-chip'} x="44" y={92 + index * 68} width="410" height="60" rx="7" />
+            <text className="diagram-label" x="58" y={112 + index * 68}>{record.id}</text>
+            <text className="diagram-node-text" x="98" y={112 + index * 68}>{record.fields}</text>
+            <text className="diagram-note" x="58" y={138 + index * 68}>
+              {L(`类别 ${record.category} → ${record.categoryNext}`, `category ${record.category} → ${record.categoryNext}`)}
+            </text>
+            <text className="diagram-note" x="252" y={138 + index * 68}>
+              {L(`地区 ${record.region} → ${record.regionNext}`, `region ${record.region} → ${record.regionNext}`)}
+            </text>
           </g>
         ))}
-        <text className="diagram-note" x="44" y="248">{L('记录 R1 同时属于“类别 X”链和“地区 东”链。', 'R1 belongs to both category-X and region-East chains.')}</text>
+        <text className="diagram-note" x="44" y="304">
+          {L('第二行是该记录的两条链指针；→ 指向下一条记录，∅ 表示链尾。', 'The second row holds both links: → next record, ∅ end of chain.')}
+        </text>
 
-        <rect className="diagram-band" x="476" y="54" width="460" height="208" rx="11" />
-        <text className="diagram-label" x="496" y="78">{L('链头入口：每个不同字段值一个入口', 'Chain heads: one entry per distinct field value')}</text>
-        {[
-          ['类别 X', 'R1 → R3'],
-          ['类别 Y', 'R2'],
-          ['地区 东', 'R1 → R2'],
-          ['地区 西', 'R3'],
-        ].map(([key, chain], index) => (
-          <g key={key}>
-            <rect className="diagram-chip" x="496" y={92 + index * 38} width="92" height="28" rx="5" />
-            <text className="diagram-node-text" x="542" y={111 + index * 38} textAnchor="middle">{key}</text>
-            <text className="diagram-note" x="604" y={111 + index * 38}>{chain}</text>
+        <rect className="diagram-band" x="516" y="54" width="420" height="260" rx="11" />
+        <text className="diagram-label" x="536" y="78">{L('链头入口：每个不同字段值一个入口', 'Chain heads: one entry per distinct field value')}</text>
+        {chainHeads.map(([key, chain, targets], index) => (
+          <g key={key} data-chain-head={targets}>
+            <rect className="diagram-chip" x="536" y={92 + index * 40} width="96" height="28" rx="5" />
+            <text className="diagram-node-text" x="584" y={111 + index * 40} textAnchor="middle">{key}</text>
+            <text className="diagram-note" x="648" y={111 + index * 40}>{chain}</text>
           </g>
         ))}
-        <text className="diagram-note" x="496" y="250">{L('按类别 X 查询：沿 X 链读 R1、R3；若要地区东，再检查成员。', 'Query category X: walk X chain R1, R3; for region East, test membership.')}</text>
+        <text className="diagram-note" x="536" y="264">
+          {L('按类别 X 查询：沿 X 链读 R1、R3，', 'query category X: walk the X chain R1, R3;')}
+        </text>
+        <text className="diagram-note" x="536" y="288">
+          {L('再检查是否符合地区条件。', 'then test whether the region condition holds.')}
+        </text>
 
-        <path className="diagram-line" d="M144 136 L144 178" markerEnd="url(#file-arrow-multi)" />
-        <text className="diagram-note" x="158" y="164">{L('类别 X 链', 'category X chain')}</text>
-        <path className="diagram-line" d="M258 136 L258 312" markerEnd="url(#file-arrow-multi)" />
-        <text className="diagram-note" x="272" y="300">{L('地区东链', 'region East chain')}</text>
+        <rect className="diagram-band" x="24" y="334" width="480" height="86" rx="10" />
+        <text className="diagram-label" x="44" y="358">{L('查询：单条件遍历', 'Query: single-condition traversal')}</text>
+        <text className="diagram-note" x="44" y="380">{L('取链头 → 沿 next 读记录 → 直到链尾；结果按链序出现。', 'Take the head → follow next → until null; results appear in chain order.')}</text>
+        <text className="diagram-note" x="44" y="400">{L('多个条件时，需要在链上过滤，或沿另一条链求交。', 'With several conditions, filter along one chain or intersect another.')}</text>
 
-        <rect className="diagram-band" x="24" y="284" width="428" height="92" rx="10" />
-        <text className="diagram-label" x="44" y="308">{L('查询：单条件遍历', 'Query: single-condition traversal')}</text>
-        <text className="diagram-note" x="44" y="331">{L('取链头 → 沿 next 读记录 → 直到链尾；结果按链序出现。', 'Take the head → follow next → until null; results appear in chain order.')}</text>
-        <text className="diagram-note" x="44" y="351">{L('多个条件时，需要在链上过滤，或沿另一条链求交。', 'With several conditions, filter along one chain or intersect with another.')}</text>
+        <rect className="diagram-band" x="516" y="334" width="420" height="86" rx="10" />
+        <text className="diagram-label" x="536" y="358">{L('维护：一条记录属于多条链', 'Maintenance: one record, several chains')}</text>
+        <text className="diagram-note" x="536" y="380">{L('插入：接到所有相关链；删除：从每条链摘除。', 'Insert into every related chain; delete from every chain.')}</text>
+        <text className="diagram-note" x="536" y="400">{L('链头数 = 不同字段值数，不是记录数。', 'Head count depends on distinct values, not records.')}</text>
 
-        <rect className="diagram-band" x="476" y="284" width="460" height="92" rx="10" />
-        <text className="diagram-label" x="496" y="308">{L('维护：一条记录属于多条链', 'Maintenance: one record, several chains')}</text>
-        <text className="diagram-note" x="496" y="331">{L('插入：接到所有相关链；删除：从每条链摘除，不能只断一条。', 'Insert into every related chain; delete from every chain, not just one.')}</text>
-        <text className="diagram-note" x="496" y="351">{L('链头数量取决于不同字段值数，不取决于记录数。', 'Head count depends on distinct values, not record count.')}</text>
-
-        <text className="diagram-label" x="28" y="412">{L('与倒排文件的选择', 'Choice against an inverted file')}</text>
-        <text className="diagram-note" x="28" y="436">{L('多重表：记录携带指针，按单关键字遍历自然；更新分散。倒排：记录 ID 集中，多关键字集合运算方便；更新多个表。', 'Multilist: pointers in records, natural single-key traversal; distributed updates. Inverted: centralized ids, easy set operations; update several lists.')}</text>
-        <text className="diagram-note" x="28" y="458">{L('两者都不是普通链表或邻接表：这里表达的是记录对关键字值的成员关系。', 'Neither is an ordinary list or adjacency list: these links express record membership in key values.')}</text>
+        <text className="diagram-label" x="28" y="440">{L('与倒排文件的选择', 'Choice against an inverted file')}</text>
+        <text className="diagram-note" x="28" y="462">{L('多重表：指针在记录中，单关键字遍历自然，更新分散。', 'Multilist: pointers in records, natural single-key traversal, distributed updates.')}</text>
+        <text className="diagram-note" x="28" y="484">{L('倒排：ID 集中，多关键字集合运算方便，但更新多张表。', 'Inverted: centralized ids make set operations easy, but several lists need updates.')}</text>
       </svg>
     );
   }
@@ -490,13 +579,31 @@ export function FileStructureConceptDiagram({
     );
   }
 
+  const comparisonPremises = [
+    {
+      head: ['块大小 B', 'Block size B'],
+      detail: ['一条记录多大、每块几条；扫描按块计数。', 'record size, records per block; scans count blocks'],
+    },
+    {
+      head: ['索引高度 h', 'Index height h'],
+      detail: ['上层是否常驻内存；点查读 h 个索引块 + 1 个数据块。', 'resident upper? h index + 1 data block'],
+    },
+    {
+      head: ['溢出/装填', 'Overflow / load'],
+      detail: ['ISAM 溢出链长度、散列装填因子决定实际路径。', 'ISAM chain + hash load determine path'],
+    },
+    {
+      head: ['缓存', 'Cache'],
+      detail: ['缓存命中改变真实 I/O，模拟计数不冒充磁盘测量。', 'cache hits alter I/O; not a disk benchmark'],
+    },
+  ] as const;
   return (
-    <svg className="concept-svg file-concept-svg" viewBox="0 0 960 580" role="img" aria-label={title}>
+    <svg className="concept-svg file-concept-svg" viewBox="0 0 960 620" role="img" aria-label={title}>
       {arrow('file-arrow-compare')}
       <text className="diagram-label diagram-label-strong" x="28" y="30">{title}</text>
       <text className="diagram-note" x="932" y="30" textAnchor="end">{L('先确定查询形态，再谈 O(·) 与块计数', 'identify query shape before quoting O(·) or block counts')}</text>
 
-      <rect className="diagram-band" x="24" y="54" width="286" height="256" rx="11" />
+      <rect className="diagram-band" x="24" y="54" width="286" height="256" rx="11" data-testid="file-comparison-query-card" />
       <text className="diagram-label" x="44" y="78">{L('查询形态 → 主要候选', 'Query shape → main candidates')}</text>
       {[
         ['主键点查', '散列 / 索引 / B+ 树索引'],
@@ -510,26 +617,24 @@ export function FileStructureConceptDiagram({
           <text className="diagram-note" x="276" y={115 + index * 48} textAnchor="end">{candidates}</text>
         </g>
       ))}
-      <text className="diagram-note" x="44" y="292">{L('没有单一冠军：同一点查，散列可能少读索引块，但范围查询要另建结构。', 'No single winner: hashing may save index blocks for a point query but needs another structure for ranges.')}</text>
+      <text className="diagram-note" x="44" y="286">{L('没有单一冠军：同一点查，散列', 'No single winner: for one point lookup, hashing')}</text>
+      <text className="diagram-note" x="44" y="304">{L('可能少读索引块；范围要另建结构。', 'may save index blocks; ranges need another structure.')}</text>
 
-      <rect className="diagram-band" x="334" y="54" width="594" height="256" rx="11" />
+      <rect className="diagram-band" x="334" y="54" width="594" height="256" rx="11" data-testid="file-comparison-premise-card" />
       <text className="diagram-label" x="354" y="78">{L('比较必须带的前提', 'Assumptions the comparison must state')}</text>
-      {[
-        ['块大小 B', '一条记录多大、每块几条；扫描按块计数。'],
-        ['索引高度 h', '上层是否常驻内存；点查读 h 个索引块 + 1 个数据块。'],
-        ['溢出/装填', 'ISAM 溢出链长度、散列装填因子决定实际路径。'],
-        ['缓存', '缓存命中改变真实 I/O，模拟计数不冒充磁盘测量。'],
-      ].map(([head, detail], index) => (
-        <g key={head}>
-          <text className="diagram-label" x={354 + (index % 2) * 286} y={104 + Math.floor(index / 2) * 74}>{head}</text>
-          <text className="diagram-note" x={354 + (index % 2) * 286} y={124 + Math.floor(index / 2) * 74}>{detail}</text>
+      {comparisonPremises.map((premise, index) => (
+        <g key={premise.head[1]} data-premise={premise.head[1]}>
+          <rect className="diagram-cell" x="354" y={94 + index * 52} width="554" height="44" rx="6" />
+          <text className="diagram-label" x="370" y={120 + index * 52}>{L(premise.head[0], premise.head[1])}</text>
+          <text className="diagram-note" x="474" y={120 + index * 52}>{L(premise.detail[0], premise.detail[1])}</text>
         </g>
       ))}
-      <rect className="diagram-cell" x="354" y="226" width="544" height="62" rx="7" />
-      <text className="diagram-note" x="626" y="249" textAnchor="middle">{L('示例：索引点查 ≈ h 个索引块 + 1 个数据块；散列点查 ≈ 1 个主桶块 + e 个溢出块。', 'Example: indexed ≈ h index blocks + 1 data block; hashed ≈ 1 primary bucket + e overflow blocks.')}</text>
-      <text className="diagram-note" x="626" y="270" textAnchor="middle">{L('这里的 h、e 是教学假设，不代表任意真实磁盘。', 'h and e are teaching assumptions, not any real disk.')}</text>
 
-      <text className="diagram-label" x="28" y="342">{L('七种组织的能力对照（详细条件见下表）', 'Capability map of seven organizations (conditions in the table)')}</text>
+      <rect className="diagram-band" x="24" y="326" width="912" height="58" rx="9" />
+      <text className="diagram-label" x="44" y="350">{L('代价示例（h、e 是教学假设）', 'Cost example (h and e are teaching assumptions)')}</text>
+      <text className="diagram-note" x="44" y="370">{L('索引点查 ≈ h 个索引块 + 1 个数据块；散列点查 ≈ 1 个主桶块 + e 个溢出块。', 'Indexed point lookup ≈ h index blocks + 1 data block; hashed ≈ 1 primary bucket + e overflow blocks.')}</text>
+
+      <text className="diagram-label" x="28" y="414">{L('七种组织的能力对照（详细条件见上表）', 'Capability map of seven organizations (conditions above)')}</text>
       {[
         ['顺序', '范围✓', '多键✗', '更新：移动/分裂'],
         ['索引', '点查✓', '范围△', '更新：索引项'],
@@ -540,14 +645,14 @@ export function FileStructureConceptDiagram({
         ['倒排', '多键✓', '范围△', '更新：多表'],
       ].map(([name, point, multi, update], index) => (
         <g key={name}>
-          <rect className={index === 6 ? 'diagram-chip diagram-accent' : 'diagram-chip'} x={28 + (index % 4) * 232} y={358 + Math.floor(index / 4) * 74} width="216" height="60" rx="7" />
-          <text className="diagram-label" x={44 + (index % 4) * 232} y={380 + Math.floor(index / 4) * 74}>{name}</text>
-          <text className="diagram-note" x={44 + (index % 4) * 232} y={398 + Math.floor(index / 4) * 74}>{point} · {multi}</text>
-          <text className="diagram-note" x={44 + (index % 4) * 232} y={414 + Math.floor(index / 4) * 74}>{update}</text>
+          <rect className={index === 6 ? 'diagram-chip diagram-accent' : 'diagram-chip'} x={28 + (index % 4) * 232} y={428 + Math.floor(index / 4) * 74} width="216" height="60" rx="7" />
+          <text className="diagram-label" x={44 + (index % 4) * 232} y={450 + Math.floor(index / 4) * 74}>{name}</text>
+          <text className="diagram-note" x={44 + (index % 4) * 232} y={468 + Math.floor(index / 4) * 74}>{point} · {multi}</text>
+          <text className="diagram-note" x={44 + (index % 4) * 232} y={484 + Math.floor(index / 4) * 74}>{update}</text>
         </g>
       ))}
-      <text className="diagram-note" x="28" y="520">{L('✓ 表示组织本身通常支持；△ 表示需要额外有序结构或代价前提；✗ 表示不适合。', '✓ usually supported; △ needs an extra ordered structure or assumptions; ✗ unsuitable.')}</text>
-      <text className="diagram-note" x="28" y="542">{L('倒排的范围△：可按记录顺序过滤，但要先有排序/额外索引才能高效按关键字区间返回。', 'Inverted range △: filter in record order, but efficient key-range return needs ordering or another index.')}</text>
+      <text className="diagram-note" x="28" y="584">{L('✓ 表示组织本身通常支持；△ 表示需要额外有序结构或代价前提；✗ 表示不适合。', '✓ usually supported; △ needs an extra ordered structure or assumptions; ✗ unsuitable.')}</text>
+      <text className="diagram-note" x="28" y="606">{L('倒排的范围△：可按记录顺序过滤，但要先有排序/额外索引才能高效按关键字区间返回。', 'Inverted range △: filter in record order, but efficient key-range return needs ordering or another index.')}</text>
     </svg>
   );
 }

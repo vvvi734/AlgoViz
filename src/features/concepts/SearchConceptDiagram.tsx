@@ -127,8 +127,11 @@ export function SearchConceptDiagram({
             <text className="diagram-label" x={x} y={Number(y) + 5} textAnchor="middle">{label}</text>
           </g>
         ))}
-        <text className="diagram-note" x="195" y="286" textAnchor="middle">
-          {L('成功比较次数 = 节点层号；等权时总路径长度最小即 ASL 最小', 'Success cost = node level; with equal weights, minimum total path length minimizes ASL')}
+        <text className="diagram-note" data-testid="static-tree-asl-notes" x="48" y="276">
+          {L('成功比较次数 = 节点层号', 'success cost = node level')}
+        </text>
+        <text className="diagram-note" x="48" y="298">
+          {L('等权：总路径最短 ⇔ ASL 最小', 'equal weights: min total path ⇔ min ASL')}
         </text>
 
         <rect className="diagram-box" x="380" y="72" width="390" height="112" rx="9" />
@@ -137,7 +140,7 @@ export function SearchConceptDiagram({
         </text>
         <text className="diagram-label" x="575" y="130" textAnchor="middle">WPL = Σ wᵢ · depthᵢ</text>
         <text className="diagram-note" x="575" y="156" textAnchor="middle">
-          {L('次优查找树：不追求全局最优，但构造代价更低', 'Nearly optimal tree: near-minimal WPL with cheaper construction')}
+          {L('次优查找树：不追求全局最优，但构造代价更低', 'near-minimal WPL; cheaper to build')}
         </text>
 
         <rect className="diagram-box" x="380" y="196" width="390" height="112" rx="9" />
@@ -161,7 +164,7 @@ export function SearchConceptDiagram({
 
   if (kind === 'hashing-basics') {
     return (
-      <svg className="concept-svg" viewBox="0 0 800 380" role="img" aria-label={aria}>
+      <svg className="concept-svg" viewBox="0 0 800 450" role="img" aria-label={aria}>
         <rect className="diagram-band" x="20" y="14" width="760" height="36" rx="8" />
         <text className="diagram-label diagram-label-strong" x="400" y="38" textAnchor="middle">
           {L('哈希查找：关键字经 h(k) 直接映射到桶，冲突必须显式处理', 'Hashing maps a key through h(k) to a bucket; collisions must be handled explicitly')}
@@ -185,7 +188,7 @@ export function SearchConceptDiagram({
         {[0, 1, 2, 3, 4, 5, 6].map((slot, index) => {
           const y = 106 + index * 30;
           return (
-            <g key={slot}>
+            <g key={slot} data-bucket-index={slot}>
               <rect className="diagram-box" x="400" y={y} width="150" height="25" rx="4" />
               <text className="diagram-note" x="414" y={y + 17}>{slot}</text>
               {[18, 25, 32, 39].filter((key) => key % 7 === slot).map((key, chain) => (
@@ -208,15 +211,18 @@ export function SearchConceptDiagram({
           {L('链地址：拉出链表', 'Chaining: extend a list')}
         </text>
         <text className="diagram-note" x="680" y="201" textAnchor="middle">
-          {L('开放定址：按探测序列换槽', 'Open addressing: probe another slot')}
+          {L('开放定址：按探测序列换槽', 'Open addressing: probe next slot')}
         </text>
 
-        <rect className="diagram-band" x="45" y="294" width="730" height="64" rx="8" />
-        <text className="diagram-label" x="410" y="318" textAnchor="middle">
+        <rect className="diagram-band" data-testid="hashing-note-band" x="45" y="326" width="730" height="94" rx="8" />
+        <text className="diagram-label" x="410" y="350" textAnchor="middle">
           α = n / m　·　{L('装填因子越高，冲突与探测越长', 'higher load factor means more collisions and longer probes')}
         </text>
-        <text className="diagram-note" x="410" y="343" textAnchor="middle">
-          {L('哈希查找的 O(1) 是均匀散列、低装填因子下的期望，不是最坏保证；删除开放定址元素还需要墓碑', 'O(1) hashing is an expectation under uniform hashing and low load, not a worst-case guarantee; open-addressing deletion needs tombstones')}
+        <text className="diagram-note" x="410" y="374" textAnchor="middle">
+          {L('哈希查找的 O(1) 是均匀散列、低装填因子下的期望，不是最坏保证；', 'O(1) hashing is an expected cost under uniform hashing and low load;')}
+        </text>
+        <text className="diagram-note" x="410" y="396" textAnchor="middle">
+          {L('删除开放定址元素还需要墓碑。', 'it is not a worst-case guarantee. Open-addressing deletion needs tombstones.')}
         </text>
       </svg>
     );

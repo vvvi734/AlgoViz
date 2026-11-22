@@ -146,7 +146,7 @@ export function GraphStorageDiagram({
     };
     const rowY = (index: number) => 245 + index * 66;
     return (
-      <svg className="concept-svg" viewBox="0 0 760 540" role="img" aria-label={L('邻接表的顶点表与边链表', 'Adjacency list: vertex table and edge chains')}>
+      <svg className="concept-svg" viewBox="0 0 760 590" role="img" aria-label={L('邻接表的顶点表与边链表', 'Adjacency list: vertex table and edge chains')}>
         <text className="diagram-label diagram-label-strong" x="40" y="28">
           {L('同一张无向图', 'The same undirected graph')}
         </text>
@@ -175,7 +175,7 @@ export function GraphStorageDiagram({
         {vertices.map((vertex, index) => {
           const y = rowY(index);
           return (
-            <g key={vertex}>
+            <g key={vertex} data-vertex-row={vertex}>
               <rect className="diagram-chip" x="52" y={y} width="44" height="36" rx="5" />
               <text className="diagram-node-text" x="74" y={y + 24} textAnchor="middle">{vertex}</text>
               <circle className="diagram-pointer-dot" cx="100" cy={y + 18} r="3" />
@@ -207,14 +207,14 @@ export function GraphStorageDiagram({
             </g>
           );
         })}
-        <text className="diagram-note" x="52" y="474">
+        <text className="diagram-note" x="52" y="508">
           {L('B 的边表：D 出现在 B 链中；D 的边表：B 又出现一次。同一条无向边被登记两次。', 'B’s chain contains D; D’s chain contains B again. The same undirected edge is recorded twice.')}
         </text>
-        <text className="diagram-note" x="52" y="498">
+        <text className="diagram-note" x="52" y="532">
           {L('n = 4，e = 4 → 4 个顶点表项 + 8 个边结点；空间 O(n + e)。', 'n = 4, e = 4 → 4 vertex entries + 8 edge nodes; space O(n + e).')}
         </text>
-        <rect className="diagram-band" x="40" y="510" width="680" height="24" rx="6" />
-        <text className="diagram-label" x="380" y="527" textAnchor="middle">
+        <rect className="diagram-band" x="40" y="544" width="680" height="28" rx="6" />
+        <text className="diagram-label" x="380" y="564" textAnchor="middle">
           {L('顶点表存“谁”，边表存“和谁相邻、下一条是谁”', 'vertex table says who; edge nodes say whom and what comes next')}
         </text>
       </svg>

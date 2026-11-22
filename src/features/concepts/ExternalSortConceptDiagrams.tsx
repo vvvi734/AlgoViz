@@ -70,7 +70,7 @@ export function ExternalSortConceptDiagram({
         <text className="diagram-label" x="374" y="82">{L('内存工作区（容量有限）', 'Memory workspace (limited)')}</text>
         <text className="diagram-note" x="374" y="102">{L('只装入一批记录，内部排序', 'load one batch and sort in memory')}</text>
         {[0, 1, 2, 3].map((row) => (
-          <rect className="diagram-cell" key={row} x="376" y="118 + row * 34" width="204" height="27" rx="5" />
+          <rect className="diagram-cell" key={row} data-testid="external-memory-row" data-row={row} x="376" y={118 + row * 34} width="204" height="27" rx="5" />
         ))}
         {['7, 3, 9', '1, 8, 2', '6, 4, 5', '…'].map((value, row) => (
           <text className="diagram-node-text" key={value} x="478" y={137 + row * 34} textAnchor="middle">{value}</text>
@@ -90,8 +90,11 @@ export function ExternalSortConceptDiagram({
             <text className="diagram-label" x="794" y={126 + index * 48} textAnchor="middle">{run}</text>
           </g>
         ))}
-        <text className="diagram-note" x="690" y="276">
-          {L('段数 m = 归并段个数；每段内部有序', 'm = number of runs; each run is internally sorted')}
+        <text className="diagram-note" x="690" y="262">
+          {L('段数 m = 归并段个数；', 'm = number of runs;')}
+        </text>
+        <text className="diagram-note" x="690" y="284">
+          {L('每段内部有序', 'each run is internally sorted')}
         </text>
 
         <path className="diagram-line" d="M480 314 L480 346" markerEnd="url(#ext-arrow-a)" />
@@ -224,7 +227,7 @@ export function ExternalSortConceptDiagram({
   return (
     <svg
       className="concept-svg external-concept-svg"
-      viewBox="0 0 940 520"
+      viewBox="0 0 940 690"
       role="img"
       aria-label={L(
         '二路归并、四路归并与最佳归并树的代价对比',
@@ -264,7 +267,7 @@ export function ExternalSortConceptDiagram({
       <text className="diagram-note" x="344" y="282">{L('败者树可把每条比较降到 O(log k)', 'a loser tree reduces this to O(log k) per record')}</text>
 
       <rect className="diagram-band diagram-accent" x="628" y="52" width="288" height="276" rx="12" />
-      <text className="diagram-label" x="646" y="78">{L('最佳归并树（段长不等）', 'Optimal merge tree (unequal runs)')}</text>
+      <text className="diagram-label" x="646" y="78">{L('最佳归并树（段长不等）', 'Optimal merge tree (unequal)')}</text>
       {[
         ['R1=3', 646, 112],
         ['R2=5', 700, 112],
@@ -288,13 +291,24 @@ export function ExternalSortConceptDiagram({
       <path className="diagram-line" d="M706 210 L706 242 M831 136 L720 242" markerEnd="url(#ext-arrow-c)" />
       <rect className="diagram-tree-node is-root" x="662" y="242" width="116" height="36" rx="6" />
       <text className="diagram-label" x="720" y="265" textAnchor="middle">{L('根 27 · 总代价 51', 'root 27 · total 51')}</text>
-      <text className="diagram-note" x="646" y="306">{L('短段先合并：3 + 5 = 8，再与 8 合并为 16，最后与 11 合并为根 27；总代价 = 8 + 16 + 27 = 51。', 'merge short runs first: 3 + 5 = 8, then 8 + 8 = 16, then 16 + 11 = root 27; total = 8 + 16 + 27 = 51.')}</text>
 
-      <rect className="diagram-band" x="24" y="350" width="892" height="132" rx="12" />
-      <text className="diagram-label" x="42" y="375">{L('三个维度一起看', 'Three dimensions together')}</text>
-      <text className="diagram-note" x="42" y="400">{L('I/O 趟数：增大 k 通常减少归并趟数 s = ⌈log_k m⌉，但需要更多输入缓冲区和更大的 k 选 1 比较结构。', 'I/O passes: larger k usually reduces s = ⌈log_k m⌉, but needs more input buffers and a larger k-way selection structure.')}</text>
-      <text className="diagram-note" x="42" y="426">{L('内存比较：线性扫描 k 个候选是 O(k)；败者树沿一条路径更新是 O(log k)，但空间与实现更复杂。', 'In-memory comparison: a linear scan costs O(k); a loser tree updates one path in O(log k) with extra space and complexity.')}</text>
-      <text className="diagram-note" x="42" y="452">{L('段长结构：段长不等时，按最小权重优先合并可降低总记录处理量；k 路满树不足时要补零权重虚拟叶。', 'Run lengths: with unequal lengths, merging lightest roots first lowers total processed records; a full k-ary tree may need zero-weight virtual leaves.')}</text>
+      <rect className="diagram-band" data-testid="external-cost-band" x="24" y="344" width="892" height="94" rx="12" />
+      <text className="diagram-label" x="44" y="368">{L('最佳归并树代价分解', 'Optimal merge tree cost breakdown')}</text>
+      <text className="diagram-note" x="44" y="392">
+        {L('3 + 5 = 8 → 8 + 8 = 16 → 16 + 11 = 27（根）', '3 + 5 = 8 → 8 + 8 = 16 → 16 + 11 = 27 (root)')}
+      </text>
+      <text className="diagram-note" x="44" y="416">
+        {L('总代价 = 8 + 16 + 27 = 51；8、16、27 与树中权重一致。', 'Total cost = 8 + 16 + 27 = 51; 8, 16 and 27 match the tree weights.')}
+      </text>
+
+      <rect className="diagram-band" x="24" y="458" width="892" height="214" rx="12" />
+      <text className="diagram-label" x="42" y="482">{L('三个维度一起看', 'Three dimensions together')}</text>
+      <text className="diagram-note" x="42" y="506">{L('I/O 趟数：增大 k 通常减少归并趟数 s = ⌈log_k m⌉，', 'I/O passes: larger k usually cuts s = ⌈log_k m⌉,')}</text>
+      <text className="diagram-note" x="42" y="528">{L('但需要更多输入缓冲区和更大的 k 选 1 比较结构。', 'but needs more input buffers and a larger k-way selection structure.')}</text>
+      <text className="diagram-note" x="42" y="554">{L('内存比较：线性扫描 k 个候选是 O(k)；', 'In-memory comparison: a linear scan costs O(k);')}</text>
+      <text className="diagram-note" x="42" y="576">{L('败者树沿一条路径更新是 O(log k)，但空间与实现更复杂。', 'a loser tree updates one path in O(log k) with extra space and complexity.')}</text>
+      <text className="diagram-note" x="42" y="602">{L('段长结构：段长不等时，按最小权重优先合并可降低总记录处理量；', 'Run lengths: with unequal lengths, merging lightest roots first')}</text>
+      <text className="diagram-note" x="42" y="624">{L('k 路满树不足时要补零权重虚拟叶。', 'lowers total processed records; a full k-ary tree may need zero-weight virtual leaves.')}</text>
     </svg>
   );
 }
