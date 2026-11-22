@@ -212,6 +212,7 @@ export const SEARCH_CONCEPT_PAGES: readonly ConceptPage[] = [
           'If weights are success probabilities and depth starts at 1, ASL_succ = Σp_i·depth_i, the normalized WPL. With equal weights ASL is mean depth. Failure needs a probability for each external gap and its actual comparison count.',
         ],
         formula: 'WPL = Σ w_i·depth_i\nASL_succ = WPL / Σ w_i  (w_i = p_i 时)\nASL_fail = Σ q_j·c_j',
+        formulaEn: 'WPL = Σ w_i·depth_i\nASL_succ = WPL / Σ w_i  (when w_i = p_i)\nASL_fail = Σ q_j·c_j',
         points: [
           ['深度起算必须统一：根为第 1 层时比较次数等于深度。', 'Fix the depth convention: root at level 1 makes comparisons equal depth.'],
           ['权值未归一时先除以总权值，不能直接当 ASL。', 'Unnormalized weights must be divided by the total before calling the result ASL.'],
@@ -328,6 +329,7 @@ export const SEARCH_CONCEPT_PAGES: readonly ConceptPage[] = [
           'A hash function should be cheap, uniformly distribute and resist input regularities. Division hashing h(k) = k mod p often uses a prime p to avoid common factors; multiplicative hashing extracts high bits of a fractional product; folding adds key segments; digit analysis selects well-distributed digits. These constructions do not each need a player.',
         ],
         formula: 'h(k) = k mod p        (p 取合适素数)\nh(k) = ⌊m·(k·A mod 1)⌋  (0 < A < 1)\nα = n / m',
+        formulaEn: 'h(k) = k mod p        (choose a suitable prime p)\nh(k) = ⌊m·(k·A mod 1)⌋  (0 < A < 1)\nα = n / m',
         points: [
           ['模数不要与关键字集合的固定因子同频。', 'Do not let the modulus share fixed factors with the key set.'],
           ['哈希不是加密：追求速度与分布，不要求可逆或抗攻击。', 'Hashing is not encryption: it targets speed/distribution, not reversibility or attack resistance.'],
@@ -355,6 +357,7 @@ export const SEARCH_CONCEPT_PAGES: readonly ConceptPage[] = [
           'Under uniform hashing, chaining and equal-probability success, successful ASL is about 1 + α/2 and unsuccessful about α (textbooks differ on empty-chain checks). Linear probing grows nonlinearly in both directions and deteriorates near full occupancy. These are model results, not protection for every function and distribution.',
         ],
         formula: '链地址（简化模型）: ASL_succ ≈ 1 + α/2,  ASL_fail ≈ α\n开放定址线性探测: ASL 随 α 非线性增长\nα = n/m',
+        formulaEn: 'chaining (simplified model): ASL_succ ≈ 1 + α/2,  ASL_fail ≈ α\nopen addressing with linear probing: ASL grows nonlinearly with α\nα = n/m',
         points: [
           ['报告 ASL 必须同时给出 α、冲突策略和成功/失败条件。', 'Report ASL with α, collision policy and success/failure conditions.'],
           ['链地址失败可能走完整链；空链只需一次地址检查，口径要说明。', 'A chaining failure may walk the whole chain; an empty chain needs one check, so state the convention.'],

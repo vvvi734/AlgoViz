@@ -301,6 +301,16 @@
   font-size: 14px;
 }
 
+.diagram-note-compact {
+  font-size: 12px;
+}
+
+.diagram-cell-label {
+  fill: var(--txt);
+  font-size: 12px;
+  font-weight: 650;
+}
+
 .diagram-line,
 .diagram-axis,
 .diagram-guide,

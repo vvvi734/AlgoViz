@@ -18,6 +18,7 @@ export type ConceptDiagramKind =
   | 'graph-storage-comparison'
   | 'articulation-basics'
   | 'sorting'
+  | 'sorting-comparison'
   | 'string'
   | 'string-index'
   | 'array'

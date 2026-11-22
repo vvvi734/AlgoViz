@@ -919,12 +919,12 @@ Python 的注释密度低不必然是缺陷，因为 Python 代码更短；但�
 | P2-03 | 已修复并验证 | 静态树表 ASL 说明左对齐，390px 不再左裁 |
 | P1-12 | 待 CODE-DOC-03 处理 | 参考代码事实性注释问题，本轮按要求不处理 |
 | P1-13 | 待 CODE-DOC-03 处理 | 参考代码关键教学解释缺失/过时，本轮按要求不处理 |
-| P2-04 | 未处理，保留原问题 | 32 条公式缺 `formulaEn`，留待后续双语专项 |
+| P2-04 | 已修复并验证（TEACHING-FINAL，见第 14 节） | 54 条含中文公式均有非空 `formulaEn`；32 条原缺口逐条核对，覆盖 18 个理论专题 |
 | P2-05 | 待 CODE-DOC-03 处理 | 27 个参考文件无人工 annotation，留待注释专项 |
 | P2-06 | 待 CODE-DOC-03 处理 | `Purpose` + `作用` 模板化注释，留待注释专项 |
-| P2-07 | 未处理，保留原问题 | 排序图解与多关键字/LSD/MSD 主题弱相关，留待后续图解专项 |
+| P2-07 | 已修复并验证（TEACHING-FINAL，见第 14 节） | `sorting-comparison` 绑定专用 LSD/MSD/链式桶图；稳定性图仍归 `sorting-basics` |
 
-**统计：21 个原问题中，15 个已修复并验证，6 个保留并明确归属。**
+**统计：21 个原问题中，17 个已修复并验证，4 个保留并明确归属（P1-12/P1-13/P2-05/P2-06 后由 CODE-DOC-03 处理）。**
 
 ### 10.3 逐项整改记录
 
@@ -1114,8 +1114,8 @@ Python 的注释密度低不必然是缺陷，因为 Python 代码更短；但�
 | P1-13 | 已修复并验证 | 循环链表校准样本完成；线性表、栈队列、串、树、图、排序、外部排序、文件索引的代表函数补齐“为什么”和失败路径说明；人工抽查 30 个函数 |
 | P2-05 | 已修复并验证 | 9 个算法、27 个文件全部有 3–6 条人工 `en`/`zh` annotation；211 个 key、323 条映射均非空，全部通过精确锚点和语言一致性测试 |
 | P2-06 | 已处理并验证 | 删除 111 条函数地图模板、92 组主程序 `Purpose`/`作用` 对及若干简单 helper 重复说明；保留解释职责、参数、边界、返回值和不变量的有效模板，不以“保留行数”冒充质量 |
-| P2-04 | 未处理，保留原问题 | 英文公式缺口不属于参考代码注释轮次 |
-| P2-07 | 未处理，保留原问题 | 排序比较图解弱相关不属于本轮，且本轮禁止修改理论 SVG |
+| P2-04 | 已修复并验证（TEACHING-FINAL，见第 14 节） | 英文公式缺口已按第 14 节逐条补齐 |
+| P2-07 | 已修复并验证（TEACHING-FINAL，见第 14 节） | 排序比较图解已改为专用图解，细则见第 14 节 |
 
 ### 11.3 P1-12：事实性错误注释
 
@@ -1262,8 +1262,8 @@ Python 的注释密度低不必然是缺陷，因为 Python 代码更短；但�
 | `doubly_linked_list.cpp::remove` | 已修复并验证（SAFETY-01）：释放前保存 `prev` 与尾关系，先更新 `tail_` 再转移所有权；覆盖空表、单结点、头、尾、中间、连续删除、删除后遍历/再插入与不存在值 |
 | `btree.c::split` | 已修复并验证（SAFETY-01）：`split` 改为 `int` 且不分配；调用方先分配 `right`/`new_root`，失败返回 0；覆盖空根、根第一次/第二次分配、孩子分裂、根分裂后更深层第三次分配失败 |
 | `bplus_tree.c::split_leaf/split_internal` | 已修复并验证（SAFETY-01）：`valid` 改为 `-1/0/1` 三态，分裂函数只接收预分配右结点；覆盖叶/内部/根分配失败、根满但不分裂与手工满根+满内部孩子失败注入 |
-| P2-04 | 32 条公式缺 `formulaEn`，保留给后续双语专项 |
-| P2-07 | 排序比较图解与多关键字/LSD/MSD/链式桶弱相关，保留给后续图解专项 |
+| P2-04 | 已修复（TEACHING-FINAL，见第 14 节）；上文保留 CODE-DOC-03 轮次的历史状态 |
+| P2-07 | 已修复（TEACHING-FINAL，见第 14 节）；上文保留 CODE-DOC-03 轮次的历史状态 |
 | P2-06 剩余模板 | 当前 631 条 `Purpose` / 605 条 `作用` 中仍有可继续精炼的条目；本轮已筛掉低价值重复，但没有做全源机械删除 |
 | 事实校验边界 | `comment-fact` 是 41 组维护性规则，不是“理解全部中文注释”的形式化证明；本轮结论是“已发现问题归零”，不宣称对未来任意语义错误免疫 |
 
@@ -1272,7 +1272,7 @@ Python 的注释密度低不必然是缺陷，因为 Python 代码更短；但�
 - 从 `9757782f0145d1ed1db376f82be6b9db6df76bdc` 开始在 `main` 直接提交并推送。
 - 暂存只使用显式 `git add src docs` 或明确文件列表；从未执行 `git add -A`、`git clean`、`git reset --hard`。
 - `图论/` 始终为未跟踪状态，未删除、移动、覆盖、暂存或提交。
-- 未创建 `v1.0.0` Tag，未部署正式网站，未处理 P2-04/P2-07。
+- 该轮未创建 `v1.0.0` Tag、未部署正式网站；该轮未处理 P2-04/P2-07，后续由 TEACHING-FINAL 处理（见第 14 节）。
 - 最终提交哈希以 `git log -1` 为准；本节不写死自引用哈希。
 
 **CODE-DOC-03 到此停止。** 后续 SAFETY-01 见第 12 节；再后续只在明确授权时处理 P2-04、P2-07 或新登记风险。
@@ -1308,3 +1308,76 @@ Python 的注释密度低不必然是缺陷，因为 Python 代码更短；但�
 **保留限制。** C `MAX_BLOCKS=24` 仍是教学描述符上限，表满拒绝分裂；C/C++ articulation 固定 8 顶点，与 UI 动态课最多 10 顶点不是同一契约；C++ `hasGraphShape` 只校验形状；C KMP `-1` 同时表示 `NULL` 与分配失败；Python replacement 空槽守卫为防御性保护。
 
 **提交。** 按 free-list、KMP、articulation、radix、replacement 拆分功能提交，随后提交测试、双语说明与本节/报告。最终 `HEAD` 以 `git log -1` 为准；`图论/` 始终保持未跟踪保护状态。本轮停止，不自动进入 CODE-DOC-04。
+
+## 14. TEACHING-FINAL：英文公式与排序比较图解整改
+
+本节只处理教材审计遗留的 P2-04 与 P2-07，从 `09be8e27ab59aab63c5335520e8eac738c3490be` 的 `main` 开始，直接在 `main` 修改、提交和推送。没有创建分支、worktree 或 Tag，没有部署；未改 60 个算法的有效代码、Python Trace、双语算法 annotation、动画播放器、课程导航结构或无关理论专题；`图论/` 始终未跟踪且未暂存。
+
+### 14.1 P2-04：32 条英文公式
+
+**实际缺口。** 当前概念注册表共 76 个 `formula` 字段，其中 54 个公式含中文说明，22 个是纯数学/纯符号表达式。审计所说的 32 条缺口全部落在 54 条含中文说明的公式中；分布为 `catalog.ts` 29 条、`searchConcepts.ts` 3 条，覆盖 `adt`、`algorithm-cases`、`array-basics`、`b-tree`、`complexity`、`forest-conversion`、`graph-basics`、`hashing-basics`、`linear-list`、`sorting-basics`、`sparse-matrix`、`special-matrices`、`stack-queue-storage`、`static-tree-table`、`storage-structures`、`string-basics`、`tree-storage`、`tree-terms` 共 18 个专题。
+
+**补齐方式。** 逐条读取原公式、所属章节、教学定义和正文约定，只翻译说明文字，不改变符号、下标、索引基准和运算顺序。例如：
+
+| 专题 | 中文公式约定 | 新增英文公式（节选） |
+|---|---|---|
+| `complexity` | 0 基不涉及；忽略常数与低阶项 | `T(n) = O(f(n)): ignore constant factors and lower-order terms` |
+| `array-basics` | 0 基完全二叉树下标 | `0-based array indices: left child 2i+1, right child 2i+2, parent ⌊(i−1)/2⌋` |
+| `special-matrices` | 0 基下三角、三对角映射 | `0-based lower triangle: k = i(i+1)/2 + j (i ≥ j)`；`tridiagonal (0-based): k = 2i + j, \|i−j\| ≤ 1` |
+| `sparse-matrix` | 行优先、列优先均用 0 基 | `row-major position = i*C + j; column-major position = j*R + i (0-based)` |
+| `b-tree` | `m=4` 满节点 3 键分裂 | `m = 4: a full node with 3 keys → left 1 key + promoted 1 key + right 1 key` |
+| `static-tree-table` | 根深度从 1 起算，ASL 与 WPL 同权值约定 | `WPL = Σ w_i·depth_i\nASL_succ = WPL / Σ w_i  (when w_i = p_i)\nASL_fail = Σ q_j·c_j` |
+| `hashing-basics` | 除留余数、乘法散列、装填因子 | `h(k) = k mod p        (choose a suitable prime p)\nh(k) = ⌊m·(k·A mod 1)⌋  (0 < A < 1)\nα = n / m` |
+
+其余 25 条同样逐条补齐，未用删除中文公式的方式规避缺口。纯符号表达式仍按原符号串显示；`formulaEn` 不强行添加与数学式无关的英文句子。
+
+**验证。**
+- `src/domain/concepts/catalog.test.ts` 新增不变量：任何含 CJK 的 `formula` 必须有非空 `formulaEn`，且 `formulaEn` 不含 CJK。
+- `src/features/concepts/TeachingFinal.test.tsx` 静态保存 32 条实际新增英文串，断言 32 条全部命中、18 个专题集合一致、54 条含中文公式全部有英文；并检查英文公式保留原公式中的变量名、数字和希腊符号，不能只检查“非空”。
+- 同一测试逐页渲染全部 `CONCEPT_PAGES` 的英文模式，断言 `.concept-formula` 的实际显示文本等于审核后的 `formulaEn`，且英文页面公式区不出现中文。
+- 真实浏览器：18 个专题在中文和英文下逐页打开检查（390px），`complexity` 另在 1280/1680/390 三视口中英文检查公式可见、非空、英文无 CJK。截图见 `test-results/teaching-final/complexity-formula-{zh,en}-{1280,1680,390}.png`。
+
+**结果。** 32/32 原缺口闭合；54/54 含中文公式有等价英文说明；18/18 专题覆盖；76 条公式无“含中文但缺 `formulaEn`”。`TOTAL=76 MISSING=0` 中的 MISSING 专指该缺口，不表示 76 条都必须有冗余英文串。
+
+### 14.2 P2-07：`sorting-comparison` 专用图解
+
+**修复前。** `sorting-comparison` 绑定 `diagram: 'sorting'`，实际渲染的是 `sorting-basics` 的“稳定/不稳定”两栏图。该图不能表达多关键字排序的关键条件：LSD 从最低位到最高位的逐趟稳定分配/收集、MSD 的分组递归、同一主键下保留次键次序、链式桶只改 `tail->next` 而不搬记录。只改标题会继续掩盖不匹配，因此没有采用。
+
+**最小修复。** 新增 `SortingComparisonDiagram.tsx` 作为纯静态 SVG，并增加独立 `ConceptDiagramKind: 'sorting-comparison'`：
+- `catalog.ts`：`sorting-comparison` 改为 `diagram: 'sorting-comparison'`；`sorting-basics` 继续使用原 `'sorting'` 稳定性图。
+- `types.ts`：扩展 `ConceptDiagramKind`。
+- `ConceptView.tsx` 与 `ConceptDiagram.tsx`：按 kind 路由到专用组件，避免直接调用时落入图论默认图。
+- `concepts.css`：只为新图增加 `.diagram-note-compact` 与 `.diagram-cell-label`；沿用既有 `.concept-diagram-frame { overflow-x:auto }` 和 `.concept-svg { min-width:760px }`。
+
+**图解内容（760×500）。**
+- 第 1 趟按个位：初始链 `A 23 → B 12 → C 21`，按个位 3/2/1 分到桶 3/2/1，桶头=桶尾，收集为 `C(21) → B(12) → A(23)`。
+- 第 2 趟按十位：输入为第 1 趟结果，分配后桶 2 串起 `C 21 → A 23`，最终 `B(12) → C(21) → A(23)`；明确“十位 2（主键）下 C、A 保持第 1 趟先后，先次键、后主键”。
+- 桶链：第 2 趟桶 1 为 `B 12`，桶 2 为 `C 21 → A 23`（头 C、尾 A），桶 3 空；说明链式分配只改 `tail->next`。
+- 底部三条结论：LSD 最低位→最高位、逐趟稳定分配/收集；MSD 最高位→低位、按组递归；选择条件为“关键字可按位分解、每趟 LSD 分配/收集必须稳定、桶数 b 与基数匹配”。
+
+**教学含义变化。** 修复前，学生只能看到“稳定/不稳定”分组，无法把正文的“多关键字、LSD/MSD、链式桶”落到具体记录链；修复后，图解直接展示两趟稳定分配/收集如何保留次键次序，以及桶头/桶尾和链式桶的实际分配关系。图示不新增播放器，仍是静态教材图。
+
+**验证。**
+- `TeachingFinal.test.tsx` 断言该专题绑定 `sorting-comparison`、SVG 为 `760×500`、包含 LSD/MSD/桶/链/选择条件、第 2 趟桶 2 的记录顺序为 `21 → 23`，且中英文均无异常。
+- `e2e/teaching-final.spec.ts` 在 1280×900、1680×1000、390×844 三视口、中英文两种语言下检查：SVG 文本/矩形/线条/多边形全部位于 viewBox；文本标签互不重叠；390px 图解内部可横向滚动，滚动到左端时左侧可读、滚动到右端时最右侧选择条件完整可见；桌面视口无意外横向溢出。
+- 迭代中实际发现并修正了英文桶标签挤出格子、底部两行长说明超出 viewBox、桶 2 头尾标记与下一行相压的问题；最终两轮浏览器几何检查均为 0 越界、0 文本重叠。截图见 `test-results/teaching-final/sorting-comparison-{zh,en}-{1280,1680}-left.png` 与 `...-390-{left,right}.png`。
+
+### 14.3 质量门禁
+
+| 项 | 结果 |
+|---|---|
+| 全量 Vitest | `npm test`：154 个测试文件、1424 个测试全部通过 |
+| 理论数据/双语测试 | `catalog.test.ts`、`TeachingFinal.test.tsx`、`ConceptView.test.tsx` 共 21 个测试通过 |
+| SVG 单测/几何 | 新图单元测试与 Playwright 三视口几何检查通过；文本包围盒、重叠、滚动可见性均有断言 |
+| 实际浏览器 | Playwright/Edge，1280、1680、390；中文、英文；4 个专项用例全部通过，生成 14 张截图 |
+| TypeScript | `npm run typecheck` 退出 0 |
+| 生产构建 | `npm run build` 退出 0；仅保留既有 Monaco/主 chunk 体积提示 |
+
+### 14.4 边界与未解决项
+
+- 本轮只完成 P2-04 与 P2-07。CODE-DOC-04 的真实进度仍是 27/60，BATCH-04/05/06 没有真实提交；不能把本轮 P2 整改写成算法注释 60/60 或整个发布门禁通过。
+- 390px 仍允许图解内部横向滚动；这是既有教材图约定，不是把 760px 内容压缩到 390px。滚动两端均已验证关键文字可达，不把“可滚动”当作“永久裁切”的借口。
+- 浏览器公式逐页检查覆盖 18 个专题的中英文；三视口截图选 `complexity` 作为代表页，未把 18×3×2 全部截图当作交付物。
+- 未创建 Tag、未部署、未创建分支或 worktree；提交与推送完成后停止，等待 RELEASE-RECHECK。
+
+**提交。** 本轮实现、测试与本节审计更新在 `main` 直接提交；最终提交哈希以 `git log -1` 为准。`图论/` 始终保持未跟踪保护状态。

@@ -216,6 +216,7 @@ const BASE_CONCEPT_PAGES: readonly ConceptPage[] = [
           ['二分查找每轮把区间减半，因此是 O(log n)。', 'Binary search halves the range each round, hence O(log n).'],
         ],
         formula: 'T(n) = O(f(n))：常数因子忽略，低阶项忽略',
+        formulaEn: 'T(n) = O(f(n)): ignore constant factors and lower-order terms',
       },
       {
         title: ['常见增长量级', 'Common growth orders'],
@@ -306,6 +307,7 @@ const BASE_CONCEPT_PAGES: readonly ConceptPage[] = [
           ['连续存放对缓存友好，遍历速度快。', 'Contiguous layout is cache-friendly and fast to scan.'],
         ],
         formula: '地址(a[i]) = 首地址 + i × 每个元素的大小',
+        formulaEn: 'address(a[i]) = base address + i × element size',
       },
       {
         title: ['链式存储：节点与指针', 'Linked: nodes and pointers'],
@@ -428,6 +430,7 @@ const BASE_CONCEPT_PAGES: readonly ConceptPage[] = [
           ['叶子数 n0 与度为 2 的节点数 n2 满足 n0 = n2 + 1。', 'Leaf count n0 and degree-2 node count n2 satisfy n0 = n2 + 1.'],
         ],
         formula: 'n0 = n2 + 1；深度 k 最多 2^k − 1 个节点',
+        formulaEn: 'n0 = n2 + 1; depth k holds at most 2^k − 1 nodes',
       },
       {
         title: ['二叉链表：数据域与两个指针域', 'Binary linked list: data plus two pointers'],
@@ -441,6 +444,7 @@ const BASE_CONCEPT_PAGES: readonly ConceptPage[] = [
           ['普通树的孩子兄弟表示法也用两个指针，但存的是 firstChild 与 nextSibling，语义不是 left/right 孩子。', 'The child-sibling layout for ordinary trees also uses two pointers, but they mean firstChild and nextSibling, not left/right children.'],
         ],
         formula: '2n 个指针域 = (n−1) 条孩子链 + (n+1) 个空指针',
+        formulaEn: '2n pointer fields = (n−1) child links + (n+1) null pointers',
       },
       {
         title: ['满二叉树与完全二叉树', 'Full and complete binary trees'],
@@ -449,6 +453,7 @@ const BASE_CONCEPT_PAGES: readonly ConceptPage[] = [
           'A full binary tree fills every level; a complete binary tree fills all levels except possibly the last, which is filled left to right. A complete tree maps naturally to an array.',
         ],
         formula: '数组下标从 0 开始：左孩子 2i+1，右孩子 2i+2，父节点 ⌊(i−1)/2⌋',
+        formulaEn: '0-based array indices: left child 2i+1, right child 2i+2, parent ⌊(i−1)/2⌋',
       },
     ],
     comparison: {
@@ -546,6 +551,7 @@ const BASE_CONCEPT_PAGES: readonly ConceptPage[] = [
           'Every undirected edge adds one to each endpoint’s degree, so the degree sum is twice the edge count. This helps test whether a degree sequence is possible.',
         ],
         formula: 'Σ deg(v) = 2|E|（无向图）；简单无向图 |E| ≤ n(n−1)/2',
+        formulaEn: 'Σ deg(v) = 2|E| (undirected graph); simple undirected graph |E| ≤ n(n−1)/2',
       },
       {
         title: ['连通性与生成树', 'Connectivity and spanning trees'],
@@ -647,6 +653,7 @@ const BASE_CONCEPT_PAGES: readonly ConceptPage[] = [
           ['更换实现时，只要操作语义不变，调用者无需改写。', 'If the operation semantics stay the same, callers need not change when the implementation changes.'],
         ],
         formula: 'ADT = (数据对象, 数据关系, 操作集合)',
+        formulaEn: 'ADT = (data objects, data relationships, operation set)',
       },
       {
         title: ['用栈看清“抽象”', 'See abstraction through a stack'],
@@ -736,6 +743,7 @@ const BASE_CONCEPT_PAGES: readonly ConceptPage[] = [
           ['只写 O(n) 而不说明是哪种情况，信息是不完整的。', 'Writing O(n) without naming the case leaves the statement incomplete.'],
         ],
         formula: '顺序查找：最好 1 次，最坏 n 次（目标不存在也算最坏）',
+        formulaEn: 'Sequential search: best 1 comparison, worst n comparisons (target absent also counts as worst case)',
       },
       {
         title: ['平均情况不是两头的平均数', 'Average is not the midpoint of best and worst'],
@@ -834,6 +842,7 @@ const BASE_CONCEPT_PAGES: readonly ConceptPage[] = [
           ['线性表不要求元素按值有序，只要求位置有先后。', 'The values need not be sorted; only positions are ordered.'],
         ],
         formula: 'a(i−1) → ai → a(i+1)，其中 1 < i < n',
+        formulaEn: 'a(i−1) → ai → a(i+1), where 1 < i < n',
       },
       {
         title: ['抽象数据类型：先定接口，再选存储', 'ADT first, storage second'],
@@ -995,6 +1004,7 @@ const BASE_CONCEPT_PAGES: readonly ConceptPage[] = [
           ['堆排序最坏也是 O(n log n)，额外空间 O(1)，但通常不稳定、缓存局部性较差，适合内存紧且需要最坏保证的场景。', 'Heap sort also guarantees O(n log n) worst case with O(1) extra space, but it is usually unstable and has weaker cache locality; it suits tight-memory, worst-case-guarantee situations.'],
         ],
         formula: '比较排序最坏情况下界：Ω(n log n)',
+        formulaEn: 'Worst-case lower bound for comparison sorting: Ω(n log n)',
       },
     ],
     comparison: {
@@ -1113,7 +1123,7 @@ const BASE_CONCEPT_PAGES: readonly ConceptPage[] = [
       '排序方法的选择不是背一张“最快算法”排行榜，而是先确定数据规模、初始有序程度、稳定性要求、额外空间限制和关键字结构，再排除不满足硬条件的候选。多关键字排序依赖稳定分配；链式基数排序用桶头/桶尾指针避免搬动整条记录。',
       'Choosing a sort is not memorising a “fastest algorithm” ranking. Fix the input size, initial order, stability requirement, extra-space limit and key structure first, then eliminate candidates that fail a hard constraint. Multi-key sorting relies on stable passes; chained radix sort uses bucket head/tail links to avoid moving whole records.',
     ],
-    diagram: 'sorting',
+    diagram: 'sorting-comparison',
     definitions: [
       {
         term: ['主关键字与次关键字', 'Primary and secondary keys'],
@@ -1308,6 +1318,7 @@ const BASE_CONCEPT_PAGES: readonly ConceptPage[] = [
           ['销毁、清空等管理操作不属于“求值”本身，但会影响容量与后续操作的前置条件。', 'Destroy and clear are management operations rather than value computation, but they affect capacity and preconditions for later operations.'],
         ],
         formula: '常见 ADT：StrAssign、StrCompare、StrLength、Concat、SubString、Index、StrInsert、StrDelete',
+        formulaEn: 'Common ADT operations: StrAssign, StrCompare, StrLength, Concat, SubString, Index, StrInsert, StrDelete',
       },
       {
         title: ['空串、空格串与相等：不要被“看起来一样”骗了', 'Empty, blank and equal: do not trust appearance'],
@@ -1338,6 +1349,7 @@ const BASE_CONCEPT_PAGES: readonly ConceptPage[] = [
           ['空模式串：项目统一视为无效输入并在执行前拒绝；空模式串本身会匹配每个位置，容易产生无意义结果。', 'Empty pattern: the project treats it as invalid input and rejects it before execution; an empty pattern would match every position and produce meaningless results.'],
         ],
         formula: 'T = "ABABABCABABABC"，P = "ABABC" → 0 基匹配起点 2、9',
+        formulaEn: 'T = "ABABABCABABABC", P = "ABABC" → 0-based match starts 2 and 9',
       },
       {
         title: ['KMP 要解决的核心问题', 'The core problem KMP solves'],
@@ -1352,6 +1364,7 @@ const BASE_CONCEPT_PAGES: readonly ConceptPage[] = [
           ['构造 lps 为 O(m)，匹配为 O(n)，总时间 O(n+m)，额外空间 O(m)。', 'Building lps is O(m), matching is O(n), total O(n+m), with O(m) extra space.'],
         ],
         formula: '失配：j ← lps[j − 1]，i 不变',
+        formulaEn: 'On mismatch: j ← lps[j − 1], i unchanged',
       },
       {
         title: ['使用同一种下标约定', 'Use one indexing convention'],
@@ -1541,6 +1554,7 @@ const BASE_CONCEPT_PAGES: readonly ConceptPage[] = [
           ['逻辑相邻不等于地址相邻：A[i][j] 与 A[i][j+1] 在行优先存储中才紧挨着。', 'Logical neighbours are not always physical neighbours: A[i][j] and A[i][j+1] are adjacent only under row-major storage.'],
         ],
         formula: 'A[i][j]：0 ≤ i < R，0 ≤ j < C（本课程 0 基）',
+        formulaEn: 'A[i][j]: 0 ≤ i < R, 0 ≤ j < C (0-based in this course)',
       },
       {
         title: ['顺序存储：把二维压成一维', 'Sequential storage: flatten the second dimension'],
@@ -1555,6 +1569,7 @@ const BASE_CONCEPT_PAGES: readonly ConceptPage[] = [
           ['C/C++ 的二维数组通常按行优先；Fortran、MATLAB 等常按列优先，读题时先看题目约定。', 'C/C++ 2D arrays are usually row-major; Fortran and MATLAB often use column-major. Check the stated convention first.'],
         ],
         formula: '行优先位置 = i*C + j；列优先位置 = j*R + i（0 基）',
+        formulaEn: 'row-major position = i*C + j; column-major position = j*R + i (0-based)',
       },
       {
         title: ['地址计算：基准、宽度、顺序三件事', 'Address calculation: base, width and order'],
@@ -1569,6 +1584,7 @@ const BASE_CONCEPT_PAGES: readonly ConceptPage[] = [
           ['若题目下标从 1 开始，先把 i、j 各减 1，再代入上面的 0 基公式；不要直接把 1 基下标塞进公式。', 'If the problem uses 1-based indices, subtract 1 from i and j before using the 0-based formulas; never substitute 1-based indices directly.'],
         ],
         formula: '行优先 Loc(i,j) = base + (i*C + j)*w',
+        formulaEn: 'row-major Loc(i,j) = base + (i*C + j)*w',
       },
     ],
     comparison: {
@@ -1648,6 +1664,7 @@ const BASE_CONCEPT_PAGES: readonly ConceptPage[] = [
           ['压缩后仍要能从 (i,j) 算出唯一的一维下标，否则无法随机访问。', 'After compression, (i,j) must still map to a unique 1D index; otherwise random access is impossible.'],
         ],
         formula: '对称矩阵元素数：n(n+1)/2（含主对角线）',
+        formulaEn: 'number of elements in a symmetric matrix: n(n+1)/2 (including the main diagonal)',
       },
       {
         title: ['下三角映射：考试最常考的公式', 'Lower-triangle mapping: the exam formula'],
@@ -1662,6 +1679,7 @@ const BASE_CONCEPT_PAGES: readonly ConceptPage[] = [
           ['上三角若单独按行存储，可用 k = i*n − i(i+1)/2 + j（0 基，i ≤ j）；更稳妥的做法仍是转成下三角。', 'If the upper triangle is stored directly by rows, k = i*n − i(i+1)/2 + j (0-based, i ≤ j); converting to the lower triangle is usually safer.'],
         ],
         formula: '0 基下三角：k = i(i+1)/2 + j（i ≥ j）',
+        formulaEn: '0-based lower triangle: k = i(i+1)/2 + j (i ≥ j)',
       },
       {
         title: ['对角与带状：只存一条带子', 'Diagonal and banded: keep only a strip'],
@@ -1675,6 +1693,7 @@ const BASE_CONCEPT_PAGES: readonly ConceptPage[] = [
           ['带状矩阵的压缩量取决于带宽；带宽接近 n 时，压缩带来的收益迅速消失。', 'The saving depends on the bandwidth; as it approaches n, compression stops paying off.'],
         ],
         formula: '三对角（0 基）：k = 2i + j，|i−j| ≤ 1',
+        formulaEn: 'tridiagonal (0-based): k = 2i + j, |i−j| ≤ 1',
       },
       {
         title: ['公式之外的两个检查', 'Two checks beyond the formula'],
@@ -1688,6 +1707,7 @@ const BASE_CONCEPT_PAGES: readonly ConceptPage[] = [
           ['压缩数组长度要与元素个数一致；多留常量槽时要在答案里说明。', 'The compressed length must match the entry count; if a constant slot is added, state it explicitly.'],
         ],
         formula: '先定三角、再定基准、最后代公式',
+        formulaEn: 'first identify the triangle, then the base index, then substitute into the formula',
       },
     ],
     comparison: {
@@ -1767,6 +1787,7 @@ const BASE_CONCEPT_PAGES: readonly ConceptPage[] = [
           ['稀疏程度不高时，三元组的额外字段反而可能更占空间。', 'When the matrix is not very sparse, the extra triplet fields can cost more space.'],
         ],
         formula: '非零比例 δ = t / (m×n)',
+        formulaEn: 'nonzero fraction δ = t / (m×n)',
       },
       {
         title: ['三元组表：只记录非零元素', 'Triplet list: record only non-zeros'],
@@ -1780,6 +1801,7 @@ const BASE_CONCEPT_PAGES: readonly ConceptPage[] = [
           ['恢复算法需要先建立 m×n 的全零矩阵；稀疏存储并没有消除输出矩阵本身的空间。', 'Restore first creates an m×n zero matrix; the sparse format does not remove the output matrix’s own space.'],
         ],
         formula: '(row, col, value) 表；t 条记录占 3t 个数值',
+        formulaEn: '(row, col, value) table; t records occupy 3t numeric values',
       },
       {
         title: ['CSR：把行号压进 row_ptr', 'CSR: fold row numbers into row_ptr'],
@@ -1793,6 +1815,7 @@ const BASE_CONCEPT_PAGES: readonly ConceptPage[] = [
           ['CSR 很适合按行扫描、矩阵向量乘法；按列访问和随机 A[i][j] 仍需额外查找。', 'CSR suits row scans and sparse matrix–vector products; column access and random A[i][j] still need a lookup.'],
         ],
         formula: 'CSR 数值量：row_ptr(m+1) + col_idx(t) + values(t)',
+        formulaEn: 'CSR storage: row_ptr(m+1) + col_idx(t) + values(t)',
       },
       {
         title: ['三元组转置为什么要用 cpot', 'Why triplet transpose needs cpot'],
@@ -1807,6 +1830,7 @@ const BASE_CONCEPT_PAGES: readonly ConceptPage[] = [
           ['时间 O(t + c)，额外辅助空间 O(c)，结果表本身占 O(t)；不是 O(t²)。', 'Time O(t + c), extra working space O(c), and the result table itself is O(t); not O(t²).'],
         ],
         formula: 'cpot[c] = cpot[c−1] + num[c−1]（0 基）',
+        formulaEn: 'cpot[c] = cpot[c−1] + num[c−1] (0-based)',
       },
     ],
     comparison: {
@@ -1898,6 +1922,7 @@ const BASE_CONCEPT_PAGES: readonly ConceptPage[] = [
           'If a node has keys k₁ < k₂ < … < kₜ, its child pointers c₀, c₁, …, cₜ cover t+1 disjoint intervals: c₀ is below k₁, cᵢ lies between kᵢ and kᵢ₊₁, and cₜ is above kₜ. This interval ownership is the only rule for choosing a child during search, and it must be restored after insertion.',
         ],
         formula: 'k₁ < k₂ < … < kₜ；cᵢ 中的关键字 ∈ (kᵢ, kᵢ₊₁)，两端为 -∞ / +∞',
+        formulaEn: 'k₁ < k₂ < … < kₜ; keys in cᵢ lie in (kᵢ, kᵢ₊₁), with -∞ / +∞ at the ends',
       },
       {
         title: ['查找：节点内比较，再选一个孩子', 'Search: compare inside, then choose one child'],
@@ -1924,6 +1949,7 @@ const BASE_CONCEPT_PAGES: readonly ConceptPage[] = [
           ['重复关键字在插入前先定位；一旦命中就拒绝插入，树保持不变。', 'A duplicate is located before insertion; on a hit the insertion is rejected and the tree is unchanged.'],
         ],
         formula: 'm = 4：满节点 3 键 → 左 1 键 + 上升 1 键 + 右 1 键',
+        formulaEn: 'm = 4: a full node with 3 keys → left 1 key + promoted 1 key + right 1 key',
       },
       {
         title: ['树高与代价', 'Height and cost'],
@@ -2570,6 +2596,7 @@ const BASE_CONCEPT_PAGES: readonly ConceptPage[] = [
           ['只维护一个整数，空间开销小；但容量固定，扩容要重新分配并搬移元素。', 'Only one integer is maintained, so overhead is small; capacity is fixed, and growth requires reallocation and copying.'],
         ],
         formula: 'top == -1（空）\ntop == MAXSIZE - 1（满）\n入栈 ++top; 出栈 top--',
+        formulaEn: 'top == -1 (empty)\ntop == MAXSIZE - 1 (full)\npush ++top; pop top--',
       },
       {
         title: ['链栈：在表头完成 push 与 pop', 'Linked stack: push and pop at the head'],
@@ -2754,6 +2781,7 @@ const BASE_CONCEPT_PAGES: readonly ConceptPage[] = [
           ['每个孩子链表都要处理空链；实现时通常区分“无孩子”和“链表结束”。', 'Every child list needs an empty case; implementations distinguish “no children” from “end of list”.'],
         ],
         formula: 'A → B → C → D；B → E → F；D → G；其余 firstChild = NULL',
+        formulaEn: 'A → B → C → D; B → E → F; D → G; all other firstChild = NULL',
       },
       {
         title: ['孩子兄弟表示法：两个指针写成二叉链表', 'Child-sibling representation: two pointers, binary shape'],
@@ -2912,6 +2940,7 @@ const BASE_CONCEPT_PAGES: readonly ConceptPage[] = [
           ['树的后根不是二叉树的“后序”；对应的是二叉树的中序。', 'A tree’s postorder is not the binary tree’s postorder; it corresponds to the binary tree’s inorder.'],
         ],
         formula: '树的先根 = 二叉树先序；树的后根 = 二叉树中序；森林先序/中序 = 二叉树先序/中序',
+        formulaEn: 'tree preorder = binary-tree preorder; tree postorder = binary-tree inorder; forest preorder/inorder = binary-tree preorder/inorder',
       },
     ],
     comparison: {

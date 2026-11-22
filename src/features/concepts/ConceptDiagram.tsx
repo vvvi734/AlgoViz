@@ -12,6 +12,7 @@ import {
 import { DynamicStorageDiagram } from './DynamicStorageDiagram';
 import { SearchConceptDiagram } from './SearchConceptDiagram';
 import { SequentialCapacityDiagram } from './SequentialCapacityDiagram';
+import { SortingComparisonDiagram } from './SortingComparisonDiagram';
 
 /**
  * Large, static SVG diagrams for concept lessons. They never animate and never
@@ -19,6 +20,10 @@ import { SequentialCapacityDiagram } from './SequentialCapacityDiagram';
  */
 export function ConceptDiagram({ kind, lang }: { kind: ConceptDiagramKind; lang: Lang }) {
   const L = (zh: string, en: string) => (lang === 'zh' ? zh : en);
+
+  if (kind === 'sorting-comparison') {
+    return <SortingComparisonDiagram lang={lang} />;
+  }
 
   if (kind === 'string-index') {
     return <StringIndexDiagram lang={lang} />;

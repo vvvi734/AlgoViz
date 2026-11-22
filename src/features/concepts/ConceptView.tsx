@@ -6,6 +6,7 @@ import { QueueConceptDiagram } from './QueueConceptDiagrams';
 import { TreeConceptDiagram } from './TreeConceptDiagrams';
 import { ExternalSortConceptDiagram } from './ExternalSortConceptDiagrams';
 import { FileStructureConceptDiagram } from './FileStructureConceptDiagrams';
+import { SortingComparisonDiagram } from './SortingComparisonDiagram';
 import '../../styles/concepts.css';
 
 /**
@@ -67,6 +68,8 @@ export function ConceptView({ concept }: { concept: ConceptPage }) {
             <FileStructureConceptDiagram kind={concept.diagram} lang={lang} />
           ) : concept.diagram === 'circular-queue' || concept.diagram === 'stack-queue-storage' ? (
             <QueueConceptDiagram kind={concept.diagram} lang={lang} />
+          ) : concept.diagram === 'sorting-comparison' ? (
+            <SortingComparisonDiagram lang={lang} />
           ) : concept.diagram === 'tree-storage' ||
             concept.diagram === 'forest-conversion' ||
             concept.diagram === 'threaded-binary-tree' ? (

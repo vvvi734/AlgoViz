@@ -52,6 +52,14 @@ describe('VISUAL-02 concept catalog structure', () => {
         }
       }
 
+      const formulasWithChinese = page.sections.filter(
+        (section) => section.formula && /[\u3400-\u9fff]/.test(section.formula),
+      );
+      for (const section of formulasWithChinese) {
+        expect(section.formulaEn?.trim(), `${page.id}/section/formulaEn`).toBeTruthy();
+        expect(section.formulaEn, `${page.id}/section/formulaEn`).not.toMatch(/[\u3400-\u9fff]/);
+      }
+
       const zhTitles = page.sections.map((section) => section.title[0].trim());
       const enTitles = page.sections.map((section) => section.title[1].trim());
       expect(new Set(zhTitles).size, `${page.id}/duplicate zh section title`).toBe(zhTitles.length);
