@@ -64,18 +64,19 @@ static int Contains(const BTreeNode *node, int key)
     return Contains(node->children[index], key);
 }
 
-// Purpose: Split a full child: promote the middle key to parent, keep the left half in the old node and the right half in a new node; children always has one more entry than keys.
-// 作用：分裂满子结点：中间键上移到 parent，左右两半分别留在原结点和新结点；children 比 keys 多一个。
-void split(BTreeNode *parent, int index, BTreeNode *full)
+// Purpose: Split a full child into an already allocated right node: promote the middle key to parent, keep the left half in the old node and the right half in `right`; children always has one more entry than keys.
+// 作用：把满子结点分裂到已分配好的右结点：中间键上移到 parent，左右两半分别留在原结点和 `right`；children 比 keys 多一个。
+// Precondition: `right` is allocated and zeroed by the caller. This helper allocates nothing, so it cannot fail after the tree has been modified.
+// Failure path: split allocates nothing; callers allocate `right` before any structural write, so OOM returns 0 with the old tree unchanged.
+// 失败路径：split 不分配；调用方在改结构前分配 right，OOM 返回 0，旧树保持不变。
+int split(BTreeNode *parent, int index, BTreeNode *full, BTreeNode *right)
 {
-    int middle = MAX_KEYS / 2;
-    int median = full->keys[middle];
-    BTreeNode *right = NewNode();
     if (right == NULL)
     {
-        // Failure path: this void helper only leaves the child untouched; it cannot report failure, while InsertNonFull continues as if the split happened. The teaching implementation registers this OOM limitation rather than changing control flow.
-        return;
+        return 0;
     }
+    int middle = MAX_KEYS / 2;
+    int median = full->keys[middle];
 
     // Keys after the median become the right node; their child slots must move with them, not stay under the left node.
     right->key_count = MAX_KEYS - middle - 1;
@@ -101,11 +102,12 @@ void split(BTreeNode *parent, int index, BTreeNode *full)
     parent->keys[index] = median;
     parent->children[index + 1] = right;
     ++parent->key_count;
+    return 1;
 }
 
-// Purpose: Insert into a subtree known not to be full; split a full child before descending so no backtracking is needed.
-// 作用：在确定未满的子树中插入；遇到满孩子先分裂再下降，避免回溯。
-static void InsertNonFull(BTreeNode *node, int key)
+// Purpose: Insert into a subtree known not to be full; allocate the right sibling before splitting a full child, then descend so no backtracking is needed.
+// 作用：在确定未满的子树中插入；分裂满孩子前先分配右兄弟，再下降，避免回溯。
+static int InsertNonFull(BTreeNode *node, int key)
 {
     int index = node->key_count - 1;
     if (node->children[0] == NULL)
@@ -117,7 +119,7 @@ static void InsertNonFull(BTreeNode *node, int key)
         }
         node->keys[index + 1] = key;
         ++node->key_count;
-        return;
+        return 1;
     }
 
     index = 0;
@@ -127,48 +129,59 @@ static void InsertNonFull(BTreeNode *node, int key)
     }
     if (node->children[index]->key_count == MAX_KEYS)
     {
-        split(node, index, node->children[index]);
+        BTreeNode *right = NewNode();
+        if (right == NULL)
+        {
+            return 0;
+        }
+        split(node, index, node->children[index], right);
         // The promoted median now sits at index; if the new key is larger, it belongs to the new right child.
         if (key > node->keys[index])
         {
             ++index;
         }
     }
-    InsertNonFull(node->children[index], key);
+    return InsertNonFull(node->children[index], key);
 }
 
 // A full child is split before descending; its median moves into the parent, so insertion never needs to back up.
-// Purpose: B-tree insertion entry: reject duplicates; when the root is full, create a new root and split so height grows by one.
-// 作用：B 树插入入口：重复键拒绝；根满时先建新根并分裂，保证树高只增一层。
-void InsertBTree(BTreeNode **root, int key)
+// Purpose: B-tree insertion entry: reject duplicates; when the root is full, allocate the new root and right sibling before splitting so an allocation failure leaves the old tree intact.
+// 作用：B 树插入入口：重复键拒绝；根满时先分配新根和右兄弟再分裂，使分配失败时旧树保持不变。
+int InsertBTree(BTreeNode **root, int key)
 {
     if (*root == NULL)
     {
         *root = NewNode();
         if (*root == NULL)
         {
-            return;
+            return 0;
         }
         (*root)->keys[0] = key;
         (*root)->key_count = 1;
-        return;
+        return 1;
     }
     if (Contains(*root, key))
     {
-        return;
+        return 1;
     }
     if ((*root)->key_count == MAX_KEYS)
     {
         BTreeNode *new_root = NewNode();
         if (new_root == NULL)
         {
-            return;
+            return 0;
+        }
+        BTreeNode *right = NewNode();
+        if (right == NULL)
+        {
+            free(new_root);
+            return 0;
         }
         new_root->children[0] = *root;
-        split(new_root, 0, *root);
+        split(new_root, 0, *root, right);
         *root = new_root;
     }
-    InsertNonFull(*root, key);
+    return InsertNonFull(*root, key);
 }
 
 // Purpose: Return the first key position not less than key; this is also the only possible child slot.

@@ -185,8 +185,8 @@ describe('three-language reference registry', () => {
     expect(kmpFindPython).toContain('text.find(pattern)');
 
     const btreeC = await loadReferenceCode('btree', 'c');
-    expect(btreeC).toContain('void split');
-    expect(btreeC).toContain('void InsertBTree');
+    expect(btreeC).toContain('int split');
+    expect(btreeC).toContain('int InsertBTree');
 
     const btreeCpp = await loadReferenceCode('btree', 'cpp');
     expect(btreeCpp).toContain('split_child');

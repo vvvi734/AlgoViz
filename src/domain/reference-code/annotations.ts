@@ -455,8 +455,8 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
       zh: "下降前先分裂已满的孩子；中位键上移到父节点，因此插入不需要回溯。",
     },
     {
-      en: "Failure path: this void helper only leaves the child untouched; it cannot report failure, while InsertNonFull continues as if the split happened. The teaching implementation registers this OOM limitation rather than changing control flow.",
-      zh: "失败路径：这个 void 辅助函数只是不修改原结点，无法向调用方报告失败；InsertNonFull 仍会按“已分裂”继续。本教学实现登记该 OOM 限制，不改变控制流。",
+      en: "Failure path: split allocates nothing; callers allocate `right` before any structural write, so OOM returns 0 with the old tree unchanged.",
+      zh: "失败路径：split 不分配；调用方在改结构前分配 right，OOM 返回 0，旧树保持不变。",
     },
   ],
   "btree.cpp": [
