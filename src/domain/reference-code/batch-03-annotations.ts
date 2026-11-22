@@ -574,8 +574,8 @@ export const BATCH_03_ANNOTATIONS: Record<
       "zh": "根结点就是最小值；删除后必须保持数组紧凑，因此用最后一个叶结点填补根。"
     },
     {
-      "en": "Copy the last live node into the root before shrinking size; top already holds the old root.",
-      "zh": "先把最后一个有效结点复制到根，再缩小 size；旧根已经保存在 top 中。"
+      "en": "Shrink first, then copy the current last live node into the root; the saved top remains the returned minimum.",
+      "zh": "先缩小 size，再把当前最后一个有效结点复制到根；已保存的 top 仍是返回的最小值。"
     },
     {
       "en": "Sift-down compares the current node with both children and swaps with the smaller one; stopping when neither child is smaller restores heap order.",

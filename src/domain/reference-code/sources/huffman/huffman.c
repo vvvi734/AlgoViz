@@ -86,7 +86,7 @@ HNode *heap_pop(MinHeap *heap)
     {
         return top;
     }
-    // Copy the last live node into the root before shrinking size; top already holds the old root.
+    // Shrink first, then copy the current last live node into the root; the saved top remains the returned minimum.
     heap->items[0] = heap->items[heap->size];
     int index = 0;
     while (1)
