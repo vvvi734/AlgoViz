@@ -29,6 +29,7 @@
 typedef struct PolyNode
 {
     int coefficient;
+    // The exponent is the ordering key. A descending chain lets the merge choose the next output term from only the two heads, without random access or a coefficient array.
     int exponent;
     struct PolyNode *next;
 } PolyNode;
@@ -67,6 +68,7 @@ static void free_poly(PolyNode *head)
 static void append_term(PolyNode **head, PolyNode **tail, int coefficient, int exponent)
 {
     PolyNode *node = make_node(coefficient, exponent);
+    // The first term must set `head`; later terms only follow `tail->next`. Maintaining tail is what makes every append O(1) instead of rescanning the result.
     if (*head == NULL)
         *head = node;
     else
@@ -85,12 +87,15 @@ static PolyNode *add_polynomials(const PolyNode *a, const PolyNode *b)
     PolyNode *result = NULL;
     PolyNode *tail = NULL;
 
+    // The loop continues while either input has terms. The two-input branch compares exponents; the leftover branches copy an unopposed tail without another comparison.
     while (a != NULL || b != NULL)
     {
         if (a != NULL && b != NULL)
         {
+            // Equal exponents are the only merge case. A zero sum creates no node, but both cursors still advance because both input terms have been consumed.
             if (a->exponent == b->exponent)
             {
+                // Compute the sum before moving either cursor. The zero test then decides whether a result node exists; cursor advance is separate from node creation.
                 int sum = a->coefficient + b->coefficient;
                 if (sum != 0)
                 { /* cancellation drops the term */
@@ -99,6 +104,7 @@ static PolyNode *add_polynomials(const PolyNode *a, const PolyNode *b)
                 a = a->next; /* both cursors advance */
                 b = b->next;
             }
+            // A has the larger exponent, so its term is next in descending output. B must wait; emitting B first would break the required exponent order.
             else if (a->exponent > b->exponent)
             {
                 append_term(&result, &tail, a->coefficient, a->exponent);
@@ -110,6 +116,7 @@ static PolyNode *add_polynomials(const PolyNode *a, const PolyNode *b)
                 b = b->next; /* only B advances */
             }
         }
+        // Once B is exhausted, every remaining A term is already in descending order. Copying them one by one preserves that order and handles unequal lengths.
         else if (a != NULL)
         {
             append_term(&result, &tail, a->coefficient, a->exponent);

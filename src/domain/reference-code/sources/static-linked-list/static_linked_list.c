@@ -29,6 +29,7 @@
 typedef struct
 {
     int data;
+    // cur is an array index, not a machine address: the array fixes every node's physical location, so changing a logical successor only rewrites this index and never moves data.
     int cur;
 } StaticNode;
 
@@ -52,6 +53,7 @@ static void static_init(StaticList *list, const int *values, int count)
         list->nodes[i].data = 0;
         list->nodes[i].cur = NULL_INDEX;
     }
+    // The initializer clamps the active prefix to CAPACITY before linking anything; a longer input must not make the live chain or the free suffix leave the array.
     if (count > CAPACITY)
         count = CAPACITY;
 
@@ -75,6 +77,7 @@ static void static_init(StaticList *list, const int *values, int count)
 // 作用：从数据链表头沿 cur 计数，返回当前有效元素个数。
 static int static_length(const StaticList *list)
 {
+    // The length is not cached. Walking cur from head is the authoritative count, so this function cannot disagree with the actual live chain.
     int count = 0;
     int current = list->head;
     while (current != NULL_INDEX)
@@ -85,14 +88,15 @@ static int static_length(const StaticList *list)
     return count;
 }
 
-// Purpose: Return the cursor preceding position; position 0 returns the head cursor.
-// 作用：返回位置 position 的前驱游标；position=0 时返回头游标。
+// Purpose: Return the cursor preceding 1-based position; position 1 has no predecessor and returns the head sentinel.
+// 作用：返回 1 基位置 position 的前驱游标；position=1 没有前驱，返回头哨兵。
 static int static_predecessor(const StaticList *list, int position)
 {
     int step;
     int previous;
     if (position == 1)
         return NULL_INDEX; /* 1-based logical position */
+    // For a 1-based position p, starting at head already accounts for the first node; the loop performs p-2 hops and stops on the node immediately before p.
     previous = list->head;
     for (step = 1; step < position - 1; ++step)
     {
@@ -114,10 +118,12 @@ static int static_insert(StaticList *list, int position, int value)
 
     if (position < 1 || position > length + 1)
         return 0; /* precondition */
+    // free_head is the only proof that a cell is available. The data chain must never be scanned as an allocation source, because live nodes are not free slots.
     if (list->free_head == NULL_INDEX)
         return 0; /* capacity exhausted */
 
     new_index = list->free_head;
+    // Read the borrowed cell's free successor before overwriting its cur: this assignment is what actually removes new_index from the free chain and keeps the rest reachable.
     list->free_head = list->nodes[new_index].cur; /* borrow from free chain */
 
     list->nodes[new_index].data = value;
@@ -126,9 +132,11 @@ static int static_insert(StaticList *list, int position, int value)
     previous = static_predecessor(list, position);
     successor = (previous == NULL_INDEX) ? list->head : list->nodes[previous].cur;
 
+    // The new cell must point at the old successor before head or the predecessor is changed. Redirecting the predecessor first would erase the only link to the tail.
     list->nodes[new_index].cur = successor;
     if (previous == NULL_INDEX)
     {
+        // NULL_INDEX doubles as the predecessor sentinel for position 1. This branch is the only case where the head itself, rather than a cur field, must be rewritten.
         list->head = new_index;
     }
     else
@@ -169,6 +177,7 @@ static int static_delete(StaticList *list, int position, int *removed)
 
     /* Recycle: the target becomes the new front of the free chain. */
     list->nodes[target].data = 0;
+    // Unlink the live chain first, then push target onto the free head. The order keeps a deleted cell from still being reachable as a live node while it joins the free list.
     list->nodes[target].cur = list->free_head;
     list->free_head = target;
     return 1;

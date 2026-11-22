@@ -1480,11 +1480,83 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
       en: "Keep the successor first, then redirect the predecessor; reversing loses the tail.",
       zh: "先让新结点接住后继，再改前驱；顺序反过来会丢掉后面的链。",
     },
+    {
+      en: "cur is an array index, and kNull=-1 is deliberately outside 0..kCapacity-1. That makes a real first cell (index 0) different from the end marker.",
+      zh: "cur 是数组下标，kNull=−1 被刻意放在 0..kCapacity−1 之外；这样真实的 0 号槽不会和结束标记混淆。",
+    },
+    {
+      en: "The live prefix occupies cells 0..count-1. Linking it in array order is correct only for this initial state; later inserts may make logical order differ from physical order.",
+      zh: "有效前缀占据 0..count−1；按数组顺序串起来只保证初始状态，后续插入会让逻辑顺序与物理顺序分离。",
+    },
+    {
+      en: "The free suffix starts immediately after the live prefix. If the array is full, a null head makes the next insert fail before any cell is touched.",
+      zh: "空闲后缀紧接在有效前缀之后；数组已满时把空闲头置空，下一次插入会在改动任何槽之前失败。",
+    },
+    {
+      en: "`fresh` keeps the cell that is about to leave the free chain. It must be saved before `freeHead_` moves, because after that move the old head index is no longer stored anywhere.",
+      zh: "`fresh` 保存即将离开空闲链的槽；必须在 `freeHead_` 移动前保存，否则旧头下标就再也找不到了。",
+    },
+    {
+      en: "The free chain uses the same cur field as the live chain. Advancing freeHead_ to the borrowed cell's successor is the actual removal from the free list.",
+      zh: "空闲链和数据链共用 cur 字段；把 freeHead_ 推进到被借槽的后继，才是真正从空闲链中摘除该槽。",
+    },
+    {
+      en: "Link the fresh cell to its successor before changing `head_` or the predecessor's cur. The reverse order would overwrite the only pointer to the remaining tail.",
+      zh: "先让新槽指向后继，再改 `head_` 或前驱的 cur；顺序反过来会覆盖指向剩余尾部的唯一指针。",
+    },
+    {
+      en: "A null predecessor means insertion at the front, so only this branch rewrites `head_`; a middle or tail insert rewrites exactly one predecessor's cur.",
+      zh: "前驱为空表示插在表头，只有这个分支改写 `head_`；中间或尾部插入只改一个前驱的 cur。",
+    },
+    {
+      en: "Recycle only after the live chain is unlinked. Pushing target to the front of the free chain reuses the cell without disturbing any live sibling.",
+      zh: "先完成数据链解链，再回收目标槽；把它压到空闲链头即可复用该槽，且不影响任何有效兄弟结点。",
+    },
+    {
+      en: "There is no `length_` field: this O(n) walk from `head_` is the authoritative size and always agrees with the actual cur chain after inserts and deletes.",
+      zh: "类中没有 `length_` 字段：这次从 `head_` 出发的 O(n) 遍历才是权威长度，插入删除后也始终与真实 cur 链一致。",
+    },
   ],
   "static_linked_list.c": [
     {
       en: "Keep the successor first, then redirect the predecessor.",
       zh: "先让新结点接住后继，再改前驱。",
+    },
+    {
+      en: "cur is an array index, not a machine address: the array fixes every node's physical location, so changing a logical successor only rewrites this index and never moves data.",
+      zh: "cur 保存的是数组下标而不是机器地址：结点的物理位置由数组固定，改变逻辑后继只需改写这个下标，不必搬动数据。",
+    },
+    {
+      en: "The initializer clamps the active prefix to CAPACITY before linking anything; a longer input must not make the live chain or the free suffix leave the array.",
+      zh: "初始化在串链之前就把有效前缀截断到 CAPACITY；输入再长也不能让数据链或空闲链越过数组边界。",
+    },
+    {
+      en: "The length is not cached. Walking cur from head is the authoritative count, so this function cannot disagree with the actual live chain.",
+      zh: "这里不缓存长度；从 head 沿 cur 计数才是权威结果，因此函数不会与真实数据链不一致。",
+    },
+    {
+      en: "For a 1-based position p, starting at head already accounts for the first node; the loop performs p-2 hops and stops on the node immediately before p.",
+      zh: "对 1 基位置 p，从 head 出发已经算过第一个结点；循环只走 p−2 步，正好停在第 p 个结点的前驱上。",
+    },
+    {
+      en: "free_head is the only proof that a cell is available. The data chain must never be scanned as an allocation source, because live nodes are not free slots.",
+      zh: "free_head 是“还有空槽”的唯一凭据；不能把数据链当作分配来源扫描，因为有效结点并不是空闲槽。",
+    },
+    {
+      en: "Read the borrowed cell's free successor before overwriting its cur: this assignment is what actually removes new_index from the free chain and keeps the rest reachable.",
+      zh: "在覆盖被借结点的 cur 之前先读出它的空闲后继；正是这次赋值把 new_index 从空闲链摘下，同时保住其余空闲槽。",
+    },
+    {
+      en: "The new cell must point at the old successor before head or the predecessor is changed. Redirecting the predecessor first would erase the only link to the tail.",
+      zh: "必须先让新结点接住原后继，再改 head 或前驱；若先改前驱，指向尾部的唯一链接就会被覆盖。",
+    },
+    {
+      en: "NULL_INDEX doubles as the predecessor sentinel for position 1. This branch is the only case where the head itself, rather than a cur field, must be rewritten.",
+      zh: "NULL_INDEX 同时充当位置 1 的前驱哨兵；只有这个分支需要改 head 本身，其他插入都只改某个 cur。",
+    },
+    {
+      en: "Unlink the live chain first, then push target onto the free head. The order keeps a deleted cell from still being reachable as a live node while it joins the free list.",
+      zh: "必须先把目标结点从数据链解下，再把它压入空闲链头；否则同一结点会同时被数据链和空闲链引用。",
     },
   ],
   "static_linked_list.py": [
@@ -1492,11 +1564,71 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
       en: "Follow cur from head; array order is not logical order.",
       zh: "从 head 沿 cur 前进；数组顺序不是逻辑顺序。",
     },
+    {
+      en: "`None` is the null cursor, never index 0. Every live cursor is an integer in 0..capacity-1, so a physical slot and a logical position stay independent.",
+      zh: "`None` 是空游标，绝不是 0 号下标；有效游标都是 0..capacity−1 的整数，因此物理槽位与逻辑位置相互独立。",
+    },
+    {
+      en: "Clamp the initial sequence before any linking, so both the live prefix and the free suffix stay inside the fixed `data` and `cur` arrays.",
+      zh: "先截断初始序列再串链，确保有效前缀和空闲后缀都落在固定的 `data`、`cur` 数组内。",
+    },
+    {
+      en: "The free chain begins at the first unused slot. `None` is the explicit empty state, not a slot that can be borrowed.",
+      zh: "空闲链从第一个未用槽开始；`None` 是显式空状态，表示没有任何槽可借。",
+    },
+    {
+      en: "Read the next free index before writing `cur[fresh]`; this assignment removes `fresh` from the free chain while preserving the rest of the free suffix.",
+      zh: "在写 `cur[fresh]` 前先读出下一个空闲下标；这次赋值把 `fresh` 从空闲链摘下，同时保住其余空闲后缀。",
+    },
+    {
+      en: "`previous is None` is the head sentinel for position 1. Otherwise the successor is the predecessor's current cur, captured before any rewiring.",
+      zh: "`previous is None` 表示位置 1 的头部哨兵；否则后继就是前驱当前的 cur，并且必须在改链前捕获。",
+    },
+    {
+      en: "Connect the borrowed slot to its successor before changing `head` or the predecessor. Reversing the order cuts off every node after the insertion point.",
+      zh: "先让借来的槽接住后继，再改 `head` 或前驱；顺序反过来会切断插入点之后的整条链。",
+    },
+    {
+      en: "Recycle after unlinking: target becomes the new free head, and its old free successor remains reachable through the new `cur[target]`.",
+      zh: "解链后再回收：target 成为新的空闲链头，而原来的空闲后继通过新的 `cur[target]` 仍然可达。",
+    },
+    {
+      en: "Advance by cur, not by the loop index. After inserts and deletes the physical array order is deliberately unrelated to logical order.",
+      zh: "前进靠 cur 而不是循环下标；插入删除后，数组物理顺序本来就与逻辑顺序无关。",
+    },
   ],
   "polynomial_add.c": [
     {
       en: "Equal exponents add; a zero sum creates no result node.",
       zh: "指数相等时系数相加；和为 0 不创建结果结点。",
+    },
+    {
+      en: "The exponent is the ordering key. A descending chain lets the merge choose the next output term from only the two heads, without random access or a coefficient array.",
+      zh: "指数是排序键；按指数降序的链使合并只需比较两个头结点就能决定下一项，无需随机访问或系数数组。",
+    },
+    {
+      en: "The first term must set `head`; later terms only follow `tail->next`. Maintaining tail is what makes every append O(1) instead of rescanning the result.",
+      zh: "第一项必须设置 `head`；后续项只沿 `tail->next` 接入。维护尾指针使每次追加都是 O(1)，不必重扫结果链。",
+    },
+    {
+      en: "The loop continues while either input has terms. The two-input branch compares exponents; the leftover branches copy an unopposed tail without another comparison.",
+      zh: "只要任一输入还有项循环就继续；双输入分支比较指数，剩余分支直接复制没有对手的尾部，无需再比较。",
+    },
+    {
+      en: "Compute the sum before moving either cursor. The zero test then decides whether a result node exists; cursor advance is separate from node creation.",
+      zh: "先算出系数和，再移动任一游标；零值判断只决定是否建结果结点，与游标前进是两件事。",
+    },
+    {
+      en: "Equal exponents are the only merge case. A zero sum creates no node, but both cursors still advance because both input terms have been consumed.",
+      zh: "只有指数相等才合并；系数和为 0 时不建结点，但两个游标仍要前进，因为两项输入都已被消费。",
+    },
+    {
+      en: "A has the larger exponent, so its term is next in descending output. B must wait; emitting B first would break the required exponent order.",
+      zh: "A 的指数更大，所以它的项应先在降序结果中输出；B 必须等待，先输出 B 会破坏要求的指数顺序。",
+    },
+    {
+      en: "Once B is exhausted, every remaining A term is already in descending order. Copying them one by one preserves that order and handles unequal lengths.",
+      zh: "B 用尽后，A 的剩余项本身已经降序；逐项复制即可保持顺序，也正确处理了两条链长度不等的情况。",
     },
   ],
   "polynomial_add.py": [
@@ -1504,11 +1636,67 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
       en: "Two cursors advance once each; a zero coefficient sum creates no node.",
       zh: "两个指针各前进一次；系数和为 0 不建结点。",
     },
+    {
+      en: "The node constructor rejects zero coefficients and negative exponents immediately, so every chain built from these nodes already satisfies the sparse-term invariant.",
+      zh: "结点构造器立即拒绝零系数和负指数，因此由这些结点组成的链天然满足稀疏项不变量。",
+    },
+    {
+      en: "The previous exponent must be strictly larger. Equal exponents would be duplicate terms, while an increasing exponent would make the merge order impossible.",
+      zh: "前一个指数必须严格更大；相等会产生重复项，递增则会使合并所依赖的顺序不成立。",
+    },
+    {
+      en: "The tail is a real node reference. Link through it before moving tail, so append stays O(1) without a separate length field.",
+      zh: "尾指针是真实结点引用；先通过它接链再移动尾指针，追加就能保持 O(1)，无需额外长度字段。",
+    },
+    {
+      en: "The result is built until both input cursors are exhausted. The leftover branch is required for unequal lengths, not an optional optimization.",
+      zh: "结果要一直构建到两个输入游标都耗尽；剩余分支用于处理长度不等，并不是可选优化。",
+    },
+    {
+      en: "Only equal exponents combine. A zero total is omitted, but both cursors advance because both input terms have already been consumed.",
+      zh: "只有指数相等才合并；总和为 0 时省略该项，但两个游标仍要前进，因为两项输入都已被消费。",
+    },
+    {
+      en: "The larger exponent must appear first in the descending result. The other cursor remains so its term can compete with the next left term.",
+      zh: "更大的指数必须先在降序结果中出现；另一个游标保持不动，让它的项与下一个左项继续竞争。",
+    },
+    {
+      en: "Once right is exhausted, the rest of left is already in descending order; appending each node preserves the invariant instead of re-sorting.",
+      zh: "右链用尽后，左链剩余部分已经降序；逐结点追加即可保持不变量，无需重新排序。",
+    },
   ],
   "polynomial_add.cpp": [
     {
       en: "A zero coefficient sum must create no node: 0x^k is not a sparse term.",
       zh: "系数相加为 0 时不能建结点：0x^k 不是稀疏多项式的有效项。",
+    },
+    {
+      en: "The exponent orders the sparse terms. Descending order lets the merge pick the next result from the two heads only, so no random access to a coefficient array is needed.",
+      zh: "指数为稀疏项排序；降序使合并只从两个头结点取下一项，无需随机访问系数数组。",
+    },
+    {
+      en: "`unique_ptr` owns each node, while `tail_` is a non-owning cursor. Updating `tail_` after linking keeps appends O(1) and avoids a second owning pointer.",
+      zh: "`unique_ptr` 拥有每个结点，`tail_` 只是非拥有游标；接好链后再更新 `tail_`，使追加保持 O(1) 且不产生第二个拥有者。",
+    },
+    {
+      en: "An empty polynomial has no tail yet. The first node must set both `head_` and `tail_`; later nodes only follow `tail_->next`.",
+      zh: "空多项式还没有尾结点；第一个结点必须同时设置 `head_` 与 `tail_`，后续结点只沿 `tail_->next` 接入。",
+    },
+    {
+      en: "Either non-empty chain keeps the merge alive. Each iteration consumes exactly one cursor, or both when exponents are equal, so neither chain is skipped.",
+      zh: "任一链非空合并就继续；每轮恰好消费一个游标，指数相等时消费两个，因此不会跳过任何一条链。",
+    },
+    {
+      en: "Equal exponents are the only case that combines coefficients. A zero sum skips node creation, but both cursors still advance because both terms are consumed.",
+      zh: "只有指数相等才合并系数；零和不建结点，但两个游标仍要前进，因为两项都已被消费。",
+    },
+    {
+      en: "Left has the larger exponent and must be emitted first in descending order. Right stays put so it can be compared with the next left term.",
+      zh: "左链指数更大，必须在降序结果中先输出；右游标保持不动，以便与下一个左项继续比较。",
+    },
+    {
+      en: "When right is exhausted, the remaining left terms are already ordered. Copying them directly finishes the merge without inventing extra comparisons.",
+      zh: "右链用尽后，左链剩余项本身有序；直接复制即可完成合并，不需要额外比较。",
     },
   ],
   "infix_to_postfix.c": [

@@ -25,6 +25,7 @@
 struct Term
 {
     int coefficient;
+    // The exponent orders the sparse terms. Descending order lets the merge pick the next result from the two heads only, so no random access to a coefficient array is needed.
     int exponent;
 };
 
@@ -41,6 +42,7 @@ class Polynomial
 
     // Purpose: Append a term at the polynomial tail and maintain tail so exponents stay linked in order.
     // 作用：在多项式尾部追加一项；维护尾指针，保证按指数顺序链接。
+    // `unique_ptr` owns each node, while `tail_` is a non-owning cursor. Updating `tail_` after linking keeps appends O(1) and avoids a second owning pointer.
     void append(const Term &term)
     {
         auto node = std::make_unique<Node>(Node{term, nullptr});
@@ -67,10 +69,12 @@ class Polynomial
         const Node *left = a.head();
         const Node *right = b.head();
 
+        // Either non-empty chain keeps the merge alive. Each iteration consumes exactly one cursor, or both when exponents are equal, so neither chain is skipped.
         while (left != nullptr || right != nullptr)
         {
             if (left != nullptr && right != nullptr)
             {
+                // Equal exponents are the only case that combines coefficients. A zero sum skips node creation, but both cursors still advance because both terms are consumed.
                 if (left->term.exponent == right->term.exponent)
                 {
                     const int sum = left->term.coefficient + right->term.coefficient;
@@ -81,6 +85,7 @@ class Polynomial
                     left = left->next.get(); // both advance
                     right = right->next.get();
                 }
+                // Left has the larger exponent and must be emitted first in descending order. Right stays put so it can be compared with the next left term.
                 else if (left->term.exponent > right->term.exponent)
                 {
                     result.append(left->term);
@@ -92,6 +97,7 @@ class Polynomial
                     right = right->next.get(); // only B advances
                 }
             }
+            // When right is exhausted, the remaining left terms are already ordered. Copying them directly finishes the merge without inventing extra comparisons.
             else if (left != nullptr)
             {
                 result.append(left->term); // append the remaining A tail
@@ -111,6 +117,7 @@ class Polynomial
     void print(const std::string &label) const
     {
         std::cout << label << " = ";
+        // An empty polynomial has no tail yet. The first node must set both `head_` and `tail_`; later nodes only follow `tail_->next`.
         if (!head_)
         {
             std::cout << "0\n";

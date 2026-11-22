@@ -23,10 +23,12 @@ class StaticList:
     def __init__(self, capacity: int, values: list[int]) -> None:
         self.capacity = capacity
         self.data: list[int | None] = [None] * capacity
+        # `None` is the null cursor, never index 0. Every live cursor is an integer in 0..capacity-1, so a physical slot and a logical position stay independent.
         self.cur: list[int | None] = [None] * capacity
         self.head: int | None = None
         self.free_head: int | None = None
 
+        # Clamp the initial sequence before any linking, so both the live prefix and the free suffix stay inside the fixed `data` and `cur` arrays.
         count = min(len(values), capacity)
         for index in range(count):
             self.data[index] = values[index]
@@ -35,6 +37,7 @@ class StaticList:
 
         for index in range(count, capacity):
             self.cur[index] = index + 1 if index + 1 < capacity else None
+        # The free chain begins at the first unused slot. `None` is the explicit empty state, not a slot that can be borrowed.
         self.free_head = count if count < capacity else None
 
     # Follow cur from head; array order is not logical order.
@@ -43,6 +46,7 @@ class StaticList:
         current = self.head
         while current is not None:
             order.append(current)
+            # Advance by cur, not by the loop index. After inserts and deletes the physical array order is deliberately unrelated to logical order.
             current = self.cur[current]
         return order
 
@@ -64,14 +68,17 @@ class StaticList:
             return False                  # capacity is exhausted
 
         fresh = self.free_head
+        # Read the next free index before writing `cur[fresh]`; this assignment removes `fresh` from the free chain while preserving the rest of the free suffix.
         self.free_head = self.cur[fresh]  # borrow from the free chain
         self.data[fresh] = value
         self.cur[fresh] = None
 
         previous = self._predecessor(position)
+        # `previous is None` is the head sentinel for position 1. Otherwise the successor is the predecessor's current cur, captured before any rewiring.
         successor = self.cur[previous] if previous is not None else self.head
 
         # Keep the successor first, then redirect the predecessor.
+        # Connect the borrowed slot to its successor before changing `head` or the predecessor. Reversing the order cuts off every node after the insertion point.
         self.cur[fresh] = successor
         if previous is None:
             self.head = fresh
@@ -97,6 +104,7 @@ class StaticList:
         else:
             self.cur[previous] = successor
         self.data[target] = None
+        # Recycle after unlinking: target becomes the new free head, and its old free successor remains reachable through the new `cur[target]`.
         self.cur[target] = self.free_head
         self.free_head = target
         return removed

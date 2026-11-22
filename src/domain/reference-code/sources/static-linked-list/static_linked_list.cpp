@@ -44,7 +44,9 @@ class StaticList
         if (freeHead_ == kNull)
             return false; // array is full
 
+        // `fresh` keeps the cell that is about to leave the free chain. It must be saved before `freeHead_` moves, because after that move the old head index is no longer stored anywhere.
         const int fresh = freeHead_;
+        // The free chain uses the same cur field as the live chain. Advancing freeHead_ to the borrowed cell's successor is the actual removal from the free list.
         freeHead_ = cells_[fresh].cur; // borrow the cell
 
         cells_[fresh].data = value;
@@ -54,8 +56,10 @@ class StaticList
         const int successor = previous == kNull ? head_ : cells_[previous].cur;
 
         // The new node keeps the successor before the predecessor is changed.
+        // Link the fresh cell to its successor before changing `head_` or the predecessor's cur. The reverse order would overwrite the only pointer to the remaining tail.
         cells_[fresh].cur = successor;
         if (previous == kNull)
+            // A null predecessor means insertion at the front, so only this branch rewrites `head_`; a middle or tail insert rewrites exactly one predecessor's cur.
             head_ = fresh;
         else
             cells_[previous].cur = fresh;
@@ -79,6 +83,7 @@ class StaticList
         else
             cells_[previous].cur = successor;
         cells_[target].data = 0;
+        // Recycle only after the live chain is unlinked. Pushing target to the front of the free chain reuses the cell without disturbing any live sibling.
         cells_[target].cur = freeHead_;
         freeHead_ = target;
         return removed;
@@ -106,6 +111,7 @@ class StaticList
     struct Cell
     {
         int data = 0;
+        // cur is an array index, and kNull=-1 is deliberately outside 0..kCapacity-1. That makes a real first cell (index 0) different from the end marker.
         int cur = kNull;
     };
 
@@ -116,6 +122,7 @@ class StaticList
         int count = static_cast<int>(values.size());
         if (count > kCapacity)
             count = kCapacity;
+        // The live prefix occupies cells 0..count-1. Linking it in array order is correct only for this initial state; later inserts may make logical order differ from physical order.
         for (int i = 0; i < count; ++i)
         {
             cells_[i].data = values[i];
@@ -126,21 +133,23 @@ class StaticList
         {
             cells_[i].cur = i + 1 < kCapacity ? i + 1 : kNull;
         }
+        // The free suffix starts immediately after the live prefix. If the array is full, a null head makes the next insert fail before any cell is touched.
         freeHead_ = count < kCapacity ? count : kNull;
     }
 
-    // Purpose: Return the data-list length from the maintained length field.
-    // 作用：返回数据链表长度；直接读维护的 length 字段。
+    // Purpose: Count live nodes by walking cur from head; this class keeps no length field.
+    // 作用：从 head 沿 cur 计数；本类没有维护 length 字段。
     int size() const
     {
+        // There is no `length_` field: this O(n) walk from `head_` is the authoritative size and always agrees with the actual cur chain after inserts and deletes.
         int count = 0;
         for (int current = head_; current != kNull; current = cells_[current].cur)
             ++count;
         return count;
     }
 
-    // Purpose: Return the array index of position's predecessor; position 0 returns the data-list head cursor.
-    // 作用：返回 position 前驱的数组下标；position=0 时返回数据链表头游标。
+    // Purpose: Return the array index of 1-based position's predecessor; position 1 returns the head sentinel.
+    // 作用：返回 1 基位置 position 的前驱数组下标；position=1 返回头哨兵。
     int predecessor(int position) const
     {
         if (position == 1)

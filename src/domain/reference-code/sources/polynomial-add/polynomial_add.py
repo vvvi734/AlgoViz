@@ -32,6 +32,7 @@ class PolyNode:
     exponent: int
     next: "PolyNode | None" = None
 
+    # The node constructor rejects zero coefficients and negative exponents immediately, so every chain built from these nodes already satisfies the sparse-term invariant.
     def __post_init__(self) -> None:
         if self.coefficient == 0:
             raise ValueError("a sparse chain must not store a zero coefficient")
@@ -45,6 +46,7 @@ class Polynomial:
         self.tail: PolyNode | None = None
         previous_exponent: int | None = None
         for coefficient, exponent in terms:
+            # The previous exponent must be strictly larger. Equal exponents would be duplicate terms, while an increasing exponent would make the merge order impossible.
             if previous_exponent is not None and exponent >= previous_exponent:
                 raise ValueError("terms must strictly descend by exponent")
             previous_exponent = exponent
@@ -58,6 +60,7 @@ class Polynomial:
         if self.head is None:
             self.head = node
         else:
+            # The tail is a real node reference. Link through it before moving tail, so append stays O(1) without a separate length field.
             self.tail.next = node
         self.tail = node
 
@@ -76,8 +79,10 @@ def add_polynomials(a: Polynomial, b: Polynomial) -> Polynomial:
     left = a.head
     right = b.head
 
+    # The result is built until both input cursors are exhausted. The leftover branch is required for unequal lengths, not an optional optimization.
     while left is not None or right is not None:
         if left is not None and right is not None:
+            # Only equal exponents combine. A zero total is omitted, but both cursors advance because both input terms have already been consumed.
             if left.exponent == right.exponent:
                 total = left.coefficient + right.coefficient
                 if total != 0:
@@ -85,12 +90,14 @@ def add_polynomials(a: Polynomial, b: Polynomial) -> Polynomial:
                     result.append(total, left.exponent)
                 left = left.next          # equal exponents advance both
                 right = right.next
+            # The larger exponent must appear first in the descending result. The other cursor remains so its term can compete with the next left term.
             elif left.exponent > right.exponent:
                 result.append(left.coefficient, left.exponent)
                 left = left.next          # only A advances
             else:
                 result.append(right.coefficient, right.exponent)
                 right = right.next        # only B advances
+        # Once right is exhausted, the rest of left is already in descending order; appending each node preserves the invariant instead of re-sorting.
         elif left is not None:
             # B is exhausted; the rest of A is already ordered.
             result.append(left.coefficient, left.exponent)
