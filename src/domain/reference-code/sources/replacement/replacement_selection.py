@@ -23,8 +23,9 @@ def comes_before(left, right):
 def replacement_selection(values, capacity):
     if not 1 <= len(values) <= 20:
         raise ValueError("replacement selection needs 1..20 records")
-    if not 2 <= capacity <= 6:
-        raise ValueError("workspace capacity must be 2..6")
+    # A bool or non-integer capacity would pass numeric comparison but fail later in range(); reject it at the API boundary.
+    if isinstance(capacity, bool) or not isinstance(capacity, int) or not 2 <= capacity <= 6:
+        raise ValueError("workspace capacity must be an integer from 2 to 6")
 
     records = [
         {"value": value, "original_index": index}
@@ -56,7 +57,10 @@ def replacement_selection(values, capacity):
             winner["state"] = "empty"
 
             if input_index < len(records):
-                empty = next(slot for slot in workspace if slot["state"] == "empty")
+                # The just-emitted slot is empty, so a valid state always has one; handle an invariant break explicitly instead of leaking StopIteration.
+                empty = next((slot for slot in workspace if slot["state"] == "empty"), None)
+                if empty is None:
+                    raise ValueError("remaining input without an empty workspace slot")
                 incoming = records[input_index]
                 input_index += 1
                 empty["item"] = incoming

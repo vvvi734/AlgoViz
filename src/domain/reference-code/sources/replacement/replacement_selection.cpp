@@ -18,7 +18,12 @@
 
 #include <algorithm>
 #include <cstdio>
+#include <stdexcept>
 #include <vector>
+
+constexpr int MAX_RECORDS = 20;
+constexpr int MIN_WORKSPACE = 2;
+constexpr int MAX_WORKSPACE = 6;
 
 enum SlotState
 {
@@ -54,6 +59,16 @@ static bool comes_before(const Item &left, const Item &right)
 static std::vector<std::vector<Item>> replacement_selection(const std::vector<Item> &input,
                                                             int capacity)
 {
+    // The teaching contract is 1..20 records and 2..6 workspace slots; reject anything else before constructing vectors.
+    if (input.empty() || static_cast<int>(input.size()) > MAX_RECORDS)
+    {
+        throw std::invalid_argument("replacement selection needs 1..20 records");
+    }
+    if (capacity < MIN_WORKSPACE || capacity > MAX_WORKSPACE)
+    {
+        throw std::invalid_argument("workspace capacity must be 2..6");
+    }
+
     // workspace holds resident candidates only; current is a separate vector, so an output run can be larger than the workspace.
     std::vector<Slot> workspace(capacity);
     std::vector<std::vector<Item>> runs;
@@ -109,7 +124,7 @@ static std::vector<std::vector<Item>> replacement_selection(const std::vector<It
                 // Remaining input with no empty slot violates the refill invariant; throw instead of overwriting a frozen record.
                 if (empty < 0)
                 {
-                    throw "no empty workspace slot";
+                    throw std::runtime_error("no empty workspace slot");
                 }
                 workspace[empty].item = input[inputIndex++];
                 // Only keys below the threshold are frozen; equality remains eligible.
@@ -142,7 +157,7 @@ static std::vector<std::vector<Item>> replacement_selection(const std::vector<It
             {
                 break;
             }
-            throw "remaining input without a resident record";
+            throw std::runtime_error("remaining input without a resident record");
         }
         // A new run starts with no threshold; carrying lastOutput forward would freeze smaller keys incorrectly.
         hasLastOutput = false;
@@ -155,19 +170,27 @@ int main()
 {
     const std::vector<Item> input = {
         {7, 0}, {3, 1}, {9, 2}, {1, 3}, {8, 4}, {2, 5}, {6, 6}, {4, 7}, {5, 8}};
-    const std::vector<std::vector<Item>> runs = replacement_selection(input, 3);
-
-    int total = 0;
-    for (int runIndex = 0; runIndex < static_cast<int>(runs.size()); ++runIndex)
+    try
     {
-        std::printf("run%c length=%d:", 'A' + runIndex, static_cast<int>(runs[runIndex].size()));
-        for (const Item &item : runs[runIndex])
+        const std::vector<std::vector<Item>> runs = replacement_selection(input, 3);
+
+        int total = 0;
+        for (int runIndex = 0; runIndex < static_cast<int>(runs.size()); ++runIndex)
         {
-            std::printf(" %d", item.value);
+            std::printf("run%c length=%d:", 'A' + runIndex, static_cast<int>(runs[runIndex].size()));
+            for (const Item &item : runs[runIndex])
+            {
+                std::printf(" %d", item.value);
+            }
+            std::printf("\n");
+            total += static_cast<int>(runs[runIndex].size());
         }
-        std::printf("\n");
-        total += static_cast<int>(runs[runIndex].size());
+        std::printf("runs=%d records=%d workspace=3\n", static_cast<int>(runs.size()), total);
     }
-    std::printf("runs=%d records=%d workspace=3\n", static_cast<int>(runs.size()), total);
+    catch (const std::exception &error)
+    {
+        std::fprintf(stderr, "replacement selection failed: %s\n", error.what());
+        return 1;
+    }
     return 0;
 }

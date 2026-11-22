@@ -95,11 +95,17 @@ static int EmptySlot(const Workspace *workspace, int capacity)
 
 // Purpose: Copy the current run into completed runs and reset its buffer.
 // 作用：把当前段完整移入已完成归并段，并清空当前段缓冲。
-static void CloseRun(RunResult *runs, int *runCount, Item *current, int *currentLength)
+// Returns 0 if the fixed run buffer or completed-run array would overflow; no output is truncated.
+static int CloseRun(RunResult *runs, int *runCount, Item *current, int *currentLength)
 {
     if (*currentLength == 0)
     {
-        return;
+        return 1;
+    }
+    // current and RunResult.items both hold at most MAX_RECORDS records; runs holds at most MAX_RUNS completed runs.
+    if (*currentLength < 0 || *currentLength > MAX_RECORDS || *runCount < 0 || *runCount >= MAX_RUNS)
+    {
+        return 0;
     }
     for (int index = 0; index < *currentLength; ++index)
     {
@@ -108,12 +114,18 @@ static void CloseRun(RunResult *runs, int *runCount, Item *current, int *current
     runs[*runCount].length = *currentLength;
     *runCount += 1;
     *currentLength = 0;
+    return 1;
 }
 
 // Purpose: Generate every initial run from the input and report each length.
 // 作用：生成全部初始归并段，并返回段数。
 static int ReplacementSelection(const Item *input, int n, int capacity, RunResult *runs)
 {
+    // Validate every fixed-capacity dimension before initializing the workspace: n <= 20 keeps current/RunResult safe, capacity 2..6 keeps Workspace safe.
+    if (input == NULL || runs == NULL || n < 1 || n > MAX_RECORDS || capacity < 2 || capacity > MAX_WORKSPACE)
+    {
+        return -1;
+    }
     // The workspace holds only resident candidates; current is a separate run buffer, so a run may grow beyond the workspace capacity.
     Workspace workspace = {0};
     // The run buffer is appended in nondecreasing key order: after the first output, every eligible refill is checked against lastOutput.
@@ -163,7 +175,10 @@ static int ReplacementSelection(const Item *input, int n, int capacity, RunResul
         }
 
         // No eligible key means the current run cannot grow; close and copy it before unfreezing candidates for the next run.
-        CloseRun(runs, &runCount, current, &currentLength);
+        if (!CloseRun(runs, &runCount, current, &currentLength))
+        {
+            return -1;
+        }
         int unfrozen = 0;
         for (int slot = 0; slot < capacity; ++slot)
         {
@@ -211,7 +226,7 @@ int main(void)
     int runCount = ReplacementSelection(input, 9, 3, runs);
     if (runCount < 0)
     {
-        printf("replacement selection invariant failed\n");
+        printf("replacement selection invalid input or invariant failed\n");
         return 1;
     }
     return 0;
