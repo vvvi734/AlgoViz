@@ -42,8 +42,7 @@ typedef struct
     int size;
 } MinHeap;
 
-// Purpose: Min-heap comparator: lower frequency wins, and insertion order breaks ties so the tree shape stays stable.
-// 作用：最小堆比较器：频率小的优先；频率相同用插入序号打破平局，保证树形稳定。
+// Frequency is primary; order breaks ties, so equal weights still produce a deterministic tree shape.
 int node_less(const HNode *a, const HNode *b)
 {
     if (a->frequency != b->frequency)
@@ -58,15 +57,14 @@ void heap_init(MinHeap *heap)
     heap->size = 0;
 }
 
-// Min-heap ordering is (frequency, insertion order), keeping ties deterministic.
-// Purpose: Insert a new node into the min-heap and sift it up using node_less for comparisons.
-// 作用：把新结点插入最小堆并上浮；比较使用 node_less。
+// Append at the end of the array, then sift up; the heap property is restored along one root path.
 void heap_push(MinHeap *heap, HNode *node)
 {
     int index = heap->size++;
     heap->items[index] = node;
     while (index > 0)
     {
+        // The 0-based parent formula; index 0 has no parent and ends the sift-up loop.
         int parent = (index - 1) / 2;
         if (!node_less(heap->items[index], heap->items[parent]))
         {
@@ -79,8 +77,7 @@ void heap_push(MinHeap *heap, HNode *node)
     }
 }
 
-// Purpose: Pop the least frequent node, move the last node to the root, and sift down to restore heap order.
-// 作用：弹出频率最小的结点，把末尾结点移到根后下沉恢复堆序。
+// The root is the minimum; removing it must keep the array compact, so the last leaf fills the root.
 HNode *heap_pop(MinHeap *heap)
 {
     HNode *top = heap->items[0];
@@ -89,12 +86,14 @@ HNode *heap_pop(MinHeap *heap)
     {
         return top;
     }
+    // Copy the last live node into the root before shrinking size; top already holds the old root.
     heap->items[0] = heap->items[heap->size];
     int index = 0;
     while (1)
     {
         int left = index * 2 + 1;
         int right = left + 1;
+        // Sift-down compares the current node with both children and swaps with the smaller one; stopping when neither child is smaller restores heap order.
         int smallest = index;
         if (left < heap->size && node_less(heap->items[left], heap->items[smallest]))
         {
@@ -116,8 +115,7 @@ HNode *heap_pop(MinHeap *heap)
     return top;
 }
 
-// Purpose: Create a Huffman node holding frequency, symbol and insertion order; internal nodes use a placeholder symbol.
-// 作用：创建哈夫曼结点：保存频率、字符和插入顺序；内部结点字符用占位符。
+// Every node starts with null children; internal nodes use the placeholder symbol, so only leaves are printed as characters.
 HNode *make_node(int frequency, char symbol, int order)
 {
     HNode *node = (HNode *)malloc(sizeof(HNode));
@@ -133,8 +131,7 @@ HNode *make_node(int frequency, char symbol, int order)
     return node;
 }
 
-// Purpose: Recursively print each leaf's Huffman code along the 0/1 tree path without modifying the tree.
-// 作用：沿树的 0/1 路径递归输出每个叶子的哈夫曼编码；不修改树。
+// A node with no children is a leaf; its path is complete, so write the terminator and emit the code.
 void print_codes(const HNode *node, char path[], int depth)
 {
     if (node->left == NULL && node->right == NULL)
@@ -145,6 +142,7 @@ void print_codes(const HNode *node, char path[], int depth)
     }
     if (node->left != NULL)
     {
+        // Left edges append 0 and right edges append 1; depth indexes the next free character in the shared path buffer.
         path[depth] = '0';
         print_codes(node->left, path, depth + 1);
     }
@@ -155,8 +153,7 @@ void print_codes(const HNode *node, char path[], int depth)
     }
 }
 
-// Purpose: Free a Huffman tree postorder: release both children before the current node.
-// 作用：后序释放哈夫曼树：先释放左右孩子，再释放当前结点。
+// Postorder release is required: children must be freed before the parent whose fields still point at them.
 void free_tree(HNode *node)
 {
     if (node == NULL)

@@ -32,18 +32,18 @@ class Node:
 
 # Left subtree, then node, then right subtree; a BST yields ascending keys.
 # Recurse left, visit the root, then recurse right; for a BST this emits keys in ascending order.
-# Purpose: Inorder traversal of a subtree appending keys to output; read-only.
-# 作用：中序遍历子树并把键追加到 output；只读。
 def inorder(node: Node | None, output: list[int]) -> None:
+    # None is the empty subtree, so return without touching value or child links; this base case stops every descent.
     if node is None:
         return
+    # The left call must return before the root is appended; the call stack holds ancestors whose right subtrees are still pending.
     inorder(node.left, output)
+    # Appending between the two recursive calls is the definition of inorder; moving this line changes the traversal order.
     output.append(node.value)
+    # The right subtree runs after the root, so a BST emits keys in ascending order.
     inorder(node.right, output)
 
 
-# Purpose: Build a demo BST and print its inorder sequence.
-# 作用：构造演示 BST 并打印中序序列。
 def main() -> None:
     root = Node(
         4,

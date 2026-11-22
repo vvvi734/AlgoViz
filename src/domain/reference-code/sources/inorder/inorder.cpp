@@ -1,10 +1,10 @@
 /*
- * 中文导读：按访问根结点的时机区分前序、中序、后序；层序遍历则借助队列逐层访问。
- * 阅读顺序：先看递归函数中 visit 放在两次递归的哪一侧；再看显式栈版本为什么要一路压左孩子；最后看层序队列的 size 分层。
+ * 中文导读：递归实现二叉树的中序遍历，访问顺序固定为“左子树、根、右子树”。
+ * 阅读顺序：先看空指针递归出口；再看左递归返回后访问根；最后看右递归与 BST 升序性质。
  * 关键不变量：递归栈保存的是尚未访问完的祖先；中序输出始终按左—根—右。
- * 易错点：前/中/后序访问语句位置放错；显式栈弹栈后忘记右子树；层序不记录每层 size 导致分层错误；空树边界。
- * 复杂度：O(n) 时间，递归 O(h) 栈 / 层序 O(width) 队列。
- * 输入/输出：输入 main 内置的二叉树；中序/层序遍历把键写入输出数组；main 打印序列。
+ * 易错点：先访问根再走左子树会变成前序；忘记空指针出口；把右递归写在访问之前。
+ * 复杂度：O(n) 时间，O(h) 递归栈空间，h 为树高。
+ * 输入/输出：输入 main 内置的二叉树；按中序打印键；空树不输出任何键。
 */
 
 // AlgoViz reference implementation: inorder traversal (C++17).
@@ -30,16 +30,18 @@ struct Node
 
 // Left subtree, then node, then right subtree; a BST yields ascending keys.
 // Recurse left, visit the root, then recurse right; for a BST this emits keys in ascending order.
-// Purpose: Inorder traversal: left subtree, then root, then right subtree; read-only.
-// 作用：中序遍历：先左子树，再访问根，最后右子树；只读。
 void inorder(const Node *node)
 {
+    // nullptr is the empty subtree, so return without touching value or child links; this base case stops every descent.
     if (!node)
     {
         return;
     }
+    // The left call must return before the root is printed; the call stack holds ancestors whose right subtrees are still pending.
     inorder(node->left);
+    // Visiting between the two recursive calls is the definition of inorder; moving this line changes the traversal order.
     std::cout << node->value << ' ';
+    // The right subtree runs after the root, so a BST emits keys in ascending order.
     inorder(node->right);
 }
 

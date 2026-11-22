@@ -37,23 +37,19 @@ struct Node
 class MinHeap
 {
   public:
-    // Purpose: Build a min-heap from leaf nodes, storing indices only while the real nodes live in nodes_.
-    // 作用：用叶子结点数组建最小堆；只保存下标，真实结点在 nodes_ 中。
+    // The heap stores indices, not Node copies; nodes_ must outlive the heap and never reallocate during merging.
     explicit MinHeap(std::vector<Node> &nodes) : nodes_(nodes)
     {
     }
 
-    // Min-heap ordering is (frequency, insertion order), keeping ties deterministic.
-    // Purpose: Push a node index into the min-heap and sift it up using less(index, index) for comparisons.
-    // 作用：把结点下标加入最小堆并上浮；比较用 less(index, index)。
+    // Append the index at the end of the array, then sift up; the parent of i is (i - 1) / 2.
     void push(int index)
     {
         heap_.push_back(index);
         sift_up(heap_.size() - 1);
     }
 
-    // Purpose: Pop the heap-top index, sift the last index down, and return the index of the least frequent node.
-    // 作用：弹出堆顶下标并把末尾下标下沉；返回频率最小的结点下标。
+    // Save the root index, move the last index into the root, shrink, then sift down; the returned index still names a live node.
     int pop()
     {
         int top = heap_.front();
@@ -66,23 +62,18 @@ class MinHeap
         return top;
     }
 
-    // Purpose: Read-only emptiness test that does not modify the structure.
-    // 作用：只读判断容器是否为空；不修改结构。
     bool empty() const
     {
         return heap_.empty();
     }
 
-    // Purpose: Return the current element count from the maintained field instead of traversing.
-    // 作用：返回当前有效元素个数；直接读取维护字段，不遍历。
     std::size_t size() const
     {
         return heap_.size();
     }
 
   private:
-    // Purpose: Compare two node indices by frequency, using insertion order to break frequency ties stably.
-    // 作用：比较两个结点下标：频率小者优先，频率相同按插入序号稳定排序。
+    // Frequency is primary and insertion order breaks ties; this total order makes equal-weight merges deterministic.
     bool less(int a, int b) const
     {
         if (nodes_[a].frequency != nodes_[b].frequency)
@@ -92,8 +83,6 @@ class MinHeap
         return nodes_[a].order < nodes_[b].order;
     }
 
-    // Purpose: Sift up from index, swapping with the parent until min-heap order is restored.
-    // 作用：从 index 向上与父结点比较并交换，直到最小堆序恢复。
     void sift_up(std::size_t index)
     {
         while (index > 0)
@@ -108,14 +97,13 @@ class MinHeap
         }
     }
 
-    // Purpose: Sift down from index, swapping with the smaller child until min-heap order is restored.
-    // 作用：从 index 向下与较小孩子交换，直到最小堆序恢复。
     void sift_down(std::size_t index)
     {
         while (true)
         {
             std::size_t left = index * 2 + 1;
             std::size_t right = left + 1;
+            // The scan includes the current node, so no swap occurs when the heap order already holds.
             std::size_t smallest = index;
             if (left < heap_.size() && less(heap_[left], heap_[smallest]))
             {
@@ -138,8 +126,7 @@ class MinHeap
     std::vector<int> heap_;
 };
 
-// Purpose: Recursively print each leaf's Huffman code along the 0/1 tree path without modifying the tree.
-// 作用：沿树的 0/1 路径递归输出每个叶子的哈夫曼编码；不修改树。
+// An index whose both child links are -1 is a leaf; its accumulated path is the final prefix code.
 void print_codes(const std::vector<Node> &nodes, int index, std::string path)
 {
     const Node &node = nodes[index];
@@ -150,6 +137,7 @@ void print_codes(const std::vector<Node> &nodes, int index, std::string path)
     }
     if (node.left != -1)
     {
+        // Each recursive call receives a new string, so sibling branches cannot corrupt each other's path.
         print_codes(nodes, node.left, path + '0');
     }
     if (node.right != -1)
@@ -164,6 +152,7 @@ int main()
     std::vector<char> symbols{'a', 'b', 'c', 'd', 'e', 'f'};
 
     std::vector<Node> nodes;
+    // Reserve the full binary-tree size before taking node references; vector growth would invalidate the MinHeap's reference and all stored indices.
     nodes.reserve(2 * frequencies.size() - 1);
     MinHeap heap(nodes);
     for (std::size_t i = 0; i < frequencies.size(); ++i)
@@ -172,6 +161,7 @@ int main()
         heap.push(static_cast<int>(i));
     }
 
+    // Internal nodes receive increasing order values after the leaves, keeping ties deterministic without changing frequency order.
     int order = static_cast<int>(frequencies.size());
     // Merge the two least frequent nodes repeatedly; the final tree gives shorter codes to more frequent symbols.
     while (heap.size() > 1)

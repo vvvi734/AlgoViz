@@ -34,8 +34,7 @@ class Node:
     right: "Node | None" = None
 
 
-# Purpose: Provide an ascending-weight comparison for heapq, using the symbol to keep equal weights stable.
-# 作用：为 heapq 提供按权值升序的比较；权值相同时按字符稳定排序。
+# Frequency is primary and order is the tie-breaker; the symbol is deliberately not compared.
 def node_less(a: Node, b: Node) -> bool:
     return (a.frequency, a.order) < (b.frequency, b.order)
 
@@ -47,7 +46,7 @@ class MinHeap:
     def __len__(self) -> int:
         return len(self._items)
 
-    # Min-heap ordering is (frequency, insertion order), keeping ties deterministic.
+    # Append then sift up; the list is a complete binary tree, so the parent index is (i - 1) // 2.
     def push(self, node: Node) -> None:
         self._items.append(node)
         index = len(self._items) - 1
@@ -58,8 +57,10 @@ class MinHeap:
             self._items[parent], self._items[index] = self._items[index], self._items[parent]
             index = parent
 
+    # Save the root, move the last leaf into it, then sift down; the caller must never pop an empty heap.
     def pop(self) -> Node:
         top = self._items[0]
+        # Pop the last element first so the array shrinks before the root is replaced; the saved root remains valid.
         last = self._items.pop()
         if self._items:
             self._items[0] = last
@@ -68,6 +69,7 @@ class MinHeap:
                 left = index * 2 + 1
                 right = left + 1
                 smallest = index
+                # Each child index is bounds-checked before comparison; equal keys are resolved by order, never by object identity.
                 if left < len(self._items) and node_less(self._items[left], self._items[smallest]):
                     smallest = left
                 if right < len(self._items) and node_less(self._items[right], self._items[smallest]):
@@ -82,20 +84,18 @@ class MinHeap:
         return top
 
 
-# Purpose: Collect leaf codes recursively with 0 for the left edge and 1 for the right edge.
-# 作用：递归收集叶子编码；左 0 右 1。
+# A node with no children is a leaf; its path is complete, so store it under the leaf symbol.
 def collect_codes(node: Node, path: str, codes: dict[str, str]) -> None:
     if node.left is None and node.right is None:
         codes[node.symbol] = path or "(empty)"
         return
     if node.left is not None:
+        # Strings are immutable, so concatenation gives each branch an independent path.
         collect_codes(node.left, path + "0", codes)
     if node.right is not None:
         collect_codes(node.right, path + "1", codes)
 
 
-# Purpose: Build a demo Huffman tree and print the codes.
-# 作用：构造演示哈夫曼树并打印编码。
 def main() -> None:
     symbols = ["a", "b", "c", "d", "e", "f"]
     frequencies = [5, 9, 12, 13, 16, 45]
@@ -105,6 +105,7 @@ def main() -> None:
 
     order = len(frequencies)
     # Merge the two least frequent nodes repeatedly; the final tree gives shorter codes to more frequent symbols.
+    # Two pops and one push reduce the forest by one tree; the final root carries the sum of all frequencies.
     while len(heap) > 1:
         first = heap.pop()
         second = heap.pop()

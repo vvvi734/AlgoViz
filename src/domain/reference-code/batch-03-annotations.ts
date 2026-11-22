@@ -501,5 +501,173 @@ export const BATCH_03_ANNOTATIONS: Record<
       "en": "front() reads data[front] without moving front, so it is safe to call repeatedly.",
       "zh": "front() 读取 data[front] 且不移动 front，因此可以安全地重复调用。"
     }
+  ],
+  "inorder.c": [
+    {
+      "en": "NULL is the empty subtree, so return without touching value or child links; this base case stops every descent.",
+      "zh": "NULL 表示空子树，直接返回且不访问 value 或孩子链接；这个递归基终止每一次下降。"
+    },
+    {
+      "en": "The left call must return before the root is printed; the call stack holds ancestors whose right subtrees are still pending.",
+      "zh": "左递归必须先返回，之后才能打印根；调用栈保存着右子树仍待处理的祖先。"
+    },
+    {
+      "en": "Visiting between the two recursive calls is the definition of inorder; moving this line changes the traversal order.",
+      "zh": "访问语句位于两次递归之间，这正是中序的定义；移动这一行就会改变遍历顺序。"
+    },
+    {
+      "en": "The right subtree runs after the root, so a BST emits keys in ascending order.",
+      "zh": "右子树在根之后执行，因此对 BST 来说关键字会按升序输出。"
+    }
+  ],
+  "inorder.cpp": [
+    {
+      "en": "nullptr is the empty subtree, so return without touching value or child links; this base case stops every descent.",
+      "zh": "nullptr 表示空子树，直接返回且不访问 value 或孩子链接；这个递归基终止每一次下降。"
+    },
+    {
+      "en": "The left call must return before the root is printed; the call stack holds ancestors whose right subtrees are still pending.",
+      "zh": "左递归必须先返回，之后才能打印根；调用栈保存着右子树仍待处理的祖先。"
+    },
+    {
+      "en": "Visiting between the two recursive calls is the definition of inorder; moving this line changes the traversal order.",
+      "zh": "访问语句位于两次递归之间，这正是中序的定义；移动这一行就会改变遍历顺序。"
+    },
+    {
+      "en": "The right subtree runs after the root, so a BST emits keys in ascending order.",
+      "zh": "右子树在根之后执行，因此对 BST 来说关键字会按升序输出。"
+    }
+  ],
+  "inorder.py": [
+    {
+      "en": "None is the empty subtree, so return without touching value or child links; this base case stops every descent.",
+      "zh": "None 表示空子树，直接返回且不访问 value 或孩子链接；这个递归基终止每一次下降。"
+    },
+    {
+      "en": "The left call must return before the root is appended; the call stack holds ancestors whose right subtrees are still pending.",
+      "zh": "左递归必须先返回，之后才能追加根；调用栈保存着右子树仍待处理的祖先。"
+    },
+    {
+      "en": "Appending between the two recursive calls is the definition of inorder; moving this line changes the traversal order.",
+      "zh": "追加语句位于两次递归之间，这正是中序的定义；移动这一行就会改变遍历顺序。"
+    },
+    {
+      "en": "The right subtree runs after the root, so a BST emits keys in ascending order.",
+      "zh": "右子树在根之后执行，因此对 BST 来说关键字会按升序输出。"
+    }
+  ],
+  "huffman.c": [
+    {
+      "en": "Frequency is primary; order breaks ties, so equal weights still produce a deterministic tree shape.",
+      "zh": "频率是主键；插入序号用于打破平局，因此相同权值也会得到确定的树形。"
+    },
+    {
+      "en": "Append at the end of the array, then sift up; the heap property is restored along one root path.",
+      "zh": "先把结点追加到数组末尾，再上浮；堆性质只沿一条通向根的路径恢复。"
+    },
+    {
+      "en": "The 0-based parent formula; index 0 has no parent and ends the sift-up loop.",
+      "zh": "这是 0 基堆的父结点公式；index 为 0 时没有父结点，上浮循环随之结束。"
+    },
+    {
+      "en": "The root is the minimum; removing it must keep the array compact, so the last leaf fills the root.",
+      "zh": "根结点就是最小值；删除后必须保持数组紧凑，因此用最后一个叶结点填补根。"
+    },
+    {
+      "en": "Copy the last live node into the root before shrinking size; top already holds the old root.",
+      "zh": "先把最后一个有效结点复制到根，再缩小 size；旧根已经保存在 top 中。"
+    },
+    {
+      "en": "Sift-down compares the current node with both children and swaps with the smaller one; stopping when neither child is smaller restores heap order.",
+      "zh": "下沉时比较当前结点与两个孩子，并与较小者交换；当两个孩子都不更小时停止，堆序即恢复。"
+    },
+    {
+      "en": "Every node starts with null children; internal nodes use the placeholder symbol, so only leaves are printed as characters.",
+      "zh": "每个结点创建时孩子都为空；内部结点使用占位字符，因此只有叶子会打印成字符。"
+    },
+    {
+      "en": "A node with no children is a leaf; its path is complete, so write the terminator and emit the code.",
+      "zh": "没有孩子的结点就是叶子；此时路径已完整，写入终止符并输出编码。"
+    },
+    {
+      "en": "Left edges append 0 and right edges append 1; depth indexes the next free character in the shared path buffer.",
+      "zh": "左分支追加 0，右分支追加 1；depth 指向共享路径缓冲区中的下一个空字符。"
+    },
+    {
+      "en": "Postorder release is required: children must be freed before the parent whose fields still point at them.",
+      "zh": "必须后序释放：先释放孩子，再释放仍然指向它们的孩子结点。"
+    }
+  ],
+  "huffman.cpp": [
+    {
+      "en": "Reserve the full binary-tree size before taking node references; vector growth would invalidate the MinHeap's reference and all stored indices.",
+      "zh": "先预留完整二叉树的容量，再让 MinHeap 持有引用；vector 扩容会使引用失效，并让所有下标失去意义。"
+    },
+    {
+      "en": "The heap stores indices, not Node copies; nodes_ must outlive the heap and never reallocate during merging.",
+      "zh": "堆保存的是下标而非 Node 副本；nodes_ 必须比堆活得久，并且合并期间绝不能重新分配。"
+    },
+    {
+      "en": "Frequency is primary and insertion order breaks ties; this total order makes equal-weight merges deterministic.",
+      "zh": "频率是主键，插入序号用于打破平局；这个全序让相同权值的合并结果确定。"
+    },
+    {
+      "en": "Append the index at the end of the array, then sift up; the parent of i is (i - 1) / 2.",
+      "zh": "把下标追加到数组末尾再上浮；下标 i 的父结点是 (i - 1) / 2。"
+    },
+    {
+      "en": "Save the root index, move the last index into the root, shrink, then sift down; the returned index still names a live node.",
+      "zh": "先保存根下标，把末尾下标移到根、缩小堆，再下沉；返回的下标仍指向有效结点。"
+    },
+    {
+      "en": "The scan includes the current node, so no swap occurs when the heap order already holds.",
+      "zh": "比较范围包含当前结点，因此堆序已经成立时不会发生交换。"
+    },
+    {
+      "en": "An index whose both child links are -1 is a leaf; its accumulated path is the final prefix code.",
+      "zh": "两个子链接都为 -1 的下标是叶子；累积的 path 就是最终前缀码。"
+    },
+    {
+      "en": "Each recursive call receives a new string, so sibling branches cannot corrupt each other's path.",
+      "zh": "每次递归都收到一个新的字符串，因此兄弟分支不会破坏彼此的路径。"
+    },
+    {
+      "en": "Internal nodes receive increasing order values after the leaves, keeping ties deterministic without changing frequency order.",
+      "zh": "内部结点在叶子之后获得递增序号，从而在不改变频率顺序的前提下保持平局稳定。"
+    }
+  ],
+  "huffman.py": [
+    {
+      "en": "Frequency is primary and order is the tie-breaker; the symbol is deliberately not compared.",
+      "zh": "频率是主键，插入序号用于打破平局；符号本身刻意不参与比较。"
+    },
+    {
+      "en": "Append then sift up; the list is a complete binary tree, so the parent index is (i - 1) // 2.",
+      "zh": "先追加再上浮；列表就是完全二叉树，因此父结点下标为 (i - 1) // 2。"
+    },
+    {
+      "en": "Save the root, move the last leaf into it, then sift down; the caller must never pop an empty heap.",
+      "zh": "先保存根，把最后一个叶结点移入根，再下沉；调用者绝不能对空堆执行 pop。"
+    },
+    {
+      "en": "Pop the last element first so the array shrinks before the root is replaced; the saved root remains valid.",
+      "zh": "先弹出末尾元素，使数组在替换根之前缩短；已保存的根仍然有效。"
+    },
+    {
+      "en": "Each child index is bounds-checked before comparison; equal keys are resolved by order, never by object identity.",
+      "zh": "比较前先检查每个孩子下标；相同键由 order 解决，绝不依赖对象身份。"
+    },
+    {
+      "en": "A node with no children is a leaf; its path is complete, so store it under the leaf symbol.",
+      "zh": "没有孩子的结点是叶子；此时路径完整，按叶子的符号存入编码表。"
+    },
+    {
+      "en": "Strings are immutable, so concatenation gives each branch an independent path.",
+      "zh": "字符串不可变，因此拼接会给每个分支一条独立的路径。"
+    },
+    {
+      "en": "Two pops and one push reduce the forest by one tree; the final root carries the sum of all frequencies.",
+      "zh": "两次 pop 加一次 push 使森林减少一棵树；最终根结点保存所有频率之和。"
+    }
   ]
 };
