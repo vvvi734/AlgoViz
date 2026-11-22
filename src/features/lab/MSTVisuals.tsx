@@ -28,49 +28,82 @@ function viewBoxFor(model: PrimVisualModel | KruskalVisualModel): string {
 }
 
 const WEIGHT_HALF_WIDTH = 17;
-const WEIGHT_HALF_HEIGHT = 9;
+/**
+ * The collision box is taller than the 18-unit background chip: the painted
+ * weight glyph extends above and below the rect on narrow viewports.
+ * Reserving 34 units vertically keeps the real rendered labels apart, not just
+ * their rounded backgrounds.
+ */
+const WEIGHT_HALF_HEIGHT = 17;
+
+type WeightPoint = { x: number; y: number };
+type WeightBox = { left: number; right: number; top: number; bottom: number };
+
+function weightBox(point: WeightPoint): WeightBox {
+  return {
+    left: point.x - WEIGHT_HALF_WIDTH,
+    right: point.x + WEIGHT_HALF_WIDTH,
+    top: point.y - WEIGHT_HALF_HEIGHT,
+    bottom: point.y + WEIGHT_HALF_HEIGHT,
+  };
+}
+
+function boxesOverlap(a: WeightBox, b: WeightBox): boolean {
+  return Math.min(a.right, b.right) > Math.max(a.left, b.left)
+    && Math.min(a.bottom, b.bottom) > Math.max(a.top, b.top);
+}
 
 /**
- * Keep the weight chip on the edge unless its midpoint would sit on a node.
- * The official C–D edge passes close to E; at r=29 the old midpoint chip
- * clipped E's ring. Candidate points stay deterministic, so scrubbing cannot
- * make the label jump.
+ * Keep the weight chip on the edge unless a node or an earlier weight chip
+ * already occupies that spot. The candidate points are functions of the fixed
+ * graph geometry only, so scrubbing cannot make a label jump between frames.
+ *
+ * A dense five-node graph on a 390px phone cannot always fit six labels
+ * without collisions; choosing the least crowded candidate keeps labels apart
+ * without enlarging the canvas or shrinking the type.
  */
-function weightLabelPoint(
-  edge: PrimEdgeVisual | KruskalEdgeVisual,
+function computeWeightLabels(
+  edges: ReadonlyArray<PrimEdgeVisual | KruskalEdgeVisual>,
   nodes: ReadonlyArray<{ x: number; y: number }>,
   radius: number,
-): { x: number; y: number } {
-  const midX = (edge.x1 + edge.x2) / 2;
-  const midY = (edge.y1 + edge.y2) / 2;
-  const dx = edge.x2 - edge.x1;
-  const dy = edge.y2 - edge.y1;
-  const length = Math.hypot(dx, dy) || 1;
-  const ux = dx / length;
-  const uy = dy / length;
-  const px = -uy;
-  const py = ux;
+): Map<string, WeightPoint> {
+  const placed: WeightBox[] = [];
 
-  const hitsNode = (x: number, y: number) => {
-    const left = x - WEIGHT_HALF_WIDTH;
-    const right = x + WEIGHT_HALF_WIDTH;
-    const top = y - WEIGHT_HALF_HEIGHT;
-    const bottom = y + WEIGHT_HALF_HEIGHT;
-    return nodes.some((node) => {
-      const nx = Math.max(left, Math.min(node.x, right));
-      const ny = Math.max(top, Math.min(node.y, bottom));
-      return Math.hypot(node.x - nx, node.y - ny) < radius + 3;
-    });
+  const collisions = (point: WeightPoint): { nodes: number; labels: number } => {
+    const box = weightBox(point);
+    const nodeHits = nodes.filter((node) => {
+      const nx = Math.max(box.left, Math.min(node.x, box.right));
+      const ny = Math.max(box.top, Math.min(node.y, box.bottom));
+      return Math.hypot(node.x - nx, node.y - ny) < radius + 10;
+    }).length;
+    const labelHits = placed.filter((other) => boxesOverlap(box, other)).length;
+    return { nodes: nodeHits, labels: labelHits };
   };
 
-  if (!hitsNode(midX, midY)) return { x: midX, y: midY };
-  const candidates = [
-    { x: midX + ux * 26, y: midY + uy * 26 },
-    { x: midX - ux * 26, y: midY - uy * 26 },
-    { x: midX + px * 22, y: midY + py * 22 },
-    { x: midX - px * 22, y: midY - py * 22 },
-  ];
-  return candidates.find((point) => !hitsNode(point.x, point.y)) ?? { x: midX, y: midY };
+  return new Map(edges.map((edge) => {
+    const midX = (edge.x1 + edge.x2) / 2;
+    const midY = (edge.y1 + edge.y2) / 2;
+    const candidates: WeightPoint[] = [{ x: midX, y: midY }];
+    for (let ring = 1; ring <= 12; ring += 1) {
+      const radiusDistance = ring * 8;
+      for (let step = 0; step < 16; step += 1) {
+        const angle = (step * Math.PI) / 8;
+        candidates.push({
+          x: midX + Math.cos(angle) * radiusDistance,
+          y: midY + Math.sin(angle) * radiusDistance,
+        });
+      }
+    }
+    const scored = candidates.map((point) => ({ point, ...collisions(point) }));
+    const best = scored.find((item) => item.nodes === 0 && item.labels === 0)
+      ?? scored.reduce((a, b) => {
+        const scoreA = a.nodes * 4 + a.labels;
+        const scoreB = b.nodes * 4 + b.labels;
+        return scoreB < scoreA ? b : a;
+      });
+    placed.push(weightBox(best.point));
+    return [edge.id, best.point] as const;
+  }));
 }
 
 function Legend({ states }: { states: Array<{ state: string; label: string }> }) {
@@ -87,6 +120,7 @@ function Legend({ states }: { states: Array<{ state: string; label: string }> })
 }
 
 function PrimGraph({ model }: { model: PrimVisualModel }) {
+  const weightLabels = computeWeightLabels(model.edges, model.nodes, model.nodeRadius);
   return (
     <div className="mst-graph-scroll">
       <svg
@@ -100,7 +134,7 @@ function PrimGraph({ model }: { model: PrimVisualModel }) {
       >
         <g className="mst-edges">
           {model.edges.map((edge) => {
-            const label = weightLabelPoint(edge, model.nodes, model.nodeRadius);
+            const label = weightLabels.get(edge.id) ?? { x: (edge.x1 + edge.x2) / 2, y: (edge.y1 + edge.y2) / 2 };
             return (
               <g
                 key={edge.id}
@@ -153,6 +187,7 @@ function PrimGraph({ model }: { model: PrimVisualModel }) {
 }
 
 function KruskalGraph({ model }: { model: KruskalVisualModel }) {
+  const weightLabels = computeWeightLabels(model.edges, model.nodes, model.nodeRadius);
   return (
     <div className="mst-graph-scroll">
       <svg
@@ -166,7 +201,7 @@ function KruskalGraph({ model }: { model: KruskalVisualModel }) {
       >
         <g className="mst-edges">
           {model.edges.map((edge: KruskalEdgeVisual) => {
-            const label = weightLabelPoint(edge, model.nodes, model.nodeRadius);
+            const label = weightLabels.get(edge.id) ?? { x: (edge.x1 + edge.x2) / 2, y: (edge.y1 + edge.y2) / 2 };
             return (
               <g
                 key={edge.id}

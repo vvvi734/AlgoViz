@@ -100,7 +100,7 @@ describe('App UI regression (Phase 1)', () => {
     expect(screen.queryByTestId('nav-more')).toBeNull();
     expect(screen.queryAllByTestId(/^problem-/)).toHaveLength(0);
 
-    fireEvent.click(screen.getByRole('button', { name: 'Switch language' }));
+    fireEvent.click(screen.getByRole('button', { name: /切换语言|Switch language/ }));
     expect(screen.getByTestId('concept-title').textContent).toBe('Basic concepts of data structures');
   });
 });

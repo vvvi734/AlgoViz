@@ -5,7 +5,8 @@ import { THEME_PREFERENCES, type ThemePreference } from '../theme/resolve';
 
 export function TopBar() {
   const { preference, setPreference } = useTheme();
-  const { t, lang, toggleLang } = useI18n();
+  const { t, lang, toggleLang, b } = useI18n();
+  const languageLabel = `${lang === 'zh' ? 'EN / 中文' : '中文 / EN'} · ${b('切换语言', 'Switch language')}`;
   const headerRef = useRef<HTMLElement | null>(null);
   const labels: Record<ThemePreference, string> = {
     light: t('themeLight'),
@@ -65,7 +66,7 @@ export function TopBar() {
             <option key={value} value={value}>{labels[value]}</option>
           ))}
         </select>
-        <button className="btn ghost" onClick={toggleLang} aria-label="Switch language">
+        <button className="btn ghost" onClick={toggleLang} aria-label={languageLabel}>
           {lang === 'zh' ? 'EN / 中文' : '中文 / EN'}
         </button>
       </div>

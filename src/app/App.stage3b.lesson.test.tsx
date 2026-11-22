@@ -123,7 +123,7 @@ describe('Stage 3B — teaching steps follow the single timeline cursor', () => 
     fireEvent.change(screen.getByTestId('scrub'), { target: { value: '2' } });
     expect(screen.getByTestId('lesson-active-step').dataset.stepId).toBe('swap');
 
-    fireEvent.click(screen.getByRole('button', { name: 'Switch language' }));
+    fireEvent.click(screen.getByRole('button', { name: /切换语言|Switch language/ }));
 
     const runsBeforeSwitch = mockedRun.mock.calls.length;
     await waitFor(() => expect(screen.getByTestId('progress').textContent).toBe('3 / 12'));

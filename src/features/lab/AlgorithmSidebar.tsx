@@ -233,7 +233,7 @@ export function AlgorithmSidebar({
                 className="textbook-chapter-head"
                 aria-expanded={open}
                 aria-controls={`chapter-${chapter.id}-body`}
-                aria-label={chapterAria(chapter)}
+                aria-current={holdsCurrent ? 'true' : undefined}
                 data-testid={`chapter-${chapter.id}`}
                 data-has-current={holdsCurrent ? 'true' : 'false'}
                 onClick={() => onToggleChapter(chapter.id)}
@@ -430,7 +430,7 @@ function TextbookTopicRow({
         className="textbook-topic-head"
         aria-expanded={open}
         aria-controls={`topic-${topic.id}-body`}
-        aria-label={`${title} · ${categoryLong}`}
+        aria-label={`${title} ${topic.children.length || topic.algorithms.length} · ${categoryLong}`}
         data-testid={`topic-${topic.id}`}
         data-kind="group"
         data-category={topic.category}

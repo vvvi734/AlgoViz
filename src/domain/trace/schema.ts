@@ -152,7 +152,7 @@ export type JsonValue = string | number | boolean | null | JsonValue[] | { [key:
  * instead of re-inventing one.
  */
 export const jsonValueSchema: z.ZodType<JsonValue> = z.lazy(() =>
-  z.union([z.string(), z.number().finite(), z.boolean(), z.null(), z.array(jsonValueSchema), z.record(jsonValueSchema)]),
+  z.union([z.string(), z.number().finite(), z.boolean(), z.null(), z.array(jsonValueSchema), z.record(z.string(), jsonValueSchema)]),
 );
 
 /** One element of a stack/queue snapshot. `id` is stable for the element's lifetime. */
@@ -8436,7 +8436,7 @@ export const traceEventSchema = z.object({
   eventType: z.enum(EVENT_TYPES),
   visualType: z.enum(VISUAL_TYPES),
   /** Visual state payload; the renderer reads `state.type` as the source of truth. */
-  state: z.record(jsonValueSchema).refine(
+  state: z.record(z.string(), jsonValueSchema).refine(
     (state) => JSON.stringify(state).length <= LIMITS.MAX_STATE_JSON_BYTES,
     'state too large',
   ),

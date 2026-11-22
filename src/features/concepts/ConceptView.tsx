@@ -43,7 +43,13 @@ export function ConceptView({ concept }: { concept: ConceptPage }) {
             <span className="concept-swipe-hint"> · {t('conceptDiagramSwipe')}</span>
           </span>
         </div>
-        <div className="concept-diagram-frame" data-testid="concept-diagram">
+        <div
+          className="concept-diagram-frame"
+          data-testid="concept-diagram"
+          role="region"
+          aria-label={t('conceptDiagram')}
+          tabIndex={0}
+        >
           {concept.diagram === 'asl-decision-tree' || concept.diagram === 'block-search' ? (
             <SearchConceptDiagram kind={concept.diagram} lang={lang} />
           ) : concept.diagram === 'external-sort' ||
@@ -118,7 +124,12 @@ export function ConceptView({ concept }: { concept: ConceptPage }) {
             <h2 id="concept-comparison-title">{t('conceptComparison')}</h2>
             <span className="concept-section-note concept-table-swipe-hint">{t('conceptTableSwipe')}</span>
           </div>
-          <div className="concept-table-wrap">
+          <div
+            className="concept-table-wrap"
+            role="region"
+            aria-label={tr(comparison.title)}
+            tabIndex={0}
+          >
             <table>
               <caption>{tr(comparison.title)}</caption>
               <thead>

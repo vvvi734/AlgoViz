@@ -187,9 +187,9 @@ describe('Stage 3 playback fix — a new trace restarts the timeline', () => {
     // Theme + language + speed are not new traces.
     fireEvent.change(screen.getByTestId('theme-select'), { target: { value: 'light' } });
     expect(screen.getByTestId('progress').textContent).toBe('7 / 12');
-    fireEvent.click(screen.getByRole('button', { name: 'Switch language' }));
+    fireEvent.click(screen.getByRole('button', { name: /切换语言|Switch language/ }));
     expect(screen.getByTestId('progress').textContent).toBe('7 / 12');
-    fireEvent.change(screen.getByLabelText('Speed'), { target: { value: '5' } });
+    fireEvent.change(screen.getByTestId('speed'), { target: { value: '5' } });
     expect(screen.getByTestId('progress').textContent).toBe('7 / 12');
   });
 });

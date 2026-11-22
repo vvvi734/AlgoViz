@@ -132,7 +132,7 @@ export function LearningRail({
                   data-testid={`lesson-step-${step.stepId}`}
                   data-active={stepIndex === activeIndex ? 'true' : 'false'}
                   data-frame-count={frames}
-                  aria-label={step.title[lang]}
+                  aria-label={`${String(stepIndex + 1).padStart(2, '0')} · ${step.title[lang]}`}
                   title={step.title[lang]}
                   disabled={frames === 0}
                   onClick={() => {

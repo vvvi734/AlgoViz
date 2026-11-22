@@ -149,7 +149,7 @@ describe('INPUT-07 — sparse matrix input and shared state consistency', () => 
     });
 
     const beforeLanguage = mockedRun.mock.calls.length;
-    fireEvent.click(screen.getByRole('button', { name: 'Switch language' }));
+    fireEvent.click(screen.getByRole('button', { name: /切换语言|Switch language/ }));
     expect((screen.getByTestId('run-input') as HTMLInputElement).value).toBe('ABABAB');
     expect((screen.getByTestId('kmp-pattern') as HTMLInputElement).value).toBe('ABA');
     expect(mockedRun.mock.calls.length).toBe(beforeLanguage);

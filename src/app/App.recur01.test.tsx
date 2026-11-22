@@ -93,7 +93,7 @@ describe('RECUR-01 — factorial / Fibonacci share the guided input pipeline', (
     await waitFor(() => expect(lastInput()).toBe(randomN));
 
     const beforeLanguage = mockedRun.mock.calls.length;
-    fireEvent.click(screen.getByRole('button', { name: 'Switch language' }));
+    fireEvent.click(screen.getByRole('button', { name: /切换语言|Switch language/ }));
     expect(inputValue()).toBe(String(randomN));
     expect(mockedRun.mock.calls.length).toBe(beforeLanguage);
   });

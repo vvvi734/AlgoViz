@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import type { Playback } from './usePlayback';
 import type { TraceEvent } from '../../domain/trace/schema';
 import { localizeTraceMessage } from '../../domain/lessons/localizeMessage';
@@ -7,6 +8,19 @@ export function Timeline({ events, playback }: { events: TraceEvent[]; playback:
   const { t, lang } = useI18n();
   const last = Math.max(0, events.length - 1);
   const message = localizeTraceMessage(events[playback.index]?.message ?? '', lang);
+  // Keep the range's React value tracker in sync with the controlled index.
+  // After a new trace resets the DOM value programmatically, React's tracker can
+  // still hold the previous frame; a later drag back to that same number would
+  // then be ignored by onChange. onInput bypasses that stale comparison, and the
+  // ref keeps both events from seeking twice.
+  const lastScrubValue = useRef(playback.index);
+  lastScrubValue.current = playback.index;
+  const seekFromScrub = (event: { currentTarget: HTMLInputElement }) => {
+    const value = Number(event.currentTarget.value);
+    if (value === lastScrubValue.current) return;
+    lastScrubValue.current = value;
+    playback.seek(value);
+  };
   return (
     <div className="stage-playback">
       <div className="stage-foot">
@@ -23,18 +37,19 @@ export function Timeline({ events, playback }: { events: TraceEvent[]; playback:
         min={0}
         max={last}
         value={playback.index}
-        aria-label="Timeline"
+        aria-label={t('timelineLabel')}
         data-testid="scrub"
-        onChange={(event) => playback.seek(Number(event.target.value))}
+        onChange={seekFromScrub}
+        onInput={seekFromScrub}
       />
       <div className="controls">
-        <button className="btn small" onClick={playback.restart} title="Reset" aria-label="Reset">⟲</button>
+        <button className="btn small" onClick={playback.restart} title={t('playerReset')} aria-label={t('playerReset')} data-testid="restart-btn">⟲</button>
         <button
           className="btn small"
           onClick={playback.prev}
           disabled={playback.index <= 0}
-          title="Previous"
-          aria-label="Previous"
+          title={t('playerPrevious')}
+          aria-label={t('playerPrevious')}
           data-testid="prev-btn"
         >◀</button>
         <button
@@ -49,8 +64,8 @@ export function Timeline({ events, playback }: { events: TraceEvent[]; playback:
           className="btn small"
           onClick={playback.next}
           disabled={playback.index >= last}
-          title="Next"
-          aria-label="Next"
+          title={t('playerNext')}
+          aria-label={t('playerNext')}
           data-testid="next-btn"
         >▶|</button>
         <span className="muted smalltext">{t('speed')}</span>
@@ -60,7 +75,8 @@ export function Timeline({ events, playback }: { events: TraceEvent[]; playback:
           min={1}
           max={5}
           value={playback.speed}
-          aria-label="Speed"
+          aria-label={t('playerSpeed')}
+          data-testid="speed"
           onChange={(event) => playback.setSpeed(Number(event.target.value))}
         />
       </div>

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import {
   advance,
   clampIndex,
@@ -34,7 +34,10 @@ export function usePlayback(events: TraceEvent[]) {
   // NEVER write `[frames]` here. `frames` is declared by lib.dom as
   // `declare var frames: WindowProxy`, so such a dependency type-checks and runs,
   // silently watches window.frames (a constant), and the reset never fires.
-  useEffect(() => {
+  // Run during the commit phase, before the first frame is painted or a
+  // keyboard/mouse step can be handled. A passive effect here can arrive after
+  // the user's first "next" click and overwrite it with frame 0.
+  useLayoutEffect(() => {
     setState(initialPlayback);
   }, [events]);
 

@@ -113,7 +113,7 @@ void collect(const KeyNode &node, std::string prefix, std::vector<std::string> &
 int main()
 {
     KeyNode root;
-    for (const std::string &word : {"car", "card", "care", "cat", "dog", "do"})
+    for (const std::string word : {"car", "card", "care", "cat", "dog", "do"})
     {
         insert(root, word);
     }
