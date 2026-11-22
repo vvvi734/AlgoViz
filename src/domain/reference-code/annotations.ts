@@ -172,6 +172,26 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
       en: "Save next before freeing, and release the head chain first so nested children are not lost.",
       zh: "释放前先保存 next，并先释放 head 子链，否则释放当前节点后既无法继续同层，也会泄漏子表。",
     },
+    {
+      en: "An atom has no list layer, so its depth is 0. Reading value.head here would use the wrong union member and treat a character buffer as a pointer.",
+      zh: "原子没有列表层，所以深度为 0；此处读 value.head 会取错 union 成员，把字符缓冲区当成指针。",
+    },
+    {
+      en: "An empty list is a real node representing (), so it counts as one layer. Only a null pointer means no table at all; that case was handled before this check.",
+      zh: "空表是表示 () 的真实结点，因此算一层；只有空指针才表示根本没有表，而那种情况已在此检查前处理。",
+    },
+    {
+      en: "best starts at 0 because the empty-list case already returned. Every child depth must beat the current best before it can become the maximum.",
+      zh: "best 从 0 开始，因为空表情况已经提前返回；每个孩子深度必须超过当前最大值，才能成为新的最大值。",
+    },
+    {
+      en: "Recursion enters one child through head; the for-loop's next step follows the sibling next link. This keeps nesting depth separate from same-level traversal.",
+      zh: "递归通过 head 进入一个孩子；for 循环的下一步沿同层 next 前进，从而把嵌套深度与同层遍历区分开。",
+    },
+    {
+      en: "Adding one counts the current list's parentheses layer. Taking the maximum rather than the sum is what makes this a depth, not a count of elements.",
+      zh: "加一是在计算当前列表这一层括号；取最大值而不是求和，才使结果表示深度而不是元素个数。",
+    },
   ],
   "gl_depth.cpp": [
     {
@@ -189,6 +209,26 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
     {
       en: "Save next before delete, and release the head chain first so nested children are not lost.",
       zh: "delete 前先保存 next，并先释放 head 子链，避免释放后失联或泄漏嵌套孩子。",
+    },
+    {
+      en: "An atom contributes no nesting layer, so it returns 0. Deferencing value.head for an atom would read the union through the wrong member.",
+      zh: "原子不贡献嵌套层，因此返回 0；对原子解引用 value.head 会通过错误的 union 成员读取。",
+    },
+    {
+      en: "A real empty list has no children but still represents one pair of parentheses, so it returns 1; null is only a defensive no-node value.",
+      zh: "真实空表没有孩子，但仍代表一对括号，所以返回 1；nullptr 只是防御性的“没有结点”。",
+    },
+    {
+      en: "The empty case already returned, so best can start at 0. Each child's depth is compared against the best seen so far.",
+      zh: "空表情况已经返回，因此 best 可从 0 开始；每个孩子深度都与目前最大值比较。",
+    },
+    {
+      en: "head moves one level down, while the loop's child=child->next stays on the sibling chain. Recursion depth therefore tracks nesting, not the number of siblings.",
+      zh: "head 向下一层进入，而循环中的 child=child->next 留在同层兄弟链；因此递归深度对应嵌套层数，而不是兄弟数量。",
+    },
+    {
+      en: "The +1 accounts for the current list layer; the maximum, not a sum, ensures several sibling branches do not inflate the depth.",
+      zh: "加一计算当前列表层；取最大值而非求和，确保多个兄弟分支不会把深度累加虚增。",
     },
   ],
   "gl_depth.py": [
@@ -208,6 +248,26 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
       en: "Siblings are alternatives, so take the maximum child depth, not the sum.",
       zh: "同层兄弟是并列分支，应取最大孩子深度，不能把各分支深度累加。",
     },
+    {
+      en: "An atom has no child head and no parentheses layer, so its depth is 0; treating it as a list would read the wrong representation.",
+      zh: "原子没有孩子 head，也没有括号层，所以深度为 0；把它当子表会读取错误的表示。",
+    },
+    {
+      en: "A list node with head None is the real empty list (), which still counts as one layer. A missing node is different and was handled by the None check above.",
+      zh: "head 为 None 的列表结点是真实空表 ()，仍然算一层；缺少结点是另一回事，已由上方的 None 判断处理。",
+    },
+    {
+      en: "best is safe to start at 0 only because the empty-list case has already returned; every non-empty child must provide a depth to compare.",
+      zh: "只有空表已提前返回时，best 才能安全地从 0 开始；每个非空孩子都必须给出可比较的深度。",
+    },
+    {
+      en: "Recursive descent follows head into one child, while `child = child.next` walks siblings. Those two links represent different levels and must not be mixed.",
+      zh: "递归沿 head 下降到一个孩子，而 `child = child.next` 遍历兄弟；这两条链接代表不同层级，不能混用。",
+    },
+    {
+      en: "The current list adds one bracket layer; the maximum child depth is used, so sibling alternatives do not add extra levels.",
+      zh: "当前列表增加一层括号；使用孩子最大深度，因此并列兄弟不会额外增加层数。",
+    },
   ],
   "gl_copy.c": [
     {
@@ -225,6 +285,26 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
     {
       en: "Purpose: Append child to the sibling chain and set its next pointer.",
       zh: "把 child 接到同层链尾，并由本函数负责设置它的 next。",
+    },
+    {
+      en: "Allocate the copy's parent before descending. Returning src or reusing a child would alias source and copy, so later mutation in one tree would silently change the other.",
+      zh: "先分配副本的父结点再递归下降；返回 src 或复用孩子会让源表与副本别名，之后修改一棵树会悄悄改变另一棵。",
+    },
+    {
+      en: "An atom has no children, so copying its text into the fresh node completes this subtree. There is no head to recurse into and no next to copy here.",
+      zh: "原子没有孩子，把文本复制到新结点就完成了这棵子树；这里既没有 head 可递归，也不复制 next。",
+    },
+    {
+      en: "tail is the address of the next link slot, starting at the new list's head. This lets the first and later copied children use the same assignment path.",
+      zh: "tail 是下一个链接槽的地址，从新表的 head 开始；这样第一个和后续复制孩子都走同一条赋值路径。",
+    },
+    {
+      en: "Attach the copied child at the current slot, then move tail to the child's next field. Linking before advancing is what preserves sibling order.",
+      zh: "把复制孩子接到当前槽，再把 tail 移到该孩子的 next 字段；先接链再前进才能保持同层顺序。",
+    },
+    {
+      en: "A failed recursive copy leaves a partially linked subtree. Free it through the real child edges before returning NULL, so the caller never receives a half-built list.",
+      zh: "递归复制失败会留下部分连接的子树；返回 NULL 前必须沿真实孩子边释放它，避免调用方拿到半成品链。",
     },
   ],
   "gl_copy.cpp": [
@@ -244,6 +324,26 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
       en: "Save next before delete and free the head chain first, so neither siblings nor children are lost.",
       zh: "delete 前保存 next 并先释放 head 子链，保证同层与子表都不会丢失。",
     },
+    {
+      en: "The new parent must exist before its children are copied. Sharing a source child would make the two trees alias, so a later edit in one would appear in the other.",
+      zh: "新父结点必须先于孩子复制而存在；共享源孩子会让两棵树别名，之后对一棵的修改会出现在另一棵。",
+    },
+    {
+      en: "An atom is a leaf: copying its text into the fresh node finishes the whole subtree, with no head recursion and no next link copied.",
+      zh: "原子是叶结点：把文本复制到新结点就完成整棵子树，既没有 head 递归，也不复制 next。",
+    },
+    {
+      en: "tail addresses the next child-link slot. Starting at the fresh node's head lets an empty copy and a non-empty copy share one insertion loop.",
+      zh: "tail 指向下一个孩子链接槽；从新结点的 head 开始，使空副本与非空副本共用同一个插入循环。",
+    },
+    {
+      en: "Write the copied child into the current slot, then advance tail to that child's next field. Reversing the two steps would lose the insertion point.",
+      zh: "把复制孩子写入当前槽，再把 tail 推进到该孩子的 next 字段；两步顺序反过来会丢失插入位置。",
+    },
+    {
+      en: "A throw from a deeper allocation is not caught here, but this null check still guards the contract. Freeing the half-built subtree keeps ownership clean on failure.",
+      zh: "更深层的分配异常不会在此捕获，但这个空指针检查仍维护契约；失败时释放半成品子树可保持所有权清晰。",
+    },
   ],
   "gl_copy.py": [
     {
@@ -261,6 +361,26 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
     {
       en: "Purpose: Append child to parent's sibling chain and set its next to None.",
       zh: "把 child 追加到 parent 的同层链尾，并把 child.next 显式置为 None。",
+    },
+    {
+      en: "A fresh node copies the tag and atom value but not head or next. Those links are rebuilt separately, which is what makes this a deep copy rather than an alias.",
+      zh: "新结点复制 tag 与 atom 值，但不复制 head 或 next；这些链接另行重建，这才使它成为深复制而不是别名。",
+    },
+    {
+      en: "An atom has no children, so the fresh node is already a complete copy of this one-node subtree.",
+      zh: "原子没有孩子，因此新结点已经是这棵单结点子树的完整副本。",
+    },
+    {
+      en: "tail starts at the new list node; the first child goes into dst.head, and later children follow tail.next. This mirrors the C pointer-to-pointer insertion without a dummy node.",
+      zh: "tail 从新列表结点开始；第一个孩子放进 dst.head，后续孩子沿 tail.next 接入，用无哑结点的方式对应 C 的指向指针的尾指针。",
+    },
+    {
+      en: "The first copied child must initialize head; only later children use next. Checking head here is what distinguishes the two cases without a dummy node.",
+      zh: "第一个复制孩子必须初始化 head；只有后续孩子才用 next。这里检查 head 才能在没有哑结点时区分两种情况。",
+    },
+    {
+      en: "Advance tail after the child is linked. Moving it first would discard the only reference to the slot where the next sibling must be attached.",
+      zh: "接好孩子后再推进 tail；若先移动，就会丢掉“下一个兄弟应接在哪里”的唯一引用。",
     },
   ],
   "bfs.c": [
@@ -1450,17 +1570,97 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
       en: "`cpot[col]` is the next write position for that column; writing a triple increments it for the next entry.",
       zh: "`cpot[col]` 是该列下一个写入位置；每写入一个三元组就递增，供同列下一条使用。",
     },
+    {
+      en: "Transpose swaps the shape immediately: the source column count becomes the destination row count, and vice versa. The triplet count stays the same because non-zero positions are only relabelled.",
+      zh: "转置首先交换矩阵形状：源列数变成目标行数，源行数变成目标列数；非零元素个数不变，因为只是重标行列坐标。",
+    },
+    {
+      en: "A zero-column source has no column to index; the destination already has zero triples, so success without building num/cpot is correct.",
+      zh: "源矩阵没有列就没有可建索引的列；目标三元组数已经为 0，因此不建 num/cpot 而直接成功是正确的。",
+    },
+    {
+      en: "Column 0 owns the first result slot. There is no earlier column whose entries must be reserved, so its start is exactly zero.",
+      zh: "第 0 列占据结果中的第一个槽；它前面没有别的列需要预留空间，因此起始位置恰好为 0。",
+    },
+    {
+      en: "Each column starts after all previous columns: the previous start plus the previous count is the prefix sum that gives this column its first slot.",
+      zh: "每一列都排在前一列的全部元素之后：前一列起点加前一列元素数，就是确定本列首槽的前缀和。",
+    },
+    {
+      en: "Scan the source in its existing row-major order. Within one source column, entries appear in increasing source row, which becomes increasing destination column; direct placement therefore produces row-major output.",
+      zh: "按源三元组原有的行优先顺序扫描；同一源列内条目按源行递增，转置后正好变成目标列递增，因此直接回填就得到行优先结果。",
+    },
+    {
+      en: "q is this column's next free slot, not a global write counter. Every column has its own moving cursor, so columns can be filled independently.",
+      zh: "q 是本列的下一个空闲槽，而不是全局写指针；每列都有独立移动的游标，因此各列可以分别回填。",
+    },
+    {
+      en: "Advance the cursor after the write. The current triple occupies q; the next triple from the same column must go to q+1, otherwise entries would overwrite each other.",
+      zh: "写入后再推进游标：当前三元组占据 q，同列下一条必须写到 q+1，否则会互相覆盖。",
+    },
   ],
   "sparse_transpose.cpp": [
     {
       en: "`cpot[col]` is the next write position for that column; writing a triple increments it for the next entry.",
       zh: "`cpot[col]` 是该列下一个写入位置；每写入一个三元组就递增，供同列下一条使用。",
     },
+    {
+      en: "The transpose swaps dimensions before any data movement: source columns become result rows and source rows become result columns. Only coordinates change, not the number of non-zero values.",
+      zh: "转置在搬数据前先交换维度：源列成为结果行，源行成为结果列；改变的只是坐标，不是非零值个数。",
+    },
+    {
+      en: "With no source columns there is no column start to compute; the resized result already has the correct row count and zero triples.",
+      zh: "源矩阵没有列就无需计算列起点；已调整大小的结果已有正确行数和 0 个三元组。",
+    },
+    {
+      en: "Column 0 starts at result slot 0 because no earlier column has entries to reserve before it.",
+      zh: "第 0 列从结果槽 0 开始，因为前面没有任何列需要先占位置。",
+    },
+    {
+      en: "The loop builds a prefix sum: column c starts after the start plus the size of column c-1, so all earlier columns remain contiguous and untouched.",
+      zh: "循环构造前缀和：第 c 列排在“前一列起点 + 前一列大小”之后，从而让所有更早的列保持连续且不被覆盖。",
+    },
+    {
+      en: "The source is scanned in its stored row-major order. Within one source column, source rows increase, and after the coordinate swap those become increasing result columns, so each column's block is filled in order.",
+      zh: "按源三元组保存的行优先顺序扫描；同一源列内源行递增，交换坐标后就是目标列递增，因此每列区块按序填满。",
+    },
+    {
+      en: "q is the next free slot of this specific column, not a global counter; cpot is a per-column moving write cursor.",
+      zh: "q 是当前这一列的下一个空闲槽，而不是全局计数器；cpot 是每列独立的移动写游标。",
+    },
+    {
+      en: "Increment only after writing. The current item owns q, and the next item from this column must use q+1 or it would overwrite the just-written triple.",
+      zh: "写完后才自增；当前条目占用 q，同列下一条必须使用 q+1，否则会覆盖刚写入的三元组。",
+    },
   ],
   "sparse_transpose.py": [
     {
       en: "`cpot[col]` is the next write position for that column; writing a triple increments it for the next entry.",
       zh: "`cpot[col]` 是该列下一个写入位置；每写入一个三元组就递增，供同列下一条使用。",
+    },
+    {
+      en: "Preallocate one destination slot per source triple. Placement writes by random index through cpot, so the list must already have all slots; each slot is then overwritten exactly once.",
+      zh: "按源三元组数量预先分配目标槽；回填时通过 cpot 随机下标写入，因此列表必须先有全部槽位，之后每个槽恰好被覆盖一次。",
+    },
+    {
+      en: "Column 0 begins at result index 0 because no earlier column has entries to place before it.",
+      zh: "第 0 列从结果下标 0 开始，因为前面没有更早的列需要先放元素。",
+    },
+    {
+      en: "Each cpot entry is a prefix sum: column c starts after the previous column's start and all of its entries, keeping column blocks contiguous.",
+      zh: "每个 cpot 项都是前缀和：第 c 列排在前一列起点及其全部条目之后，使各列区块保持连续。",
+    },
+    {
+      en: "The source list is already strictly row-major. Scanning it in that order preserves the within-column source-row order, which becomes destination-column order after the swap.",
+      zh: "源列表已严格按行优先排列；按此顺序扫描会保留列内源行次序，交换坐标后正好成为目标列次序。",
+    },
+    {
+      en: "q is the next free position for this source column, not a single global write index. Each column consumes its own cpot slot independently.",
+      zh: "q 是当前源列的下一个空闲位置，而不是单一全局写下标；每列独立消费自己的 cpot 槽。",
+    },
+    {
+      en: "Move this column's cursor forward only after filling q. The next entry from the same column must land at q+1, so writing and advancing cannot be swapped.",
+      zh: "填好 q 后才推进本列游标；同列下一条必须落在 q+1，因此写入与推进的顺序不能交换。",
     },
   ],
   "stack_builtin.cpp": [

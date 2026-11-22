@@ -109,21 +109,25 @@ int gl_depth(const GLNode *node)
     {
         return 0;
     }
+    // A real empty list has no children but still represents one pair of parentheses, so it returns 1; null is only a defensive no-node value.
     if (node->value.head == nullptr)
     {
         return 1;
     }
+    // The empty case already returned, so best can start at 0. Each child's depth is compared against the best seen so far.
     int best = 0;
     for (const GLNode *child = node->value.head; child != nullptr; child = child->next)
     {
         // 子表并列，深度取最大值；不能把所有子表深度相加。
         // Purpose: Sibling sublists are alternatives; take the maximum, not the sum.
+        // head moves one level down, while the loop's child=child->next stays on the sibling chain. Recursion depth therefore tracks nesting, not the number of siblings.
         int child_depth = gl_depth(child);
         if (child_depth > best)
         {
             best = child_depth;
         }
     }
+    // The +1 accounts for the current list layer; the maximum, not a sum, ensures several sibling branches do not inflate the depth.
     return best + 1;
 }
 
@@ -152,6 +156,7 @@ void print_gl(const GLNode *node)
     {
         return;
     }
+    // An atom contributes no nesting layer, so it returns 0. Deferencing value.head for an atom would read the union through the wrong member.
     if (node->tag == GL_ATOM)
     {
         std::cout << node->value.atom;

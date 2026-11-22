@@ -50,10 +50,12 @@ struct SparseMatrix
 SparseMatrix fast_transpose(const SparseMatrix &source)
 {
     SparseMatrix result;
+    // The transpose swaps dimensions before any data movement: source columns become result rows and source rows become result columns. Only coordinates change, not the number of non-zero values.
     result.rows = source.cols;
     result.cols = source.rows;
     result.triples.resize(source.triples.size());
 
+    // With no source columns there is no column start to compute; the resized result already has the correct row count and zero triples.
     if (source.cols == 0)
     {
         return result;
@@ -69,7 +71,9 @@ SparseMatrix fast_transpose(const SparseMatrix &source)
     }
 
     // Phase 2: each column's first result slot.
+    // Column 0 starts at result slot 0 because no earlier column has entries to reserve before it.
     cpot[0] = 0;
+    // The loop builds a prefix sum: column c starts after the start plus the size of column c-1, so all earlier columns remain contiguous and untouched.
     for (int c = 1; c < source.cols; ++c)
     {
         cpot[static_cast<std::size_t>(c)] =
@@ -77,10 +81,13 @@ SparseMatrix fast_transpose(const SparseMatrix &source)
     }
 
     // Phase 3: place entries directly; cpot acts as a moving write cursor.
+    // The source is scanned in its stored row-major order. Within one source column, source rows increase, and after the coordinate swap those become increasing result columns, so each column's block is filled in order.
     for (const Triple &item : source.triples)
     {
+        // q is the next free slot of this specific column, not a global counter; cpot is a per-column moving write cursor.
         int q = cpot[static_cast<std::size_t>(item.col)];
         result.triples[static_cast<std::size_t>(q)] = {item.col, item.row, item.value};
+        // Increment only after writing. The current item owns q, and the next item from this column must use q+1 or it would overwrite the just-written triple.
         ++cpot[static_cast<std::size_t>(item.col)];
     }
 

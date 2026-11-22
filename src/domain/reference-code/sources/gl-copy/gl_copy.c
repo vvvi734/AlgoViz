@@ -115,27 +115,32 @@ GLNode *copy_one(const GLNode *src)
     {
         return NULL;
     }
+    // Allocate the copy's parent before descending. Returning src or reusing a child would alias source and copy, so later mutation in one tree would silently change the other.
     GLNode *dst = new_node(src->tag);
     if (dst == NULL)
     {
         return NULL;
     }
+    // An atom has no children, so copying its text into the fresh node completes this subtree. There is no head to recurse into and no next to copy here.
     if (src->tag == GL_ATOM)
     {
         memcpy(dst->value.atom, src->value.atom, sizeof(dst->value.atom));
         return dst;
     }
+    // tail is the address of the next link slot, starting at the new list's head. This lets the first and later copied children use the same assignment path.
     GLNode **tail = &dst->value.head;
     for (const GLNode *child = src->value.head; child != NULL; child = child->next)
     {
         GLNode *child_copy = copy_one(child);
         // 新副本一旦分配失败，必须回收已经建好的部分，避免半成品泄漏。
         // Purpose: If a child copy fails, free the partially built subtree to avoid a leak.
+        // A failed recursive copy leaves a partially linked subtree. Free it through the real child edges before returning NULL, so the caller never receives a half-built list.
         if (child_copy == NULL)
         {
             free_gl(dst);
             return NULL;
         }
+        // Attach the copied child at the current slot, then move tail to the child's next field. Linking before advancing is what preserves sibling order.
         *tail = child_copy;
         tail = &child_copy->next;
     }

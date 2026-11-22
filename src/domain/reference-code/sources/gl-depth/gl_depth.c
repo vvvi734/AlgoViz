@@ -116,21 +116,25 @@ int gl_depth(const GLNode *node)
     {
         return 0;
     }
+    // An empty list is a real node representing (), so it counts as one layer. Only a null pointer means no table at all; that case was handled before this check.
     if (node->value.head == NULL)
     {
         return 1;
     }
+    // best starts at 0 because the empty-list case already returned. Every child depth must beat the current best before it can become the maximum.
     int best = 0;
     for (const GLNode *child = node->value.head; child != NULL; child = child->next)
     {
         // 子表之间是并列关系，深度取最大值，不能把各子表深度相加。
         // Purpose: Sibling sublists are alternatives, so take the maximum depth, never the sum.
+        // Recursion enters one child through head; the for-loop's next step follows the sibling next link. This keeps nesting depth separate from same-level traversal.
         int child_depth = gl_depth(child);
         if (child_depth > best)
         {
             best = child_depth;
         }
     }
+    // Adding one counts the current list's parentheses layer. Taking the maximum rather than the sum is what makes this a depth, not a count of elements.
     return best + 1;
 }
 
@@ -159,6 +163,7 @@ void print_gl(const GLNode *node)
     {
         return;
     }
+    // An atom has no list layer, so its depth is 0. Reading value.head here would use the wrong union member and treat a character buffer as a pointer.
     if (node->tag == GL_ATOM)
     {
         printf("%s", node->value.atom);

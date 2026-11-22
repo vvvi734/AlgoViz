@@ -80,6 +80,7 @@ static int fast_transpose(const TripletList *src, TripletList *dst)
         return 0;
     }
 
+    // Transpose swaps the shape immediately: the source column count becomes the destination row count, and vice versa. The triplet count stays the same because non-zero positions are only relabelled.
     dst->rows = src->cols;
     dst->cols = src->rows;
     dst->count = src->count;
@@ -93,6 +94,7 @@ static int fast_transpose(const TripletList *src, TripletList *dst)
         }
     }
 
+    // A zero-column source has no column to index; the destination already has zero triples, so success without building num/cpot is correct.
     if (src->cols == 0)
     {
         return 1;
@@ -116,19 +118,24 @@ static int fast_transpose(const TripletList *src, TripletList *dst)
     }
 
     /* Phase 2: cpot[c] is the first result slot of column c. */
+    // Column 0 owns the first result slot. There is no earlier column whose entries must be reserved, so its start is exactly zero.
     cpot[0] = 0;
     for (c = 1; c < src->cols; ++c)
     {
+        // Each column starts after all previous columns: the previous start plus the previous count is the prefix sum that gives this column its first slot.
         cpot[c] = cpot[c - 1] + num[c - 1];
     }
 
     /* Phase 3: place each source triplet directly into its final slot. */
+    // Scan the source in its existing row-major order. Within one source column, entries appear in increasing source row, which becomes increasing destination column; direct placement therefore produces row-major output.
     for (k = 0; k < src->count; ++k)
     {
+        // q is this column's next free slot, not a global write counter. Every column has its own moving cursor, so columns can be filled independently.
         int q = cpot[src->data[k].col];
         dst->data[q].row = src->data[k].col;
         dst->data[q].col = src->data[k].row;
         dst->data[q].value = src->data[k].value;
+        // Advance the cursor after the write. The current triple occupies q; the next triple from the same column must go to q+1, otherwise entries would overwrite each other.
         ++cpot[src->data[k].col];
     }
 

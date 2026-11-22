@@ -76,16 +76,20 @@ def gl_depth(node: GLNode | None) -> int:
         return 0
     if node.tag == "atom":
         return 0
+    # A list node with head None is the real empty list (), which still counts as one layer. A missing node is different and was handled by the None check above.
     if node.head is None:
         return 1
+    # best is safe to start at 0 only because the empty-list case has already returned; every non-empty child must provide a depth to compare.
     best = 0
     child = node.head
     while child is not None:
         # Siblings are alternatives, so take the maximum child depth, not the sum.
+        # Recursive descent follows head into one child, while `child = child.next` walks siblings. Those two links represent different levels and must not be mixed.
         child_depth = gl_depth(child)
         if child_depth > best:
             best = child_depth
         child = child.next
+    # The current list adds one bracket layer; the maximum child depth is used, so sibling alternatives do not add extra levels.
     return best + 1
 
 
@@ -94,6 +98,7 @@ def format_gl(node: GLNode | None) -> str:
     """输出无空格的括号表达式，仅用于核对示例。"""
     if node is None:
         return ""
+    # An atom has no child head and no parentheses layer, so its depth is 0; treating it as a list would read the wrong representation.
     if node.tag == "atom":
         return node.atom or ""
     parts: list[str] = []

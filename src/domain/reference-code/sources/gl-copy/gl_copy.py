@@ -71,9 +71,12 @@ def copy_one(src: GLNode | None) -> GLNode | None:
     """复制一个节点及其子树，不复制 src.next；返回新节点。"""
     if src is None:
         return None
+    # A fresh node copies the tag and atom value but not head or next. Those links are rebuilt separately, which is what makes this a deep copy rather than an alias.
     dst = GLNode(src.tag, src.atom)
+    # An atom has no children, so the fresh node is already a complete copy of this one-node subtree.
     if src.tag == "atom":
         return dst
+    # tail starts at the new list node; the first child goes into dst.head, and later children follow tail.next. This mirrors the C pointer-to-pointer insertion without a dummy node.
     tail = dst
     child = src.head
     while child is not None:
@@ -82,10 +85,12 @@ def copy_one(src: GLNode | None) -> GLNode | None:
             raise MemoryError("copy allocation failed")
         # 新节点逐个接入：dst.head 只指向第一个复制孩子，其余走 next。
         # Purpose: Link copies one by one; dst.head holds the first child and next holds the rest.
+        # The first copied child must initialize head; only later children use next. Checking head here is what distinguishes the two cases without a dummy node.
         if dst.head is None:
             dst.head = child_copy
         else:
             tail.next = child_copy
+        # Advance tail after the child is linked. Moving it first would discard the only reference to the slot where the next sibling must be attached.
         tail = child_copy
         child = child.next
     return dst

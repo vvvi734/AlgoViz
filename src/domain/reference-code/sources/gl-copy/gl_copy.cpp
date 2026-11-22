@@ -107,23 +107,28 @@ GLNode *copy_one(const GLNode *src)
     {
         return nullptr;
     }
+    // The new parent must exist before its children are copied. Sharing a source child would make the two trees alias, so a later edit in one would appear in the other.
     GLNode *dst = new_node(src->tag);
+    // An atom is a leaf: copying its text into the fresh node finishes the whole subtree, with no head recursion and no next link copied.
     if (src->tag == GL_ATOM)
     {
         std::memcpy(dst->value.atom, src->value.atom, sizeof(dst->value.atom));
         return dst;
     }
+    // tail addresses the next child-link slot. Starting at the fresh node's head lets an empty copy and a non-empty copy share one insertion loop.
     GLNode **tail = &dst->value.head;
     for (const GLNode *child = src->value.head; child != nullptr; child = child->next)
     {
         GLNode *child_copy = copy_one(child);
         // 分配失败时回收已建好的半棵副本，避免内存泄漏。
         // Purpose: On allocation failure, free the half-built copy instead of leaking it.
+        // A throw from a deeper allocation is not caught here, but this null check still guards the contract. Freeing the half-built subtree keeps ownership clean on failure.
         if (child_copy == nullptr)
         {
             free_gl(dst);
             return nullptr;
         }
+        // Write the copied child into the current slot, then advance tail to that child's next field. Reversing the two steps would lose the insertion point.
         *tail = child_copy;
         tail = &child_copy->next;
     }

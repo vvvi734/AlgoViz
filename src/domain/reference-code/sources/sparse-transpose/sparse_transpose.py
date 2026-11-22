@@ -59,6 +59,7 @@ def fast_transpose(rows: int, cols: int, triples: List[Triple]) -> Tuple[int, in
 
     num = [0] * cols
     cpot = [0] * cols
+    # Preallocate one destination slot per source triple. Placement writes by random index through cpot, so the list must already have all slots; each slot is then overwritten exactly once.
     result = [Triple(0, 0, 0) for _ in triples]
 
     # Phase 1: count non-zeros per original column.
@@ -66,14 +67,18 @@ def fast_transpose(rows: int, cols: int, triples: List[Triple]) -> Tuple[int, in
         num[item.col] += 1
 
     # Phase 2: cpot[c] is the first result slot of column c.
+    # Column 0 begins at result index 0 because no earlier column has entries to place before it.
     cpot[0] = 0
+    # Each cpot entry is a prefix sum: column c starts after the previous column's start and all of its entries, keeping column blocks contiguous.
     for c in range(1, cols):
         cpot[c] = cpot[c - 1] + num[c - 1]
 
     # Phase 3: place each source triplet directly into its final slot.
     for item in triples:
+        # q is the next free position for this source column, not a single global write index. Each column consumes its own cpot slot independently.
         q = cpot[item.col]
         result[q] = Triple(item.col, item.row, item.value)
+        # Move this column's cursor forward only after filling q. The next entry from the same column must land at q+1, so writing and advancing cannot be swapped.
         cpot[item.col] = q + 1
 
     return new_rows, new_cols, result
@@ -93,6 +98,7 @@ def main() -> None:
     ]
     new_rows, new_cols, result = fast_transpose(rows, cols, triples)
     print(f"shape = {rows} x {cols}, nnz = {len(triples)}")
+    # The source list is already strictly row-major. Scanning it in that order preserves the within-column source-row order, which becomes destination-column order after the swap.
     for item in triples:
         print((item.row, item.col, item.value))
     print("--- transposed ---")
