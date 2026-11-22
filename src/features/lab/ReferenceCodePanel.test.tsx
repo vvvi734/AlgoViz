@@ -108,6 +108,41 @@ describe('ReferenceCodePanel', () => {
     expect(enCopy).toContain('int Binary_Search');
   });
 
+  it('shows and copies free-list internal teaching comments in both UI languages', async () => {
+    renderPanel('free-list', '空闲空间分配');
+    await waitForCode();
+    const zhCode = screen.getByTestId('reference-code-fallback').textContent ?? '';
+    expect(zhCode).toContain('首次适应一旦遇到第一个足够大的块就可以停止');
+    expect(zhCode).toContain('左合并后联合块位于 index-1');
+    expect(zhCode).not.toContain('First Fit can stop at the first adequate block');
+
+    fireEvent.click(screen.getByTestId('reference-copy'));
+    await waitFor(() => expect(screen.getByTestId('reference-copy').textContent).toContain('已复制'));
+    const writeText = navigator.clipboard.writeText as unknown as ReturnType<typeof vi.fn>;
+    const zhCopy = String(writeText.mock.calls[0][0]);
+    expect(zhCopy).toContain('首次适应一旦遇到第一个足够大的块就可以停止');
+    expect(zhCopy).toContain('左合并后联合块位于 index-1');
+    expect(zhCopy).not.toContain('First Fit can stop at the first adequate block');
+
+    fireEvent.click(screen.getByTestId('test-toggle-language'));
+    await waitFor(() =>
+      expect(screen.getByTestId('reference-code-fallback').textContent).toContain(
+        'First Fit can stop at the first adequate block',
+      ),
+    );
+    const enCode = screen.getByTestId('reference-code-fallback').textContent ?? '';
+    expect(enCode).toContain('First Fit can stop at the first adequate block');
+    expect(enCode).toContain('After a left merge the unified block sits at index-1');
+    expect(enCode).not.toMatch(/[\u3400-\u9fff]/);
+
+    fireEvent.click(screen.getByTestId('reference-copy'));
+    await waitFor(() => expect(writeText).toHaveBeenCalledTimes(2));
+    const enCopy = String(writeText.mock.calls[1][0]);
+    expect(enCopy).toContain('First Fit can stop at the first adequate block');
+    expect(enCopy).toContain('After a left merge the unified block sits at index-1');
+    expect(enCopy).not.toMatch(/[\u3400-\u9fff]/);
+  });
+
   it('switches between the principle and shared convenience implementations', async () => {
     renderPanel('bubble', '冒泡排序');
     await waitForCode();

@@ -1197,20 +1197,508 @@ export const REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
   ],
   "free_list.c": [
     {
-      en: "A block owns the half-open interval [start, start + size).",
-      zh: "一个块拥有半开区间 [start, start + size)；右端点不包含在块内。",
+      en: "Free-space list: First Fit / Best Fit over one simulated address range.",
+      zh: "空闲空间分配：在一条模拟地址空间上演示首次适应与最佳适应。",
+    },
+    {
+      en: "A descriptor owns the half-open range [start, start + size); the byte at start + size belongs to the next block.",
+      zh: "块描述符拥有半开区间 [start, start + size)；start + size 处的字节属于下一个块。",
+    },
+    {
+      en: "This is a block-table simulation, not a real allocator: head/tail tags are teaching fields, not hardware boundary tags.",
+      zh: "这是块描述符表的模拟，不是真实分配器；head/tail 标记是教学字段，不等同于硬件边界标识。",
+    },
+    {
+      en: "Descriptors stay in increasing address order so adjacent blocks can be recognized by index, not by searching addresses.",
+      zh: "所有块描述符按地址递增排列，因此相邻关系可以直接用下标判断，不必再搜索地址。",
+    },
+    {
+      en: "start and size describe [start, start + size): size is a length, not an inclusive end address.",
+      zh: "start 与 size 描述区间 [start, start + size)：size 是长度，不是包含末字节的结束地址。",
+    },
+    {
+      en: "free=1 means the block is reusable; label names an allocated request and is empty for free blocks.",
+      zh: "free=1 表示块可复用；label 记录已分配的请求名，空闲块保持空字符串。",
+    },
+    {
+      en: "head_size/tail_size and head_free/tail_free duplicate the block size/state for teaching boundary tags; they are not independent truth.",
+      zh: "head_size/tail_size 与 head_free/tail_free 只是为演示边界标识而复制块的大小和状态，不是四份互相独立的事实。",
+    },
+    {
+      en: "blocks[] plus count form an address-ordered descriptor table; count is the number of valid records, not the memory capacity.",
+      zh: "blocks[] 与 count 组成按地址排序的块描述符表；count 是有效记录数，不是内存容量。",
+    },
+    {
+      en: "capacity is the original simulated size; it also supplies a sentinel larger than any possible best-fit remainder.",
+      zh: "capacity 是模拟内存的原始大小，同时为最佳适应提供一个大于任何可能剩余量的哨兵。",
+    },
+    {
+      en: "policy is a list-level switch: 0 selects First Fit, 1 selects Best Fit; it is read anew on every allocation.",
+      zh: "policy 是整张块表的策略开关：0 为首次适应，1 为最佳适应，每次分配都会重新读取。",
+    },
+    {
+      en: "sync_tags is the only routine that writes the simulated head/tail tags; every size or state change must call it.",
+      zh: "sync_tags 是唯一写入模拟首尾标记的函数；任何大小或占用状态变化后都必须调用它。",
+    },
+    {
+      en: "Initial state is exactly one free descriptor [0, total); later allocations split this single hole.",
+      zh: "初始状态只有一个空闲块 [0, total)；后续分配都从这个唯一的洞中切分。",
+    },
+    {
+      en: "count becomes 1 only after start, size, free and tags are complete, so the first scan always sees a valid record.",
+      zh: "只有 start、size、free 和首尾标记都写好后才把 count 设为 1，确保第一次扫描看到的是完整记录。",
+    },
+    {
+      en: "Inserting a split remainder must preserve address order, so every descriptor at and after index moves one slot right.",
+      zh: "插入分裂出的剩余块必须保持地址顺序，因此从 index 开始的所有描述符都要右移一位。",
+    },
+    {
+      en: "MAX_BLOCKS bounds this teaching table; the code does not reject overflow, so callers must keep count below the limit.",
+      zh: "MAX_BLOCKS 限制这张教学块表的大小；代码没有拒绝溢出的检查，调用方必须保证 count 不超过上限。",
+    },
+    {
+      en: "The copy loop runs backwards from count to index; a forward loop would overwrite a record before it is moved.",
+      zh: "复制循环从 count 倒退到 index；如果正向复制，会先把尚未搬走的记录覆盖掉。",
+    },
+    {
+      en: "count increases last, after the new record and its tags are complete; no later loop can observe a half-written slot.",
+      zh: "等新记录和首尾标记都完整后，最后才增加 count；这样后续循环不会看到写了一半的槽。",
+    },
+    {
+      en: "Removing a descriptor closes the gap by moving every later record one slot left; this edits the simulation table only.",
+      zh: "删除描述符时把后面的记录逐个左移来填洞；这里只修改模拟块表，不释放真实进程内存。",
+    },
+    {
+      en: "count decreases after the shift, so the stale last slot is never visited again.",
+      zh: "搬移完成后才减少 count，因此末尾的旧槽不会再被访问。",
+    },
+    {
+      en: "First Fit can stop at the first adequate block; Best Fit cannot, because a later block may leave a smaller remainder.",
+      zh: "首次适应一旦遇到第一个足够大的块就可以停止；最佳适应不能停，因为后面的块可能留下更小的剩余空间。",
+    },
+    {
+      en: "chosen=-1 means \"no candidate\"; best_remainder starts at capacity+1 so any real remainder beats that sentinel.",
+      zh: "chosen=-1 表示“尚无候选”；best_remainder 从 capacity+1 开始，任何真实剩余量都小于这个哨兵。",
+    },
+    {
+      en: "A used block cannot be allocated, and a block smaller than request cannot be split into a non-negative remainder.",
+      zh: "已占用块不能分配；小于申请量的块也无法切出非负的剩余空间。",
+    },
+    {
+      en: "remainder is the free tail after a split; an exact fit leaves remainder 0 and needs no new descriptor.",
+      zh: "remainder 是切分后留下的空闲尾部；正好等大时剩余为 0，不需要新建描述符。",
+    },
+    {
+      en: "First Fit selects the first adequate block in address order and breaks immediately.",
+      zh: "首次适应按地址顺序选择第一个足够大的块，并立即结束扫描。",
+    },
+    {
+      en: "Best Fit must inspect every candidate; \"<\" keeps the earlier address when two blocks leave the same remainder.",
+      zh: "最佳适应必须检查所有候选；剩余量相同时用 \"<\" 保留地址更靠前的块。",
+    },
+    {
+      en: "No chosen block means the request cannot fit in any single free interval; return 0 leaves the table unchanged.",
+      zh: "没有选出块，说明请求无法放入任何单个空闲区间；返回 0 且块表保持不变。",
+    },
+    {
+      en: "Only a strictly larger block is split; the free suffix starts exactly at the old start plus the allocated prefix.",
+      zh: "只有严格大于申请量的块才分裂；空闲后缀正好从原起点加上已分配前缀的长度处开始。",
+    },
+    {
+      en: "remainder_start is old start + request; it marks the first byte that the allocated prefix does not own.",
+      zh: "remainder_start 等于原起点加申请量，标记已分配前缀不再拥有的第一个字节。",
+    },
+    {
+      en: "remainder_size is old size minus request, so [start, start+request) and the suffix are adjacent and never overlap.",
+      zh: "remainder_size 是原大小减去申请量，因此 [start, start+request) 与后缀相邻且不会重叠。",
+    },
+    {
+      en: "Insert the suffix before shrinking the chosen block: the split uses the old size, and chosen keeps its index.",
+      zh: "先插入后缀、再缩小选中块：分裂读取的是原大小，而选中块的下标不会改变。",
+    },
+    {
+      en: "Shrink the prefix only after the suffix exists, so the table always covers the original interval.",
+      zh: "等后缀记录存在后才缩小前缀，保证块表始终覆盖原来的完整区间。",
+    },
+    {
+      en: "After the split, mark the prefix used and attach the request label; then sync tags so the footer describes the final state.",
+      zh: "分裂完成后把前缀标记为已占用并写入请求名，再同步首尾标记，使块尾描述最终状态。",
+    },
+    {
+      en: "Merge the current block into its left neighbour; both records are adjacent and free.",
+      zh: "把当前块合并进左邻块；两条记录必须相邻且都空闲。",
+    },
+    {
+      en: "The union starts at the left neighbour's address because the released block lies immediately after it.",
+      zh: "联合块从左邻块的地址开始，因为被释放块紧跟在左邻块之后。",
+    },
+    {
+      en: "The merged size is the sum of two adjacent lengths; no address gap exists between them.",
+      zh: "合并后的大小是两个相邻块长度之和；两块之间没有地址空隙。",
+    },
+    {
+      en: "Assign the union to the left slot and delete the current record, keeping one descriptor for the continuous range.",
+      zh: "把合并结果写回左槽并删除当前记录，连续区间只保留一个描述符。",
+    },
+    {
+      en: "Merge the current block with its right neighbour; both records are adjacent and free.",
+      zh: "把当前块与右邻块合并；两条记录必须相邻且都空闲。",
+    },
+    {
+      en: "The union keeps the current start because the right neighbour begins exactly at current start + current size.",
+      zh: "联合块保留当前起点，因为右邻块正好从“当前起点 + 当前大小”处开始。",
+    },
+    {
+      en: "The merged size adds the right length; deleting the right record leaves a single descriptor for the union.",
+      zh: "合并后的大小加上右邻块长度；删除右邻记录后，联合区间只剩一个描述符。",
+    },
+    {
+      en: "Release accepts only an allocated record with the exact ID; free blocks and unknown IDs are not valid releases.",
+      zh: "释放只接受“已占用且 ID 完全匹配”的记录；空闲块或未知 ID 都不是合法释放。",
+    },
+    {
+      en: "If neither neighbour is free, the released descriptor stays as an independent hole.",
+      zh: "如果左右都不空闲，被释放的记录就保留为独立的洞。",
+    },
+    {
+      en: "Mark the block free and clear its label before neighbour checks, so the search sees the released interval as a hole.",
+      zh: "先标记为空闲并清空 label，再检查邻块，这样邻块判断看到的就是一个洞。",
+    },
+    {
+      en: "left_free and right_free snapshot physical adjacency; only an actually adjacent free block may be merged.",
+      zh: "left_free 与 right_free 记录真实相邻关系；只有确实相邻的空闲块才允许合并。",
+    },
+    {
+      en: "A left merge absorbs the released record into the previous descriptor and removes one record.",
+      zh: "向左合并会把被释放记录吸收进前一个描述符，并删除一条记录。",
+    },
+    {
+      en: "After a left merge the unified block sits at index-1, so index must decrease before checking the right side.",
+      zh: "左合并后联合块位于 index-1，因此必须先执行 index -= 1，才能继续检查右侧。",
+    },
+    {
+      en: "right_free was captured before the left merge; after index-- it still names the block immediately right of the union.",
+      zh: "right_free 在左合并前就已记录；index 减一后，它仍然指向联合块右边紧邻的块。",
+    },
+    {
+      en: "print_blocks walks the address order and prints [start, end), making gaps or overlaps visible.",
+      zh: "print_blocks 按地址顺序打印 [start, end)，便于直接看出空隙或重叠。",
+    },
+    {
+      en: "A-E allocate adjacent blocks from low addresses, so the only untouched space is the trailing free suffix.",
+      zh: "A-E 从低地址开始连续分配，因此尚未使用的空间只剩下末尾的空闲区。",
+    },
+    {
+      en: "The demonstration assumes enough capacity and a correct fixed operation sequence; it is not a general input parser.",
+      zh: "该演示假定容量足够且固定操作序列成立；它不是通用输入解析器。",
+    },
+    {
+      en: "Releasing B and D creates two isolated holes; F can reuse the earlier hole under First Fit.",
+      zh: "释放 B、D 产生两个互不相邻的洞；首次适应会让 F 复用靠前的那个洞。",
+    },
+    {
+      en: "F is allocated after the two releases, so it demonstrates reuse of a hole rather than growth of the tail.",
+      zh: "F 在两次释放之后分配，用来演示复用空洞，而不是继续从尾部扩展。",
+    },
+    {
+      en: "Releasing C joins both neighbours, then releasing F joins the remaining right hole; this demonstrates two-sided coalescing.",
+      zh: "释放 C 会同时合并左右邻块，随后释放 F 再合并右侧的洞；这里演示了两侧合并。",
+    },
+    {
+      en: "G=40 is deliberately larger than every remaining contiguous hole, so the final call must fail without changing the table.",
+      zh: "G=40 故意大于所有剩余连续空闲区，因此最后一次申请必须失败且不改变块表。",
     },
   ],
   "free_list.cpp": [
     {
-      en: "A block owns the half-open interval [start, start + size).",
-      zh: "一个块拥有半开区间 [start, start + size)；右端点不包含在块内。",
+      en: "Free-space list: First Fit / Best Fit over one simulated address range.",
+      zh: "空闲空间分配：在一条模拟地址空间上演示首次适应与最佳适应。",
+    },
+    {
+      en: "A descriptor owns half-open [start, start + size); this program models block records, not raw pointer memory.",
+      zh: "块描述符拥有半开区间 [start, start + size)；本程序模拟块记录，而不是直接操作原始指针内存。",
+    },
+    {
+      en: "The vector stays in address order, so adjacency is decided by neighbouring indices.",
+      zh: "vector 始终按地址递增排列，因此相邻关系由相邻下标决定。",
+    },
+    {
+      en: "head/tail tags are teaching copies of size and occupancy, not independent allocator metadata.",
+      zh: "head/tail 标记只是大小与占用状态的教学副本，不是独立的分配器元数据。",
+    },
+    {
+      en: "start and size define [start, start + size); size is a length, not an inclusive address.",
+      zh: "start 与 size 定义 [start, start + size)；size 是长度，不是包含末字节的地址。",
+    },
+    {
+      en: "free and label are canonical occupancy state; the four tag fields only mirror them.",
+      zh: "free 与 label 是规范的占用状态；四个首尾标记字段只是它们的镜像。",
+    },
+    {
+      en: "sync_tags must run after every size or state change, or the printed footer becomes stale.",
+      zh: "任何大小或占用状态变化后都必须运行 sync_tags，否则打印出的块尾信息就会过期。",
+    },
+    {
+      en: "FreeList owns a vector of Block records; no manual new/delete is involved, and vector growth moves elements but not logical addresses.",
+      zh: "FreeList 持有一个 Block 记录的 vector；没有手动 new/delete，vector 扩容只移动元素，不改变逻辑地址。",
+    },
+    {
+      en: "The constructor creates one free block [0,total); capacity_ is kept as a sentinel bound and as the original memory size.",
+      zh: "构造函数创建唯一的空闲块 [0,total)；capacity_ 既作为哨兵上界，也记录原始内存大小。",
+    },
+    {
+      en: "The scan follows vector order, which is address order; First Fit can return at the first adequate block.",
+      zh: "扫描顺序就是 vector 的地址顺序；首次适应遇到第一个足够大的块就可以返回。",
+    },
+    {
+      en: "block is a reference, not a copy; it must not survive vector::insert/erase, so later code re-indexes blocks_[chosen].",
+      zh: "block 是引用而不是副本；它不能跨越 vector::insert/erase，因此后续代码重新用 blocks_[chosen] 访问。",
+    },
+    {
+      en: "chosen<0 and capacity_+1 encode \"no candidate\"; any real remainder is smaller than the sentinel.",
+      zh: "chosen<0 与 capacity_+1 表示“尚无候选”；任何真实剩余量都小于这个哨兵。",
+    },
+    {
+      en: "Used blocks and blocks too small for the request cannot produce a valid free prefix.",
+      zh: "已占用块和小于申请量的块都无法切出合法的空闲前缀。",
+    },
+    {
+      en: "First Fit breaks immediately; Best Fit continues to compare remainders and uses < so ties keep the earlier block.",
+      zh: "首次适应立即结束扫描；最佳适应继续比较剩余量，并用 < 在剩余量相同时保留靠前的块。",
+    },
+    {
+      en: "If no candidate exists, return false and leave blocks_ unchanged; the request has no single contiguous hole.",
+      zh: "没有候选时返回 false 且 blocks_ 保持不变；请求找不到任何单个连续空洞。",
+    },
+    {
+      en: "A block larger than the request is split; exact fit skips the split and simply changes occupancy.",
+      zh: "只有大于申请量的块才分裂；正好等大时跳过分裂，只改变占用状态。",
+    },
+    {
+      en: "The suffix starts at start+request and has size oldSize-request, so prefix and suffix are adjacent and disjoint.",
+      zh: "后缀从 start+request 开始、大小为 oldSize-request，因此前缀与后缀相邻且不相交。",
+    },
+    {
+      en: "vector::insert shifts later records right; after it returns, refer to blocks_[chosen], not the old reference.",
+      zh: "vector::insert 会把后面的记录右移；返回后必须重新用 blocks_[chosen] 访问，不能继续使用旧引用。",
+    },
+    {
+      en: "Shrink the chosen prefix after insertion; its start is unchanged and the new suffix remains at chosen+1.",
+      zh: "插入完成后才缩小选中前缀；它的起点不变，新后缀仍在 chosen+1 位置。",
+    },
+    {
+      en: "Set occupancy and label before sync_tags, then let the footer copy the finished state.",
+      zh: "先设置占用状态和 label，再调用 sync_tags，让块尾复制最终状态。",
+    },
+    {
+      en: "Only an allocated block with the exact label can be released; missing or already-free IDs return false.",
+      zh: "只有“已占用且 label 完全匹配”的块才能释放；不存在或已空闲的 ID 返回 false。",
+    },
+    {
+      en: "If neither side is free, the released record remains an independent hole.",
+      zh: "如果左右都不空闲，被释放的记录就保留为独立的洞。",
+    },
+    {
+      en: "Mark free and clear the label before neighbour checks, so the released interval is visible as a hole.",
+      zh: "先标记为空闲并清空 label，再检查邻块，这样被释放区间在判断时就是一个洞。",
+    },
+    {
+      en: "left_free and right_free snapshot adjacency before any erase; vector::erase shifts indices but preserves address order.",
+      zh: "left_free 与 right_free 在任何 erase 之前记录相邻关系；vector::erase 只移动下标，不破坏地址顺序。",
+    },
+    {
+      en: "A left merge uses the left neighbour's start and the sum of both sizes, then erases the released record.",
+      zh: "向左合并使用左邻块的起点和两块大小之和，然后删除被释放记录。",
+    },
+    {
+      en: "The merged range starts at the left neighbour because the released block is immediately to its right.",
+      zh: "合并区间从左邻块开始，因为被释放块正好位于它的右边。",
+    },
+    {
+      en: "index -= 1 is required because erase removed the old current element; the merged block now sits one slot left.",
+      zh: "必须执行 index -= 1，因为 erase 删除了原来的当前元素，合并块现在位于左边一格。",
+    },
+    {
+      en: "right_free was captured before the left erase; after index-- it still names the block immediately right of the merged range.",
+      zh: "right_free 在左删除前就已记录；index 减一后，它仍指向合并区间右边紧邻的块。",
+    },
+    {
+      en: "The second merge keeps the current start; the right neighbour begins at current start + current size.",
+      zh: "第二次合并保留当前起点；右邻块正好从“当前起点 + 当前大小”处开始。",
+    },
+    {
+      en: "policy_ is a list-level switch read by the next allocate; it does not change existing blocks.",
+      zh: "policy_ 是整张表级开关，只影响下一次 allocate，不会改变已有块。",
+    },
+    {
+      en: "policy_ stores the policy for this list: false is First Fit, true is Best Fit.",
+      zh: "policy_ 保存当前列表的策略：false 为首次适应，true 为最佳适应。",
+    },
+    {
+      en: "print() only reads the vector, so address order and tag consistency can be inspected without mutation.",
+      zh: "print() 只读取 vector，因此可以在不修改状态的情况下检查地址顺序和首尾标记一致性。",
+    },
+    {
+      en: "A-E allocate adjacent prefixes, leaving one trailing free interval.",
+      zh: "A-E 连续分配相邻前缀，最后只剩一个末尾空闲区。",
+    },
+    {
+      en: "The demonstration assumes a fixed sequence and enough capacity; it is not a general input parser.",
+      zh: "该演示假定固定操作序列和容量足够；它不是通用输入解析器。",
+    },
+    {
+      en: "Releasing B and D produces two isolated holes; F reuses the earlier hole under First Fit.",
+      zh: "释放 B、D 产生两个互不相邻的洞；首次适应会让 F 复用靠前的洞。",
+    },
+    {
+      en: "F is allocated after the releases, so it demonstrates hole reuse rather than tail growth.",
+      zh: "F 在释放之后分配，用来演示复用空洞而不是继续扩展尾部。",
+    },
+    {
+      en: "Releasing C joins both sides, then releasing F joins the right hole; this exercises two-sided coalescing.",
+      zh: "释放 C 会合并左右两侧，随后释放 F 再合并右侧的洞；这里练习了两侧合并。",
+    },
+    {
+      en: "G=40 exceeds every remaining contiguous hole, so allocate must return false and leave the table unchanged.",
+      zh: "G=40 大于所有剩余连续空洞，因此 allocate 必须返回 false 且不改变块表。",
     },
   ],
   "free_list.py": [
     {
-      en: "A block owns the half-open interval [start, start + size).",
-      zh: "一个块拥有半开区间 [start, start + size)；右端点不包含在块内。",
+      en: "Free-space list: First Fit / Best Fit over one simulated address range.",
+      zh: "空闲空间分配：在一条模拟地址空间上演示首次适应与最佳适应。",
+    },
+    {
+      en: "A block owns half-open [start, start + size); size is a length, not an inclusive end address.",
+      zh: "块拥有半开区间 [start, start + size)；size 是长度，不是包含末字节的结束地址。",
+    },
+    {
+      en: "blocks is an address-ordered list of Block objects; adjacency is determined by list indices.",
+      zh: "blocks 是按地址排序的 Block 对象列表；相邻关系由列表下标决定。",
+    },
+    {
+      en: "free and label are canonical; head/tail tags are teaching copies of size and occupancy.",
+      zh: "free 与 label 是规范状态；head/tail 标记只是大小和占用状态的教学副本。",
+    },
+    {
+      en: "The constructor stores start, size, free and label, then immediately syncs the simulated boundary tags.",
+      zh: "构造函数保存 start、size、free 和 label，然后立即同步模拟首尾标记。",
+    },
+    {
+      en: "sync_tags must follow every size or occupancy change; otherwise the footer describes an old interval.",
+      zh: "任何大小或占用状态变化后都必须调用 sync_tags，否则块尾描述的仍是旧区间。",
+    },
+    {
+      en: "The list starts with one free block [0, capacity); every later allocation splits an existing hole.",
+      zh: "列表初始只有唯一的空闲块 [0, capacity)；之后每次分配都从已有洞中切分。",
+    },
+    {
+      en: "capacity records the original simulated size; allocation still uses the current Block.size values.",
+      zh: "capacity 记录模拟内存的原始大小；实际分配仍以当前 Block.size 为准。",
+    },
+    {
+      en: "best_fit is a per-call policy switch; it does not mutate the list, so later calls may choose differently.",
+      zh: "best_fit 是每次调用独立的策略开关；它不修改列表，后续调用可以改用另一种策略。",
+    },
+    {
+      en: "The scan follows list order, which is address order; First Fit may stop at the first adequate block.",
+      zh: "扫描顺序就是列表的地址顺序；首次适应遇到第一个足够大的块就可以停止。",
+    },
+    {
+      en: "None is the sentinel for \"no candidate\"; best_remainder stays None until the first adequate block.",
+      zh: "None 表示“尚无候选”；在遇到第一个足够大的块之前，best_remainder 保持 None。",
+    },
+    {
+      en: "Used blocks and blocks smaller than request cannot yield a non-negative free remainder.",
+      zh: "已占用块和小于申请量的块都无法产生非负的空闲剩余量。",
+    },
+    {
+      en: "First Fit breaks immediately; Best Fit keeps the smallest remainder and uses < so ties keep the earlier address.",
+      zh: "首次适应立即结束扫描；最佳适应保留最小剩余量，并用 < 在剩余量相同时保留靠前的地址。",
+    },
+    {
+      en: "If chosen is None, return False and leave the list unchanged; no single hole can hold the request.",
+      zh: "chosen 为 None 时返回 False 且列表保持不变；没有任何单个洞能容纳该请求。",
+    },
+    {
+      en: "A block larger than the request is split; exact fit skips the split and just changes occupancy.",
+      zh: "只有大于申请量的块才分裂；正好等大时跳过分裂，只改变占用状态。",
+    },
+    {
+      en: "The suffix begins at old start+request and has size oldSize-request, so the ranges are adjacent and disjoint.",
+      zh: "后缀从原 start+request 开始、大小为 oldSize-request，因此两段区间相邻且不相交。",
+    },
+    {
+      en: "Insert the suffix before shrinking block: Block(...) reads the old size, and block is an object reference that survives list insertion.",
+      zh: "先插入后缀、再缩小 block：Block(...) 读取的是旧大小，而 block 是对象引用，不会因列表插入而失效。",
+    },
+    {
+      en: "After insertion, block still names the chosen object; set occupancy and label before sync_tags so the footer copies the final state.",
+      zh: "插入后 block 仍指向被选中的对象；先设置占用状态和 label，再调用 sync_tags，让块尾复制最终状态。",
+    },
+    {
+      en: "Only an allocated block with the exact ID can be released; unknown or already-free IDs return False.",
+      zh: "只有“已占用且 ID 完全匹配”的块才能释放；未知或已空闲的 ID 返回 False。",
+    },
+    {
+      en: "If neither side is free, the released record remains an independent hole.",
+      zh: "如果左右都不空闲，被释放记录就保留为独立的洞。",
+    },
+    {
+      en: "Mark free and clear the label before neighbour checks, so the released interval is visible as a hole.",
+      zh: "先标记为空闲并清空 label，再检查邻块，这样被释放区间在判断时就是一个洞。",
+    },
+    {
+      en: "left_free and right_free snapshot adjacency before any deletion; only true neighbours may be merged.",
+      zh: "left_free 与 right_free 在任何删除之前记录相邻关系；只有真正相邻的块才允许合并。",
+    },
+    {
+      en: "A left merge uses the left block's start and the sum of both sizes, then deletes the released record at index.",
+      zh: "向左合并使用左块的起点和两块大小之和，然后删除 index 处的被释放记录。",
+    },
+    {
+      en: "The merged object starts at left.start and spans both adjacent lengths.",
+      zh: "合并对象从 left.start 开始，跨越两个相邻块的长度。",
+    },
+    {
+      en: "index -= 1 is required because the deletion shifted the merged block one slot left.",
+      zh: "必须执行 index -= 1，因为删除操作把合并块整体左移了一格。",
+    },
+    {
+      en: "right_free records the pre-deletion neighbour snapshot; the second branch below rechecks the shifted neighbour instead of trusting this old boolean.",
+      zh: "right_free 记录删除前的邻居快照；下面的第二个分支会重新检查移动后的邻居，而不是直接相信这个旧布尔值。",
+    },
+    {
+      en: "After a left deletion, index -= 1 makes index+1 the original right neighbour; the condition must be evaluated anew because the list shifted.",
+      zh: "左删除后 index -= 1，使 index+1 重新指向原来的右邻块；由于列表已经移动，条件必须重新求值。",
+    },
+    {
+      en: "The second merge keeps the current start and adds the right length, covering the adjacent range.",
+      zh: "第二次合并保留当前起点并加上右块长度，覆盖整个相邻区间。",
+    },
+    {
+      en: "print_blocks walks the list in address order; visible [start,end) ranges should tile the capacity without gaps.",
+      zh: "print_blocks 按地址顺序遍历列表；可见的 [start,end) 区间应当无缝铺满容量。",
+    },
+    {
+      en: "The asserts assume the fixed demonstration sequence succeeds; under -O they disappear, so this is a teaching harness, not a runtime guarantee.",
+      zh: "这些 assert 假定固定演示序列成功；在 -O 下会被移除，因此它只是教学演示，不是运行时保证。",
+    },
+    {
+      en: "A-E place adjacent allocations, leaving one trailing free interval.",
+      zh: "A-E 连续放置相邻分配，最后只剩一个末尾空闲区。",
+    },
+    {
+      en: "Releasing B and D creates two isolated holes; F reuses the earlier hole under the default First Fit.",
+      zh: "释放 B、D 产生两个互不相邻的洞；默认首次适应会让 F 复用靠前的洞。",
+    },
+    {
+      en: "F is allocated after the releases, demonstrating hole reuse rather than tail growth.",
+      zh: "F 在释放之后分配，用来演示复用空洞而不是扩展尾部。",
+    },
+    {
+      en: "Releasing C and F exercises two-sided coalescing; G=40 exceeds every remaining hole and must fail.",
+      zh: "释放 C 和 F 练习两侧合并；G=40 大于所有剩余空洞，必须失败。",
     },
   ],
   "buddy_system.c": [
