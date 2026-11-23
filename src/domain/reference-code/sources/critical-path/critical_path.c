@@ -41,8 +41,10 @@ void CriticalPath(void)
     int earliest[EVENT_COUNT] = {0};
     int latest[EVENT_COUNT];
 
+    // This C version assumes ACTIVITIES is already in topological order; a random edge order would use unfinished predecessors.
     for (int index = 0; index < ACTIVITY_COUNT; ++index)
     {
+        // Earliest time is the latest possible finish over all incoming activities; taking max prevents a later predecessor from being ignored.
         int candidate = earliest[ACTIVITIES[index].from] + ACTIVITIES[index].duration;
         if (candidate > earliest[ACTIVITIES[index].to])
         {
@@ -51,11 +53,14 @@ void CriticalPath(void)
     }
     for (int event = 0; event < EVENT_COUNT; ++event)
     {
+        // Every latest time starts at the project duration because the demo has one sink at event 5; multiple sinks need their own deadlines.
         latest[event] = earliest[EVENT_COUNT - 1];
     }
+    // The reverse scan walks the edge array backwards; this is a reverse topological order only if the array was topologically sorted.
     for (int index = ACTIVITY_COUNT - 1; index >= 0; --index)
     {
         int candidate = latest[ACTIVITIES[index].to] - ACTIVITIES[index].duration;
+        // Latest time is the minimum of successor latest minus duration; a smaller candidate forces this predecessor to start earlier.
         if (candidate < latest[ACTIVITIES[index].from])
         {
             latest[ACTIVITIES[index].from] = candidate;
@@ -77,6 +82,7 @@ void CriticalPath(void)
     {
         int early_start = earliest[ACTIVITIES[index].from];
         int late_start = latest[ACTIVITIES[index].to] - ACTIVITIES[index].duration;
+        // Zero slack is the activity-level certificate: earliest start equals latest start, so any delay moves the project.
         if (early_start == late_start)
         {
             printf("%d -> %d: %d\n", ACTIVITIES[index].from, ACTIVITIES[index].to,

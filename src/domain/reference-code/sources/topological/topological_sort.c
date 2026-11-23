@@ -40,6 +40,7 @@ int TopologicalSort(int order[])
     {
         for (int to = 0; to < VERTEX_COUNT; ++to)
         {
+            // The double loop scans every matrix cell; each 1 contributes one incoming edge, so the degree table costs O(V²).
             if (GRAPH[from][to] != 0)
             {
                 ++indegree[to];
@@ -50,18 +51,22 @@ int TopologicalSort(int order[])
     {
         if (indegree[vertex] == 0)
         {
+            // All zero-indegree vertices are ready at time zero; FIFO order is a valid tie-break, not a required order.
             queue[tail++] = vertex;
         }
     }
 
     while (head < tail)
     {
+        // head is the next unread slot, not the queue length; head == tail means the queue is empty.
         int vertex = queue[head++];
+        // A vertex is committed only after it leaves the queue; emitted is both the output length and the next write index.
         order[emitted++] = vertex;
         for (int next = 0; next < VERTEX_COUNT; ++next)
         {
             if (GRAPH[vertex][next] != 0)
             {
+                // Removing this vertex deletes one incoming edge from each neighbour; indegree reaches zero only once, so no duplicate enqueue.
                 --indegree[next];
                 if (indegree[next] == 0)
                 {
@@ -71,6 +76,7 @@ int TopologicalSort(int order[])
         }
     }
 
+    // A count below V is not a partial answer; it is the cycle certificate the caller must check.
     return emitted;
 }
 

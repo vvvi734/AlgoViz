@@ -45,6 +45,7 @@ int main()
     for (std::size_t i = 0; i < activities.size(); ++i)
     {
         graph[activities[i].from].push_back(static_cast<int>(i));
+        // Each activity adds one incoming edge to its target; Kahn can then process events only after all predecessors finish.
         ++indegree[activities[i].to];
     }
 
@@ -67,6 +68,7 @@ int main()
         for (int index : graph[vertex])
         {
             const Activity &activity = activities[index];
+            // Earliest time is the maximum over incoming activities, not a sum; every predecessor must be able to finish first.
             earliest[activity.to] =
                 std::max(earliest[activity.to], earliest[vertex] + activity.weight);
             if (--indegree[activity.to] == 0)
@@ -76,8 +78,10 @@ int main()
         }
     }
 
+    // All latest times start at the project duration because event 5 is the demo's unique sink.
     std::vector<int> latest(6, earliest[5]);
     // Reverse pass: latest[v] = min(latest[next] - weight).
+    // order.rbegin() is the reverse topological order produced by the forward pass; an arbitrary order leaves latest times incomplete.
     for (auto it = order.rbegin(); it != order.rend(); ++it)
     {
         int vertex = *it;
@@ -98,11 +102,13 @@ int main()
     {
         std::cout << ' ' << value;
     }
+    // The project duration is the earliest time of the unique sink, not the sum of all activity weights.
     std::cout << "\nduration: " << earliest[5] << '\n';
 
     std::cout << "critical edges:\n";
     for (const Activity &activity : activities)
     {
+        // The endpoint zero-slack checks and the duration equality together identify a critical activity; the equality is the actual zero-slack test.
         if (earliest[activity.from] == latest[activity.from] &&
             earliest[activity.to] == latest[activity.to] &&
             latest[activity.to] - earliest[activity.from] == activity.weight)

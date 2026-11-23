@@ -35,6 +35,7 @@ int main()
     for (auto [from, to] : edges)
     {
         graph[from].push_back(to);
+        // Every stored edge adds exactly one incoming count; parallel edges correctly raise it more than once.
         ++indegree[to];
     }
 
@@ -43,6 +44,7 @@ int main()
     {
         if (indegree[vertex] == 0)
         {
+            // All zero-indegree vertices are ready initially; queue order chooses among valid topological orders.
             ready.push(vertex);
         }
     }
@@ -53,9 +55,11 @@ int main()
     {
         int vertex = ready.front();
         ready.pop();
+        // The vertex is appended after it leaves the ready queue; order is the accepted prefix, not a set of candidates.
         order.push_back(vertex);
         for (int next : graph[vertex])
         {
+            // This is the moment the neighbour loses its last incoming edge; only then may it enter the queue.
             if (--indegree[next] == 0)
             {
                 ready.push(next);
@@ -63,6 +67,7 @@ int main()
         }
     }
 
+    // A shorter order means some vertices never reached indegree zero; the graph has a directed cycle.
     if (order.size() != graph.size())
     {
         std::cout << "cycle detected\n";

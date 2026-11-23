@@ -33,19 +33,24 @@ def main() -> None:
     indegree = [0] * 6
     for source, target in edges:
         graph[source].append(target)
+        # Every edge adds exactly one incoming count; parallel edges correctly raise it more than once.
         indegree[target] += 1
 
+    # The generator feeds only zero-indegree vertices; deque popleft makes this Kahn's FIFO variant.
     ready = deque(vertex for vertex in range(6) if indegree[vertex] == 0)
     order: list[int] = []
     # Pop a zero-indegree vertex, append it, then decrement each neighbour's indegree.
     while ready:
         vertex = ready.popleft()
+        # Append after popleft; order is the accepted prefix, not a set of ready vertices.
         order.append(vertex)
         for next_vertex in graph[vertex]:
+            # Removing one out-edge lowers one neighbour; equality with zero is the only enqueue trigger.
             indegree[next_vertex] -= 1
             if indegree[next_vertex] == 0:
                 ready.append(next_vertex)
 
+    # 6 is the demo's vertex count; a generic caller must compare with len(graph), which this demo does not.
     if len(order) != 6:
         print("cycle detected")
         return

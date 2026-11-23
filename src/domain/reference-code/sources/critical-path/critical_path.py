@@ -38,6 +38,7 @@ def main() -> None:
     indegree = [0] * 6
     for index, (source, target, _) in enumerate(activities):
         graph[source].append(index)
+        # Each activity adds one incoming edge to its target; Kahn delays that event until every predecessor is done.
         indegree[target] += 1
 
     earliest = [0] * 6
@@ -48,13 +49,16 @@ def main() -> None:
         order.append(vertex)
         for index in graph[vertex]:
             source, target, weight = activities[index]
+            # Earliest time is the maximum over incoming activities; max is required because all predecessors must finish.
             earliest[target] = max(earliest[target], earliest[source] + weight)
             indegree[target] -= 1
             if indegree[target] == 0:
                 ready.append(target)
 
+    # All latest times start at the final event's earliest time because this demo has one sink.
     latest = [earliest[-1]] * 6
     # Reverse pass: latest[v] = min(latest[next] - weight).
+    # reversed(order) is the reverse topological order from Kahn; using the forward order would read successors too early.
     for vertex in reversed(order):
         for index in graph[vertex]:
             _, target, weight = activities[index]
@@ -66,6 +70,7 @@ def main() -> None:
 
     print("critical edges:")
     for source, target, weight in activities:
+        # The two endpoint checks plus the weight equality identify zero-slack activities; the equality is the decisive test.
         if (
             earliest[source] == latest[source]
             and earliest[target] == latest[target]
@@ -73,6 +78,7 @@ def main() -> None:
         ):
             print(f"{source} -> {target} : {weight}")
 
+    # This assertion documents the demo's project duration; it is not an input-validation check.
     assert earliest[-1] == 8
     assert latest == [0, 3, 4, 6, 7, 8]
 
