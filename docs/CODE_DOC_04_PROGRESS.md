@@ -3,18 +3,19 @@
 本清单只登记课程注册表 `REFERENCE_CODE` 中的 60 个正式算法；每个算法的 C、C++、Python principle 源码各一份。非正式的 convenience 对照文件不纳入总数，也不以注释条数判定完成。
 
 - BATCH-03 起始基线：`976002fdc58d89afaf91d747c9b7cdee01c86edf`
+- BATCH-04 起始基线：`55233ca148f8d1f2d16fb6504eb2f7dd9e8edf73`（BATCH-03 已完成 27/60）
 - 排序口径：教材第 1–12 章章序 → 章节课程目录实际出现顺序 → 算法 ID。本表已按该稳定顺序排列，CH1 无正式算法。
 - 完成口径：必须存在该算法的教学注释提交哈希，并完成双语 anchor、源码编译/语法检查与专项测试；仅有注释条数不计为完成。
-- 当前统计：**27 / 60 已完成且有证据**，0 个本批进行中，33 个尚未完成，0 个阻断。
+- 当前统计：**38 / 60 已完成且有证据**，0 个本批进行中，22 个尚未完成，0 个阻断。
 
 ## 分类统计
 
 | 分类 | 数量 | 说明 |
 | --- | ---: | --- |
-| 已完成且有证据 | 27 | BATCH-01 6 个、BATCH-02 10 个、BATCH-03 11 个，均有提交哈希与源码证据。 |
-| 本批进行中 | 0 | BATCH-03 的 11 个算法均已按组提交；全批门禁见 BATCH-03 报告。 |
-| 尚未完成 | 33 | 未领取或无教学深化提交，保持原状。 |
-| 存在例外或阻断 | 0 | 本批未发现阻断；新发现实现风险只在报告第 6 节登记，未擅自修复。 |
+| 已完成且有证据 | 38 | BATCH-01 6 个、BATCH-02 10 个、BATCH-03 11 个、BATCH-04 11 个，均有提交哈希与源码证据。 |
+| 本批进行中 | 0 | BATCH-04 的 11 个算法均已按组提交；全批门禁见 BATCH-04 报告。 |
+| 尚未完成 | 22 | 未领取或无教学深化提交，保持原状。 |
+| 存在例外或阻断 | 0 | 本批未发现阻断；新发现实现风险只在报告第 8 节登记，未擅自修复。 |
 
 ## 60 项正式算法状态
 
@@ -42,19 +43,19 @@
 | 20 | CH6 树与二叉树 | `huffman` | `sources/huffman/huffman.c` | `sources/huffman/huffman.cpp` | `sources/huffman/huffman.py` | 已完成且有证据 | BATCH-03 | `d9e7323` | 通过（注释/本地化/编译/专项测试） |
 | 21 | CH7 图 | `bfs` | `sources/bfs/bfs.c` | `sources/bfs/bfs.cpp` | `sources/bfs/bfs.py` | 已完成且有证据 | BATCH-03 | `04f83b5` | 通过（注释/本地化/编译/专项测试） |
 | 22 | CH7 图 | `dfs` | `sources/dfs/dfs.c` | `sources/dfs/dfs.cpp` | `sources/dfs/dfs.py` | 已完成且有证据 | BATCH-03 | `04f83b5` | 通过（注释/本地化/编译/专项测试） |
-| 23 | CH7 图 | `components` | `sources/components/components.c` | `sources/components/components.cpp` | `sources/components/components.py` | 尚未完成 | 未分配 | `—` | 未复核 |
-| 24 | CH7 图 | `scc` | `sources/scc/scc.c` | `sources/scc/scc.cpp` | `sources/scc/scc.py` | 尚未完成 | 未分配 | `—` | 未复核 |
+| 23 | CH7 图 | `components` | `sources/components/components.c` | `sources/components/components.cpp` | `sources/components/components.py` | 已完成且有证据 | BATCH-04 | `33291ba` | 通过（BATCH-04 报告） |
+| 24 | CH7 图 | `scc` | `sources/scc/scc.c` | `sources/scc/scc.cpp` | `sources/scc/scc.py` | 已完成且有证据 | BATCH-04 | `33291ba` | 通过（BATCH-04 报告） |
 | 25 | CH7 图 | `articulation` | `sources/articulation/articulation.c` | `sources/articulation/articulation.cpp` | `sources/articulation/articulation.py` | 已完成且有证据 | BATCH-01 | `e5b2a28` | 通过（BATCH-01 提交与回归） |
-| 26 | CH7 图 | `prim` | `sources/prim/prim.c` | `sources/prim/prim.cpp` | `sources/prim/prim.py` | 尚未完成 | 未分配 | `—` | 未复核 |
-| 27 | CH7 图 | `kruskal` | `sources/kruskal/kruskal.c` | `sources/kruskal/kruskal.cpp` | `sources/kruskal/kruskal.py` | 尚未完成 | 未分配 | `—` | 未复核 |
-| 28 | CH7 图 | `topological` | `sources/topological/topological_sort.c` | `sources/topological/topological_sort.cpp` | `sources/topological/topological_sort.py` | 尚未完成 | 未分配 | `—` | 未复核 |
-| 29 | CH7 图 | `critical-path` | `sources/critical-path/critical_path.c` | `sources/critical-path/critical_path.cpp` | `sources/critical-path/critical_path.py` | 尚未完成 | 未分配 | `—` | 未复核 |
-| 30 | CH7 图 | `dijkstra` | `sources/dijkstra/dijkstra.c` | `sources/dijkstra/dijkstra.cpp` | `sources/dijkstra/dijkstra.py` | 尚未完成 | 未分配 | `—` | 未复核 |
-| 31 | CH7 图 | `floyd-warshall` | `sources/floyd-warshall/floyd_warshall.c` | `sources/floyd-warshall/floyd_warshall.cpp` | `sources/floyd-warshall/floyd_warshall.py` | 尚未完成 | 未分配 | `—` | 未复核 |
-| 32 | CH7 图 | `bellman-ford` | `sources/bellman-ford/bellman_ford.c` | `sources/bellman-ford/bellman_ford.cpp` | `sources/bellman-ford/bellman_ford.py` | 尚未完成 | 未分配 | `—` | 未复核 |
+| 26 | CH7 图 | `prim` | `sources/prim/prim.c` | `sources/prim/prim.cpp` | `sources/prim/prim.py` | 已完成且有证据 | BATCH-04 | `19790ff` | 通过（BATCH-04 报告） |
+| 27 | CH7 图 | `kruskal` | `sources/kruskal/kruskal.c` | `sources/kruskal/kruskal.cpp` | `sources/kruskal/kruskal.py` | 已完成且有证据 | BATCH-04 | `19790ff` | 通过（BATCH-04 报告） |
+| 28 | CH7 图 | `topological` | `sources/topological/topological_sort.c` | `sources/topological/topological_sort.cpp` | `sources/topological/topological_sort.py` | 已完成且有证据 | BATCH-04 | `2100b4d` | 通过（BATCH-04 报告） |
+| 29 | CH7 图 | `critical-path` | `sources/critical-path/critical_path.c` | `sources/critical-path/critical_path.cpp` | `sources/critical-path/critical_path.py` | 已完成且有证据 | BATCH-04 | `2100b4d` | 通过（BATCH-04 报告） |
+| 30 | CH7 图 | `dijkstra` | `sources/dijkstra/dijkstra.c` | `sources/dijkstra/dijkstra.cpp` | `sources/dijkstra/dijkstra.py` | 已完成且有证据 | BATCH-04 | `8986b66` | 通过（BATCH-04 报告） |
+| 31 | CH7 图 | `floyd-warshall` | `sources/floyd-warshall/floyd_warshall.c` | `sources/floyd-warshall/floyd_warshall.cpp` | `sources/floyd-warshall/floyd_warshall.py` | 已完成且有证据 | BATCH-04 | `8986b66` | 通过（BATCH-04 报告） |
+| 32 | CH7 图 | `bellman-ford` | `sources/bellman-ford/bellman_ford.c` | `sources/bellman-ford/bellman_ford.cpp` | `sources/bellman-ford/bellman_ford.py` | 已完成且有证据 | BATCH-04 | `8986b66` | 通过（BATCH-04 报告） |
 | 33 | CH8 动态存储管理 | `free-list` | `sources/free-list/free_list.c` | `sources/free-list/free_list.cpp` | `sources/free-list/free_list.py` | 已完成且有证据 | BATCH-01 | `4270cc2` | 通过（BATCH-01 提交与回归） |
-| 34 | CH8 动态存储管理 | `buddy-system` | `sources/buddy-system/buddy_system.c` | `sources/buddy-system/buddy_system.cpp` | `sources/buddy-system/buddy_system.py` | 尚未完成 | 未分配 | `—` | 未复核 |
-| 35 | CH8 动态存储管理 | `garbage-collection` | `sources/garbage-collection/garbage_collection.c` | `sources/garbage-collection/garbage_collection.cpp` | `sources/garbage-collection/garbage_collection.py` | 尚未完成 | 未分配 | `—` | 未复核 |
+| 34 | CH8 动态存储管理 | `buddy-system` | `sources/buddy-system/buddy_system.c` | `sources/buddy-system/buddy_system.cpp` | `sources/buddy-system/buddy_system.py` | 已完成且有证据 | BATCH-04 | `0d245c0` | 通过（BATCH-04 报告） |
+| 35 | CH8 动态存储管理 | `garbage-collection` | `sources/garbage-collection/garbage_collection.c` | `sources/garbage-collection/garbage_collection.cpp` | `sources/garbage-collection/garbage_collection.py` | 已完成且有证据 | BATCH-04 | `0d245c0` | 通过（BATCH-04 报告） |
 | 36 | CH9 查找 | `linear` | `sources/linear/linear_search.c` | `sources/linear/linear_search.cpp` | `sources/linear/linear_search.py` | 尚未完成 | 未分配 | `—` | 未复核 |
 | 37 | CH9 查找 | `binary` | `sources/binary/binary_search.c` | `sources/binary/binary_search.cpp` | `sources/binary/binary_search.py` | 尚未完成 | 未分配 | `—` | 未复核 |
 | 38 | CH9 查找 | `block-search` | `sources/block-search/block_search.c` | `sources/block-search/block_search.cpp` | `sources/block-search/block_search.py` | 已完成且有证据 | BATCH-02 | `05ccb1a` | 通过（BATCH-02 报告） |
@@ -93,6 +94,30 @@
 本批新增 219 条英文教学注释及对应中文 annotation，覆盖 33 份 principle 源码；另有专项测试、查看器测试与 Playwright 用例作为独立验证提交（见最终报告）。
 
 `huffman` 的 C 版 `heap_pop` 注释在 `eb7a24d` 做了“先缩小 size、再复制末尾结点”的事实顺序校正，仍属于 BATCH-03 范围。
+
+## BATCH-04 领取与提交证据
+
+| 组 | 算法 ID | 提交哈希 | 推送结果 |
+| --- | --- | --- | --- |
+| 1 | `components`, `scc` | `33291ba` | `55233ca..33291ba main -> main` |
+| 2 | `prim`, `kruskal` | `19790ff` | `33291ba..19790ff main -> main` |
+| 3 | `topological`, `critical-path` | `2100b4d` | `19790ff..2100b4d main -> main` |
+| 4 | `dijkstra`, `floyd-warshall`, `bellman-ford` | `8986b66` | `2100b4d..8986b66 main -> main` |
+| 5 | `buddy-system`, `garbage-collection` | `0d245c0` | `8986b66..0d245c0 main -> main` |
+| 6 | 双语 annotation、专项测试、查看器与 Playwright | `efbcf07` | `0d245c0..efbcf07 main -> main` |
+
+本批新增 **211** 条源码教学注释（C/C++ 用 `//`，Python 用 `#`），替换 6 条旧注释；`git diff` 审计的非注释变更数为 **0**。双语映射最终为 **230** 条，覆盖 33 份 principle 源码：211 条对应新增注释，19 条为原有但此前被过滤的注释恢复映射。`buddy_system.cpp` / `buddy_system.py` 各删除 1 条与基础映射重复的 `The merged block starts...` 条目，避免同一锚点被两个中文版本覆盖。
+
+专项验证结果：BATCH-04、事实核查、本地化与查看器共 **79/79** 通过；全量 Vitest **155 files / 1470 tests** 通过；33 份本批源码 C/C++ 编译与 Python 语法检查 **33/33** 通过，此前全量 211 份参考源码复核为 0 失败；`npm run typecheck` 与 `npm run build` 均退出 0；代表性 Playwright 用 `components`、`critical-path`、`buddy-system`、`garbage-collection` 完成中英显示与真实剪贴板复制，**1/1** 通过。
+
+## BATCH-04 未修改的实现风险（详情见报告第 8 节）
+
+1. `prim.c` 用 0 表示无边，真实零权边会被 `GRAPH[best][next] != 0` 拒绝；`prim.cpp` / `prim.py` 只把零权树边从打印列表中隐藏，总权值仍包含 0。
+2. `kruskal.cpp` / `kruskal.py` 以 `used == 4` 作为五顶点演示的停止条件；`topological_sort.py` 以 `len(order) != 6` 判断环。换顶点数会误判。
+3. `critical_path.c` 假定 `ACTIVITIES` 已按拓扑序排列；任意边序会用到尚未完成的前驱。
+4. `dijkstra.cpp::path_to` 对不可达目标只返回目标名；`dijkstra.py` 的边指向未登记顶点时在 `distance[v]` 处触发 `KeyError`。
+5. `buddy_system.c` 的 `init_memory` 接受非 2 的幂容量，`allocate_block` 后续才返回失败；重复标签与 `MAX_LABEL=4` 截断会让标签身份产生歧义。
+6. `garbage_collection.c` 的显式栈容量为 `MAX_OBJECTS`，对象在首次弹出前可被多个父对象重复压栈；根固定为下标 0，真实收集器需要显式根集合。
 
 ## 未修改的实现风险登记
 
