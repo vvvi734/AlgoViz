@@ -30,23 +30,29 @@ INF = float("inf")
 # Purpose: Return shortest distances from source; return None for a reachable negative cycle and do not modify edges.
 # 作用：返回从 source 出发的最短距离；可达负环返回 None，不修改 edges。
 def bellman_ford(vertex_count: int, edges: list[tuple[int, int, int]], source: int) -> list[float] | None:
+    # All distances start unknown at infinity; only the source is made finite.
     dist: list[float] = [INF] * vertex_count
+    # The zero-length source path is the seed; every other value must be produced by relaxation.
     dist[source] = 0
 
     for _ in range(vertex_count - 1):
         changed = False
         for start, end, weight in edges:
+            # An unreachable tail cannot relax; adding a negative weight to infinity would fabricate a finite value.
             if dist[start] == INF:
                 continue
             candidate = dist[start] + weight
             if candidate < dist[end]:
                 dist[end] = candidate
                 changed = True
+        # A pass without change is a fixed point; further passes cannot improve any reachable distance.
         if not changed:
             break
 
     for start, end, weight in edges:
+        # Only a reachable tail can expose a negative cycle; unreachable cycles must not invalidate the answer.
         if dist[start] != INF and dist[start] + weight < dist[end]:
+            # None is the explicit failure value for a reachable negative cycle; it is not an empty distance list.
             return None
     return dist
 

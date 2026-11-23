@@ -35,21 +35,25 @@ def dijkstra(
     distance: dict[str, int | float] = {vertex: float("inf") for vertex in graph}
     previous: dict[str, str | None] = {vertex: None for vertex in graph}
     settled: set[str] = set()
+    # The source is the only finite initial distance; all other vertices start unknown at infinity.
     distance[source] = 0
     queue: list[tuple[int, str]] = [(0, source)]
 
     while queue:
         current_distance, u = heapq.heappop(queue)
         # Ignore stale heap entries: the same vertex may appear with an older, larger distance.
+        # A vertex may be pushed several times; comparing the popped distance with the table discards older entries.
         if u in settled or current_distance != distance[u]:
             continue  # stale heap entry
         # Settling is final because every remaining candidate distance is at least this value.
         settled.add(u)
 
         for v, weight in graph.get(u, []):
+            # A negative weight invalidates Dijkstra's finality argument, so the implementation rejects it explicitly.
             if weight < 0:
                 raise ValueError("Dijkstra requires non-negative edge weights")
             candidate = current_distance + weight
+            # Only a strictly smaller candidate updates distance and predecessor; ties keep the earlier path.
             if candidate < distance[v]:
                 distance[v] = candidate
                 previous[v] = u
@@ -63,6 +67,7 @@ def dijkstra(
 def path_to(previous: dict[str, str | None], target: str) -> list[str]:
     path: list[str] = []
     current: str | None = target
+    # previous is None only at the source; a missing map entry would fail rather than invent a path.
     while current is not None:
         path.append(current)
         current = previous[current]

@@ -29,16 +29,21 @@ INF = float("inf")
 # The outer loop must be the intermediate vertex k; relaxing k before it is allowed would use incomplete paths.
 # Purpose: Update dist in place with all-pairs shortest paths; no new matrix is returned.
 # 作用：原地把 dist 更新为全源最短路径；不返回新矩阵。
+# The function mutates dist in place and returns None; callers must keep the matrix if they need the original weights.
 def floyd_warshall(dist: list[list[float]]) -> None:
     size = len(dist)
     for middle in range(size):
         for source in range(size):
+            # A missing source-to-middle route cannot be extended; skip it before adding INF.
             if dist[source][middle] == INF:
                 continue
             for target in range(size):
+                # The second half is a sentinel too; checking both halves prevents a fake finite distance.
                 if dist[middle][target] == INF:
                     continue
+                # With both halves finite, the candidate is a real path length and can replace the direct route.
                 candidate = dist[source][middle] + dist[middle][target]
+                # Only a strict improvement updates the matrix; equality keeps the existing route.
                 if candidate < dist[source][target]:
                     dist[source][target] = candidate
 
@@ -54,6 +59,7 @@ def main() -> None:
     ]
     floyd_warshall(dist)
 
+    # This version does not detect negative cycles; a negative diagonal would be reported as an ordinary distance.
     print("distances:")
     for row in dist:
         print(["INF" if value == INF else value for value in row])

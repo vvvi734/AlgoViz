@@ -30,11 +30,14 @@ void FloydWarshall(int distance[VERTEX_COUNT][VERTEX_COUNT])
     {
         for (int from = 0; from < VERTEX_COUNT; ++from)
         {
+            // The update is in place; because middle is fixed for this round, no copy of the old matrix is needed.
             for (int to = 0; to < VERTEX_COUNT; ++to)
             {
+                // Both halves must be finite; adding INF would overflow the sentinel and create a fake route.
                 if (distance[from][middle] != INF && distance[middle][to] != INF &&
                     distance[from][middle] + distance[middle][to] < distance[from][to])
                 {
+                    // Only a strict improvement replaces the current route; equality deliberately keeps the existing path.
                     distance[from][to] = distance[from][middle] + distance[middle][to];
                 }
             }
@@ -44,6 +47,7 @@ void FloydWarshall(int distance[VERTEX_COUNT][VERTEX_COUNT])
 
 int main(void)
 {
+    // Diagonal zero is the empty path; missing edges are INF rather than zero-weight edges.
     int distance[VERTEX_COUNT][VERTEX_COUNT] = {
         {0, 5, INF, 10},
         {INF, 0, 3, INF},
@@ -51,7 +55,9 @@ int main(void)
         {INF, INF, INF, 0},
     };
 
+    // The input matrix is mutated; callers must not expect the original direct-edge matrix afterwards.
     FloydWarshall(distance);
+    // Negative diagonal entries would signal a negative cycle, but this teaching version never checks the diagonal.
     printf("all-pairs shortest distances:\n");
     for (int from = 0; from < VERTEX_COUNT; ++from)
     {

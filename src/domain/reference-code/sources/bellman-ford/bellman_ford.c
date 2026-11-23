@@ -46,16 +46,21 @@ bool bellman_ford(int vertex_count, const Edge edges[], int edge_count, int sour
 {
     for (int i = 0; i < vertex_count; ++i)
     {
+        // Every distance begins unknown; only the source is made finite.
         dist[i] = INF;
     }
+    // The source is the zero-length path to itself; this is the seed for every relaxation.
     dist[source] = 0;
 
     for (int round = 0; round < vertex_count - 1; ++round)
     {
+        // A full pass with no change proves a fixed point; later passes would repeat the same comparisons.
         bool changed = false;
+        // The extra pass runs after V-1 rounds; only a reachable edge can still improve and expose a negative cycle.
         for (int i = 0; i < edge_count; ++i)
         {
             const Edge *edge = &edges[i];
+            // An unreachable tail cannot relax; adding a negative weight to INF would create a fake finite distance.
             if (dist[edge->from] == INF)
             {
                 continue;
@@ -81,6 +86,7 @@ bool bellman_ford(int vertex_count, const Edge edges[], int edge_count, int sour
             return false;
         }
     }
+    // A clean extra pass certifies that every reachable distance is final.
     return true;
 }
 

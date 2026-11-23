@@ -32,12 +32,14 @@ static void PrintPath(const int previous[], int vertex)
 {
     int path[VERTEX_COUNT];
     int length = 0;
+    // The predecessor chain is followed backwards from the target; -1 is the source sentinel, so this assumes a reachable target.
     for (int current = vertex; current != -1; current = previous[current])
     {
         path[length++] = current;
     }
     for (int index = length - 1; index >= 0; --index)
     {
+        // The collected path is reversed only for printing; the predecessor chain itself stays target-to-source.
         printf("%d%s", path[index], index == 0 ? "" : " -> ");
     }
 }
@@ -55,6 +57,7 @@ void Dijkstra(int source)
         distance[vertex] = INF;
         previous[vertex] = -1;
     }
+    // Every other distance stays INF; a finite initial value would pretend an unknown route is already known.
     distance[source] = 0;
 
     for (int round = 0; round < VERTEX_COUNT; ++round)
@@ -68,6 +71,7 @@ void Dijkstra(int source)
                 best = vertex;
             }
         }
+        // If the smallest unsettled tentative distance is still INF, every remaining vertex is unreachable.
         if (best == -1 || distance[best] == INF)
         {
             break;
@@ -77,6 +81,7 @@ void Dijkstra(int source)
         for (int next = 0; next < VERTEX_COUNT; ++next)
         {
             // A zero matrix entry means no edge, not a zero-cost edge.
+            // Only a strict improvement rewrites distance and predecessor; an equal alternative keeps the earlier path.
             if (GRAPH[best][next] != 0 && distance[best] + GRAPH[best][next] < distance[next])
             {
                 distance[next] = distance[best] + GRAPH[best][next];

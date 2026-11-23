@@ -18,7 +18,7 @@
 // 3. Stop early when a full pass makes no change.
 // 4. One extra pass that still relaxes an edge proves a reachable negative cycle.
 //
-// Complexity: O(V * E); extra space O(V) for distances and predecessors.
+// Complexity: O(V * E); extra space O(V) for distances.
 // Convention: Edges are (u, v, weight) with 0-based endpoints; returns None/null on
 //   a negative cycle.
 
@@ -40,7 +40,9 @@ bool bellman_ford(int vertex_count, const std::vector<Edge> &edges, int source,
                   std::vector<int> &dist)
 {
     const int kInfinity = std::numeric_limits<int>::max();
+    // All vertices start unknown at the maximum int; assigning a fresh vector also discards old results.
     dist.assign(vertex_count, kInfinity);
+    // The source is the only zero-distance seed; every other distance must be earned by relaxation.
     dist[source] = 0;
 
     for (int round = 0; round < vertex_count - 1; ++round)
@@ -48,6 +50,7 @@ bool bellman_ford(int vertex_count, const std::vector<Edge> &edges, int source,
         bool changed = false;
         for (const Edge &edge : edges)
         {
+            // An unreachable tail is not relaxed; INF plus a negative weight would overflow or fake a finite route.
             if (dist[edge.from] == kInfinity)
             {
                 continue;
@@ -59,6 +62,7 @@ bool bellman_ford(int vertex_count, const std::vector<Edge> &edges, int source,
                 changed = true;
             }
         }
+        // No change in a whole pass means every edge already satisfies the triangle inequality for reachable vertices.
         if (!changed)
         {
             break;
@@ -67,6 +71,7 @@ bool bellman_ford(int vertex_count, const std::vector<Edge> &edges, int source,
 
     for (const Edge &edge : edges)
     {
+        // The detection pass only considers reachable tails; an unreachable negative cycle must not fail the result.
         if (dist[edge.from] != kInfinity && dist[edge.from] + edge.weight < dist[edge.to])
         {
             return false;

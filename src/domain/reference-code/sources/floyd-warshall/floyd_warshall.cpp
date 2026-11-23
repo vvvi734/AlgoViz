@@ -16,8 +16,7 @@
 //    infinity.
 // 2. Use k as the only allowed intermediate vertex, in the outer loop.
 // 3. Relax dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j]).
-// 4. The matrix is updated in place; negative cycles can be detected on the
-//    diagonal.
+// 4. The matrix is updated in place; this teaching version does not run negative-cycle detection.
 //
 // Complexity: O(V^3); extra space O(V^2) for the distance matrix.
 // Convention: 0-based vertices; INF means no edge/path; the diagonal starts at 0.
@@ -37,19 +36,23 @@ void floyd_warshall(std::vector<std::vector<int>> &dist)
     {
         for (std::size_t from = 0; from < dist.size(); ++from)
         {
+            // A row whose route to middle is missing cannot be extended through middle; skip before adding.
             if (dist[from][middle] == kInfinity)
             {
                 continue;
             }
             for (std::size_t to = 0; to < dist.size(); ++to)
             {
+                // The second half is also a sentinel, not a finite weight; adding it would fabricate a path.
                 if (dist[middle][to] == kInfinity)
                 {
                     continue;
                 }
+                // With both halves finite, the candidate is a real route length that can be compared safely.
                 int candidate = dist[from][middle] + dist[middle][to];
                 if (candidate < dist[from][to])
                 {
+                    // Only a strict improvement rewrites the matrix entry; an equal route keeps the current distance unchanged.
                     dist[from][to] = candidate;
                 }
             }
@@ -66,8 +69,10 @@ int main()
         {2, kInfinity, kInfinity, 0},
     };
 
+    // The matrix is passed by non-const reference and updated in place; the original direct edges are lost after the call.
     floyd_warshall(dist);
 
+    // This implementation does not scan the diagonal for negative cycles; it only computes distances that may use negative edges.
     std::cout << "distances:\n";
     for (const auto &row : dist)
     {

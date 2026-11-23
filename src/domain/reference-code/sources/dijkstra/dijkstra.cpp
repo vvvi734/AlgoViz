@@ -60,9 +60,11 @@ std::vector<long long> dijkstra(const std::vector<std::vector<Edge>> &graph, int
     using Queue =
         std::priority_queue<QueueEntry, std::vector<QueueEntry>, std::greater<QueueEntry>>;
     Queue queue;
+    // The source is the only zero-distance entry; every other vertex begins at infinity.
     distance[static_cast<std::size_t>(source)] = 0;
     queue.push({0, source});
 
+    // The heap can hold stale entries for settled vertices, so the loop is not bounded by V.
     while (!queue.empty())
     {
         QueueEntry current = queue.top();
@@ -79,11 +81,13 @@ std::vector<long long> dijkstra(const std::vector<std::vector<Edge>> &graph, int
 
         for (const Edge &edge : graph[static_cast<std::size_t>(u)])
         {
+            // Dijkstra's proof needs non-negative weights; rejecting a negative edge is safer than silently returning a wrong path.
             if (edge.weight < 0)
             {
                 throw std::invalid_argument("Dijkstra requires non-negative edge weights");
             }
             long long candidate = distance[static_cast<std::size_t>(u)] + edge.weight;
+            // An equal candidate is not an improvement; keeping the old predecessor avoids needless heap entries.
             if (candidate < distance[static_cast<std::size_t>(edge.to)])
             {
                 distance[static_cast<std::size_t>(edge.to)] = candidate;
@@ -101,6 +105,7 @@ std::string path_to(const std::vector<int> &previous, int target,
                     const std::vector<std::string> &names)
 {
     std::vector<int> path;
+    // path_to assumes target is reachable; an unreachable target has previous -1 and would produce only the target name.
     for (int current = target; current != -1; current = previous[static_cast<std::size_t>(current)])
     {
         path.push_back(current);
