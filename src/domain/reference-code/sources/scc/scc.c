@@ -35,6 +35,7 @@
 void first_pass(int graph[VERTEX_COUNT][VERTEX_COUNT], int vertex, bool visited[VERTEX_COUNT],
                 int order[VERTEX_COUNT], int *position)
 {
+    // Mark on entry before exploring; a directed cycle would otherwise recurse back into the same vertex.
     visited[vertex] = true;
     for (int next = 0; next < VERTEX_COUNT; ++next)
     {
@@ -43,6 +44,7 @@ void first_pass(int graph[VERTEX_COUNT][VERTEX_COUNT], int vertex, bool visited[
             first_pass(graph, next, visited, order, position);
         }
     }
+    // Append after the neighbour loop: this is finish order, not discovery order, and Kosaraju reads it backwards.
     order[(*position)++] = vertex;
 }
 
@@ -73,6 +75,7 @@ int main(void)
         int from = edges[i][0];
         int to = edges[i][1];
         graph[from][to] = 1;
+        // Flipping the endpoints builds the transpose; using the original graph in the second pass would follow forward edges instead.
         reverse_graph[to][from] = 1;
     }
 
@@ -89,9 +92,11 @@ int main(void)
 
     for (int i = 0; i < VERTEX_COUNT; ++i)
     {
+        // The first pass leaves every vertex visited; the second pass needs a clean marking array or it would collect nothing.
         visited[i] = false;
     }
     int components = 0;
+    // Kosaraju reads finish order backwards; starting at index 0 would begin from a sink-side vertex and can split an SCC.
     for (int i = VERTEX_COUNT - 1; i >= 0; --i)
     {
         int vertex = order[i];
@@ -99,6 +104,7 @@ int main(void)
         {
             ++components;
             printf("scc %d:", components);
+            // Each unvisited second-pass start is a new SCC; collect walks only the reversed graph and cannot leave that component.
             collect(reverse_graph, vertex, visited);
             printf("\n");
         }

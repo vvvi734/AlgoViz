@@ -33,6 +33,7 @@
 void first_pass(const std::vector<std::vector<int>> &graph, int vertex, std::vector<bool> &visited,
                 std::vector<int> &order)
 {
+    // Mark before iterating outgoing neighbours; a cycle would otherwise return to this vertex before it is recorded.
     visited[vertex] = true;
     for (int next : graph[vertex])
     {
@@ -41,6 +42,7 @@ void first_pass(const std::vector<std::vector<int>> &graph, int vertex, std::vec
             first_pass(graph, next, visited, order);
         }
     }
+    // push_back after the recursive calls records finish order; vector reallocation does not change the logical order.
     order.push_back(vertex);
 }
 
@@ -68,6 +70,7 @@ int main()
     for (auto [from, to] : edges)
     {
         graph[from].push_back(to);
+        // The transpose is built while edges are read; storing the same direction again would not reverse the graph.
         reverse_graph[to].push_back(from);
     }
 
@@ -81,13 +84,16 @@ int main()
         }
     }
 
+    // Reset the whole marking array between passes; the first pass marked every reachable vertex.
     std::fill(visited.begin(), visited.end(), false);
     int components = 0;
+    // Reverse iterators read finish order backwards; the second pass must not use order.begin().
     for (auto it = order.rbegin(); it != order.rend(); ++it)
     {
         if (!visited[*it])
         {
             std::vector<int> component;
+            // A second-pass DFS tree is exactly one SCC; the transposed graph keeps the search inside that source component.
             collect(reverse_graph, *it, visited, component);
             ++components;
             std::cout << "scc " << components << ":";

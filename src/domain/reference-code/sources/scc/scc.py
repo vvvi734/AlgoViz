@@ -29,10 +29,12 @@ from __future__ import annotations
 # Purpose: DFS on the original graph and append finished vertices to order.
 # 作用：在原图上 DFS，把完成顶点追加到 order。
 def first_pass(graph: list[list[int]], vertex: int, visited: list[bool], order: list[int]) -> None:
+    # Mark on entry; a directed cycle would otherwise recurse through the same vertex indefinitely.
     visited[vertex] = True
     for neighbor in graph[vertex]:
         if not visited[neighbor]:
             first_pass(graph, neighbor, visited, order)
+    # append after the neighbour loop stores finish order; this is the order that must be reversed for the second pass.
     order.append(vertex)
 
 
@@ -54,8 +56,10 @@ def main() -> None:
     reverse_graph: list[list[int]] = [[] for _ in range(6)]
     for source, target in edges:
         graph[source].append(target)
+        # Reversing each edge while building the graph is what makes the second pass a transpose search.
         reverse_graph[target].append(source)
 
+    # Rebinding a fresh list clears the first pass's marks; the second pass must not reuse the old visited list.
     visited = [False] * 6
     order: list[int] = []
     for vertex in range(6):
@@ -64,9 +68,11 @@ def main() -> None:
 
     visited = [False] * 6
     components: list[list[int]] = []
+    # reversed(order) yields finish order backwards; using order directly violates Kosaraju's source-component order.
     for vertex in reversed(order):
         if not visited[vertex]:
             component: list[int] = []
+            # collect starts only at an unvisited vertex; every tree it builds is one strongly connected component.
             collect(reverse_graph, vertex, visited, component)
             components.append(component)
 

@@ -32,6 +32,7 @@
 void add_edge(int graph[VERTEX_COUNT][VERTEX_COUNT], int a, int b)
 {
     graph[a][b] = 1;
+    // The reverse cell is not optional: an undirected edge must be visible from both endpoints.
     graph[b][a] = 1;
 }
 
@@ -42,6 +43,7 @@ void visit(int graph[VERTEX_COUNT][VERTEX_COUNT], int vertex, bool visited[VERTE
 {
     visited[vertex] = true;
     printf(" %d", vertex);
+    // The matrix scan checks every column, including the edge back to the parent; the visited test is what stops that walk.
     for (int next = 0; next < VERTEX_COUNT; ++next)
     {
         if (graph[vertex][next] && !visited[next])
@@ -60,14 +62,17 @@ int count_components(int graph[VERTEX_COUNT][VERTEX_COUNT])
     int components = 0;
     for (int start = 0; start < VERTEX_COUNT; ++start)
     {
+        // A component is counted only when the outer scan finds a vertex that no earlier DFS reached; one count therefore means one component.
         if (!visited[start])
         {
             ++components;
+            // The printed order is DFS discovery order, not a sorted component label; membership, not the print sequence, defines the component.
             printf("component %d:", components);
             visit(graph, start, visited);
             printf("\n");
         }
     }
+    // The return value counts DFS starts, not the sum of vertex degrees or the number of edges.
     return components;
 }
 

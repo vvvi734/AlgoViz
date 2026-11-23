@@ -27,8 +27,10 @@
 // 作用：从 vertex 出发 DFS，把同一连通分量中的所有结点标记为已访问。
 void visit(const std::vector<std::vector<int>> &graph, int vertex, std::vector<bool> &visited)
 {
+    // Mark before walking neighbours; otherwise the parent edge leads straight back and the recursion would not terminate.
     visited[vertex] = true;
     std::cout << ' ' << vertex;
+    // The range loop touches only stored adjacency entries, so total work over all calls is O(V+E), unlike the matrix version's O(V²).
     for (int next : graph[vertex])
     {
         if (!visited[next])
@@ -43,10 +45,12 @@ void visit(const std::vector<std::vector<int>> &graph, int vertex, std::vector<b
 // 作用：扫描所有未访问结点，每启动一次 DFS 就得到一个连通分量。
 int count_components(const std::vector<std::vector<int>> &graph)
 {
+    // The visited array is sized from graph.size(), so the scan cannot silently skip a vertex or read past the graph.
     std::vector<bool> visited(graph.size(), false);
     int components = 0;
     for (std::size_t start = 0; start < graph.size(); ++start)
     {
+        // Only an unvisited start opens a new component; a visited vertex already belongs to an earlier DFS tree.
         if (!visited[start])
         {
             ++components;
@@ -63,6 +67,7 @@ int main()
     std::vector<std::vector<int>> graph(7);
     auto add_edge = [&graph](int a, int b)
     {
+        // Both adjacency entries encode undirectedness; pushing only one direction would change the component structure.
         graph[a].push_back(b);
         graph[b].push_back(a);
     };

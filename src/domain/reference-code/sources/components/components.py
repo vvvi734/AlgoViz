@@ -25,8 +25,11 @@ from __future__ import annotations
 # Purpose: Recursively mark vertex's whole connected component and append each vertex to component.
 # 作用：从 vertex 递归标记整个连通分量，并追加到 component。
 def visit(graph: list[list[int]], vertex: int, visited: list[bool], component: list[int]) -> None:
+    # Mark before the loop; an undirected neighbour may point back to the caller, and a late mark would recurse forever.
     visited[vertex] = True
+    # component is the per-start result list; append order is DFS discovery order, not a sorted or canonical component order.
     component.append(vertex)
+    # The list holds only real neighbours; each undirected edge is seen once from each endpoint, so total work is O(V+E).
     for neighbor in graph[vertex]:
         if not visited[neighbor]:
             visit(graph, neighbor, visited, component)
@@ -36,6 +39,7 @@ def visit(graph: list[list[int]], vertex: int, visited: list[bool], component: l
 # Purpose: Return the vertex lists of all connected components without modifying graph.
 # 作用：返回所有连通分量的顶点列表；不修改 graph。
 def count_components(graph: list[list[int]]) -> list[list[int]]:
+    # A fresh list is built from the current graph size; no mark from a previous call can leak into this one.
     visited = [False] * len(graph)
     components: list[list[int]] = []
     for start in range(len(graph)):
@@ -52,6 +56,7 @@ def main() -> None:
     graph: list[list[int]] = [[] for _ in range(7)]
 
     def add_edge(a: int, b: int) -> None:
+        # Appending both directions is the only place this undirected graph records symmetry.
         graph[a].append(b)
         graph[b].append(a)
 
