@@ -43,6 +43,7 @@ class DisjointSet
     {
         for (int i = 0; i < size; ++i)
         {
+            // Every vertex starts in a singleton set; rank zero means all sets begin the same height.
             parent_[i] = i;
         }
     }
@@ -55,6 +56,7 @@ class DisjointSet
     {
         int root_a = find(a);
         int root_b = find(b);
+        // Different roots mean the edge joins two components; equal roots mean accepting it would close a cycle.
         if (root_a == root_b)
         {
             return false;
@@ -80,6 +82,7 @@ class DisjointSet
     // 作用：并查集查找根；带路径压缩，降低后续查询高度。
     int find(int vertex)
     {
+        // Path halving rewrites every other parent link as it climbs; the loop stops at the representative.
         while (parent_[vertex] != vertex)
         {
             parent_[vertex] = parent_[parent_[vertex]];
@@ -97,6 +100,7 @@ int main()
     std::vector<Edge> edges{
         {0, 1, 2}, {0, 3, 6}, {1, 2, 3}, {1, 3, 8}, {1, 4, 5}, {2, 4, 7}, {3, 4, 9},
     };
+    // std::sort is not stable, but equal-weight edges may be accepted in any order; every resulting MST is valid.
     std::sort(edges.begin(), edges.end(),
               [](const Edge &a, const Edge &b)
               {
@@ -113,6 +117,7 @@ int main()
         {
             std::cout << edge.from << " - " << edge.to << " : " << edge.weight << '\n';
             total += edge.weight;
+            // 4 is V-1 for this five-vertex demo; a generic implementation must derive the bound from the vertex count.
             if (++used == 4)
             {
                 break;

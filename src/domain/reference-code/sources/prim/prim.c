@@ -40,6 +40,7 @@ void Prim(void)
         key[vertex] = INF;
         parent[vertex] = -1;
     }
+    // Only the source begins at zero; initializing every key to zero would make all vertices look already attached.
     key[0] = 0;
 
     printf("mst edges:\n");
@@ -54,19 +55,24 @@ void Prim(void)
                 best = vertex;
             }
         }
+        // INF is the cut's no-edge marker; this break means the graph is disconnected, and the caller receives only the partial total.
         if (best == -1 || key[best] == INF)
         {
             break;
         }
+        // Settle before relaxing; the selected flag prevents this vertex from being chosen again, so its final key cannot be overwritten.
         selected[best] = 1;
+        // The source has no parent; printing it would invent an edge with no endpoint.
         if (parent[best] != -1)
         {
             printf("%d - %d: %d\n", parent[best], best, key[best]);
             total += key[best];
         }
+        // Once best is settled, only unselected neighbours can cross the cut; selected neighbours are already inside the tree.
         for (int next = 0; next < VERTEX_COUNT; ++next)
         {
             // Only an unselected vertex can still cross the cut; strict < keeps the first lightest edge.
+            // This matrix uses zero for 'no edge'; a genuine zero-weight edge would be indistinguishable from absence.
             if (GRAPH[best][next] != 0 && !selected[next] && GRAPH[best][next] < key[next])
             {
                 key[next] = GRAPH[best][next];

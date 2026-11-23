@@ -59,6 +59,7 @@ static int UnionRoots(int parent[], int rank[], int left, int right)
     {
         return 0;
     }
+    // Union by rank attaches the shorter tree under the taller one; only equal ranks increase a rank.
     if (rank[left_root] < rank[right_root])
     {
         parent[left_root] = right_root;
@@ -87,17 +88,22 @@ void Kruskal(Edge edges[], int edge_count)
 
     for (int vertex = 0; vertex < VERTEX_COUNT; ++vertex)
     {
+        // Each vertex starts as its own representative; an uninitialized parent would make find() follow an arbitrary index.
         parent[vertex] = vertex;
     }
+    // Sorting first is the greedy precondition; scanning an arbitrary edge order can accept a heavy edge before a cheap one.
     qsort(edges, (size_t)edge_count, sizeof(Edge), CompareEdges);
 
     printf("mst edges:\n");
+    // The accepted < V-1 stop is valid only when a spanning tree exists; a disconnected graph ends with fewer edges and no error.
     for (int index = 0; index < edge_count && accepted < VERTEX_COUNT - 1; ++index)
     {
+        // UnionRoots returns false exactly when both endpoints already share a root; that edge would close a cycle.
         if (UnionRoots(parent, rank, edges[index].from, edges[index].to))
         {
             printf("%d - %d: %d\n", edges[index].from, edges[index].to, edges[index].weight);
             total += edges[index].weight;
+            // accepted counts only edges that merged two different sets; rejected cycle edges never advance it.
             ++accepted;
         }
     }

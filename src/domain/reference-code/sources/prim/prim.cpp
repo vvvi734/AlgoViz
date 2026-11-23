@@ -48,24 +48,30 @@ int main()
     std::vector<bool> selected(5, false);
     using Candidate = std::pair<int, int>;
     std::priority_queue<Candidate, std::vector<Candidate>, std::greater<Candidate>> candidates;
+    // The initial (0,0) is a cut seed, not a tree edge; its zero weight is deliberately excluded from the output.
     candidates.push({0, 0});
 
     int total = 0;
     std::cout << "mst edges:\n";
+    // An empty heap with vertices still unselected means the graph is disconnected; this demo prints the partial total without a failure flag.
     while (!candidates.empty())
     {
         auto [weight, vertex] = candidates.top();
         candidates.pop();
+        // A vertex can be pushed once per incident edge; the first pop settles it and every later entry is stale.
         if (selected[vertex])
         {
             continue;
         }
         selected[vertex] = true;
+        // The root seed contributes zero; every nonzero accepted weight is one edge of the spanning tree.
         total += weight;
+        // This condition suppresses the root's zero weight, but it would also suppress a genuine zero-weight edge; the demo graph has none.
         if (weight != 0)
         {
             std::cout << "edge to " << vertex << " : " << weight << '\n';
         }
+        // Pushing every unselected endpoint is a lazy decrease-key: the heap may hold O(E) candidates instead of one per vertex.
         for (auto [next_weight, next] : graph[vertex])
         {
             if (!selected[next])

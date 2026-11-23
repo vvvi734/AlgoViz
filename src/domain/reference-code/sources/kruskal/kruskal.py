@@ -26,12 +26,14 @@ from __future__ import annotations
 
 class DisjointSet:
     def __init__(self, size: int) -> None:
+        # Each index is its own parent initially; a missing entry would make find fail before any edge is considered.
         self.parent = list(range(size))
         self.rank = [0] * size
 
     # Purpose: Return the root of vertex's set and apply path compression.
     # 作用：返回 vertex 所在集合的根，并做路径压缩。
     def find(self, vertex: int) -> int:
+        # Path halving rewrites grandparent links while climbing; the returned vertex is the set representative.
         while self.parent[vertex] != vertex:
             self.parent[vertex] = self.parent[self.parent[vertex]]
             vertex = self.parent[vertex]
@@ -44,6 +46,7 @@ class DisjointSet:
     def unite(self, a: int, b: int) -> bool:
         root_a = self.find(a)
         root_b = self.find(b)
+        # Equal roots mean a and b are already connected; accepting this edge would close a cycle.
         if root_a == root_b:
             return False
         if self.rank[root_a] < self.rank[root_b]:
@@ -68,11 +71,14 @@ def main() -> None:
     used = 0
 
     print("mst edges:")
+    # sorted is stable, but correctness does not depend on input order among equal weights; any valid MST is acceptable.
     for start, end, weight in sorted(edges, key=lambda edge: edge[2]):
+        # Only a successful union adds an edge; a rejected edge already had both endpoints in one set.
         if sets.unite(start, end):
             print(f"{start} - {end} : {weight}")
             total += weight
             used += 1
+            # 4 is V-1 for this five-vertex demo; a general implementation must use the actual vertex count.
             if used == 4:
                 break
 
