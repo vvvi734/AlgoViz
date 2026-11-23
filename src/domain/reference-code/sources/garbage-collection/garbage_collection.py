@@ -35,20 +35,26 @@ class MemoryGraph:
 
     def mark_reachable(self):
         for obj in self.objects:
+            # Clear marks before each collection; a stale True would make unreachable objects survive the sweep.
             obj.marked = False
+        # The demo has one root, A at index 0; a real collector must enumerate a root set.
         stack = [0]  # The demo has one root, A.
+        # The list is a LIFO pending stack; the order does not affect which objects are reachable.
         while stack:
             current = stack.pop()
             if self.objects[current].marked:
                 continue
+            # Mark at pop time; different parents may append the same object before it is first marked.
             self.objects[current].marked = True
             # Follow every outgoing edge; the marked test prevents cycles from looping.
+            # Scanning every reference for each popped object is O(N*E); an adjacency list would make marking O(N+E).
             for source, target in self.refs:
                 if source == current and not self.objects[target].marked:
                     stack.append(target)
 
     def sweep(self):
         for obj in self.objects:
+            # Sweep frees every unmarked object; the free flag persists until reset_graph creates a fresh table.
             if not obj.marked:
                 obj.free = True
 
@@ -62,6 +68,7 @@ class MemoryGraph:
                 cursor = obj.start + obj.size
         if cursor < 96:
             spans.append((cursor, 96))
+        # Free spans are the gaps between live intervals; after compaction there is one tail span.
         print("free spans:", spans)
 
     def print_objects(self, live_only=False):
@@ -81,6 +88,7 @@ class MemoryGraph:
         self.print_spans()
 
     def compact(self):
+        # compact() resets the graph, so it is an independent compaction demo rather than a continuation of mark_and_sweep().
         print("compaction")
         self.reset_graph()
         self.mark_reachable()
@@ -88,6 +96,7 @@ class MemoryGraph:
 
         cursor = 0
         # Move every live object to the first free address after the previous one.
+        # Compaction walks the object array, not the address-sorted list; relative order is preserved but not re-sorted by start.
         for obj in self.objects:
             if not obj.free:
                 old_start = obj.start
@@ -95,7 +104,7 @@ class MemoryGraph:
                 cursor += obj.size
                 print(f"move {obj.id}: {old_start} -> {obj.start}")
 
-        # Every reference stores an address, so all endpoints must be refreshed.
+        # References store object indices, not raw addresses; moving start changes the address derived from the object, not the stored index.
         for source, target in self.refs:
             source_obj = self.objects[source]
             target_obj = self.objects[target]

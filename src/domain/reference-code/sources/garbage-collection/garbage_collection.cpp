@@ -37,12 +37,14 @@ public:
 
     void compact()
     {
+        // compact() resets the graph first, so it demonstrates compaction independently of the preceding mark-sweep output.
         std::cout << "compaction\n";
         reset_graph();
         mark_reachable();
         sweep();
 
         int cursor = 0;
+        // Compaction moves objects in object-array order; the relative order is preserved, but it is not sorted by original address.
         // Move every live object to the first free address after the previous one.
         for (Object &object : objects_)
         {
@@ -56,7 +58,7 @@ public:
             }
         }
 
-        // Every reference stores an address, so all endpoints must be refreshed.
+        // References store object indices, not raw addresses; moving start changes the address derived from the object, not the stored index.
         for (const Reference &ref : refs_)
         {
             const Object &from = objects_[ref.from];
@@ -88,9 +90,12 @@ private:
         std::vector<int> stack;
         for (Object &object : objects_)
         {
+            // Clear marks before each collection; a mark left from the previous cycle would keep garbage alive.
             object.marked = false;
         }
+        // The demo has one root, A at index 0; a general collector must iterate a real root set.
         stack.push_back(0); // The demo has one root, A.
+        // The vector is a LIFO pending stack; reachability is independent of the traversal order.
         while (!stack.empty())
         {
             int current = stack.back();
@@ -99,8 +104,10 @@ private:
             {
                 continue;
             }
+            // Mark at pop time; an object can be pushed by several parents before its first pop marks it.
             objects_[current].marked = true;
             // Follow every outgoing edge; the marked test prevents cycles from looping.
+            // Scanning all references for every popped object is O(N*E); an adjacency list would reduce marking to O(N+E).
             for (const Reference &ref : refs_)
             {
                 if (ref.from == current && !objects_[ref.to].marked)
@@ -115,6 +122,7 @@ private:
     {
         for (Object &object : objects_)
         {
+            // Sweep frees every unmarked object; free is not cleared until reset_graph builds a fresh table.
             if (!object.marked)
             {
                 object.free = true;
@@ -125,6 +133,7 @@ private:
     void print_spans() const
     {
         int cursor = 0;
+        // Free spans are gaps between live intervals; compaction leaves one contiguous tail span.
         std::cout << "free spans: ";
         for (const Object &object : objects_)
         {

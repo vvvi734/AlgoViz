@@ -70,13 +70,17 @@ static void mark_reachable(void)
 {
     int stack[MAX_OBJECTS];
     int top = 0;
+    // This demo has exactly one root, A at index 0; a real collector iterates an explicit root set.
     int root = 0; // The demo has one root, A.
     int index;
     for (index = 0; index < object_count; index += 1)
     {
+        // Clear marks before every collection; a stale mark from an earlier cycle would make an unreachable object look live.
         objects[index].marked = 0;
     }
+    // DFS starts from the root set; the stack holds pending objects, not the object table itself.
     stack[top++] = root;
+    // Pop order is LIFO; the exact order is irrelevant to reachability as long as every pending object is processed.
     while (top > 0)
     {
         int current = stack[--top];
@@ -85,8 +89,10 @@ static void mark_reachable(void)
         {
             continue;
         }
+        // Mark when popping, not when pushing; duplicate pushes are possible before the first pop marks the object.
         objects[current].marked = 1;
         // Follow every outgoing edge; the marked test prevents cycles from looping.
+        // Scanning every reference for each object costs O(N*E); an adjacency list would make marking O(N+E).
         for (ref_index = 0; ref_index < ref_count; ref_index += 1)
         {
             if (refs[ref_index].from == current && !objects[refs[ref_index].to].marked)
@@ -102,6 +108,7 @@ static void sweep(void)
     int index;
     for (index = 0; index < object_count; index += 1)
     {
+        // Sweep frees every unmarked object; free is sticky until reset_graph rebuilds the object table.
         if (!objects[index].marked)
         {
             objects[index].free = 1;
@@ -113,6 +120,7 @@ static void print_spans(void)
 {
     int cursor = 0;
     int index;
+    // Free spans are the gaps between consecutive live intervals; after compaction only one tail gap remains.
     printf("free spans: ");
     for (index = 0; index < object_count; index += 1)
     {
@@ -162,11 +170,13 @@ static void compact(void)
 {
     int cursor = 0;
     int index;
+    // compact() calls reset_graph(), so it is an independent demonstration rather than a continuation of mark_and_sweep().
     printf("compaction\n");
     reset_graph();
     mark_reachable();
     sweep();
 
+    // Compaction moves live objects in object-array order; it preserves relative order but does not sort by original address.
     // Move every live object to the first free address after the previous one.
     for (index = 0; index < object_count; index += 1)
     {
@@ -179,7 +189,7 @@ static void compact(void)
         }
     }
 
-    // Every reference stores an address, so all endpoints must be refreshed.
+    // References store object indices, not raw addresses; moving start changes the address derived from the object, not the stored index.
     for (index = 0; index < ref_count; index += 1)
     {
         int from = refs[index].from;

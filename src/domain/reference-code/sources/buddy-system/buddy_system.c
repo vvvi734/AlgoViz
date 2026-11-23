@@ -22,12 +22,14 @@ static int max_level = 0;
 
 static int power_of_two(int value)
 {
+    // Only exact powers of two keep every split aligned; zero and non-power capacities are rejected before splitting begins.
     return value > 0 && (value & (value - 1)) == 0;
 }
 
 static int level_of(int size)
 {
     int level = 0;
+    // level is ceil(log2(size)); request 3 therefore needs a level-2 block of size 4.
     while ((1 << level) < size)
     {
         level += 1;
@@ -43,6 +45,7 @@ static void init_memory(int total)
     blocks[0].start = 0;
     blocks[0].size = total;
     blocks[0].level = max_level;
+    // The heap starts as one free root covering [0, capacity); for the required power-of-two capacity, max_level is log2(capacity).
     blocks[0].free = 1;
     blocks[0].label[0] = '\0';
 }
@@ -83,6 +86,7 @@ static int allocate_block(const char *id, int request)
     }
 
     // Find the smallest free block at or above the rounded target level.
+    // Search upward from the rounded target level and stop at the first free level; taking a larger block would split more than necessary.
     for (level = target_level; level <= max_level && index == -1; level += 1)
     {
         int position;
@@ -101,6 +105,7 @@ static int allocate_block(const char *id, int request)
     }
 
     // Halve the chosen block repeatedly; the left half stays the working block.
+    // Each split keeps the left half in place and inserts the right half immediately after it; address order and the chosen index stay valid.
     while (blocks[index].level > target_level)
     {
         int half = blocks[index].size / 2;
@@ -108,6 +113,7 @@ static int allocate_block(const char *id, int request)
         blocks[index].level -= 1;
         insert_block(index + 1, blocks[index].start + half, half, 1);
     }
+    // The block is marked used only after all splits, so it stays free until every split has completed.
     blocks[index].free = 0;
     snprintf(blocks[index].label, MAX_LABEL, "%s", id);
     return 1;
@@ -132,6 +138,7 @@ static int release_block(const char *id)
     blocks[index].label[0] = '\0';
     while (blocks[index].level < max_level)
     {
+        // XOR works because size is a power of two and the block is aligned; it gives the sibling address, not an arbitrary block.
         int buddy_start = blocks[index].start ^ blocks[index].size;
         int buddy = -1;
         int position;
@@ -145,11 +152,13 @@ static int release_block(const char *id)
                 break;
             }
         }
+        // Merge only with a free buddy of exactly the same size; an allocated or differently sized neighbour blocks coalescing.
         if (buddy == -1)
         {
             break;
         }
         // The merged block starts at the smaller address and doubles its size.
+        // The merged interval starts at the smaller address; otherwise level and address no longer describe the same block.
         if (blocks[buddy].start < blocks[index].start)
         {
             blocks[index].start = blocks[buddy].start;

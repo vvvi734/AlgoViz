@@ -16,6 +16,7 @@ struct Block
 class BuddyHeap
 {
 public:
+    // The constructor records the root level as log2(capacity) and puts the whole range in one free block.
     explicit BuddyHeap(int total) : capacity_(total), max_level_(level_of(total))
     {
         blocks_.push_back({0, total, max_level_, true, ""});
@@ -27,9 +28,11 @@ public:
         {
             return false;
         }
+        // The request is rounded up to a level; request 3 uses a size-4 block rather than a size-2 block.
         int target = level_of(request);
         int chosen = -1;
         // Find the smallest free block at or above the rounded target level.
+        // The first free level at or above target avoids splitting a larger block than the request requires.
         for (int level = target; level <= max_level_ && chosen < 0; ++level)
         {
             for (int index = 0; index < static_cast<int>(blocks_.size()); ++index)
@@ -47,6 +50,7 @@ public:
         }
 
         // Halve the chosen block repeatedly; the left half stays the working block.
+        // Splitting keeps the left half and inserts the right half after it; vector insertion preserves address order.
         while (blocks_[chosen].level > target)
         {
             int half = blocks_[chosen].size / 2;
@@ -55,6 +59,7 @@ public:
             Block right{blocks_[chosen].start + half, half, blocks_[chosen].level, true, ""};
             blocks_.insert(blocks_.begin() + chosen + 1, right);
         }
+        // Mark the block used only after the split loop; a half-built split must not be published as allocated.
         blocks_[chosen].free = false;
         blocks_[chosen].label = id;
         return true;
@@ -80,6 +85,7 @@ public:
         blocks_[index].label.clear();
         while (blocks_[index].level < max_level_)
         {
+            // The XOR sibling formula assumes an aligned power-of-two block; a non-aligned interval would produce a meaningless address.
             int buddy_start = blocks_[index].start ^ blocks_[index].size;
             int buddy = -1;
             for (int position = 0; position < static_cast<int>(blocks_.size()); ++position)
@@ -92,11 +98,13 @@ public:
                     break;
                 }
             }
+            // Only a free same-size buddy can merge; a used or differently sized neighbour stops the cascade.
             if (buddy < 0)
             {
                 break;
             }
             // The merged block starts at the smaller address and doubles its size.
+            // The unified block must begin at the smaller address; otherwise address and level describe different intervals.
             if (blocks_[buddy].start < blocks_[index].start)
             {
                 blocks_[index].start = blocks_[buddy].start;
