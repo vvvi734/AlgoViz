@@ -222,8 +222,8 @@ const REFERENCE_LEARNING_NOTES: Record<string, LocalizedText> = {
     en: 'Capacity is a power of two. Round the request up to a level, find the smallest adequate block at or above it, then halve repeatedly to the target level. Release computes the buddy with start XOR size; only a free true buddy of the same level may merge upward. O(M·L).',
   },
   'garbage-collection': {
-    zh: '从根集合迭代标记可达对象，并用已标记/在栈集合阻止环无限重复。清除回收所有未标记对象；紧缩再把存活对象按地址前移，并重写每条引用的源/目标地址。标记 O(N+E)，清除 O(N)，紧缩另加存活字节。',
-    en: 'Mark reachable objects iteratively from roots, using marked/queued sets to stop cycles. Sweep reclaims every unmarked object; compaction then packs live objects and rewrites every reference endpoint. Marking O(N+E), sweeping O(N), compaction plus live bytes.',
+    zh: '从根集合（演示中只有 A）出发迭代标记可达对象，并用已标记/在栈集合阻止环无限重复。清除回收所有未标记对象；紧缩按对象数组顺序把存活对象前移。引用保存对象下标，移动后打印地址由对象新 start 派生，无需重写引用。标记在本实现中对每个对象扫描全部引用，O(N·E)；建邻接表可降至 O(N+E)。',
+    en: 'Mark reachable objects iteratively from the root set (only A in the demo), using marked/pending sets to stop cycles. Sweep reclaims every unmarked object; compaction packs live objects in object-array order. References store object indices, so moving start changes the printed address derived from the object, not the stored index. This implementation scans every reference for each object, O(N*E); an adjacency list would reduce marking to O(N+E).',
   },
   multiway: {
     zh: 'k 个已有序段各维护一个 FIFO 输入缓冲区，只有队首可作候选。反复选最小候选写入共享输出缓冲区，满块时模拟写出；某段缓冲空且仍有记录时补读一块。线性扫描 k 个候选为 O(nk)，败者树可降至 O(n log k)。所有读写计数只是教学模型事件。',

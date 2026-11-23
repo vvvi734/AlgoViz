@@ -35,6 +35,72 @@ const batchAlgorithms = [
     zh: '工作区只保存驻留候选记录；current 是独立的归并段缓冲，因此一段可以长于工作区容量。',
     en: 'The workspace holds only resident candidates; current is a separate run buffer, so a run may grow beyond the workspace capacity.',
   },
+  {
+    id: 'components',
+    name: '连通分量',
+    zh: '递归前先标记：无向边会指回调用者，提前标记才能避免沿这个环无限递归。',
+    en: 'Mark before recursing: an undirected edge leads back to the caller, and marking early prevents that cycle from recursing forever.',
+  },
+  {
+    id: 'scc',
+    name: '强连通分量',
+    zh: '邻居循环结束后才追加：这里记录的是完成顺序而不是发现顺序，Kosaraju 会倒着读它。',
+    en: 'Append after the neighbour loop: this is finish order, not discovery order, and Kosaraju reads it backwards.',
+  },
+  {
+    id: 'prim',
+    name: 'Prim 最小生成树',
+    zh: '每轮扫描所有顶点寻找最小 key，正是矩阵实现为 O(V²) 的原因。',
+    en: 'Scanning every vertex to find the minimum key is why the matrix implementation is O(V^2).',
+  },
+  {
+    id: 'kruskal',
+    name: 'Kruskal 最小生成树',
+    zh: '先排序是贪心的前提；按任意边序扫描可能先接受重边、后接受轻边。',
+    en: 'Sorting first is the greedy precondition; scanning an arbitrary edge order can accept a heavy edge before a cheap one.',
+  },
+  {
+    id: 'topological',
+    name: '拓扑排序',
+    zh: '所有入度为 0 的顶点在时刻 0 都已就绪；FIFO 只是合法的平局策略，不是唯一顺序。',
+    en: 'All zero-indegree vertices are ready at time zero; FIFO order is a valid tie-break, not a required order.',
+  },
+  {
+    id: 'critical-path',
+    name: '关键路径',
+    zh: '这个 C 版假定 ACTIVITIES 已按拓扑序排列；任意边序会用到尚未完成的前驱。',
+    en: 'This C version assumes ACTIVITIES is already in topological order; a random edge order would use unfinished predecessors.',
+  },
+  {
+    id: 'dijkstra',
+    name: 'Dijkstra 最短路径',
+    zh: '这次线性扫描正是矩阵实现为 O(V²) 的原因；堆可以避免反复扫描所有顶点。',
+    en: 'This linear scan is why the matrix implementation costs O(V^2); a heap would avoid rescanning all vertices.',
+  },
+  {
+    id: 'floyd-warshall',
+    name: 'Floyd-Warshall 全源最短路',
+    zh: '两段都必须有限；把 INF 相加会溢出哨兵值并造出假路线。',
+    en: 'Both halves must be finite; adding INF would overflow the sentinel and create a fake route.',
+  },
+  {
+    id: 'bellman-ford',
+    name: 'Bellman-Ford 最短路径',
+    zh: '所有距离先设为未知；只有源点改为有限。',
+    en: 'Every distance begins unknown; only the source is made finite.',
+  },
+  {
+    id: 'buddy-system',
+    name: '伙伴系统',
+    zh: '从向上取整的目标级开始，寻找最小可用的空闲块。',
+    en: 'Find the smallest free block at or above the rounded target level.',
+  },
+  {
+    id: 'garbage-collection',
+    name: '标记清除与存储紧缩',
+    zh: '引用保存对象下标而不是原始地址；移动 start 改变的是由对象派生的地址，不是存储的下标。',
+    en: 'References store object indices, not raw addresses; moving start changes the address derived from the object, not the stored index.',
+  },
 ] as const;
 
 

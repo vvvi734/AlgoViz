@@ -8,6 +8,7 @@
  * treated as source-only documentation and are omitted from the Chinese view.
  */
 import { BATCH_03_ANNOTATIONS } from './batch-03-annotations';
+import { BATCH_04_ANNOTATIONS } from './batch-04-annotations';
 
 export interface ReferenceAnnotation {
   en: string;
@@ -2775,24 +2776,9 @@ const BASE_REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[]>
       zh: "合并后的块从较小的地址开始，大小翻倍并提升一级。",
     },
   ],
-  "garbage_collection.c": [
-    {
-      en: "Every reference stores an address, so all endpoints must be refreshed.",
-      zh: "引用中保存了地址，因此移动对象后所有相关端点都必须刷新。",
-    },
-  ],
-  "garbage_collection.cpp": [
-    {
-      en: "Every reference stores an address, so all endpoints must be refreshed.",
-      zh: "引用中保存了地址，因此移动对象后所有相关端点都必须刷新。",
-    },
-  ],
-  "garbage_collection.py": [
-    {
-      en: "Every reference stores an address, so all endpoints must be refreshed.",
-      zh: "引用中保存了地址，因此移动对象后所有相关端点都必须刷新。",
-    },
-  ],
+  "garbage_collection.c": [],
+  "garbage_collection.cpp": [],
+  "garbage_collection.py": [],
   "block_search.c": [
     {
       en: "Before any entry exists, reject a size that cannot partition the array; otherwise the ceiling division and later maximum lookup have no defined block boundary.",
@@ -3566,6 +3552,13 @@ const MERGED_REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[
 };
 
 for (const [fileName, annotations] of Object.entries(BATCH_03_ANNOTATIONS)) {
+  MERGED_REFERENCE_ANNOTATIONS[fileName] = [
+    ...(MERGED_REFERENCE_ANNOTATIONS[fileName] ?? []),
+    ...annotations,
+  ];
+}
+
+for (const [fileName, annotations] of Object.entries(BATCH_04_ANNOTATIONS)) {
   MERGED_REFERENCE_ANNOTATIONS[fileName] = [
     ...(MERGED_REFERENCE_ANNOTATIONS[fileName] ?? []),
     ...annotations,
