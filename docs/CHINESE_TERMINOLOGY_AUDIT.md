@@ -298,12 +298,21 @@ Playwright 覆盖：
 关键截图：
 
 - `390-dijkstra.png`：Dijkstra 完整名、4 条术语、短名导航与移动端单列布局。
-- `390-dfs.png`：DFS 的 LIFO、Frontier、状态术语与 `FRONT/REAR/TOP` 中文说明。
+- `390-adt.png`：ADT 页中文优先标题，以及“ADT 全称 + 栈操作”两条术语。
+- `390-bfs.png` / `390-dfs.png`：BFS 与 DFS 各自的 FIFO/LIFO、Frontier 和状态术语，未重复或混用。
 - `390-static-tree-table.png`：ASL/WPL/BST/AVL 四列术语在 390px 下完整换行。
 - `390-sparse-matrix.png`：CSR 与三元组表术语块。
 - `1280-dijkstra-en.png`：英文模式无中文术语，组标签为 `GRAPH`。
 
-## 11. 仍需人工确认
+## 11. 交付与公网验收
+
+- 功能提交：`4fb1b105be9ed13f3fb134d412cb4abf1f343dec`（`feat(i18n): add Chinese terminology glossary and audit`），已推送到 Gitee `origin/main` 与 GitHub `github/main`。
+- GitHub Actions `CI`：run `45379622864`，结论 success。
+- GitHub Actions `Deploy AlgoViz to GitHub Pages`：run `45379622633`，结论 success。
+- 公网中文页复核（2026-11-24）：`https://vvvi734.github.io/AlgoViz/` 首页标题为“数据结构的基本概念”，术语块显示“数据结构（Data Structure）”；Dijkstra 页标题为“Dijkstra（迪杰斯特拉）最短路径算法”，术语块显示松弛操作、`dist`、Dijkstra 状态和前驱指针。
+- 未创建 `v1.0.0` Tag，未发布 GitHub Release。
+
+## 12. 仍需人工确认
 
 1. `Lomuto` 的“洛穆托”是否为课程统一采用译名。
 2. `Floyd-Warshall` 的“弗洛伊德—沃舍尔”是否要在教材口径中固定。
@@ -311,7 +320,7 @@ Playwright 覆盖：
 4. `Trie` 是否需要在其他页面追加“键树”别名；当前只在词典与对应术语块出现。
 5. 6 条备用算法名（Dijkstra、Bellman-Ford、Prim、Kruskal、Kahn、Kosaraju）目前由标题/导学承担解释，没有单独渲染词典卡片。
 
-## 12. 例外与未处理清单
+## 13. 例外与未处理清单
 
 不翻译且不进入术语块：
 
@@ -322,4 +331,3 @@ Playwright 覆盖：
 - 示例输入记录字母、节点编号、URL、文件路径、localStorage 键、npm 包名
 
 这些例外不是遗漏，而是代码标识与教学术语的边界。若后续新增课程，仍应按本报告的分类规则逐页审查，不能仅依赖正则扫描。
-</content>
