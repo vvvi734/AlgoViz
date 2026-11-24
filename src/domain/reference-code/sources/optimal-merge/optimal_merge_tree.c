@@ -63,6 +63,7 @@ static int BuildOptimalMergeTree(const int *weights, int segmentCount, int k, No
     int realCount = segmentCount;
     // The forest must end with one root, so pad with d zero-weight leaves; they change shape, never the total weight.
     int missing = ((k - 1) - ((segmentCount - 1) % (k - 1))) % (k - 1);
+    // A full k-ary tree needs (leaves-1) divisible by k-1; the outer modulo turns a zero deficit into zero virtual leaves instead of k-1.
     int totalLeaves = realCount + missing;
 
     for (int index = 0; index < realCount; ++index)
@@ -77,7 +78,9 @@ static int BuildOptimalMergeTree(const int *weights, int segmentCount, int k, No
     for (int index = 0; index < missing; ++index)
     {
         nodes[nodeCount].weight = 0;
+        // Virtual leaves carry zero weight because they add no records to merge; only their structural slot matters.
         nodes[nodeCount].kind = VIRTUAL_LEAF;
+        // The kind tag keeps virtual leaves distinguishable from real zero-length runs and from internal nodes.
         nodes[nodeCount].localIndex = index;
         nodes[nodeCount].childCount = 0;
         nodes[nodeCount].parent = -1;
@@ -95,13 +98,16 @@ static int BuildOptimalMergeTree(const int *weights, int segmentCount, int k, No
     int totalCost = 0;
     int internalCount = 0;
     while (rootCount > 1)
+    // The loop ends with exactly one root; a forest of one means the whole schedule is represented by that tree.
     {
         if (rootCount < k)
+        // With virtual padding the forest size should always support a k-way combine; falling below k means the shape invariant was already broken.
         {
             return -1;
         }
         // Selection sort the roots and take the first k; the forest is tiny.
         for (int left = 0; left + 1 < rootCount; ++left)
+        // The forest is tiny, so selection sort is acceptable; a priority queue would change the code but not the greedy result.
         {
             for (int right = left + 1; right < rootCount; ++right)
             {
@@ -126,6 +132,7 @@ static int BuildOptimalMergeTree(const int *weights, int segmentCount, int k, No
             int selected = roots[child];
             nodes[parent].children[child] = selected;
             nodes[parent].weight += nodes[selected].weight;
+            // The parent weight is built as the sum of exactly k selected children; it is not copied from any single root.
             nodes[selected].parent = parent;
             printf(" %d", nodes[selected].weight);
         }
@@ -133,6 +140,7 @@ static int BuildOptimalMergeTree(const int *weights, int segmentCount, int k, No
         nodeCount += 1;
         internalCount += 1;
         totalCost += nodes[parent].weight;
+        // Every internal node's weight is paid once in the merge schedule, so total cost is their sum, not the final root weight.
 
         // Remove the selected roots and reinsert the new parent at the end.
         int kept = 0;
@@ -141,6 +149,7 @@ static int BuildOptimalMergeTree(const int *weights, int segmentCount, int k, No
             roots[kept++] = roots[root];
         }
         roots[kept++] = parent;
+        // The new parent replaces the k consumed roots; keeping the old roots would let their records be merged twice.
         rootCount = kept;
     }
 

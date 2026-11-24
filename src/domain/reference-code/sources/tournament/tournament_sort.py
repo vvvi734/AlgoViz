@@ -17,12 +17,15 @@
 # 作用：返回更优的有效候选下标；两个候选都失效时返回 None。
 def better(records, active, left, right):
     if left is None or not active[left]:
+    # None and inactive are different reasons for absence but both mean the left child cannot win.
         return right if right is not None and active[right] else None
     if right is None or not active[right]:
         return left
     if records[left]["value"] != records[right]["value"]:
+    # Only unequal values reach this branch; equality is handled by the identity tie-break below.
         return left if records[left]["value"] < records[right]["value"] else right
     return left if records[left]["original_index"] < records[right]["original_index"] else right
+    # The original index is carried through the tournament unchanged, which is what lets equal values remain distinguishable and stable.
 
 
 # Purpose: Fill leaves in input order, then build every internal winner bottom-up.
@@ -30,7 +33,9 @@ def better(records, active, left, right):
 def build_tree(records, active, tree, leaf_count):
     for slot in range(leaf_count):
         tree[leaf_count + slot] = slot if slot < len(records) else None
+        # Leaves use record indices for real inputs and None for padding; a numeric 0 would be a valid record and therefore ambiguous.
     for node in range(leaf_count - 1, 0, -1):
+    # The reverse range stops at 1 because index 0 is unused; root 1 is the last node computed.
         tree[node] = better(records, active, tree[node * 2], tree[node * 2 + 1])
 
 
@@ -38,9 +43,12 @@ def build_tree(records, active, tree, leaf_count):
 # 作用：将赢家置为失效，并只重算它所在叶子到根的祖先路径。
 def remove_winner(records, active, tree, leaf_count, winner):
     active[winner] = False
+    # The record is deactivated before recomputation so every ancestor sees the new state on its first visit.
     node = (leaf_count + records[winner]["original_index"]) // 2
+    # Floor division maps a leaf slot to its parent; the floor is exact because leaf_count is a power of two.
     while node >= 1:
         tree[node] = better(records, active, tree[node * 2], tree[node * 2 + 1])
+        # Recomputing both child references is necessary even though only one side changed: Better needs both current candidates.
         node //= 2
 
 

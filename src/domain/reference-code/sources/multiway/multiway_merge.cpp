@@ -47,11 +47,14 @@ static bool comes_before(const Record &left, const Record &right)
 static int refill(InputRun &run, int blockSize, int capacity, int &readBlocks)
 {
     const int freeSlots = capacity - static_cast<int>(run.buffer.size());
+    // The vector buffer length is the current fill level; capacity is the per-run limit, not the total number of records.
     const int remaining = static_cast<int>(run.records.size()) - run.cursor;
     const int take = std::max(0, std::min(blockSize, std::min(freeSlots, remaining)));
+    // A refill takes the smallest of block size, free space and unread records; the max(0, ...) prevents a negative loop bound.
     for (int offset = 0; offset < take; ++offset)
     {
         run.buffer.push_back(run.cursor);
+        // Only the cursor is buffered; the record remains in the run vector, so refill does not duplicate payload data.
         run.cursor += 1;
     }
     if (take > 0)
@@ -83,6 +86,7 @@ static std::vector<Record> multiway_merge(std::vector<InputRun> runs, int buffer
         for (int runIndex = 0; runIndex < static_cast<int>(runs.size()); ++runIndex)
         {
             if (runs[runIndex].buffer.empty())
+            // An empty FIFO cannot nominate a candidate; the run stays in the array but contributes nothing until refilled.
             {
                 continue;
             }
@@ -101,9 +105,11 @@ static std::vector<Record> multiway_merge(std::vector<InputRun> runs, int buffer
         InputRun &owner = runs[winnerRun];
         const Record winner = owner.records[owner.buffer.front()];
         owner.buffer.erase(owner.buffer.begin());
+        // Erasing the front preserves FIFO order; the next record becomes front without any index arithmetic.
         outputBuffer.push_back(winner);
 
         if (static_cast<int>(outputBuffer.size()) == bufferCapacity)
+        // The shared output buffer is flushed only at capacity; a partial block is handled after all runs are exhausted.
         {
             for (const Record &record : outputBuffer)
             {
@@ -121,6 +127,7 @@ static std::vector<Record> multiway_merge(std::vector<InputRun> runs, int buffer
 
     // A trailing partial buffer is still one simulated output block.
     if (!outputBuffer.empty())
+    // The trailing partial buffer is still a block; omitting this flush would silently drop the last records.
     {
         for (const Record &record : outputBuffer)
         {

@@ -56,6 +56,7 @@ static int build_optimal_merge_tree(const std::vector<int> &weights, int k, std:
     const int realCount = static_cast<int>(weights.size());
     // The forest must end with one root, so pad with d zero-weight leaves; they change shape, never the total weight.
     const int missing = ((k - 1) - ((realCount - 1) % (k - 1))) % (k - 1);
+    // The deficit formula is the C version translated to counts; it pads only the shape, never the total record weight.
 
     for (int index = 0; index < realCount; ++index)
     {
@@ -69,6 +70,7 @@ static int build_optimal_merge_tree(const std::vector<int> &weights, int k, std:
     {
         Node node;
         node.kind = VIRTUAL_LEAF;
+        // A virtual node has kind VIRTUAL_LEAF and default weight 0; no real input ever enters this branch.
         node.localIndex = index;
         nodes.push_back(node);
     }
@@ -89,6 +91,7 @@ static int build_optimal_merge_tree(const std::vector<int> &weights, int k, std:
             return -1;
         }
         std::stable_sort(roots.begin(), roots.end(), [&nodes](int left, int right) {
+        // stable_sort keeps the comparator's tie order deterministic; the comparator itself already uses weight, kind and id.
             return root_comes_before(nodes, left, right);
         });
 
@@ -100,6 +103,7 @@ static int build_optimal_merge_tree(const std::vector<int> &weights, int k, std:
             const int selected = roots[child];
             parent.children.push_back(selected);
             parent.weight += nodes[selected].weight;
+            // The parent is accumulated from exactly k selected roots; a missing child would silently change the merge cost.
             nodes[selected].parent = static_cast<int>(nodes.size());
         }
         std::printf("combine T%d =", internalCount);
@@ -110,10 +114,13 @@ static int build_optimal_merge_tree(const std::vector<int> &weights, int k, std:
         std::printf(" -> %d\n", parent.weight);
         nodes.push_back(parent);
         totalCost += parent.weight;
+        // Cost is accumulated per internal node, not reconstructed from the root afterward; the root only equals a subset of this sum.
         internalCount += 1;
 
         roots.erase(roots.begin(), roots.begin() + k);
+        // Exactly the first k roots were consumed by this combine; erasing fewer would leave stale roots in the forest.
         roots.push_back(static_cast<int>(nodes.size()) - 1);
+        // The parent index is the vector position after push_back; computing it before the push would point to the wrong node.
     }
 
     std::printf("leaves: real=%d virtual=%d total=%d\n",

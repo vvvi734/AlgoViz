@@ -30,6 +30,7 @@ def build_optimal_merge_tree(weights, k):
     real_count = len(weights)
     # The forest must end with one root, so pad with d zero-weight leaves; they change shape, never total weight.
     missing = ((k - 1) - ((real_count - 1) % (k - 1))) % (k - 1)
+    # The padding count is zero when the real leaves already form a full tree; otherwise it is the smallest positive deficit.
     nodes = []
     for index, weight in enumerate(weights):
         nodes.append({
@@ -44,6 +45,7 @@ def build_optimal_merge_tree(weights, k):
             "id": f"V{index}",
             "kind": "virtual",
             "weight": 0,
+            # Virtual leaves contribute no key weight; their only role is to occupy the shape slots needed for full branching.
             "children": [],
             "parent": None,
         })
@@ -53,10 +55,13 @@ def build_optimal_merge_tree(weights, k):
     total_cost = 0
     internal_count = 0
     while len(roots) > 1:
+    # Termination requires one root; the forest size shrinks by k-1 each combine, which is exactly the divisibility invariant.
         if len(roots) < k:
             raise ValueError("forest cannot supply k roots; virtual leaves are missing")
         roots.sort(key=lambda node_index: root_key(nodes[node_index]))
+        # Sorting the forest by (weight, real-before-virtual, id) is the greedy selection; a different tie order can change the tree shape but not the optimal cost for valid weights.
         selected = roots[:k]
+        # Exactly k roots are combined; selecting fewer would produce an internal node with an invalid arity.
         parent_index = len(nodes)
         parent = {
             "id": f"T{internal_count}",
@@ -69,9 +74,11 @@ def build_optimal_merge_tree(weights, k):
         for index in selected:
             nodes[index]["parent"] = parent_index
         total_cost += parent["weight"]
+        # Each internal node adds its own weight to the total; summing root weights would miss the costs paid at lower levels.
         internal_count += 1
         print(f"combine {parent['id']} = {parent['weight']}")
         roots = roots[k:] + [parent_index]
+        # The new parent replaces the consumed prefix; keeping the selected roots would duplicate their records in later merges.
 
     return total_cost, nodes, missing
 

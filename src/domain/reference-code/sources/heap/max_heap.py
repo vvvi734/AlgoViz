@@ -27,8 +27,10 @@ class MaxHeap:
     # Purpose: Append value and sift it up until the max-heap property holds.
     # 作用：追加 value 并上滤到满足最大堆性质。
     def push(self, value: int) -> None:
+    # Python lists grow dynamically, so push has no capacity failure; the only work after append is restoring the parent chain.
         self._items.append(value)
         self._sift_up(len(self._items) - 1)
+        # The new element is at len-1 after append; passing len instead would index past the list.
 
     # Purpose: Return and remove the heap top; return None when empty, otherwise sift down the new root.
     # 作用：返回并删除堆顶；空堆返回 None，随后下滤新根。
@@ -37,7 +39,9 @@ class MaxHeap:
             return None
         top = self._items[0]
         last = self._items.pop()
+        # pop removes and returns the last element; when only one element existed, last is also the old root and no root rewrite is needed.
         if self._items:
+        # After popping the last element the list can be empty; assigning to index 0 then would raise IndexError.
             self._items[0] = last
             self._sift_down(0)
         return top
@@ -48,7 +52,9 @@ class MaxHeap:
     def _sift_up(self, index: int) -> None:
         while index > 0:
             parent = (index - 1) // 2
+            # Floor division is required for a 0-based heap; true division would produce a float and break indexing.
             if self._items[parent] >= self._items[index]:
+            # The >= test allows equal parent and child keys; swapping equals would add work without improving heap order.
                 return
             self._items[parent], self._items[index] = self._items[index], self._items[parent]
             index = parent
@@ -60,12 +66,14 @@ class MaxHeap:
         while True:
             left = index * 2 + 1
             right = left + 1
+            # The right child may not exist; both child comparisons below are individually guarded by list bounds.
             largest = index
             if left < len(self._items) and self._items[left] > self._items[largest]:
                 largest = left
             if right < len(self._items) and self._items[right] > self._items[largest]:
                 largest = right
             if largest == index:
+            # If neither existing child is larger, the local heap property is restored and no further descent is needed.
                 return
             self._items[index], self._items[largest] = self._items[largest], self._items[index]
             index = largest

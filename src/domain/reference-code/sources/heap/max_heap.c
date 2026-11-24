@@ -52,7 +52,9 @@ void sift_up(MaxHeap *heap, int index)
     while (index > 0)
     {
         int parent = (index - 1) / 2;
+        // The 0-based parent formula works for every child index; using i/2 would be the 1-based rule and place the parent one level too high.
         if (heap->items[parent] >= heap->items[index])
+        // Once the parent is at least the child, every ancestor was already >= that parent, so the whole path is valid without further checks.
         {
             break;
         }
@@ -69,6 +71,7 @@ void sift_down(MaxHeap *heap, int index)
     while (true)
     {
         int left = index * 2 + 1;
+        // The left-child formula is the inverse of the parent formula; right is left+1 and may not exist.
         int right = left + 1;
         int largest = index;
         if (left < heap->size && heap->items[left] > heap->items[largest])
@@ -76,10 +79,12 @@ void sift_down(MaxHeap *heap, int index)
             largest = left;
         }
         if (right < heap->size && heap->items[right] > heap->items[largest])
+        // The right-child check is guarded separately because a node can have a left child without a right child.
         {
             largest = right;
         }
         if (largest == index)
+        // No child is greater than the current parent, so the max-heap property holds at this position and sifting can stop.
         {
             break;
         }
@@ -93,10 +98,12 @@ void sift_down(MaxHeap *heap, int index)
 bool heap_push(MaxHeap *heap, int value)
 {
     if (heap->size == HEAP_CAPACITY)
+    // The array is fixed-size, so a full heap reports failure instead of growing; C++ and Python versions use dynamic storage.
     {
         return false;
     }
     heap->items[heap->size] = value;
+    // The new value is written at the old size, then size grows; sifting uses the new last index, not the old slot.
     ++heap->size;
     sift_up(heap, heap->size - 1);
     return true;
@@ -112,9 +119,11 @@ bool heap_pop(MaxHeap *heap, int *out_value)
     }
     *out_value = heap->items[0];
     --heap->size;
+    // Decrementing first removes the old root from the logical heap; the subsequent move overwrites slot 0 with the former last value.
     if (heap->size > 0)
     {
         heap->items[0] = heap->items[heap->size];
+        // The last element is the only one that can be moved without breaking the complete-tree shape; sift_down then repairs order.
         sift_down(heap, 0);
     }
     return true;

@@ -39,6 +39,7 @@ static int Better(
     int right)
 {
     if (left < 0 || !active[left])
+    // The active array is the source of truth after removal; a stored leaf index alone is not proof that the record still participates.
     {
         return (right >= 0 && active[right]) ? right : -1;
     }
@@ -47,10 +48,12 @@ static int Better(
         return left;
     }
     if (records[left].value != records[right].value)
+    // Value comparison is the hot path; equality falls through to the stable identity comparison below.
     {
         return records[left].value < records[right].value ? left : right;
     }
     return records[left].originalIndex < records[right].originalIndex ? left : right;
+    // Ties are broken by input position, so equal keys keep their original relative order after extraction.
 }
 
 // Purpose: Fill leaves in input order, then build every internal winner bottom-up.
@@ -65,8 +68,10 @@ static void BuildTree(
     {
         tree[leafCount + slot].recordIndex =
             slot < static_cast<int>(records.size()) ? slot : -1;
+            // Padding leaves deliberately become -1; mapping them to record 0 would make a real record appear twice.
     }
     for (int node = leafCount - 1; node >= 1; --node)
+    // Bottom-up construction is a postorder over the complete tree; a parent is never read before its children are ready.
     {
         tree[node].recordIndex = Better(
             records,
@@ -86,7 +91,9 @@ static void RemoveWinner(
     int winner)
 {
     active[winner] = 0;
+    // The winner is removed logically, not erased from the vector; tree slots and record indices stay stable.
     int node = (leafCount + records[winner].originalIndex) / 2;
+    // The parent formula mirrors the leaf layout; using winner directly would be wrong when winner is not the leaf slot.
     while (node >= 1)
     {
         tree[node].recordIndex = Better(
@@ -95,6 +102,7 @@ static void RemoveWinner(
             tree[node * 2].recordIndex,
             tree[node * 2 + 1].recordIndex);
         node /= 2;
+        // Each division moves one level toward the root, so the total repair is O(log n) rather than a full rebuild.
     }
 }
 

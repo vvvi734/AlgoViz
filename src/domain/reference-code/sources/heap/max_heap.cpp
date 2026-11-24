@@ -31,6 +31,7 @@ class MaxHeap
     bool push(int value)
     {
         items_.push_back(value);
+        // push_back grows the vector as needed, so this version has no fixed-capacity failure path; the heap order is restored afterward.
         sift_up(items_.size() - 1);
         return true;
     }
@@ -44,7 +45,9 @@ class MaxHeap
             return std::nullopt;
         }
         int top = items_.front();
+        // The maximum is copied before the last element overwrites the root; returning after the move would lose the extracted value.
         items_.front() = items_.back();
+        // Moving the last element to the root preserves completeness; popping it afterward would leave a hole.
         items_.pop_back();
         if (!items_.empty())
         {
@@ -69,10 +72,12 @@ class MaxHeap
     // Purpose: Sift up from index, swapping with the parent until heap order is restored or the root is reached.
     // 作用：从 index 向上与父结点比较并交换，直到堆序恢复或到达根。
     void sift_up(std::size_t index)
+    // The loop condition index > 0 is the only root guard; the parent formula is never evaluated for the root.
     {
         while (index > 0)
         {
             std::size_t parent = (index - 1) / 2;
+            // size_t arithmetic is safe here because index > 0; a signed index would also work but is not needed for this upward walk.
             if (items_[parent] >= items_[index])
             {
                 break;
@@ -91,6 +96,7 @@ class MaxHeap
         {
             std::size_t left = index * 2 + 1;
             std::size_t right = left + 1;
+            // right is computed even when it is out of range; every use is guarded by right < items_.size().
             std::size_t largest = index;
             if (left < items_.size() && items_[left] > items_[largest])
             {
@@ -101,11 +107,13 @@ class MaxHeap
                 largest = right;
             }
             if (largest == index)
+            // The parent already dominates both existing children, so the local heap property is restored and the loop can return.
             {
                 return;
             }
             std::swap(items_[index], items_[largest]);
             index = largest;
+            // Following the swapped child continues the repair down the only path that could still violate the heap property.
         }
     }
 

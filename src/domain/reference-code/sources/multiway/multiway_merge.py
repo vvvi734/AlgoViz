@@ -24,9 +24,11 @@ def fill_run(run, block_size, capacity, counters):
     free_slots = capacity - len(run["buffer"])
     remaining = len(run["records"]) - run["cursor"]
     take = min(block_size, free_slots, remaining)
+    # The refill count is capped by the block size, the FIFO's free space, and the unread tail; any smaller bound must win.
     if take <= 0:
         return
     run["buffer"].extend(range(run["cursor"], run["cursor"] + take))
+    # The buffer stores integer positions, so extending with a range is equivalent to pushing cursor, cursor+1, ... without copies.
     run["cursor"] += take
     counters["reads"] += 1
 
@@ -44,6 +46,7 @@ def merge_runs(runs, capacity, block_size):
     while True:
         # Only the buffer front of each run enters candidates; records behind the FIFO window are not read yet.
         candidates = [
+        # The candidate list is rebuilt each iteration from nonempty FIFOs; a stale winner from a previous iteration cannot survive.
             (run_index, run["buffer"][0])
             for run_index, run in enumerate(runs)
             if run["buffer"]
@@ -61,9 +64,11 @@ def merge_runs(runs, capacity, block_size):
 
         owner = runs[winner_run]
         owner["buffer"].pop(0)
+        # pop(0) removes the FIFO head; using pop() would remove the tail and break the arrival order.
         output_buffer.append(winner_record)
 
         if len(output_buffer) == capacity:
+        # The output block is emitted at exactly capacity; the buffer is cleared after extending written, not before.
             written.extend(output_buffer)
             output_buffer.clear()
             counters["writes"] += 1
@@ -73,10 +78,12 @@ def merge_runs(runs, capacity, block_size):
 
     # The final partial block still counts as one simulated write.
     if output_buffer:
+    # A nonempty trailing buffer is one final partial block and must be counted as a write.
         written.extend(output_buffer)
         counters["writes"] += 1
 
     if len(written) != sum(len(run["records"]) for run in runs):
+    # The total-count assertion catches lost records; it is a teaching invariant check, not a performance optimization.
         raise ValueError("merge did not output every record")
     for left, right in zip(written, written[1:]):
         if not comes_before(left, right):

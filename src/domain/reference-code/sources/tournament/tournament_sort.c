@@ -37,6 +37,7 @@ typedef struct
 static int Better(const Record *records, const int *active, int left, int right)
 {
     if (left < 0 || !active[left])
+    // An absent or inactive left child is not a candidate; the right child can win by default, but only if it is also active.
     {
         return (right >= 0 && active[right]) ? right : -1;
     }
@@ -45,10 +46,12 @@ static int Better(const Record *records, const int *active, int left, int right)
         return left;
     }
     if (records[left].value != records[right].value)
+    // The primary key decides first; originalIndex is consulted only when the values tie, so ordinary comparisons stay cheap.
     {
         return records[left].value < records[right].value ? left : right;
     }
     return records[left].originalIndex < records[right].originalIndex ? left : right;
+    // The smaller original index wins a tie; this is the stability rule and also gives the animation a deterministic label order.
 }
 
 // Purpose: Compute the smallest power of two that can hold n leaves.
@@ -59,6 +62,7 @@ static int LeafCapacity(int n)
     while (capacity < n)
     {
         capacity *= 2;
+        // The leaf layer must be a power of two so every internal node has two children; extra leaf slots become inactive sentinels.
     }
     return capacity;
 }
@@ -70,12 +74,15 @@ static void BuildTree(const Record *records, int n, const int *active, TreeNode 
     for (int node = 1; node < 2 * leafCount; ++node)
     {
         tree[node].recordIndex = -1;
+        // Every tree slot is cleared before leaves are filled; otherwise an old winner could survive in a padding subtree.
     }
     for (int slot = 0; slot < leafCount; ++slot)
     {
         tree[leafCount + slot].recordIndex = slot < n ? slot : -1;
+        // Leaves map input positions directly; slots beyond n are marked -1 rather than mapped to a fake record 0.
     }
     for (int node = leafCount - 1; node >= 1; --node)
+    // Building from the last internal node down to 1 guarantees both children already hold winners before their parent is computed.
     {
         tree[node].recordIndex = Better(
             records,
@@ -95,7 +102,9 @@ static void RemoveWinner(
     int winner)
 {
     active[winner] = 0;
+    // Deactivation happens before any ancestor recomputation; the Better calls then ignore the removed record even if its leaf slot remains.
     int node = (leafCount + records[winner].originalIndex) / 2;
+    // The walk starts at the parent of the winner's leaf, not at the leaf: the leaf itself is already represented by active[].
     while (node >= 1)
     {
         tree[node].recordIndex = Better(
@@ -104,6 +113,7 @@ static void RemoveWinner(
             tree[node * 2].recordIndex,
             tree[node * 2 + 1].recordIndex);
         node /= 2;
+        // Only the ancestor chain changes; the sibling subtree's winner is still valid and is intentionally reused.
     }
 }
 

@@ -62,7 +62,9 @@ static int ComesBefore(const Record *left, const Record *right)
 static int Refill(InputRun *run, int blockSize, int capacity, int *readBlocks)
 {
     int freeSlots = capacity - run->bufferLength;
+    // capacity is the per-run FIFO capacity, not the global record capacity; freeSlots bounds how much one refill may add.
     int remaining = run->length - run->cursor;
+    // cursor counts records already moved into the buffer; remaining is the unread tail that refill is allowed to consume.
     int take = blockSize;
     if (take > freeSlots)
     {
@@ -79,10 +81,12 @@ static int Refill(InputRun *run, int blockSize, int capacity, int *readBlocks)
     for (int offset = 0; offset < take; ++offset)
     {
         run->buffer[run->bufferLength] = run->cursor;
+        // The buffer stores record indices, not record copies; the actual Record stays in the run and is read through this index.
         run->bufferLength += 1;
         run->cursor += 1;
     }
     *readBlocks += 1;
+    // A refill counts as one simulated block read only when take > 0; an exhausted run must not inflate the counter.
     return take;
 }
 
@@ -101,6 +105,7 @@ static void FlushOutput(OutputBuffer *output, Record *written, int *writtenLengt
         *writtenLength += 1;
     }
     output->length = 0;
+    // Flushing resets the logical length but does not erase the array; the next block overwrites the prefix from index 0.
     *writeBlocks += 1;
 }
 
@@ -135,6 +140,7 @@ static int MultiwayMerge(InputRun runs[MAX_K], int k, int bufferCapacity, int bl
         {
             InputRun *run = &runs[runIndex];
             if (run->bufferLength == 0)
+            // An empty buffer contributes no candidate; skipping it is different from treating its missing head as value 0.
             {
                 continue;
             }
@@ -154,6 +160,7 @@ static int MultiwayMerge(InputRun runs[MAX_K], int k, int bufferCapacity, int bl
         InputRun *owner = &runs[winnerRun];
         Record winner = owner->records[owner->buffer[winnerOffset]];
         for (int index = winnerOffset; index + 1 < owner->bufferLength; ++index)
+        // Removing the winner shifts the FIFO tail left; this keeps the next record at buffer[0] and preserves arrival order.
         {
             owner->buffer[index] = owner->buffer[index + 1];
         }
@@ -162,6 +169,7 @@ static int MultiwayMerge(InputRun runs[MAX_K], int k, int bufferCapacity, int bl
         output.records[output.length] = winner;
         output.length += 1;
         if (output.length == output.capacity)
+        // A block is written exactly when the shared output buffer reaches capacity; flushing earlier would create smaller artificial blocks.
         {
             FlushOutput(&output, written, &writtenLength, writeBlocks);
         }
@@ -173,6 +181,7 @@ static int MultiwayMerge(InputRun runs[MAX_K], int k, int bufferCapacity, int bl
     }
 
     // The last partial output block is still a block and must not be dropped.
+    // The final flush is outside the loop because the last block is usually partial; dropping it would lose records.
     FlushOutput(&output, written, &writtenLength, writeBlocks);
 
     printf("merged:");
