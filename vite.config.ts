@@ -1,10 +1,13 @@
 import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
 
-// `base: './'` keeps the build usable both at a domain root and under
-// GitHub Pages project paths (/<repo>/). There is no client-side router yet.
+// Local development and generic static hosting use a relative base. GitHub
+// Pages supplies an absolute project prefix through VITE_BASE_PATH so the
+// same source can be deployed under /<repository>/ without a second config.
+const base = process.env.VITE_BASE_PATH ?? './';
+
 export default defineConfig({
-  base: './',
+  base,
   plugins: [react()],
   build: {
     outDir: 'dist',
