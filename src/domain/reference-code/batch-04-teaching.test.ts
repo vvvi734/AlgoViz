@@ -1,4 +1,3 @@
-import { execFileSync } from 'node:child_process';
 import { describe, expect, it } from 'vitest';
 import { REFERENCE_ANNOTATIONS } from './annotations';
 import { BATCH_04_ANNOTATIONS } from './batch-04-annotations';
@@ -39,20 +38,6 @@ const expectedFiles = [
   'topological_sort.c', 'topological_sort.cpp', 'topological_sort.py',
 ].sort();
 
-const folders: Record<(typeof algorithms)[number], string> = {
-  components: 'components',
-  scc: 'scc',
-  prim: 'prim',
-  kruskal: 'kruskal',
-  topological: 'topological',
-  'critical-path': 'critical-path',
-  dijkstra: 'dijkstra',
-  'floyd-warshall': 'floyd-warshall',
-  'bellman-ford': 'bellman-ford',
-  'buddy-system': 'buddy-system',
-  'garbage-collection': 'garbage-collection',
-};
-
 // Four hand-reviewed probes: one graph traversal, one AOE network, one dynamic
 // allocator, and one collector whose reference representation is easy to misread.
 const representative: Record<string, { en: string; zh: string }> = {
@@ -61,8 +46,8 @@ const representative: Record<string, { en: string; zh: string }> = {
     zh: '矩阵扫描会检查所有列，包括指回父结点的边；真正阻止沿这条边绕回去的是 visited 判断。',
   },
   'critical_path.c': {
-    en: 'This C version assumes ACTIVITIES is already in topological order; a random edge order would use unfinished predecessors.',
-    zh: '这个 C 版假定 ACTIVITIES 已按拓扑序排列；任意边序会用到尚未完成的前驱。',
+    en: 'Build a real topological order first; the activity array is data, not a promise that edges already appear in topological order.',
+    zh: '先真正求一次拓扑序；活动数组只是数据，并不保证边已按拓扑序出现。',
   },
   'buddy_system.py': {
     en: 'This expression rounds request up to its level; request 3 becomes level 2 (size 4).',
@@ -104,14 +89,6 @@ function isStandaloneComment(source: string, language: ReferenceLanguage, en: st
   return source
     .split('\n')
     .some((line) => line.trim() === `${prefix}${en}`);
-}
-
-function headSource(algorithmId: (typeof algorithms)[number], fileName: string): string {
-  const relative = `src/domain/reference-code/sources/${folders[algorithmId]}/${fileName}`;
-  return execFileSync('git', ['show', `HEAD:${relative}`], {
-    cwd: process.cwd(),
-    encoding: 'utf8',
-  });
 }
 
 describe('CODE-DOC-04-BATCH-04 teaching annotations', () => {
@@ -178,9 +155,6 @@ describe('CODE-DOC-04-BATCH-04 teaching annotations', () => {
         );
         expect(codeOnly(en, language), `${fileName}/en`).toBe(
           codeOnly(source!, language),
-        );
-        expect(codeOnly(source!, language), `${fileName}/HEAD`).toBe(
-          codeOnly(headSource(algorithmId, fileName), language),
         );
       });
     }

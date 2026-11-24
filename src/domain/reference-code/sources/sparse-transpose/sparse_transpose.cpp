@@ -28,6 +28,7 @@
  */
 
 #include <iostream>
+#include <stdexcept>
 #include <vector>
 
 struct Triple
@@ -50,6 +51,14 @@ struct SparseMatrix
 SparseMatrix fast_transpose(const SparseMatrix &source)
 {
     SparseMatrix result;
+    // Reject coordinates before indexing num[col]: a column outside [0, cols) would otherwise write beyond the column table.
+    for (const Triple &item : source.triples)
+    {
+        if (item.row < 0 || item.row >= source.rows || item.col < 0 || item.col >= source.cols)
+        {
+            throw std::invalid_argument("triplet coordinate outside the matrix");
+        }
+    }
     // The transpose swaps dimensions before any data movement: source columns become result rows and source rows become result columns. Only coordinates change, not the number of non-zero values.
     result.rows = source.cols;
     result.cols = source.rows;

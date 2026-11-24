@@ -28,6 +28,17 @@ static Object objects[MAX_OBJECTS];
 static int object_count = 0;
 static Reference refs[MAX_REFS];
 static int ref_count = 0;
+static int roots[MAX_OBJECTS];
+static int root_count = 0;
+
+// The root set is separate from the object table: not every live object is reachable from index 0.
+static void add_root(int index)
+{
+    if (index >= 0 && index < object_count && root_count < MAX_OBJECTS)
+    {
+        roots[root_count++] = index;
+    }
+}
 
 static void add_object(const char *id, int start, int size)
 {
@@ -50,6 +61,7 @@ static void reset_graph(void)
 {
     object_count = 0;
     ref_count = 0;
+    root_count = 0;
     add_object("A", 0, 12);
     add_object("E", 12, 8);
     add_object("B", 20, 10);
@@ -58,6 +70,7 @@ static void reset_graph(void)
     add_object("G", 46, 6);
     add_object("D", 52, 12);
     add_object("H", 64, 8);
+    add_root(0); // The demo root set is {A}; real embeddings can append more roots with add_root.
     add_ref(0, 2); // A -> B
     add_ref(0, 4); // A -> C
     add_ref(2, 6); // B -> D
@@ -70,33 +83,36 @@ static void mark_reachable(void)
 {
     int stack[MAX_OBJECTS];
     int top = 0;
-    // This demo has exactly one root, A at index 0; a real collector iterates an explicit root set.
-    int root = 0; // The demo has one root, A.
     int index;
     for (index = 0; index < object_count; index += 1)
     {
         // Clear marks before every collection; a stale mark from an earlier cycle would make an unreachable object look live.
         objects[index].marked = 0;
     }
+    // Seed every explicit root, not just object 0; marking before pushing means each object enters the stack at most once.
+    for (index = 0; index < root_count; index += 1)
+    {
+        int root = roots[index];
+        if (root >= 0 && root < object_count && !objects[root].marked)
+        {
+            objects[root].marked = 1;
+            stack[top++] = root;
+        }
+    }
     // DFS starts from the root set; the stack holds pending objects, not the object table itself.
-    stack[top++] = root;
     // Pop order is LIFO; the exact order is irrelevant to reachability as long as every pending object is processed.
     while (top > 0)
     {
         int current = stack[--top];
         int ref_index;
-        if (objects[current].marked)
-        {
-            continue;
-        }
-        // Mark when popping, not when pushing; duplicate pushes are possible before the first pop marks the object.
-        objects[current].marked = 1;
         // Follow every outgoing edge; the marked test prevents cycles from looping.
         // Scanning every reference for each object costs O(N*E); an adjacency list would make marking O(N+E).
         for (ref_index = 0; ref_index < ref_count; ref_index += 1)
         {
             if (refs[ref_index].from == current && !objects[refs[ref_index].to].marked)
             {
+                // Mark on push, not on pop: two parents can reach the same child before either pops, and that must not push it twice.
+                objects[refs[ref_index].to].marked = 1;
                 stack[top++] = refs[ref_index].to;
             }
         }

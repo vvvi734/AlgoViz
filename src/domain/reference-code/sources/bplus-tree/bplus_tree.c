@@ -19,11 +19,11 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 
 #define ORDER 4
 // MAX_KEYS is 3, but the arrays reserve one extra slot: insertion writes the fourth key first, then split_leaf moves it out. The overflow slot is part of the algorithm, not slack.
 #define MAX_KEYS 3
-#define MAX_NODES 72
 
 typedef struct
 {
@@ -43,18 +43,32 @@ typedef struct
     int right;
 } Split;
 
-static BPlusNode nodes[MAX_NODES];
+static BPlusNode *nodes = NULL;
 static int node_count = 0;
+static int node_capacity = 0;
+// 0 means unlimited; a positive value is an explicit test/safety budget that fails cleanly before growing further.
+static int node_limit = 0;
 static int root = -1;
 
 // Purpose: Allocate a real node and initialize the leaf flag, key list and next link together.
 // 作用：分配真实节点，并同时初始化 leaf、键表与 next 链接。
-// The static pool returns a node id, not a pointer; -1 is the allocation failure sentinel and also propagates through Split.valid.
+// The node table grows geometrically: an insertion count is no longer capped by a compile-time constant, and a failed realloc keeps the old table intact.
 static int new_node(int leaf)
 {
-    if (node_count >= MAX_NODES)
+    if (node_limit > 0 && node_count >= node_limit)
     {
         return -1;
+    }
+    if (node_count == node_capacity)
+    {
+        int grown_capacity = node_capacity == 0 ? 16 : node_capacity * 2;
+        BPlusNode *grown = (BPlusNode *)realloc(nodes, (size_t)grown_capacity * sizeof(BPlusNode));
+        if (grown == NULL)
+        {
+            return -1;
+        }
+        nodes = grown;
+        node_capacity = grown_capacity;
     }
     int id = node_count++;
     nodes[id].key_count = 0;
@@ -64,8 +78,8 @@ static int new_node(int leaf)
     return id;
 }
 
-// Purpose: Return the most recently allocated node to the pool only when it is still the last unused node; this is the LIFO undo used when a lower split fails.
-// 作用：仅当最近分配的节点仍是最后一个未使用节点时归还静态池；这是低层分裂失败时的后进先出回滚。
+// Purpose: Return the most recently allocated node only when it is still the last unused node; this is the LIFO undo used when a lower split fails.
+// 作用：仅当最近分配的节点仍是最后一个未使用节点时归还节点表；这是低层分裂失败时的后进先出回滚。
 static void release_node(int id)
 {
     if (id >= 0 && id == node_count - 1 && nodes[id].key_count == 0 && nodes[id].child_count == 0)
@@ -258,7 +272,7 @@ static Split insert_rec(int node, int key)
     return split_internal(node, pending);
 }
 
-// Purpose: Reject duplicates before mutation; preallocate a new root before a taller tree is needed, so a static-pool failure leaves the old root and leaf chain untouched.
+// Purpose: Reject duplicates before mutation; preallocate a new root before a taller tree is needed, so an allocation failure leaves the old root and leaf chain untouched.
 // 作用：修改前拒绝重复；树需要长高前先分配新根，使静态池失败时旧根与叶链保持不变。
 static int insert_key(int key)
 {
@@ -384,5 +398,10 @@ int main(void)
     printf("insert 12 again: %s\n", second_insert == 1 ? "inserted" : second_insert == 0 ? "duplicate" : "allocation failed");
     range_scan(10, 18);
     printf("find 12 after insertion: %s\n", contains(12) ? "found" : "missing");
+    free(nodes);
+    nodes = NULL;
+    node_count = 0;
+    node_capacity = 0;
+    node_limit = 0;
     return 0;
 }

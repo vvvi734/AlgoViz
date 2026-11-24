@@ -182,26 +182,26 @@ export const BATCH_04_ANNOTATIONS: Record<
       "zh": "best 确定后，只有未选邻居还能横跨切割；已选邻居已经在树内。"
     },
     {
-      "en": "This matrix uses zero for 'no edge'; a genuine zero-weight edge would be indistinguishable from absence.",
-      "zh": "这个矩阵用 0 表示“没有边”；真正的零权边会与“无边”无法区分。"
+      "en": "INF marks absence; a genuine zero-weight edge is a legal edge and must still relax key[next].",
+      "zh": "INF 表示没有边；真正的零权边仍是合法边，必须照样更新 key[next]。"
     },
   ],
   "prim.cpp": [
     {
-      "en": "The initial (0,0) is a cut seed, not a tree edge; its zero weight is deliberately excluded from the output.",
-      "zh": "初始的 (0,0) 是切割种子，不是生成树边；它的零权值被刻意排除在输出之外。"
+      "en": "A candidate records the edge's two endpoints, so the root can be distinguished from a real zero-weight edge.",
+      "zh": "候选记录边的两个端点，因此根种子能与真正的零权边区分开。"
     },
     {
       "en": "A vertex can be pushed once per incident edge; the first pop settles it and every later entry is stale.",
       "zh": "一个顶点可能因每条关联边各入堆一次；第一次弹出就确定它，之后所有条目都已过期。"
     },
     {
-      "en": "The root seed contributes zero; every nonzero accepted weight is one edge of the spanning tree.",
-      "zh": "根种子贡献 0；之后每个非零的被接受权值才是一条生成树边。"
+      "en": "The root seed contributes zero; every accepted candidate with a parent is one edge of the spanning tree.",
+      "zh": "根种子贡献 0；每个带父顶点的候选都是一条生成树边。"
     },
     {
-      "en": "This condition suppresses the root's zero weight, but it would also suppress a genuine zero-weight edge; the demo graph has none.",
-      "zh": "这个条件屏蔽了根的零权，但也会屏蔽真正的零权边；演示图中没有这种边。"
+      "en": "Parent presence, not weight != 0, decides whether this candidate is a real tree edge; a zero-weight edge must still be printed.",
+      "zh": "判断真实树边的是父是否存在，而不是 weight != 0；零权边仍必须输出。"
     },
     {
       "en": "Pushing every unselected endpoint is a lazy decrease-key: the heap may hold O(E) candidates instead of one per vertex.",
@@ -218,24 +218,20 @@ export const BATCH_04_ANNOTATIONS: Record<
       "zh": "一个顶点可能因每条关联边各入堆一次；selected 检查会丢弃更旧、更重的过期条目。"
     },
     {
-      "en": "The heap starts with a zero-weight seed for vertex 0; that entry is not an actual tree edge.",
-      "zh": "堆用一个指向顶点 0 的零权种子启动；这个条目不是真正的树边。"
+      "en": "Each candidate stores (weight, vertex, parent); parent -1 marks the zero-weight seed rather than a real edge.",
+      "zh": "每个候选保存 (weight, vertex, parent)；父为 −1 表示零权种子，而不是真正的边。"
     },
     {
-      "en": "A vertex may have several heap entries; the first pop settles it, and later entries are discarded as stale.",
-      "zh": "一个顶点可能在堆里有多个条目；第一次弹出就确定它，后续条目都作为过期项丢弃。"
+      "en": "The seed adds zero; every accepted candidate with a parent is one edge of the spanning tree.",
+      "zh": "种子加的是 0；每个带父顶点的候选都是一条生成树边。"
     },
     {
-      "en": "The seed adds zero; only later accepted weights correspond to edges of the spanning tree.",
-      "zh": "种子加的是 0；之后被接受的权值才对应生成树边。"
-    },
-    {
-      "en": "This skips the zero-weight seed, but a real zero-weight edge would also be hidden; the demo has none.",
-      "zh": "这里跳过零权种子，但真正的零权边也会被隐藏；演示图中没有这种边。"
+      "en": "Parent presence, not truthiness of weight, decides whether this is a real edge; a genuine zero-weight edge must still be printed.",
+      "zh": "判断真实边的是父是否存在，而不是权重的真值；真正的零权边仍必须输出。"
     },
     {
       "en": "Pushing every unselected endpoint is a lazy decrease-key; the heap can grow to O(E) entries.",
-      "zh": "把所有未选端点都入堆是惰性 decrease-key；堆的条目数可能达到 O(E)。"
+      "zh": "把每个未选中的端点都压栈相当于惰性 decrease-key；堆最多增长到 O(E) 条。"
     },
     {
       "en": "If the heap empties before every vertex is selected, the graph is disconnected and the printed total is only partial.",
@@ -286,8 +282,8 @@ export const BATCH_04_ANNOTATIONS: Record<
       "zh": "路径减半在向上走时改写隔代父链接；循环停在代表元上。"
     },
     {
-      "en": "4 is V-1 for this five-vertex demo; a generic implementation must derive the bound from the vertex count.",
-      "zh": "这个五顶点演示里 4 就是 V−1；通用实现必须从顶点数推导这个上界。"
+      "en": "A spanning tree has exactly vertex_count - 1 edges; deriving the bound keeps the early stop valid for other graphs.",
+      "zh": "生成树恰好有 vertex_count−1 条边；从实际顶点数推导上界，换图也不会误停。"
     },
   ],
   "kruskal.py": [
@@ -308,8 +304,8 @@ export const BATCH_04_ANNOTATIONS: Record<
       "zh": "sorted 是稳定的，但正确性不依赖等权边的输入次序；任何有效最小生成树都可以。"
     },
     {
-      "en": "4 is V-1 for this five-vertex demo; a general implementation must use the actual vertex count.",
-      "zh": "这个五顶点演示里 4 是 V−1；通用实现必须使用实际顶点数。"
+      "en": "A spanning tree has exactly vertex_count - 1 edges; the bound must follow the actual graph.",
+      "zh": "生成树恰好有 vertex_count−1 条边；上界必须跟随实际图规模。"
     },
     {
       "en": "Only a successful union adds an edge; a rejected edge already had both endpoints in one set.",
@@ -382,26 +378,26 @@ export const BATCH_04_ANNOTATIONS: Record<
       "zh": "删除一条出边就降低一个邻居的入度；只有等于 0 才是入队触发条件。"
     },
     {
-      "en": "6 is the demo's vertex count; a generic caller must compare with len(graph), which this demo does not.",
-      "zh": "6 是演示图的顶点数；通用调用者必须与 len(graph) 比较，而这个演示没有这样做。"
+      "en": "Compare with the actual vertex count; hard-coding six would mislabel every other graph as cyclic.",
+      "zh": "必须与真实顶点数比较；把 6 写死会让其他规模的图都被误判为有环。"
     },
   ],
   "critical_path.c": [
     {
-      "en": "This C version assumes ACTIVITIES is already in topological order; a random edge order would use unfinished predecessors.",
-      "zh": "这个 C 版假定 ACTIVITIES 已按拓扑序排列；任意边序会用到尚未完成的前驱。"
+      "en": "Build a real topological order first; the activity array is data, not a promise that edges already appear in topological order.",
+      "zh": "先真正求一次拓扑序；活动数组只是数据，并不保证边已按拓扑序出现。"
     },
     {
       "en": "Earliest time is the latest possible finish over all incoming activities; taking max prevents a later predecessor from being ignored.",
       "zh": "最早时间要取所有入边完成时刻的最大值；取 max 才能不忽略较晚的前驱。"
     },
     {
-      "en": "Every latest time starts at the project duration because the demo has one sink at event 5; multiple sinks need their own deadlines.",
-      "zh": "所有最迟时间先设为总工期，因为演示只有一个汇点（事件 5）；多汇点需要各自的截止时间。"
+      "en": "Latest times start at the shared project deadline; reverse topological relaxation lowers every non-sink event.",
+      "zh": "最迟时间从共享的项目期限开始；按逆拓扑序松弛会降低每个非汇点事件。"
     },
     {
-      "en": "The reverse scan walks the edge array backwards; this is a reverse topological order only if the array was topologically sorted.",
-      "zh": "逆推沿边表倒着走；只有边表本身按拓扑序排列时，这才是逆拓扑序。"
+      "en": "Walk the reverse topological order produced by Kahn; an arbitrary edge order would leave latest times incomplete.",
+      "zh": "按 Kahn 生成的逆拓扑序遍历；任意边序会让最迟时间不完整。"
     },
     {
       "en": "Latest time is the minimum of successor latest minus duration; a smaller candidate forces this predecessor to start earlier.",
@@ -504,8 +500,8 @@ export const BATCH_04_ANNOTATIONS: Record<
       "zh": "等长候选不算改进；保留旧前驱可以避免无谓的堆条目。"
     },
     {
-      "en": "path_to assumes target is reachable; an unreachable target has previous -1 and would produce only the target name.",
-      "zh": "path_to 假定目标可达；不可达目标的 previous 是 −1，只会返回目标名。"
+      "en": "An unreachable target has previous == -1, which would otherwise look like a one-vertex path ending at target.",
+      "zh": "不可达目标的 previous 为 −1；若不检查，它看起来就像只含目标的一个顶点路径。"
     },
     {
       "en": "The heap can hold stale entries for settled vertices, so the loop is not bounded by V.",
@@ -862,8 +858,8 @@ export const BATCH_04_ANNOTATIONS: Record<
       "zh": "每轮收集前先清空标记；上一轮遗留的标记会把不可达对象误当成存活。"
     },
     {
-      "en": "This demo has exactly one root, A at index 0; a real collector iterates an explicit root set.",
-      "zh": "这个演示只有一个根 A（下标 0）；真正的收集器要遍历显式根集合。"
+      "en": "The root set is separate from the object table: not every live object is reachable from index 0.",
+      "zh": "根集合独立于对象表：并非所有存活对象都能从下标 0 到达。"
     },
     {
       "en": "DFS starts from the root set; the stack holds pending objects, not the object table itself.",
@@ -874,8 +870,8 @@ export const BATCH_04_ANNOTATIONS: Record<
       "zh": "弹出顺序是后进先出；只要每个待处理对象都被处理，具体顺序不影响可达性。"
     },
     {
-      "en": "Mark when popping, not when pushing; duplicate pushes are possible before the first pop marks the object.",
-      "zh": "弹出时才标记，而不是入栈时；对象第一次被弹出前可能已经重复入栈。"
+      "en": "Mark on push, not on pop: two parents can reach the same child before either pops, and that must not push it twice.",
+      "zh": "入栈时就标记，而不是弹出时：两个父对象可能在任一弹出前都到达同一孩子，不能让它重复入栈。"
     },
     {
       "en": "Scanning every reference for each object costs O(N*E); an adjacency list would make marking O(N+E).",

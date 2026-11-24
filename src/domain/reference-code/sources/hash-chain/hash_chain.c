@@ -118,11 +118,11 @@ void table_print(const HashTable *table)
     }
 }
 
-// Purpose: Free every node in every bucket; this demo does not clear bucket heads, so the table must be re-initialized before reuse.
-// 作用：释放所有桶中的结点；本演示不把桶头置空，因此复用前必须重新初始化。
+// Purpose: Free every node in every bucket and clear the head so the table is safe for reuse.
+// 作用：释放所有桶中的结点，并把桶头清空，使表可安全复用。
 void table_free(HashTable *table)
 {
-    // The function frees nodes but does not clear bucket heads; after it returns the table holds dangling pointers and must be re-initialized before reuse.
+    // Clearing the head is part of the operation: leaving it pointing at freed memory turns a later contains() into a use-after-free.
     for (int i = 0; i < TABLE_SIZE; ++i)
     {
         Node *node = table->buckets[i];
@@ -133,6 +133,7 @@ void table_free(HashTable *table)
             free(node);
             node = next;
         }
+        table->buckets[i] = NULL;
     }
 }
 

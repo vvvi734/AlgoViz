@@ -53,6 +53,21 @@ std::vector<long long> dijkstra(const std::vector<std::vector<Edge>> &graph, int
 {
     const long long infinity = std::numeric_limits<long long>::max();
     const int n = static_cast<int>(graph.size());
+    // Validate the source and every edge target before indexing: an out-of-range vertex would corrupt distance/previous before any path check runs.
+    if (source < 0 || source >= n)
+    {
+        throw std::invalid_argument("source vertex is outside the graph");
+    }
+    for (const auto &neighbours : graph)
+    {
+        for (const Edge &edge : neighbours)
+        {
+            if (edge.to < 0 || edge.to >= n)
+            {
+                throw std::invalid_argument("edge target is outside the graph");
+            }
+        }
+    }
     std::vector<long long> distance(static_cast<std::size_t>(n), infinity);
     std::vector<char> settled(static_cast<std::size_t>(n), 0);
     previous.assign(static_cast<std::size_t>(n), -1);
@@ -102,10 +117,19 @@ std::vector<long long> dijkstra(const std::vector<std::vector<Edge>> &graph, int
 // Purpose: Walk previous[] from target back to the source, reverse it, and return a readable path string.
 // 作用：沿 previous[] 从 target 回溯到源点并反转，返回可读路径字符串。
 std::string path_to(const std::vector<int> &previous, int target,
-                    const std::vector<std::string> &names)
+                    const std::vector<std::string> &names, int source)
 {
+    // An unreachable target has previous == -1, which would otherwise look like a one-vertex path ending at target.
+    if (target < 0 || target >= static_cast<int>(previous.size()))
+    {
+        return "path: unreachable";
+    }
+    if (target != source && previous[static_cast<std::size_t>(target)] == -1)
+    {
+        return "path: unreachable";
+    }
     std::vector<int> path;
-    // path_to assumes target is reachable; an unreachable target has previous -1 and would produce only the target name.
+    // path_to assumes a reachable target; the source is the only valid vertex whose previous is -1.
     for (int current = target; current != -1; current = previous[static_cast<std::size_t>(current)])
     {
         path.push_back(current);
@@ -137,6 +161,6 @@ int main()
     {
         std::cout << names[i] << " distance=" << distance[i] << '\n';
     }
-    std::cout << path_to(previous, 5, names) << '\n';
+    std::cout << path_to(previous, 5, names, 0) << '\n';
     return 0;
 }

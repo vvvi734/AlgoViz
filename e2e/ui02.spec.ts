@@ -138,6 +138,8 @@ test.describe('UI-02 — left animation, right synchronized explanation', () => 
     await expect(page.locator('[data-testid="progress"]')).toHaveText('28 / 46');
     await expect(page.locator('[data-testid="dijkstra-distance-row"][data-node-id="F"]')).toHaveAttribute('data-distance', '4');
     await expect(page.locator('[data-testid="lesson-active-step"]')).toHaveAttribute('data-step-id', 'relax');
+    // The shell's 220px → 64px grid transition must settle before comparing columns.
+    await page.waitForTimeout(320);
 
     const stage = await page.locator('[data-testid="visual-stage"]').boundingBox();
     const rail = await page.locator('[data-testid="explanation-rail"]').boundingBox();

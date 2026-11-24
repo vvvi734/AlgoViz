@@ -45,30 +45,29 @@ def main() -> None:
     add_edge(3, 4, 9)
 
     selected = [False] * 5
-    # The heap starts with a zero-weight seed for vertex 0; that entry is not an actual tree edge.
-    candidates: list[tuple[int, int]] = [(0, 0)]
+    # Each candidate stores (weight, vertex, parent); parent -1 marks the zero-weight seed rather than a real edge.
+    candidates: list[tuple[int, int, int]] = [(0, 0, -1)]
     total = 0
     edges: list[tuple[int, int]] = []
 
     print("mst edges:")
     # If the heap empties before every vertex is selected, the graph is disconnected and the printed total is only partial.
     while candidates:
-        weight, vertex = heapq.heappop(candidates)
+        weight, vertex, parent = heapq.heappop(candidates)
         # A vertex may be pushed once per incident edge; the selected check discards stale, heavier entries.
-        # A vertex may have several heap entries; the first pop settles it, and later entries are discarded as stale.
         if selected[vertex]:
             continue
         selected[vertex] = True
-        # The seed adds zero; only later accepted weights correspond to edges of the spanning tree.
+        # The seed adds zero; every accepted candidate with a parent is one edge of the spanning tree.
         total += weight
-        # This skips the zero-weight seed, but a real zero-weight edge would also be hidden; the demo has none.
-        if weight:
+        # Parent presence, not truthiness of weight, decides whether this is a real edge; a genuine zero-weight edge must still be printed.
+        if parent != -1:
             edges.append((vertex, weight))
-            print("edge to", vertex, ":", weight)
+            print("edge", parent, "-", vertex, ":", weight)
         # Pushing every unselected endpoint is a lazy decrease-key; the heap can grow to O(E) entries.
         for next_weight, next_vertex in graph[vertex]:
             if not selected[next_vertex]:
-                heapq.heappush(candidates, (next_weight, next_vertex))
+                heapq.heappush(candidates, (next_weight, next_vertex, vertex))
 
     print("total:", total)
     assert total == 16

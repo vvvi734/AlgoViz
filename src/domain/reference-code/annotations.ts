@@ -1878,8 +1878,8 @@ const BASE_REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[]>
       zh: "cur 保存的是数组下标而不是机器地址：结点的物理位置由数组固定，改变逻辑后继只需改写这个下标，不必搬动数据。",
     },
     {
-      en: "The initializer clamps the active prefix to CAPACITY before linking anything; a longer input must not make the live chain or the free suffix leave the array.",
-      zh: "初始化在串链之前就把有效前缀截断到 CAPACITY；输入再长也不能让数据链或空闲链越过数组边界。",
+      en: "The initializer rejects a prefix larger than CAPACITY before linking anything; silently clamping would hide the caller's error.",
+      zh: "初始化在串链之前就拒绝超过 CAPACITY 的前缀；静默截断会掩盖调用方的错误。",
     },
     {
       en: "The length is not cached. Walking cur from head is the authoritative count, so this function cannot disagree with the actual live chain.",

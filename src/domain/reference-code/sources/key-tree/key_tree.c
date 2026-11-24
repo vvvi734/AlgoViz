@@ -58,7 +58,11 @@ static int new_node(char letter)
 // 作用：返回一个字符对应的孩子；边不存在时返回 -1。
 static int find_child(int parent, char letter)
 {
-    // Subtracting 'a' assumes a lower-case letter; there is no range check here, so any other byte would index outside the 26-slot alphabet.
+    // Every edge must be a lower-case letter; other bytes would index outside the 26-slot alphabet.
+    if (parent < 0 || parent >= node_count || letter < 'a' || letter > 'z')
+    {
+        return -1;
+    }
     return nodes[parent].child[letter - 'a'];
 }
 
@@ -88,8 +92,16 @@ static int walk_word(const char *word, int *node_out, int *matched_out)
 // 作用：只有每个字符边都存在且末节点 terminal=true 才算命中。
 static int find_word(const char *word, int *matched_out)
 {
-    // This hard-codes the root id as 0. It is true while the root is the first allocated node and never released, but find_word does not verify that assumption.
-    int node = 0;
+    // The root is a field, not an assumed index: allocation order may change, and root is the only valid entry point.
+    if (root < 0 || word == NULL)
+    {
+        if (matched_out != NULL)
+        {
+            *matched_out = 0;
+        }
+        return 0;
+    }
+    int node = root;
     int complete = walk_word(word, &node, matched_out);
     // The two tests answer different questions: complete means the whole path exists, terminal means that path is a stored word; a prefix can pass the first and fail the second.
     return complete && nodes[node].terminal;
@@ -99,9 +111,29 @@ static int find_word(const char *word, int *matched_out)
 // 作用：先拒绝重复，再只为缺失后缀建节点，最后在末端设置 terminal。
 static int insert_word(const char *word)
 {
+    if (word == NULL || root < 0)
+    {
+        return -1;
+    }
+    size_t length = strlen(word);
+    // The prefix buffer is MAX_WORD_LENGTH + 1 bytes; accepting a longer word would overflow it during printing.
+    if (length > MAX_WORD_LENGTH)
+    {
+        return -1;
+    }
+    for (size_t position = 0; position < length; ++position)
+    {
+        if (word[position] < 'a' || word[position] > 'z')
+        {
+            return -1;
+        }
+    }
     int node = root;
     int matched = 0;
     int exists = 1;
+    int saved_count = node_count;
+    int first_parent = -1;
+    char first_letter = '\0';
     while (word[matched] != '\0')
     {
         int child = find_child(node, word[matched]);
@@ -112,7 +144,18 @@ static int insert_word(const char *word)
             child = new_node(word[matched]);
             if (child < 0)
             {
+                // Roll back every node allocated by this call and unlink the first new edge; a failed insert must leave the old dictionary untouched.
+                node_count = saved_count;
+                if (first_parent >= 0)
+                {
+                    nodes[first_parent].child[first_letter - 'a'] = -1;
+                }
                 return -1;
+            }
+            if (first_parent < 0)
+            {
+                first_parent = node;
+                first_letter = word[matched];
             }
             nodes[node].child[word[matched] - 'a'] = child;
         }
@@ -143,7 +186,11 @@ static void print_words(int node, char *prefix, int depth)
         int child = nodes[node].child[slot];
         if (child >= 0)
         {
-            // This write assumes depth is below MAX_WORD_LENGTH; insert_word never enforces the length limit, so a longer word would make the demo buffer overflow.
+            // The buffer is MAX_WORD_LENGTH + 1 bytes; the depth guard prevents a malformed deep tree from writing past it.
+            if (depth >= MAX_WORD_LENGTH)
+            {
+                return;
+            }
             prefix[depth] = nodes[child].letter;
             print_words(child, prefix, depth + 1);
         }
@@ -155,10 +202,19 @@ static void print_words(int node, char *prefix, int depth)
 int main(void)
 {
     root = new_node('\0');
+    if (root < 0)
+    {
+        printf("root allocation failed\n");
+        return 1;
+    }
     const char *words[] = {"car", "card", "care", "cat", "dog", "do"};
     for (int index = 0; index < (int)(sizeof(words) / sizeof(words[0])); ++index)
     {
-        insert_word(words[index]);
+        if (insert_word(words[index]) < 0)
+        {
+            printf("insert %s failed\n", words[index]);
+            return 1;
+        }
     }
     char prefix[MAX_WORD_LENGTH + 1] = {0};
     printf("dictionary:\n");

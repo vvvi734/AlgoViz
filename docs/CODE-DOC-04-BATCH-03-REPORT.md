@@ -260,6 +260,8 @@ def bfs(graph: list[list[int]], start: int) -> list[int]:
 
 ## 10. 未修改的实现风险
 
+> **2026-11-24 回填：本节 6 项均已修复。** 逐项修复与验证见 `docs/CODE-DOC-04-HISTORICAL-RISK-REPORT.md` 第 2.2 节；以下保留原始登记记录作为审计历史。
+
 1. `huffman.c`：`main` 的 `heap_push(&heap, make_node(...))` 未检查 `make_node` 的 NULL 返回；分配失败会解引用空指针。
 2. `huffman.c`：合并循环的 `parent = make_node(...)` 同样未检查 NULL，随后直接写 `parent->left` / `parent->right`。
 3. `huffman.c`：`MinHeap` 固定数组容量，未做运行时容量检查；当前示例在容量内，换更大输入可能越界。

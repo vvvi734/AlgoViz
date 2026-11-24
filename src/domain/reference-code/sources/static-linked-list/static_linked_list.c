@@ -43,9 +43,14 @@ typedef struct
 /* Build the live chain in logical order, then chain every remaining cell. */
 // Build a static list from the given values by chaining the data list first and the leftover slots into the free list.
 // 用给定值建立静态链表：先串数据链表，再把剩余槽串成空闲链表。
-static void static_init(StaticList *list, const int *values, int count)
+static int static_init(StaticList *list, const int *values, int count)
 {
     int i;
+    // Reject invalid arguments before touching the array: a negative count or an oversized prefix cannot be represented, and a non-empty input needs storage.
+    if (list == NULL || count < 0 || count > CAPACITY || (count > 0 && values == NULL))
+    {
+        return -1;
+    }
     list->head = NULL_INDEX;
     list->free_head = NULL_INDEX;
     for (i = 0; i < CAPACITY; ++i)
@@ -53,9 +58,7 @@ static void static_init(StaticList *list, const int *values, int count)
         list->nodes[i].data = 0;
         list->nodes[i].cur = NULL_INDEX;
     }
-    // The initializer clamps the active prefix to CAPACITY before linking anything; a longer input must not make the live chain or the free suffix leave the array.
-    if (count > CAPACITY)
-        count = CAPACITY;
+    // The initializer rejects a prefix larger than CAPACITY before linking anything; silently clamping would hide the caller's error.
 
     for (i = 0; i < count; ++i)
     { /* live prefix */
@@ -71,6 +74,7 @@ static void static_init(StaticList *list, const int *values, int count)
     }
     if (count < CAPACITY)
         list->free_head = count;
+    return 0;
 }
 
 // Count live elements by following cur from the data-list head.
@@ -201,7 +205,11 @@ int main(void)
 {
     const int values[] = {10, 20, 30};
     StaticList list;
-    static_init(&list, values, 3);
+    if (static_init(&list, values, 3) != 0)
+    {
+        printf("static_init failed\n");
+        return 1;
+    }
 
     printf("physical rows:\n");
     {

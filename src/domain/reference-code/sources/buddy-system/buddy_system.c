@@ -3,8 +3,8 @@
 #include <stdio.h>
 #include <string.h>
 
-#define MAX_BLOCKS 32
-#define MAX_LABEL 4
+#define MAX_BLOCKS 128
+#define MAX_LABEL 32
 
 typedef struct
 {
@@ -37,8 +37,13 @@ static int level_of(int size)
     return level;
 }
 
-static void init_memory(int total)
+static int init_memory(int total)
 {
+    // Reject the capacity before publishing it: a non-power-of-two heap cannot be split into aligned buddies, and allocate_block would fail later.
+    if (!power_of_two(total))
+    {
+        return 0;
+    }
     count = 1;
     capacity = total;
     max_level = level_of(total);
@@ -48,11 +53,17 @@ static void init_memory(int total)
     // The heap starts as one free root covering [0, capacity); for the required power-of-two capacity, max_level is log2(capacity).
     blocks[0].free = 1;
     blocks[0].label[0] = '\0';
+    return 1;
 }
 
-static void insert_block(int index, int start, int size, int free)
+static int insert_block(int index, int start, int size, int free)
 {
     int position;
+    // The table is fixed; a caller must reserve capacity before splitting rather than writing past blocks[MAX_BLOCKS - 1].
+    if (count >= MAX_BLOCKS)
+    {
+        return 0;
+    }
     for (position = count; position > index; position -= 1)
     {
         blocks[position] = blocks[position - 1];
@@ -63,6 +74,7 @@ static void insert_block(int index, int start, int size, int free)
     blocks[index].free = free;
     blocks[index].label[0] = '\0';
     count += 1;
+    return 1;
 }
 
 static void remove_block(int index)
@@ -77,13 +89,27 @@ static void remove_block(int index)
 
 static int allocate_block(const char *id, int request)
 {
-    int target_level = level_of(request);
+    int target_level;
     int level;
     int index = -1;
+    // The label is copied into a fixed field, so an empty, overlong or duplicate id must be rejected before any block is marked used.
+    if (id == NULL || id[0] == '\0' || strlen(id) >= MAX_LABEL)
+    {
+        return 0;
+    }
+    for (int existing = 0; existing < count; existing += 1)
+    {
+        if (!blocks[existing].free && strcmp(blocks[existing].label, id) == 0)
+        {
+            return 0;
+        }
+    }
+    // Validate the request before level_of(): computing ceil(log2()) on an out-of-range value could shift past the int width.
     if (!power_of_two(capacity) || request <= 0 || request > capacity)
     {
         return 0;
     }
+    target_level = level_of(request);
 
     // Find the smallest free block at or above the rounded target level.
     // Search upward from the rounded target level and stop at the first free level; taking a larger block would split more than necessary.
@@ -106,12 +132,19 @@ static int allocate_block(const char *id, int request)
 
     // Halve the chosen block repeatedly; the left half stays the working block.
     // Each split keeps the left half in place and inserts the right half immediately after it; address order and the chosen index stay valid.
+    if (count + (blocks[index].level - target_level) > MAX_BLOCKS)
+    {
+        return 0;
+    }
     while (blocks[index].level > target_level)
     {
         int half = blocks[index].size / 2;
         blocks[index].size = half;
         blocks[index].level -= 1;
-        insert_block(index + 1, blocks[index].start + half, half, 1);
+        if (!insert_block(index + 1, blocks[index].start + half, half, 1))
+        {
+            return 0;
+        }
     }
     // The block is marked used only after all splits, so it stays free until every split has completed.
     blocks[index].free = 0;
@@ -188,7 +221,7 @@ static void print_blocks(void)
 
 int main(void)
 {
-    init_memory(32);
+    if (!init_memory(32)) return 1;
     if (!allocate_block("A", 3)) return 1;
     if (!allocate_block("B", 5)) return 1;
     if (!allocate_block("C", 2)) return 1;

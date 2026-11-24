@@ -42,6 +42,7 @@ enum GlTag
 };
 
 constexpr int GL_ATOM_MAX = 8;
+constexpr int GL_MAX_DEPTH = 64;
 
 struct GLNode
 {
@@ -98,11 +99,16 @@ void append_child(GLNode *list, GLNode *child)
 }
 
 // Depth semantics: atom 0, empty list 1, non-empty list 1 + maximum child depth; null is only a defensive 0.
-int gl_depth(const GLNode *node)
+static int gl_depth_limited(const GLNode *node, int remaining)
 {
     if (node == nullptr)
     {
         return 0;
+    }
+    // Bound the recursion before the C++ call stack becomes the failure point; -1 reports that the limit was exceeded.
+    if (remaining <= 0)
+    {
+        return -1;
     }
     if (node->tag == GL_ATOM)
     {
@@ -120,7 +126,11 @@ int gl_depth(const GLNode *node)
         // 子表并列，深度取最大值；不能把所有子表深度相加。
         // Sibling sublists are alternatives; take the maximum, not the sum.
         // head moves one level down, while the loop's child=child->next stays on the sibling chain. Recursion depth therefore tracks nesting, not the number of siblings.
-        int child_depth = gl_depth(child);
+        int child_depth = gl_depth_limited(child, remaining - 1);
+        if (child_depth < 0)
+        {
+            return -1;
+        }
         if (child_depth > best)
         {
             best = child_depth;
@@ -128,6 +138,12 @@ int gl_depth(const GLNode *node)
     }
     // The +1 accounts for the current list layer; the maximum, not a sum, ensures several sibling branches do not inflate the depth.
     return best + 1;
+}
+
+// Public entry point: -1 means the nesting exceeded GL_MAX_DEPTH, not that the list is empty.
+int gl_depth(const GLNode *node)
+{
+    return gl_depth_limited(node, GL_MAX_DEPTH);
 }
 
 // Save next before delete, and release the head chain first so nested children are not lost.

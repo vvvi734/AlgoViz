@@ -40,6 +40,7 @@
 #define GL_ATOM 0
 #define GL_LIST 1
 #define GL_ATOM_MAX 8
+#define GL_MAX_DEPTH 64
 
 typedef struct GLNode
 {
@@ -109,9 +110,14 @@ void append_child(GLNode *list, GLNode *child)
 
 // A deep copy must allocate the new parent before descending; sharing a child would alias source and copy.
 // On child failure, free the partially built subtree instead of returning a half-connected list.
-GLNode *copy_one(const GLNode *src)
+static GLNode *copy_one_limited(const GLNode *src, int remaining)
 {
     if (src == NULL)
+    {
+        return NULL;
+    }
+    // Reject pathological nesting before C recursion exhausts the call stack; the caller treats NULL as failure and frees any partial copy.
+    if (remaining <= 0)
     {
         return NULL;
     }
@@ -131,7 +137,7 @@ GLNode *copy_one(const GLNode *src)
     GLNode **tail = &dst->value.head;
     for (const GLNode *child = src->value.head; child != NULL; child = child->next)
     {
-        GLNode *child_copy = copy_one(child);
+        GLNode *child_copy = copy_one_limited(child, remaining - 1);
         // 新副本一旦分配失败，必须回收已经建好的部分，避免半成品泄漏。
         // If a child copy fails, free the partially built subtree to avoid a leak.
         // A failed recursive copy leaves a partially linked subtree. Free it through the real child edges before returning NULL, so the caller never receives a half-built list.
@@ -145,6 +151,12 @@ GLNode *copy_one(const GLNode *src)
         tail = &child_copy->next;
     }
     return dst;
+}
+
+// Public entry point: NULL also reports failure when the source nesting exceeds GL_MAX_DEPTH.
+GLNode *copy_one(const GLNode *src)
+{
+    return copy_one_limited(src, GL_MAX_DEPTH);
 }
 
 // 递归释放整棵表；先保存 next，再释放当前节点和 head 链。

@@ -41,6 +41,7 @@ enum GlTag
 };
 
 constexpr int GL_ATOM_MAX = 8;
+constexpr int GL_MAX_DEPTH = 64;
 
 struct GLNode
 {
@@ -100,9 +101,14 @@ void append_child(GLNode *parent, GLNode *child)
 
 // A deep copy allocates the new parent before descending; reusing a child would keep source and copy aliased.
 // On allocation failure, free the half-built subtree rather than returning a partially linked copy.
-GLNode *copy_one(const GLNode *src)
+static GLNode *copy_one_limited(const GLNode *src, int remaining)
 {
     if (src == nullptr)
+    {
+        return nullptr;
+    }
+    // Bound recursion before the C++ call stack overflows; the caller treats nullptr as failure and frees the partial copy.
+    if (remaining <= 0)
     {
         return nullptr;
     }
@@ -118,7 +124,7 @@ GLNode *copy_one(const GLNode *src)
     GLNode **tail = &dst->value.head;
     for (const GLNode *child = src->value.head; child != nullptr; child = child->next)
     {
-        GLNode *child_copy = copy_one(child);
+        GLNode *child_copy = copy_one_limited(child, remaining - 1);
         // 分配失败时回收已建好的半棵副本，避免内存泄漏。
         // On allocation failure, free the half-built copy instead of leaking it.
         // A throw from a deeper allocation is not caught here, but this null check still guards the contract. Freeing the half-built subtree keeps ownership clean on failure.
@@ -132,6 +138,12 @@ GLNode *copy_one(const GLNode *src)
         tail = &child_copy->next;
     }
     return dst;
+}
+
+// Public entry point: nullptr also reports failure when the source nesting exceeds GL_MAX_DEPTH.
+GLNode *copy_one(const GLNode *src)
+{
+    return copy_one_limited(src, GL_MAX_DEPTH);
 }
 
 // Save next before delete and free the head chain first, so neither siblings nor children are lost.

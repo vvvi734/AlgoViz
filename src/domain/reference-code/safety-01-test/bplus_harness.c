@@ -7,12 +7,33 @@
 #include <stdlib.h>
 #include <string.h>
 
+// The harness owns the test budget: the implementation itself grows without a
+// compile-time cap, so these constants describe the failure point under test.
+#define MAX_NODES 72
+#define HARNESS_NODES 4096
+
 #define main bplus_app_main
 #include "../sources/bplus-tree/bplus_tree.c"
 #undef main
 
-static int visited[MAX_NODES];
-static int leaf_ids[MAX_NODES];
+static void ensure_capacity(int cap)
+{
+    if (node_capacity >= cap)
+    {
+        return;
+    }
+    BPlusNode *grown = (BPlusNode *)realloc(nodes, (size_t)cap * sizeof(BPlusNode));
+    if (grown == NULL)
+    {
+        fprintf(stderr, "harness realloc failed\n");
+        exit(2);
+    }
+    nodes = grown;
+    node_capacity = cap;
+}
+
+static int visited[HARNESS_NODES];
+static int leaf_ids[HARNESS_NODES];
 static int leaf_count;
 static int leaf_depth = -1;
 static int chain_ok;
@@ -29,7 +50,7 @@ static int subtree_min_key(int id)
 
 static int validate_node(int id, int depth)
 {
-    if (id < 0 || id >= MAX_NODES || visited[id])
+    if (id < 0 || id >= node_count || visited[id])
     {
         return 0;
     }
@@ -56,7 +77,7 @@ static int validate_node(int id, int depth)
             return 0;
         }
         leaf_ids[leaf_count++] = id;
-        return nodes[id].next >= -1 && nodes[id].next < MAX_NODES;
+        return nodes[id].next >= -1 && nodes[id].next < node_count;
     }
     if (nodes[id].child_count != nodes[id].key_count + 1)
     {
@@ -64,7 +85,7 @@ static int validate_node(int id, int depth)
     }
     for (int index = 0; index < nodes[id].child_count; ++index)
     {
-        if (nodes[id].children[index] < 0 || nodes[id].children[index] >= MAX_NODES)
+        if (nodes[id].children[index] < 0 || nodes[id].children[index] >= node_count)
         {
             return 0;
         }
@@ -163,6 +184,8 @@ static int run_failure(const char *mode, int build_count, int cap, int target)
     int before_valid = validate_bplus(build_count);
     int before_contains = all_contains(1, build_count);
     int before_leaves = leaf_count;
+    ensure_capacity(cap);
+    node_limit = cap;
     node_count = cap;
     int result = insert_key(target);
     int after_valid = validate_bplus(build_count);
@@ -201,6 +224,8 @@ static int run_no_split_under_cap(void)
         return 1;
     }
     int before_leaves = leaf_count;
+    ensure_capacity(MAX_NODES);
+    node_limit = MAX_NODES;
     node_count = MAX_NODES;
     int result = insert_key(65);
     int after_valid = validate_bplus(65);
@@ -334,6 +359,8 @@ static int run_internal_split_failure(void)
         before_present = before_present && contains(existing[index]);
     }
     int before_leaves = leaf_count;
+    ensure_capacity(MAX_NODES - 2);
+    node_limit = MAX_NODES - 2;
     node_count = MAX_NODES - 2;
     int result = insert_key(18);
     int after_valid = validate_bplus(18);
@@ -377,6 +404,8 @@ int main(int argc, char **argv)
     {
         root = -1;
         node_count = 0;
+        ensure_capacity(MAX_NODES);
+        node_limit = MAX_NODES;
         node_count = MAX_NODES;
         int result = insert_key(10);
         int ok = result == -1 && root == -1 && node_count == MAX_NODES;
@@ -398,6 +427,29 @@ int main(int argc, char **argv)
     if (strcmp(mode, "internal-second") == 0)
     {
         return run_failure(mode, 69, MAX_NODES - 1, 70);
+    }
+    if (strcmp(mode, "dynamic-growth") == 0)
+    {
+        root = -1;
+        node_count = 0;
+        node_limit = 0;
+        int ok = 1;
+        for (int key = 1; key <= 500; ++key)
+        {
+            if (insert_key(key) != 1)
+            {
+                ok = 0;
+                break;
+            }
+        }
+        int valid = validate_bplus(500);
+        int present = all_contains(1, 500);
+        printf("MODE=%s\n", mode);
+        printf("NODE_COUNT=%d\n", node_count);
+        printf("VALID=%d\n", valid);
+        printf("ALL_KEYS=%d\n", present);
+        printf("ALL_OK=%d\n", ok && valid && present);
+        return (ok && valid && present) ? 0 : 1;
     }
     if (strcmp(mode, "normal") == 0)
     {

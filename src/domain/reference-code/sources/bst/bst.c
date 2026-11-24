@@ -32,16 +32,18 @@ typedef struct BSTNode
 // Purpose: Insert value by the left-smaller/right-larger rule; inserted distinguishes a new key from a duplicate, and the new subtree root is returned.
 // 作用：按左小右大插入 value；inserted 区分新插入与重复键，返回新的子树根。
 // The recursive call returns the subtree root, and the caller stores it back into left or right; skipping that assignment would lose the newly inserted node.
-BSTNode *BSTInsert(BSTNode *root, int value, bool *inserted)
+BSTNode *BSTInsert(BSTNode *root, int value, bool *inserted, bool *failed)
 {
+    *failed = false;
     // Null is the unique insertion point; allocation happens only when the search path falls off the tree.
     if (root == NULL)
     {
         BSTNode *node = (BSTNode *)malloc(sizeof(BSTNode));
-        // Allocation failure sets inserted=false, but this teaching function still returns NULL; a production caller must propagate failure instead of assigning NULL over an existing subtree.
+        // A failed allocation returns NULL only at this empty slot; the parent must not publish it as a replacement for an existing subtree.
         if (node == NULL)
         {
             *inserted = false;
+            *failed = true;
             return NULL;
         }
         node->value = value;
@@ -53,11 +55,21 @@ BSTNode *BSTInsert(BSTNode *root, int value, bool *inserted)
     // Strict comparisons send equal keys to the final else branch; that is why duplicates are rejected rather than stored on an arbitrary side.
     if (value < root->value)
     {
-        root->left = BSTInsert(root->left, value, inserted);
+        BSTNode *child = BSTInsert(root->left, value, inserted, failed);
+        if (*failed)
+        {
+            return root;
+        }
+        root->left = child;
     }
     else if (value > root->value)
     {
-        root->right = BSTInsert(root->right, value, inserted);
+        BSTNode *child = BSTInsert(root->right, value, inserted, failed);
+        if (*failed)
+        {
+            return root;
+        }
+        root->right = child;
     }
     else
     {
@@ -116,10 +128,17 @@ int main(void)
     BSTNode *root = NULL;
     int keys[] = {50, 30, 70, 20, 40, 60, 80};
     bool inserted = false;
+    bool failed = false;
 
     for (int index = 0; index < (int)(sizeof(keys) / sizeof(keys[0])); ++index)
     {
-        root = BSTInsert(root, keys[index], &inserted);
+        root = BSTInsert(root, keys[index], &inserted, &failed);
+        if (failed)
+        {
+            printf("allocation failed while inserting %d\n", keys[index]);
+            FreeTree(root);
+            return 1;
+        }
     }
 
     printf("inorder:");
@@ -127,7 +146,12 @@ int main(void)
     printf("\n");
     printf("search 60: %s\n", BSTSearch(root, 60) != NULL ? "found" : "missing");
     printf("search 65: %s\n", BSTSearch(root, 65) != NULL ? "found" : "missing");
-    root = BSTInsert(root, 30, &inserted);
+    root = BSTInsert(root, 30, &inserted, &failed);
+    if (failed)
+    {
+        FreeTree(root);
+        return 1;
+    }
     printf("duplicate 30 inserted: %s\n", inserted ? "yes" : "no");
 
     FreeTree(root);

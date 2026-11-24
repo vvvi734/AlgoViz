@@ -68,8 +68,8 @@ const batchAlgorithms = [
   {
     id: 'critical-path',
     name: '关键路径',
-    zh: '这个 C 版假定 ACTIVITIES 已按拓扑序排列；任意边序会用到尚未完成的前驱。',
-    en: 'This C version assumes ACTIVITIES is already in topological order; a random edge order would use unfinished predecessors.',
+    zh: '先真正求一次拓扑序；活动数组只是数据，并不保证边已按拓扑序出现。',
+    en: 'Build a real topological order first; the activity array is data, not a promise that edges already appear in topological order.',
   },
   {
     id: 'dijkstra',
@@ -116,8 +116,8 @@ const batchAlgorithms = [
   {
     id: 'bst',
     name: '二叉排序树',
-    zh: '分配失败会置 inserted=false，但这个教学函数仍返回 NULL；生产调用方必须向上传播失败，不能把 NULL 覆盖到已有子树上。',
-    en: 'Allocation failure sets inserted=false, but this teaching function still returns NULL; a production caller must propagate failure instead of assigning NULL over an existing subtree.',
+    zh: '分配失败只会在空槽处返回 NULL；父节点不能把它当作已有子树的替代值发布。',
+    en: 'A failed allocation returns NULL only at this empty slot; the parent must not publish it as a replacement for an existing subtree.',
   },
   {
     id: 'avl',
@@ -140,14 +140,14 @@ const batchAlgorithms = [
   {
     id: 'key-tree',
     name: '键树',
-    zh: '这里把根结点 id 硬编码为 0。只要根是第一个分配且从不释放的结点，这个假设成立，但 find_word 并不校验它。',
-    en: 'This hard-codes the root id as 0. It is true while the root is the first allocated node and never released, but find_word does not verify that assumption.',
+    zh: '根是显式字段而不是假定的下标：分配顺序可能变化，root 才是唯一合法入口。',
+    en: 'The root is a field, not an assumed index: allocation order may change, and root is the only valid entry point.',
   },
   {
     id: 'hash-chain',
     name: '链地址法',
-    zh: '这个函数释放结点但不清理桶头；返回后表中仍是悬空指针，复用前必须重新初始化。',
-    en: 'The function frees nodes but does not clear bucket heads; after it returns the table holds dangling pointers and must be re-initialized before reuse.',
+    zh: '清空桶头是操作的一部分：若仍指向已释放内存，后续 contains() 就是 use-after-free。',
+    en: 'Clearing the head is part of the operation: leaving it pointing at freed memory turns a later contains() into a use-after-free.',
   },
   {
     id: 'hash-probe',

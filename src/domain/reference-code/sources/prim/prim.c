@@ -22,7 +22,11 @@
 #define INF 1000000
 
 static const int GRAPH[VERTEX_COUNT][VERTEX_COUNT] = {
-    {0, 2, 0, 6, 0}, {2, 0, 3, 8, 5}, {0, 3, 0, 0, 7}, {6, 8, 0, 0, 9}, {0, 5, 7, 9, 0},
+    {0, 2, INF, 6, INF},
+    {2, 0, 3, 8, 5},
+    {INF, 3, 0, INF, 7},
+    {6, 8, INF, 0, 9},
+    {INF, 5, 7, 9, 0},
 };
 
 // `key[v]` is the lightest edge from v to the current tree; `parent[v]` records the endpoint that supplied it.
@@ -72,8 +76,8 @@ void Prim(void)
         for (int next = 0; next < VERTEX_COUNT; ++next)
         {
             // Only an unselected vertex can still cross the cut; strict < keeps the first lightest edge.
-            // This matrix uses zero for 'no edge'; a genuine zero-weight edge would be indistinguishable from absence.
-            if (GRAPH[best][next] != 0 && !selected[next] && GRAPH[best][next] < key[next])
+            // INF marks absence; a genuine zero-weight edge is a legal edge and must still relax key[next].
+            if (GRAPH[best][next] < INF && !selected[next] && GRAPH[best][next] < key[next])
             {
                 key[next] = GRAPH[best][next];
                 parent[next] = best;

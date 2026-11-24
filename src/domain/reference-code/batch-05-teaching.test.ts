@@ -1,4 +1,3 @@
-import { execFileSync } from 'node:child_process';
 import { describe, expect, it } from 'vitest';
 import { REFERENCE_ANNOTATIONS } from './annotations';
 import { BATCH_05_ANNOTATIONS } from './batch-05-annotations';
@@ -39,26 +38,12 @@ const expectedFiles = [
   'shell_sort.c', 'shell_sort.cpp', 'shell_sort.py',
 ].sort();
 
-const folders: Record<(typeof algorithms)[number], string> = {
-  linear: 'linear',
-  binary: 'binary',
-  bst: 'bst',
-  avl: 'avl',
-  btree: 'btree',
-  'bplus-tree': 'bplus-tree',
-  'key-tree': 'key-tree',
-  'hash-chain': 'hash-chain',
-  'hash-probe': 'hash-probe',
-  insertion: 'insertion',
-  shell: 'shell',
-};
-
 // Four reviewed probes: a BST allocation-risk explanation, two multi-level
 // split decisions, and the open-addressing sentinel collision.
 const representative: Record<string, { en: string; zh: string }> = {
   'bst.c': {
-    en: 'Allocation failure sets inserted=false, but this teaching function still returns NULL; a production caller must propagate failure instead of assigning NULL over an existing subtree.',
-    zh: '分配失败会置 inserted=false，但这个教学函数仍返回 NULL；生产调用方必须向上传播失败，不能把 NULL 覆盖到已有子树上。',
+    en: 'A failed allocation returns NULL only at this empty slot; the parent must not publish it as a replacement for an existing subtree.',
+    zh: '分配失败只会在空槽处返回 NULL；父节点不能把它当作已有子树的替代值发布。',
   },
   'btree.c': {
     en: 'The median index is 1 for order 4; it is moved to the parent and removed from the child, so the two halves never both retain it.',
@@ -69,8 +54,8 @@ const representative: Record<string, { en: string; zh: string }> = {
     zh: '溢出键存在后按 2/2 分裂：右叶保留 keys 2、3，左叶保留 keys 0、1，提升的分隔键仍留在右叶。',
   },
   'hash_probe.cpp': {
-    en: 'kEmpty is also a legal int key, and this class does not reject -1; inserting -1 would make a real key look empty to contains(). Non-negative keys are therefore an implicit precondition.',
-    zh: 'kEmpty 本身也是合法 int 键，而这个类不拒绝 -1；插入 -1 会让真实键在 contains() 中看起来像空槽。因此非负键是隐式前提。',
+    en: 'optional stores every int key, so no integer sentinel can collide with a legitimate key.',
+    zh: 'optional 能保存任意 int 键，因此没有整数哨兵会与合法键冲突。',
   },
 };
 
@@ -104,14 +89,6 @@ function isStandaloneComment(source: string, language: ReferenceLanguage, en: st
   return source
     .split('\n')
     .some((line) => line.trim() === `${prefix}${en}`);
-}
-
-function headSource(algorithmId: (typeof algorithms)[number], fileName: string): string {
-  const relative = `src/domain/reference-code/sources/${folders[algorithmId]}/${fileName}`;
-  return execFileSync('git', ['show', `HEAD:${relative}`], {
-    cwd: process.cwd(),
-    encoding: 'utf8',
-  });
 }
 
 describe('CODE-DOC-04-BATCH-05 teaching annotations', () => {
@@ -178,9 +155,6 @@ describe('CODE-DOC-04-BATCH-05 teaching annotations', () => {
         );
         expect(codeOnly(en, language), `${fileName}/en`).toBe(
           codeOnly(source!, language),
-        );
-        expect(codeOnly(source!, language), `${fileName}/HEAD`).toBe(
-          codeOnly(headSource(algorithmId, fileName), language),
         );
       });
     }

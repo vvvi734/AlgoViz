@@ -85,8 +85,22 @@ Node *list_append(DoublyList *list, int value)
 }
 
 // Removal repairs both `prev` and `next`; removing the head or tail must also update the external head/tail pointer.
-void list_remove(DoublyList *list, Node *node)
+int list_remove(DoublyList *list, Node *node)
 {
+    // A pointer from another list still has plausible prev/next links, so membership must be proved before any splice or free.
+    if (list == NULL || node == NULL)
+    {
+        return 0;
+    }
+    Node *current = list->head;
+    while (current != NULL && current != node)
+    {
+        current = current->next;
+    }
+    if (current == NULL)
+    {
+        return 0;
+    }
     // Head removal has no predecessor to patch, so it must move list->head to node->next instead.
     if (node->prev != NULL)
     {
@@ -106,6 +120,7 @@ void list_remove(DoublyList *list, Node *node)
         list->tail = node->prev;
     }
     free(node);
+    return 1;
 }
 
 void list_print_forward(const DoublyList *list)
@@ -153,7 +168,10 @@ int main(void)
     printf("backward: ");
     list_print_backward(&list);
 
-    list_remove(&list, two);
+    if (!list_remove(&list, two))
+    {
+        printf("remove 2 rejected\n");
+    }
     printf("after remove 2: ");
     list_print_forward(&list);
     printf("tail prev: %d\n",

@@ -79,6 +79,15 @@ static int fast_transpose(const TripletList *src, TripletList *dst)
     {
         return 0;
     }
+    // Validate every coordinate before any write: --num[col] would index outside the column table when col >= cols, corrupting memory.
+    for (k = 0; k < src->count; ++k)
+    {
+        if (src->data[k].row < 0 || src->data[k].row >= src->rows ||
+            src->data[k].col < 0 || src->data[k].col >= src->cols)
+        {
+            return 0;
+        }
+    }
 
     // Transpose swaps the shape immediately: the source column count becomes the destination row count, and vice versa. The triplet count stays the same because non-zero positions are only relabelled.
     dst->rows = src->cols;

@@ -53,7 +53,8 @@ bool ListInsert(SeqList *list, int index, int value)
 
 bool ListErase(SeqList *list, int index, int *removed)
 {
-    if (index < 0 || index >= list->length)
+    // The output pointer is part of the contract; writing through NULL would crash before the caller sees the false result.
+    if (list == NULL || removed == NULL || index < 0 || index >= list->length)
     {
         return false;
     }

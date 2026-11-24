@@ -13,8 +13,8 @@
  * Events are vertices; activities are directed edges with a duration. The
  * earliest event time is the longest path from the source, and the latest event
  * time is the longest path that still meets the project deadline. An activity is
- * critical when its earliest start equals its latest start. Edges are listed in
- * topological order, so forward and backward passes each scan the list once.
+ * critical when its earliest start equals its latest start. A Kahn pass builds
+ * the processing order, so the activity array does not have to be sorted.
  */
 
 #include <stdio.h>
@@ -40,30 +40,90 @@ void CriticalPath(void)
 {
     int earliest[EVENT_COUNT] = {0};
     int latest[EVENT_COUNT];
+    int indegree[EVENT_COUNT] = {0};
+    int order[EVENT_COUNT];
+    int order_count = 0;
+    int queue[EVENT_COUNT];
+    int head = 0;
+    int tail = 0;
 
-    // This C version assumes ACTIVITIES is already in topological order; a random edge order would use unfinished predecessors.
+    // Build a real topological order first; the activity array is data, not a promise that edges already appear in topological order.
     for (int index = 0; index < ACTIVITY_COUNT; ++index)
     {
-        // Earliest time is the latest possible finish over all incoming activities; taking max prevents a later predecessor from being ignored.
-        int candidate = earliest[ACTIVITIES[index].from] + ACTIVITIES[index].duration;
-        if (candidate > earliest[ACTIVITIES[index].to])
-        {
-            earliest[ACTIVITIES[index].to] = candidate;
-        }
+        ++indegree[ACTIVITIES[index].to];
     }
     for (int event = 0; event < EVENT_COUNT; ++event)
     {
-        // Every latest time starts at the project duration because the demo has one sink at event 5; multiple sinks need their own deadlines.
-        latest[event] = earliest[EVENT_COUNT - 1];
-    }
-    // The reverse scan walks the edge array backwards; this is a reverse topological order only if the array was topologically sorted.
-    for (int index = ACTIVITY_COUNT - 1; index >= 0; --index)
-    {
-        int candidate = latest[ACTIVITIES[index].to] - ACTIVITIES[index].duration;
-        // Latest time is the minimum of successor latest minus duration; a smaller candidate forces this predecessor to start earlier.
-        if (candidate < latest[ACTIVITIES[index].from])
+        if (indegree[event] == 0)
         {
-            latest[ACTIVITIES[index].from] = candidate;
+            queue[tail++] = event;
+        }
+    }
+    while (head < tail)
+    {
+        int event = queue[head++];
+        order[order_count++] = event;
+        for (int index = 0; index < ACTIVITY_COUNT; ++index)
+        {
+            if (ACTIVITIES[index].from == event && --indegree[ACTIVITIES[index].to] == 0)
+            {
+                queue[tail++] = ACTIVITIES[index].to;
+            }
+        }
+    }
+    if (order_count != EVENT_COUNT)
+    {
+        printf("cycle detected\n");
+        return;
+    }
+
+    // Process events in topological order, so every predecessor has already contributed its finish time.
+    for (int position = 0; position < order_count; ++position)
+    {
+        int event = order[position];
+        for (int index = 0; index < ACTIVITY_COUNT; ++index)
+        {
+            if (ACTIVITIES[index].from == event)
+            {
+                // Earliest time is the latest possible finish over all incoming activities; taking max prevents a later predecessor from being ignored.
+                int candidate = earliest[event] + ACTIVITIES[index].duration;
+                if (candidate > earliest[ACTIVITIES[index].to])
+                {
+                    earliest[ACTIVITIES[index].to] = candidate;
+                }
+            }
+        }
+    }
+
+    // The project duration is the maximum event time, not the last array slot; multiple sinks must share this deadline.
+    int project_duration = 0;
+    for (int event = 0; event < EVENT_COUNT; ++event)
+    {
+        if (earliest[event] > project_duration)
+        {
+            project_duration = earliest[event];
+        }
+    }
+    // Latest times start at the shared project deadline; reverse topological relaxation lowers every non-sink event.
+    for (int event = 0; event < EVENT_COUNT; ++event)
+    {
+        latest[event] = project_duration;
+    }
+    // Walk the reverse topological order produced by Kahn; an arbitrary edge order would leave latest times incomplete.
+    for (int position = order_count - 1; position >= 0; --position)
+    {
+        int event = order[position];
+        for (int index = 0; index < ACTIVITY_COUNT; ++index)
+        {
+            if (ACTIVITIES[index].from == event)
+            {
+                // Latest time is the minimum of successor latest minus duration; a smaller candidate forces this predecessor to start earlier.
+                int candidate = latest[ACTIVITIES[index].to] - ACTIVITIES[index].duration;
+                if (candidate < latest[event])
+                {
+                    latest[event] = candidate;
+                }
+            }
         }
     }
 
@@ -89,7 +149,7 @@ void CriticalPath(void)
                    ACTIVITIES[index].duration);
         }
     }
-    printf("project duration: %d\n", earliest[EVENT_COUNT - 1]);
+    printf("project duration: %d\n", project_duration);
 }
 
 int main(void)

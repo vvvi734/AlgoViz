@@ -83,14 +83,16 @@ static AVLNode *RotateLeft(AVLNode *root)
 // Purpose: Insert by BST ordering, recompute heights while recursion unwinds, and apply one of the four rotations; returns the new subtree root.
 // 作用：按 BST 规则插入 value，并在递归返回时重算高度、按四种失衡情况旋转；返回新的子树根。
 // Insertion is ordinary BST descent; all AVL work happens on the unwinding path, where subtree heights and balance factors become known.
-AVLNode *AVLInsert(AVLNode *root, int value)
+AVLNode *AVLInsert(AVLNode *root, int value, int *failed)
 {
+    *failed = 0;
     if (root == NULL)
     {
         AVLNode *node = (AVLNode *)malloc(sizeof(AVLNode));
-        // A new leaf starts at height 1; allocation failure returns NULL, and the demo caller must avoid assigning it over an existing subtree.
+        // A new leaf starts at height 1; allocation failure is reported through failed, so the parent keeps its old child link.
         if (node == NULL)
         {
+            *failed = 1;
             return NULL;
         }
         node->value = value;
@@ -101,12 +103,22 @@ AVLNode *AVLInsert(AVLNode *root, int value)
     }
     if (value < root->value)
     {
-        // The recursive result is assigned back to root->left; this is also how a rotated subtree root replaces the old child.
-        root->left = AVLInsert(root->left, value);
+        // The recursive result is assigned back to root->left only after success; assigning a failure NULL would erase the whole subtree.
+        AVLNode *child = AVLInsert(root->left, value, failed);
+        if (*failed)
+        {
+            return root;
+        }
+        root->left = child;
     }
     else if (value > root->value)
     {
-        root->right = AVLInsert(root->right, value);
+        AVLNode *child = AVLInsert(root->right, value, failed);
+        if (*failed)
+        {
+            return root;
+        }
+        root->right = child;
     }
     else
     {
@@ -172,10 +184,17 @@ int main(void)
 {
     AVLNode *root = NULL;
     int keys[] = {10, 20, 30, 40, 50, 25};
+    int failed = 0;
 
     for (int index = 0; index < (int)(sizeof(keys) / sizeof(keys[0])); ++index)
     {
-        root = AVLInsert(root, keys[index]);
+        root = AVLInsert(root, keys[index], &failed);
+        if (failed)
+        {
+            printf("allocation failed while inserting %d\n", keys[index]);
+            FreeAVL(root);
+            return 1;
+        }
     }
 
     printf("inorder:");

@@ -26,6 +26,8 @@ head；忘记把子节点接到 next 导致只剩第一个孩子。
 
 from __future__ import annotations
 
+GL_MAX_DEPTH = 64
+
 
 # One node carries a tag and either atom text or a child head.
 class GLNode:
@@ -67,10 +69,12 @@ def append_child(parent: GLNode, child: GLNode) -> None:
 
 
 # Copy one node and its subtree; src.next is intentionally not copied.
-def copy_one(src: GLNode | None) -> GLNode | None:
-    """复制一个节点及其子树，不复制 src.next；返回新节点。"""
+def _copy_one(src: GLNode | None, remaining: int) -> GLNode | None:
     if src is None:
         return None
+    # A fixed budget fails before Python's own recursion limit, and the explicit exception is easier to diagnose than RecursionError.
+    if remaining <= 0:
+        raise ValueError("generalized list exceeds GL_MAX_DEPTH")
     # A fresh node copies the tag and atom value but not head or next. Those links are rebuilt separately, which is what makes this a deep copy rather than an alias.
     dst = GLNode(src.tag, src.atom)
     # An atom has no children, so the fresh node is already a complete copy of this one-node subtree.
@@ -80,9 +84,7 @@ def copy_one(src: GLNode | None) -> GLNode | None:
     tail = dst
     child = src.head
     while child is not None:
-        child_copy = copy_one(child)
-        if child_copy is None:
-            raise MemoryError("copy allocation failed")
+        child_copy = _copy_one(child, remaining - 1)
         # 新节点逐个接入：dst.head 只指向第一个复制孩子，其余走 next。
         # Link copies one by one; dst.head holds the first child and next holds the rest.
         # The first copied child must initialize head; only later children use next. Checking head here is what distinguishes the two cases without a dummy node.
@@ -94,6 +96,11 @@ def copy_one(src: GLNode | None) -> GLNode | None:
         tail = child_copy
         child = child.next
     return dst
+
+
+def copy_one(src: GLNode | None) -> GLNode | None:
+    """复制一个节点及其子树；超过 GL_MAX_DEPTH 时抛 ValueError。"""
+    return _copy_one(src, GL_MAX_DEPTH)
 
 
 # Render the list in parenthesized form so copy and source can be compared.

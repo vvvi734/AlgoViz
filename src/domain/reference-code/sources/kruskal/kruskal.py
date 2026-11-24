@@ -66,7 +66,9 @@ def main() -> None:
         (0, 1, 2), (0, 3, 6), (1, 2, 3), (1, 3, 8),
         (1, 4, 5), (2, 4, 7), (3, 4, 9),
     ]
-    sets = DisjointSet(5)
+    # Derive the vertex count from the edge endpoints; a hard-coded five-vertex bound would mis-handle other graph sizes.
+    vertex_count = max(max(start, end) for start, end, _ in edges) + 1
+    sets = DisjointSet(vertex_count)
     total = 0
     used = 0
 
@@ -78,8 +80,8 @@ def main() -> None:
             print(f"{start} - {end} : {weight}")
             total += weight
             used += 1
-            # 4 is V-1 for this five-vertex demo; a general implementation must use the actual vertex count.
-            if used == 4:
+            # A spanning tree has exactly vertex_count - 1 edges; the bound must follow the actual graph.
+            if used == vertex_count - 1:
                 break
 
     print("total:", total)

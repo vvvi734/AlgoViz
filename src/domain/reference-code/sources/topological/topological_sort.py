@@ -32,12 +32,15 @@ def main() -> None:
     graph: list[list[int]] = [[] for _ in range(6)]
     indegree = [0] * 6
     for source, target in edges:
+        # An endpoint outside the declared vertex range would index graph or indegree out of bounds.
+        if source < 0 or source >= len(graph) or target < 0 or target >= len(graph):
+            raise ValueError("edge endpoint outside the vertex range")
         graph[source].append(target)
         # Every edge adds exactly one incoming count; parallel edges correctly raise it more than once.
         indegree[target] += 1
 
     # The generator feeds only zero-indegree vertices; deque popleft makes this Kahn's FIFO variant.
-    ready = deque(vertex for vertex in range(6) if indegree[vertex] == 0)
+    ready = deque(vertex for vertex in range(len(graph)) if indegree[vertex] == 0)
     order: list[int] = []
     # Pop a zero-indegree vertex, append it, then decrement each neighbour's indegree.
     while ready:
@@ -50,8 +53,8 @@ def main() -> None:
             if indegree[next_vertex] == 0:
                 ready.append(next_vertex)
 
-    # 6 is the demo's vertex count; a generic caller must compare with len(graph), which this demo does not.
-    if len(order) != 6:
+    # Compare with the actual vertex count; hard-coding six would mislabel every other graph as cyclic.
+    if len(order) != len(graph):
         print("cycle detected")
         return
     print("order:", order)

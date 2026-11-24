@@ -13,8 +13,8 @@ const cases = [
   {
     id: 'critical-path',
     cFile: 'critical_path.c',
-    zh: '这个 C 版假定 ACTIVITIES 已按拓扑序排列；任意边序会用到尚未完成的前驱。',
-    en: 'This C version assumes ACTIVITIES is already in topological order; a random edge order would use unfinished predecessors.',
+    zh: '先真正求一次拓扑序；活动数组只是数据，并不保证边已按拓扑序出现。',
+    en: 'Build a real topological order first; the activity array is data, not a promise that edges already appear in topological order.',
   },
   {
     id: 'buddy-system',

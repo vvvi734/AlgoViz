@@ -25,6 +25,7 @@
 #include <functional>
 #include <iostream>
 #include <queue>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -46,17 +47,18 @@ int main()
     add_edge(3, 4, 9);
 
     std::vector<bool> selected(5, false);
-    using Candidate = std::pair<int, int>;
+    // A candidate records the edge's two endpoints, so the root can be distinguished from a real zero-weight edge.
+    using Candidate = std::tuple<int, int, int>;
     std::priority_queue<Candidate, std::vector<Candidate>, std::greater<Candidate>> candidates;
-    // The initial (0,0) is a cut seed, not a tree edge; its zero weight is deliberately excluded from the output.
-    candidates.push({0, 0});
+    // The initial (0,0,-1) is a cut seed, not a tree edge; parent -1 is what excludes it from the output.
+    candidates.push({0, 0, -1});
 
     int total = 0;
     std::cout << "mst edges:\n";
     // An empty heap with vertices still unselected means the graph is disconnected; this demo prints the partial total without a failure flag.
     while (!candidates.empty())
     {
-        auto [weight, vertex] = candidates.top();
+        auto [weight, vertex, parent] = candidates.top();
         candidates.pop();
         // A vertex can be pushed once per incident edge; the first pop settles it and every later entry is stale.
         if (selected[vertex])
@@ -64,19 +66,19 @@ int main()
             continue;
         }
         selected[vertex] = true;
-        // The root seed contributes zero; every nonzero accepted weight is one edge of the spanning tree.
+        // The root seed contributes zero; every accepted candidate with a parent is one edge of the spanning tree.
         total += weight;
-        // This condition suppresses the root's zero weight, but it would also suppress a genuine zero-weight edge; the demo graph has none.
-        if (weight != 0)
+        // Parent presence, not weight != 0, decides whether this candidate is a real tree edge; a zero-weight edge must still be printed.
+        if (parent != -1)
         {
-            std::cout << "edge to " << vertex << " : " << weight << '\n';
+            std::cout << "edge " << parent << " - " << vertex << " : " << weight << '\n';
         }
         // Pushing every unselected endpoint is a lazy decrease-key: the heap may hold O(E) candidates instead of one per vertex.
         for (auto [next_weight, next] : graph[vertex])
         {
             if (!selected[next])
             {
-                candidates.push({next_weight, next});
+                candidates.push({next_weight, next, vertex});
             }
         }
     }

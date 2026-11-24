@@ -22,12 +22,12 @@ export const BATCH_05_ANNOTATIONS: Record<
       "zh": "插入下降阶段就是普通 BST；所有 AVL 工作发生在回溯路径上，此时子树高度与平衡因子才已知。"
     },
     {
-      "en": "A new leaf starts at height 1; allocation failure returns NULL, and the demo caller must avoid assigning it over an existing subtree.",
-      "zh": "新叶高度从 1 开始；分配失败返回 NULL，演示调用方必须避免把它覆盖到已有子树上。"
+      "en": "A new leaf starts at height 1; allocation failure is reported through failed, so the parent keeps its old child link.",
+      "zh": "新叶高度从 1 开始；分配失败通过 failed 上报，父节点因此保留原来的孩子链接。"
     },
     {
-      "en": "The recursive result is assigned back to root->left; this is also how a rotated subtree root replaces the old child.",
-      "zh": "递归结果被接回 root->left；旋转后的子树根也通过这个赋值替换旧孩子。"
+      "en": "The recursive result is assigned back to root->left only after success; assigning a failure NULL would erase the whole subtree.",
+      "zh": "递归结果只在成功后才写回 root->left；把失败的 NULL 写回会抹掉整棵子树。"
     },
     {
       "en": "The sign matters: positive means left-heavy, so only positive imbalance can select LL or LR; magnitude alone is not enough.",
@@ -214,8 +214,8 @@ export const BATCH_05_ANNOTATIONS: Record<
       "zh": "多出的键槽让分裂成为搬移而不是第二遍插入；没有它，第 4 个键会在分裂前就越界。"
     },
     {
-      "en": "The static pool returns a node id, not a pointer; -1 is the allocation failure sentinel and also propagates through Split.valid.",
-      "zh": "静态池返回结点 id 而不是指针；-1 是分配失败哨兵，也会通过 Split.valid 向上传播。"
+      "en": "The node table grows geometrically: an insertion count is no longer capped by a compile-time constant, and a failed realloc keeps the old table intact.",
+      "zh": "节点表按倍数扩容：插入数量不再受编译期常量限制，realloc 失败时旧表也保持完整。"
     },
     {
       "en": "Equality goes right because separator i equals the minimum of the right child; sending equality left would make a duplicate range unreachable.",
@@ -360,8 +360,8 @@ export const BATCH_05_ANNOTATIONS: Record<
       "zh": "空指针是唯一插入点；只有搜索路径落到树外时才分配结点。"
     },
     {
-      "en": "Allocation failure sets inserted=false, but this teaching function still returns NULL; a production caller must propagate failure instead of assigning NULL over an existing subtree.",
-      "zh": "分配失败会置 inserted=false，但这个教学函数仍返回 NULL；生产调用方必须向上传播失败，不能把 NULL 覆盖到已有子树上。"
+      "en": "A failed allocation returns NULL only at this empty slot; the parent must not publish it as a replacement for an existing subtree.",
+      "zh": "分配失败只会在空槽处返回 NULL；父节点不能把它当作已有子树的替代值发布。"
     },
     {
       "en": "Strict comparisons send equal keys to the final else branch; that is why duplicates are rejected rather than stored on an arbitrary side.",
@@ -668,8 +668,8 @@ export const BATCH_05_ANNOTATIONS: Record<
       "zh": "free 前先保存 next，因为释放 node 后 node->next 不可再读；循环必须通过保存的指针前进。"
     },
     {
-      "en": "The function frees nodes but does not clear bucket heads; after it returns the table holds dangling pointers and must be re-initialized before reuse.",
-      "zh": "这个函数释放结点但不清理桶头；返回后表中仍是悬空指针，复用前必须重新初始化。"
+      "en": "Clearing the head is part of the operation: leaving it pointing at freed memory turns a later contains() into a use-after-free.",
+      "zh": "清空桶头是操作的一部分：若仍指向已释放内存，后续 contains() 就是 use-after-free。"
     }
   ],
   "hash_chain.cpp": [
@@ -752,12 +752,12 @@ export const BATCH_05_ANNOTATIONS: Record<
       "zh": "容量是构造参数，因此探测取模使用 slots_.size() 而不是全局常量；所有槽初始都是哨兵值。"
     },
     {
-      "en": "kEmpty is also a legal int key, and this class does not reject -1; inserting -1 would make a real key look empty to contains(). Non-negative keys are therefore an implicit precondition.",
-      "zh": "kEmpty 本身也是合法 int 键，而这个类不拒绝 -1；插入 -1 会让真实键在 contains() 中看起来像空槽。因此非负键是隐式前提。"
+      "en": "optional stores every int key, so no integer sentinel can collide with a legitimate key.",
+      "zh": "optional 能保存任意 int 键，因此没有整数哨兵会与合法键冲突。"
     },
     {
-      "en": "The first empty slot accepts the insert; if the table is full, the loop ends without a write and returns false.",
-      "zh": "第一个空槽接受插入；表满时循环结束且不写入，返回 false。"
+      "en": "optional distinguishes a real key such as -1 from an empty slot; no integer can be reserved as the sentinel.",
+      "zh": "optional 把 −1 这样的真实键与空槽区分开；不再需要保留任何整数当哨兵。"
     },
     {
       "en": "A duplicate can appear later in the probe sequence, so the loop must compare every occupied slot until it finds the key or an empty slot.",
@@ -774,8 +774,8 @@ export const BATCH_05_ANNOTATIONS: Record<
   ],
   "hash_probe.py": [
     {
-      "en": "EMPTY is a sentinel, not a reserved key; the table never validates that inputs are non-negative, so a real -1 would be lost on lookup.",
-      "zh": "EMPTY 是哨兵而不是保留键；表从不校验输入非负，因此真实的 -1 在查找时会被当作空槽。"
+      "en": "EMPTY is None, not an integer: every int, including -1, remains a valid key.",
+      "zh": "EMPTY 使用 None 而不是整数：包括 −1 在内的任意 int 都能作为合法键。"
     },
     {
       "en": "Capacity is fixed at construction and every slot starts EMPTY; no resize path exists, so alpha can grow until the table is full.",
@@ -790,8 +790,8 @@ export const BATCH_05_ANNOTATIONS: Record<
       "zh": "循环上界是槽数，即使没有空槽也能证明终止；表满时返回 False。"
     },
     {
-      "en": "This empty check is both the insertion point and the absence proof; the two roles coincide only because the table has no deletion.",
-      "zh": "这个空槽判断同时承担插入点与不存在证明；两种角色重合，仅因为表不删除。"
+      "en": "None marks the empty slot; a real key such as -1 is never confused with it.",
+      "zh": "None 表示空槽；−1 这样的真实键永远不会被误认为空。"
     },
     {
       "en": "The search walks the same cyclic sequence as insert and stops at EMPTY; a table full of other keys costs one full cycle before returning False.",
@@ -906,16 +906,16 @@ export const BATCH_05_ANNOTATIONS: Record<
       "zh": "新结点不保存父边；调用方必须在分配成功后用 nodes[parent].child[letter - 'a'] 把它接上。"
     },
     {
-      "en": "Subtracting 'a' assumes a lower-case letter; there is no range check here, so any other byte would index outside the 26-slot alphabet.",
-      "zh": "减去 'a' 假设输入为小写字母；这里没有范围检查，其他字节会索引到 26 槽字母表之外。"
+      "en": "Every edge must be a lower-case letter; other bytes would index outside the 26-slot alphabet.",
+      "zh": "每条边必须是小写字母；其他字节会索引到 26 槽字母表之外。"
     },
     {
       "en": "matched is both the number of consumed characters and the index of the next character; the loop stops at the terminator or the first missing edge.",
       "zh": "matched 既是已消费字符数，也是下一个字符下标；循环在终止符或第一条缺失边处停止。"
     },
     {
-      "en": "This hard-codes the root id as 0. It is true while the root is the first allocated node and never released, but find_word does not verify that assumption.",
-      "zh": "这里把根结点 id 硬编码为 0。只要根是第一个分配且从不释放的结点，这个假设成立，但 find_word 并不校验它。"
+      "en": "The root is a field, not an assumed index: allocation order may change, and root is the only valid entry point.",
+      "zh": "根是显式字段而不是假定的下标：分配顺序可能变化，root 才是唯一合法入口。"
     },
     {
       "en": "The two tests answer different questions: complete means the whole path exists, terminal means that path is a stored word; a prefix can pass the first and fail the second.",
@@ -930,8 +930,8 @@ export const BATCH_05_ANNOTATIONS: Record<
       "zh": "terminal 在整段循环结束后才置位，因此同一条赋值既覆盖新建后缀，也覆盖末端尚未成词的已有前缀。"
     },
     {
-      "en": "This write assumes depth is below MAX_WORD_LENGTH; insert_word never enforces the length limit, so a longer word would make the demo buffer overflow.",
-      "zh": "这次写入假设 depth 小于 MAX_WORD_LENGTH；insert_word 从不校验长度限制，更长的单词会让演示缓冲区越界。"
+      "en": "The buffer is MAX_WORD_LENGTH + 1 bytes; the depth guard prevents a malformed deep tree from writing past it.",
+      "zh": "缓冲区为 MAX_WORD_LENGTH + 1 字节；深度保护阻止畸形深树越界写入。"
     },
     {
       "en": "depth > 0 skips the root; otherwise a terminal mark on the root, which represents the empty prefix, would print an empty line as a word.",

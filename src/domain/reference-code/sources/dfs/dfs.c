@@ -44,18 +44,28 @@ static void Visit(int vertex, int visited[VERTEX_COUNT])
 }
 
 // One call covers exactly the connected component containing start.
-void DFS(int start)
+int DFS(int start)
 {
+    // Reject an out-of-range index before Visit reads visited[start].
+    if (start < 0 || start >= VERTEX_COUNT)
+    {
+        printf("dfs: start vertex out of range\n");
+        return 0;
+    }
     // The array is zero-initialized once; every recursive call receives the same array, not a copy.
     int visited[VERTEX_COUNT] = {0};
     printf("dfs:");
     // The entry call marks and prints every vertex reachable from start; other components keep their zero flags.
     Visit(start, visited);
     printf("\n");
+    return 1;
 }
 
 int main(void)
 {
-    DFS(0);
+    if (!DFS(0))
+    {
+        return 1;
+    }
     return 0;
 }

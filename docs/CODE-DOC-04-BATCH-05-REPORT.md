@@ -172,6 +172,8 @@ static constexpr int kEmpty = -1;
 
 ## 8. 尚存缺陷（只登记，未修复）
 
+> **2026-11-24 回填：本节 6 项均已修复。** 逐项修复与验证见 `docs/CODE-DOC-04-HISTORICAL-RISK-REPORT.md` 第 2.4 节；以下保留原始登记记录作为审计历史。
+
 1. `bst.c`：`malloc` 失败返回 NULL，父结点可能把原孩子指针置 NULL，丢失原子树；C 版无删除。
 2. `avl_tree.c`：插入分配失败同样可能断链；三语言 AVL 均无删除。
 3. `hash_chain.c`：`table_free` 释放结点但不清理桶头；返回后表处于悬空指针状态，复用前必须重新初始化。

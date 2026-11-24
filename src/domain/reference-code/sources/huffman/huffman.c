@@ -38,9 +38,11 @@ typedef struct HNode
 
 typedef struct
 {
-    HNode *items[32];
+    HNode *items[64];
     int size;
 } MinHeap;
+
+#define HEAP_CAPACITY 64
 
 // Frequency is primary; order breaks ties, so equal weights still produce a deterministic tree shape.
 int node_less(const HNode *a, const HNode *b)
@@ -58,8 +60,13 @@ void heap_init(MinHeap *heap)
 }
 
 // Append at the end of the array, then sift up; the heap property is restored along one root path.
-void heap_push(MinHeap *heap, HNode *node)
+int heap_push(MinHeap *heap, HNode *node)
 {
+    // The array has a physical limit; returning 0 lets the caller free its nodes instead of writing items[64].
+    if (heap == NULL || node == NULL || heap->size >= HEAP_CAPACITY)
+    {
+        return 0;
+    }
     int index = heap->size++;
     heap->items[index] = node;
     while (index > 0)
@@ -75,11 +82,17 @@ void heap_push(MinHeap *heap, HNode *node)
         heap->items[index] = temp;
         index = parent;
     }
+    return 1;
 }
 
 // The root is the minimum; removing it must keep the array compact, so the last leaf fills the root.
 HNode *heap_pop(MinHeap *heap)
 {
+    // An empty heap has no items[0] to read; callers must check NULL before dereferencing the result.
+    if (heap == NULL || heap->size == 0)
+    {
+        return NULL;
+    }
     HNode *top = heap->items[0];
     --heap->size;
     if (heap->size == 0)
@@ -165,6 +178,16 @@ void free_tree(HNode *node)
     free(node);
 }
 
+// Free every root still inside the heap after a failed merge: each item owns a disjoint subtree.
+static void free_forest(MinHeap *heap)
+{
+    for (int index = 0; index < heap->size; ++index)
+    {
+        free_tree(heap->items[index]);
+    }
+    heap->size = 0;
+}
+
 int main(void)
 {
     char symbols[] = {'a', 'b', 'c', 'd', 'e', 'f'};
@@ -175,7 +198,15 @@ int main(void)
     heap_init(&heap);
     for (int i = 0; i < count; ++i)
     {
-        heap_push(&heap, make_node(frequencies[i], symbols[i], i));
+        HNode *leaf = make_node(frequencies[i], symbols[i], i);
+        // Both allocation and heap-capacity failures must stop before the next iteration, otherwise NULL enters the heap.
+        if (leaf == NULL || !heap_push(&heap, leaf))
+        {
+            free_tree(leaf);
+            free_forest(&heap);
+            printf("failed to build the initial forest\n");
+            return 1;
+        }
     }
 
     int order = count;
@@ -184,14 +215,43 @@ int main(void)
     {
         HNode *first = heap_pop(&heap);
         HNode *second = heap_pop(&heap);
+        if (first == NULL || second == NULL)
+        {
+            free_tree(first);
+            free_tree(second);
+            free_forest(&heap);
+            printf("heap underflow\n");
+            return 1;
+        }
         HNode *parent = make_node(first->frequency + second->frequency, '\0', order++);
+        // A failed allocation must not leave first and second detached from the forest.
+        if (parent == NULL)
+        {
+            free_tree(first);
+            free_tree(second);
+            free_forest(&heap);
+            printf("allocation failed during merge\n");
+            return 1;
+        }
         parent->left = first;
         parent->right = second;
-        heap_push(&heap, parent);
+        if (!heap_push(&heap, parent))
+        {
+            free_tree(parent);
+            free_forest(&heap);
+            printf("heap capacity exhausted during merge\n");
+            return 1;
+        }
     }
 
     HNode *root = heap_pop(&heap);
-    char path[32];
+    if (root == NULL)
+    {
+        printf("no Huffman root\n");
+        return 1;
+    }
+    // A 64-leaf tree can have depth 63, so the path buffer must hold 63 bits plus the terminator.
+    char path[HEAP_CAPACITY + 1];
     printf("root frequency: %d\n", root->frequency);
     printf("codes:\n");
     print_codes(root, path, 0);

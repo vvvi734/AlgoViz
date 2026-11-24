@@ -107,7 +107,13 @@ int main()
                   return a.weight < b.weight;
               });
 
-    DisjointSet sets(5);
+    // Derive the vertex count from the edge endpoints; hard-coding five would break correctness for any other graph size.
+    int vertex_count = 0;
+    for (const Edge &edge : edges)
+    {
+        vertex_count = std::max(vertex_count, std::max(edge.from, edge.to) + 1);
+    }
+    DisjointSet sets(vertex_count);
     int total = 0;
     int used = 0;
     std::cout << "mst edges:\n";
@@ -117,8 +123,8 @@ int main()
         {
             std::cout << edge.from << " - " << edge.to << " : " << edge.weight << '\n';
             total += edge.weight;
-            // 4 is V-1 for this five-vertex demo; a generic implementation must derive the bound from the vertex count.
-            if (++used == 4)
+            // A spanning tree has exactly vertex_count - 1 edges; deriving the bound keeps the early stop valid for other graphs.
+            if (++used == vertex_count - 1)
             {
                 break;
             }

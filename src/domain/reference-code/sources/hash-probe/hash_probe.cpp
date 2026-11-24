@@ -4,11 +4,11 @@
  * 关键不变量：查找路径上若目标存在，一定在第一个 EMPTY 之前被看到；本版本不删除，EMPTY 是唯一终止标记。
  * 易错点：删除直接置 EMPTY 截断后续查找；表满死循环；负载因子过高；负哈希下标。
  * 复杂度：平均 O(1)，最坏 O(n)；空间 O(capacity)。
- * 输入/输出：输入非负整数 key 的插入/查找序列；操作返回布尔；main 打印槽的空/占用状态。
+ * 输入/输出：输入整数 key 的插入/查找序列；操作返回布尔；main 打印槽的空/占用状态。
 */
 
 // AlgoViz reference implementation: linear probing hash table (C++17).
-// -1 marks an empty slot; insert and search probe forward with wraparound.
+// std::optional marks an empty slot; insert and search probe forward with wraparound.
 //
 // Reading guide:
 // 1. Map a key to its home slot with key % table_size.
@@ -23,6 +23,7 @@
 //   tombstones.
 
 #include <iostream>
+#include <optional>
 #include <vector>
 
 class HashTable
@@ -31,7 +32,7 @@ class HashTable
     // Purpose: Construct an open-addressing table by allocating capacity slots and marking them all EMPTY.
     // 作用：构造开放地址散列表：分配 capacity 个槽并全部标为 EMPTY。
     // Capacity is a constructor argument, so the probe modulo uses slots_.size() rather than a global constant; every slot starts as the sentinel.
-    explicit HashTable(std::size_t size) : slots_(size, kEmpty)
+    explicit HashTable(std::size_t size) : slots_(size)
     {
     }
 
@@ -45,14 +46,14 @@ class HashTable
         for (std::size_t step = 0; step < slots_.size(); ++step)
         {
             std::size_t index = (start + step) % slots_.size();
-            // The first empty slot accepts the insert; if the table is full, the loop ends without a write and returns false.
-            if (slots_[index] == kEmpty)
+            // optional distinguishes a real key such as -1 from an empty slot; no integer can be reserved as the sentinel.
+            if (!slots_[index].has_value())
             {
                 slots_[index] = key;
                 return true;
             }
             // A duplicate can appear later in the probe sequence, so the loop must compare every occupied slot until it finds the key or an empty slot.
-            if (slots_[index] == key)
+            if (*slots_[index] == key)
             {
                 return false;
             }
@@ -69,11 +70,12 @@ class HashTable
         for (std::size_t step = 0; step < slots_.size(); ++step)
         {
             std::size_t index = (start + step) % slots_.size();
-            if (slots_[index] == kEmpty)
+            // An empty optional proves absence; an occupied slot is compared by its stored integer, including -1.
+            if (!slots_[index].has_value())
             {
                 return false;
             }
-            if (slots_[index] == key)
+            if (*slots_[index] == key)
             {
                 return true;
             }
@@ -88,21 +90,18 @@ class HashTable
         for (std::size_t i = 0; i < slots_.size(); ++i)
         {
             std::cout << '[' << i << "] ";
-            if (slots_[i] == kEmpty)
+            if (!slots_[i].has_value())
             {
                 std::cout << "_\n";
             }
             else
             {
-                std::cout << slots_[i] << '\n';
+                std::cout << *slots_[i] << '\n';
             }
         }
     }
 
   private:
-    // kEmpty is also a legal int key, and this class does not reject -1; inserting -1 would make a real key look empty to contains(). Non-negative keys are therefore an implicit precondition.
-    static constexpr int kEmpty = -1;
-
     // Purpose: Map key to the initial slot in 0..capacity-1.
     // 作用：把 key 映射到 0..capacity-1 的初始槽位。
     // The modulo is computed in int and only then converted to size_t; converting first would make a negative remainder impossible to correct.
@@ -113,7 +112,8 @@ class HashTable
                                                   : index);
     }
 
-    std::vector<int> slots_;
+    // optional stores every int key, so no integer sentinel can collide with a legitimate key.
+    std::vector<std::optional<int>> slots_;
 };
 
 int main()

@@ -35,6 +35,15 @@ def dijkstra(
     distance: dict[str, int | float] = {vertex: float("inf") for vertex in graph}
     previous: dict[str, str | None] = {vertex: None for vertex in graph}
     settled: set[str] = set()
+    # Both the source and every edge target must be registered vertices; otherwise distance[v] would raise KeyError mid-run.
+    if source not in graph:
+        raise ValueError("source vertex is not in the graph")
+    for u, neighbours in graph.items():
+        for v, weight in neighbours:
+            if v not in graph:
+                raise ValueError(f"edge target {v!r} is not a graph vertex")
+            if weight < 0:
+                raise ValueError("Dijkstra requires non-negative edge weights")
     # The source is the only finite initial distance; all other vertices start unknown at infinity.
     distance[source] = 0
     queue: list[tuple[int, str]] = [(0, source)]
@@ -66,6 +75,9 @@ def dijkstra(
 # 作用：沿 previous 从 target 回溯到源点，返回路径顶点列表。
 def path_to(previous: dict[str, str | None], target: str) -> list[str]:
     path: list[str] = []
+    # An unknown target has no predecessor entry; fail explicitly rather than inventing a one-vertex path.
+    if target not in previous:
+        raise ValueError(f"target {target!r} is not a graph vertex")
     current: str | None = target
     # previous is None only at the source; a missing map entry would fail rather than invent a path.
     while current is not None:

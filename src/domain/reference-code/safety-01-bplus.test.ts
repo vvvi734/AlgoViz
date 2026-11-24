@@ -128,6 +128,18 @@ describe.skipIf(!hasGcc)('SAFETY-01 B+ tree split failure states', () => {
     expect(result.stdout).toContain('ALL_OK=1');
   });
 
+  it('grows past the old 72-node pool instead of failing at a compile-time cap', () => {
+    const result = run(harnessBinary, ['dynamic-growth']);
+    expect(result.status, result.stderr).toBe(0);
+    expect(result.stderr).toBe('');
+    const match = result.stdout.match(/NODE_COUNT=(\d+)/);
+    expect(match, result.stdout).not.toBeNull();
+    expect(Number(match![1])).toBeGreaterThan(72);
+    expect(result.stdout).toContain('VALID=1');
+    expect(result.stdout).toContain('ALL_KEYS=1');
+    expect(result.stdout).toContain('ALL_OK=1');
+  });
+
   it('keeps the teaching demo output unchanged', () => {
     const result = run(demoBinary, []);
     expect(result.status, result.stderr).toBe(0);

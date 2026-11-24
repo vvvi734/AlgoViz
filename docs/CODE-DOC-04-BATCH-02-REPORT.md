@@ -429,6 +429,8 @@ find 60: index=-1, index comparisons=2, block comparisons=4
 
 ## 7. 发现但未修改的实现风险
 
+> **2026-11-24 回填：本节 3 项均已修复。** 逐项修复与验证见 `docs/CODE-DOC-04-HISTORICAL-RISK-REPORT.md` 第 2.1 节；以下保留原始登记记录作为审计历史。
+
 以下只记录位置和复现条件，没有修改有效代码：
 
 1. `sparse_transpose.c` 的 `fast_transpose` 在 `++num[src->data[k].col]` 处信任三元组列坐标；若 `src->cols=5` 而某三元组 `col=7`，会对 `num` 产生越界写。`sparse_transpose.cpp` 的 `num[source.triples[k].col]++` 同样没有边界检查。Python 版在 `fast_transpose` 前显式检查 `0 <= col < cols`，会抛出 `ValueError`，不存在该越界。

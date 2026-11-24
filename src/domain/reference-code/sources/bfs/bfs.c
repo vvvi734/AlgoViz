@@ -26,8 +26,14 @@ static const int GRAPH[VERTEX_COUNT][VERTEX_COUNT] = {
 };
 
 // The queue holds only discovered vertices; visited is set at enqueue time, so no vertex can enter twice.
-void BFS(int start)
+int BFS(int start)
 {
+    // A caller-supplied index must be a real vertex before it is used as an array subscript.
+    if (start < 0 || start >= VERTEX_COUNT)
+    {
+        printf("bfs: start vertex out of range\n");
+        return 0;
+    }
     // One zeroed mark per vertex; zero means undiscovered before the start is inserted.
     int visited[VERTEX_COUNT] = {0};
     // The array is a FIFO ring: head removes, tail inserts, and VERTEX_COUNT bounds the frontier because each vertex is enqueued at most once.
@@ -64,10 +70,14 @@ void BFS(int start)
         }
     }
     printf("\n");
+    return 1;
 }
 
 int main(void)
 {
-    BFS(0);
+    if (!BFS(0))
+    {
+        return 1;
+    }
     return 0;
 }
