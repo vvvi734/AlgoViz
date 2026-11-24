@@ -79,7 +79,10 @@ function SearchPresetPicker<T extends string>({
   );
 }
 
+export type SearchPickerKind = 'block' | 'bplus' | 'key';
+
 export function SearchPresetPickers({
+  activePicker,
   inputJson,
   blockActual,
   bplusActual,
@@ -88,6 +91,7 @@ export function SearchPresetPickers({
   onSelectBplus,
   onSelectKey,
 }: {
+  activePicker: SearchPickerKind;
   inputJson: string;
   blockActual: BlockSearchPresetId | null;
   bplusActual: BplusTreePresetId | null;
@@ -96,8 +100,10 @@ export function SearchPresetPickers({
   onSelectBplus: (preset: BplusTreePresetId) => void;
   onSelectKey: (preset: KeyTreePresetId) => void;
 }) {
-  return (
-    <>
+  // Each search lesson owns one preset contract. Showing sibling lessons' presets
+  // here would let a B+ tree page rewrite its input with block-search or trie data.
+  if (activePicker === 'block') {
+    return (
       <SearchPresetPicker
         testId="block-search-picker"
         titleKey="blockSearchPickerLabel"
@@ -108,6 +114,10 @@ export function SearchPresetPickers({
         inputJson={inputJson}
         actual={blockActual}
       />
+    );
+  }
+  if (activePicker === 'bplus') {
+    return (
       <SearchPresetPicker
         testId="bplus-picker"
         titleKey="bplusPickerLabel"
@@ -118,16 +128,18 @@ export function SearchPresetPickers({
         inputJson={inputJson}
         actual={bplusActual}
       />
-      <SearchPresetPicker
-        testId="key-tree-picker"
-        titleKey="keyTreePickerLabel"
-        ruleKey="keyTreePickerRule"
-        presets={KEY_TREE_PRESETS}
-        fromInput={keyTreePresetFromInput}
-        onSelect={onSelectKey}
-        inputJson={inputJson}
-        actual={keyActual}
-      />
-    </>
+    );
+  }
+  return (
+    <SearchPresetPicker
+      testId="key-tree-picker"
+      titleKey="keyTreePickerLabel"
+      ruleKey="keyTreePickerRule"
+      presets={KEY_TREE_PRESETS}
+      fromInput={keyTreePresetFromInput}
+      onSelect={onSelectKey}
+      inputJson={inputJson}
+      actual={keyActual}
+    />
   );
 }

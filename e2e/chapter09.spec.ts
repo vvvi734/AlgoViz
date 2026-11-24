@@ -16,6 +16,14 @@ async function openAlgorithm(page: Page, id: string, stage: string): Promise<num
   return Number(first?.split('/')[1]?.trim());
 }
 
+const SEARCH_PICKER_IDS = ['block-search-picker', 'bplus-picker', 'key-tree-picker'] as const;
+
+async function expectOnlySearchPicker(page: Page, activeId: (typeof SEARCH_PICKER_IDS)[number]) {
+  for (const id of SEARCH_PICKER_IDS) {
+    await expect(page.getByTestId(id)).toHaveCount(id === activeId ? 1 : 0);
+  }
+}
+
 async function setFrame(page: Page, frame: number, total: number) {
   const progress = page.getByTestId('progress');
   const text = (await progress.textContent()) ?? '';
@@ -44,6 +52,7 @@ test.describe('TEXTBOOK-09 — block search, B-tree delete, B+ tree and key tree
     test.setTimeout(360_000);
     await openPhone(page);
     const firstTotal = await openAlgorithm(page, 'block-search', 'block-search-visual');
+    await expectOnlySearchPicker(page, 'block-search-picker');
 
     await expect(page.getByTestId('block-search-picker')).toHaveAttribute('data-actual', 'hit-middle');
     await page.getByTestId('block-search-picker-hit-middle').click();
@@ -121,6 +130,7 @@ test.describe('TEXTBOOK-09 — block search, B-tree delete, B+ tree and key tree
     test.setTimeout(360_000);
     await openPhone(page);
     await openAlgorithm(page, 'bplus-tree', 'bplus-tree-visual');
+    await expectOnlySearchPicker(page, 'bplus-picker');
 
     await page.getByTestId('bplus-picker-range-query').click();
     await expect(page.getByTestId('bplus-picker')).toHaveAttribute('data-selected', 'range-query');
@@ -140,6 +150,7 @@ test.describe('TEXTBOOK-09 — block search, B-tree delete, B+ tree and key tree
     test.setTimeout(420_000);
     await openPhone(page);
     await openAlgorithm(page, 'key-tree', 'key-tree-visual');
+    await expectOnlySearchPicker(page, 'key-tree-picker');
 
     await page.getByTestId('key-tree-picker-shared-prefix-hit').click();
     const hitTotal = await runAgain(page);

@@ -82,6 +82,13 @@ export function LabView({
   const showBlockSearchPicker = lab.currentAlgo === 'block-search' && lab.codeLang === 'python';
   const showBplusPicker = lab.currentAlgo === 'bplus-tree' && lab.codeLang === 'python';
   const showKeyTreePicker = lab.currentAlgo === 'key-tree' && lab.codeLang === 'python';
+  const activeSearchPicker = showBlockSearchPicker
+    ? 'block'
+    : showBplusPicker
+      ? 'bplus'
+      : showKeyTreePicker
+        ? 'key'
+        : null;
   const showHeapPicker = lab.currentAlgo === 'heap' && lab.codeLang === 'python';
   const showHuffmanPicker = lab.currentAlgo === 'huffman' && lab.codeLang === 'python';
   const showSequentialListPicker = lab.currentAlgo === 'seqlist' && lab.codeLang === 'python';
@@ -426,8 +433,9 @@ export function LabView({
                 onSelect={lab.selectBTreePreset}
               />
             ) : null}
-            {showBlockSearchPicker || showBplusPicker || showKeyTreePicker ? (
+            {activeSearchPicker ? (
               <SearchPresetPickers
+                activePicker={activeSearchPicker}
                 inputJson={lab.inputJson}
                 blockActual={showBlockSearchPicker ? actualBlockSearchPreset : null}
                 bplusActual={showBplusPicker ? actualBplusPreset : null}
