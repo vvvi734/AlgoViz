@@ -23,6 +23,7 @@
 #define MAX_WORDS 8
 #define MAX_WORD_LENGTH 8
 
+// A node stores the letter on its incoming edge, not the whole prefix; 26 direct child slots make each character step one array lookup.
 typedef struct
 {
     char letter;
@@ -36,6 +37,7 @@ static int root = -1;
 
 // Purpose: Allocate one node and initialize its letter, terminal flag and 26 child slots; the caller links the parent edge.
 // 作用：分配一个节点并初始化 letter、terminal 与 26 个孩子槽；父边由调用方接入，本函数不修改父节点。
+// The new node owns no parent link; the caller must attach it with nodes[parent].child[letter - 'a'] after allocation succeeds.
 static int new_node(char letter)
 {
     if (node_count >= MAX_NODES)
@@ -56,6 +58,7 @@ static int new_node(char letter)
 // 作用：返回一个字符对应的孩子；边不存在时返回 -1。
 static int find_child(int parent, char letter)
 {
+    // Subtracting 'a' assumes a lower-case letter; there is no range check here, so any other byte would index outside the 26-slot alphabet.
     return nodes[parent].child[letter - 'a'];
 }
 
@@ -65,6 +68,7 @@ static int walk_word(const char *word, int *node_out, int *matched_out)
 {
     int node = root;
     int matched = 0;
+    // matched is both the number of consumed characters and the index of the next character; the loop stops at the terminator or the first missing edge.
     while (word[matched] != '\0')
     {
         int child = find_child(node, word[matched]);
@@ -84,8 +88,10 @@ static int walk_word(const char *word, int *node_out, int *matched_out)
 // 作用：只有每个字符边都存在且末节点 terminal=true 才算命中。
 static int find_word(const char *word, int *matched_out)
 {
+    // This hard-codes the root id as 0. It is true while the root is the first allocated node and never released, but find_word does not verify that assumption.
     int node = 0;
     int complete = walk_word(word, &node, matched_out);
+    // The two tests answer different questions: complete means the whole path exists, terminal means that path is a stored word; a prefix can pass the first and fail the second.
     return complete && nodes[node].terminal;
 }
 
@@ -101,6 +107,7 @@ static int insert_word(const char *word)
         int child = find_child(node, word[matched]);
         if (child < 0)
         {
+            // exists starts true and is cleared only when a missing edge is created; that flag prevents marking a pre-existing duplicate as a new word.
             exists = 0;
             child = new_node(word[matched]);
             if (child < 0)
@@ -116,6 +123,7 @@ static int insert_word(const char *word)
     {
         return 0;
     }
+    // Terminal is set after the whole loop, so the same assignment covers a new suffix and an existing prefix that had no complete word at its end.
     nodes[node].terminal = 1;
     return 1;
 }
@@ -124,6 +132,7 @@ static int insert_word(const char *word)
 // 作用：DFS 打印单词；深度大于 0 的 terminal 才把当前前缀变成真实单词。
 static void print_words(int node, char *prefix, int depth)
 {
+    // depth > 0 skips the root; otherwise a terminal mark on the root, which represents the empty prefix, would print an empty line as a word.
     if (nodes[node].terminal && depth > 0)
     {
         prefix[depth] = '\0';
@@ -134,6 +143,7 @@ static void print_words(int node, char *prefix, int depth)
         int child = nodes[node].child[slot];
         if (child >= 0)
         {
+            // This write assumes depth is below MAX_WORD_LENGTH; insert_word never enforces the length limit, so a longer word would make the demo buffer overflow.
             prefix[depth] = nodes[child].letter;
             print_words(child, prefix, depth + 1);
         }

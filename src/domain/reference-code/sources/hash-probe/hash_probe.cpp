@@ -30,6 +30,7 @@ class HashTable
   public:
     // Purpose: Construct an open-addressing table by allocating capacity slots and marking them all EMPTY.
     // 作用：构造开放地址散列表：分配 capacity 个槽并全部标为 EMPTY。
+    // Capacity is a constructor argument, so the probe modulo uses slots_.size() rather than a global constant; every slot starts as the sentinel.
     explicit HashTable(std::size_t size) : slots_(size, kEmpty)
     {
     }
@@ -44,11 +45,13 @@ class HashTable
         for (std::size_t step = 0; step < slots_.size(); ++step)
         {
             std::size_t index = (start + step) % slots_.size();
+            // The first empty slot accepts the insert; if the table is full, the loop ends without a write and returns false.
             if (slots_[index] == kEmpty)
             {
                 slots_[index] = key;
                 return true;
             }
+            // A duplicate can appear later in the probe sequence, so the loop must compare every occupied slot until it finds the key or an empty slot.
             if (slots_[index] == key)
             {
                 return false;
@@ -59,6 +62,7 @@ class HashTable
 
     // Purpose: Linear-probe from the initial slot and stop at EMPTY; without deletion, EMPTY alone proves absence.
     // 作用：从初始槽位线性探测，遇到 EMPTY 停止；本版本没有删除，EMPTY 足以证明不存在。
+    // Contains uses the same start index and step order as insert; if it used a different probe order, it could stop at an empty slot before reaching the key.
     bool contains(int key) const
     {
         std::size_t start = hash_index(key);
@@ -96,10 +100,12 @@ class HashTable
     }
 
   private:
+    // kEmpty is also a legal int key, and this class does not reject -1; inserting -1 would make a real key look empty to contains(). Non-negative keys are therefore an implicit precondition.
     static constexpr int kEmpty = -1;
 
     // Purpose: Map key to the initial slot in 0..capacity-1.
     // 作用：把 key 映射到 0..capacity-1 的初始槽位。
+    // The modulo is computed in int and only then converted to size_t; converting first would make a negative remainder impossible to correct.
     std::size_t hash_index(int key) const
     {
         int index = key % static_cast<int>(slots_.size());

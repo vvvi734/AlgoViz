@@ -22,13 +22,16 @@ Convention: Fixed-capacity open addressing; this teaching version has no deletio
 
 from __future__ import annotations
 
+# EMPTY is a sentinel, not a reserved key; the table never validates that inputs are non-negative, so a real -1 would be lost on lookup.
 EMPTY = -1
 
 
 class HashTable:
+    # Capacity is fixed at construction and every slot starts EMPTY; no resize path exists, so alpha can grow until the table is full.
     def __init__(self, size: int = 11) -> None:
         self._slots: list[int] = [EMPTY] * size
 
+    # Python's modulo already normalizes negative keys, so this method needs no sign branch; the result is always a valid slot index.
     def _index(self, key: int) -> int:
         return key % len(self._slots)
 
@@ -36,10 +39,12 @@ class HashTable:
     # This teaching version has no deletion, so an empty slot ends the probe; adding tombstones would require lookup to continue past them.
     # Purpose: Insert key by linear probing; return False for a duplicate key or a full table.
     # 作用：线性探测插入 key；重复键或表满返回 False。
+    # The loop bound is the number of slots, which proves termination even when no empty slot exists; a full table returns False.
     def insert(self, key: int) -> bool:
         start = self._index(key)
         for step in range(len(self._slots)):
             index = (start + step) % len(self._slots)
+            # This empty check is both the insertion point and the absence proof; the two roles coincide only because the table has no deletion.
             if self._slots[index] == EMPTY:
                 self._slots[index] = key
                 return True
@@ -49,6 +54,7 @@ class HashTable:
 
     # Purpose: Search for key along the probe sequence and stop at EMPTY.
     # 作用：沿探测序列查找 key，遇到 EMPTY 停止。
+    # The search walks the same cyclic sequence as insert and stops at EMPTY; a table full of other keys costs one full cycle before returning False.
     def contains(self, key: int) -> bool:
         start = self._index(key)
         for step in range(len(self._slots)):

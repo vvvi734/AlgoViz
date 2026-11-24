@@ -1,10 +1,10 @@
 /*
  * 中文导读：每个桶挂一条链表，冲突的元素共享同一个桶但保留为独立结点。
- * 阅读顺序：先看 hash 函数和桶数组；再看 insert 为什么先查重；最后看 remove 如何跨过待删结点重接链表。
+ * 阅读顺序：先看 hash 函数和桶数组；再看 insert 为什么先查重；最后看 table_free 如何释放结点（本版本不提供 remove）。
  * 关键不变量：同一个键最多出现一次；每个结点只属于其哈希值对应的桶。
- * 易错点：删除头结点不更新桶指针；哈希为负未取模；扩容后没有重新散列；比较键时只比哈希值。
+ * 易错点：释放后误以为桶头已清空；哈希为负未归一；扩容后没有重新散列；比较键时只比哈希值。
  * 复杂度：平均 O(1)，最坏 O(n)（全部冲突）；空间 O(n+buckets)。
- * 输入/输出：输入非负整数 key 的插入/查找/删除序列；操作返回布尔或值；main 打印桶链状态。
+ * 输入/输出：输入非负整数 key 的插入/查找序列；操作返回布尔值；main 打印桶链状态；不提供删除。
 */
 
 /*
@@ -19,7 +19,7 @@
  * Complexity: Expected time: O(1 + alpha) per operation, O(n) worst; extra space O(n
  *   + table_size).
  * Convention: Non-negative integer keys; table size is fixed at compile/construction
- *   time.
+ *   time. This C demo implements insert and lookup only; remove is not provided.
  */
 
 #include <stdbool.h>
@@ -41,6 +41,7 @@ typedef struct
 
 // Purpose: Initialize the chained hash table by clearing every bucket head.
 // 作用：初始化链地址散列表：所有桶头指针置空。
+// The table has a fixed bucket array; initialization only clears heads, and this version never resizes or rehashes existing keys.
 void table_init(HashTable *table)
 {
     for (int i = 0; i < TABLE_SIZE; ++i)
@@ -53,6 +54,7 @@ void table_init(HashTable *table)
 // 作用：把 key 映射到 0..bucket_count-1 的桶下标；负键要先转成非负。
 int hash_index(int key)
 {
+    // C's remainder can be negative, so the conditional adds TABLE_SIZE; without it a negative key would index outside the bucket array.
     int index = key % TABLE_SIZE;
     return index < 0 ? index + TABLE_SIZE : index;
 }
@@ -64,6 +66,7 @@ int hash_index(int key)
 bool table_insert(HashTable *table, int key)
 {
     int index = hash_index(key);
+    // The duplicate test scans the entire target chain before allocation; a colliding duplicate may sit behind several nodes, not only at the head.
     for (Node *node = table->buckets[index]; node != NULL; node = node->next)
     {
         if (node->key == key)
@@ -71,12 +74,14 @@ bool table_insert(HashTable *table, int key)
             return false;
         }
     }
+    // A failed allocation returns false, the same value used for a duplicate; the caller cannot distinguish out-of-memory from an existing key in this API.
     Node *node = (Node *)malloc(sizeof(Node));
     if (node == NULL)
     {
         return false;
     }
     node->key = key;
+    // Head insertion is O(1): the new node points at the old head, then the bucket head is republished; chain order becomes reverse insertion order.
     node->next = table->buckets[index];
     table->buckets[index] = node;
     return true;
@@ -84,6 +89,7 @@ bool table_insert(HashTable *table, int key)
 
 // Purpose: Traverse the target bucket and compare real keys rather than only hash values.
 // 作用：只读遍历目标桶，比较真实键而不是只比较哈希值。
+// Only the target bucket can hold this key because every insertion uses the same hash index; an empty bucket is a proof of absence for this fixed table.
 bool table_contains(const HashTable *table, int key)
 {
     int index = hash_index(key);
@@ -112,15 +118,17 @@ void table_print(const HashTable *table)
     }
 }
 
-// Purpose: Free every node in every bucket, then clear each bucket head to avoid leaks.
-// 作用：释放所有桶中的结点，再把桶头置空，避免内存泄漏。
+// Purpose: Free every node in every bucket; this demo does not clear bucket heads, so the table must be re-initialized before reuse.
+// 作用：释放所有桶中的结点；本演示不把桶头置空，因此复用前必须重新初始化。
 void table_free(HashTable *table)
 {
+    // The function frees nodes but does not clear bucket heads; after it returns the table holds dangling pointers and must be re-initialized before reuse.
     for (int i = 0; i < TABLE_SIZE; ++i)
     {
         Node *node = table->buckets[i];
         while (node != NULL)
         {
+            // next is saved before free because freeing node would make node->next unreadable; the loop must advance through the saved pointer.
             Node *next = node->next;
             free(node);
             node = next;

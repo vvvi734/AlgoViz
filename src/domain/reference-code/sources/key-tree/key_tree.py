@@ -15,6 +15,7 @@ nodes only for the missing suffix and rejects duplicates before mutation.
 """
 
 
+# children is a dict, so edge existence is a hash lookup; dictionary() sorts the result because dict insertion order is not the curriculum's ordering guarantee.
 class KeyNode:
     def __init__(self, letter=""):
         self.letter = letter
@@ -24,9 +25,11 @@ class KeyNode:
 
 # Purpose: Walk the longest existing prefix and report the last real node plus matched length.
 # 作用：沿最长已存在前缀下降，返回最后真实节点与匹配长度。
+# The while condition checks both stopping reasons at once: the word ends, or the next character has no edge in the current node.
 def walk(root, word):
     node = root
     matched = 0
+    # Membership is tested before indexing, so a missing edge ends the walk without a KeyError; matched is left at the last successful prefix length.
     while matched < len(word) and word[matched] in node.children:
         node = node.children[word[matched]]
         matched += 1
@@ -35,6 +38,7 @@ def walk(root, word):
 
 # Purpose: A hit needs every edge and terminal=True; a shared prefix alone is not a word.
 # 作用：命中要求每条边都存在且 terminal=True；共享前缀本身不是单词。
+# The tuple return separates the hit flag from progress; callers can still inspect matched when the word is absent.
 def find(root, word):
     node, matched = walk(root, word)
     return matched == len(word) and node.terminal, matched
@@ -42,10 +46,12 @@ def find(root, word):
 
 # Purpose: Reject duplicates first, then create only missing suffix nodes and mark the end terminal.
 # 作用：先拒绝重复，再只为缺失后缀创建节点，并把末端标记为 terminal。
+# The loop creates nodes only after a missing edge is observed; an existing prefix therefore stays untouched until the final terminal assignment.
 def insert(root, word):
     node = root
     complete_path = True
     for letter in word:
+        # get returns None for a missing edge without raising; the newly created child is published into the parent dict before the walk advances.
         child = node.children.get(letter)
         if child is None:
             complete_path = False
@@ -60,6 +66,7 @@ def insert(root, word):
 
 # Purpose: DFS with the current prefix; only a terminal at depth > 0 emits a dictionary word.
 # 作用：带当前前缀 DFS；只有深度大于 0 的 terminal 才输出词典单词。
+# An explicit stack avoids the recursion-depth limit; pushing children in reverse sorted order makes pop visit them in ascending order.
 def dictionary(root):
     words = []
     stack = [(root, "")]
@@ -67,6 +74,7 @@ def dictionary(root):
         node, prefix = stack.pop()
         if node.terminal and prefix:
             words.append(prefix)
+        # reverse=True is paired with stack LIFO: the smallest letter is pushed last and therefore popped first, so the emitted words stay sorted.
         for letter, child in sorted(node.children.items(), reverse=True):
             stack.append((child, prefix + letter))
     return sorted(words)

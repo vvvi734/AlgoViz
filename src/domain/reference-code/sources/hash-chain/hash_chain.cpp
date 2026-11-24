@@ -30,9 +30,11 @@ class HashTable
     // Each bucket owns a vector-backed chain; a new key is appended, and duplicates are rejected before push_back.
     // Purpose: Append a new key after checking for duplicates; return false for an existing key.
     // 作用：查重后把新键追加到桶尾；重复键返回 false。
+    // The scan is linear in chain length; push_back may reallocate the bucket vector, but the bucket index remains valid because only the inner vector moves.
     bool insert(int key)
     {
         std::size_t index = hash_index(key);
+        // The whole bucket is scanned before push_back; a duplicate may be behind several colliding keys, so checking only the first element is insufficient.
         for (int existing : buckets_[index])
         {
             if (existing == key)
@@ -40,6 +42,7 @@ class HashTable
                 return false;
             }
         }
+        // Insertion appends to the chain, so the printed order is insertion order; the C version prepends and therefore prints in the opposite order.
         buckets_[index].push_back(key);
         return true;
     }
@@ -61,6 +64,7 @@ class HashTable
 
     // Purpose: Print the chained hash table bucket by bucket to observe collision chains; read-only.
     // 作用：逐桶输出链地址散列表的内容，用于观察冲突链；只读。
+    // Lookup and printing touch one bucket at a time; the average O(1+alpha) bound assumes hashing spreads keys, not that chains are short by construction.
     void print() const
     {
         for (std::size_t i = 0; i < buckets_.size(); ++i)
@@ -77,6 +81,7 @@ class HashTable
   private:
     // Purpose: Map key to a bucket index in 0..bucket_count-1; convert negative keys to a non-negative value first.
     // 作用：把 key 映射到 0..bucket_count-1 的桶下标；负键要先转成非负。
+    // The cast to int is required before modulo; mixing size_t here would turn a negative key into a huge unsigned value before the sign correction.
     std::size_t hash_index(int key) const
     {
         int index = key % static_cast<int>(buckets_.size());

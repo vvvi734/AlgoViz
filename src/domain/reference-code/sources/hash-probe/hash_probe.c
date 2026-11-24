@@ -21,6 +21,7 @@
 #include <stdio.h>
 
 #define HASH_CAPACITY 11
+// The EMPTY sentinel is -1, so this representation assumes non-negative keys; storing -1 as a real key would make that slot indistinguishable from empty.
 #define HASH_EMPTY (-1)
 
 typedef struct
@@ -30,6 +31,7 @@ typedef struct
 
 // Purpose: Initialize open addressing by marking every slot EMPTY; this version keeps no tombstone or deletion counter.
 // 作用：初始化开放地址散列表：所有槽标为 EMPTY；本版本没有墓碑，也没有删除计数字段。
+// Every slot starts EMPTY; because this version never deletes, no DELETED state and no occupancy-versus-tombstone distinction are needed.
 void InitHashTable(HashTable *table)
 {
     for (int index = 0; index < HASH_CAPACITY; ++index)
@@ -42,6 +44,7 @@ void InitHashTable(HashTable *table)
 // 作用：计算 key 的初始槽位；后续线性探测从这里开始向后找空位。
 static int HomeSlot(int key)
 {
+    // The home slot is only the start of the probe, not the final position; collisions move forward modulo capacity, wrapping at the array end.
     int slot = key % HASH_CAPACITY;
     return slot < 0 ? slot + HASH_CAPACITY : slot;
 }
@@ -52,14 +55,17 @@ static int HomeSlot(int key)
 bool HashInsert(HashTable *table, int key)
 {
     int start = HomeSlot(key);
+    // step < capacity guarantees termination even when every slot is occupied; a full table returns false after one complete cycle.
     for (int step = 0; step < HASH_CAPACITY; ++step)
     {
         int index = (start + step) % HASH_CAPACITY;
+        // The first EMPTY slot is the insertion point only because no key can be hidden beyond it; adding deletion would break this proof.
         if (table->slots[index] == HASH_EMPTY)
         {
             table->slots[index] = key;
             return true;
         }
+        // The duplicate test continues along the probe sequence, not just at the home slot; colliding keys may be several steps away.
         if (table->slots[index] == key)
         {
             return false;
@@ -70,6 +76,7 @@ bool HashInsert(HashTable *table, int key)
 
 // Purpose: Start linear probing at HomeSlot and stop only at EMPTY; without deletion, EMPTY alone proves absence.
 // 作用：从 HomeSlot 开始线性探测，遇到 EMPTY 才停止；本版本没有删除，因此 EMPTY 足以证明不存在。
+// Search follows the exact same probe sequence as insertion; stopping at EMPTY is valid only in this no-deletion table.
 bool HashContains(const HashTable *table, int key)
 {
     int start = HomeSlot(key);

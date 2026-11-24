@@ -23,10 +23,12 @@ from __future__ import annotations
 TABLE_SIZE = 7
 
 
+# The bucket count is fixed at construction; changing it later would invalidate every stored key's home bucket, so no resize API is provided.
 class HashTable:
     def __init__(self, size: int = TABLE_SIZE) -> None:
         self._buckets: list[list[int]] = [[] for _ in range(size)]
 
+    # Python's % already returns a non-negative remainder for negative keys, so unlike the C implementation no sign correction is needed.
     def _index(self, key: int) -> int:
         return key % len(self._buckets)
 
@@ -34,8 +36,10 @@ class HashTable:
     # Each bucket owns a list; a new key is appended to that bucket, and duplicates are rejected before append.
     # Purpose: Insert key into its bucket; return False if it already exists, otherwise append and return True.
     # 作用：把 key 插入对应桶；已存在返回 False，否则追加并返回 True。
+    # The membership test performs the duplicate scan, and append happens only after it fails; average cost is 1 + alpha for the target bucket.
     def insert(self, key: int) -> bool:
         bucket = self._buckets[self._index(key)]
+        # This is a full linear scan of the target Python list, not a hash lookup; it is O(chain length), which is why alpha controls the real cost.
         if key in bucket:
             return False
         bucket.append(key)
@@ -48,6 +52,7 @@ class HashTable:
 
     # Purpose: Return a copy of the bucket contents so callers cannot mutate the internal chain.
     # 作用：返回桶内容的副本，避免调用方直接改内部链。
+    # Returning copies prevents callers from mutating internal lists; the tradeoff is O(n) copying whenever the table is inspected.
     def buckets(self) -> list[list[int]]:
         return [list(bucket) for bucket in self._buckets]
 
