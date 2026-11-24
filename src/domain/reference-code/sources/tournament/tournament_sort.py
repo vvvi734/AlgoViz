@@ -55,8 +55,9 @@ def remove_winner(records, active, tree, leaf_count, winner):
 # Purpose: Return the stable sorted record sequence produced by the winner tree.
 # 作用：返回选择树产生的稳定升序记录序列。
 def tournament_sort(values):
-    if not 1 <= len(values) <= 12:
-        raise ValueError("tree sort needs 1..12 records")
+    if not values:
+        return []
+    # Capacity is derived from the input length; the earlier 1..12 guard was a demo limitation, not a property of the winner tree.
     records = [
         {"value": value, "original_index": index}
         for index, value in enumerate(values)

@@ -1,34 +1,51 @@
 """AlgoViz reference implementation: quicksort.
 
-Lomuto partition: <= pivot goes left, > pivot goes right.
+Median-of-three chooses the pivot; Lomuto partition places it in its final slot.
+The smaller side recurses and the larger side iterates, bounding stack depth.
 
 Reading guide:
-1. Partition the range around the last element as pivot.
-2. Move values smaller than the pivot left and values greater than it right.
-3. Place the pivot in its final slot and recurse on the two sides.
+1. Order low/middle/high and move the median to high.
+2. Partition with <= on the left and > on the right.
+3. Recurse on the smaller side; continue the loop on the larger side.
 
-Complexity: O(n log n) average, O(n^2) worst; extra space O(log n) average recursion,
-  O(n) worst.
+Complexity: O(n log n) average, O(n^2) worst; recursion space O(log n) by construction.
 Convention: Ranges are inclusive [low, high]; 0-based indices; the partition scheme is
   not stable.
 """
-# 中文导读：以区间末尾为枢轴做 Lomuto 划分，再递归排序左右两段。
-# 阅读顺序：先看 boundary 的含义，再看枢轴换到 boundary+1 的位置。
+# 中文导读：三数取中选枢轴，Lomuto 划分后先递归较小侧、较大侧用循环处理。
+# 阅读顺序：先看 median_of_three 如何把中位数换到末尾，再看 partition 的边界。
 # 输入/输出：输入整数数组；原地排序，无返回值。
 # 不变量：划分后枢轴左侧不大于枢轴，右侧大于枢轴。
-# 易错点：boundary 初值写错；递归区间包含枢轴导致死循环；有序数组退化为 O(n^2)。
-# 复杂度：平均 O(n log n)，最坏 O(n^2)，额外空间 O(log n) 递归。
+# 易错点：固定末尾枢轴导致有序数组退化；两侧都递归导致栈深 O(n)。
+# 复杂度：平均 O(n log n)，最坏 O(n^2)，递归栈 O(log n)。
 
 from __future__ import annotations
 
 
+# Purpose: Order values[low], values[middle], values[high], then move the median to high for Lomuto.
+# 作用：先让 low/middle/high 三个位置有序，再把中位数换到 high，供 Lomuto 划分使用。
+def median_of_three(values: list[int], low: int, high: int) -> int:
+    middle = low + (high - low) // 2
+    # The offset midpoint avoids low+high overflow; for a two-element range it equals low.
+    if values[middle] < values[low]:
+        values[middle], values[low] = values[low], values[middle]
+    if values[high] < values[low]:
+    # After this swap low holds the smallest of the three, so the median cannot be low.
+        values[high], values[low] = values[low], values[high]
+    if values[high] < values[middle]:
+    # The remaining comparison orders middle and high; the median is now at middle.
+        values[high], values[middle] = values[middle], values[high]
+    values[middle], values[high] = values[high], values[middle]
+    # Lomuto reads values[high] as the pivot, so the median is moved there after the three-way ordering.
+    return values[high]
+
+
 # Lomuto partition: <= pivot goes left, > pivot goes right, pivot returns at boundary + 1.
-# Lomuto partition: `boundary` marks the end of the <= pivot region and starts at low - 1; the pivot is swapped to `boundary + 1`.
-# Purpose: Partition [low, high] around values[high] and return the pivot's final index.
-# 作用：以 values[high] 为枢轴划分 [low, high]，返回枢轴最终下标。
+# Purpose: Partition [low, high] around the median moved to the end and return its final index.
+# 作用：以三数取中后放在末尾的基准划分 [low, high]，返回基准最终下标。
 def partition(values: list[int], low: int, high: int) -> int:
-    pivot = values[high]
-    # The pivot is a local copy; reassigning values during partitioning cannot silently change the comparison threshold.
+    pivot = median_of_three(values, low, high)
+    # Median-of-three makes sorted and reverse-sorted inputs choose a middle value instead of an extreme.
     boundary = low - 1
     # boundary is the exclusive end of the accepted region; starting at low-1 makes the first accepted element land at low.
     for index in range(low, high):
@@ -43,16 +60,20 @@ def partition(values: list[int], low: int, high: int) -> int:
     return boundary + 1
 
 
-# Purpose: Recursively sort the inclusive interval [low, high].
-# 作用：递归排序闭区间 [low, high]。
+# Purpose: Partition, recurse on the smaller side, and iterate on the larger side.
+# 作用：划分后先递归较小侧、再循环处理较大侧，避免不平衡划分把递归栈推到 O(n)。
 def quick_sort_range(values: list[int], low: int, high: int) -> None:
-    if low >= high:
-    # The empty/single-element guard prevents a recursive call that could not shrink the interval.
-        return
-    middle = partition(values, low, high)
-    quick_sort_range(values, low, middle - 1)
-    quick_sort_range(values, middle + 1, high)
-    # The right recursive call starts after the pivot; including middle would reuse the same pivot and never terminate.
+    while low < high:
+    # The loop replaces the larger recursive branch; only the smaller branch consumes stack, bounding depth by O(log n).
+        middle = partition(values, low, high)
+        if middle - low < high - middle:
+        # The left side is smaller: recurse there and continue with the right side.
+            quick_sort_range(values, low, middle - 1)
+            low = middle + 1
+        else:
+        # The right side is no larger: recurse there and continue with the left side.
+            quick_sort_range(values, middle + 1, high)
+            high = middle - 1
 
 
 # Purpose: Start quicksort on the whole array.

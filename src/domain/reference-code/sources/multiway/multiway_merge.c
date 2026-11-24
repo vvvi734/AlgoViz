@@ -6,23 +6,22 @@
  * 把这里的模拟读写计数误当成浏览器真实磁盘访问。
  * 复杂度：本实现线性扫描 k 个候选，O(n × k)；败者树可把选择降到 O(n log k)。
  * 输入/输出：main 使用两个已有序段 [2,5,9] 与 [1,6,10]；打印稳定合并结果和模拟块计数。
+ * 容量口径：k、各段长度和缓冲区容量都由调用方传入，内部按实际规模分配，不再受静态数组上限约束。
  */
 
 /*
  * k-way balanced merge in C11 over a teaching-model external store.
  *
  * Each run owns a FIFO input buffer and exposes only its head as a candidate.
- * A full output buffer becomes one simulated block write. The counters below
- * describe model events; they never access a real disk or file system.
+ * A full output buffer becomes one simulated block write. The run buffers,
+ * output buffer and written array are allocated from the actual k and n, so
+ * this implementation has no MAX_K or MAX_RECORDS ceiling.
+ * The counters below describe model events; they never access a real disk.
  */
 
+#include <limits.h>
 #include <stdio.h>
-#include <string.h>
-
-#define MAX_RECORDS 24
-#define MAX_K 4
-#define MAX_RUN_RECORDS 6
-#define MAX_BUFFER 3
+#include <stdlib.h>
 
 typedef struct
 {
@@ -32,16 +31,16 @@ typedef struct
 
 typedef struct
 {
-    Record records[MAX_RUN_RECORDS];
+    Record *records;
     int length;
     int cursor;
-    int buffer[MAX_RECORDS];
+    int *buffer;
     int bufferLength;
 } InputRun;
 
 typedef struct
 {
-    Record records[MAX_RECORDS];
+    Record *records;
     int length;
     int capacity;
 } OutputBuffer;
@@ -62,7 +61,7 @@ static int ComesBefore(const Record *left, const Record *right)
 static int Refill(InputRun *run, int blockSize, int capacity, int *readBlocks)
 {
     int freeSlots = capacity - run->bufferLength;
-    // capacity is the per-run FIFO capacity, not the global record capacity; freeSlots bounds how much one refill may add.
+    // capacity is the per-run FIFO capacity supplied by the caller, not a global record ceiling; freeSlots bounds one refill.
     int remaining = run->length - run->cursor;
     // cursor counts records already moved into the buffer; remaining is the unread tail that refill is allowed to consume.
     int take = blockSize;
@@ -109,14 +108,51 @@ static void FlushOutput(OutputBuffer *output, Record *written, int *writtenLengt
     *writeBlocks += 1;
 }
 
-// Purpose: Merge exactly k non-empty-or-empty sorted runs and return the written count.
-// 作用：真正执行一趟 k 路平衡归并，返回写出的记录总数。
-static int MultiwayMerge(InputRun runs[MAX_K], int k, int bufferCapacity, int blockSize,
+// Purpose: Release the per-run buffers allocated by MultiwayMerge; pointers are cleared so a caller cannot free them twice.
+// 作用：释放 MultiwayMerge 为各段分配的缓冲区，并把指针清空，避免调用方重复释放。
+static void FreeRunBuffers(InputRun *runs, int k)
+{
+    for (int runIndex = 0; runIndex < k; ++runIndex)
+    {
+        free(runs[runIndex].buffer);
+        runs[runIndex].buffer = NULL;
+        runs[runIndex].bufferLength = 0;
+    }
+}
+
+// Purpose: Merge exactly k sorted runs and return the written count, or -1 when a size/allocation check fails.
+// 作用：真正执行一趟 k 路平衡归并，返回写出的记录总数；规模非法或分配失败返回 -1。
+static int MultiwayMerge(InputRun *runs, int k, int bufferCapacity, int blockSize,
                          int *readBlocks, int *writeBlocks)
 {
+    if (runs == NULL || k <= 0 || bufferCapacity <= 0 || blockSize <= 0)
+    {
+        return -1;
+    }
+
+    int total = 0;
+    for (int runIndex = 0; runIndex < k; ++runIndex)
+    {
+        if (runs[runIndex].length < 0 || total > INT_MAX - runs[runIndex].length)
+        // Validate each run before allocating the written array; a negative or overflowing count would make the allocation undersized.
+        {
+            return -1;
+        }
+        total += runs[runIndex].length;
+    }
+
+    Record *written = (Record *)malloc((size_t)(total > 0 ? total : 1) * sizeof(Record));
+    Record *outputRecords = (Record *)malloc((size_t)bufferCapacity * sizeof(Record));
+    // The written array is exactly n records and the output block is exactly bufferCapacity records; neither uses a fixed maximum.
+    if (written == NULL || outputRecords == NULL)
+    {
+        free(written);
+        free(outputRecords);
+        return -1;
+    }
+
     OutputBuffer output;
-    Record written[MAX_RECORDS];
-    int writtenLength = 0;
+    output.records = outputRecords;
     output.length = 0;
     output.capacity = bufferCapacity;
     *readBlocks = 0;
@@ -124,6 +160,15 @@ static int MultiwayMerge(InputRun runs[MAX_K], int k, int bufferCapacity, int bl
 
     for (int runIndex = 0; runIndex < k; ++runIndex)
     {
+        runs[runIndex].buffer = (int *)malloc((size_t)bufferCapacity * sizeof(int));
+        // The FIFO stores record indices, so its element type is int; one allocation per run keeps the buffers independent.
+        if (runs[runIndex].buffer == NULL)
+        {
+            FreeRunBuffers(runs, runIndex);
+            free(written);
+            free(outputRecords);
+            return -1;
+        }
         runs[runIndex].bufferLength = 0;
         runs[runIndex].cursor = 0;
         Refill(&runs[runIndex], blockSize, bufferCapacity, readBlocks);
@@ -132,6 +177,7 @@ static int MultiwayMerge(InputRun runs[MAX_K], int k, int bufferCapacity, int bl
     // Only buffer[0] of each run is a candidate; the run's unread tail stays invisible until Refill moves it in.
     // Every iteration selects one candidate. A run with an empty buffer after
     // its head leaves may refill immediately, but a fully consumed run stays out.
+    int writtenLength = 0;
     while (1)
     {
         int winnerRun = -1;
@@ -190,30 +236,43 @@ static int MultiwayMerge(InputRun runs[MAX_K], int k, int bufferCapacity, int bl
         printf(" (%d,%c)", written[index].value, 'A' + written[index].originalIndex);
     }
     printf("\n");
+
+    FreeRunBuffers(runs, k);
+    free(written);
+    free(outputRecords);
     return writtenLength;
 }
 
 int main(void)
 {
-    InputRun runs[MAX_K];
-    memset(runs, 0, sizeof(runs));
-    int values[MAX_K][MAX_RUN_RECORDS] = {{2, 5, 9}, {1, 6, 10}};
-    int lengths[MAX_K] = {3, 3};
+    int values[2][3] = {{2, 5, 9}, {1, 6, 10}};
+    int lengths[2] = {3, 3};
+    Record records[2][3];
+    InputRun runs[2];
     int originalIndex = 0;
     for (int runIndex = 0; runIndex < 2; ++runIndex)
     {
-        runs[runIndex].length = lengths[runIndex];
         for (int slot = 0; slot < lengths[runIndex]; ++slot)
         {
-            runs[runIndex].records[slot].value = values[runIndex][slot];
-            runs[runIndex].records[slot].originalIndex = originalIndex;
+            records[runIndex][slot].value = values[runIndex][slot];
+            records[runIndex][slot].originalIndex = originalIndex;
             originalIndex += 1;
         }
+        runs[runIndex].records = records[runIndex];
+        runs[runIndex].length = lengths[runIndex];
+        runs[runIndex].cursor = 0;
+        runs[runIndex].buffer = NULL;
+        runs[runIndex].bufferLength = 0;
     }
 
     int reads = 0;
     int writes = 0;
     int total = MultiwayMerge(runs, 2, 2, 1, &reads, &writes);
+    if (total < 0)
+    {
+        printf("multiway merge failed: invalid size or allocation failure\n");
+        return 1;
+    }
     printf("records=%d readBlocks=%d writeBlocks=%d mergePasses=1\n", total, reads, writes);
     printf("note: simulated teaching I/O, not browser disk access\n");
     return 0;

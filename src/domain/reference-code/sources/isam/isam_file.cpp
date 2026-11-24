@@ -97,11 +97,11 @@ class IsamFile
         MainBlock &block = blocks[static_cast<std::size_t>(blockIndex)];
         if (static_cast<int>(block.records.size()) < capacity)
         {
-            auto position = std::lower_bound(
-            // lower_bound inserts before existing equal keys, so a later equal-key record precedes an earlier one; unlike the C version, this insert is not stable.
+            auto position = std::upper_bound(
+            // upper_bound returns the first key strictly greater than record.key, so the new record is inserted after equal keys and matches the C/Python stability rule.
                 block.records.begin(), block.records.end(), record.key,
-                [](const Record &left, int key)
-                { return left.key < key; });
+                [](int key, const Record &right)
+                { return key < right.key; });
             block.records.insert(position, record);
             std::cout << "insert " << record.key << " into main B" << blockIndex << "\n";
             RefreshBounds();
@@ -134,10 +134,11 @@ class IsamFile
             node = newNode;
         }
         auto &records = overflow[static_cast<std::size_t>(node)].records;
-        auto position = std::lower_bound(
+        auto position = std::upper_bound(
+        // The overflow insertion uses the same upper_bound rule as the main block; both paths must preserve the arrival order of equal keys.
             records.begin(), records.end(), record.key,
-            [](const Record &left, int key)
-            { return left.key < key; });
+            [](int key, const Record &right)
+            { return key < right.key; });
         records.insert(position, record);
         RefreshBounds();
     }

@@ -5,7 +5,7 @@
  * 若块最大键变化，索引上界也要刷新。最后必须真实重查新记录。
  * 易错点：上界当成下一块首键；主块命中仍读链；溢出链跨块；插入后索引未更新。
  * 复杂度：索引 O(E)，主块 O(B)，溢出链 O(C)；所有块访问都是教学模拟。
- * 输入/输出：6 条记录、主块容量 2；插入 105 进入 B2 溢出链，再查找并打印命中位置。
+ * 输入/输出：6 条记录、主块容量 2；插入 105 进入 B2 溢出链，再查找并打印命中位置；容量耗尽时明确拒绝。
  */
 
 /*
@@ -163,8 +163,8 @@ static int Lookup(IsamFile *file, int target, int *isOverflow)
 }
 
 // The chosen block is fixed before overflow is considered; a full block appends to its own chain and then the index is refreshed.
-// 作用：先按上界锁定主块；主块有空间按序插入，否则追加到该块专属溢出链，最后刷新真实上界。
-static void Insert(IsamFile *file, Record record)
+// 作用：先按上界锁定主块；主块有空间按序插入，否则追加到该块专属溢出链，最后刷新真实上界；容量不足返回 0 且不留下半更新。
+static int Insert(IsamFile *file, Record record)
 {
     int blockIndex = ChooseBlock(file, record.key);
     MainBlock *block = &file->blocks[blockIndex];
@@ -172,12 +172,18 @@ static void Insert(IsamFile *file, Record record)
     {
         printf("insert %d into main block B%d\n", record.key, blockIndex);
         RefreshBounds(file);
-        return;
+        return 1;
     }
 
     printf("main block B%d is full; insert %d into overflow\n", blockIndex, record.key);
     if (block->overflowHead < 0)
     {
+        if (file->overflowCount >= MAX_OVERFLOW)
+        // Check the global node pool before taking a head slot; writing overflow[overflowCount] here would run past the static array.
+        {
+            printf("overflow area is full; cannot create a head for B%d\n", blockIndex);
+            return 0;
+        }
         block->overflowHead = file->overflowCount;
         file->overflow[file->overflowCount].length = 0;
         file->overflow[file->overflowCount].next = -1;
@@ -192,7 +198,12 @@ static void Insert(IsamFile *file, Record record)
     }
     if (file->overflow[node].length >= OVERFLOW_CAPACITY)
     {
-        // No MAX_OVERFLOW guard is checked before this new node is created; exceeding the static array would write out of bounds.
+        if (file->overflowCount >= MAX_OVERFLOW)
+        // Reject before linking a new node: the chain and the node pool must stay consistent, so no partial link is written.
+        {
+            printf("overflow area is full; insert %d rejected\n", record.key);
+            return 0;
+        }
         file->overflow[file->overflowCount].length = 0;
         file->overflow[file->overflowCount].next = -1;
         file->overflow[node].next = file->overflowCount;
@@ -200,9 +211,14 @@ static void Insert(IsamFile *file, Record record)
         node = file->overflowCount;
         file->overflowCount += 1;
     }
-    InsertSorted(file->overflow[node].records, &file->overflow[node].length,
-                 OVERFLOW_CAPACITY, record);
+    if (!InsertSorted(file->overflow[node].records, &file->overflow[node].length,
+                      OVERFLOW_CAPACITY, record))
+    // The tail was checked above, but the insertion helper still returns a status so a future capacity change cannot fail silently.
+    {
+        return 0;
+    }
     RefreshBounds(file);
+    return 1;
 }
 
 int main(void)
@@ -229,7 +245,11 @@ int main(void)
     }
     RefreshBounds(&file);
 
-    Insert(&file, (Record){105, "E"});
+    if (!Insert(&file, (Record){105, "E"}))
+    {
+        printf("insert 105 rejected: overflow capacity exhausted\n");
+        return 1;
+    }
     int isOverflow = 0;
     int found = Lookup(&file, 105, &isOverflow);
     printf("lookup 105: %s in %s, main reads=%d, overflow reads=%d\n",

@@ -6,16 +6,18 @@ Reading guide:
 1. Store the complete binary tree in an array without holes.
 2. For index i, the parent is (i - 1) / 2 and the children are 2i + 1, 2i + 2.
 3. Push appends and sifts up; pop moves the last value to the root and sifts down.
+4. The demo builds by repeated push, not by a bottom-up heapify pass.
 
-Complexity: O(log n) push/pop, O(1) top; extra space O(n).
+Complexity: O(log n) push/pop, O(1) top, O(n log n) to build by repeated push;
+  extra space O(n).
 Convention: Max-heap property: every parent is >= its children; 0-based array indices.
 """
 # 中文导读：数组存储完全二叉树，插入上滤，弹出把末尾移到根后下滤。
-# 阅读顺序：先看父子下标公式，再看 _sift_up 与 _sift_down 的停止条件。
+# 阅读顺序：先看父子下标公式，再看 _sift_up 与 _sift_down 的停止条件；本实现靠逐次 push 上浮建堆，没有批量 heapify。
 # 输入/输出：输入整数；push 无返回值，pop 返回当前最大值，空堆返回 None。
 # 不变量：任意父结点不小于其孩子；数组无空洞。
-# 易错点：下标从 1 开始却用 0 基公式；下滤只比较左孩子。
-# 复杂度：push/pop O(log n)，top O(1)，额外空间 O(n)。
+# 易错点：下标从 1 开始却用 0 基公式；下滤只比较左孩子；把逐次插入误写成自底向上建堆。
+# 复杂度：push/pop O(log n)，top O(1)，逐次插入建堆 O(n log n)，额外空间 O(n)。
 
 from __future__ import annotations
 

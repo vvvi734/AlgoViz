@@ -4,7 +4,7 @@
  * 关键不变量：进入 merge 时左右两半各自有序；每取一个元素后，输出前缀仍有序。
  * 易错点：临时数组下标算错；剩余元素忘记拷贝；递归边界导致死循环；合并时破坏稳定性。
  * 复杂度：O(n log n) 时间，O(n) 额外空间，稳定。
- * 输入/输出：输入 main 内置的整数数组；排序函数借助缓冲区原地归并，无返回值；main 打印排序结果。
+ * 输入/输出：输入 main 内置的整数数组；排序函数借助缓冲区原地归并，返回 1 表示成功、0 表示分配失败；main 检查状态并打印排序结果。
 */
 
 /*
@@ -73,22 +73,23 @@ static void MergeSortRange(int *values, int low, int high, int *buffer)
 }
 
 // Purpose: Merge-sort entry: allocate one temporary buffer and recursively sort the whole array.
-// 作用：归并排序入口：分配一次临时 buffer，递归排序整个数组。
-void MergeSort(int *values, int count)
+// 作用：归并排序入口：分配一次临时 buffer，递归排序整个数组；返回 1 成功，0 分配失败。
+int MergeSort(int *values, int count)
 {
     if (count <= 1)
     {
-        return;
+        return 1;
     }
     int *buffer = (int *)malloc((size_t)count * sizeof(int));
     // One buffer is allocated for the whole sort, not per merge; recursive calls share it because their ranges are disjoint.
     if (buffer == NULL)
-    // Allocation failure returns without sorting; the caller cannot distinguish this from success because the API has no status result.
+    // Returning a status instead of silently leaving the array unsorted lets the caller distinguish allocation failure from success.
     {
-        return;
+        return 0;
     }
     MergeSortRange(values, 0, count - 1, buffer);
     free(buffer);
+    return 1;
 }
 
 int main(void)
@@ -96,7 +97,11 @@ int main(void)
     int values[] = {5, 1, 4, 2, 8, 0, 3, 7, 6, 9};
     int count = (int)(sizeof(values) / sizeof(values[0]));
 
-    MergeSort(values, count);
+    if (!MergeSort(values, count))
+    {
+        fprintf(stderr, "merge sort: temporary buffer allocation failed\n");
+        return 1;
+    }
     printf("sorted:");
     for (int index = 0; index < count; ++index)
     {

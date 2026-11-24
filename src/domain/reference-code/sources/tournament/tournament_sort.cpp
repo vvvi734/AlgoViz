@@ -111,11 +111,7 @@ int main()
     std::vector<Record> records = {
         {8, 0}, {3, 1}, {11, 2}, {1, 3}, {7, 4}, {2, 5}, {9, 6}, {4, 7}};
     const int n = static_cast<int>(records.size());
-    if (n < 1 || n > 12)
-    {
-        std::puts("record count must be 1..12");
-        return 1;
-    }
+    // The tree and active array are sized from n, not from a 12-record ceiling; any vector length with enough memory is supported.
 
     int leafCount = 1;
     while (leafCount < n)

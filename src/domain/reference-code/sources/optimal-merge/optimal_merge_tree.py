@@ -20,14 +20,16 @@ def root_key(node):
 # Purpose: Build a full k-ary greedy merge tree and return total cost plus nodes.
 # 作用：构造最佳归并树，返回总归并代价和全部节点。
 def build_optimal_merge_tree(weights, k):
-    if not 1 <= len(weights) <= 12:
-        raise ValueError("optimal merge tree needs 1..12 segments")
-    if not 2 <= k <= 4:
-        raise ValueError("k must be 2..4")
-    if any(weight < 1 or weight > 999 for weight in weights):
-        raise ValueError("segment weights must be 1..999")
+    if not weights:
+        raise ValueError("optimal merge tree needs at least one real segment")
+    if k < 2:
+        raise ValueError("k must be at least 2; a one-way merge has no internal node")
+    if any(weight < 1 for weight in weights):
+        raise ValueError("segment weights must be positive")
 
     real_count = len(weights)
+    real_weight = sum(weights)
+    # Real weight is kept separate from virtual padding; the root must equal this sum after every combine.
     # The forest must end with one root, so pad with d zero-weight leaves; they change shape, never total weight.
     missing = ((k - 1) - ((real_count - 1) % (k - 1))) % (k - 1)
     # The padding count is zero when the real leaves already form a full tree; otherwise it is the smallest positive deficit.
@@ -80,6 +82,12 @@ def build_optimal_merge_tree(weights, k):
         roots = roots[k:] + [parent_index]
         # The new parent replaces the consumed prefix; keeping the selected roots would duplicate their records in later merges.
 
+    if nodes[roots[0]]["weight"] != real_weight:
+    # Virtual leaves are shape-only; a root weight different from the real input sum means structural weight leaked into data.
+        raise ValueError("virtual padding changed the root weight")
+    if any(node["kind"] == "virtual" and node["weight"] != 0 for node in nodes):
+    # The virtual tag is part of the contract: a nonzero virtual leaf would turn a placeholder into a fake data segment.
+        raise ValueError("virtual leaf must stay weight-zero")
     return total_cost, nodes, missing
 
 

@@ -59,8 +59,15 @@ static int RootComesBefore(const Node *nodes, int left, int right)
 // 作用：构造 k 路最佳归并树，返回所有内部节点权重之和。
 static int BuildOptimalMergeTree(const int *weights, int segmentCount, int k, Node *nodes)
 {
+    if (segmentCount <= 0 || segmentCount > MAX_SEGMENTS || k < 2 || k > MAX_K)
+    // The padding formula and k-way combine assume at least one real segment and at least two children per internal node.
+    {
+        return -1;
+    }
     int nodeCount = 0;
     int realCount = segmentCount;
+    int realWeight = 0;
+    // Real weight is tracked separately from virtual padding; the two values must not be conflated when the tree is validated.
     // The forest must end with one root, so pad with d zero-weight leaves; they change shape, never the total weight.
     int missing = ((k - 1) - ((segmentCount - 1) % (k - 1))) % (k - 1);
     // A full k-ary tree needs (leaves-1) divisible by k-1; the outer modulo turns a zero deficit into zero virtual leaves instead of k-1.
@@ -69,6 +76,7 @@ static int BuildOptimalMergeTree(const int *weights, int segmentCount, int k, No
     for (int index = 0; index < realCount; ++index)
     {
         nodes[nodeCount].weight = weights[index];
+        realWeight += weights[index];
         nodes[nodeCount].kind = REAL_LEAF;
         nodes[nodeCount].localIndex = index;
         nodes[nodeCount].childCount = 0;
@@ -80,7 +88,7 @@ static int BuildOptimalMergeTree(const int *weights, int segmentCount, int k, No
         nodes[nodeCount].weight = 0;
         // Virtual leaves carry zero weight because they add no records to merge; only their structural slot matters.
         nodes[nodeCount].kind = VIRTUAL_LEAF;
-        // The kind tag keeps virtual leaves distinguishable from real zero-length runs and from internal nodes.
+        // The kind tag keeps virtual leaves distinguishable from real zero-length runs and from internal nodes; they must never enter a merge run.
         nodes[nodeCount].localIndex = index;
         nodes[nodeCount].childCount = 0;
         nodes[nodeCount].parent = -1;
@@ -154,6 +162,13 @@ static int BuildOptimalMergeTree(const int *weights, int segmentCount, int k, No
     }
 
     printf("leaves: real=%d virtual=%d total=%d\n", realCount, missing, totalLeaves);
+    if (nodes[roots[0]].weight != realWeight)
+    // Virtual leaves are shape-only: if padding changed the root's record weight, the tree has mixed structural and data semantics.
+    {
+        printf("optimal merge tree invariant failed: root weight %d != real weight %d\n",
+               nodes[roots[0]].weight, realWeight);
+        return -1;
+    }
     printf("root weight=%d totalCost=%d combines=%d\n",
            nodes[roots[0]].weight, totalCost, internalCount);
     return totalCost;

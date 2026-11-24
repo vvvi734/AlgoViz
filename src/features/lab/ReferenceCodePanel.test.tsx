@@ -200,8 +200,8 @@ const batchAlgorithms = [
   {
     id: 'merge',
     name: '归并排序',
-    zh: '分配失败会直接返回且不排序；由于接口没有状态返回值，调用方无法区分失败与成功。',
-    en: 'Allocation failure returns without sorting; the caller cannot distinguish this from success because the API has no status result.',
+    zh: '返回状态而不是静默留下未排序数组，让调用方能够区分分配失败与成功。',
+    en: 'Returning a status instead of silently leaving the array unsorted lets the caller distinguish allocation failure from success.',
   },
   {
     id: 'multiway',
@@ -448,7 +448,7 @@ describe('ReferenceCodePanel', () => {
 
     rerender(panel('merge', '归并排序'));
     await waitFor(() =>
-      expect(screen.getByTestId('reference-code-fallback').textContent).toContain('void MergeSort'),
+      expect(screen.getByTestId('reference-code-fallback').textContent).toContain('int MergeSort'),
     );
     expect(screen.getByTestId('reference-file-name').textContent).toBe('merge_sort.c');
     expect(screen.queryByTestId('reference-implementation-tabs')).toBeNull();

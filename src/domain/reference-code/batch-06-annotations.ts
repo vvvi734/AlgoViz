@@ -138,8 +138,8 @@ export const BATCH_06_ANNOTATIONS: Record<
       "zh": "块读取在块内扫描之前计费；失败与命中使用相同的一块成本。"
     },
     {
-      "en": "The demo hardcodes 3 here instead of using the capacity argument; changing BuildBlocks' capacity without updating this line would return wrong positions.",
-      "zh": "示例在这里硬编码 3，而没有使用 capacity 参数；若改变 BuildBlocks 的容量却不改这一行，返回位置会出错。"
+      "en": "The base position uses the same capacity that BuildBlocks used, so changing the block size cannot desynchronize address and layout.",
+      "zh": "基址换算使用与 BuildBlocks 相同的容量，因此修改块大小不会让地址与布局脱节。"
     }
   ],
   "indexed_file.py": [
@@ -164,8 +164,8 @@ export const BATCH_06_ANNOTATIONS: Record<
       "zh": "计数器记录块读取，不记录 Python 比较；块内记录检查不会增加它。"
     },
     {
-      "en": "The capacity 3 is hardcoded in the returned position; this matches the demo's build_blocks(records, 3) call but is not parameterized.",
-      "zh": "返回位置中硬编码了容量 3；它与示例的 build_blocks(records, 3) 一致，但没有参数化。"
+      "en": "The capacity comes from the same layout used by build_blocks; a literal 3 here would break as soon as the block size changes.",
+      "zh": "容量来自 build_blocks 使用的同一布局；在这里写死 3，一旦块大小改变就会出错。"
     }
   ],
   "inverted_index.c": [
@@ -174,8 +174,8 @@ export const BATCH_06_ANNOTATIONS: Record<
       "zh": "一个关键字只对应一张倒排表；扫描返回已有表，而不是为同一字符串创建重复表。"
     },
     {
-      "en": "A new table is appended without checking MAX_TERMS; the demo stays within 16 distinct terms, but the API has no capacity failure path.",
-      "zh": "新表追加前没有检查 MAX_TERMS；示例的关键字数在 16 以内，但接口没有容量失败路径。"
+      "en": "The table is a fixed caller-owned array; report failure before assigning lists[*listCount].term.",
+      "zh": "表是调用方提供的定长数组；在写入 lists[*listCount].term 之前必须先报告失败。"
     },
     {
       "en": "The posting stores the integer record position, so the same record can be found without comparing external ID strings.",
@@ -276,8 +276,8 @@ export const BATCH_06_ANNOTATIONS: Record<
       "zh": "只有主块未命中后才计溢出结点读取；主区命中不会支付专属链成本。"
     },
     {
-      "en": "No MAX_OVERFLOW guard is checked before this new node is created; exceeding the static array would write out of bounds.",
-      "zh": "创建新结点前没有检查 MAX_OVERFLOW；超过静态数组容量会越界写入。"
+      "en": "Reject before linking a new node: the chain and the node pool must stay consistent, so no partial link is written.",
+      "zh": "链接新结点前先拒绝：链与节点池必须保持一致，不能留下半条链接。"
     }
   ],
   "isam_file.cpp": [
@@ -294,8 +294,8 @@ export const BATCH_06_ANNOTATIONS: Record<
       "zh": "超出范围的目标回退到最后一块；这是确定的探测位置，不代表记录一定存在。"
     },
     {
-      "en": "lower_bound inserts before existing equal keys, so a later equal-key record precedes an earlier one; unlike the C version, this insert is not stable.",
-      "zh": "lower_bound 会把新记录插到已有相等键之前，因此后插入的相等键反而更靠前；与 C 版不同，这个插入不稳定。"
+      "en": "upper_bound returns the first key strictly greater than record.key, so the new record is inserted after equal keys and matches the C/Python stability rule.",
+      "zh": "upper_bound 返回第一个严格大于 record.key 的位置，新记录因此插在相等键之后，与 C/Python 的稳定性规则一致。"
     },
     {
       "en": "A full main block creates its own overflow head; records never spill into another block's chain, which preserves the index mapping.",
@@ -472,8 +472,8 @@ export const BATCH_06_ANNOTATIONS: Record<
       "zh": "整个排序只分配一个 buffer，而不是每次合并都分配；递归区间互不相交，因此可以共享。"
     },
     {
-      "en": "Allocation failure returns without sorting; the caller cannot distinguish this from success because the API has no status result.",
-      "zh": "分配失败会直接返回且不排序；由于接口没有状态返回值，调用方无法区分失败与成功。"
+      "en": "Returning a status instead of silently leaving the array unsorted lets the caller distinguish allocation failure from success.",
+      "zh": "返回状态而不是静默留下未排序数组，让调用方能够区分分配失败与成功。"
     }
   ],
   "merge_sort.cpp": [
@@ -538,8 +538,8 @@ export const BATCH_06_ANNOTATIONS: Record<
   ],
   "multiway_merge.c": [
     {
-      "en": "capacity is the per-run FIFO capacity, not the global record capacity; freeSlots bounds how much one refill may add.",
-      "zh": "capacity 是每段 FIFO 的容量，不是全局记录容量；freeSlots 限制一次补充能加入多少。"
+      "en": "capacity is the per-run FIFO capacity supplied by the caller, not a global record ceiling; freeSlots bounds one refill.",
+      "zh": "capacity 是调用方传入的每段 FIFO 容量，不是全局记录上限；freeSlots 限制一次补充的量。"
     },
     {
       "en": "cursor counts records already moved into the buffer; remaining is the unread tail that refill is allowed to consume.",
@@ -644,8 +644,8 @@ export const BATCH_06_ANNOTATIONS: Record<
       "zh": "虚拟叶权重为 0，因为它们不增加待归并记录；只有结构槽位有意义。"
     },
     {
-      "en": "The kind tag keeps virtual leaves distinguishable from real zero-length runs and from internal nodes.",
-      "zh": "kind 标记让虚拟叶区别于真实零长度段，也区别于内部结点。"
+      "en": "The kind tag keeps virtual leaves distinguishable from real zero-length runs and from internal nodes; they must never enter a merge run.",
+      "zh": "kind 标记让虚拟叶区别于真实零长度段，也区别于内部结点；它们绝不能进入真实归并段。"
     },
     {
       "en": "With virtual padding the forest size should always support a k-way combine; falling below k means the shape invariant was already broken.",
@@ -678,8 +678,8 @@ export const BATCH_06_ANNOTATIONS: Record<
       "zh": "缺口公式与 C 版按计数表达一致；它只补形状，不改变记录总权重。"
     },
     {
-      "en": "A virtual node has kind VIRTUAL_LEAF and default weight 0; no real input ever enters this branch.",
-      "zh": "虚拟结点标记为 VIRTUAL_LEAF 且权重默认 0；真实输入不会进入这个分支。"
+      "en": "A virtual node has kind VIRTUAL_LEAF and default weight 0; it fills a shape slot but is never a real zero-length run.",
+      "zh": "虚拟结点标记为 VIRTUAL_LEAF 且权重默认 0；它只占结构槽位，绝不是真实零长度段。"
     },
     {
       "en": "stable_sort keeps the comparator's tie order deterministic; the comparator itself already uses weight, kind and id.",
@@ -734,8 +734,24 @@ export const BATCH_06_ANNOTATIONS: Record<
   ],
   "quick_sort.c": [
     {
-      "en": "Choosing the last element makes the pivot value stable during the scan; a sorted input would repeatedly choose the largest and degrade to O(n^2).",
-      "zh": "选择末尾元素让扫描期间基准值保持稳定；已排序输入会反复选到最大值，从而退化为 O(n^2)。"
+      "en": "The midpoint is computed by offset to avoid low+high overflow; for a two-element range it equals low.",
+      "zh": "中点用偏移量计算，避免 low+high 溢出；对两个元素的区间，它等于 low。"
+    },
+    {
+      "en": "After this swap low holds the smallest of the three, so the median cannot be low.",
+      "zh": "这次交换后 low 保存三者中的最小值，因此中位数不可能在 low。"
+    },
+    {
+      "en": "The remaining comparison orders middle and high; the median is now at middle.",
+      "zh": "剩下的比较把 middle 与 high 排好序；此时中位数位于 middle。"
+    },
+    {
+      "en": "Lomuto reads values[high] as the pivot, so the median is moved there after the three-way ordering.",
+      "zh": "Lomuto 以 values[high] 为基准，因此三处排序后要把中位数换到 high。"
+    },
+    {
+      "en": "Median-of-three makes sorted and reverse-sorted inputs choose a middle value instead of the extreme, avoiding the common O(n^2) case.",
+      "zh": "三数取中让已排序和逆序输入选到中间值而非极值，避开常见的 O(n^2) 退化。"
     },
     {
       "en": "boundary is the last index of the <= pivot region and starts before low, so the region is empty before the first comparison.",
@@ -750,26 +766,42 @@ export const BATCH_06_ANNOTATIONS: Record<
       "zh": "<= 把相等键送到左侧；这避免大量重复键时左区为空，但也使划分不稳定。"
     },
     {
-      "en": "boundary grows only when a qualifying element is found; the element at the new boundary is swapped into the processed region.",
-      "zh": "只有找到符合条件的元素时 boundary 才增长；新边界处的元素被换入已处理区域。"
-    },
-    {
       "en": "The final swap puts the pivot immediately after the <= region; boundary+1 is its final position, so later recursion must exclude it.",
       "zh": "最终交换把基准放到 <= 区域之后；boundary+1 就是它的最终位置，后续递归必须排除它。"
     },
     {
-      "en": "An empty or one-element range is already sorted; this base case also prevents infinite recursion on equal bounds.",
-      "zh": "空区间或单元素区间已经有序；这个基例也防止相同边界造成无限递归。"
+      "en": "The loop replaces the larger recursive branch; only the smaller branch consumes stack, so every nested call is at most half the parent.",
+      "zh": "循环替代较大的递归分支；只有较小侧消耗栈，因此每次嵌套调用的规模至多减半。"
     },
     {
-      "en": "The two recursive ranges are disjoint and exclude pivot; passing pivot itself would recreate the same partition forever.",
-      "zh": "两个递归区间互不相交且都排除 pivot；把 pivot 本身传进去会不断重建同一个划分。"
+      "en": "The left side is smaller: recurse there and continue the loop with the right side.",
+      "zh": "左侧更小：递归左侧，右侧继续留在循环中处理。"
+    },
+    {
+      "en": "The right side is no larger: recurse there and continue with the left side.",
+      "zh": "右侧不更大：递归右侧，左侧继续处理。"
     }
   ],
   "quick_sort.cpp": [
     {
-      "en": "The pivot is copied by value before any swap, so later element moves cannot change the comparison target.",
-      "zh": "基准在交换前按值复制，后续元素移动不会改变比较目标。"
+      "en": "The midpoint offset avoids low+high overflow; for a two-element range it equals low.",
+      "zh": "中点用偏移量计算，避免 low+high 溢出；对两个元素的区间，它等于 low。"
+    },
+    {
+      "en": "After this swap low holds the smallest of the three, so the median cannot be low.",
+      "zh": "这次交换后 low 保存三者中的最小值，因此中位数不可能在 low。"
+    },
+    {
+      "en": "The remaining comparison orders middle and high; the median is now at middle.",
+      "zh": "剩下的比较把 middle 与 high 排好序；此时中位数位于 middle。"
+    },
+    {
+      "en": "Lomuto reads values[high] as the pivot, so the median is moved there after the three-way ordering.",
+      "zh": "Lomuto 以 values[high] 为基准，因此三处排序后要把中位数换到 high。"
+    },
+    {
+      "en": "Median-of-three makes sorted and reverse-sorted inputs choose a middle value instead of an extreme, avoiding their common O(n^2) path.",
+      "zh": "三数取中让已排序和逆序输入选到中间值而非极值，避开它们常见的 O(n^2) 退化。"
     },
     {
       "en": "boundary is a signed index because low can be 0; low-1 must remain a sentinel rather than wrap to a huge size_t.",
@@ -784,26 +816,42 @@ export const BATCH_06_ANNOTATIONS: Record<
       "zh": "<= 是划分契约；改成 < 会把相等键留在右侧，并改变重复键的行为。"
     },
     {
-      "en": "boundary advances before the swap, so it always marks the last accepted element after the exchange.",
-      "zh": "boundary 先自增再交换，因此交换后它始终标记最后一个被接受的元素。"
-    },
-    {
       "en": "The pivot moves to boundary+1 only after all smaller-or-equal keys are on its left; that slot is final, not provisional.",
       "zh": "所有小于等于基准的键就位后，基准才移到 boundary+1；该位置是最终位置，不是暂存位置。"
     },
     {
-      "en": "The base case covers both empty and single-element ranges; no partition is attempted when there is nothing to split.",
-      "zh": "基例同时覆盖空区间和单元素区间；没有可分割内容时不再调用划分。"
+      "en": "The loop replaces the larger recursive branch; only the smaller branch consumes stack, bounding depth by O(log n).",
+      "zh": "循环替代较大的递归分支；只有较小侧消耗栈，因此栈深被限制在 O(log n)。"
     },
     {
-      "en": "Recursing on middle+1 and middle-1 keeps the pivot out of both subproblems, which guarantees progress.",
-      "zh": "对 middle+1 和 middle-1 递归都把基准排除在两个子问题之外，从而保证规模缩小。"
+      "en": "The left side is smaller: recurse there and continue the loop with the right side.",
+      "zh": "左侧更小：递归左侧，右侧继续留在循环中处理。"
+    },
+    {
+      "en": "The right side is no larger: recurse there and continue with the left side.",
+      "zh": "右侧不更大：递归右侧，左侧继续处理。"
     }
   ],
   "quick_sort.py": [
     {
-      "en": "The pivot is a local copy; reassigning values during partitioning cannot silently change the comparison threshold.",
-      "zh": "基准是局部副本；划分期间重新赋值 values 不会悄悄改变比较阈值。"
+      "en": "The offset midpoint avoids low+high overflow; for a two-element range it equals low.",
+      "zh": "中点用偏移量计算，避免 low+high 溢出；对两个元素的区间，它等于 low。"
+    },
+    {
+      "en": "After this swap low holds the smallest of the three, so the median cannot be low.",
+      "zh": "这次交换后 low 保存三者中的最小值，因此中位数不可能在 low。"
+    },
+    {
+      "en": "The remaining comparison orders middle and high; the median is now at middle.",
+      "zh": "剩下的比较把 middle 与 high 排好序；此时中位数位于 middle。"
+    },
+    {
+      "en": "Lomuto reads values[high] as the pivot, so the median is moved there after the three-way ordering.",
+      "zh": "Lomuto 以 values[high] 为基准，因此三处排序后要把中位数换到 high。"
+    },
+    {
+      "en": "Median-of-three makes sorted and reverse-sorted inputs choose a middle value instead of an extreme.",
+      "zh": "三数取中让已排序和逆序输入选到中间值而非极值。"
     },
     {
       "en": "boundary is the exclusive end of the accepted region; starting at low-1 makes the first accepted element land at low.",
@@ -826,12 +874,16 @@ export const BATCH_06_ANNOTATIONS: Record<
       "zh": "元组赋值在 Python 中原子地交换基准与 boundary+1；此时基准位于最终下标。"
     },
     {
-      "en": "The empty/single-element guard prevents a recursive call that could not shrink the interval.",
-      "zh": "空区间/单元素守卫阻止无法缩小规模的递归调用。"
+      "en": "The loop replaces the larger recursive branch; only the smaller branch consumes stack, bounding depth by O(log n).",
+      "zh": "循环替代较大的递归分支；只有较小侧消耗栈，因此栈深被限制在 O(log n)。"
     },
     {
-      "en": "The right recursive call starts after the pivot; including middle would reuse the same pivot and never terminate.",
-      "zh": "右递归从基准之后开始；包含 middle 会重复使用同一基准并永不终止。"
+      "en": "The left side is smaller: recurse there and continue with the right side.",
+      "zh": "左侧更小：递归左侧，右侧继续处理。"
+    },
+    {
+      "en": "The right side is no larger: recurse there and continue with the left side.",
+      "zh": "右侧不更大：递归右侧，左侧继续处理。"
     }
   ],
   "selection_sort.c": [

@@ -186,7 +186,7 @@
 - `npm run typecheck` 退出 0；`npm run build` 退出 0（Vite 6.4.6，1951 modules）。
 - 代表性 Playwright：`bubble`、`tournament`、`multiway`、`isam`，中文显示/复制、英文切换/复制、英文无汉字，**1/1** 通过。
 
-## BATCH-06 未修改的实现风险（详情见报告第 8 节）
+## BATCH-06 登记风险（已由 RISK-06 修复，详情见报告第 8 节）
 
 1. `heap` 三语言文件头提到“从最后一个非叶结点倒着下沉建堆”，但代码只实现逐次 `push` 上浮，没有批量 heapify；本批未修改头注释，只登记口径偏差。
 2. `merge_sort.c`：`malloc` 失败时直接 `return`，数组保持未排序且接口没有失败返回值。
@@ -198,4 +198,15 @@
 8. `quick_sort` 末元素 pivot 在已排序输入上退化 O(n²)，递归深度最坏 O(n)。
 9. `optimal_merge_tree` 的虚拟叶只补形状，不能当作真实零长度归并段；总代价必须按内部权重求和，不能只报根权重。
 
+## RISK-06 修复与验证
 
+- 范围：BATCH-06 报告第 8 节的 10 项风险；BATCH-02～BATCH-05 的其他登记风险不在本轮范围。
+- 修复结果：10/10。覆盖 `heap` 注释口径、`merge_sort.c` 分配失败、ISAM C 溢出容量、倒排索引容量、锦标赛 12 条上限、多路归并静态上限、索引位置硬编码、快速排序有序退化、最佳归并树虚拟叶语义、ISAM C++ 相等键稳定性。
+- 新增专项 `src/domain/reference-code/risk-06.test.ts` 与 `risk-06-test/` harness：**10/10** 通过。
+- 全量 Vitest：**159 files / 1575 tests** 通过。
+- BATCH-06 注释专项：**35/35** 通过。
+- `npm run typecheck` 退出 0；`npm run build` 退出 0。
+- Playwright `e2e/code-doc-04-batch-06.spec.ts`：**1/1** 通过。
+- 受影响主程序：C 8/8、C++ 6/6、Python 9/9 编译/运行通过。
+- 报告：`docs/CODE-DOC-04-RISK-06-REPORT.md`。
+- 提交与推送：待填写。

@@ -1546,8 +1546,8 @@ const BASE_REFERENCE_ANNOTATIONS: Record<string, readonly ReferenceAnnotation[]>
   ],
   "quick_sort.py": [
     {
-      en: "Lomuto partition: `boundary` marks the end of the <= pivot region and starts at low - 1; the pivot is swapped to `boundary + 1`.",
-      zh: "Lomuto 分区：`boundary` 标记 <= pivot 区域的末尾，初始为 low - 1；最后把 pivot 换到 `boundary + 1`。",
+      en: "Lomuto partition: <= pivot goes left, > pivot goes right, pivot returns at boundary + 1.",
+      zh: "Lomuto 分区：小于等于基准的键放左侧，较大的放右侧，返回基准最终下标 boundary + 1。",
     },
   ],
   "scc.c": [

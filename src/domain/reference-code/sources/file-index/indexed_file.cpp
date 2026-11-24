@@ -92,7 +92,9 @@ static std::vector<Entry> BuildIndex(const std::vector<Block> &blocks, bool dens
 
 // Choose the last entry not greater than target, then read exactly one block; a miss still counts that block read.
 // 作用：逐项检查索引，选择不大于目标的最后一项，读一块并在块内比较；失败同样计一次块读取。
-static int Lookup(const std::vector<Block> &blocks, const std::vector<Entry> &index, int target, Io &io)
+// The block capacity is a parameter, so the returned record position stays correct if the caller changes the layout.
+static int Lookup(const std::vector<Block> &blocks, const std::vector<Entry> &index, int target,
+                  int capacity, Io &io)
 {
     std::size_t chosen = 0;
     // chosen starts at the first entry so index[chosen] is always valid, including targets below the minimum and above the maximum.
@@ -124,8 +126,8 @@ static int Lookup(const std::vector<Block> &blocks, const std::vector<Entry> &in
         std::cout << "  compare " << record.key << " (" << record.label << ")\n";
         if (record.key == target)
         {
-            return blockIndex * 3 + static_cast<int>(offset);
-            // The demo hardcodes 3 here instead of using the capacity argument; changing BuildBlocks' capacity without updating this line would return wrong positions.
+            return blockIndex * capacity + static_cast<int>(offset);
+            // The base position uses the same capacity that BuildBlocks used, so changing the block size cannot desynchronize address and layout.
         }
     }
     return -1;
@@ -145,7 +147,7 @@ int main()
         std::cout << (dense ? "dense" : "sparse") << " index: "
                   << index.size() << " entries\n";
         Io io;
-        int found = Lookup(blocks, index, 106, io);
+        int found = Lookup(blocks, index, 106, 3, io);
         std::cout << "lookup 106: " << (found >= 0 ? "hit" : "miss")
                   << ", probes=" << io.probes
                   << ", block reads=" << io.blockReads << "\n";
@@ -153,7 +155,7 @@ int main()
 
     std::vector<Entry> dense = BuildIndex(blocks, true);
     Io io;
-    int missing = Lookup(blocks, dense, 109, io);
+    int missing = Lookup(blocks, dense, 109, 3, io);
     std::cout << "lookup 109: " << (missing >= 0 ? "hit" : "miss")
               << ", probes=" << io.probes
               << ", block reads=" << io.blockReads << "\n";

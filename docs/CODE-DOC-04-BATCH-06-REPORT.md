@@ -143,20 +143,33 @@ int maximum = file->blocks[blockIndex].records[...].key;
 
 Playwright 用例：`e2e/code-doc-04-batch-06.spec.ts`，代表算法 `bubble`、`tournament`、`multiway`、`isam`；验证中文显示与真实剪贴板复制、切换英文后的显示与复制、英文文本不含汉字。
 
-## 8. 未修改的实现风险
+## 8. 已登记风险的后续修复
 
-以下问题只登记，不在本批修改有效代码，也不影响 60/60 的“教学注释覆盖”口径：
+以下 10 项是 BATCH-06 当时只登记、未修改有效代码的风险；后续 `CODE-DOC-04-RISK-06` 已全部修复。原始登记保留在此，修复细节与验证见 `docs/CODE-DOC-04-RISK-06-REPORT.md`。
 
-1. `heap` 三语言文件头都提到“建堆/从最后一个非叶结点倒着下沉”，但源码只实现逐次 `push` 上浮，没有批量 heapify；头注释与实现口径不完全一致。
-2. `merge_sort.c`：`malloc` 失败时直接 `return`，数组保持未排序；接口没有状态返回值，调用方无法区分失败与成功。
-3. `isam_file.c`：`MAX_OVERFLOW=5`，`overflowCount` 增加前没有上限检查；输入超过容量可能越界写 `overflow[]`。
-4. `inverted_index.c`：`MAX_TERMS=16`、`MAX_POSTINGS=9`、`MAX_KEYWORDS=4` 均未在插入时检查；当前 4 条记录样例在界内。
-5. `tournament_sort.c` / `.cpp`：硬上限 12 条记录、`MAX_LEAVES=16`；超出会失败或越界，不是通用实现。
-6. `multiway_merge.c`：`MAX_RECORDS=24`、`MAX_K=4`、`MAX_RUN_RECORDS=6`，输入段数与记录数受静态数组限制；`readBlocks/writeBlocks` 只是教学模型，不是磁盘访问。
-7. `indexed_file.cpp` / `.py`：返回位置硬编码 `blockIndex * 3 + offset`，与示例容量 3 绑定；修改块容量而不改公式会返回错误位置。C 版使用 `BLOCK_CAPACITY` 常量，没有该问题。
-8. `quick_sort` 末元素 pivot 在已排序输入上退化 O(n²)，递归深度最坏 O(n)。
-9. `optimal_merge_tree` 的虚拟叶只补形状，不能当作真实零长度归并段；总代价必须按内部权重求和，不能只报根权重。
-10. `isam_file.cpp` 用 `std::lower_bound` 插入，新相等键会排在已有相等键之前；C 版和 Python 版保持稳定，这是三语言行为差异。
+1. `heap` 三语言文件头建堆口径与逐次 `push` 上浮实现不一致。
+   修复：统一改为“逐次插入建堆 O(n log n)，不含批量 heapify”。
+2. `merge_sort.c` 分配失败静默返回，调用方无法区分失败。
+   修复：`MergeSort` 改为返回 `int`，失败返回 0，`main` 检查并退出非零。
+3. `isam_file.c` 溢出节点池未检查 `MAX_OVERFLOW`，可能越界。
+   修复：`Insert` 返回状态；创建溢出头和新结点前检查容量，失败不写半条链。
+4. `inverted_index.c` 的词表、posting、关键字数量上限未检查。
+   修复：`BuildIndex` 先校验输入和容量，失败重置计数并返回 0。
+5. `tournament_sort` 的 12 条记录 / `MAX_LEAVES` 上限。
+   修复：C 版按 `n` 动态分配并新增 `TournamentSort`；C++/Python 移除 12 条限制。
+6. `multiway_merge.c` 的 `MAX_RECORDS/MAX_K/MAX_RUN_RECORDS/MAX_BUFFER` 静态上限。
+   修复：改为调用方传入容量，动态分配每段 FIFO、输出缓冲和结果数组，并清理失败路径。
+7. `indexed_file.cpp/.py` 返回位置硬编码 `blockIndex * 3 + offset`。
+   修复：`Lookup`/`lookup` 增加 `capacity` 参数，按同一布局换算位置。
+8. `quick_sort` 末元素 pivot 在有序输入上退化 O(n²)、栈深 O(n)。
+   修复：三语言加入三数取中，并改为小侧递归、大侧循环，栈深稳定在 O(log n)。
+9. `optimal_merge_tree` 虚拟叶只补形状，缺少权重语义校验。
+   修复：增加真实权重累计、根权重校验和虚拟叶零权重校验；Python 移除人为规模限制。
+10. `isam_file.cpp` 用 `lower_bound` 插入，相等键顺序与 C/Python 不一致。
+    修复：主块与溢出链改用 `upper_bound`，新相等键追加在已有相等键之后。
+
+修复后 RISK-06 专项 **10/10**、全量 Vitest **159 files / 1575 tests**、`typecheck`、`build` 与 BATCH-06 Playwright **1/1** 均通过。
+
 
 ## 9. 交付边界
 

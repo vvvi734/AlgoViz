@@ -1,9 +1,9 @@
 /*
  * 中文导读：用完全二叉树数组实现优先队列：堆顶最大，插入和删除后通过上浮/下沉恢复堆序。
- * 阅读顺序：先记 0 基下标关系 parent=(i-1)/2、children=2i+1/2i+2；再看 sift_up 与 sift_down 的交换方向；最后看建堆为什么从最后一个非叶结点倒着下沉。
+ * 阅读顺序：先记 0 基下标关系 parent=(i-1)/2、children=2i+1/2i+2；再看 sift_up 与 sift_down 的交换方向；最后看本实现如何用逐次 push 上浮建堆，而不是批量 heapify。
  * 关键不变量：每个父结点都不小于它的孩子；数组的前 size 个位置构成完全树。
- * 易错点：1 基/0 基公式混用；下沉只比较一个孩子；删除堆顶后忘记把末尾元素放到根；建堆从根往下。
- * 复杂度：取最大 O(1)，插入/删除 O(log n)，建堆 O(n)，空间 O(n)。
+ * 易错点：1 基/0 基公式混用；下沉只比较一个孩子；删除堆顶后忘记把末尾元素放到根；把逐次插入误写成自底向上建堆。
+ * 复杂度：取最大 O(1)，插入/删除 O(log n)，逐次插入建堆 O(n log n)，空间 O(n)。
  * 输入/输出：输入 push/pop 操作序列；push 无返回值，pop 返回当前最大值；main 打印堆数组与弹出值。
 */
 
@@ -15,8 +15,10 @@
  * 1. Store the complete binary tree in an array without holes.
  * 2. For index i, the parent is (i - 1) / 2 and the children are 2i + 1, 2i + 2.
  * 3. Push appends and sifts up; pop moves the last value to the root and sifts down.
+ * 4. The demo builds by repeated push, not by a bottom-up heapify pass.
  *
- * Complexity: O(log n) push/pop, O(1) top; extra space O(n).
+ * Complexity: O(log n) push/pop, O(1) top, O(n log n) to build by repeated push;
+ *   extra space O(n).
  * Convention: Max-heap property: every parent is >= its children; 0-based array
  *   indices.
  */

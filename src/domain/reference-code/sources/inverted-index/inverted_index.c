@@ -4,7 +4,7 @@
  * 一个关键字可对应多个记录，倒排表不是唯一键索引；缺失关键字得到空表，不是错误。
  * 易错点：记录 ID 追加到错表；AND 只读第一张表；OR 不去重；结果按集合迭代顺序输出。
  * 复杂度：构建 O(T)，查询 O(Σ|L|)；本文件不做分词、排名或真实全文搜索。
- * 输入/输出：R1–R4 与关键字，构建后演示“algorithms AND sorting”与“algorithms OR sorting”。
+ * 输入/输出：R1–R4 与关键字，构建后演示“algorithms AND sorting”与“algorithms OR sorting”；构建失败返回非零。
  */
 
 /*
@@ -34,8 +34,8 @@ typedef struct
     int postingCount;
 } PostingList;
 
-// Purpose: Find a term's list, creating an empty one when it is new.
-// 作用：按关键字查找倒排表；首次出现时建立空表，表键是关键字而不是记录 ID。
+// Purpose: Find a term's list, creating an empty one when it is new; return -1 when the term table is full.
+// 作用：按关键字查找倒排表；首次出现时建立空表，表满返回 -1，绝不写越界的第 MAX_TERMS+1 项。
 static int FindOrCreateTerm(PostingList *lists, int *listCount, const char *term)
 {
     for (int index = 0; index < *listCount; index += 1)
@@ -46,27 +46,57 @@ static int FindOrCreateTerm(PostingList *lists, int *listCount, const char *term
             return index;
         }
     }
+    if (*listCount >= MAX_TERMS)
+    // The table is a fixed caller-owned array; report failure before assigning lists[*listCount].term.
+    {
+        return -1;
+    }
     lists[*listCount].term = term;
-    // A new table is appended without checking MAX_TERMS; the demo stays within 16 distinct terms, but the API has no capacity failure path.
     lists[*listCount].postingCount = 0;
     *listCount += 1;
     return *listCount - 1;
 }
 
-// Purpose: Scan every record and append its id to each term's posting list.
-// 作用：逐记录、逐关键字追加记录编号；构建结果必须等于真实关键字集合。
-static void BuildIndex(const Record *records, int recordCount, PostingList *lists, int *listCount)
+// Purpose: Scan every record and append its id to each term's posting list; return 1 on success, 0 on capacity overflow.
+// 作用：逐记录、逐关键字追加记录编号；先校验全部输入，再构建；容量不足时清空计数并返回 0。
+static int BuildIndex(const Record *records, int recordCount, PostingList *lists, int *listCount)
 {
+    *listCount = 0;
+    if (recordCount < 0 || recordCount > MAX_RECORDS)
+    {
+        return 0;
+    }
+    for (int record = 0; record < recordCount; record += 1)
+    {
+        if (records[record].keywordCount < 0 || records[record].keywordCount > MAX_KEYWORDS)
+        // Validate the keyword count before indexing the fixed keywords array; an out-of-range count would read past the record.
+        {
+            return 0;
+        }
+    }
+
     for (int record = 0; record < recordCount; record += 1)
     {
         for (int keyword = 0; keyword < records[record].keywordCount; keyword += 1)
         {
             int term = FindOrCreateTerm(lists, listCount, records[record].keywords[keyword]);
+            if (term < 0)
+            {
+                *listCount = 0;
+                return 0;
+            }
+            if (lists[term].postingCount >= MAX_POSTINGS)
+            // A posting list has its own fixed capacity; reject the record before writing postings[postingCount].
+            {
+                *listCount = 0;
+                return 0;
+            }
             lists[term].postings[lists[term].postingCount] = record;
             // The posting stores the integer record position, so the same record can be found without comparing external ID strings.
             lists[term].postingCount += 1;
         }
     }
+    return 1;
 }
 
 // A missing term returns NULL; an empty posting list is a different state, though both contain no record.
@@ -148,7 +178,11 @@ int main(void)
     int recordCount = 4;
     PostingList lists[MAX_TERMS];
     int listCount = 0;
-    BuildIndex(records, recordCount, lists, &listCount);
+    if (!BuildIndex(records, recordCount, lists, &listCount))
+    {
+        printf("inverted index build failed: term or posting capacity exhausted\n");
+        return 1;
+    }
 
     printf("inverted index:\n");
     for (int term = 0; term < listCount; term += 1)

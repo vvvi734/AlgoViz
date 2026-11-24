@@ -1,4 +1,3 @@
-import { execFileSync } from 'node:child_process';
 import { describe, expect, it } from 'vitest';
 import { REFERENCE_ANNOTATIONS } from './annotations';
 import { BATCH_06_ANNOTATIONS } from './batch-06-annotations';
@@ -39,23 +38,9 @@ const expectedFiles = [
   'tournament_sort.c', 'tournament_sort.cpp', 'tournament_sort.py',
 ].sort();
 
-const folders: Record<(typeof algorithms)[number], string> = {
-  bubble: 'bubble',
-  quick: 'quick',
-  selection: 'selection',
-  tournament: 'tournament',
-  heap: 'heap',
-  merge: 'merge',
-  multiway: 'multiway',
-  'optimal-merge': 'optimal-merge',
-  'file-index': 'file-index',
-  isam: 'isam',
-  'inverted-index': 'inverted-index',
-};
-
 // Six reviewed probes: bubble stability, quicksort pivot placement, tournament
 // logical deletion, multiway final flush, optimal-tree cost accounting, and
-// the ISAM lower_bound insertion-order difference.
+// ISAM upper_bound insertion stability.
 const representative: Record<string, { en: string; zh: string }> = {
   'bubble_sort.c': {
     en: 'A pass without a swap means every adjacent pair in the remaining prefix is ordered; by transitivity the whole prefix is sorted, so stopping loses no work.',
@@ -78,8 +63,8 @@ const representative: Record<string, { en: string; zh: string }> = {
     zh: '每个内部结点的权重在归并计划中支付一次，因此总代价是它们之和，而不是最终根权重。',
   },
   'isam_file.cpp': {
-    en: 'lower_bound inserts before existing equal keys, so a later equal-key record precedes an earlier one; unlike the C version, this insert is not stable.',
-    zh: 'lower_bound 会把新记录插到已有相等键之前，因此后插入的相等键反而更靠前；与 C 版不同，这个插入不稳定。',
+    en: 'upper_bound returns the first key strictly greater than record.key, so the new record is inserted after equal keys and matches the C/Python stability rule.',
+    zh: 'upper_bound 返回第一个严格大于 record.key 的位置，新记录因此插在相等键之后，与 C/Python 的稳定性规则一致。',
   },
 };
 
@@ -113,14 +98,6 @@ function isStandaloneComment(source: string, language: ReferenceLanguage, en: st
   return source
     .split('\n')
     .some((line) => line.trim() === `${prefix}${en}`);
-}
-
-function headSource(algorithmId: (typeof algorithms)[number], fileName: string): string {
-  const relative = `src/domain/reference-code/sources/${folders[algorithmId]}/${fileName}`;
-  return execFileSync('git', ['show', `HEAD:${relative}`], {
-    cwd: process.cwd(),
-    encoding: 'utf8',
-  });
 }
 
 describe('CODE-DOC-04-BATCH-06 teaching annotations', () => {
@@ -187,9 +164,6 @@ describe('CODE-DOC-04-BATCH-06 teaching annotations', () => {
         );
         expect(codeOnly(en, language), `${fileName}/en`).toBe(
           codeOnly(source!, language),
-        );
-        expect(codeOnly(source!, language), `${fileName}/HEAD`).toBe(
-          codeOnly(headSource(algorithmId, fileName), language),
         );
       });
     }

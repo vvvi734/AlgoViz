@@ -53,7 +53,18 @@ static bool root_comes_before(const std::vector<Node> &nodes, int left, int righ
 // 作用：构造最佳归并树并返回总归并代价。
 static int build_optimal_merge_tree(const std::vector<int> &weights, int k, std::vector<Node> &nodes)
 {
+    if (weights.empty() || k < 2)
+    // The padding formula divides by k-1, and a one-way merge is not an internal-node merge at all.
+    {
+        return -1;
+    }
     const int realCount = static_cast<int>(weights.size());
+    int realWeight = 0;
+    // Real weight is accumulated separately from virtual padding; the root must match this total at the end.
+    for (int weight : weights)
+    {
+        realWeight += weight;
+    }
     // The forest must end with one root, so pad with d zero-weight leaves; they change shape, never the total weight.
     const int missing = ((k - 1) - ((realCount - 1) % (k - 1))) % (k - 1);
     // The deficit formula is the C version translated to counts; it pads only the shape, never the total record weight.
@@ -70,7 +81,7 @@ static int build_optimal_merge_tree(const std::vector<int> &weights, int k, std:
     {
         Node node;
         node.kind = VIRTUAL_LEAF;
-        // A virtual node has kind VIRTUAL_LEAF and default weight 0; no real input ever enters this branch.
+        // A virtual node has kind VIRTUAL_LEAF and default weight 0; it fills a shape slot but is never a real zero-length run.
         node.localIndex = index;
         nodes.push_back(node);
     }
@@ -125,6 +136,13 @@ static int build_optimal_merge_tree(const std::vector<int> &weights, int k, std:
 
     std::printf("leaves: real=%d virtual=%d total=%d\n",
                 realCount, missing, static_cast<int>(nodes.size()) - internalCount);
+    if (nodes[roots[0]].weight != realWeight)
+    // Virtual leaves are shape-only; a root weight different from the real input sum means structural weight leaked into data.
+    {
+        std::printf("optimal merge tree invariant failed: root weight %d != real weight %d\n",
+                    nodes[roots[0]].weight, realWeight);
+        return -1;
+    }
     std::printf("root weight=%d totalCost=%d combines=%d\n",
                 nodes[roots[0]].weight, totalCost, internalCount);
     return totalCost;

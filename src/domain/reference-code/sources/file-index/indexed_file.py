@@ -54,8 +54,9 @@ def build_index(blocks: list[Block], dense: bool) -> list[Entry]:
     return index
 
 
-def lookup(blocks: list[Block], index: list[Entry], target: int) -> tuple[int, Io]:
-    """作用：选不大于目标的最后一项，读一个块，再在块内逐条比较。"""
+def lookup(blocks: list[Block], index: list[Entry], target: int,
+           capacity: int) -> tuple[int, Io]:
+    """作用：选不大于目标的最后一项，读一个块，再在块内逐条比较；位置按同一容量换算。"""
     io = Io()
     # chosen starts at 0 so a target above every entry still selects the last valid block.
     chosen = 0
@@ -78,8 +79,8 @@ def lookup(blocks: list[Block], index: list[Entry], target: int) -> tuple[int, I
     for offset, record in enumerate(blocks[block_index].records):
         print(f"  compare {record.key} ({record.label})")
         if record.key == target:
-            return block_index * 3 + offset, io
-            # The capacity 3 is hardcoded in the returned position; this matches the demo's build_blocks(records, 3) call but is not parameterized.
+            return block_index * capacity + offset, io
+            # The capacity comes from the same layout used by build_blocks; a literal 3 here would break as soon as the block size changes.
     return -1, io
 
 
@@ -93,14 +94,14 @@ def main() -> None:
 
     for dense in (True, False):
         index = build_index(blocks, dense)
-        found, io = lookup(blocks, index, 106)
+        found, io = lookup(blocks, index, 106, 3)
         kind = "dense" if dense else "sparse"
         print(f"{kind} index: {len(index)} entries")
         print(f"lookup 106: {'hit' if found >= 0 else 'miss'}, "
               f"probes={io.probes}, block reads={io.block_reads}")
 
     index = build_index(blocks, True)
-    missing, io = lookup(blocks, index, 109)
+    missing, io = lookup(blocks, index, 109, 3)
     print(f"lookup 109: {'hit' if missing >= 0 else 'miss'}, "
           f"probes={io.probes}, block reads={io.block_reads}")
 

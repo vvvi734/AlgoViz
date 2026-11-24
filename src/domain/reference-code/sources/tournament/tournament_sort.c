@@ -4,7 +4,7 @@
  * 关键不变量：每个内部节点的 recordIndex 等于其两个子树当前 active 赢家中的较优者；根节点因此总是剩余记录的最小者。
  * 易错点：填充叶被当作 0；删除叶后重算整棵树；只比较 value 而丢掉 originalIndex；忘记过滤 inactive 记录。
  * 复杂度：建树 O(n)，每输出一个记录更新 O(log n)，总计 O(n log n)；选择树需要 O(n) 额外空间。
- * 输入/输出：输入 main 内置的整数数组；排序后原地输出有序记录；main 打印每条记录的关键字与原始下标。
+ * 输入/输出：输入 main 内置的整数数组；排序结果写入调用方提供的记录数组；main 打印每条记录的关键字与原始下标。
  */
 
 /*
@@ -15,10 +15,9 @@
  * rebuilt once, and each removal recomputes only the winner's leaf-to-root path.
  */
 
+#include <limits.h>
 #include <stdio.h>
-
-#define MAX_RECORDS 12
-#define MAX_LEAVES 16
+#include <stdlib.h>
 
 typedef struct
 {
@@ -54,13 +53,18 @@ static int Better(const Record *records, const int *active, int left, int right)
     // The smaller original index wins a tie; this is the stability rule and also gives the animation a deterministic label order.
 }
 
-// Purpose: Compute the smallest power of two that can hold n leaves.
-// 作用：计算能容纳 n 条记录的最小 2 的幂叶容量。
+// Purpose: Compute the smallest power of two that can hold n leaves; return 0 if it cannot be represented.
+// 作用：计算能容纳 n 条记录的最小 2 的幂叶容量；无法用 int 表示时返回 0。
 static int LeafCapacity(int n)
 {
     int capacity = 1;
     while (capacity < n)
     {
+        if (capacity > INT_MAX / 2)
+        // Doubling again would overflow int and make the tree size wrap; the caller treats 0 as a capacity failure.
+        {
+            return 0;
+        }
         capacity *= 2;
         // The leaf layer must be a power of two so every internal node has two children; extra leaf slots become inactive sentinels.
     }
@@ -128,18 +132,46 @@ static void PrintResult(const Record *records, int n)
     }
 }
 
-int main(void)
+// Purpose: Allocate the tournament tree for exactly n records and write the stable result into sorted.
+// 作用：按 n 动态分配记录、active、树与输出数组，把稳定排序结果写入调用方的 sorted；容量或分配失败返回 0。
+static int TournamentSort(const int *values, int n, Record *sorted)
 {
-    Record records[MAX_RECORDS] = {
-        {8, 0}, {3, 1}, {11, 2}, {1, 3}, {7, 4}, {2, 5}, {9, 6}, {4, 7}};
-    int n = 8;
+    if (n < 0 || n > INT_MAX / 2)
+    // The leaf capacity doubles up to n, and 2*leafCount must remain a valid int for the tree indices.
+    {
+        return 0;
+    }
+    if (n == 0)
+    {
+        return 1;
+    }
     int leafCount = LeafCapacity(n);
-    TreeNode tree[2 * MAX_LEAVES];
-    int active[MAX_RECORDS];
-    int output[MAX_RECORDS];
+    if (leafCount == 0 || leafCount > INT_MAX / 2)
+    // 2*leafCount must remain a valid int because BuildTree and RemoveWinner use int node indices.
+    {
+        return 0;
+    }
+
+    Record *records = (Record *)malloc((size_t)n * sizeof(Record));
+    int *active = (int *)malloc((size_t)n * sizeof(int));
+    TreeNode *tree = (TreeNode *)malloc((size_t)(2 * leafCount) * sizeof(TreeNode));
+    int *output = (int *)malloc((size_t)n * sizeof(int));
+    // Every array is sized from n instead of a fixed MAX_RECORDS; the earlier 12-record ceiling was an implementation limit, not part of the algorithm.
+    if (records == NULL || active == NULL || tree == NULL || output == NULL)
+    {
+        free(records);
+        free(active);
+        free(tree);
+        free(output);
+        return 0;
+    }
+
     for (int index = 0; index < n; ++index)
     {
+        records[index].value = values[index];
+        records[index].originalIndex = index;
         active[index] = 1;
+        // The original index is assigned before sorting; it is the stable tie-breaker and must not be confused with the output position.
     }
 
     BuildTree(records, n, active, tree, leafCount);
@@ -148,16 +180,37 @@ int main(void)
         int winner = tree[1].recordIndex;
         if (winner < 0)
         {
-            return 1;
+            free(records);
+            free(active);
+            free(tree);
+            free(output);
+            return 0;
         }
         output[count] = winner;
         RemoveWinner(records, active, tree, leafCount, winner);
     }
 
-    Record sorted[MAX_RECORDS];
     for (int index = 0; index < n; ++index)
     {
         sorted[index] = records[output[index]];
+    }
+    free(records);
+    free(active);
+    free(tree);
+    free(output);
+    return 1;
+}
+
+int main(void)
+{
+    int values[] = {8, 3, 11, 1, 7, 2, 9, 4};
+    int n = (int)(sizeof(values) / sizeof(values[0]));
+    Record sorted[8];
+    // The caller owns the result array; only its length must match n. The sorting routine allocates its own tree from n.
+    if (!TournamentSort(values, n, sorted))
+    {
+        printf("tournament sort failed: invalid length or allocation failure\n");
+        return 1;
     }
     PrintResult(sorted, n);
     return 0;
