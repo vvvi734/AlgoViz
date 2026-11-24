@@ -135,11 +135,11 @@
 
 | 组 | 算法 ID | 提交哈希 | 推送结果 |
 | --- | --- | --- | --- |
-| 1 | `linear`, `binary`, `bst` | `94a18ad` | 待推送后回填 |
-| 2 | `avl`, `btree`, `bplus-tree` | `18b9188` | 待推送后回填 |
-| 3 | `key-tree`, `hash-chain`, `hash-probe` | `feb4756` | 待推送后回填 |
-| 4 | `insertion`, `shell` | `51b8a64` | 待推送后回填 |
-| 5 | 双语 annotation、专项测试、查看器与 Playwright | `77bee84` | 待推送后回填 |
+| 1 | `linear`, `binary`, `bst` | `94a18ad` | `c6272a8..3e107da main -> main` |
+| 2 | `avl`, `btree`, `bplus-tree` | `18b9188` | `c6272a8..3e107da main -> main` |
+| 3 | `key-tree`, `hash-chain`, `hash-probe` | `feb4756` | `c6272a8..3e107da main -> main` |
+| 4 | `insertion`, `shell` | `51b8a64` | `c6272a8..3e107da main -> main` |
+| 5 | 双语 annotation、专项测试、查看器与 Playwright | `77bee84` | `c6272a8..3e107da main -> main` |
 
 本批新增 **272** 条源码教学注释，覆盖 33 份 principle 源码；`git diff --stat` 为 296 insertions / 22 deletions，其余增删来自 B 树、AVL、BST、链地址散列文件头的事实修正。有效代码经 `stripReferenceComments` 与 `HEAD` 逐文件比较，33/33 一致。
 
