@@ -19,6 +19,8 @@ import { LearningRail } from './LearningRail';
 import { ReferenceCodePanel } from './ReferenceCodePanel';
 import { useSvgTextFloor } from './useSvgTextFloor';
 import { usePlaybackKeyboard } from './usePlaybackKeyboard';
+import { useFullscreenView } from './useFullscreenView';
+import { FullscreenWorkspace } from './FullscreenWorkspace';
 import { AlgorithmGuide, ALGORITHM_GUIDE_ID } from './AlgorithmGuide';
 import { useAlgorithmGuidePreferences } from './useAlgorithmGuidePreferences';
 import { buildAlgorithmGuide } from '../../domain/guides/buildGuide';
@@ -76,6 +78,8 @@ export function LabView({
   // conceptById returns undefined on algorithm routes, so truthiness is the
   // real "no player on this page" test; only a resolved concept lesson disables it.
   usePlaybackKeyboard(lab.playback, !concept);
+  const fullscreen = useFullscreenView();
+  const fullscreenButtonRef = useRef<HTMLButtonElement | null>(null);
   const currentEvent = lab.events[lab.playback.index];
   const actualTreeTraversal =
     currentEvent?.structure?.kind === 'binary-tree' ? currentEvent.structure.traversal : null;
@@ -384,13 +388,39 @@ export function LabView({
                 <div className="eyebrow">{t('visualization')}</div>
                 <h2>{t('algorithmStage')}</h2>
               </div>
-              {showGraphStepPeek && activeStep ? (
-                <div className="stage-step-peek" data-testid="stage-step-peek">
-                  <span className="stage-step-peek-label">{t('currentStep')}</span>
-                  <span className="stage-step-peek-text">{activeStep.title[lang]}</span>
-                </div>
-              ) : null}
-              {lab.traceStale && <span className="tag orange" data-testid="sync-stale">{t('traceStaleShort')}</span>}
+              <div className="stage-head-actions">
+                {showGraphStepPeek && activeStep ? (
+                  <div className="stage-step-peek" data-testid="stage-step-peek">
+                    <span className="stage-step-peek-label">{t('currentStep')}</span>
+                    <span className="stage-step-peek-text">{activeStep.title[lang]}</span>
+                  </div>
+                ) : null}
+                {lab.traceStale && <span className="tag orange" data-testid="sync-stale">{t('traceStaleShort')}</span>}
+                <button
+                  ref={fullscreenButtonRef}
+                  type="button"
+                  className="btn small stage-fullscreen-btn"
+                  aria-label={t('fullscreenView')}
+                  aria-haspopup="dialog"
+                  title={t('fullscreenView')}
+                  data-testid="fullscreen-open-btn"
+                  disabled={!currentEvent || lab.events.length === 0}
+                  onClick={fullscreen.openView}
+                >
+                  <span className="stage-fullscreen-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" width="16" height="16" focusable="false">
+                      <path
+                        d="M9 4H4v5M15 4h5v5M9 20H4v-5M15 20h5v-5"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                      />
+                    </svg>
+                  </span>
+                  <span className="stage-fullscreen-label">{t('fullscreenView')}</span>
+                </button>
+              </div>
             </div>
             {showTreePicker ? (
               <div className="stage-control-strip" data-testid="tree-control-strip">
@@ -490,6 +520,19 @@ export function LabView({
             onLanguageChange={setReferenceLanguage}
           />
         </WorkspaceTabs>
+
+        {fullscreen.open ? (
+          <FullscreenWorkspace
+            event={currentEvent}
+            events={lab.events}
+            playback={lab.playback}
+            algorithmId={lab.currentAlgo}
+            algorithmName={entry ? pick(entry.name) : lab.currentAlgo}
+            mode={fullscreen.mode}
+            onClose={fullscreen.close}
+            returnFocusRef={fullscreenButtonRef}
+          />
+        ) : null}
           </>
         )}
       </div>

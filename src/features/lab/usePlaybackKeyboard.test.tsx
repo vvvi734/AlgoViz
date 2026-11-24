@@ -229,6 +229,28 @@ describe('usePlaybackKeyboard', () => {
     expect(frame()).toBe(0);
   });
 
+  it('allows the fullscreen playback dialog to control the same player', () => {
+    renderKeyboard();
+    const modal = document.createElement('div');
+    modal.dataset.keyboardFixture = 'fullscreen';
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.dataset.keyboardPlaybackSurface = 'true';
+    modal.tabIndex = -1;
+    document.body.append(modal);
+    modal.focus();
+
+    const event = press(modal, 'ArrowRight');
+    expect(event.defaultPrevented).toBe(true);
+    expect(frame()).toBe(1);
+
+    // A foreground target outside the marked playback dialog is still blocked
+    // by the modal.
+    const outside = press(document.body, 'ArrowRight');
+    expect(outside.defaultPrevented).toBe(false);
+    expect(frame()).toBe(1);
+  });
+
   it('leaves arrows and Home/End to a focused horizontal scroll region', () => {
     renderKeyboard();
     const scroller = document.createElement('div');

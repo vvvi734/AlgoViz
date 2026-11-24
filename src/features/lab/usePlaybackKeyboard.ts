@@ -76,9 +76,21 @@ function isVisible(element: Element): boolean {
 /**
  * A modal owns the keyboard while it is open. Checking the document (not only
  * the focused target) also protects programs that leave focus on the page body.
+ *
+ * The immersive fullscreen workspace is also a dialog, but it hosts the same
+ * player. A modal explicitly marked as a playback surface only stops blocking
+ * when focus is genuinely inside it; unrelated dialogs still win.
  */
-function hasOpenModal(doc: Document): boolean {
-  return Array.from(doc.querySelectorAll(MODAL_SELECTOR)).some(isVisible);
+function hasOpenModal(doc: Document, target: EventTarget | null): boolean {
+  const focused = asElement(target);
+  return Array.from(doc.querySelectorAll(MODAL_SELECTOR)).some((modal) => {
+    if (!isVisible(modal)) return false;
+    return !(
+      modal.getAttribute('data-keyboard-playback-surface') === 'true' &&
+      focused &&
+      modal.contains(focused)
+    );
+  });
 }
 
 /** Preserve arrow/Home/End/Space scrolling when a graph or code region owns focus. */
@@ -119,7 +131,7 @@ export function resolvePlaybackShortcut(
   if (!command) return null;
   if (playback.frameCount <= 0) return null;
   if (isTextEntryOrReader(event.target)) return null;
-  if (hasOpenModal(doc)) return null;
+  if (hasOpenModal(doc, event.target)) return null;
 
   if (command === 'toggle') {
     if (!canPlay(playback.frameCount)) return null;

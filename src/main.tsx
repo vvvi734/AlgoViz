@@ -37,6 +37,7 @@ import './styles/textbook02.css';
 import './styles/memory08.css';
 import './styles/collapse01.css';
 import './styles/keyboard01.css';
+import './styles/fullscreen01.css';
 
 // A reload is a fresh reading session. Without this, Chrome/Firefox may restore
 // the previous nested scroller position before React mounts the concept hero.

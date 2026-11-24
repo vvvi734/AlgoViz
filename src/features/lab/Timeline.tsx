@@ -94,7 +94,7 @@ export function Timeline({ events, playback }: { events: TraceEvent[]; playback:
       </div>
       <div className="timeline">
         <span data-testid="progress">{playback.progress}</span>
-        <span>{t('timelineHint')}</span>
+        <span className="timeline-hint">{t('timelineHint')}</span>
       </div>
       <div
         className="keyboard-hint"
