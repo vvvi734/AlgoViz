@@ -5,17 +5,18 @@
 - BATCH-03 起始基线：`976002fdc58d89afaf91d747c9b7cdee01c86edf`
 - BATCH-04 起始基线：`55233ca148f8d1f2d16fb6504eb2f7dd9e8edf73`（BATCH-03 已完成 27/60）
 - BATCH-05 起始基线：`c6272a8b3d79373030152dcab2609ec4361ec818`（BATCH-04 已完成 38/60）
+- BATCH-06 起始基线：`582d4cd0cf8758e350d78a59475874867528b7f2`（BATCH-05 已完成 49/60）
 - 排序口径：教材第 1–12 章章序 → 章节课程目录实际出现顺序 → 算法 ID。本表已按该稳定顺序排列，CH1 无正式算法。
 - 完成口径：必须存在该算法的教学注释提交哈希，并完成双语 anchor、源码编译/语法检查与专项测试；仅有注释条数不计为完成。
-- 当前统计：**49 / 60 已完成且有证据**，0 个本批进行中，11 个尚未完成，0 个阻断。
+- 当前统计：**60 / 60 已完成且有证据**，0 个本批进行中，0 个尚未完成，0 个阻断。
 
 ## 分类统计
 
 | 分类 | 数量 | 说明 |
 | --- | ---: | --- |
-| 已完成且有证据 | 49 | BATCH-01 6 个、BATCH-02 10 个、BATCH-03 11 个、BATCH-04 11 个、BATCH-05 11 个，均有提交哈希与源码证据。 |
-| 本批进行中 | 0 | BATCH-05 的 11 个算法均已按组提交；全批门禁见 BATCH-05 报告。 |
-| 尚未完成 | 11 | 未领取或无教学深化提交，保持原状。 |
+| 已完成且有证据 | 60 | BATCH-01 6 个、BATCH-02 10 个、BATCH-03 11 个、BATCH-04 11 个、BATCH-05 11 个、BATCH-06 11 个，均有提交哈希与源码证据。 |
+| 本批进行中 | 0 | BATCH-06 的 11 个算法均已按组提交；全批门禁见 BATCH-06 报告。 |
+| 尚未完成 | 0 | 60 个正式算法的三语言 principle 源码均已进入教学注释与双语映射。 |
 | 存在例外或阻断 | 0 | 本批未发现阻断；新发现实现风险只在报告第 8 节登记，未擅自修复。 |
 
 ## 60 项正式算法状态
@@ -69,19 +70,19 @@
 | 45 | CH9 查找 | `hash-probe` | `sources/hash-probe/hash_probe.c` | `sources/hash-probe/hash_probe.cpp` | `sources/hash-probe/hash_probe.py` | 已完成且有证据 | BATCH-05 | `feb4756` | 通过（注释/本地化/编译/专项测试） |
 | 46 | CH10 内部排序 | `insertion` | `sources/insertion/insertion_sort.c` | `sources/insertion/insertion_sort.cpp` | `sources/insertion/insertion_sort.py` | 已完成且有证据 | BATCH-05 | `51b8a64` | 通过（注释/本地化/编译/专项测试） |
 | 47 | CH10 内部排序 | `shell` | `sources/shell/shell_sort.c` | `sources/shell/shell_sort.cpp` | `sources/shell/shell_sort.py` | 已完成且有证据 | BATCH-05 | `51b8a64` | 通过（注释/本地化/编译/专项测试） |
-| 48 | CH10 内部排序 | `bubble` | `sources/bubble/bubble_sort.c` | `sources/bubble/bubble_sort.cpp` | `sources/bubble/bubble_sort.py` | 尚未完成 | 未分配 | `—` | 未复核 |
-| 49 | CH10 内部排序 | `quick` | `sources/quick/quick_sort.c` | `sources/quick/quick_sort.cpp` | `sources/quick/quick_sort.py` | 尚未完成 | 未分配 | `—` | 未复核 |
-| 50 | CH10 内部排序 | `selection` | `sources/selection/selection_sort.c` | `sources/selection/selection_sort.cpp` | `sources/selection/selection_sort.py` | 尚未完成 | 未分配 | `—` | 未复核 |
-| 51 | CH10 内部排序 | `tournament` | `sources/tournament/tournament_sort.c` | `sources/tournament/tournament_sort.cpp` | `sources/tournament/tournament_sort.py` | 尚未完成 | 未分配 | `—` | 未复核 |
-| 52 | CH10 内部排序 | `heap` | `sources/heap/max_heap.c` | `sources/heap/max_heap.cpp` | `sources/heap/max_heap.py` | 尚未完成 | 未分配 | `—` | 未复核 |
-| 53 | CH10 内部排序 | `merge` | `sources/merge/merge_sort.c` | `sources/merge/merge_sort.cpp` | `sources/merge/merge_sort.py` | 尚未完成 | 未分配 | `—` | 未复核 |
+| 48 | CH10 内部排序 | `bubble` | `sources/bubble/bubble_sort.c` | `sources/bubble/bubble_sort.cpp` | `sources/bubble/bubble_sort.py` | 已完成且有证据 | BATCH-06 | `4a55a52` | 通过（注释/本地化/编译/专项测试/全量覆盖） |
+| 49 | CH10 内部排序 | `quick` | `sources/quick/quick_sort.c` | `sources/quick/quick_sort.cpp` | `sources/quick/quick_sort.py` | 已完成且有证据 | BATCH-06 | `4a55a52` | 通过（注释/本地化/编译/专项测试/全量覆盖） |
+| 50 | CH10 内部排序 | `selection` | `sources/selection/selection_sort.c` | `sources/selection/selection_sort.cpp` | `sources/selection/selection_sort.py` | 已完成且有证据 | BATCH-06 | `4a55a52` | 通过（注释/本地化/编译/专项测试/全量覆盖） |
+| 51 | CH10 内部排序 | `tournament` | `sources/tournament/tournament_sort.c` | `sources/tournament/tournament_sort.cpp` | `sources/tournament/tournament_sort.py` | 已完成且有证据 | BATCH-06 | `974300e` | 通过（注释/本地化/编译/专项测试/全量覆盖） |
+| 52 | CH10 内部排序 | `heap` | `sources/heap/max_heap.c` | `sources/heap/max_heap.cpp` | `sources/heap/max_heap.py` | 已完成且有证据 | BATCH-06 | `974300e` | 通过（注释/本地化/编译/专项测试/全量覆盖） |
+| 53 | CH10 内部排序 | `merge` | `sources/merge/merge_sort.c` | `sources/merge/merge_sort.cpp` | `sources/merge/merge_sort.py` | 已完成且有证据 | BATCH-06 | `4a55a52` | 通过（注释/本地化/编译/专项测试/全量覆盖） |
 | 54 | CH10 内部排序 | `radix` | `sources/radix/radix_sort.c` | `sources/radix/radix_sort.cpp` | `sources/radix/radix_sort.py` | 已完成且有证据 | BATCH-01 | `b9341a5` | 通过（BATCH-01 提交与回归） |
-| 55 | CH11 外部排序 | `multiway` | `sources/multiway/multiway_merge.c` | `sources/multiway/multiway_merge.cpp` | `sources/multiway/multiway_merge.py` | 尚未完成 | 未分配 | `—` | 未复核 |
+| 55 | CH11 外部排序 | `multiway` | `sources/multiway/multiway_merge.c` | `sources/multiway/multiway_merge.cpp` | `sources/multiway/multiway_merge.py` | 已完成且有证据 | BATCH-06 | `974300e` | 通过（注释/本地化/编译/专项测试/全量覆盖） |
 | 56 | CH11 外部排序 | `replacement` | `sources/replacement/replacement_selection.c` | `sources/replacement/replacement_selection.cpp` | `sources/replacement/replacement_selection.py` | 已完成且有证据 | BATCH-01 | `a13aafd` | 通过（BATCH-01 提交与回归） |
-| 57 | CH11 外部排序 | `optimal-merge` | `sources/optimal-merge/optimal_merge_tree.c` | `sources/optimal-merge/optimal_merge_tree.cpp` | `sources/optimal-merge/optimal_merge_tree.py` | 尚未完成 | 未分配 | `—` | 未复核 |
-| 58 | CH12 文件 | `file-index` | `sources/file-index/indexed_file.c` | `sources/file-index/indexed_file.cpp` | `sources/file-index/indexed_file.py` | 尚未完成 | 未分配 | `—` | 未复核 |
-| 59 | CH12 文件 | `isam` | `sources/isam/isam_file.c` | `sources/isam/isam_file.cpp` | `sources/isam/isam_file.py` | 尚未完成 | 未分配 | `—` | 未复核 |
-| 60 | CH12 文件 | `inverted-index` | `sources/inverted-index/inverted_index.c` | `sources/inverted-index/inverted_index.cpp` | `sources/inverted-index/inverted_index.py` | 尚未完成 | 未分配 | `—` | 未复核 |
+| 57 | CH11 外部排序 | `optimal-merge` | `sources/optimal-merge/optimal_merge_tree.c` | `sources/optimal-merge/optimal_merge_tree.cpp` | `sources/optimal-merge/optimal_merge_tree.py` | 已完成且有证据 | BATCH-06 | `974300e` | 通过（注释/本地化/编译/专项测试/全量覆盖） |
+| 58 | CH12 文件 | `file-index` | `sources/file-index/indexed_file.c` | `sources/file-index/indexed_file.cpp` | `sources/file-index/indexed_file.py` | 已完成且有证据 | BATCH-06 | `842799b` | 通过（注释/本地化/编译/专项测试/全量覆盖） |
+| 59 | CH12 文件 | `isam` | `sources/isam/isam_file.c` | `sources/isam/isam_file.cpp` | `sources/isam/isam_file.py` | 已完成且有证据 | BATCH-06 | `842799b` | 通过（注释/本地化/编译/专项测试/全量覆盖） |
+| 60 | CH12 文件 | `inverted-index` | `sources/inverted-index/inverted_index.c` | `sources/inverted-index/inverted_index.cpp` | `sources/inverted-index/inverted_index.py` | 已完成且有证据 | BATCH-06 | `842799b` | 通过（注释/本地化/编译/专项测试/全量覆盖） |
 
 ## BATCH-03 领取与提交证据
 
@@ -155,3 +156,44 @@
 4. `hash_probe.cpp` / `hash_probe.py`：`EMPTY=-1` 同时可作真实键，插入 `-1` 后 `contains(-1)` 会把真实键当空槽；C 版头注释明确只接受非负键。
 5. `key_tree.c`：`find_word` 直接把根写成 id=0，依赖根始终是第一个分配结点；`MAX_WORD_LENGTH=8` 未在插入时校验。
 6. `bplus_tree.c`：静态池 `MAX_NODES=72`，超出后插入返回 -1；无删除。
+
+## BATCH-06 领取与提交证据
+
+| 组 | 算法 ID | 提交哈希 | 推送结果 |
+| --- | --- | --- | --- |
+| 1 | `bubble`, `selection`, `quick`, `merge` | `4a55a52` | `582d4cd..05dee78 main -> main` |
+| 2 | `tournament`, `heap`, `multiway`, `optimal-merge` | `974300e` | `582d4cd..05dee78 main -> main` |
+| 3 | `file-index`, `isam`, `inverted-index` | `842799b` | `582d4cd..05dee78 main -> main` |
+| 4 | 双语 annotation、专项测试、全量覆盖、查看器与 Playwright | `05dee78` | `582d4cd..05dee78 main -> main` |
+
+本批新增 **238** 条源码教学注释，覆盖 33 份 principle 源码；`git diff --stat` 为 **238 insertions / 0 deletions**，没有文件头事实修正，也没有有效代码改动。有效代码经 `stripReferenceComments` 与 `HEAD` 逐文件比较，33/33 一致。
+
+教学重点覆盖：冒泡排序的 `swapped` 每趟重置与严格 `>` 稳定性；选择排序的最小值候选、惰性交换与不稳定原因；快速排序的末元素基准、Lomuto 边界、相等键左置与递归排除 pivot；归并排序的闭区间、单缓冲复用、左段优先稳定性与 C 版分配失败静默返回；树形选择的 `(value, originalIndex)` 平局规则、逻辑删除与单路径修复；0 基堆的父子公式、固定容量失败与动态容量差异；多路归并的分段 FIFO、按 `(value, originalIndex)` 选赢家、整块写出与末尾 flush；最佳归并树的虚拟零权重叶、满 k 叉树缺口公式与内部权重求和口径；稠密/稀疏索引、ISAM 专属溢出链与倒排索引 AND/OR 单位元。
+
+## BATCH-06 全量覆盖与抽查
+
+- 注册表正式算法 **60** 个；正式 principle 文件 **180** 份（C/C++/Python 各 60），文件名去重后仍为 180。
+- 全量覆盖测试逐算法、逐语言加载源码：60 × 3 份文件均有非空双语映射（每份至少 3 条），中文/英文本地化后的去注释代码与源文件、`HEAD` 完全一致。
+- 14 个算法人工抽查覆盖线性表、栈、串、树、图、动态存储、查找、内部排序、外部排序与文件：`seqlist`、`doubly`、`stack`、`kmp`、`huffman`、`threaded-inorder`、`articulation`、`free-list`、`linear`、`insertion`、`quick`、`multiway`、`isam`、`file-index`。
+- 覆盖测试文件：`src/domain/reference-code/code-doc-04-coverage.test.ts`，3/3 通过。
+
+## BATCH-06 验证结果
+
+- BATCH-06 专项：**35/35**；注释事实：**4/4**；全量覆盖：**3/3**；查看器：**50/50**。
+- 全量 Vitest：**158 files / 1565 tests** 全部通过。
+- 33 份源码：C 11/11、C++ 11/11 编译通过；22 个可执行程序运行退出码 0；Python 11/11 语法检查与运行通过。
+- `npm run typecheck` 退出 0；`npm run build` 退出 0（Vite 6.4.6，1951 modules）。
+- 代表性 Playwright：`bubble`、`tournament`、`multiway`、`isam`，中文显示/复制、英文切换/复制、英文无汉字，**1/1** 通过。
+
+## BATCH-06 未修改的实现风险（详情见报告第 8 节）
+
+1. `heap` 三语言文件头提到“从最后一个非叶结点倒着下沉建堆”，但代码只实现逐次 `push` 上浮，没有批量 heapify；本批未修改头注释，只登记口径偏差。
+2. `merge_sort.c`：`malloc` 失败时直接 `return`，数组保持未排序且接口没有失败返回值。
+3. `isam_file.c`：`MAX_OVERFLOW=5`，创建溢出结点前未检查上限；超过静态数组容量会越界写。
+4. `inverted_index.c`：`MAX_TERMS=16`、`MAX_POSTINGS=9`、`MAX_KEYWORDS=4` 未在插入时检查；当前 4 条记录样例在界内。
+5. `tournament_sort.c` / `.cpp`：硬上限 12 条记录、`MAX_LEAVES=16`；超出会失败或越界。
+6. `multiway_merge.c`：`MAX_RECORDS=24`、`MAX_K=4`、`MAX_RUN_RECORDS=6`，输入规模受静态数组限制；I/O 计数只是教学模型。
+7. `indexed_file.cpp` / `.py`：返回位置硬编码 `blockIndex * 3 + offset`，与示例容量 3 绑定；修改块容量而不改公式会返回错误位置。
+8. `quick_sort` 末元素 pivot 在已排序输入上退化 O(n²)，递归深度最坏 O(n)。
+9. `optimal_merge_tree` 的虚拟叶只补形状，不能当作真实零长度归并段；总代价必须按内部权重求和，不能只报根权重。
+
