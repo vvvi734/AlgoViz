@@ -24,6 +24,7 @@ from __future__ import annotations
 
 # Purpose: Check that adjacent values are non-decreasing; empty and single-element arrays return True.
 # 作用：判断相邻元素是否非降；空数组和单元素数组返回 True。
+# all() over adjacent pairs is vacuously true for empty and single-element lists, matching the intended precondition.
 def is_non_decreasing(values: list[int]) -> bool:
     return all(values[i - 1] <= values[i] for i in range(1, len(values)))
 
@@ -34,17 +35,23 @@ def is_non_decreasing(values: list[int]) -> bool:
 # 作用：返回 target 的下标或 -1；要求 values 已非降排序。
 def binary_search(values: list[int], target: int) -> int:
     """Return the index of target in a non-decreasing list, or -1."""
+    # The guard prevents right from becoming -1 on an empty list; Python would otherwise accept values[-1] as the last element.
     if not values:
         return -1
+    # Both endpoints are inclusive, so the initial window covers exactly every valid list index.
     left, right = 0, len(values) - 1
+    # The loop condition is inclusive for the same reason as the C version: one remaining element still needs one comparison.
     while left <= right:
+        # Python integers do not overflow, but subtraction still avoids a needless large intermediate and floor division keeps mid inside the window.
         mid = left + (right - left) // 2
         if values[mid] == target:
             return mid
         if values[mid] < target:
+            # A smaller middle cannot hold the answer, so the left edge moves strictly past it; this is the progress step.
             left = mid + 1
         else:
             right = mid - 1
+    # The exhausted window is the only route to this return, so the caller receives a miss without ambiguity.
     return -1
 
 

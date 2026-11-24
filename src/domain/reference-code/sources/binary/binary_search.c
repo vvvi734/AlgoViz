@@ -21,13 +21,17 @@
 // The window is inclusive: low == high still leaves one candidate, and mid is computed without overflow.
 // Purpose: Binary-search a sorted array and return the index, or -1 when absent; the interval convention is documented on the function's first comment.
 // 作用：在有序数组中做二分查找；返回下标，找不到返回 -1。区间约定见函数第一行注释。
+// The non-decreasing precondition is documented but not checked here; this C entry trusts the caller, so an unsorted array would discard valid candidates.
 int Binary_Search(const int *values, int count, int target)
 {
     int low = 0;
+    // high is an inclusive index, not a one-past-the-end bound; for count 0 it becomes -1 and the while condition is false immediately.
     int high = count - 1;
 
+    // Equality must enter the loop because low == high still names one candidate; stopping at low < high would skip that last element.
     while (low <= high)
     {
+        // Subtract before halving: low + high could overflow int even when the true middle is valid; the floor bias is harmless because both sides shrink.
         int middle = low + (high - low) / 2;
         if (values[middle] == target)
         {
@@ -35,13 +39,16 @@ int Binary_Search(const int *values, int count, int target)
         }
         if (values[middle] < target)
         {
+            // values[middle] is proven smaller than target, so middle itself can be excluded; assigning low = middle would not shrink the window.
             low = middle + 1;
         }
         else
         {
+            // The symmetric exclusion is required here too: middle is proven larger, and keeping it can leave low and high unchanged forever.
             high = middle - 1;
         }
     }
+    // The loop ends only when low > high, meaning no index remains; -1 therefore follows from the empty window, not from a failed comparison.
     return -1;
 }
 

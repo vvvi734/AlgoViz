@@ -35,18 +35,22 @@ class Node:
 # BST invariant: left keys < root < right keys; duplicates are rejected, so search follows one path.
 # Purpose: Insert value and return the new subtree root; leave duplicate keys unchanged.
 # 作用：插入 value 并返回新的子树根；重复键原样返回。
+# Returning the subtree root lets the caller reconnect left or right; Python's reference assignment is the analogue of the C pointer update.
 def insert(root: Node | None, value: int) -> Node:
+    # The recursive path creates a node only at None; duplicate values return the same root and never allocate.
     if root is None:
         return Node(value)
     if value < root.value:
         root.left = insert(root.left, value)
     elif value > root.value:
         root.right = insert(root.right, value)
+        # Equal keys skip both branches and reach the final return, so an existing node is never duplicated or rewired.
     return root
 
 
 # Purpose: Check whether value exists in the tree; read-only.
 # 作用：判断 value 是否在树中；只读。
+# The loop follows at most one branch per level; a missing key ends at None after O(h) comparisons.
 def contains(root: Node | None, value: int) -> bool:
     node = root
     while node is not None:
@@ -58,6 +62,7 @@ def contains(root: Node | None, value: int) -> bool:
 
 # Purpose: Return the node holding the smallest key in the subtree; the caller guarantees node is non-null.
 # 作用：返回子树中最小键所在结点；调用方保证 node 非空。
+# The minimum is the leftmost node; the loop can move without a null check because the caller only passes a non-empty right subtree.
 def minimum(node: Node) -> Node:
     while node.left is not None:
         node = node.left
@@ -74,12 +79,15 @@ def remove(root: Node | None, value: int) -> Node | None:
     elif value > root.value:
         root.right = remove(root.right, value)
     else:
+        # With no left child, returning root.right splices the only child into the parent slot; Python's garbage collector releases the removed node.
         if root.left is None:
             return root.right
         if root.right is None:
             return root.left
+        # The two-child case copies the successor's value first, then deletes the successor itself; this avoids rewiring three parent/child links.
         successor = minimum(root.right)
         root.value = successor.value
+        # Deleting by the copied key is safe because the successor is the minimum of the right subtree and therefore has no left child.
         root.right = remove(root.right, successor.value)
     return root
 

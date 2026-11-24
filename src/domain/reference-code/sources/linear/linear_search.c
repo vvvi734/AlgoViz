@@ -20,21 +20,26 @@
 // Return the first matching index; -1 is correct only after the entire array has been scanned.
 // Purpose: Compare from 0 through count-1; return the matching index or -1.
 // 作用：从 0 到 count-1 逐个比较；找到返回下标，失败返回 -1。
+// Linear search has no ordering precondition: every position remains a candidate until the loop either matches or exhausts the array.
 int LinearSearch(const int *values, int count, int target)
 {
+    // The bound is count, not count - 1: index runs 0..count-1, so the loop never reads the position just after the last valid element.
     for (int index = 0; index < count; ++index)
     {
+        // Returning immediately makes the duplicate policy visible: this implementation reports the lowest matching index, not any matching index.
         if (values[index] == target)
         {
             return index;
         }
     }
+    // -1 lies outside every valid index, so a real match at index 0 is never confused with the failure value.
     return -1;
 }
 
 int main(void)
 {
     int values[] = {7, 2, 9, 4, 4, 1};
+    // sizeof is applied to the array itself, not to a pointer; after an array parameter decays to a pointer this element-count idiom would be wrong.
     int count = (int)(sizeof(values) / sizeof(values[0]));
 
     printf("find 4: index=%d\n", LinearSearch(values, count, 4));

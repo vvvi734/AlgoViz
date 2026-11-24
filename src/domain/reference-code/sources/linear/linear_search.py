@@ -24,10 +24,14 @@ from __future__ import annotations
 # Return the first matching index; -1 is correct only after the entire array has been scanned.
 # Purpose: Return target's first index or -1 without modifying values.
 # 作用：返回 target 的首个下标或 -1；不修改 values。
+# A Python list also carries its length, so the scan is expressed by iteration rather than a separately supplied count.
 def linear_search(values: list[int], target: int) -> int:
+    # enumerate supplies both the index and the value, so the body never indexes the list a second time.
     for index, value in enumerate(values):
+        # The first equal value wins; later duplicates are unreachable because the return exits the loop immediately.
         if value == target:
             return index
+    # Reaching this line means the iterator was exhausted, which is exactly the condition that proves absence.
     return -1
 
 
@@ -40,6 +44,7 @@ def main() -> None:
     print("target 6 ->", linear_search(values, 6))
     print("empty ->", linear_search([], 6))
     assert linear_search(values, 9) == 3
+    # The assertion pins the miss contract independently of the printed output, so a later refactor cannot silently change -1 to None.
     assert linear_search(values, 6) == -1
 
 

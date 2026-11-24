@@ -26,10 +26,12 @@
 
 // Purpose: Check that the array is non-decreasing as the precondition for binary search.
 // 作用：检查数组是否按非降序排列，作为二分查找的前置条件检查。
+// This helper turns the precondition into an executable check; the search below is only valid after it returns true.
 bool is_non_decreasing(const std::vector<int> &values)
 {
     for (std::size_t i = 1; i < values.size(); ++i)
     {
+        // One inversion is enough to reject the input; scanning all pairs would waste work once the order is already broken.
         if (values[i - 1] > values[i])
         {
             return false;
@@ -43,6 +45,7 @@ bool is_non_decreasing(const std::vector<int> &values)
 // 作用：在有序 vector 中做二分查找；返回目标下标，找不到返回 -1。
 int binary_search_index(const std::vector<int> &values, int target)
 {
+    // The empty case is handled before computing right = size - 1, avoiding a conversion from -1 into an unsigned index.
     if (values.empty())
     {
         return -1;
@@ -51,6 +54,7 @@ int binary_search_index(const std::vector<int> &values, int target)
     int right = static_cast<int>(values.size()) - 1;
     while (left <= right)
     {
+        // left and right stay int so the subtraction is signed; the cast appears only at the indexing expression.
         int mid = left + (right - left) / 2;
         if (values[static_cast<std::size_t>(mid)] == target)
         {
@@ -58,13 +62,16 @@ int binary_search_index(const std::vector<int> &values, int target)
         }
         if (values[static_cast<std::size_t>(mid)] < target)
         {
+            // Excluding the tested middle is what guarantees progress; all indices left of the new left are known too small.
             left = mid + 1;
         }
         else
         {
+            // The right half is discarded by moving right below middle, preserving the invariant that the answer can only lie inside [left, right].
             right = mid - 1;
         }
     }
+    // No candidate remains when the inclusive window crosses, so the miss is proven by the window state.
     return -1;
 }
 

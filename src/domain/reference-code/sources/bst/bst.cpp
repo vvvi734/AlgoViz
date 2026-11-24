@@ -44,6 +44,7 @@ class BST
     // BST invariant: left keys < root < right keys; duplicates are rejected, so search follows one path.
     // Purpose: Start an insertion at the root and publish the returned subtree; the static overload does the real insert.
     // 作用：从根启动插入并接回返回的子树；真正的递归插入与去重由静态重载完成。
+    // The wrapper publishes the returned subtree back into root_; the private overload may change ownership, so dropping the return would detach the tree.
     void insert(int value)
     {
         root_ = insert(std::move(root_), value);
@@ -51,6 +52,7 @@ class BST
 
     // Purpose: Descend by the left-smaller/right-larger rule to find value; return true on a hit.
     // 作用：按左小右大下探查找 value；找到返回 true。
+    // Search does not modify the tree and does not need the owning pointer type; a raw observation pointer is enough.
     bool contains(int value) const
     {
         Node *node = root_.get();
@@ -92,6 +94,7 @@ class BST
     // 作用：在 BST 中插入 value；重复键忽略，返回新的子树根。
     static std::unique_ptr<Node> insert(std::unique_ptr<Node> node, int value)
     {
+        // A null child is exactly where a new leaf belongs; duplicates skip node creation and return the same subtree.
         if (!node)
         {
             return std::make_unique<Node>(value);
@@ -125,6 +128,7 @@ class BST
             node->right = remove(std::move(node->right), value);
             return node;
         }
+        // No left child means the right child, possibly null, can be moved up; unique_ptr transfer both splices and destroys the removed node.
         if (!node->left)
         {
             return std::move(node->right);
@@ -133,18 +137,21 @@ class BST
         {
             return std::move(node->left);
         }
+        // The successor is the leftmost node of the right subtree; it is the smallest key larger than the removed key, so copying it preserves ordering.
         Node *successor = node->right.get();
         while (successor->left)
         {
             successor = successor->left.get();
         }
         node->value = successor->value;
+        // The successor is removed by key through the same recursive path, not by a raw pointer; this keeps every parent's unique_ptr valid.
         node->right = remove(std::move(node->right), successor->value);
         return node;
     }
 
     // Purpose: Inorder traversal of the whole tree printing ascending keys; the static overload recurses left-root-right and is read-only.
     // 作用：中序遍历整棵树并输出升序键值；静态重载负责递归左—根—右，只读。
+    // Recursing left before printing and right afterwards produces ascending keys only because the invariant already holds for every subtree.
     static void inorder(const Node *node)
     {
         if (!node)
@@ -172,6 +179,7 @@ int main()
     std::cout << "contains 4: " << (tree.contains(4) ? "yes" : "no") << '\n';
     std::cout << "contains 9: " << (tree.contains(9) ? "yes" : "no") << '\n';
 
+    // Removing the root with two children exercises the successor path: the value changes, but the node object and its ownership stay in place.
     tree.remove(5);
     std::cout << "after remove 5: ";
     tree.inorder();

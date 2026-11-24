@@ -25,15 +25,20 @@
 // Return the first matching index; -1 is correct only after the entire array has been scanned.
 // Purpose: Compare from one end of the array; return the matching index or -1.
 // 作用：从数组一端逐个比较；找到返回下标，失败返回 -1。
+// The vector carries its size, so this version needs no separate count and has no pointer-decay pitfall.
 int linear_search(const std::vector<int> &values, int target)
 {
+    // size_t is the container's native index type; an empty vector makes the loop body execute zero times without a special case.
     for (std::size_t index = 0; index < values.size(); ++index)
     {
+        // Strict equality is the only match test; the first hit is returned before any later duplicate can be examined.
         if (values[index] == target)
         {
+            // The cast narrows size_t to the function's int contract; a vector larger than INT_MAX would need a wider return type.
             return static_cast<int>(index);
         }
     }
+    // The fall-through return is reached only after every index failed, so -1 is a proof of absence rather than an initial guess.
     return -1;
 }
 
