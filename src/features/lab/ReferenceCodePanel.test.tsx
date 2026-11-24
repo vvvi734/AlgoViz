@@ -101,6 +101,72 @@ const batchAlgorithms = [
     zh: '引用保存对象下标而不是原始地址；移动 start 改变的是由对象派生的地址，不是存储的下标。',
     en: 'References store object indices, not raw addresses; moving start changes the address derived from the object, not the stored index.',
   },
+  {
+    id: 'linear',
+    name: '顺序查找',
+    zh: '-1 不属于任何有效下标，因此真实命中下标 0 不会与失败值混淆。',
+    en: '-1 lies outside every valid index, so a real match at index 0 is never confused with the failure value.',
+  },
+  {
+    id: 'binary',
+    name: '二分查找',
+    zh: '非降序前提只写在契约里，这个 C 入口并不检查；它信任调用方，未排序数组会丢掉有效候选。',
+    en: 'The non-decreasing precondition is documented but not checked here; this C entry trusts the caller, so an unsorted array would discard valid candidates.',
+  },
+  {
+    id: 'bst',
+    name: '二叉排序树',
+    zh: '分配失败会置 inserted=false，但这个教学函数仍返回 NULL；生产调用方必须向上传播失败，不能把 NULL 覆盖到已有子树上。',
+    en: 'Allocation failure sets inserted=false, but this teaching function still returns NULL; a production caller must propagate failure instead of assigning NULL over an existing subtree.',
+  },
+  {
+    id: 'avl',
+    name: '平衡二叉树',
+    zh: '符号很重要：正值表示左重，只有正失衡才可能选择 LL 或 LR；只看绝对值不够。',
+    en: 'The sign matters: positive means left-heavy, so only positive imbalance can select LL or LR; magnitude alone is not enough.',
+  },
+  {
+    id: 'btree',
+    name: 'B 树',
+    zh: '4 阶的中位下标是 1；它被移入父结点并从孩子中删除，两半不会同时保留它。',
+    en: 'The median index is 1 for order 4; it is moved to the parent and removed from the child, so the two halves never both retain it.',
+  },
+  {
+    id: 'bplus-tree',
+    name: 'B+ 树',
+    zh: '溢出键存在后按 2/2 分裂：右叶保留 keys 2、3，左叶保留 keys 0、1，提升的分隔键仍留在右叶。',
+    en: 'The split is 2/2 after the overflow key is present: right keeps keys 2 and 3, left keeps keys 0 and 1, and the promoted separator stays in the right leaf.',
+  },
+  {
+    id: 'key-tree',
+    name: '键树',
+    zh: '这里把根结点 id 硬编码为 0。只要根是第一个分配且从不释放的结点，这个假设成立，但 find_word 并不校验它。',
+    en: 'This hard-codes the root id as 0. It is true while the root is the first allocated node and never released, but find_word does not verify that assumption.',
+  },
+  {
+    id: 'hash-chain',
+    name: '链地址法',
+    zh: '这个函数释放结点但不清理桶头；返回后表中仍是悬空指针，复用前必须重新初始化。',
+    en: 'The function frees nodes but does not clear bucket heads; after it returns the table holds dangling pointers and must be re-initialized before reuse.',
+  },
+  {
+    id: 'hash-probe',
+    name: '开放定址法',
+    zh: 'EMPTY 哨兵是 -1，因此这种表示假设键非负；把 -1 当作真实键存入会让该槽与空槽无法区分。',
+    en: 'The EMPTY sentinel is -1, so this representation assumes non-negative keys; storing -1 as a real key would make that slot indistinguishable from empty.',
+  },
+  {
+    id: 'insertion',
+    name: '直接插入排序',
+    zh: '严格的 > 是稳定性决策：相等键会停止搬移，新键落在它们之后，相对次序得以保留。',
+    en: 'The strict > is the stability decision: equal keys stop the shift, so the new key lands after them and their relative order survives.',
+  },
+  {
+    id: 'shell',
+    name: '希尔排序',
+    zh: '希尔排序是对交错子序列做一系列插入排序；它不是稳定排序，因为较早的 gap 轮次可能让相等键互相越过。',
+    en: 'Shell sort is a sequence of insertion sorts on interleaved subsequences; it is not a stable sort because earlier gap passes can move equal keys past each other.',
+  },
 ] as const;
 
 
