@@ -62,6 +62,7 @@ static int InsertSorted(Record *records, int *length, int capacity, Record recor
     }
     int position = *length;
     while (position > 0 && records[position - 1].key > record.key)
+    // Only strictly larger keys shift right; an equal key stays before the new record, so insertion is stable within a main block.
     {
         records[position] = records[position - 1];
         position -= 1;
@@ -76,6 +77,7 @@ static int InsertSorted(Record *records, int *length, int capacity, Record recor
 static int BlockMaximum(const IsamFile *file, int blockIndex)
 {
     int maximum = file->blocks[blockIndex].records[file->blocks[blockIndex].length - 1].key;
+    // The main block's last key is only a starting maximum; the true maximum may live in this block's overflow chain.
     int node = file->blocks[blockIndex].overflowHead;
     while (node >= 0)
     {
@@ -99,11 +101,13 @@ static int ChooseBlock(const IsamFile *file, int target)
     for (int block = 0; block < file->blockCount; block += 1)
     {
         if (file->bounds[block] >= target)
+        // The first bound at least target owns the record because bounds are ascending maxima and equal keys belong to the earlier block.
         {
             return block;
         }
     }
     return file->blockCount - 1;
+    // A target above every bound still maps to the last block; this keeps the index valid and makes the miss a normal block probe rather than an out-of-range access.
 }
 
 // Recompute every bound after a mutation because an overflow append can change the block's maximum.
@@ -113,6 +117,7 @@ static void RefreshBounds(IsamFile *file)
     for (int block = 0; block < file->blockCount; block += 1)
     {
         file->bounds[block] = BlockMaximum(file, block);
+        // Every bound is rebuilt after a mutation because an inserted overflow record can raise a block's maximum even when its main area did not change.
     }
 }
 
@@ -122,6 +127,7 @@ static int Lookup(IsamFile *file, int target, int *isOverflow)
 {
     int blockIndex = ChooseBlock(file, target);
     file->mainReads += 1;
+    // The selected main block is read once before any record comparison; a main-area hit and a later overflow miss share this cost.
     printf("index bound %d selects B%d\n", file->bounds[blockIndex], blockIndex);
 
     const MainBlock *block = &file->blocks[blockIndex];
@@ -139,6 +145,7 @@ static int Lookup(IsamFile *file, int target, int *isOverflow)
     while (node >= 0)
     {
         file->overflowReads += 1;
+        // Overflow nodes are charged only after the main block misses; a main-area hit never pays for the private chain.
         printf("  read overflow node O%d\n", node);
         for (int offset = 0; offset < file->overflow[node].length; offset += 1)
         {
@@ -185,6 +192,7 @@ static void Insert(IsamFile *file, Record record)
     }
     if (file->overflow[node].length >= OVERFLOW_CAPACITY)
     {
+        // No MAX_OVERFLOW guard is checked before this new node is created; exceeding the static array would write out of bounds.
         file->overflow[file->overflowCount].length = 0;
         file->overflow[file->overflowCount].next = -1;
         file->overflow[node].next = file->overflowCount;

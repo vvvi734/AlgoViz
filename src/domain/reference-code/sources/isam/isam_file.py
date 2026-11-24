@@ -41,6 +41,7 @@ class IsamFile:
     def refresh_bounds(self) -> None:
         """作用：重算每块含溢出链的真实最大键，索引不盲目采用新插入值。"""
         self.bounds = [self.block_maximum(index)
+        # The list comprehension rebuilds one bound per block; there is no incremental update path that could miss an overflow change.
                        for index in range(len(self.blocks))]
 
     def block_maximum(self, block_index: int) -> int:
@@ -52,6 +53,7 @@ class IsamFile:
             for record in self.overflow[node].records:
                 maximum = max(maximum, record.key)
             node = self.overflow[node].next
+            # The overflow walk follows next until -1; the chain is private to this main block, so records from other blocks are never examined.
         return maximum
 
     # The first bound >= target owns the candidate; if target exceeds every bound, the last block is still the only possible owner.
@@ -61,6 +63,7 @@ class IsamFile:
             if bound >= target:
                 return block_index
         return len(self.blocks) - 1
+        # If no bound covers the target, the last block is still returned; this is a deterministic miss path, not a wraparound.
 
     def insert(self, record: Record) -> None:
         """作用：主块有空间按序插入；块满则追加到该块专属溢出链。"""
@@ -69,6 +72,7 @@ class IsamFile:
         block = self.blocks[block_index]
         if len(block.records) < self.capacity:
             block.records.append(record)
+            # The record is appended first and the whole block is sorted afterward; Python's stable sort leaves equal keys in their existing relative order.
             block.records.sort(key=lambda item: item.key)  # 保持块内有序。
             print(f"insert {record.key} into main B{block_index}")
             self.refresh_bounds()
@@ -86,6 +90,7 @@ class IsamFile:
         if len(self.overflow[node].records) >= self.capacity:
             new_node = len(self.overflow)
             self.overflow.append(OverflowNode())
+            # A new overflow node is created lazily only when the current tail is full; the private chain grows without a global preallocation.
             self.overflow[node].next = new_node
             print(f"link O{node} -> O{new_node}")
             node = new_node
@@ -97,6 +102,7 @@ class IsamFile:
         """作用：主块扫描后沿专属链，分别计主区读取与溢出节点读取。"""
         block_index = self.choose_block(target)
         self.main_reads += 1
+        # A main-block access is charged before the record loop; overflow reads are a separate counter charged only after a main miss.
         print(f"bound {self.bounds[block_index]} selects B{block_index}")
         block = self.blocks[block_index]
         for offset, record in enumerate(block.records):

@@ -36,6 +36,7 @@ static PostingLists BuildIndex(const std::vector<Record> &records)
         for (const std::string &term : record.keywords)
         {
             lists[term].push_back(record.id);
+            // The map creates a posting vector on first insertion; the posting stores the string ID, so membership is checked by string equality.
         }
     }
     return lists;
@@ -50,14 +51,18 @@ static std::vector<std::string> Query(const std::vector<Record> &records,
 {
     std::vector<std::string> result;
     for (const Record &record : records)
+    // The query scans the original record vector, which fixes output order and guarantees at most one append per record.
     {
         bool include = useAnd;
+        // The initial value is the identity for the chosen connective; negating it would make empty queries or missing terms behave differently.
         for (const std::string &term : terms)
         {
             auto found = lists.find(term);
+            // A missing term is represented by end(), and the following condition treats it as an empty posting list.
             bool present = found != lists.end() &&
                            std::find(found->second.begin(), found->second.end(), record.id) != found->second.end();
             include = useAnd ? (include && present) : (include || present);
+            // The ternary keeps one loop for both modes; each term updates the accumulator with the connective selected by useAnd.
         }
         if (include)
         {

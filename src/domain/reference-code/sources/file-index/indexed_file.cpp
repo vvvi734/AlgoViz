@@ -44,6 +44,7 @@ struct Io
 static void SortRecords(std::vector<Record> &records)
 {
     std::stable_sort(records.begin(), records.end(),
+    // stable_sort is required here: the block layout must not depend on incidental ordering of equal keys.
                      [](const Record &left, const Record &right)
                      { return left.key < right.key; });
 }
@@ -56,6 +57,7 @@ static std::vector<Block> BuildBlocks(const std::vector<Record> &records, int ca
     {
         Block block;
         std::size_t end = std::min(records.size(), start + static_cast<std::size_t>(capacity));
+        // end is clamped to the vector size, so the final block is naturally partial and no sentinel record is invented.
         for (std::size_t index = start; index < end; index += 1)
         {
             block.records.push_back(records[index]);
@@ -82,6 +84,7 @@ static std::vector<Entry> BuildIndex(const std::vector<Block> &blocks, bool dens
         else
         {
             index.push_back({blocks[block].records.back().key, static_cast<int>(block)});
+            // The sparse key is the block's last record; the entry stores the block number, which is the only address the probe needs.
         }
     }
     return index;
@@ -92,6 +95,7 @@ static std::vector<Entry> BuildIndex(const std::vector<Block> &blocks, bool dens
 static int Lookup(const std::vector<Block> &blocks, const std::vector<Entry> &index, int target, Io &io)
 {
     std::size_t chosen = 0;
+    // chosen starts at the first entry so index[chosen] is always valid, including targets below the minimum and above the maximum.
     io = {};
     for (std::size_t position = 0; position < index.size(); position += 1)
     {
@@ -110,6 +114,7 @@ static int Lookup(const std::vector<Block> &blocks, const std::vector<Entry> &in
 
     int blockIndex = index[chosen].blockIndex;
     io.blockReads = 1;
+    // The block read is charged before the in-block scan; a miss is measured with the same one-block cost as a hit.
     std::cout << "index chooses block B" << blockIndex
               << " (entry " << index[chosen].key << ")\n";
     const Block &block = blocks[static_cast<std::size_t>(blockIndex)];
@@ -120,6 +125,7 @@ static int Lookup(const std::vector<Block> &blocks, const std::vector<Entry> &in
         if (record.key == target)
         {
             return blockIndex * 3 + static_cast<int>(offset);
+            // The demo hardcodes 3 here instead of using the capacity argument; changing BuildBlocks' capacity without updating this line would return wrong positions.
         }
     }
     return -1;

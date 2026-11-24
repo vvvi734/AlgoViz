@@ -49,6 +49,7 @@ class IsamFile
     int BlockMaximum(int blockIndex) const
     {
         int maximum = blocks[blockIndex].records.back().key;
+        // The main block's back() is the starting point, but overflow records are scanned because they can be the true maximum.
         int node = blocks[blockIndex].overflowHead;
         while (node >= 0)
         {
@@ -66,6 +67,7 @@ class IsamFile
     void RefreshBounds()
     {
         bounds.clear();
+        // Bounds are derived data: clearing and rebuilding prevents a stale upper bound from surviving an overflow append.
         for (std::size_t block = 0; block < blocks.size(); block += 1)
         {
             bounds.push_back(BlockMaximum(static_cast<int>(block)));
@@ -84,6 +86,7 @@ class IsamFile
             }
         }
         return static_cast<int>(bounds.size()) - 1;
+        // Out-of-range targets fall back to the last block; this is a defined probe location, not a claim that the record exists.
     }
 
     // The block is chosen before overflow is considered; a full block appends to its private chain, then bounds are rebuilt.
@@ -95,6 +98,7 @@ class IsamFile
         if (static_cast<int>(block.records.size()) < capacity)
         {
             auto position = std::lower_bound(
+            // lower_bound inserts before existing equal keys, so a later equal-key record precedes an earlier one; unlike the C version, this insert is not stable.
                 block.records.begin(), block.records.end(), record.key,
                 [](const Record &left, int key)
                 { return left.key < key; });
@@ -107,6 +111,7 @@ class IsamFile
         std::cout << "B" << blockIndex << " full: append "
                   << record.key << " to overflow\n";
         if (block.overflowHead < 0)
+        // A full main block creates its own overflow head; records never spill into another block's chain, which preserves the index mapping.
         {
             block.overflowHead = static_cast<int>(overflow.size());
             overflow.push_back({});
@@ -143,6 +148,7 @@ class IsamFile
     {
         int blockIndex = ChooseBlock(target);
         mainReads += 1;
+        // The main-block read is counted before scanning, so a subsequent overflow lookup still includes the initial main access.
         std::cout << "bound " << bounds[blockIndex]
                   << " selects B" << blockIndex << "\n";
         const MainBlock &block = blocks[static_cast<std::size_t>(blockIndex)];
@@ -153,6 +159,7 @@ class IsamFile
             {
                 fromOverflow = false;
                 return blockIndex * capacity + static_cast<int>(offset);
+                // The position uses the runtime capacity, so unlike file-index this version remains correct if the block capacity changes.
             }
         }
 

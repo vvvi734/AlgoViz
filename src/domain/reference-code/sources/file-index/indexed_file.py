@@ -36,6 +36,7 @@ class Io:
 def build_blocks(records: list[Record], capacity: int) -> list[Block]:
     """作用：按块容量切块；块号就是索引项地址。"""
     return [Block(records[start:start + capacity])
+    # List slicing already truncates at the end, so the final block is partial without an explicit min() or padding step.
             for start in range(0, len(records), capacity)]
 
 
@@ -49,6 +50,7 @@ def build_index(blocks: list[Block], dense: bool) -> list[Entry]:
                 index.append(Entry(record.key, block_index))
         else:
             index.append(Entry(block.records[-1].key, block_index))
+            # The sparse entry uses the block's last key as an inclusive upper bound and records the block index for the later probe.
     return index
 
 
@@ -57,9 +59,11 @@ def lookup(blocks: list[Block], index: list[Entry], target: int) -> tuple[int, I
     io = Io()
     # chosen starts at 0 so a target above every entry still selects the last valid block.
     chosen = 0
+    # chosen is pre-seeded so a target below every bound still selects block 0 and the lookup has a defined one-block cost.
     for position, entry in enumerate(index):
         io.probes += 1
         if entry.key == target:
+        # An exact hit ends the probe immediately; there is no reason to inspect larger upper bounds after the owning block is known.
             chosen = position
             break
         if entry.key > target:
@@ -69,11 +73,13 @@ def lookup(blocks: list[Block], index: list[Entry], target: int) -> tuple[int, I
     # A miss still reads the selected block once; in-block comparisons are record checks, not extra block I/O.
     block_index = index[chosen].block_index
     io.block_reads = 1
+    # The counter records block reads, not Python comparisons; in-block record checks do not add to it.
     print(f"index chooses block B{block_index} (entry {index[chosen].key})")
     for offset, record in enumerate(blocks[block_index].records):
         print(f"  compare {record.key} ({record.label})")
         if record.key == target:
             return block_index * 3 + offset, io
+            # The capacity 3 is hardcoded in the returned position; this matches the demo's build_blocks(records, 3) call but is not parameterized.
     return -1, io
 
 

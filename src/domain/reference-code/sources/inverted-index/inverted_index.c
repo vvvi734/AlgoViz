@@ -41,11 +41,13 @@ static int FindOrCreateTerm(PostingList *lists, int *listCount, const char *term
     for (int index = 0; index < *listCount; index += 1)
     {
         if (strcmp(lists[index].term, term) == 0)
+        // A term owns exactly one posting list; the scan returns the existing table instead of creating a duplicate for the same string.
         {
             return index;
         }
     }
     lists[*listCount].term = term;
+    // A new table is appended without checking MAX_TERMS; the demo stays within 16 distinct terms, but the API has no capacity failure path.
     lists[*listCount].postingCount = 0;
     *listCount += 1;
     return *listCount - 1;
@@ -61,6 +63,7 @@ static void BuildIndex(const Record *records, int recordCount, PostingList *list
         {
             int term = FindOrCreateTerm(lists, listCount, records[record].keywords[keyword]);
             lists[term].postings[lists[term].postingCount] = record;
+            // The posting stores the integer record position, so the same record can be found without comparing external ID strings.
             lists[term].postingCount += 1;
         }
     }
@@ -78,6 +81,7 @@ static const PostingList *FindTerm(const PostingList *lists, int listCount, cons
         }
     }
     return NULL;
+    // NULL means the term was never seen; an existing table with postingCount 0 would be a different state even though neither contains records.
 }
 
 // Postings store record indices, so membership compares an integer position rather than an external ID string.
@@ -91,6 +95,7 @@ static int Contains(const PostingList *list, int record)
     for (int index = 0; index < list->postingCount; index += 1)
     {
         if (list->postings[index] == record)
+        // Contains compares record indices, not IDs; this is why the query can be evaluated by walking the original record array.
         {
             return 1;
         }
@@ -105,8 +110,10 @@ static int Query(int recordCount, const PostingList *lists,
 {
     int count = 0;
     for (int record = 0; record < recordCount; record += 1)
+    // Walking records rather than postings makes output follow storage order, and each record is tested once so duplicates cannot appear.
     {
         int include = useAnd;
+        // The identity value differs by mode: AND starts true because an empty conjunction holds, OR starts false because an empty disjunction does not.
         for (int term = 0; term < termCount; term += 1)
         {
             const PostingList *list = FindTerm(lists, listCount, terms[term]);
@@ -114,6 +121,7 @@ static int Query(int recordCount, const PostingList *lists,
             if (useAnd)
             {
                 include = include && present;
+                // A missing term yields present=0, so AND fails that record; OR can still succeed through another present term.
             }
             else
             {

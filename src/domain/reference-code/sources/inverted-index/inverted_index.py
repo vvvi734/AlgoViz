@@ -23,6 +23,7 @@ def build_index(records: list[Record]) -> dict[str, list[str]]:
     for record in records:
         for term in record.keywords:
             index.setdefault(term, []).append(record.record_id)
+            # setdefault creates the posting list on first sight and appends the string record ID; no separate term table is needed.
     return index
 
 
@@ -32,11 +33,14 @@ def query(records: list[Record], index: dict[str, list[str]],
     matched: list[str] = []
     # Walk records, not posting lists, so AND and OR both keep storage order and return each record at most once.
     for record in records:
+    # The outer loop is over records, not postings, so results follow storage order and each record is emitted at most once.
         if mode == "and":
             include = all(record.record_id in index.get(term, [])
+            # all() implements AND over every query term; a missing term contributes an empty list, so that record cannot match.
                           for term in terms)
         else:
             include = any(record.record_id in index.get(term, [])
+            # any() implements OR; a missing term is empty but another term can still make the record match.
                           for term in terms)
         if include:
             matched.append(record.record_id)
@@ -58,6 +62,7 @@ def main() -> None:
     print("algorithms OR sorting:", " ".join(query(records, index, ["algorithms", "sorting"], "or")))
     # A missing term falls back to an empty list: AND with it must fail, while OR can still match another term.
     print("missing term AND algorithms:", query(records, index, ["missing", "algorithms"], "and"))
+    # The demo prints a missing-term query so the contract is observable: AND with an unseen term must be empty, while OR may still return matches.
 
 
 if __name__ == "__main__":

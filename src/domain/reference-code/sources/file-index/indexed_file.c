@@ -51,6 +51,7 @@ typedef struct
 static void SortRecords(Record *records, int count)
 {
     for (int i = 1; i < count; i += 1)
+    // Insertion sort is chosen because its shift condition uses strict >; equal keys therefore keep their input order and the later block split is deterministic.
     {
         Record current = records[i];
         int j = i - 1;
@@ -69,6 +70,7 @@ static int BuildBlocks(const Record *records, int count, DataBlock *blocks)
 {
     int blockCount = 0;
     for (int start = 0; start < count; start += BLOCK_CAPACITY)
+    // The last block may be shorter than BLOCK_CAPACITY; BuildBlocks copies only the remaining records instead of padding fake entries.
     {
         int length = count - start;
         if (length > BLOCK_CAPACITY)
@@ -105,6 +107,7 @@ static int BuildIndex(const DataBlock *blocks, int blockCount, int dense, IndexE
         else
         {
             index[count].key = blocks[block].records[blocks[block].length - 1].key;
+            // A sparse entry is the block's own maximum, not the next block's minimum; using the next block's first key would send equal boundary keys to the wrong block.
             index[count].blockIndex = block;
             count += 1;
         }
@@ -119,6 +122,7 @@ static int BuildIndex(const DataBlock *blocks, int blockCount, int dense, IndexE
 static int Lookup(const DataBlock *blocks, const IndexEntry *index, int entryCount, int target, IoCounters *io)
 {
     int chosen = 0;
+    // Starting at entry 0 guarantees a valid block even when the target is below the smallest key; that case still costs one block read.
     io->probes = 0;
     io->blockReads = 0;
 
@@ -126,11 +130,13 @@ static int Lookup(const DataBlock *blocks, const IndexEntry *index, int entryCou
     {
         io->probes += 1;
         if (index[position].key == target)
+        // An exact index hit can stop probing immediately because the selected entry already names the correct block.
         {
             chosen = position;
             break;
         }
         if (index[position].key > target)
+        // The first greater bound ends the probe; all later bounds are even larger, so the previous entry is the last one not greater than target.
         {
             break;
         }
@@ -139,6 +145,7 @@ static int Lookup(const DataBlock *blocks, const IndexEntry *index, int entryCou
 
     int blockIndex = index[chosen].blockIndex;
     io->blockReads = 1;
+    // Exactly one data block is read whether the subsequent in-block comparison hits or misses; record comparisons are not counted as block I/O.
     printf("index chooses block B%d (key %d)\n", blockIndex, index[chosen].key);
 
     for (int offset = 0; offset < blocks[blockIndex].length; offset += 1)
@@ -148,6 +155,7 @@ static int Lookup(const DataBlock *blocks, const IndexEntry *index, int entryCou
         if (record->key == target)
         {
             return blockIndex * BLOCK_CAPACITY + offset;
+            // The returned number is the record's position under the fixed block layout, not a byte offset or a real disk address.
         }
     }
     return -1;
