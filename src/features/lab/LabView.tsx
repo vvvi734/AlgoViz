@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { AlgorithmSidebar } from './AlgorithmSidebar';
 import { VisualStage } from './VisualStage';
 import { TreeTraversalPicker } from './TreeTraversalPicker';
@@ -41,6 +41,7 @@ import { btreePresetFromInput } from '../../domain/algorithms/btreeExamples';
 import { heapPresetFromInput } from '../../domain/algorithms/heapExamples';
 import { huffmanPresetFromInput } from '../../domain/algorithms/huffmanExamples';
 import { useI18n } from '../../i18n/I18nProvider';
+import type { ReferenceLanguage } from '../../domain/reference-code/registry';
 
 /**
  * Stage 7A learning workspace, re-laid out by UI-02 and refined by
@@ -155,6 +156,11 @@ export function LabView({
   // UX-01: folding is a per-algorithm presentation preference. It is derived
   // from the current algorithm and never stored in the LabController.
   const algorithmGuide = useAlgorithmGuidePreferences(lab.currentAlgo);
+  const guideToggleRef = useRef<HTMLButtonElement | null>(null);
+  const guideReturnFocusRef = useRef(false);
+  // Reference-code language lives above the collapsible panel: closing it
+  // unmounts Monaco, but reopening on the same course must keep the choice.
+  const [referenceLanguage, setReferenceLanguage] = useState<ReferenceLanguage>('c');
   // A course is a fresh reading session. Keeping this key out of the playback
   // state means language/theme changes never rewind a running trace, while an
   // actual algorithm/concept switch always starts at frame 0 and at the top.
@@ -190,6 +196,26 @@ export function LabView({
       });
     });
   };
+
+  // UX-COLLAPSE-01: the shortcut inside a long guide folds it and returns the
+  // reader to the existing header control. The layout effect runs before paint
+  // so the page does not first clamp to the shrunken document end.
+  const collapseGuideFromPanel = () => {
+    if (!algorithmGuide.isOpen) return;
+    guideReturnFocusRef.current = true;
+    algorithmGuide.toggle();
+  };
+
+  useLayoutEffect(() => {
+    if (!guideReturnFocusRef.current) return;
+    guideReturnFocusRef.current = false;
+    const toggle = guideToggleRef.current;
+    if (!toggle) return;
+    if (typeof toggle.scrollIntoView === 'function') {
+      toggle.scrollIntoView({ block: 'nearest', behavior: 'auto' });
+    }
+    toggle.focus({ preventScroll: true });
+  }, [algorithmGuide.isOpen]);
 
   // A new run (fresh `events` array) resets the selection.
   useEffect(() => setSelectedFrameId(null), [lab.events]);
@@ -259,6 +285,7 @@ export function LabView({
           <div className="lab-head-actions">
             {!concept ? (
               <button
+                ref={guideToggleRef}
                 type="button"
                 className="guide-toggle"
                 data-testid="guide-toggle"
@@ -330,6 +357,7 @@ export function LabView({
             guide={algorithmGuideContent}
             algorithmName={entry ? pick(entry.name) : lab.currentAlgo}
             onStart={startFromGuide}
+            onCollapse={collapseGuideFromPanel}
           />
         ) : null}
 
@@ -446,6 +474,8 @@ export function LabView({
           <ReferenceCodePanel
             algorithmId={lab.currentAlgo}
             algorithmName={entry ? pick(entry.name) : lab.currentAlgo}
+            language={referenceLanguage}
+            onLanguageChange={setReferenceLanguage}
           />
         </WorkspaceTabs>
           </>

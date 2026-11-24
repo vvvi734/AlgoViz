@@ -43,14 +43,30 @@ async function copyText(text: string): Promise<void> {
 export function ReferenceCodePanel({
   algorithmId,
   algorithmName,
+  language: controlledLanguage,
+  onLanguageChange,
 }: {
   algorithmId: string;
   algorithmName: string;
+  /**
+   * Optional controlled language. The workspace owns it so collapsing the
+   * panel (which unmounts Monaco) never forgets the learner's C/C++/Python
+   * choice. Standalone content tests omit both props and keep the local state.
+   */
+  language?: ReferenceLanguage;
+  onLanguageChange?: (language: ReferenceLanguage) => void;
 }) {
   const { t, lang } = useI18n();
   const { resolved } = useTheme();
   const available = useMemo(() => referenceLanguages(algorithmId), [algorithmId]);
-  const [language, setLanguage] = useState<ReferenceLanguage>(available[0] ?? 'c');
+  const [uncontrolledLanguage, setUncontrolledLanguage] = useState<ReferenceLanguage>(
+    available[0] ?? 'c',
+  );
+  const language = controlledLanguage ?? uncontrolledLanguage;
+  const changeLanguage = (next: ReferenceLanguage) => {
+    if (onLanguageChange) onLanguageChange(next);
+    else setUncontrolledLanguage(next);
+  };
   const implementations = useMemo(
     () => referenceImplementations(algorithmId, language),
     [algorithmId, language],
@@ -66,11 +82,13 @@ export function ReferenceCodePanel({
 
   useEffect(() => {
     if (available.length === 0) {
-      setLanguage('c');
+      if (controlledLanguage === undefined) setUncontrolledLanguage('c');
       return;
     }
-    setLanguage((current) => (available.includes(current) ? current : available[0]));
-  }, [available]);
+    if (available.includes(language)) return;
+    if (onLanguageChange) onLanguageChange(available[0]);
+    else setUncontrolledLanguage(available[0]);
+  }, [available, controlledLanguage, language, onLanguageChange]);
 
   useEffect(() => {
     let active = true;
@@ -182,7 +200,7 @@ export function ReferenceCodePanel({
                     disabled={!exists}
                     data-testid={`reference-lang-${item}`}
                     title={exists ? REFERENCE_LANGUAGE_LABELS[item] : t('referenceLanguageUnavailable')}
-                    onClick={() => setLanguage(item)}
+                    onClick={() => changeLanguage(item)}
                   >
                     {REFERENCE_LANGUAGE_LABELS[item]}
                     {!exists ? (

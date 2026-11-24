@@ -1,4 +1,4 @@
-import { useId, useState, type ReactNode } from 'react';
+import { useId, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 import { useI18n } from '../../i18n/I18nProvider';
 
 /**
@@ -13,6 +13,28 @@ export function WorkspaceTabs({ children }: { children: ReactNode }) {
   const { t } = useI18n();
   const [open, setOpen] = useState(false);
   const bodyId = useId();
+  const toggleRef = useRef<HTMLButtonElement | null>(null);
+  const returnFocusRef = useRef(false);
+
+  // A shortcut collapse removes thousands of pixels of read-only source. Do the
+  // return scroll and focus in the same layout pass as that DOM change so the
+  // browser never paints the temporary end-of-document position first.
+  useLayoutEffect(() => {
+    if (!returnFocusRef.current) return;
+    returnFocusRef.current = false;
+    const toggle = toggleRef.current;
+    if (!toggle) return;
+    if (typeof toggle.scrollIntoView === 'function') {
+      toggle.scrollIntoView({ block: 'nearest', behavior: 'auto' });
+    }
+    toggle.focus({ preventScroll: true });
+  }, [open]);
+
+  const collapseFromPanel = () => {
+    if (!open) return;
+    returnFocusRef.current = true;
+    setOpen(false);
+  };
 
   return (
     <section
@@ -26,6 +48,7 @@ export function WorkspaceTabs({ children }: { children: ReactNode }) {
           <span className="workspace-tabs-hint">{t('workspaceReferenceHint')}</span>
         </div>
         <button
+          ref={toggleRef}
           type="button"
           className="btn small workspace-tabs-toggle"
           aria-expanded={open}
@@ -41,6 +64,20 @@ export function WorkspaceTabs({ children }: { children: ReactNode }) {
         <div className="workspace-tabpanel" data-testid="workspace-panel-reference">
           {open ? children : null}
         </div>
+        {open ? (
+          <div className="panel-collapse-rail reference-collapse-rail">
+            <button
+              type="button"
+              className="btn small panel-collapse-button"
+              data-testid="reference-quick-collapse"
+              aria-controls={bodyId}
+              onClick={collapseFromPanel}
+            >
+              <span className="panel-collapse-chevron" aria-hidden="true">▲</span>
+              {t('referenceQuickCollapse')}
+            </button>
+          </div>
+        ) : null}
       </div>
     </section>
   );

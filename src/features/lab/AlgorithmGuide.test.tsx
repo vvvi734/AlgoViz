@@ -12,11 +12,20 @@ const dijkstraGuide = buildAlgorithmGuide(
   ALGORITHM_CATALOG.dijkstra,
 );
 
-function renderGuide(guide = dijkstraGuide, name = 'Dijkstra') {
+function renderGuide(
+  guide = dijkstraGuide,
+  name = 'Dijkstra',
+  options?: { onCollapse?: () => void },
+) {
   const onStart = vi.fn();
   render(
     <I18nProvider>
-      <AlgorithmGuide guide={guide} algorithmName={name} onStart={onStart} />
+      <AlgorithmGuide
+        guide={guide}
+        algorithmName={name}
+        onStart={onStart}
+        onCollapse={options?.onCollapse}
+      />
     </I18nProvider>,
   );
   return onStart;
@@ -188,5 +197,28 @@ describe('algorithm review sheet UI', () => {
     expect(screen.getByText('Complexity and applicability')).toBeTruthy();
     expect(screen.getByText('Common mistakes & memory')).toBeTruthy();
     expect(screen.getByTestId('guide-memory').textContent).toContain('negative');
+  });
+
+  it('keeps the shortcut absent unless the panel wires a collapse handler', () => {
+    renderGuide();
+    expect(screen.queryByTestId('guide-quick-collapse')).toBeNull();
+  });
+
+  it('shows a real panel shortcut that only invokes the guide collapse callback', () => {
+    const onCollapse = vi.fn();
+    renderGuide(dijkstraGuide, 'Dijkstra', { onCollapse });
+    const shortcut = screen.getByTestId('guide-quick-collapse');
+    expect(shortcut.tagName).toBe('BUTTON');
+    expect(shortcut.getAttribute('aria-controls')).toBe('algorithm-guide');
+    expect(shortcut.textContent).toContain('收起导学');
+    fireEvent.click(shortcut);
+    expect(onCollapse).toHaveBeenCalledTimes(1);
+  });
+
+  it('uses the English shortcut label in the English interface', () => {
+    window.localStorage.setItem('algolens-lang', 'en');
+    renderGuide(dijkstraGuide, 'Dijkstra', { onCollapse: vi.fn() });
+    expect(screen.getByTestId('guide-quick-collapse').textContent).toContain('Collapse guide');
+    expect(screen.getByTestId('guide-quick-collapse').textContent).not.toContain('收起');
   });
 });

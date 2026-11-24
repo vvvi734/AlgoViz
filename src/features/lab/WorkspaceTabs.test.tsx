@@ -1,5 +1,5 @@
 import { fireEvent, render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { I18nProvider } from '../../i18n/I18nProvider';
 import { WorkspaceTabs } from './WorkspaceTabs';
 
@@ -14,6 +14,10 @@ function renderHarness() {
 }
 
 describe('WorkspaceTabs (CORE-REFINE-01)', () => {
+  beforeEach(() => {
+    window.localStorage.clear();
+  });
+
   it('starts with reference code collapsed and exposes a reference-code label', () => {
     renderHarness();
     const tabs = screen.getByTestId('workspace-tabs');
@@ -41,5 +45,35 @@ describe('WorkspaceTabs (CORE-REFINE-01)', () => {
     fireEvent.click(screen.getByTestId('workspace-tabs-toggle'));
     expect(screen.queryByTestId('reference-panel')).toBeNull();
     expect(screen.getByTestId('workspace-tabs').getAttribute('data-expanded')).toBe('false');
+  });
+
+  it('shows the panel shortcut only while open and returns focus to the header toggle', () => {
+    renderHarness();
+    expect(screen.queryByTestId('reference-quick-collapse')).toBeNull();
+
+    const toggle = screen.getByTestId('workspace-tabs-toggle');
+    fireEvent.click(toggle);
+    const shortcut = screen.getByTestId('reference-quick-collapse');
+    expect(shortcut.tagName).toBe('BUTTON');
+    expect(shortcut.textContent).toContain('收起代码');
+    expect(shortcut.getAttribute('aria-controls')).toBe(
+      screen.getByTestId('workspace-tabs-body').id,
+    );
+
+    fireEvent.click(shortcut);
+    expect(screen.getByTestId('workspace-tabs').getAttribute('data-expanded')).toBe('false');
+    expect(screen.getByTestId('workspace-tabs-body').hidden).toBe(true);
+    expect(screen.queryByTestId('reference-quick-collapse')).toBeNull();
+    expect(screen.queryByTestId('reference-panel')).toBeNull();
+    expect(toggle.getAttribute('aria-expanded')).toBe('false');
+    expect(document.activeElement).toBe(toggle);
+  });
+
+  it('uses the English shortcut label in the English interface', () => {
+    window.localStorage.setItem('algolens-lang', 'en');
+    renderHarness();
+    fireEvent.click(screen.getByTestId('workspace-tabs-toggle'));
+    expect(screen.getByTestId('reference-quick-collapse').textContent).toContain('Collapse code');
+    expect(screen.getByTestId('reference-quick-collapse').textContent).not.toContain('收起');
   });
 });

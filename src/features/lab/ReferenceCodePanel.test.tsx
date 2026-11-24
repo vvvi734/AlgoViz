@@ -1,8 +1,11 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { useState } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import type { ReferenceLanguage } from '../../domain/reference-code/registry';
 import { I18nProvider, useI18n } from '../../i18n/I18nProvider';
 import { ThemeProvider } from '../../theme/ThemeProvider';
 import { ReferenceCodePanel } from './ReferenceCodePanel';
+import { WorkspaceTabs } from './WorkspaceTabs';
 
 const batchAlgorithms = [
   {
@@ -260,6 +263,24 @@ function renderPanel(algorithmId = 'binary', algorithmName = '二分查找') {
   return render(panel(algorithmId, algorithmName));
 }
 
+function ControlledPanel() {
+  const [language, setLanguage] = useState<ReferenceLanguage>('c');
+  return (
+    <I18nProvider>
+      <ThemeProvider>
+        <WorkspaceTabs>
+          <ReferenceCodePanel
+            algorithmId="binary"
+            algorithmName="二分查找"
+            language={language}
+            onLanguageChange={setLanguage}
+          />
+        </WorkspaceTabs>
+      </ThemeProvider>
+    </I18nProvider>
+  );
+}
+
 async function waitForCode() {
   await waitFor(() => expect(screen.getByTestId('reference-code-fallback')).toBeTruthy());
   return screen.getByTestId('reference-code-fallback').textContent ?? '';
@@ -302,6 +323,27 @@ describe('ReferenceCodePanel', () => {
       expect(screen.getByTestId('reference-code-fallback').textContent).toContain('def binary_search'),
     );
     expect(screen.getByTestId('reference-code-fallback').textContent).not.toContain('trace(');
+  });
+
+  it('keeps the selected language across a quick collapse and reopen', async () => {
+    render(<ControlledPanel />);
+    fireEvent.click(screen.getByTestId('workspace-tabs-toggle'));
+    await waitForCode();
+
+    fireEvent.click(screen.getByTestId('reference-lang-python'));
+    await waitFor(() =>
+      expect(screen.getByTestId('reference-code-fallback').textContent).toContain('def binary_search'),
+    );
+
+    fireEvent.click(screen.getByTestId('reference-quick-collapse'));
+    expect(screen.queryByTestId('reference-code-panel')).toBeNull();
+    expect(screen.getByTestId('workspace-tabs-toggle').getAttribute('aria-expanded')).toBe('false');
+    expect(document.activeElement).toBe(screen.getByTestId('workspace-tabs-toggle'));
+
+    fireEvent.click(screen.getByTestId('workspace-tabs-toggle'));
+    expect(screen.getByTestId('reference-lang-python').getAttribute('aria-selected')).toBe('true');
+    expect(screen.getByTestId('reference-file-name').textContent).toBe('binary_search.py');
+    expect(screen.getByTestId('reference-code-panel').getAttribute('data-language')).toBe('python');
   });
 
   it('copies the complete current source, not just the visible text', async () => {

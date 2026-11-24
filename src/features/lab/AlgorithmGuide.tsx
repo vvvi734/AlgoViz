@@ -20,10 +20,13 @@ export function AlgorithmGuide({
   guide,
   algorithmName,
   onStart,
+  onCollapse,
 }: {
   guide: AlgorithmGuideContent;
   algorithmName: string;
   onStart: () => void;
+  /** Optional panel-level shortcut; omitted by isolated content tests. */
+  onCollapse?: () => void;
 }) {
   const { t, lang } = useI18n();
   const localized = (value: { zh: string; en: string } | null | undefined) =>
@@ -177,6 +180,21 @@ export function AlgorithmGuide({
           </footer>
         </>
       )}
+
+      {onCollapse ? (
+        <div className="panel-collapse-rail guide-collapse-rail">
+          <button
+            type="button"
+            className="btn small panel-collapse-button"
+            data-testid="guide-quick-collapse"
+            aria-controls={ALGORITHM_GUIDE_ID}
+            onClick={onCollapse}
+          >
+            <span className="panel-collapse-chevron" aria-hidden="true">▲</span>
+            {t('guideQuickCollapse')}
+          </button>
+        </div>
+      ) : null}
     </article>
   );
 }

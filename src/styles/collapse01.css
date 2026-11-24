@@ -1,0 +1,76 @@
+/* ==========================================================================
+   UX-COLLAPSE-01 — panel-local quick collapse actions.
+
+   The page is the scroll container (GLOBAL-SCROLL). A sticky bottom rail
+   inside each expanded panel keeps the collapse control reachable without a
+   global fixed button: it is bounded by the panel and disappears with it.
+   ========================================================================== */
+
+.panel-collapse-rail {
+  position: sticky;
+  bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+  z-index: 5;
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+  min-width: 0;
+  margin-top: 6px;
+  pointer-events: none;
+}
+
+.guide-collapse-rail {
+  grid-column: 1 / -1;
+  margin-top: -8px;
+}
+
+.reference-collapse-rail {
+  margin-top: 2px;
+}
+
+/* A real button: mouse, touch, Tab, Enter and Space all use native behaviour. */
+.panel-collapse-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-width: 112px;
+  min-height: 40px;
+  padding: 0 12px;
+  border: 1px solid var(--edge-hover);
+  border-radius: 10px;
+  background: var(--panel);
+  color: var(--txt);
+  box-shadow: none;
+  white-space: nowrap;
+  pointer-events: auto;
+  touch-action: manipulation;
+}
+
+.panel-collapse-button:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.panel-collapse-chevron {
+  color: var(--accent);
+  font-size: 12px;
+  line-height: 1;
+}
+
+.panel-collapse-button:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+/* The returned header control must not be hidden under the sticky top bar. */
+.guide-toggle,
+.workspace-tabs-toggle {
+  scroll-margin-top: calc(var(--topbar-height, 72px) + 12px);
+}
+
+@media (max-width: 899px) {
+  .panel-collapse-button {
+    min-height: 44px;
+    min-width: 116px;
+  }
+}
