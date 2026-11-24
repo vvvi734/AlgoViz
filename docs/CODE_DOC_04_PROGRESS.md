@@ -209,4 +209,4 @@
 - Playwright `e2e/code-doc-04-batch-06.spec.ts`：**1/1** 通过。
 - 受影响主程序：C 8/8、C++ 6/6、Python 9/9 编译/运行通过。
 - 报告：`docs/CODE-DOC-04-RISK-06-REPORT.md`。
-- 提交与推送：待填写。
+- 提交与推送：修复提交 `7c10f54`；Gitee `6dc7af5..7c10f54 main -> main`。
