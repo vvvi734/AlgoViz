@@ -1,4 +1,5 @@
 import type { Lang } from '../../i18n/types';
+import { textbookTitleZh } from '../../i18n/terminology';
 import type { AlgorithmCatalog } from './types';
 
 /**
@@ -1129,7 +1130,8 @@ export interface TextbookChapterView extends Omit<TextbookChapter, 'topics'> {
 }
 
 export function textbookTitle(title: TextbookTitle, lang: Lang): string {
-  return lang === 'zh' ? title.zh : title.en;
+  if (lang === 'en') return title.en;
+  return textbookTitleZh(title.zh);
 }
 
 /**

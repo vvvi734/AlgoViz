@@ -195,7 +195,7 @@ export const COURSE_GUIDES: Record<string, CourseGuide> = {
       'Comparison sorts must order elements through pairwise comparisons, hence the Ω(n log n) lower bound in the comparison model. Radix sort takes another route: decompose each key into decimal digits, and starting from the least significant digit, distribute records into buckets 0–9 and collect them in stable bucket order. It never compares full keys; its time depends on the digit count d and radix k rather than log n. The price is buckets and extra record references, and it only applies to key domains with finitely many digits.',
     ),
     definition: text(
-      'LSD 基数排序是一种非比较排序：按最低位到最高位依次处理，每一趟把记录稳定分配到基数为 10 的桶中，再按桶号 0–9 依次收集；所有数位处理完后序列按完整关键字升序。',
+      'LSD（Least Significant Digit first，最低位优先）基数排序是一种非比较排序：按最低位到最高位依次处理，每一趟把记录稳定分配到基数为 10 的桶中，再按桶号 0–9 依次收集；所有数位处理完后序列按完整关键字升序。',
       'LSD radix sort is a non-comparison sort: it processes digits from least to most significant, stably distributes records into radix-10 buckets each pass, then collects buckets 0–9 in order; after all digits the sequence is ascending by the full key.',
     ),
     ...algorithm(
@@ -626,7 +626,7 @@ export const COURSE_GUIDES: Record<string, CourseGuide> = {
       'The average O(log n) of a plain BST depends on a balanced shape and can degrade to O(n). AVL stores a height at each node and requires the left/right height difference to stay at most 1; after insertion/deletion it updates along the parent chain and applies LL/RR/LR/RL rotations when needed. It pushes even the worst-case search to O(log n), at the cost of height maintenance and rotation overhead.',
     ),
     definition: text(
-      'AVL 树是带平衡条件的二叉搜索树：每个节点的左右子树高度差（平衡因子）属于 {−1, 0, 1}，失衡时通过旋转恢复。',
+      'AVL（Adelson-Velsky–Landis，平衡二叉树）是带平衡条件的二叉搜索树：每个节点的左右子树高度差（平衡因子）属于 {−1, 0, 1}，失衡时通过旋转恢复。',
       'An AVL tree is a binary search tree with a balance condition: every node’s left/right subtree height difference (balance factor) lies in {−1, 0, 1}, restored by rotations when violated.',
     ),
     ...operations(
@@ -726,7 +726,7 @@ export const COURSE_GUIDES: Record<string, CourseGuide> = {
       'In an unweighted graph, following one path deeply does not necessarily find the nearest target; depth-first search may take a long detour. Breadth-first search expands by layers with a queue: all vertices at distance 1 are processed before distance 2, so the first arrival is a shortest path in edge count. The cost is O(V) queue and visitation storage.',
     ),
     definition: text(
-      '广度优先搜索从源点出发，按到源点的边数层次扩展；使用 FIFO 队列保存待处理顶点，并用 discovered/visited 标记避免重复。',
+      'BFS（Breadth-First Search，广度优先搜索）从源点出发，按到源点的边数层次扩展；使用 FIFO 队列保存待处理顶点，并用 discovered/visited 标记避免重复。',
       'Breadth-first search starts at a source and expands in layers by edge count; it uses a FIFO queue for pending vertices and discovered/visited marks to avoid duplicates.',
     ),
     ...algorithm(
@@ -759,18 +759,18 @@ export const COURSE_GUIDES: Record<string, CourseGuide> = {
       step('栈空回溯结束', 'Finish when the stack is empty'),
     ),
     conditions: list(
-      ['适用于有向图和无向图。', '首次到达不保证最短路径；求最短路径应使用 BFS/Dijkstra。', '递归实现深度最坏 O(V)，可能栈溢出；显式栈可缓解。'],
+      ['适用于有向图和无向图。', '首次到达不保证最短路径；求最短路径应使用 BFS（广度优先搜索）或 Dijkstra（迪杰斯特拉）算法。', '递归实现深度最坏 O(V)，可能栈溢出；显式栈可缓解。'],
       ['Works on directed and undirected graphs.', 'First arrival does not guarantee a shortest path; use BFS/Dijkstra for that.', 'Recursive depth can reach O(V) and overflow; an explicit stack avoids that.'],
     ),
   },
 
   dijkstra: {
     intro: text(
-      'BFS 只能处理边权相同的最短路径；一旦边权不同，“步数少”不等于“总代价小”。Dijkstra 维护起点到各点的当前最短距离，每次取出距离最小的未确定节点并松弛它的出边。非负边权保证这个节点一旦确定就不会再被更短的路径改写；负权边会破坏这一前提。',
+      'BFS（广度优先搜索）只能处理边权相同的最短路径；一旦边权不同，“步数少”不等于“总代价小”。Dijkstra（迪杰斯特拉）算法维护起点到各点的当前最短距离，每次取出距离最小的未确定节点并松弛它的出边。非负边权保证这个节点一旦确定就不会再被更短的路径改写；负权边会破坏这一前提。',
       'BFS only handles shortest paths when all edge weights are equal; once weights differ, fewer edges no longer means lower total cost. Dijkstra maintains current distance estimates, repeatedly extracts the unsettled vertex with the smallest distance and relaxes its outgoing edges. Non-negative weights guarantee that once settled, a vertex cannot later be improved; negative edges break that premise.',
     ),
     definition: text(
-      'Dijkstra 算法求非负边权图的单源最短路径：维护距离估计，重复取出未确定顶点中距离最小者，并对其出边执行松弛。',
+      'Dijkstra（迪杰斯特拉）算法求非负边权图的单源最短路径：维护距离估计，重复取出未确定顶点中距离最小者，并对其出边执行松弛。',
       'Dijkstra’s algorithm solves single-source shortest paths on graphs with non-negative edge weights: it maintains distance estimates, repeatedly extracts the unsettled vertex with the smallest estimate, and relaxes its outgoing edges.',
     ),
     ...algorithm(
@@ -794,7 +794,7 @@ export const COURSE_GUIDES: Record<string, CourseGuide> = {
       'When all-pairs shortest paths are needed, running Dijkstra from every source is not attractive on dense graphs. Floyd-Warshall uses dynamic programming, opening one intermediate vertex k at a time and checking whether i→k→j is shorter than the current i→j. It is simple and supports negative edges, but O(V³) time and O(V²) space limit it to small or dense graphs.',
     ),
     definition: text(
-      'Floyd-Warshall 算法用动态规划求所有点对最短路径：依次允许前 k 个顶点作为中转点，更新 dist[i][j] = min(dist[i][j], dist[i][k]+dist[k][j])。',
+      'Floyd-Warshall（弗洛伊德—沃舍尔）算法用动态规划求所有点对最短路径：依次允许前 k 个顶点作为中转点，更新 dist[i][j] = min(dist[i][j], dist[i][k]+dist[k][j])。',
       'The Floyd-Warshall algorithm computes all-pairs shortest paths by dynamic programming: allowing the first k vertices as intermediates in turn and updating dist[i][j] = min(dist[i][j], dist[i][k]+dist[k][j]).',
     ),
     ...algorithm(
@@ -817,7 +817,7 @@ export const COURSE_GUIDES: Record<string, CourseGuide> = {
       'Dijkstra cannot handle negative edges because a “settled” vertex may still be reduced by a later negative edge. Bellman-Ford avoids minimum extraction and relaxes every edge for V−1 rounds; round r can discover shortest paths using at most r edges. It supports negative edges and detects negative cycles reachable from the source, at O(VE) cost.',
     ),
     definition: text(
-      'Bellman-Ford 算法通过对所有边进行最多 V−1 轮松弛求单源最短路径，并可在第 V 轮检测从源点可达的负权环。',
+      'Bellman-Ford（贝尔曼—福特）算法通过对所有边进行最多 V−1 轮松弛求单源最短路径，并可在第 V 轮检测从源点可达的负权环。',
       'The Bellman-Ford algorithm computes single-source shortest paths by relaxing all edges for at most V−1 rounds, and a V-th round detects negative cycles reachable from the source.',
     ),
     ...algorithm(
@@ -839,7 +839,7 @@ export const COURSE_GUIDES: Record<string, CourseGuide> = {
       'Choosing a minimum spanning tree by enumerating edge subsets explodes combinatorially. Prim grows a tree from any start vertex and always selects the lightest edge crossing from the tree to the outside; a min-heap makes the current lightest crossing edge quick to extract. It requires an undirected graph with comparable weights; the O(V²) adjacency-matrix variant suits dense graphs, while adjacency lists plus a min-heap also handle sparse graphs.',
     ),
     definition: text(
-      'Prim 算法从任一顶点开始构造最小生成树：每步选择连接树内与树外的最轻边，将新顶点及其横切边加入。',
+      'Prim（普里姆）算法从任一顶点开始构造最小生成树：每步选择连接树内与树外的最轻边，将新顶点及其横切边加入。',
       'Prim’s algorithm builds a minimum spanning tree from any start vertex: each step selects the lightest edge between the tree and the outside, adding the new vertex and its crossing edges.',
     ),
     ...algorithm(
@@ -862,7 +862,7 @@ export const COURSE_GUIDES: Record<string, CourseGuide> = {
       'Prim repeatedly maintains crossing edges; if edges are already sorted by weight, can we simply accept them one by one? Kruskal is exactly that greedy strategy: start from the lightest edge and keep it whenever it does not create a cycle. A disjoint-set structure makes “are the endpoints already connected?” almost constant time. It suits sparse graphs and does not require a start vertex.',
     ),
     definition: text(
-      'Kruskal 算法按边权升序扫描无向边，用并查集判断两端是否已连通；不形成环的边被加入最小生成树。',
+      'Kruskal（克鲁斯卡尔）算法按边权升序扫描无向边，用并查集判断两端是否已连通；不形成环的边被加入最小生成树。',
       'Kruskal’s algorithm scans undirected edges in ascending weight order and uses a disjoint-set structure to test whether their endpoints are already connected; edges that do not form a cycle are added to the minimum spanning tree.',
     ),
     ...algorithm(
@@ -897,7 +897,7 @@ export const COURSE_GUIDES: Record<string, CourseGuide> = {
       step('检查剩余顶点', 'Check for leftover vertices', '若输出少于 V 个，图中存在环。', 'If fewer than V vertices are output, the graph contains a cycle.'),
     ),
     conditions: list(
-      ['图必须是有向无环图（DAG）。', '若输出顶点数少于 V，说明存在有向环。', '邻接表实现时间为 O(V+E)，空间 O(V+E)。'],
+      ['图必须是有向无环图（DAG，Directed Acyclic Graph）。', '若输出顶点数少于 V，说明存在有向环。', '邻接表实现时间为 O(V+E)，空间 O(V+E)。'],
       ['The graph must be a directed acyclic graph (DAG).', 'If fewer than V vertices are output, a directed cycle exists.', 'Adjacency-list implementation runs in O(V+E) time and O(V+E) space.'],
     ),
     diagram: 'kahn',
@@ -905,11 +905,11 @@ export const COURSE_GUIDES: Record<string, CourseGuide> = {
 
   'critical-path': {
     intro: text(
-      '项目中的活动可以并行，但有些活动没有任何缓冲，一旦延迟就会拖慢总工期。关键路径法在 DAG 上先正推每个事件的最早开始 ve，再逆推最晚开始 vl；余量 l−e 为 0 的活动就是关键活动。它们串成的最长路径决定项目最短完成时间。',
+      '项目中的活动可以并行，但有些活动没有任何缓冲，一旦延迟就会拖慢总工期。关键路径法在 DAG（Directed Acyclic Graph，有向无环图）上先正推每个事件的最早开始 ve，再逆推最晚开始 vl；余量 l−e 为 0 的活动就是关键活动。它们串成的最长路径决定项目最短完成时间。',
       'Project activities can run in parallel, but some have no slack: any delay pushes the whole project. Critical-path analysis works on a DAG, first forward-propagating each event’s earliest time ve, then backward-propagating its latest time vl; activities with zero slack are critical. The longest chain of critical activities determines the shortest project duration.',
     ),
     definition: text(
-      '关键路径法是 DAG 上的工期分析方法：正推事件最早时间 ve、逆推最晚时间 vl，余量为 0 的活动构成决定总工期的关键路径。',
+      'AOE（Activity On Edge，边表示活动的网）的工期分析：正推事件最早时间 ve、逆推最晚时间 vl，余量为 0 的活动构成决定总工期的关键路径。',
       'Critical-path analysis is a duration-analysis method on a DAG: it forward-propagates earliest event times ve and backward-propagates latest event times vl; activities with zero slack form the critical path that determines total duration.',
     ),
     ...algorithm(
@@ -954,7 +954,7 @@ export const COURSE_GUIDES: Record<string, CourseGuide> = {
       'Mutual reachability in a directed graph is stronger than undirected connectivity: A reaching B does not imply B reaches A. A strongly connected component captures a maximal set of vertices that reach each other. Kosaraju records the original DFS finish order, then runs a second DFS on the transposed graph in reverse finish order; both passes are O(V+E).',
     ),
     definition: text(
-      '有向图的强连通分量是极大的顶点集合，集合内任意两点互相可达；Kosaraju 用原图完成序加转置图逆序 DFS 求解。',
+      '有向图的强连通分量（SCC，Strongly Connected Component）是极大的顶点集合，集合内任意两点互相可达；Kosaraju（科萨拉朱）用原图完成序加转置图逆序 DFS 求解。',
       'A strongly connected component of a directed graph is a maximal vertex set in which every pair reaches each other; Kosaraju solves it with the original finish order plus a reverse-order DFS on the transposed graph.',
     ),
     ...algorithm(
@@ -974,7 +974,7 @@ export const COURSE_GUIDES: Record<string, CourseGuide> = {
 
   articulation: {
     intro: text(
-      '关节点问题问的是“删掉哪个顶点会让连通分量变多”。朴素做法对每个顶点删除后重新数一遍连通分量，代价 O(V(V+E))。DFS low-link 把发现时间 disc 与子树最早可回溯时间 low 一次算完：非根顶点若有树孩子满足 low[child] ≥ disc[u]，删去 u 就会切断这棵子树；根没有祖先，只能看 DFS 树孩子数是否至少为 2。同一遍 DFS 还能用严格不等式 low[child] > disc[u] 找出桥。',
+      '关节点（Articulation Point，割点）问题问的是“删掉哪个顶点会让连通分量变多”。朴素做法对每个顶点删除后重新数一遍连通分量，代价 O(V(V+E))。DFS low-link（Low-Link Value，低链接值）把发现时间 disc 与子树最早可回溯时间 low 一次算完：非根顶点若有树孩子满足 low[child] ≥ disc[u]，删去 u 就会切断这棵子树；根没有祖先，只能看 DFS 树孩子数是否至少为 2。同一遍 DFS 还能用严格不等式 low[child] > disc[u] 找出桥。',
       'The articulation-point problem asks which vertex deletion increases the component count. The naive method deletes each vertex and recounts components, costing O(V(V+E)). DFS low-link computes discovery time disc and the subtree’s earliest reachable time low in one pass: a non-root u is a cut vertex when a tree child satisfies low[child] ≥ disc[u], because deleting u separates that subtree. The root has no ancestor, so only its number of DFS tree children matters, with at least two required. The same pass finds bridges with the strict inequality low[child] > disc[u].',
     ),
     definition: text(
@@ -1093,7 +1093,7 @@ export const COURSE_GUIDES: Record<string, CourseGuide> = {
 
   'bf': {
     intro: text(
-      'BF 把模式串依次对齐到每个合法起点，再从这个起点的第一个字符开始逐位比较。字符相同就继续，字符不同就说明当前起点作废：起点整体右移一格，模式串指针清零，从头再比。它不复用上一次对齐已经确认的前缀，所以同一段主串字符可能被多次比较，最坏时间为 O(nm)，但额外空间只需常数个指针与计数。',
+      'BF（Brute Force，暴力匹配）把模式串依次对齐到每个合法起点，再从这个起点的第一个字符开始逐位比较。字符相同就继续，字符不同就说明当前起点作废：起点整体右移一格，模式串指针清零，从头再比。它不复用上一次对齐已经确认的前缀，所以同一段主串字符可能被多次比较，最坏时间为 O(nm)，但额外空间只需常数个指针与计数。',
       'BF aligns the pattern with each legal start and compares character by character from that start. Equality continues; a mismatch invalidates the current start, shifts it right by one and resets the pattern pointer to zero. Nothing from the previous alignment is reused, so text characters may be compared repeatedly, giving O(nm) worst-case time but only constant extra space.',
     ),
     definition: text(
@@ -1154,7 +1154,7 @@ export const COURSE_GUIDES: Record<string, CourseGuide> = {
       'Naive matching restarts at each text position: after one mismatch the text start shifts by one and the whole segment just confirmed equal is compared again, costing O(nm) in the worst case. KMP first computes the pattern’s lps table, recording where a suffix of a matched prefix is also a pattern prefix. On a mismatch only pattern pointer j falls back to lps[j-1] while text pointer i keeps advancing, so construction plus scanning is O(n+m).',
     ),
     definition: text(
-      'KMP 是一种线性时间的字符串匹配算法：先计算模式串 P 的前缀表 lps，其中 lps[k] 是 P[0..k] 的最长相等真前后缀长度；再令主串指针 i 只前进，模式串指针 j 在失配时按 lps[j-1] 回退，从而在不回退主串的前提下找到所有匹配起点。',
+      'KMP（Knuth–Morris–Pratt）是一种线性时间的字符串匹配算法：先计算模式串 P 的前缀表 lps，其中 lps[k] 是 P[0..k] 的最长相等真前后缀长度；再令主串指针 i 只前进，模式串指针 j 在失配时按 lps[j-1] 回退，从而在不回退主串的前提下找到所有匹配起点。',
       'KMP is a linear-time string matching algorithm. It first computes the pattern’s lps table, where lps[k] is the longest proper prefix of P[0..k] that is also its suffix. Text pointer i then only advances, while pattern pointer j falls back to lps[j-1] on a mismatch, finding every match start without ever rewinding the text.',
     ),
     ...algorithm(
@@ -1603,7 +1603,7 @@ export const COURSE_GUIDES: Record<string, CourseGuide> = {
       'An ordered main area supports key scans, but insertion into a full block cannot freely move the whole file. ISAM places new records in that block’s private overflow chain and records the maximum key of the block plus chain in the index. A lookup selects a block by its bound, scans it, then follows the chain; heavy overflow lengthens chains and motivates periodic reorganization.',
     ),
     definition: text(
-      'ISAM 是一种索引顺序文件组织：主数据区按关键字有序分块，索引层保存每块（含溢出链）的上界，块满后的记录进入该块专属溢出区并通过链接访问。',
+      'ISAM（Indexed Sequential Access Method，索引顺序存取方法）是一种索引顺序文件组织：主数据区按关键字有序分块，索引层保存每块（含溢出链）的上界，块满后的记录进入该块专属溢出区并通过链接访问。',
       'ISAM is an index-sequential file organization: an ordered, blocked main data area is indexed by each block’s upper bound including overflow, and records beyond block capacity enter that block’s private overflow area through links.',
     ),
     ...operations(

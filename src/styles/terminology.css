@@ -1,0 +1,77 @@
+/* I18N-TERMS-01 — compact, always-visible Chinese terminology notes. */
+.term-glossary {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+  padding: 14px 16px 15px;
+  border: 1px solid var(--edge);
+  border-left: 3px solid var(--accent);
+  border-radius: 10px;
+  background: var(--panel-2);
+}
+
+.term-glossary-head {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+}
+
+.term-glossary-title {
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: .04em;
+  white-space: nowrap;
+}
+
+.term-glossary-hint {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.term-glossary-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px 22px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.term-glossary-list li {
+  min-width: 0;
+}
+
+.term-glossary-label {
+  display: block;
+  color: var(--txt);
+  font-size: 13px;
+  line-height: 1.62;
+  overflow-wrap: anywhere;
+}
+
+.term-glossary-note {
+  display: block;
+  margin-top: 1px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+@media (max-width: 720px) {
+  .term-glossary {
+    padding: 13px 14px;
+  }
+
+  .term-glossary-list {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 5px;
+  }
+
+  .term-glossary-label {
+    font-size: 13px;
+    line-height: 1.6;
+  }
+}

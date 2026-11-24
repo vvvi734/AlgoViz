@@ -3,25 +3,49 @@ import type { LessonLang } from './types';
 const CJK = /[\u3400-\u9fff]/;
 
 /**
+ * Trace payloads deliberately keep machine-stable status tokens. Only the
+ * Chinese rendering gets a visible gloss; the events themselves are unchanged,
+ * so stepping backwards still reads the same frame.
+ */
+const CHINESE_STATUS_LABELS: Record<string, string> = {
+  EMPTY: '空槽（EMPTY）',
+  OCCUPIED: '占用（OCCUPIED）',
+  DELETED: '已删除（DELETED）',
+  SORTED: '已排序（SORTED）',
+};
+
+function localizeStatusTokens(value: string): string {
+  return value.replace(/\b(EMPTY|OCCUPIED|DELETED|SORTED)\b/g, (token) =>
+    CHINESE_STATUS_LABELS[token] ?? token,
+  );
+}
+
+/**
  * UX-SIMPLIFY-02: many real Python traces emit one string in the shape
  * `中文说明 / English note`. The trace data is shared by both UI languages, so
  * pick the matching half at render time instead of showing both.
  *
- * Strings that are not bilingual (e.g. `EMPTY / OCCUPIED`) are left intact.
+ * Strings that are not bilingual (e.g. `EMPTY / OCCUPIED`) are left intact
+ * except for the reviewed Chinese status gloss above.
  */
 export function localizeTraceMessage(message: string, lang: LessonLang): string {
   const value = message.trim();
   if (!value) return value;
   const splitAt = value.indexOf(' / ');
-  if (splitAt <= 0) return value;
-  const left = value.slice(0, splitAt).trim();
-  const right = value.slice(splitAt + 3).trim();
-  if (!left || !right) return value;
-  const leftIsZh = CJK.test(left);
-  const rightIsZh = CJK.test(right);
-  if (leftIsZh === rightIsZh) return value;
-  if (lang === 'zh') return leftIsZh ? left : right;
-  return leftIsZh ? right : left;
+  let selected = value;
+  if (splitAt > 0) {
+    const left = value.slice(0, splitAt).trim();
+    const right = value.slice(splitAt + 3).trim();
+    if (left && right) {
+      const leftIsZh = CJK.test(left);
+      const rightIsZh = CJK.test(right);
+      if (leftIsZh !== rightIsZh) {
+        if (lang === 'zh') selected = leftIsZh ? left : right;
+        else selected = leftIsZh ? right : left;
+      }
+    }
+  }
+  return lang === 'zh' ? localizeStatusTokens(selected) : selected;
 }
 
 /**

@@ -44,6 +44,8 @@ import { btreePresetFromInput } from '../../domain/algorithms/btreeExamples';
 import { heapPresetFromInput } from '../../domain/algorithms/heapExamples';
 import { huffmanPresetFromInput } from '../../domain/algorithms/huffmanExamples';
 import { useI18n } from '../../i18n/I18nProvider';
+import { algorithmNameZh, algorithmShortNameZh } from '../../i18n/terminology';
+import { groupLabel } from '../../domain/algorithms/examples';
 import type { ReferenceLanguage } from '../../domain/reference-code/registry';
 
 /**
@@ -73,6 +75,12 @@ export function LabView({
 }) {
   const { t, pick, lang } = useI18n();
   const entry = lab.catalog[lab.currentAlgo];
+  const currentAlgorithmName = entry
+    ? algorithmNameZh(lab.currentAlgo, pick(entry.name), lang)
+    : lab.currentAlgo;
+  const currentAlgorithmShortName = entry
+    ? algorithmShortNameZh(lab.currentAlgo, pick(entry.name), lang)
+    : lab.currentAlgo;
   const [conceptId, setConceptId] = useState<string | null>(initialConceptId);
   const concept = conceptById(conceptId);
   // conceptById returns undefined on algorithm routes, so truthiness is the
@@ -284,10 +292,16 @@ export function LabView({
           <div className="lab-head-main">
             <div>
               <div className="eyebrow">{concept ? t('conceptKicker') : t('interactive')}</div>
-              {concept ? null : <h1 data-testid="lab-title">{entry ? pick(entry.name) : lab.currentAlgo}</h1>}
+              {concept ? null : <h1 data-testid="lab-title">{currentAlgorithmName}</h1>}
             </div>
             {concept ? null : (
-              <span className="tag green">{(entry?.group ?? '').toUpperCase()}</span>
+              <span className="tag green">
+                {entry?.group
+                  ? lang === 'zh'
+                    ? groupLabel(entry.group, lang)
+                    : entry.group.toUpperCase()
+                  : ''}
+              </span>
             )}
             {!concept ? (
               <span className={`tag ${currentEvent ? 'tag-active' : ''}`} data-testid="lab-frame-status">
@@ -343,7 +357,7 @@ export function LabView({
                       const item = lab.catalog[algorithm.id];
                       return item ? (
                         <option key={algorithm.id} value={algorithm.id}>
-                          {pick(item.name)}
+                          {algorithmShortNameZh(algorithm.id, pick(item.name), lang)}
                         </option>
                       ) : null;
                     }),
@@ -370,7 +384,7 @@ export function LabView({
           <AlgorithmGuide
             key={algorithmGuideContent.algorithmId}
             guide={algorithmGuideContent}
-            algorithmName={entry ? pick(entry.name) : lab.currentAlgo}
+            algorithmName={currentAlgorithmShortName}
             onStart={startFromGuide}
             onCollapse={collapseGuideFromPanel}
           />
@@ -515,7 +529,7 @@ export function LabView({
         <WorkspaceTabs>
           <ReferenceCodePanel
             algorithmId={lab.currentAlgo}
-            algorithmName={entry ? pick(entry.name) : lab.currentAlgo}
+            algorithmName={currentAlgorithmShortName}
             language={referenceLanguage}
             onLanguageChange={setReferenceLanguage}
           />
@@ -527,7 +541,7 @@ export function LabView({
             events={lab.events}
             playback={lab.playback}
             algorithmId={lab.currentAlgo}
-            algorithmName={entry ? pick(entry.name) : lab.currentAlgo}
+            algorithmName={currentAlgorithmShortName}
             mode={fullscreen.mode}
             onClose={fullscreen.close}
             returnFocusRef={fullscreenButtonRef}

@@ -10,6 +10,7 @@ import {
   type TextbookTopicView,
 } from '../../domain/algorithms/textbook';
 import { useI18n } from '../../i18n/I18nProvider';
+import { algorithmShortNameZh } from '../../i18n/terminology';
 
 /**
  * UX-03 → UX-03B — textbook directory.
@@ -164,8 +165,8 @@ export function AlgorithmSidebar({
             type="button"
             className="rail-current"
             onClick={onToggleCollapsed}
-            aria-label={pick(currentEntry.name)}
-            title={pick(currentEntry.name)}
+            aria-label={algorithmShortNameZh(currentAlgo, pick(currentEntry.name), lang)}
+            title={algorithmShortNameZh(currentAlgo, pick(currentEntry.name), lang)}
             data-testid="rail-current"
           >
             <span aria-hidden="true">{currentEntry.icon}</span>
@@ -378,7 +379,7 @@ function TextbookTopicRow({
     const algorithm = topic.algorithms[0];
     const entry = algorithm ? catalog[algorithm.id] : undefined;
     if (!algorithm || !entry) return null;
-    const algorithmName = pick(entry.name);
+    const algorithmName = algorithmShortNameZh(algorithm.id, pick(entry.name), lang);
     const active = algorithm.id === currentAlgo;
     return (
       <section
@@ -627,9 +628,10 @@ function AlgorithmLeafRow({
   active: boolean;
   onSelect: (id: string) => void;
 }) {
-  const { pick, t } = useI18n();
+  const { lang, pick, t } = useI18n();
   const entry = catalog[algorithm.id];
   if (!entry) return null;
+  const algorithmName = algorithmShortNameZh(algorithm.id, pick(entry.name), lang);
   return (
     <button
       type="button"
@@ -642,10 +644,10 @@ function AlgorithmLeafRow({
       data-kind="algorithm"
       data-category="visual"
       aria-current={active ? 'true' : undefined}
-      aria-label={`${pick(entry.name)} · ${t('textbookVisualLong')}`}
+      aria-label={`${algorithmName} · ${t('textbookVisualLong')}`}
     >
       <TextbookCategoryMark category="visual" />
-      <span className="alg-name">{pick(entry.name)}</span>
+      <span className="alg-name">{algorithmName}</span>
       {algorithm.extension && (
         <span className="textbook-extension" aria-hidden="true">{t('textbookExtension')}</span>
       )}

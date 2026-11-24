@@ -37,7 +37,7 @@ const GRAPH_COMMON = {
   commonMistakes: {
     zh: [
       '忘记检查 discovered，环中的节点被反复入队或压栈，遍历永远结束不了。',
-      '把 BFS 的队列和 DFS 的栈混用；画面上的 FRONT/REAR 与 TOP 会直接暴露这种错误。',
+      '把 BFS 的队列和 DFS 的栈混用；画面上的 FRONT（队首）/ REAR（队尾）与 TOP（栈顶）会直接暴露这种错误。',
       '在入队或压栈时就标记 visited，导致“已访问顺序”与真实出队/弹栈处理不一致。',
       '依赖 Python set 的迭代次序来决定邻居顺序；set 的顺序不可依赖，教学顺序必须来自固定邻接表。',
       '认为 BFS 或 DFS 只有唯一正确访问序列；邻居顺序改变时，合法序列也会改变。',

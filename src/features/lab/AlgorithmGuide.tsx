@@ -1,6 +1,7 @@
 import type { AlgorithmGuideContent } from '../../domain/guides/types';
 import { localizeComplexity } from '../../domain/lessons/localizeMessage';
 import { useI18n } from '../../i18n/I18nProvider';
+import { TermGlossary } from '../../components/TermGlossary';
 import { AlgorithmFlowView } from './AlgorithmFlow';
 import { GuideDiagram } from './GuideDiagram';
 
@@ -71,6 +72,8 @@ export function AlgorithmGuide({
               </div>
             ) : null}
           </header>
+
+          <TermGlossary algorithmId={guide.algorithmId} />
 
           <div className="guide-definition-grid" data-testid="guide-definition-block">
             <section className="guide-definition" aria-labelledby="guide-definition-title">
@@ -238,6 +241,7 @@ function CatalogGuide({
           {t('guideCatalogBody')}
         </p>
       </header>
+      <TermGlossary algorithmId={guide.algorithmId} />
       <footer className="guide-actions">
         <button
           type="button"

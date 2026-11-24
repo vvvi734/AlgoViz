@@ -12,9 +12,13 @@ describe('localizeTraceMessage', () => {
       .toBe('Empty table: all 5 buckets are NULL');
   });
 
-  it('keeps technical slash pairs that are not a translation', () => {
+  it('explains machine status tokens only in the Chinese display layer', () => {
     expect(localizeTraceMessage('EMPTY / OCCUPIED', 'en')).toBe('EMPTY / OCCUPIED');
-    expect(localizeTraceMessage('EMPTY / OCCUPIED', 'zh')).toBe('EMPTY / OCCUPIED');
+    expect(localizeTraceMessage('EMPTY / OCCUPIED', 'zh')).toBe('空槽（EMPTY） / 占用（OCCUPIED）');
+    expect(localizeTraceMessage('删除后写入 DELETED / delete writes DELETED', 'zh'))
+      .toBe('删除后写入 已删除（DELETED）');
+    expect(localizeTraceMessage('堆后缀 SORTED / heap suffix SORTED', 'zh'))
+      .toBe('堆后缀 已排序（SORTED）');
   });
 
   it('keeps plain and empty messages unchanged', () => {

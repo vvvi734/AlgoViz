@@ -7,6 +7,7 @@ import { TreeConceptDiagram } from './TreeConceptDiagrams';
 import { ExternalSortConceptDiagram } from './ExternalSortConceptDiagrams';
 import { FileStructureConceptDiagram } from './FileStructureConceptDiagrams';
 import { SortingComparisonDiagram } from './SortingComparisonDiagram';
+import { TermGlossary } from '../../components/TermGlossary';
 import '../../styles/concepts.css';
 
 /**
@@ -35,6 +36,8 @@ export function ConceptView({ concept }: { concept: ConceptPage }) {
           <p className="concept-lede">{tr(concept.summary)}</p>
         </div>
       </header>
+
+      <TermGlossary conceptId={concept.id} />
 
       <section className="concept-visual" aria-labelledby="concept-diagram-title">
         <div className="concept-section-head">
