@@ -42,6 +42,10 @@ describe('Chinese terminology dictionary', () => {
     expect(terminologyEntry('threaded-tags')?.labelZh).toContain('ltag');
     expect(terminologyEntry('union-find')?.labelZh).toContain('Disjoint Set Union');
     expect(terminologyEntry('distance')?.labelZh).toContain('dist（Distance');
+    expect(terminologyEntry('trie')?.labelZh).toBe('字典树（Trie，又称前缀树）');
+    expect(terminologyEntry('lomuto')?.labelZh).toBe('Lomuto 分区法');
+    expect(terminologyEntry('lomuto')?.chinese).toBe('Lomuto 分区法');
+    expect(terminologyEntry('lomuto')?.transliteration).toBe('洛穆托');
   });
 
   it('does not invent a functional expansion for person-named algorithms', () => {
@@ -49,7 +53,9 @@ describe('Chinese terminology dictionary', () => {
     expect(terminologyEntry('kmp')?.english).not.toMatch(/search|match/i);
     expect(terminologyEntry('avl')?.english).toBe('Adelson-Velsky and Landis');
     expect(terminologyEntry('dijkstra')?.transliteration).toBe('迪杰斯特拉');
-    expect(terminologyEntry('floyd')?.labelZh).toContain('弗洛伊德—沃舍尔');
+    expect(terminologyEntry('floyd')?.labelZh).toBe(
+      'Floyd–Warshall（弗洛伊德—沃舍尔）全源最短路径算法',
+    );
   });
 
   it('adds a Chinese gloss to algorithm titles only in Chinese mode', () => {
@@ -58,6 +64,9 @@ describe('Chinese terminology dictionary', () => {
     expect(algorithmNameZh('dfs', '深度优先搜索', 'zh')).toContain('Depth-First Search');
     expect(algorithmNameZh('kmp', 'KMP 模式匹配', 'zh')).toContain('Knuth–Morris–Pratt');
     expect(algorithmNameZh('hash-chain', '链地址法散列表', 'zh')).toContain('Chaining');
+    expect(algorithmNameZh('floyd-warshall', 'Floyd-Warshall all-pairs', 'zh')).toBe(
+      'Floyd–Warshall（弗洛伊德—沃舍尔）全源最短路径算法',
+    );
 
     expect(algorithmNameZh('dijkstra', 'Dijkstra 最短路径', 'en')).toBe('Dijkstra 最短路径');
     expect(algorithmNameZh('bfs', 'Breadth-first search', 'en')).toBe('Breadth-first search');
@@ -67,6 +76,7 @@ describe('Chinese terminology dictionary', () => {
     expect(algorithmShortNameZh('bfs', 'BFS', 'zh')).toBe('广度优先搜索（BFS）');
     expect(algorithmShortNameZh('dfs', 'DFS', 'zh')).toBe('深度优先搜索（DFS）');
     expect(algorithmShortNameZh('dijkstra', 'Dijkstra', 'zh')).toBe('Dijkstra 最短路径');
+    expect(algorithmShortNameZh('floyd-warshall', 'Floyd-Warshall', 'zh')).toBe('Floyd 全源最短路径');
     expect(algorithmShortNameZh('bplus-tree', 'B+ Tree', 'zh')).toBe('B+ 树');
     expect(algorithmShortNameZh('bfs', 'BFS', 'en')).toBe('BFS');
   });

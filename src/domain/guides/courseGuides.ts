@@ -782,7 +782,7 @@ export const COURSE_GUIDES: Record<string, CourseGuide> = {
       step('回溯前驱路径', 'Recover the path via predecessors'),
     ),
     conditions: list(
-      ['所有边权必须非负；负权边会使“已确定”失效。', '只求单源最短路径；全源问题可用 Floyd-Warshall 或多次运行。', '邻接表 + 最小堆为 O((V+E) log V)。'],
+      ['所有边权必须非负；负权边会使“已确定”失效。', '只求单源最短路径；全源问题可用 Floyd–Warshall（弗洛伊德—沃舍尔）或多次运行。', '邻接表 + 最小堆为 O((V+E) log V)。'],
       ['All edge weights must be non-negative; negative edges invalidate settling.', 'Solves single-source shortest paths; all-pairs needs Floyd-Warshall or repeated runs.', 'Adjacency list plus a min-heap runs in O((V+E) log V).'],
     ),
     diagram: 'dijkstra',
@@ -790,11 +790,11 @@ export const COURSE_GUIDES: Record<string, CourseGuide> = {
 
   'floyd-warshall': {
     intro: text(
-      '如果需要对所有点对求最短路径，从每个起点各跑一次 Dijkstra 在稠密图上并不划算。Floyd-Warshall 用动态规划逐个开放中转点 k，检查 i→k→j 是否比当前 i→j 更短。它实现简单、支持负权边，但 O(V³) 时间和 O(V²) 空间只适合小规模或稠密图。',
+      '如果需要对所有点对求最短路径，从每个起点各跑一次 Dijkstra 在稠密图上并不划算。Floyd–Warshall 用动态规划逐个开放中转点 k，检查 i→k→j 是否比当前 i→j 更短。它实现简单、支持负权边，但 O(V³) 时间和 O(V²) 空间只适合小规模或稠密图。',
       'When all-pairs shortest paths are needed, running Dijkstra from every source is not attractive on dense graphs. Floyd-Warshall uses dynamic programming, opening one intermediate vertex k at a time and checking whether i→k→j is shorter than the current i→j. It is simple and supports negative edges, but O(V³) time and O(V²) space limit it to small or dense graphs.',
     ),
     definition: text(
-      'Floyd-Warshall（弗洛伊德—沃舍尔）算法用动态规划求所有点对最短路径：依次允许前 k 个顶点作为中转点，更新 dist[i][j] = min(dist[i][j], dist[i][k]+dist[k][j])。',
+      'Floyd–Warshall（弗洛伊德—沃舍尔）算法用动态规划求所有点对最短路径：依次允许前 k 个顶点作为中转点，更新 dist[i][j] = min(dist[i][j], dist[i][k]+dist[k][j])。',
       'The Floyd-Warshall algorithm computes all-pairs shortest paths by dynamic programming: allowing the first k vertices as intermediates in turn and updating dist[i][j] = min(dist[i][j], dist[i][k]+dist[k][j]).',
     ),
     ...algorithm(

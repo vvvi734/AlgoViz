@@ -47,13 +47,13 @@
 - Dijkstra（迪杰斯特拉）
 - Prim（普里姆）
 - Kruskal（克鲁斯卡尔）
-- Floyd-Warshall（弗洛伊德—沃舍尔）
+- Floyd–Warshall（弗洛伊德—沃舍尔）
 - Bellman-Ford（贝尔曼—福特）
 - Kosaraju（科萨拉朱）
 - Huffman 采用教材式中文优先：哈夫曼树（Huffman Tree），不为已有规范译名另造音译
 - KMP 解释为 Knuth–Morris–Pratt 人名组合，不再误写成功能型英文短语
 - AVL 解释为 Adelson-Velsky–Landis，并注明“不是平衡的英文缩写”
-- Lomuto 采用“洛穆托”，列入待人工复核
+- Lomuto 课程统一称“Lomuto 分区法”；首次出现可补充“洛穆托分区法”，但不把音译作为必用正式名称
 
 ### B. 专业缩写
 
@@ -81,7 +81,7 @@
 中文优先，必要时才附英文：
 
 - 哈希表（Hash Table）
-- 字典树（Trie，前缀树，又称键树）
+- 字典树（Trie，又称前缀树）；“键树”作为教材相关别名，只在概念对应准确时保留
 - 栈（Stack）、队列（Queue）
 - 邻接矩阵 / 邻接表 / 十字链表 / 邻接多重表
 - 满二叉树 / 完全二叉树 / 线索二叉树
@@ -247,11 +247,11 @@
 - 代码标识、公式变量、Trace 字段、语言名、库名、产品名、URL、示例输入与代码片段。
 - 这些内容不是学生需要翻译的专业术语，改动会破坏代码或教学语义。
 
-### 待核实译法
+### 人工确认后的译法约定
 
-- `Lomuto` → “洛穆托”：无教材统一译名，保留在报告中待人工确认。
-- `Floyd-Warshall` → “弗洛伊德—沃舍尔”：采用通行译法，非严蔚敏教材明定。
-- `Trie` → “字典树（Trie，前缀树，又称键树）”：采用中文优先，未强行音译。
+- `Lomuto` → 正式展示“Lomuto 分区法”；首次出现可补充“洛穆托分区法”，不将“洛穆托”作为固定正式名称。
+- `Floyd–Warshall` → “弗洛伊德—沃舍尔”；首次介绍使用“Floyd–Warshall（弗洛伊德—沃舍尔）算法”，明确上下文后可用“Floyd 算法”简称。
+- `Trie` → “字典树（Trie，又称前缀树）”；“键树”保留为教材相关别名，只在键树等概念对应准确的页面展示。
 - `AVL` → 音译“阿德尔森—韦尔斯基与兰迪斯”仅保存在词典 `transliteration` 字段，界面不展示；避免标题过长。
 
 ### 真正遗漏
@@ -281,44 +281,53 @@
 | `npm run typecheck` | 通过 |
 | `npm test` / `npx vitest run` | 167 个文件，1632 项测试全部通过 |
 | `npm run build` | 通过；仅保留 zod 注释被 Rollup 移除的既有无害警告 |
-| `npx playwright test e2e/i18n-terms.spec.ts` | 5 / 5 通过，23.7s |
+| `npx playwright test e2e/i18n-terms.spec.ts` | 5 / 5 通过，30.5s |
 
 说明：一次与 `npm run build` 并行执行的全量 Vitest 中，`ReferenceCodePanel` 的 hash-chain 动态导入用例等待 1s 未完成而超时；该用例单独复跑通过，随后顺序执行全量 Vitest 也全部通过。失败原因是并行构建造成的模块加载时序抖动，测试门禁未被删除或放宽。
 
 Playwright 覆盖：
 
-- 中文首页、ADT、Dijkstra、BFS、DFS、B 树、快速排序、稀疏矩阵、静态树表。
+- 中文首页、ADT、Dijkstra、BFS、DFS、B 树、快速排序、Floyd–Warshall、键树、稀疏矩阵、静态树表。
 - 390px 与 1280px 全页截图与无页面横向溢出。
 - 360 / 390 / 768 / 1280 / 1440 多视口无横向溢出。
 - 英文模式无中文术语、标题保持英文、组标签保持 `GRAPH`。
 - Dijkstra 术语块加入后仍能执行真实 Trace，进度显示 `1 / N`。
+- 人工确认项：快速排序显示 `Lomuto 分区法`，Floyd–Warshall 首屏使用全名，键树页显示 `字典树（Trie，又称前缀树）`；三者无横向溢出。
 
-截图目录：`test-results/i18n-terms01/`，共 27 张全页 PNG。`test-results/` 被 `.gitignore` 忽略，不进入提交。
+截图目录：`test-results/i18n-terms01/`，共 29 张全页 PNG。`test-results/` 被 `.gitignore` 忽略，不进入提交。
 
 关键截图：
 
 - `390-dijkstra.png`：Dijkstra 完整名、4 条术语、短名导航与移动端单列布局。
 - `390-adt.png`：ADT 页中文优先标题，以及“ADT 全称 + 栈操作”两条术语。
 - `390-bfs.png` / `390-dfs.png`：BFS 与 DFS 各自的 FIFO/LIFO、Frontier 和状态术语，未重复或混用。
+- `390-quick-sort.png`：`Lomuto 分区法` 术语与说明，未再使用“洛穆托划分”作为正式名。
+- `390-floyd-warshall.png`：首屏 `Floyd–Warshall（弗洛伊德—沃舍尔）全源最短路径算法`。
+- `390-key-tree.png`：`字典树（Trie，又称前缀树）` 术语与键树课程标题并存，概念对应准确。
 - `390-static-tree-table.png`：ASL/WPL/BST/AVL 四列术语在 390px 下完整换行。
 - `390-sparse-matrix.png`：CSR 与三元组表术语块。
 - `1280-dijkstra-en.png`：英文模式无中文术语，组标签为 `GRAPH`。
 
-## 11. 交付与公网验收
+## 11. 初次交付与公网验收
 
 - 功能提交：`4fb1b105be9ed13f3fb134d412cb4abf1f343dec`（`feat(i18n): add Chinese terminology glossary and audit`），已推送到 Gitee `origin/main` 与 GitHub `github/main`。
+- 2026-11-24 人工确认后的增量修订见第 12 节，并随最新 `main` 提交交付；初次部署记录如下。
 - GitHub Actions `CI`：run `45379622864`，结论 success。
 - GitHub Actions `Deploy AlgoViz to GitHub Pages`：run `45379622633`，结论 success。
 - 公网中文页复核（2026-11-24）：`https://vvvi734.github.io/AlgoViz/` 首页标题为“数据结构的基本概念”，术语块显示“数据结构（Data Structure）”；Dijkstra 页标题为“Dijkstra（迪杰斯特拉）最短路径算法”，术语块显示松弛操作、`dist`、Dijkstra 状态和前驱指针。
 - 未创建 `v1.0.0` Tag，未发布 GitHub Release。
 
-## 12. 仍需人工确认
+## 12. 人工确认结论（2026-11-24）
 
-1. `Lomuto` 的“洛穆托”是否为课程统一采用译名。
-2. `Floyd-Warshall` 的“弗洛伊德—沃舍尔”是否要在教材口径中固定。
-3. `ADT` 理论页 h1 是否要从 `抽象数据类型（ADT）` 改为 `ADT（Abstract Data Type，抽象数据类型）`；当前选择前者以避免 390px 标题过长，完整英文在首屏术语块中可见。
-4. `Trie` 是否需要在其他页面追加“键树”别名；当前只在词典与对应术语块出现。
-5. 6 条备用算法名（Dijkstra、Bellman-Ford、Prim、Kruskal、Kahn、Kosaraju）目前由标题/导学承担解释，没有单独渲染词典卡片。
+上一版列出的 5 项问题已全部确认，处理如下：
+
+1. `Lomuto`：课程主要使用“Lomuto 分区法”。术语块已由 `Lomuto（洛穆托）划分` 改为 `Lomuto 分区法`；首次出现可补充“洛穆托分区法”，但不将音译作为必用正式名称。`sortingNoteQuick` 原本已使用“Lomuto 分区”，无需改动。
+2. `Floyd–Warshall`：采用“弗洛伊德—沃舍尔”。算法详情页标题已改为 `Floyd–Warshall（弗洛伊德—沃舍尔）全源最短路径算法`，导学首次定义同步使用该名称；教材目录与导航中的 `Floyd 算法`、`Floyd 全源最短路径`保留为简称。
+3. `ADT`：理论页标题保持 `抽象数据类型（ADT）`；`ADT（Abstract Data Type，抽象数据类型）` 继续放在首屏术语说明中，未把英文全称塞入主标题。
+4. `Trie`：术语标签已改为 `字典树（Trie，又称前缀树）`；“键树”保留在键树算法与对应教材标题中，只在概念对应准确时出现，不要求每个页面重复。
+5. 六个备用算法名：Dijkstra、Bellman-Ford、Prim、Kruskal、Kahn、Kosaraju 不为提高词典覆盖率重复生成术语卡片；现有标题、导学或紧邻正文已经承担解释，保持现状。
+
+本轮只围绕上述三项译名（Lomuto、Floyd–Warshall、Trie）做最小文案修改；ADT 标题与六个备用算法名无代码改动。未新增术语面板，未改算法实现、Python Trace、参考代码、课程注册、英文模式或 SVG 教学语义。
 
 ## 13. 例外与未处理清单
 

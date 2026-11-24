@@ -189,7 +189,7 @@ export const TERMINOLOGY: readonly TerminologyEntry[] = [
     id: 'trie',
     english: 'Trie',
     chinese: '字典树',
-    labelZh: '字典树（Trie，前缀树，又称键树）',
+    labelZh: '字典树（Trie，又称前缀树）',
   },
   {
     id: 'binary-tree',
@@ -311,7 +311,7 @@ export const TERMINOLOGY: readonly TerminologyEntry[] = [
     english: 'Floyd–Warshall Algorithm',
     chinese: '弗洛伊德—沃舍尔全源最短路径算法',
     transliteration: '弗洛伊德—沃舍尔',
-    labelZh: 'Floyd-Warshall（弗洛伊德—沃舍尔）全源最短路径算法',
+    labelZh: 'Floyd–Warshall（弗洛伊德—沃舍尔）全源最短路径算法',
     noteZh: '又称 Floyd 算法；由 Robert Floyd 与 Stephen Warshall 提出。',
   },
   {
@@ -473,10 +473,10 @@ export const TERMINOLOGY: readonly TerminologyEntry[] = [
   {
     id: 'lomuto',
     english: 'Lomuto Partition',
-    chinese: '洛穆托划分',
+    chinese: 'Lomuto 分区法',
     transliteration: '洛穆托',
-    labelZh: 'Lomuto（洛穆托）划分',
-    noteZh: '本课程以末尾元素为枢轴，把不大于枢轴的值换到左侧。',
+    labelZh: 'Lomuto 分区法',
+    noteZh: '首次出现可补充“洛穆托分区法”；课程统一使用“Lomuto 分区法”。本课程以末尾元素为枢轴，把不大于枢轴的值换到左侧。',
   },
   {
     id: 'pivot',
@@ -741,7 +741,7 @@ const ALGORITHM_NAME_ZH: Readonly<Record<string, string>> = {
   dfs: '深度优先搜索（DFS，Depth-First Search）',
   huffman: '哈夫曼树（Huffman Tree）与哈夫曼编码',
   dijkstra: 'Dijkstra（迪杰斯特拉）最短路径算法',
-  'floyd-warshall': 'Floyd（弗洛伊德）全源最短路径算法',
+  'floyd-warshall': 'Floyd–Warshall（弗洛伊德—沃舍尔）全源最短路径算法',
   'bellman-ford': 'Bellman-Ford（贝尔曼—福特）最短路径算法',
   prim: 'Prim（普里姆）最小生成树算法',
   kruskal: 'Kruskal（克鲁斯卡尔）最小生成树算法',

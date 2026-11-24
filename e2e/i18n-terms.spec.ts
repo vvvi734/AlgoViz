@@ -36,6 +36,8 @@ const REQUIRED_PAGES = [
   { id: 'dfs', name: 'DFS', type: 'algorithm' as const },
   { id: 'concept:b-tree', name: 'B-tree', type: 'concept' as const },
   { id: 'quick', name: 'Quick Sort', type: 'algorithm' as const },
+  { id: 'floyd-warshall', name: 'Floyd-Warshall', type: 'algorithm' as const },
+  { id: 'key-tree', name: 'Key Tree', type: 'algorithm' as const },
   { id: 'concept:sparse-matrix', name: 'Sparse Matrix', type: 'concept' as const },
   { id: 'concept:static-tree-table', name: 'Static Tree Table', type: 'concept' as const },
 ];
@@ -68,7 +70,7 @@ test.describe('I18N-TERMS-01 — Chinese terminology and bilingual regression', 
     }
   });
 
-  test('home, ADT, Dijkstra, BFS and DFS expose exact reviewed forms', async ({ page }) => {
+  test('home, concepts, graph searches, quick sort and key tree expose exact reviewed forms', async ({ page }) => {
     test.setTimeout(180_000);
     await page.goto('/');
     await expect(page.getByTestId('concept-title')).toContainText('数据结构');
@@ -131,6 +133,28 @@ test.describe('I18N-TERMS-01 — Chinese terminology and bilingual regression', 
     await ensureGuideOpen(page);
     await expect(page.getByTestId('term-glossary')).toContainText(
       'LIFO（Last In First Out，后进先出）',
+    );
+
+    await choose(page, 'quick');
+    await expect(page.getByTestId('lab-title')).toContainText('快速排序');
+    await ensureGuideOpen(page);
+    await expect(page.getByTestId('term-glossary')).toContainText('Lomuto 分区法');
+    await expect(page.getByTestId('term-glossary')).not.toContainText('Lomuto（洛穆托）划分');
+
+    await choose(page, 'floyd-warshall');
+    await expect(page.getByTestId('lab-title')).toContainText(
+      'Floyd–Warshall（弗洛伊德—沃舍尔）全源最短路径算法',
+    );
+    await ensureGuideOpen(page);
+    await expect(page.getByTestId('term-glossary')).toContainText(
+      'Floyd–Warshall（弗洛伊德—沃舍尔）全源最短路径算法',
+    );
+
+    await choose(page, 'key-tree');
+    await expect(page.getByTestId('lab-title')).toContainText('键树（Trie，字典树）');
+    await ensureGuideOpen(page);
+    await expect(page.getByTestId('term-glossary')).toContainText(
+      '字典树（Trie，又称前缀树）',
     );
   });
 
