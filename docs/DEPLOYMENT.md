@@ -220,4 +220,4 @@ GitHub Pages 默认不提供项目级自定义 CSP。若未来迁移到支持 CS
 - GitHub Pages 不提供项目自定义 CSP；本轮只验证了默认 Pages 响应下的运行情况。
 - Pyodide 只执行课程内置程序，不开放任意 Python / JavaScript 代码执行；C / C++ 为只读参考代码，不提供在线编译。
 - 本轮没有创建正式 GitHub Release、v1.0.0 Tag 或 npm 包，也没有宣布正式发布。
-- CI 工作流 `.github/workflows/ci.yml` 的 `sync:legacy` 门禁在部署提交上报告了既有的生成数据大小写漂移；这不是 Pages 路径、构建或运行问题，未在本轮混入算法内容修改。该问题需要在后续独立修复，修复前 CI 可能保持红灯。
+- 部署初期 CI 工作流 `.github/workflows/ci.yml` 的 `sync:legacy` 门禁曾因生成数据中 Huffman 英文名大小写漂移而失败；已在提交 `f01c059` 将生成结果同步为权威源数据 `legacy/algorithm-definitions.js` 的 `Huffman tree & prefix codes`。该变化只影响展示文案，未改变算法注册、课程映射、Trace 或动画语义，CI 与 Pages 工作流均已通过。
