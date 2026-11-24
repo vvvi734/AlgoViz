@@ -10,6 +10,7 @@
 import { BATCH_03_ANNOTATIONS } from './batch-03-annotations';
 import { BATCH_04_ANNOTATIONS } from './batch-04-annotations';
 import { BATCH_05_ANNOTATIONS } from './batch-05-annotations';
+import { BATCH_06_ANNOTATIONS } from './batch-06-annotations';
 
 export interface ReferenceAnnotation {
   en: string;
@@ -3567,6 +3568,13 @@ for (const [fileName, annotations] of Object.entries(BATCH_04_ANNOTATIONS)) {
 }
 
 for (const [fileName, annotations] of Object.entries(BATCH_05_ANNOTATIONS)) {
+  MERGED_REFERENCE_ANNOTATIONS[fileName] = [
+    ...(MERGED_REFERENCE_ANNOTATIONS[fileName] ?? []),
+    ...annotations,
+  ];
+}
+
+for (const [fileName, annotations] of Object.entries(BATCH_06_ANNOTATIONS)) {
   MERGED_REFERENCE_ANNOTATIONS[fileName] = [
     ...(MERGED_REFERENCE_ANNOTATIONS[fileName] ?? []),
     ...annotations,

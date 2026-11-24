@@ -167,6 +167,72 @@ const batchAlgorithms = [
     zh: '希尔排序是对交错子序列做一系列插入排序；它不是稳定排序，因为较早的 gap 轮次可能让相等键互相越过。',
     en: 'Shell sort is a sequence of insertion sorts on interleaved subsequences; it is not a stable sort because earlier gap passes can move equal keys past each other.',
   },
+  {
+    id: 'bubble',
+    name: '冒泡排序',
+    zh: '一整趟没有交换说明剩余前缀的每一对相邻元素都有序；由传递性可知整个前缀已经有序，停止不会漏排。',
+    en: 'A pass without a swap means every adjacent pair in the remaining prefix is ordered; by transitivity the whole prefix is sorted, so stopping loses no work.',
+  },
+  {
+    id: 'quick',
+    name: '快速排序',
+    zh: '最终交换把基准放到 <= 区域之后；boundary+1 就是它的最终位置，后续递归必须排除它。',
+    en: 'The final swap puts the pivot immediately after the <= region; boundary+1 is its final position, so later recursion must exclude it.',
+  },
+  {
+    id: 'selection',
+    name: '简单选择排序',
+    zh: '扫描时严格 < 会保留相等键的首次出现；但最终交换仍可能让相等键互相越过。',
+    en: 'Strict < keeps the first occurrence on equal keys during the scan, but the final swap can still move an equal key across another.',
+  },
+  {
+    id: 'tournament',
+    name: '树形选择排序',
+    zh: '遍历从赢家叶结点之父开始，而不是从叶开始：叶状态已经由 active[] 表示。',
+    en: "The walk starts at the parent of the winner's leaf, not at the leaf: the leaf itself is already represented by active[].",
+  },
+  {
+    id: 'heap',
+    name: '堆排序与优先队列',
+    zh: '数组容量固定，堆满时返回失败而不是扩容；C++ 与 Python 版使用动态存储。',
+    en: 'The array is fixed-size, so a full heap reports failure instead of growing; C++ and Python versions use dynamic storage.',
+  },
+  {
+    id: 'merge',
+    name: '归并排序',
+    zh: '分配失败会直接返回且不排序；由于接口没有状态返回值，调用方无法区分失败与成功。',
+    en: 'Allocation failure returns without sorting; the caller cannot distinguish this from success because the API has no status result.',
+  },
+  {
+    id: 'multiway',
+    name: '多路平衡归并',
+    zh: '最后一次写出在循环之外，因为最后一块通常不满；丢掉它会丢失记录。',
+    en: 'The final flush is outside the loop because the last block is usually partial; dropping it would lose records.',
+  },
+  {
+    id: 'optimal-merge',
+    name: '最佳归并树',
+    zh: '每个内部结点的权重在归并计划中支付一次，因此总代价是它们之和，而不是最终根权重。',
+    en: "Every internal node's weight is paid once in the merge schedule, so total cost is their sum, not the final root weight.",
+  },
+  {
+    id: 'file-index',
+    name: '索引文件',
+    zh: '稀疏索引项是本块自己的最大键，不是下一块的最小键；用下一块首键会把边界相等键导向错误块。',
+    en: "A sparse entry is the block's own maximum, not the next block's minimum; using the next block's first key would send equal boundary keys to the wrong block.",
+  },
+  {
+    id: 'isam',
+    name: 'ISAM 文件',
+    zh: '主块末键只是最大值的起点；真实最大值可能位于该块的溢出链中。',
+    en: "The main block's last key is only a starting maximum; the true maximum may live in this block's overflow chain.",
+  },
+  {
+    id: 'inverted-index',
+    name: '倒排索引',
+    zh: 'NULL 表示该关键字从未出现；已存在但 postingCount 为 0 的表是另一种状态，尽管两者都没有记录。',
+    en: 'NULL means the term was never seen; an existing table with postingCount 0 would be a different state even though neither contains records.',
+  },
 ] as const;
 
 
