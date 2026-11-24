@@ -31,16 +31,21 @@
 void selection_sort(std::vector<int> &values)
 {
     for (std::size_t start = 0; start + 1 < values.size(); ++start)
+    // The loop leaves the final element untouched; it is already the largest remaining value once the prefix is complete.
     {
         std::size_t minimum = start;
+        // minimum stores an index, not a value; the scan can therefore swap the original record after it finishes.
         for (std::size_t index = start + 1; index < values.size(); ++index)
+        // The scan covers only the unsorted suffix; the prefix is already globally ordered and must not re-enter the minimum search.
         {
             if (values[index] < values[minimum])
+            // This comparison chooses the smallest key, but the eventual exchange is what makes the sort unstable for equal keys.
             {
                 minimum = index;
             }
         }
         if (minimum != start)
+        // The guard avoids swapping an element with itself; it does not prevent a different equal-key record from crossing.
         {
             std::swap(values[start], values[minimum]);
         }
@@ -50,6 +55,7 @@ void selection_sort(std::vector<int> &values)
 int main()
 {
     std::vector<int> values{5, 1, 4, 2, 8, 0, 3, 7, 6, 9};
+    // The vector version uses the same exchange semantics as C; only bounds and storage ownership differ.
     selection_sort(values);
 
     std::cout << "sorted:";

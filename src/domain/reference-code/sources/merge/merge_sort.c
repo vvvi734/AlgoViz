@@ -28,8 +28,10 @@ static void MergeRange(int *values, int low, int middle, int high, int *buffer)
     int write = low;
 
     while (left <= middle && right <= high)
+    // The main loop runs only while both runs have records; once one side ends, the remaining tail needs no comparisons.
     {
         if (values[left] <= values[right])
+        // The <= tie-break takes the left run first; taking the right on equality would reverse equal records and destroy stability.
         {
             buffer[write++] = values[left++];
         }
@@ -39,6 +41,7 @@ static void MergeRange(int *values, int low, int middle, int high, int *buffer)
         }
     }
     while (left <= middle)
+    // The left tail is already sorted and every value in it is <= the exhausted right side's remaining values, so it can be copied directly.
     {
         buffer[write++] = values[left++];
     }
@@ -47,6 +50,7 @@ static void MergeRange(int *values, int low, int middle, int high, int *buffer)
         buffer[write++] = values[right++];
     }
     for (int index = low; index <= high; ++index)
+    // The merged result is copied back only after the whole range is in buffer; writing back early could overwrite an unread source element.
     {
         values[index] = buffer[index];
     }
@@ -57,10 +61,12 @@ static void MergeRange(int *values, int low, int middle, int high, int *buffer)
 static void MergeSortRange(int *values, int low, int high, int *buffer)
 {
     if (low >= high)
+    // A zero- or one-element range is already sorted; without this base case the recursion would never reach a merge.
     {
         return;
     }
     int middle = low + (high - low) / 2;
+    // The midpoint formula avoids low+high overflow and keeps the split strictly smaller than the parent range.
     MergeSortRange(values, low, middle, buffer);
     MergeSortRange(values, middle + 1, high, buffer);
     MergeRange(values, low, middle, high, buffer);
@@ -75,7 +81,9 @@ void MergeSort(int *values, int count)
         return;
     }
     int *buffer = (int *)malloc((size_t)count * sizeof(int));
+    // One buffer is allocated for the whole sort, not per merge; recursive calls share it because their ranges are disjoint.
     if (buffer == NULL)
+    // Allocation failure returns without sorting; the caller cannot distinguish this from success because the API has no status result.
     {
         return;
     }

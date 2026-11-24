@@ -24,19 +24,24 @@
 void BubbleSort(int *values, int count)
 {
     for (int end = count - 1; end > 0; --end)
+    // end is the last index of the unsorted prefix; the pass fills that slot, so the next pass can stop one position earlier.
     {
         int swapped = 0;
+        // swapped is reset per pass: early exit is evidence about this pass, not a stale flag from an earlier one.
         for (int index = 0; index < end; ++index)
+        // The inner bound is end, not count: the pair (end, end+1) is outside this pass, and comparing past it would mix the sorted suffix into the unsorted scan.
         {
             if (values[index] > values[index + 1])
             {
                 int temporary = values[index];
                 values[index] = values[index + 1];
                 values[index + 1] = temporary;
+                // Only strictly inverted neighbours are exchanged; equal keys never swap, which is exactly why this implementation is stable.
                 swapped = 1;
             }
         }
         if (!swapped)
+        // A pass without a swap means every adjacent pair in the remaining prefix is ordered; by transitivity the whole prefix is sorted, so stopping loses no work.
         {
             break;
         }
@@ -56,6 +61,7 @@ static void PrintValues(const int *values, int count)
 int main(void)
 {
     int values[] = {5, 1, 4, 2, 8, 0, 3, 7, 6, 9};
+    // This demo intentionally mixes inversions; the separate count is the array length because a pointer parameter would otherwise lose sizeof information.
     int count = (int)(sizeof(values) / sizeof(values[0]));
 
     BubbleSort(values, count);

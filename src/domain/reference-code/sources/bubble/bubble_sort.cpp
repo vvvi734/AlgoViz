@@ -33,23 +33,29 @@
 void bubble_sort(std::vector<int> &values)
 {
     if (values.size() < 2)
+    // Fewer than two elements already satisfy the postcondition; the guard also prevents size_t end-- from wrapping below zero.
     {
         return;
     }
 
     for (std::size_t end = values.size(); end > 1; --end)
+    // end is one past the last index of the active prefix; comparing index-1 with index covers every adjacent pair and leaves the fixed tail alone.
     {
         bool swapped = false;
+        // The flag is per pass; reusing a previous pass's true value would suppress the early-exit proof.
         for (std::size_t index = 1; index < end; ++index)
+        // Starting at 1 lets index-1 denote the left neighbour without a separate lower-bound variable; index < end excludes the fixed suffix.
         {
             if (values[index - 1] > values[index])
             {
                 std::swap(values[index - 1], values[index]);
+                // Swapping adjacent inverted keys moves the maximum right; strict > is the stability decision because equal keys are left in place.
                 swapped = true;
             }
         }
         // A pass without swaps means the remaining prefix is already sorted.
         if (!swapped)
+        // No swap means no inversion remains in the active prefix; the next pass would repeat the same comparisons with the same result.
         {
             break;
         }

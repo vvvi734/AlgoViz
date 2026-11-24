@@ -27,11 +27,16 @@ from __future__ import annotations
 # 作用：原地升序排序 values；不稳定。
 def selection_sort(values: list[int]) -> None:
     for start in range(len(values) - 1):
+    # range(len(values)-1) excludes the last slot, which is filled by elimination rather than by another scan.
         minimum = start
+        # minimum is an index so the tuple swap can move the original object, not just a copied integer.
         for index in range(start + 1, len(values)):
+        # The inner range starts after the candidate; the current minimum is already represented by start.
             if values[index] < values[minimum]:
+            # Equal keys do not replace the candidate here, but the later tuple assignment can still reorder them.
                 minimum = index
         if minimum != start:
+        # Skipping a no-op swap keeps the trace readable; correctness comes from the prefix invariant, not from this guard.
             values[start], values[minimum] = values[minimum], values[start]
 
 
@@ -39,6 +44,7 @@ def selection_sort(values: list[int]) -> None:
 # 作用：演示选择排序并打印结果。
 def main() -> None:
     values = [5, 1, 4, 2, 8, 0, 3, 7, 6, 9]
+    # The demo values are selected to show the minimum moving into the prefix on each pass.
     selection_sort(values)
     print("sorted:", " ".join(str(value) for value in values))
 

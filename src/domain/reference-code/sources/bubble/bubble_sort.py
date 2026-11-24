@@ -27,14 +27,20 @@ from __future__ import annotations
 # 作用：原地升序排序 values；无返回值，稳定。
 def bubble_sort(values: list[int]) -> None:
     end = len(values) - 1
+    # end tracks the last unsorted slot; it shrinks only after a pass that actually swapped something.
     while end > 0:
+    # When end reaches 0 only one element remains, so the loop can stop without a self-comparison.
         swapped = False
+        # Python's boolean is local to this pass; it must start false before the inner scan.
         for index in range(end):
+        # range(end) visits 0..end-1, so values[index+1] is always a valid neighbour and the fixed tail is never touched.
             if values[index] > values[index + 1]:
                 values[index], values[index + 1] = values[index + 1], values[index]
                 swapped = True
+                # The flag records that at least one inversion was removed; equal keys never enter this branch because the comparison is >.
         # No swap in a full pass means the remaining prefix is already sorted.
         if not swapped:
+        # The early exit is valid only because a full pass compared every adjacent pair still in the prefix.
             break
         end -= 1
 

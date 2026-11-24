@@ -24,19 +24,25 @@
 static int Partition(int *values, int low, int high)
 {
     int pivot = values[high];
+    // Choosing the last element makes the pivot value stable during the scan; a sorted input would repeatedly choose the largest and degrade to O(n^2).
     int boundary = low - 1;
+    // boundary is the last index of the <= pivot region and starts before low, so the region is empty before the first comparison.
 
     for (int index = low; index < high; ++index)
+    // The scan stops before high because values[high] is the pivot itself; including it would compare the pivot with itself and disturb the final swap.
     {
         if (values[index] <= pivot)
+        // <= sends equal keys left; this keeps duplicate-heavy input from producing an empty left side, but it also makes the partition unstable.
         {
             ++boundary;
+            // boundary grows only when a qualifying element is found; the element at the new boundary is swapped into the processed region.
             int temporary = values[boundary];
             values[boundary] = values[index];
             values[index] = temporary;
         }
     }
     int temporary = values[boundary + 1];
+    // The final swap puts the pivot immediately after the <= region; boundary+1 is its final position, so later recursion must exclude it.
     values[boundary + 1] = values[high];
     values[high] = temporary;
     return boundary + 1;
@@ -47,12 +53,14 @@ static int Partition(int *values, int low, int high)
 static void QuickSortRange(int *values, int low, int high)
 {
     if (low >= high)
+    // An empty or one-element range is already sorted; this base case also prevents infinite recursion on equal bounds.
     {
         return;
     }
     int pivot = Partition(values, low, high);
     QuickSortRange(values, low, pivot - 1);
     QuickSortRange(values, pivot + 1, high);
+    // The two recursive ranges are disjoint and exclude pivot; passing pivot itself would recreate the same partition forever.
 }
 
 // Purpose: Quicksort entry: start the recursive partition on [0..count).

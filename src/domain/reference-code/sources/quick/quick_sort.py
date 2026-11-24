@@ -28,12 +28,18 @@ from __future__ import annotations
 # 作用：以 values[high] 为枢轴划分 [low, high]，返回枢轴最终下标。
 def partition(values: list[int], low: int, high: int) -> int:
     pivot = values[high]
+    # The pivot is a local copy; reassigning values during partitioning cannot silently change the comparison threshold.
     boundary = low - 1
+    # boundary is the exclusive end of the accepted region; starting at low-1 makes the first accepted element land at low.
     for index in range(low, high):
+    # Python's range excludes high, matching the pivot exclusion exactly and avoiding an off-by-one scan.
         if values[index] <= pivot:
+        # Equal keys go left by design; this stabilizes duplicate-heavy partitions but does not make the overall sort stable.
             boundary += 1
+            # The boundary moves only after a qualifying element is seen; its value is the count of accepted elements minus one.
             values[boundary], values[index] = values[index], values[boundary]
     values[boundary + 1], values[high] = values[high], values[boundary + 1]
+    # The tuple assignment swaps pivot and boundary+1 atomically in Python; the pivot is now at its final index.
     return boundary + 1
 
 
@@ -41,10 +47,12 @@ def partition(values: list[int], low: int, high: int) -> int:
 # 作用：递归排序闭区间 [low, high]。
 def quick_sort_range(values: list[int], low: int, high: int) -> None:
     if low >= high:
+    # The empty/single-element guard prevents a recursive call that could not shrink the interval.
         return
     middle = partition(values, low, high)
     quick_sort_range(values, low, middle - 1)
     quick_sort_range(values, middle + 1, high)
+    # The right recursive call starts after the pivot; including middle would reuse the same pivot and never terminate.
 
 
 # Purpose: Start quicksort on the whole array.

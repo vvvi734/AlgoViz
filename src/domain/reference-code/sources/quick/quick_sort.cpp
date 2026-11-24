@@ -34,17 +34,23 @@ namespace
 int partition(std::vector<int> &values, int low, int high)
 {
     int pivot = values[static_cast<std::size_t>(high)];
+    // The pivot is copied by value before any swap, so later element moves cannot change the comparison target.
     int boundary = low - 1;
+    // boundary is a signed index because low can be 0; low-1 must remain a sentinel rather than wrap to a huge size_t.
     for (int index = low; index < high; ++index)
+    // The loop visits every non-pivot element exactly once; the final pivot swap happens after the scan, not inside it.
     {
         if (values[static_cast<std::size_t>(index)] <= pivot)
+        // The <= decision is the partition contract; changing it to < would leave equal keys on the right and alter duplicate behavior.
         {
             ++boundary;
+            // boundary advances before the swap, so it always marks the last accepted element after the exchange.
             std::swap(values[static_cast<std::size_t>(boundary)],
                       values[static_cast<std::size_t>(index)]);
         }
     }
     std::swap(values[static_cast<std::size_t>(boundary + 1)],
+    // The pivot moves to boundary+1 only after all smaller-or-equal keys are on its left; that slot is final, not provisional.
               values[static_cast<std::size_t>(high)]);
     return boundary + 1;
 }
@@ -54,12 +60,14 @@ int partition(std::vector<int> &values, int low, int high)
 void quick_sort_range(std::vector<int> &values, int low, int high)
 {
     if (low >= high)
+    // The base case covers both empty and single-element ranges; no partition is attempted when there is nothing to split.
     {
         return;
     }
     int middle = partition(values, low, high);
     quick_sort_range(values, low, middle - 1);
     quick_sort_range(values, middle + 1, high);
+    // Recursing on middle+1 and middle-1 keeps the pivot out of both subproblems, which guarantees progress.
 }
 
 } // namespace

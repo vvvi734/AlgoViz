@@ -29,6 +29,7 @@ void merge_range(std::vector<int> &values, std::vector<int> &buffer, int left, i
                  int right)
 {
     int i = left;
+    // The three indices are independent: i/j read the two runs, and k writes the merged position; mixing them would lose an unread element.
     int j = middle + 1;
     int k = left;
 
@@ -36,6 +37,7 @@ void merge_range(std::vector<int> &values, std::vector<int> &buffer, int left, i
     {
         // Take the left run on ties to preserve stability.
         if (values[static_cast<std::size_t>(i)] <= values[static_cast<std::size_t>(j)])
+        // Ties take the left run; this is the only place stability is decided during a merge.
         {
             buffer[static_cast<std::size_t>(k++)] = values[static_cast<std::size_t>(i++)];
         }
@@ -45,6 +47,7 @@ void merge_range(std::vector<int> &values, std::vector<int> &buffer, int left, i
         }
     }
     while (i <= middle)
+    // Only one of the two tail loops can execute after the main loop; keeping both makes the code correct for either exhausted side.
     {
         buffer[static_cast<std::size_t>(k++)] = values[static_cast<std::size_t>(i++)];
     }
@@ -53,6 +56,7 @@ void merge_range(std::vector<int> &values, std::vector<int> &buffer, int left, i
         buffer[static_cast<std::size_t>(k++)] = values[static_cast<std::size_t>(j++)];
     }
     for (k = left; k <= right; ++k)
+    // Buffer positions mirror the original indices, so copying back is a straight range copy, not a second merge.
     {
         values[static_cast<std::size_t>(k)] = buffer[static_cast<std::size_t>(k)];
     }
@@ -63,10 +67,12 @@ void merge_range(std::vector<int> &values, std::vector<int> &buffer, int left, i
 void merge_sort_range(std::vector<int> &values, std::vector<int> &buffer, int left, int right)
 {
     if (left >= right)
+    // The base case stops at zero or one element, where a merge would be a no-op.
     {
         return;
     }
     int middle = left + (right - left) / 2;
+    // This split is inclusive on both halves; the next calls use middle and middle+1 so no element is duplicated or skipped.
     merge_sort_range(values, buffer, left, middle);
     merge_sort_range(values, buffer, middle + 1, right);
     merge_range(values, buffer, left, middle, right);
@@ -82,6 +88,7 @@ void merge_sort(std::vector<int> &values)
         return;
     }
     std::vector<int> buffer(values.size());
+    // The vector buffer is allocated once and reused by every merge; its size equals the full array, so no subrange needs a separate allocation.
     merge_sort_range(values, buffer, 0, static_cast<int>(values.size()) - 1);
 }
 

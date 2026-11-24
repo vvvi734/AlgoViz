@@ -23,16 +23,21 @@
 void SelectionSort(int *values, int count)
 {
     for (int start = 0; start + 1 < count; ++start)
+    // start+1 < count stops before the final single-element suffix; that last element is already in place and needs no self-swap.
     {
         int minimum = start;
+        // The candidate starts as the first unsorted element; if the scan finds nothing smaller, no swap is needed.
         for (int index = start + 1; index < count; ++index)
+        // The scan begins after start because comparing the candidate with itself cannot change the minimum.
         {
             if (values[index] < values[minimum])
+            // Strict < keeps the first occurrence on equal keys during the scan, but the final swap can still move an equal key across another.
             {
                 minimum = index;
             }
         }
         if (minimum != start)
+        // One swap per pass keeps writes low; skipping a self-swap is an optimization, not the reason the algorithm is correct.
         {
             int temporary = values[start];
             values[start] = values[minimum];
@@ -44,6 +49,7 @@ void SelectionSort(int *values, int count)
 int main(void)
 {
     int values[] = {5, 1, 4, 2, 8, 0, 3, 7, 6, 9};
+    // The input contains several inversions so every pass can be observed changing the sorted prefix.
     int count = (int)(sizeof(values) / sizeof(values[0]));
 
     SelectionSort(values, count);

@@ -26,10 +26,13 @@ from __future__ import annotations
 # 作用：把 values[left..middle] 与 [middle+1..right] 合并到 buffer 再写回。
 def merge_range(values: list[int], buffer: list[int], left: int, middle: int, right: int) -> None:
     i, j, k = left, middle + 1, left
+    # The tuple assignment seeds both read cursors and the write cursor at once; k stays aligned with the original range.
 
     while i <= middle and j <= right:
+    # The main loop stops as soon as one run is exhausted; the remaining run is already ordered and can be appended without comparison.
         # Take the left run on ties to preserve stability.
         if values[i] <= values[j]:
+        # The left-first tie rule preserves the relative order of equal records, which is the stability guarantee.
             buffer[k] = values[i]
             i += 1
         else:
@@ -38,6 +41,7 @@ def merge_range(values: list[int], buffer: list[int], left: int, middle: int, ri
         k += 1
 
     while i <= middle:
+    # This tail loop is mutually exclusive with the right tail loop; both are written so the code does not depend on which side ends first.
         buffer[k] = values[i]
         i += 1
         k += 1
@@ -47,6 +51,7 @@ def merge_range(values: list[int], buffer: list[int], left: int, middle: int, ri
         k += 1
 
     for index in range(left, right + 1):
+    # The copy-back range is inclusive on both ends, matching the closed interval used by the recursive calls.
         values[index] = buffer[index]
 
 
@@ -56,6 +61,7 @@ def merge_sort_range(values: list[int], buffer: list[int], left: int, right: int
     if left >= right:
         return
     middle = left + (right - left) // 2
+    # Floor division keeps the left half no larger than the right, so the recursion always shrinks and terminates.
     merge_sort_range(values, buffer, left, middle)
     merge_sort_range(values, buffer, middle + 1, right)
     merge_range(values, buffer, left, middle, right)
@@ -68,6 +74,7 @@ def merge_sort(values: list[int]) -> None:
     if len(values) < 2:
         return
     buffer = [0] * len(values)
+    # A single list of full length is allocated before recursion; zero is only an initial placeholder, never a sentinel for missing data.
     merge_sort_range(values, buffer, 0, len(values) - 1)
 
 
