@@ -161,10 +161,11 @@
 
 | 组 | 算法 ID | 提交哈希 | 推送结果 |
 | --- | --- | --- | --- |
-| 1 | `bubble`, `selection`, `quick`, `merge` | `4a55a52` | `582d4cd..05dee78 main -> main` |
-| 2 | `tournament`, `heap`, `multiway`, `optimal-merge` | `974300e` | `582d4cd..05dee78 main -> main` |
-| 3 | `file-index`, `isam`, `inverted-index` | `842799b` | `582d4cd..05dee78 main -> main` |
-| 4 | 双语 annotation、专项测试、全量覆盖、查看器与 Playwright | `05dee78` | `582d4cd..05dee78 main -> main` |
+| 1 | `bubble`, `selection`, `quick`, `merge` | `4a55a52` | `582d4cd..5f1f4d9 main -> main` |
+| 2 | `tournament`, `heap`, `multiway`, `optimal-merge` | `974300e` | `582d4cd..5f1f4d9 main -> main` |
+| 3 | `file-index`, `isam`, `inverted-index` | `842799b` | `582d4cd..5f1f4d9 main -> main` |
+| 4 | 双语 annotation、专项测试、全量覆盖、查看器与 Playwright | `05dee78` | `582d4cd..5f1f4d9 main -> main` |
+| 5 | 进度、报告与推送证据 | `5f1f4d9` | `582d4cd..5f1f4d9 main -> main` |
 
 本批新增 **238** 条源码教学注释，覆盖 33 份 principle 源码；`git diff --stat` 为 **238 insertions / 0 deletions**，没有文件头事实修正，也没有有效代码改动。有效代码经 `stripReferenceComments` 与 `HEAD` 逐文件比较，33/33 一致。
 
@@ -196,4 +197,5 @@
 7. `indexed_file.cpp` / `.py`：返回位置硬编码 `blockIndex * 3 + offset`，与示例容量 3 绑定；修改块容量而不改公式会返回错误位置。
 8. `quick_sort` 末元素 pivot 在已排序输入上退化 O(n²)，递归深度最坏 O(n)。
 9. `optimal_merge_tree` 的虚拟叶只补形状，不能当作真实零长度归并段；总代价必须按内部权重求和，不能只报根权重。
+
 
