@@ -42,6 +42,33 @@ describe('AlgoViz brand migration and storage compatibility', () => {
     expect(mark.getAttribute('alt')).toBe('');
   });
 
+  it('replaces the local-first badge with a labelled GitHub repository link', async () => {
+    renderApp();
+    await waitFor(() => expect(screen.getByTestId('progress')).toBeTruthy());
+    expect(screen.queryByTestId('offline-badge')).toBeNull();
+    expect(document.body.textContent).not.toContain('LOCAL FIRST');
+
+    const link = screen.getByTestId('github-link') as HTMLAnchorElement;
+    expect(link.tagName).toBe('A');
+    expect(link.getAttribute('href')).toBe('https://github.com/vvvi734/AlgoViz');
+    expect(link.getAttribute('target')).toBe('_blank');
+    expect(link.getAttribute('rel')).toBe('noopener noreferrer');
+    expect(link.getAttribute('aria-label')).toBe('GitHub 仓库');
+    expect(link.querySelector('svg')).toBeTruthy();
+  });
+
+  it('localizes the GitHub link label', async () => {
+    window.localStorage.setItem('algolens-lang', 'en');
+    try {
+      renderApp();
+      await waitFor(() => expect(screen.getByTestId('progress')).toBeTruthy());
+      const link = screen.getByTestId('github-link');
+      expect(link.getAttribute('aria-label')).toBe('GitHub repository');
+    } finally {
+      window.localStorage.removeItem('algolens-lang');
+    }
+  });
+
   it('ignores legacy drafts and runs the built-in example', async () => {
     window.localStorage.setItem('algolens.code.bubble.js', 'const LEGACY_DRAFT = 1;');
     renderApp();

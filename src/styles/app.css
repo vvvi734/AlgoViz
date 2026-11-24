@@ -38,6 +38,21 @@ a { color: var(--accent); }
 .btn.primary { color: var(--btn-primary-fg); background: var(--accent); border-color: var(--accent); font-weight: 750; }
 .btn.danger { color: var(--red); }
 .btn.ghost { background: transparent; }
+.github-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--edge);
+  border-radius: 10px;
+  background: var(--panel-2);
+  color: var(--txt);
+  text-decoration: none;
+}
+.github-link:hover { border-color: var(--edge-hover); color: var(--accent); }
+.github-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+.github-link svg { display: block; width: 21px; height: 21px; }
 .btn.small { padding: 6px 10px; font-size: var(--font-ui); }
 .select { max-width: 100%; outline: none; }
 .theme-select { min-width: 112px; }
@@ -255,6 +270,7 @@ textarea.prompt:focus { border-color: var(--accent); }
   .sync-grid { grid-template-columns: 1fr; }
   .topbar { gap: 10px; }
   .brand { font-size: 20px; }
+  .github-link { width: 44px; height: 44px; }
   .stage { min-height: 220px; }
   .bars { height: 165px; }
   .controls { gap: 6px; }
