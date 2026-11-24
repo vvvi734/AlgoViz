@@ -20,17 +20,24 @@
 // Shift only while the previous value is strictly greater; equal keys stop the shift and keep the sort stable.
 // Purpose: Maintain a sorted prefix: save key, shift larger values right by one slot, then place key in the gap.
 // 作用：维护已排序前缀：保存 key，把更大的元素右移一格，再把 key 放到空位。
+// The function sorts in place and returns nothing; callers must keep the array alive for the whole call because every value is read and rewritten directly.
 void InsertionSort(int *values, int count)
 {
+    // The sorted prefix is [0, index); index starts at 1 because a one-element prefix is already sorted, and the loop invariant is restored at the end of each iteration.
     for (int index = 1; index < count; ++index)
     {
+        // key must be saved before shifting: the first move overwrites values[index], which is the only copy of the element being inserted.
         int key = values[index];
+        // position names the rightmost element of the sorted prefix, not the hole; the hole is always position+1 during the shift loop.
         int position = index - 1;
+        // The strict > is the stability decision: equal keys stop the shift, so the new key lands after them and their relative order survives.
         while (position >= 0 && values[position] > key)
         {
+            // This is a one-slot move, not a swap; only larger values travel right while the hole moves left, so the number of writes is minimal.
             values[position + 1] = values[position];
             --position;
         }
+        // After the loop, position+1 is the first slot whose left neighbour is <= key; that is exactly where the saved key belongs.
         values[position + 1] = key;
     }
 }
@@ -40,6 +47,7 @@ int main(void)
     int values[] = {5, 1, 4, 2, 8, 0, 3, 7, 6, 9};
     int count = (int)(sizeof(values) / sizeof(values[0]));
 
+    // On already sorted input the inner loop never runs, so each outer step costs one comparison and the total is O(n); the quadratic bound is only the worst case.
     InsertionSort(values, count);
     printf("sorted:");
     for (int index = 0; index < count; ++index)

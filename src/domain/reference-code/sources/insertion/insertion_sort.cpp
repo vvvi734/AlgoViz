@@ -29,17 +29,24 @@
 // Shift only while the previous value is strictly greater; equal keys stop the shift and keep the sort stable.
 // Purpose: Maintain a sorted prefix: save key, shift larger values right by one slot, then place key in the gap.
 // 作用：维护已排序前缀：保存 key，把更大的元素右移一格，再把 key 放到空位。
+// The vector is passed by reference and mutated in place; no auxiliary array is allocated, so extra space stays O(1).
 void insertion_sort(std::vector<int> &values)
 {
+    // size_t has no negative value, so the prefix index starts at 1 and every earlier position is a valid already-sorted element.
     for (std::size_t index = 1; index < values.size(); ++index)
     {
+        // current is the value being inserted; saving it is necessary because values[index] is overwritten by the first right shift.
         int current = values[index];
+        // position is the hole index, so the loop compares values[position-1] and writes the shifted value into values[position].
         std::size_t position = index;
+        // The position > 0 guard makes position-1 readable; the strict > stops on equality and preserves the relative order of equal keys.
         while (position > 0 && values[position - 1] > current)
         {
+            // The hole moves one slot left while the larger value moves right; no temporary swap is needed because the hole already holds a duplicate.
             values[position] = values[position - 1];
             --position;
         }
+        // The loop stops at the first position whose predecessor is <= current, so writing current into the hole restores the sorted prefix.
         values[position] = current;
     }
 }

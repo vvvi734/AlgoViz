@@ -26,13 +26,20 @@ from __future__ import annotations
 # Shift only while the previous value is strictly greater; equal keys stop the shift and keep the sort stable.
 # Purpose: Sort values ascending in place; equal elements are not swapped, so stability is preserved.
 # 作用：原地升序排序 values；相等元素不交换，保持稳定。
+# The function mutates the caller's list and returns None; a copy would sort a temporary object and leave the original unchanged.
 def insertion_sort(values: list[int]) -> None:
+    # range starts at 1 because the one-element prefix values[0:1] is already sorted; range excludes len(values), so the last valid index is len-1.
     for index in range(1, len(values)):
+        # current must be captured before any assignment; otherwise the first shift would destroy the only reference to the element being inserted.
         current = values[index]
+        # Python uses position as the current hole and compares position-1, while the C version stores position one slot left of the hole.
         position = index
+        # The guard is checked first, so values[position-1] is only read when the index is valid; equality stops the walk and keeps the sort stable.
         while position > 0 and values[position - 1] > current:
+            # This overwrites the hole with its left neighbour, then decrements position; the list never needs a separate swap buffer.
             values[position] = values[position - 1]
             position -= 1
+        # When the loop ends, position is the first slot whose left neighbour is <= current, which is the insertion point.
         values[position] = current
 
 
@@ -40,6 +47,7 @@ def insertion_sort(values: list[int]) -> None:
 # 作用：演示插入排序并打印结果。
 def main() -> None:
     values = [5, 1, 4, 2, 8, 0, 3, 7, 6, 9]
+    # The demo sorts a mixed list with duplicates absent but order-sensitive values; stability would matter if equal keys carried payloads.
     insertion_sort(values)
     print("sorted:", " ".join(str(value) for value in values))
 

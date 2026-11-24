@@ -21,17 +21,23 @@
 // Each gap pass insertion-sorts independent subsequences; gap 1 is the final ordinary insertion sort.
 // Purpose: Insertion-sort each gap-spaced subsequence while shrinking gap, finishing with the ordinary gap-1 pass.
 // 作用：按缩小 gap 做插入排序；每个 gap 下对相隔 gap 的子序列排序，最后 gap=1 收尾。
+// Shell sort is a sequence of insertion sorts on interleaved subsequences; it is not a stable sort because earlier gap passes can move equal keys past each other.
 void ShellSort(int *values, int count)
 {
+    // gap starts at n/2 and is halved; integer division eventually reaches 1 and then 0, so the loop terminates and always includes the crucial gap-1 pass.
     for (int gap = count / 2; gap > 0; gap /= 2)
     {
+        // For a fixed gap, start enumerates one element from each residue class; values[start-gap], values[start], ... form the subsequence being inserted into.
         for (int start = gap; start < count; ++start)
         {
+            // key is saved because the gapped shift writes values[start] and then values[start-gap], moving the hole left by gap each time.
             int key = values[start];
             int position = start;
+            // The position >= gap guard keeps position-gap a valid index; the strict > stops at equal keys within this pass, but that does not make the whole algorithm stable.
             while (position >= gap && values[position - gap] > key)
             {
                 values[position] = values[position - gap];
+                // The hole moves by exactly one gap, not one slot; this is what keeps the insertion inside the same residue class.
                 position -= gap;
             }
             values[position] = key;

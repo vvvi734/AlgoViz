@@ -27,16 +27,23 @@ from __future__ import annotations
 # Each gap pass insertion-sorts independent subsequences; gap 1 is the final ordinary insertion sort.
 # Purpose: Sort values ascending in place using gap-grouped insertion sort.
 # 作用：原地升序排序 values；按 gap 分组做插入排序。
+# The sort mutates the input list in place and returns None; the gap sequence is derived from len(values), so no count parameter is needed.
 def shell_sort(values: list[int]) -> None:
+    # Integer division gives the first gap; the loop below must eventually reach 1, because an odd or even length both shrink to 1 before 0.
     gap = len(values) // 2
+    # The outer condition is the termination proof: each iteration divides gap by 2, so a positive finite start reaches 0 after finitely many passes.
     while gap > 0:
+        # The first index is gap, so values[index-gap] is readable; this walks each residue class from its first two members onward.
         for index in range(gap, len(values)):
+            # current is the value being placed into the gap-separated sequence; saving it prevents the first shift from destroying it.
             current = values[index]
             position = index
+            # The guard guarantees the neighbour index is non-negative; the strict > keeps equal keys in place only within this pass, not globally.
             while position >= gap and values[position - gap] > current:
                 values[position] = values[position - gap]
                 position -= gap
             values[position] = current
+        # After the pass, gap is halved; when it finally becomes 1 the sort performs ordinary insertion sort and establishes the final total order.
         gap //= 2
 
 

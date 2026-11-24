@@ -29,19 +29,26 @@
 // Each gap pass insertion-sorts independent subsequences; gap 1 is the final ordinary insertion sort.
 // Purpose: Insertion-sort gap-separated groups while shrinking the gap; the gap-1 pass leaves the whole array sorted.
 // 作用：按缩小 gap 做分组插入排序；最后 gap=1 时整个数组有序。
+// The gaps are generated from the vector's size, so an empty or one-element vector never enters a pass and is already sorted.
 void shell_sort(std::vector<int> &values)
 {
+    // size_t division by 2 is safe and eventually reaches zero; gap always passes through 1 before the loop ends, which is required for a correct final order.
     for (std::size_t gap = values.size() / 2; gap > 0; gap /= 2)
     {
+        // index starts at gap so index-gap is valid; each residue class is processed by a separate starting offset as index advances.
         for (std::size_t index = gap; index < values.size(); ++index)
         {
+            // current is the element inserted into its gap-separated group; it must survive the first write to values[index].
             int current = values[index];
             std::size_t position = index;
+            // position >= gap is an unsigned-safe guard: position is never decremented below gap, so position-gap cannot underflow.
             while (position >= gap && values[position - gap] > current)
             {
+                // Each assignment shifts one value by exactly gap slots; the gap-sized hole then moves left, so no swap temp is needed.
                 values[position] = values[position - gap];
                 position -= gap;
             }
+            // The final write fills the gap-sized hole; when gap becomes 1 this is the ordinary insertion step and leaves the whole vector sorted.
             values[position] = current;
         }
     }
