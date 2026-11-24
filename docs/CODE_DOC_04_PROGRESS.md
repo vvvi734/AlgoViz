@@ -4,17 +4,18 @@
 
 - BATCH-03 起始基线：`976002fdc58d89afaf91d747c9b7cdee01c86edf`
 - BATCH-04 起始基线：`55233ca148f8d1f2d16fb6504eb2f7dd9e8edf73`（BATCH-03 已完成 27/60）
+- BATCH-05 起始基线：`c6272a8b3d79373030152dcab2609ec4361ec818`（BATCH-04 已完成 38/60）
 - 排序口径：教材第 1–12 章章序 → 章节课程目录实际出现顺序 → 算法 ID。本表已按该稳定顺序排列，CH1 无正式算法。
 - 完成口径：必须存在该算法的教学注释提交哈希，并完成双语 anchor、源码编译/语法检查与专项测试；仅有注释条数不计为完成。
-- 当前统计：**38 / 60 已完成且有证据**，0 个本批进行中，22 个尚未完成，0 个阻断。
+- 当前统计：**49 / 60 已完成且有证据**，0 个本批进行中，11 个尚未完成，0 个阻断。
 
 ## 分类统计
 
 | 分类 | 数量 | 说明 |
 | --- | ---: | --- |
-| 已完成且有证据 | 38 | BATCH-01 6 个、BATCH-02 10 个、BATCH-03 11 个、BATCH-04 11 个，均有提交哈希与源码证据。 |
-| 本批进行中 | 0 | BATCH-04 的 11 个算法均已按组提交；全批门禁见 BATCH-04 报告。 |
-| 尚未完成 | 22 | 未领取或无教学深化提交，保持原状。 |
+| 已完成且有证据 | 49 | BATCH-01 6 个、BATCH-02 10 个、BATCH-03 11 个、BATCH-04 11 个、BATCH-05 11 个，均有提交哈希与源码证据。 |
+| 本批进行中 | 0 | BATCH-05 的 11 个算法均已按组提交；全批门禁见 BATCH-05 报告。 |
+| 尚未完成 | 11 | 未领取或无教学深化提交，保持原状。 |
 | 存在例外或阻断 | 0 | 本批未发现阻断；新发现实现风险只在报告第 8 节登记，未擅自修复。 |
 
 ## 60 项正式算法状态
@@ -56,18 +57,18 @@
 | 33 | CH8 动态存储管理 | `free-list` | `sources/free-list/free_list.c` | `sources/free-list/free_list.cpp` | `sources/free-list/free_list.py` | 已完成且有证据 | BATCH-01 | `4270cc2` | 通过（BATCH-01 提交与回归） |
 | 34 | CH8 动态存储管理 | `buddy-system` | `sources/buddy-system/buddy_system.c` | `sources/buddy-system/buddy_system.cpp` | `sources/buddy-system/buddy_system.py` | 已完成且有证据 | BATCH-04 | `0d245c0` | 通过（BATCH-04 报告） |
 | 35 | CH8 动态存储管理 | `garbage-collection` | `sources/garbage-collection/garbage_collection.c` | `sources/garbage-collection/garbage_collection.cpp` | `sources/garbage-collection/garbage_collection.py` | 已完成且有证据 | BATCH-04 | `0d245c0` | 通过（BATCH-04 报告） |
-| 36 | CH9 查找 | `linear` | `sources/linear/linear_search.c` | `sources/linear/linear_search.cpp` | `sources/linear/linear_search.py` | 尚未完成 | 未分配 | `—` | 未复核 |
-| 37 | CH9 查找 | `binary` | `sources/binary/binary_search.c` | `sources/binary/binary_search.cpp` | `sources/binary/binary_search.py` | 尚未完成 | 未分配 | `—` | 未复核 |
+| 36 | CH9 查找 | `linear` | `sources/linear/linear_search.c` | `sources/linear/linear_search.cpp` | `sources/linear/linear_search.py` | 已完成且有证据 | BATCH-05 | `94a18ad` | 通过（注释/本地化/编译/专项测试） |
+| 37 | CH9 查找 | `binary` | `sources/binary/binary_search.c` | `sources/binary/binary_search.cpp` | `sources/binary/binary_search.py` | 已完成且有证据 | BATCH-05 | `94a18ad` | 通过（注释/本地化/编译/专项测试） |
 | 38 | CH9 查找 | `block-search` | `sources/block-search/block_search.c` | `sources/block-search/block_search.cpp` | `sources/block-search/block_search.py` | 已完成且有证据 | BATCH-02 | `05ccb1a` | 通过（BATCH-02 报告） |
-| 39 | CH9 查找 | `bst` | `sources/bst/bst.c` | `sources/bst/bst.cpp` | `sources/bst/bst.py` | 尚未完成 | 未分配 | `—` | 未复核 |
-| 40 | CH9 查找 | `avl` | `sources/avl/avl_tree.c` | `sources/avl/avl_tree.cpp` | `sources/avl/avl_tree.py` | 尚未完成 | 未分配 | `—` | 未复核 |
-| 41 | CH9 查找 | `btree` | `sources/btree/btree.c` | `sources/btree/btree.cpp` | `sources/btree/btree.py` | 尚未完成 | 未分配 | `—` | 未复核 |
-| 42 | CH9 查找 | `bplus-tree` | `sources/bplus-tree/bplus_tree.c` | `sources/bplus-tree/bplus_tree.cpp` | `sources/bplus-tree/bplus_tree.py` | 尚未完成 | 未分配 | `—` | 未复核 |
-| 43 | CH9 查找 | `key-tree` | `sources/key-tree/key_tree.c` | `sources/key-tree/key_tree.cpp` | `sources/key-tree/key_tree.py` | 尚未完成 | 未分配 | `—` | 未复核 |
-| 44 | CH9 查找 | `hash-chain` | `sources/hash-chain/hash_chain.c` | `sources/hash-chain/hash_chain.cpp` | `sources/hash-chain/hash_chain.py` | 尚未完成 | 未分配 | `—` | 未复核 |
-| 45 | CH9 查找 | `hash-probe` | `sources/hash-probe/hash_probe.c` | `sources/hash-probe/hash_probe.cpp` | `sources/hash-probe/hash_probe.py` | 尚未完成 | 未分配 | `—` | 未复核 |
-| 46 | CH10 内部排序 | `insertion` | `sources/insertion/insertion_sort.c` | `sources/insertion/insertion_sort.cpp` | `sources/insertion/insertion_sort.py` | 尚未完成 | 未分配 | `—` | 未复核 |
-| 47 | CH10 内部排序 | `shell` | `sources/shell/shell_sort.c` | `sources/shell/shell_sort.cpp` | `sources/shell/shell_sort.py` | 尚未完成 | 未分配 | `—` | 未复核 |
+| 39 | CH9 查找 | `bst` | `sources/bst/bst.c` | `sources/bst/bst.cpp` | `sources/bst/bst.py` | 已完成且有证据 | BATCH-05 | `94a18ad` | 通过（注释/本地化/编译/专项测试） |
+| 40 | CH9 查找 | `avl` | `sources/avl/avl_tree.c` | `sources/avl/avl_tree.cpp` | `sources/avl/avl_tree.py` | 已完成且有证据 | BATCH-05 | `18b9188` | 通过（注释/本地化/编译/专项测试） |
+| 41 | CH9 查找 | `btree` | `sources/btree/btree.c` | `sources/btree/btree.cpp` | `sources/btree/btree.py` | 已完成且有证据 | BATCH-05 | `18b9188` | 通过（注释/本地化/编译/专项测试） |
+| 42 | CH9 查找 | `bplus-tree` | `sources/bplus-tree/bplus_tree.c` | `sources/bplus-tree/bplus_tree.cpp` | `sources/bplus-tree/bplus_tree.py` | 已完成且有证据 | BATCH-05 | `18b9188` | 通过（注释/本地化/编译/专项测试） |
+| 43 | CH9 查找 | `key-tree` | `sources/key-tree/key_tree.c` | `sources/key-tree/key_tree.cpp` | `sources/key-tree/key_tree.py` | 已完成且有证据 | BATCH-05 | `feb4756` | 通过（注释/本地化/编译/专项测试） |
+| 44 | CH9 查找 | `hash-chain` | `sources/hash-chain/hash_chain.c` | `sources/hash-chain/hash_chain.cpp` | `sources/hash-chain/hash_chain.py` | 已完成且有证据 | BATCH-05 | `feb4756` | 通过（注释/本地化/编译/专项测试） |
+| 45 | CH9 查找 | `hash-probe` | `sources/hash-probe/hash_probe.c` | `sources/hash-probe/hash_probe.cpp` | `sources/hash-probe/hash_probe.py` | 已完成且有证据 | BATCH-05 | `feb4756` | 通过（注释/本地化/编译/专项测试） |
+| 46 | CH10 内部排序 | `insertion` | `sources/insertion/insertion_sort.c` | `sources/insertion/insertion_sort.cpp` | `sources/insertion/insertion_sort.py` | 已完成且有证据 | BATCH-05 | `51b8a64` | 通过（注释/本地化/编译/专项测试） |
+| 47 | CH10 内部排序 | `shell` | `sources/shell/shell_sort.c` | `sources/shell/shell_sort.cpp` | `sources/shell/shell_sort.py` | 已完成且有证据 | BATCH-05 | `51b8a64` | 通过（注释/本地化/编译/专项测试） |
 | 48 | CH10 内部排序 | `bubble` | `sources/bubble/bubble_sort.c` | `sources/bubble/bubble_sort.cpp` | `sources/bubble/bubble_sort.py` | 尚未完成 | 未分配 | `—` | 未复核 |
 | 49 | CH10 内部排序 | `quick` | `sources/quick/quick_sort.c` | `sources/quick/quick_sort.cpp` | `sources/quick/quick_sort.py` | 尚未完成 | 未分配 | `—` | 未复核 |
 | 50 | CH10 内部排序 | `selection` | `sources/selection/selection_sort.c` | `sources/selection/selection_sort.cpp` | `sources/selection/selection_sort.py` | 尚未完成 | 未分配 | `—` | 未复核 |
@@ -129,3 +130,28 @@
 4. `bfs.c` / `dfs.c`：对 `start` 未做范围检查，依赖调用方；`main` 只传合法值。
 5. `seqlist.c::ListErase`：未检查 `removed` 是否为 NULL，依赖调用方提供有效输出指针。
 6. `doubly_linked_list.c::list_remove`：假定 `node` 非空且确实属于该链表，未做归属校验。
+
+## BATCH-05 领取与提交证据
+
+| 组 | 算法 ID | 提交哈希 | 推送结果 |
+| --- | --- | --- | --- |
+| 1 | `linear`, `binary`, `bst` | `94a18ad` | 待推送后回填 |
+| 2 | `avl`, `btree`, `bplus-tree` | `18b9188` | 待推送后回填 |
+| 3 | `key-tree`, `hash-chain`, `hash-probe` | `feb4756` | 待推送后回填 |
+| 4 | `insertion`, `shell` | `51b8a64` | 待推送后回填 |
+| 5 | 双语 annotation、专项测试、查看器与 Playwright | `77bee84` | 待推送后回填 |
+
+本批新增 **272** 条源码教学注释，覆盖 33 份 principle 源码；`git diff --stat` 为 296 insertions / 22 deletions，其余增删来自 B 树、AVL、BST、链地址散列文件头的事实修正。有效代码经 `stripReferenceComments` 与 `HEAD` 逐文件比较，33/33 一致。
+
+教学重点覆盖：查找的有效窗口、索引/比较依据、失败条件与树/散列不变量；AVL 旋转符号、B 树中位键提升、B+ 树叶 2/2 分裂与内部分裂；BST/AVL/B 树删除路径；键树根结点 id 假设；链地址与开放定址的释放/哨兵边界；插入排序严格 `>` 的稳定性依据与希尔排序 gap 收尾。
+
+专项验证结果：BATCH-05 专项 **35/35**、注释事实 **4/4**、查看器 **39/39** 通过；全量 Vitest **156 files / 1516 tests** 通过；33 份源码 C/C++ 编译与 Python 语法+运行检查 **33/33** 通过；代表性 Playwright 用 `linear`、`btree`、`bplus-tree`、`hash-probe` 完成中英显示与真实剪贴板复制，**1/1** 通过；`npm run typecheck` 与 `npm run build` 均退出 0。
+
+## BATCH-05 未修改的实现风险（详情见报告第 8 节）
+
+1. `bst.c`：`malloc` 失败时父结点可能把原孩子指针写成 NULL，丢失原子树；C 版没有删除。
+2. `avl_tree.c`：插入分配失败同样可能断开原子树；三语言 AVL 均只实现插入，没有删除。
+3. `hash_chain.c`：`table_free` 释放结点但不清理桶头，返回后表内是悬空指针，复用前必须重新初始化。
+4. `hash_probe.cpp` / `hash_probe.py`：`EMPTY=-1` 同时可作真实键，插入 `-1` 后 `contains(-1)` 会把真实键当空槽；C 版头注释明确只接受非负键。
+5. `key_tree.c`：`find_word` 直接把根写成 id=0，依赖根始终是第一个分配结点；`MAX_WORD_LENGTH=8` 未在插入时校验。
+6. `bplus_tree.c`：静态池 `MAX_NODES=72`，超出后插入返回 -1；无删除。
