@@ -219,8 +219,9 @@ export function BTreeVisual({ model }: { model: BTreeVisualModel }) {
                     <text
                       className="btree-key-text"
                       x={key.x + key.width / 2}
-                      y={node.y + node.height / 2 + 6}
+                      y={node.y + node.height / 2}
                       textAnchor="middle"
+                      dominantBaseline="central"
                     >
                       {displayNumber(key.value)}
                     </text>

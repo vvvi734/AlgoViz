@@ -232,7 +232,12 @@ export function BplusTreeVisual({ model }: { model: BplusVisualModel }) {
                     {key.index > 0 ? (
                       <line className="bplus-key-separator" x1={key.x} y1={node.y + 5} x2={key.x} y2={node.y + node.height - 5} />
                     ) : null}
-                    <text x={key.x + key.width / 2} y={node.y + node.height / 2 + 6} textAnchor="middle">
+                    <text
+                      x={key.x + key.width / 2}
+                      y={node.y + node.height / 2}
+                      textAnchor="middle"
+                      dominantBaseline="central"
+                    >
                       {numberText(key.value)}
                     </text>
                   </g>

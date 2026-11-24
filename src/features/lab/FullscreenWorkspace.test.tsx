@@ -101,7 +101,7 @@ describe('FullscreenWorkspace', () => {
     expect(inputValue(screen.getByTestId('outside-input'))).toBe('8, 3, 1');
   });
 
-  it('hands playback keys to the existing player while the modal is open', () => {
+  it('hands the new playback keys to the existing player while the modal is open', () => {
     renderHarness();
     openWorkspace();
     const workspace = screen.getByTestId('fullscreen-workspace');
@@ -109,14 +109,21 @@ describe('FullscreenWorkspace', () => {
     toolbar.focus();
     fireEvent.keyDown(toolbar, { key: 'ArrowRight' });
     expect(text(screen.getByTestId('progress'))).toBe('2 / 5');
-    fireEvent.keyDown(toolbar, { key: 'End' });
+    fireEvent.keyDown(toolbar, { key: 'ArrowDown' });
     expect(text(screen.getByTestId('progress'))).toBe('5 / 5');
-    fireEvent.keyDown(toolbar, { key: 'Home' });
+    fireEvent.keyDown(toolbar, { key: 'ArrowLeft' });
+    expect(text(screen.getByTestId('progress'))).toBe('4 / 5');
+    fireEvent.keyDown(toolbar, { key: 'ArrowUp' });
     expect(text(screen.getByTestId('progress'))).toBe('1 / 5');
     fireEvent.keyDown(toolbar, { key: ' ' });
     expect(text(screen.getByTestId('play-btn'))).toContain('暂停');
     fireEvent.keyDown(toolbar, { key: 'ArrowRight' });
     expect(text(screen.getByTestId('play-btn'))).toContain('播放');
+
+    for (const key of ['Home', 'End', 'r']) {
+      fireEvent.keyDown(toolbar, { key });
+      expect(text(screen.getByTestId('progress'))).toBe('2 / 5');
+    }
   });
 
   it('never creates a second playback timer when the workspace mounts', () => {

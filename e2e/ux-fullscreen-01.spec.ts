@@ -170,9 +170,9 @@ test.describe('UX-FULLSCREEN-01', () => {
     await page.getByTestId('fullscreen-canvas').focus();
     await page.keyboard.press('ArrowRight');
     await expect(workspace.getByTestId('progress')).toHaveText(`2 / ${total}`);
-    await page.keyboard.press('End');
+    await page.keyboard.press('ArrowDown');
     await expect(workspace.getByTestId('progress')).toHaveText(`${total} / ${total}`);
-    await page.keyboard.press('Home');
+    await page.keyboard.press('ArrowUp');
     await expect(workspace.getByTestId('progress')).toHaveText(`1 / ${total}`);
     await page.keyboard.press('Space');
     await expect(workspace.getByTestId('play-btn')).toContainText('暂停');
@@ -189,7 +189,7 @@ test.describe('UX-FULLSCREEN-01', () => {
     expect(await page.getByTestId('fullscreen-canvas').getAttribute('data-pan-x')).toBe('0');
 
     await clickZoomIn(page, 2);
-    await page.keyboard.press('r');
+    await page.keyboard.press('ArrowUp');
     await expect(workspace.getByTestId('progress')).toHaveText(`1 / ${total}`);
     await expect(page.getByTestId('fullscreen-zoom-value')).toHaveText('150%');
     await page.keyboard.press('0');
@@ -268,7 +268,7 @@ test.describe('UX-FULLSCREEN-01', () => {
     await expect(page.getByTestId('fullscreen-zoom-value')).toHaveText('300%');
     await expect(page.getByTestId('fullscreen-zoom-in')).toBeDisabled();
     await clickZoomOut(page, 40);
-    await expect(page.getByTestId('fullscreen-zoom-value')).toHaveText('50%');
+    await expect(page.getByTestId('fullscreen-zoom-value')).toHaveText('75%');
     await expect(page.getByTestId('fullscreen-zoom-out')).toBeDisabled();
 
     await page.getByTestId('fullscreen-zoom-value').click();
@@ -301,7 +301,7 @@ test.describe('UX-FULLSCREEN-01', () => {
     await expect(workspace.getByTestId('progress')).toHaveText(`1 / ${total}`);
 
     await page.getByTestId('fullscreen-fit').click();
-    expect(await zoomValue(page)).toBeGreaterThanOrEqual(0.5);
+    expect(await zoomValue(page)).toBeGreaterThanOrEqual(0.75);
     expect(await zoomValue(page)).toBeLessThanOrEqual(3);
     expect(await zoomValue(page)).toBeGreaterThan(1.1);
     expect(Number.isFinite(await zoomValue(page))).toBe(true);

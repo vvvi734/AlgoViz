@@ -5,11 +5,22 @@
  * second renderer. Keeping the maths out of React makes every boundary
  * (50%–300%, NaN, zero-sized canvases) testable and lets pointer movement update
  * only the CSS transform instead of re-rendering a large tree or table.
+ *
+ * Most visuals keep the historical 50% floor. Dense diagrams whose node boxes
+ * shrink around fixed teaching text (linked lists and B+ trees) use a 75%
+ * readability floor: at 50% their own pointer/leaf annotations clip or overlap.
  */
 
 export const FULLSCREEN_MIN_ZOOM = 0.5;
+export const FULLSCREEN_DENSE_TEXT_MIN_ZOOM = 0.75;
 export const FULLSCREEN_MAX_ZOOM = 3;
 export const FULLSCREEN_ZOOM_LEVELS = [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2, 2.5, 3] as const;
+
+export function fullscreenMinZoomFor(algorithmId: string): number {
+  return algorithmId === 'bplus-tree' || algorithmId.includes('linked')
+    ? FULLSCREEN_DENSE_TEXT_MIN_ZOOM
+    : FULLSCREEN_MIN_ZOOM;
+}
 
 export interface ViewportSize {
   width: number;
@@ -41,22 +52,27 @@ function finite(value: number, fallback = 0): number {
   return Number.isFinite(value) ? value : fallback;
 }
 
-export function clampZoom(value: number): number {
+export function clampZoom(value: number, minZoom = FULLSCREEN_MIN_ZOOM): number {
   if (!Number.isFinite(value)) return 1;
-  return Math.min(FULLSCREEN_MAX_ZOOM, Math.max(FULLSCREEN_MIN_ZOOM, value));
+  return Math.min(FULLSCREEN_MAX_ZOOM, Math.max(minZoom, value));
 }
 
 /** Snap inward to the next/previous accessible zoom stop. */
-export function adjacentZoom(current: number, direction: 'in' | 'out'): number {
-  const safe = clampZoom(current);
+export function adjacentZoom(
+  current: number,
+  direction: 'in' | 'out',
+  minZoom = FULLSCREEN_MIN_ZOOM,
+): number {
+  const safe = clampZoom(current, minZoom);
   const epsilon = 0.001;
   if (direction === 'in') {
     return FULLSCREEN_ZOOM_LEVELS.find((level) => level > safe + epsilon) ?? FULLSCREEN_MAX_ZOOM;
   }
   for (let index = FULLSCREEN_ZOOM_LEVELS.length - 1; index >= 0; index -= 1) {
-    if (FULLSCREEN_ZOOM_LEVELS[index] < safe - epsilon) return FULLSCREEN_ZOOM_LEVELS[index];
+    const level = FULLSCREEN_ZOOM_LEVELS[index];
+    if (level < safe - epsilon && level >= minZoom - epsilon) return level;
   }
-  return FULLSCREEN_MIN_ZOOM;
+  return minZoom;
 }
 
 /** Show at least a useful sliver of the scaled stage so a pan can never lose it. */
@@ -88,9 +104,10 @@ export function zoomAroundPoint(
   nextZoom: number,
   anchor: PanOffset,
   viewport: ViewportSize,
+  minZoom = FULLSCREEN_MIN_ZOOM,
 ): FitView {
-  const from = clampZoom(currentZoom);
-  const to = clampZoom(nextZoom);
+  const from = clampZoom(currentZoom, minZoom);
+  const to = clampZoom(nextZoom, minZoom);
   const ratio = to / from;
   return {
     zoom: to,
@@ -114,6 +131,7 @@ export function computeFitView(
   viewport: ViewportSize,
   content: ContentMetrics | null,
   padding = 32,
+  minZoom = FULLSCREEN_MIN_ZOOM,
 ): FitView {
   if (
     !content ||
@@ -134,7 +152,7 @@ export function computeFitView(
   const availableWidth = Math.max(1, viewport.width - horizontalPadding * 2);
   const availableHeight = Math.max(1, viewport.height - verticalPadding * 2);
   const fitZoom = Math.min(availableWidth / content.width, availableHeight / content.height);
-  const zoom = clampZoom(fitZoom);
+  const zoom = clampZoom(fitZoom, minZoom);
   return {
     zoom,
     pan: clampPan(

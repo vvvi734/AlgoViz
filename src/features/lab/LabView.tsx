@@ -393,6 +393,7 @@ export function LabView({
         <div
           className="lab-primary ui02-workbench"
           data-testid="lab-workbench"
+          data-keyboard-playback-surface="true"
           ref={workbenchRef}
           tabIndex={-1}
         >

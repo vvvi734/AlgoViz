@@ -2,7 +2,9 @@ import { useEffect, useRef } from 'react';
 import { canPlay } from '../../domain/trace/player';
 import type { Playback } from './usePlayback';
 
-type PlaybackShortcut = 'prev' | 'next' | 'toggle' | 'reset' | 'first' | 'last';
+type PlaybackShortcut = 'prev' | 'next' | 'toggle' | 'reset' | 'last';
+
+const PLAYBACK_SURFACE_SELECTOR = '[data-keyboard-playback-surface="true"]';
 
 const TEXT_ENTRY_SELECTOR = [
   'input',
@@ -93,25 +95,53 @@ function hasOpenModal(doc: Document, target: EventTarget | null): boolean {
   });
 }
 
-/** Preserve arrow/Home/End/Space scrolling when a graph or code region owns focus. */
-function isHorizontalScrollFocused(doc: Document): boolean {
-  const element = doc.activeElement;
-  if (!(element instanceof HTMLElement)) return false;
-  const style = doc.defaultView?.getComputedStyle(element);
-  return Boolean(
-    style &&
-      (style.overflowX === 'auto' || style.overflowX === 'scroll') &&
-      element.scrollWidth > element.clientWidth + 1,
-  );
+/** Preserve native arrow-key scrolling when an actual scroll region owns focus. */
+function isScrollFocused(doc: Document): boolean {
+  const active = doc.activeElement;
+  if (!(active instanceof HTMLElement)) return false;
+
+  const surface = active.closest<HTMLElement>(PLAYBACK_SURFACE_SELECTOR);
+  let element: HTMLElement | null = active;
+  while (element && element !== doc.body && element !== doc.documentElement) {
+    // The player surface itself is a focus target, not an internal scroller.
+    // Inspect only the regions nested inside it, and never page-level parents.
+    if (surface && element === surface) break;
+    const style = doc.defaultView?.getComputedStyle(element);
+    if (style) {
+      const canScrollX =
+        (style.overflowX === 'auto' || style.overflowX === 'scroll') &&
+        element.scrollWidth > element.clientWidth + 1;
+      const canScrollY =
+        (style.overflowY === 'auto' || style.overflowY === 'scroll') &&
+        element.scrollHeight > element.clientHeight + 1;
+      if (canScrollX || canScrollY) return true;
+    }
+    element = element.parentElement;
+  }
+  return false;
+}
+
+/**
+ * Up/Down also scroll the course page. They may reach the player only when
+ * keyboard focus is genuinely inside an explicitly marked player surface:
+ * the fullscreen workspace or the algorithm workbench.
+ */
+function isPlaybackSurfaceFocused(doc: Document): boolean {
+  const active = doc.activeElement;
+  return Boolean(active instanceof Element && active.closest(PLAYBACK_SURFACE_SELECTOR));
 }
 
 function shortcutFor(event: KeyboardEvent): PlaybackShortcut | null {
-  if (event.code === 'Space' || event.key === ' ' || event.key === 'Space' || event.key === 'Spacebar') return 'toggle';
+  if (
+    event.code === 'Space' ||
+    event.key === ' ' ||
+    event.key === 'Space' ||
+    event.key === 'Spacebar'
+  ) return 'toggle';
   if (event.key === 'ArrowLeft') return 'prev';
   if (event.key === 'ArrowRight') return 'next';
-  if (event.key === 'Home') return 'first';
-  if (event.key === 'End') return 'last';
-  if (event.key.toLowerCase() === 'r') return 'reset';
+  if (event.key === 'ArrowUp') return 'reset';
+  if (event.key === 'ArrowDown') return 'last';
   return null;
 }
 
@@ -139,9 +169,14 @@ export function resolvePlaybackShortcut(
   }
 
   if (
-    isHorizontalScrollFocused(doc) &&
-    command !== 'reset'
+    isScrollFocused(doc)
   ) {
+    return null;
+  }
+
+  // Home/End/R no longer reach the player at all. Up/Down are accepted only
+  // inside a focused player surface, so reading the lesson cannot reset it.
+  if ((command === 'reset' || command === 'last') && !isPlaybackSurfaceFocused(doc)) {
     return null;
   }
 
@@ -153,7 +188,7 @@ export function resolvePlaybackShortcut(
  *
  * The command calls the same prev/next/toggle/seek/restart functions as the
  * visible controls. It never replaces the trace, reruns Python, or creates a
- * second timer. `event.repeat` is ignored for state-changing Space/R presses.
+ * second timer. `event.repeat` is ignored for state-changing Space/Up presses.
  */
 export function runPlaybackShortcut(
   event: KeyboardEvent,
@@ -178,9 +213,6 @@ export function runPlaybackShortcut(
       break;
     case 'reset':
       playback.restart();
-      break;
-    case 'first':
-      playback.seek(0);
       break;
     case 'last':
       playback.seek(playback.frameCount - 1);

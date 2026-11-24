@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  FULLSCREEN_DENSE_TEXT_MIN_ZOOM,
   FULLSCREEN_MAX_ZOOM,
   FULLSCREEN_MIN_ZOOM,
   adjacentZoom,
@@ -7,6 +8,7 @@ import {
   clampZoom,
   computeFitView,
   formatZoomPercent,
+  fullscreenMinZoomFor,
   zoomAroundPoint,
 } from './fullscreenViewport';
 
@@ -18,12 +20,23 @@ describe('fullscreenViewport', () => {
     expect(clampZoom(0)).toBe(FULLSCREEN_MIN_ZOOM);
     expect(clampZoom(99)).toBe(FULLSCREEN_MAX_ZOOM);
     expect(clampZoom(1.25)).toBe(1.25);
+    expect(clampZoom(0.5, FULLSCREEN_DENSE_TEXT_MIN_ZOOM)).toBe(0.75);
+  });
+
+  it('keeps the general 50% floor but raises dense text diagrams to 75%', () => {
+    expect(fullscreenMinZoomFor('bubble')).toBe(0.5);
+    expect(fullscreenMinZoomFor('bfs')).toBe(0.5);
+    expect(fullscreenMinZoomFor('linked')).toBe(0.75);
+    expect(fullscreenMinZoomFor('circular-linked-list')).toBe(0.75);
+    expect(fullscreenMinZoomFor('bplus-tree')).toBe(0.75);
   });
 
   it('moves through accessible zoom stops without skipping or overshooting', () => {
     expect(adjacentZoom(1, 'in')).toBe(1.25);
     expect(adjacentZoom(1, 'out')).toBe(0.75);
     expect(adjacentZoom(0.5, 'out')).toBe(0.5);
+    expect(adjacentZoom(0.75, 'out', FULLSCREEN_DENSE_TEXT_MIN_ZOOM)).toBe(0.75);
+    expect(adjacentZoom(1, 'out', FULLSCREEN_DENSE_TEXT_MIN_ZOOM)).toBe(0.75);
     expect(adjacentZoom(3, 'in')).toBe(3);
     expect(adjacentZoom(1.24, 'in')).toBe(1.25);
     expect(adjacentZoom(1.24, 'out')).toBe(1);
@@ -73,6 +86,12 @@ describe('fullscreenViewport', () => {
       40,
     );
     expect(enormous.zoom).toBe(0.5);
+    expect(computeFitView(
+      { width: 1200, height: 800 },
+      { width: 2400, height: 2000, centerX: 0, centerY: 0 },
+      40,
+      FULLSCREEN_DENSE_TEXT_MIN_ZOOM,
+    ).zoom).toBe(0.75);
   });
 
   it('centres off-centre content after fitting it', () => {

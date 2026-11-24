@@ -314,14 +314,15 @@ html.fullscreen-scroll-lock {
 }
 
 .fullscreen-bottom .keyboard-hint {
-  margin-top: 3px;
+  gap: 4px 7px;
+  margin-top: 2px;
 }
 
 .fullscreen-zoom-shortcuts {
-  padding: 2px 0 1px;
+  padding: 1px 0 0;
   color: var(--muted);
   font-size: var(--font-ui);
-  line-height: 1.4;
+  line-height: 1.35;
 }
 
 .fullscreen-sr-only {
@@ -420,9 +421,17 @@ html.fullscreen-scroll-lock {
     font-size: var(--font-ui);
   }
 
-  .fullscreen-bottom .keyboard-hint,
-  .fullscreen-bottom .timeline-hint,
+  .fullscreen-bottom .keyboard-hint {
+    width: 100%;
+    justify-content: center;
+  }
+
   .fullscreen-zoom-shortcuts {
+    width: 100%;
+    text-align: center;
+  }
+
+  .fullscreen-bottom .timeline-hint {
     display: none;
   }
 
@@ -486,9 +495,7 @@ html.fullscreen-scroll-lock {
 }
 
 @media (max-height: 620px) and (min-width: 721px) {
-  .fullscreen-bottom .keyboard-hint,
-  .fullscreen-bottom .timeline-hint,
-  .fullscreen-zoom-shortcuts {
+  .fullscreen-bottom .timeline-hint {
     display: none;
   }
 

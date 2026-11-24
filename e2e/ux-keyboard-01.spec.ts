@@ -44,12 +44,11 @@ test.describe('UX-KEYBOARD-01 playback shortcuts', () => {
     await expect(hint).toContainText('上一帧');
     await expect(hint).toContainText('播放/暂停');
     await expect(hint).toContainText('重置');
-    await expect(hint).toContainText('首帧');
     await expect(hint).toContainText('末帧');
     await expect(page.getByTestId('prev-btn')).toHaveAttribute('aria-keyshortcuts', 'ArrowLeft');
     await expect(page.getByTestId('next-btn')).toHaveAttribute('aria-keyshortcuts', 'ArrowRight');
     await expect(page.getByTestId('play-btn')).toHaveAttribute('aria-keyshortcuts', 'Space');
-    await expect(page.getByTestId('restart-btn')).toHaveAttribute('aria-keyshortcuts', 'R');
+    await expect(page.getByTestId('restart-btn')).toHaveAttribute('aria-keyshortcuts', 'ArrowUp');
     await expect(page.getByTestId('next-btn')).toHaveAttribute('title', '下一帧（→）');
     await expect(page.getByTestId('prev-btn')).toHaveAttribute('title', '上一帧（←）');
 
@@ -61,11 +60,11 @@ test.describe('UX-KEYBOARD-01 playback shortcuts', () => {
     await pressKey(page, 'ArrowLeft');
     await expect(page.getByTestId('progress')).toHaveText(`1 / ${total}`);
 
-    await pressKey(page, 'End');
+    await pressKey(page, 'ArrowDown');
     await expect(page.getByTestId('progress')).toHaveText(`${total} / ${total}`);
     await pressKey(page, 'ArrowRight');
     await expect(page.getByTestId('progress')).toHaveText(`${total} / ${total}`);
-    await pressKey(page, 'Home');
+    await pressKey(page, 'ArrowUp');
     await expect(page.getByTestId('progress')).toHaveText(`1 / ${total}`);
 
     await pressKey(page, 'Space');
@@ -74,7 +73,7 @@ test.describe('UX-KEYBOARD-01 playback shortcuts', () => {
     await expect(page.getByTestId('play-btn')).toHaveText(/播放|Play/);
 
     const inputBefore = await page.getByTestId('run-input').inputValue();
-    await pressKey(page, 'R');
+    await pressKey(page, 'ArrowUp');
     await expect(page.getByTestId('progress')).toHaveText(`1 / ${total}`);
     await expect(page.getByTestId('play-btn')).toHaveText(/播放|Play/);
     await expect(page.getByTestId('run-input')).toHaveValue(inputBefore);
@@ -83,7 +82,7 @@ test.describe('UX-KEYBOARD-01 playback shortcuts', () => {
 
     await pressKey(page, 'Space');
     await expect(page.getByTestId('play-btn')).toHaveText(/暂停|Pause/);
-    await pressKey(page, 'End');
+    await pressKey(page, 'ArrowDown');
     await expect(page.getByTestId('progress')).toHaveText(`${total} / ${total}`);
     await expect(page.getByTestId('play-btn')).toHaveText(/播放|Play/);
   });
@@ -107,9 +106,9 @@ test.describe('UX-KEYBOARD-01 playback shortcuts', () => {
       await focusWorkspace(page);
       await pressKey(page, 'ArrowRight');
       await expect(page.getByTestId('progress')).toHaveText(`2 / ${total}`);
-      await pressKey(page, 'End');
+      await pressKey(page, 'ArrowDown');
       await expect(page.getByTestId('progress')).toHaveText(`${total} / ${total}`);
-      await pressKey(page, 'Home');
+      await pressKey(page, 'ArrowUp');
       await expect(page.getByTestId('progress')).toHaveText(`1 / ${total}`);
     }
 
@@ -205,8 +204,8 @@ test.describe('UX-KEYBOARD-01 playback shortcuts', () => {
     await page.getByRole('button', { name: 'Modal action' }).focus();
     await expect(page.getByTestId('progress')).toHaveText(/^1 \/ \d+$/);
     await page.keyboard.press('ArrowRight');
-    await page.keyboard.press('End');
-    await page.keyboard.press('R');
+    await page.keyboard.press('ArrowDown');
+    await page.keyboard.press('ArrowUp');
     await expect(page.getByTestId('progress')).toHaveText(/^1 \/ \d+/);
     await page.evaluate(() => document.querySelector('[data-keyboard-fixture="modal"]')?.remove());
   });

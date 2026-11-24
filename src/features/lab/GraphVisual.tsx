@@ -440,7 +440,7 @@ function NodeGlyph({
       {node.isolated && <circle className="graph-isolated-ring" r={radius + 3} fill="none" />}
       {target && <circle className="graph-target-ring" r={radius + 3} fill="none" />}
       <circle className="graph-node-body" r={radius} />
-      <text className="graph-node-label" y={4} textAnchor="middle">
+      <text className="graph-node-label" y={0} textAnchor="middle" dominantBaseline="central">
         {node.label}
       </text>
       {weighted && (

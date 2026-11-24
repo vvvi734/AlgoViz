@@ -48,7 +48,7 @@ export function Timeline({ events, playback }: { events: TraceEvent[]; playback:
           onClick={playback.restart}
           title={t('playerResetShortcut')}
           aria-label={t('playerResetShortcut')}
-          aria-keyshortcuts="R"
+          aria-keyshortcuts="ArrowUp"
           data-testid="restart-btn"
         >⟲</button>
         <button
@@ -105,10 +105,9 @@ export function Timeline({ events, playback }: { events: TraceEvent[]; playback:
         <span className="keyboard-hint-icon" aria-hidden="true">⌨</span>
         <span className="keyboard-hint-item"><kbd>←</kbd>{t('playerPrevious')}</span>
         <span className="keyboard-hint-item"><kbd>→</kbd>{t('playerNext')}</span>
+        <span className="keyboard-hint-item"><kbd>↑</kbd>{t('playerShortcutReset')}</span>
+        <span className="keyboard-hint-item"><kbd>↓</kbd>{t('playerShortcutLast')}</span>
         <span className="keyboard-hint-item"><kbd>Space</kbd>{t('playerShortcutPlayPause')}</span>
-        <span className="keyboard-hint-item"><kbd>R</kbd>{t('playerShortcutReset')}</span>
-        <span className="keyboard-hint-item"><kbd>Home</kbd>{t('playerShortcutFirst')}</span>
-        <span className="keyboard-hint-item"><kbd>End</kbd>{t('playerShortcutLast')}</span>
       </div>
     </div>
   );

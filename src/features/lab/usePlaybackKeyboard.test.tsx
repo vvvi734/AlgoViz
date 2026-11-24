@@ -30,9 +30,26 @@ function KeyboardHarness({ events, enabled = true }: { events: TraceEvent[]; ena
 function renderKeyboard(events: TraceEvent[] = EVENTS, enabled = true) {
   return render(
     <StrictMode>
-      <KeyboardHarness events={events} enabled={enabled} />
+      <div
+        data-testid="playback-surface"
+        data-keyboard-playback-surface="true"
+        tabIndex={-1}
+      >
+        <KeyboardHarness events={events} enabled={enabled} />
+      </div>
     </StrictMode>,
   );
+}
+
+function focusSurface(): HTMLElement {
+  const surface = screen.getByTestId('playback-surface');
+  surface.focus();
+  return surface;
+}
+
+function leaveSurface(): void {
+  const active = document.activeElement;
+  if (active instanceof HTMLElement) active.blur();
 }
 
 function press(target: EventTarget, key: string, init: KeyboardEventInit = {}): KeyboardEvent {
@@ -61,8 +78,9 @@ afterEach(() => {
 });
 
 describe('usePlaybackKeyboard', () => {
-  it('maps arrows, Home and End and clamps at both frame boundaries', () => {
+  it('maps the four arrows to prev/next/reset/last and clamps at both boundaries', () => {
     renderKeyboard();
+    focusSurface();
     expect(frame()).toBe(0);
 
     let event = press(document.body, 'ArrowLeft');
@@ -76,17 +94,21 @@ describe('usePlaybackKeyboard', () => {
     press(document.body, 'ArrowLeft');
     expect(frame()).toBe(1);
 
-    press(document.body, 'Home');
-    expect(frame()).toBe(0);
-    press(document.body, 'End');
+    press(document.body, 'ArrowDown');
     expect(frame()).toBe(4);
-    event = press(document.body, 'ArrowRight');
+    press(document.body, 'ArrowRight');
     expect(event.defaultPrevented).toBe(true);
     expect(frame()).toBe(4);
+
+    press(document.body, 'ArrowUp');
+    expect(frame()).toBe(0);
+    press(document.body, 'ArrowLeft');
+    expect(frame()).toBe(0);
   });
 
   it('uses the existing play/pause and reset transitions', () => {
     renderKeyboard();
+    focusSurface();
 
     press(document.body, 'Space');
     expect(playing()).toBe(true);
@@ -94,7 +116,7 @@ describe('usePlaybackKeyboard', () => {
     expect(frame()).toBe(1);
     expect(playing()).toBe(false);
 
-    press(document.body, 'End');
+    press(document.body, 'ArrowDown');
     expect(frame()).toBe(4);
     expect(playing()).toBe(false);
 
@@ -102,14 +124,28 @@ describe('usePlaybackKeyboard', () => {
     expect(frame()).toBe(0);
     expect(playing()).toBe(true);
 
-    press(document.body, 'R');
+    press(document.body, 'ArrowUp');
     expect(frame()).toBe(0);
     expect(playing()).toBe(false);
   });
 
+  it('removes R, Home and End from the player without hijacking them', () => {
+    renderKeyboard();
+    focusSurface();
+    press(document.body, 'ArrowDown');
+    expect(frame()).toBe(4);
+
+    for (const key of ['Home', 'End', 'r', 'R']) {
+      const event = press(document.body, key);
+      expect(event.defaultPrevented).toBe(false);
+      expect(frame()).toBe(4);
+    }
+  });
+
   it('ignores browser and IME shortcuts', () => {
     renderKeyboard();
-    press(document.body, 'End');
+    focusSurface();
+    press(document.body, 'ArrowDown');
     expect(frame()).toBe(4);
 
     let event = press(document.body, 'r', { ctrlKey: true });
@@ -124,6 +160,10 @@ describe('usePlaybackKeyboard', () => {
     expect(event.defaultPrevented).toBe(false);
     expect(frame()).toBe(4);
 
+    event = press(document.body, 'ArrowRight', { keyCode: 229 });
+    expect(event.defaultPrevented).toBe(false);
+    expect(frame()).toBe(4);
+
     event = press(document.body, 'ArrowRight', { metaKey: true });
     expect(event.defaultPrevented).toBe(false);
     expect(frame()).toBe(4);
@@ -132,6 +172,7 @@ describe('usePlaybackKeyboard', () => {
   it('does not flip play or reset repeatedly while a key is held', () => {
     const intervalSpy = vi.spyOn(window, 'setInterval');
     renderKeyboard();
+    focusSurface();
 
     press(document.body, 'Space');
     expect(playing()).toBe(true);
@@ -151,18 +192,19 @@ describe('usePlaybackKeyboard', () => {
     press(document.body, 'Space');
     expect(playing()).toBe(true);
 
-    const repeatedReset = press(document.body, 'r', { repeat: true });
+    const repeatedReset = press(document.body, 'ArrowUp', { repeat: true });
     expect(repeatedReset.defaultPrevented).toBe(true);
     expect(frame()).toBe(2);
     expect(playing()).toBe(true);
 
-    press(document.body, 'R');
+    press(document.body, 'ArrowUp');
     expect(frame()).toBe(0);
     expect(playing()).toBe(false);
   });
 
   it('keeps text entry, contenteditable, Monaco and reference code native', () => {
     renderKeyboard();
+    focusSurface();
     press(document.body, 'ArrowRight');
     press(document.body, 'ArrowRight');
     expect(frame()).toBe(2);
@@ -172,6 +214,9 @@ describe('usePlaybackKeyboard', () => {
     document.body.append(input);
     input.focus();
     let event = press(input, 'ArrowRight');
+    expect(event.defaultPrevented).toBe(false);
+    expect(frame()).toBe(2);
+    event = press(input, 'ArrowUp');
     expect(event.defaultPrevented).toBe(false);
     expect(frame()).toBe(2);
 
@@ -243,15 +288,18 @@ describe('usePlaybackKeyboard', () => {
     const event = press(modal, 'ArrowRight');
     expect(event.defaultPrevented).toBe(true);
     expect(frame()).toBe(1);
+    const down = press(modal, 'ArrowDown');
+    expect(down.defaultPrevented).toBe(true);
+    expect(frame()).toBe(4);
 
     // A foreground target outside the marked playback dialog is still blocked
     // by the modal.
     const outside = press(document.body, 'ArrowRight');
     expect(outside.defaultPrevented).toBe(false);
-    expect(frame()).toBe(1);
+    expect(frame()).toBe(4);
   });
 
-  it('leaves arrows and Home/End to a focused horizontal scroll region', () => {
+  it('leaves all five keys to a focused horizontal scroll region', () => {
     renderKeyboard();
     const scroller = document.createElement('div');
     scroller.dataset.keyboardFixture = 'scroller';
@@ -264,6 +312,8 @@ describe('usePlaybackKeyboard', () => {
 
     const arrow = press(scroller, 'ArrowRight');
     expect(arrow.defaultPrevented).toBe(false);
+    const up = press(scroller, 'ArrowUp');
+    expect(up.defaultPrevented).toBe(false);
     const home = press(scroller, 'Home');
     expect(home.defaultPrevented).toBe(false);
     expect(frame()).toBe(0);
@@ -281,6 +331,7 @@ describe('usePlaybackKeyboard', () => {
     Object.defineProperty(pageScroller, 'scrollWidth', { configurable: true, value: 320 });
     const workspace = document.createElement('div');
     workspace.dataset.keyboardFixture = 'workspace';
+    workspace.dataset.keyboardPlaybackSurface = 'true';
     workspace.tabIndex = -1;
     pageScroller.append(workspace);
     document.body.append(pageScroller);
@@ -289,6 +340,28 @@ describe('usePlaybackKeyboard', () => {
     const event = press(workspace, 'ArrowRight');
     expect(event.defaultPrevented).toBe(true);
     expect(frame()).toBe(1);
+    const down = press(workspace, 'ArrowDown');
+    expect(down.defaultPrevented).toBe(true);
+    expect(frame()).toBe(4);
+  });
+
+  it('does not consume Up/Down while the course page owns focus', () => {
+    renderKeyboard();
+    leaveSurface();
+    expect(document.activeElement).toBe(document.body);
+
+    press(document.body, 'ArrowRight');
+    expect(frame()).toBe(1);
+
+    for (const key of ['ArrowUp', 'ArrowDown']) {
+      const event = press(document.body, key);
+      expect(event.defaultPrevented).toBe(false);
+      expect(frame()).toBe(1);
+    }
+
+    focusSurface();
+    expect(press(document.body, 'ArrowDown').defaultPrevented).toBe(true);
+    expect(frame()).toBe(4);
   });
 
   it('does nothing without a trace and respects the disabled page scope', () => {

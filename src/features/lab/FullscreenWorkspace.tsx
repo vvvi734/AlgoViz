@@ -18,18 +18,22 @@ import { useI18n } from '../../i18n/I18nProvider';
 import type { FullscreenMode } from './useFullscreenView';
 import {
   FULLSCREEN_MAX_ZOOM,
-  FULLSCREEN_MIN_ZOOM,
   adjacentZoom,
   clampPan,
   clampZoom,
   computeFitView,
   formatZoomPercent,
+  fullscreenMinZoomFor,
   viewportSizeFromElement,
   zoomAroundPoint,
   type PanOffset,
   type ViewportSize,
 } from './fullscreenViewport';
 import { measureVisualContent } from './fullscreenContentBounds';
+import {
+  applyFullscreenTextScale,
+  resetFullscreenTextScale,
+} from './fullscreenTextScale';
 
 const NO_PAN_SELECTOR = [
   'button',
@@ -167,9 +171,40 @@ export function FullscreenWorkspace({
   } | null>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
   const resizeFrameRef = useRef<number | null>(null);
+  const textZoomRef = useRef<number | null>(null);
+  const minZoom = fullscreenMinZoomFor(algorithmId);
   const titleId = useId();
   const helpId = useId();
   const panHintId = useId();
+
+  const visualStage = useCallback(
+    () => worldRef.current?.querySelector<HTMLElement>('[data-testid="visual-stage"]') ?? null,
+    [],
+  );
+
+  /**
+   * Text is re-typed at 1/zoom so the world transform only changes geometry.
+   * New frame elements are picked up after each render; repeated pan events at
+   * the same zoom deliberately do not rescan the DOM.
+   */
+  const syncTextScale = useCallback((force = false) => {
+    const stage = visualStage();
+    if (!stage) return;
+    const zoom = zoomRef.current;
+    if (!force && textZoomRef.current === zoom) return;
+    applyFullscreenTextScale(stage, zoom);
+    textZoomRef.current = zoom;
+  }, [visualStage]);
+
+  const refreshTextScale = useCallback(() => {
+    const stage = visualStage();
+    if (!stage) return;
+    // CSS can change under a responsive breakpoint while the immersive view is
+    // open; drop cached sizes before measuring/fitting the new viewport.
+    resetFullscreenTextScale(stage);
+    textZoomRef.current = null;
+    syncTextScale(true);
+  }, [syncTextScale, visualStage]);
 
   const applyTransform = useCallback(() => {
     const world = worldRef.current;
@@ -185,6 +220,7 @@ export function FullscreenWorkspace({
       viewport.dataset.panX = String(panRef.current.x);
       viewport.dataset.panY = String(panRef.current.y);
     }
+    syncTextScale();
 
     const percent = formatZoomPercent(zoomRef.current);
     const value = zoomValueRef.current;
@@ -192,26 +228,26 @@ export function FullscreenWorkspace({
       value.textContent = percent;
       value.setAttribute('aria-label', `${t('fullscreenResetZoom')} · ${percent}`);
     }
-    if (zoomOutRef.current) zoomOutRef.current.disabled = zoomRef.current <= FULLSCREEN_MIN_ZOOM + 0.001;
+    if (zoomOutRef.current) zoomOutRef.current.disabled = zoomRef.current <= minZoom + 0.001;
     if (zoomInRef.current) zoomInRef.current.disabled = zoomRef.current >= FULLSCREEN_MAX_ZOOM - 0.001;
-  }, [t]);
+  }, [minZoom, t]);
 
   const commitView = useCallback((view: { zoom: number; pan: PanOffset }, fit: boolean) => {
-    zoomRef.current = clampZoom(view.zoom);
+    zoomRef.current = clampZoom(view.zoom, minZoom);
     panRef.current = clampPan(view.pan, viewportSizeRef.current, zoomRef.current);
     fitModeRef.current = fit;
     applyTransform();
-  }, [applyTransform]);
+  }, [applyTransform, minZoom]);
 
   const resetZoom = useCallback(() => {
     commitView({ zoom: 1, pan: { x: 0, y: 0 } }, false);
   }, [commitView]);
 
   const stepZoom = useCallback((direction: 'in' | 'out') => {
-    const next = adjacentZoom(zoomRef.current, direction);
+    const next = adjacentZoom(zoomRef.current, direction, minZoom);
     if (Math.abs(next - zoomRef.current) < 0.001) return;
     commitView({ zoom: next, pan: panRef.current }, false);
-  }, [commitView]);
+  }, [commitView, minZoom]);
 
   const fitToScreen = useCallback(() => {
     const viewport = viewportRef.current;
@@ -220,9 +256,9 @@ export function FullscreenWorkspace({
     viewportSizeRef.current = size;
     const content = measureVisualContent(stage, zoomRef.current);
     const padding = Math.min(64, Math.max(20, Math.min(size.width, size.height) * 0.055));
-    const fit = computeFitView(size, content, padding);
+    const fit = computeFitView(size, content, padding, minZoom);
     commitView(fit, true);
-  }, [commitView]);
+  }, [commitView, minZoom]);
 
   const movePan = useCallback((x: number, y: number) => {
     const next = clampPan({ x, y }, viewportSizeRef.current, zoomRef.current);
@@ -246,7 +282,7 @@ export function FullscreenWorkspace({
       y: event.clientY - (rect.top + rect.height / 2),
     };
     const factor = Math.exp(-event.deltaY * 0.0015);
-    const next = clampZoom(zoomRef.current * finiteDimension(factor, 1));
+    const next = clampZoom(zoomRef.current * finiteDimension(factor, 1), minZoom);
     if (Math.abs(next - zoomRef.current) < 0.0001) return;
     const view = zoomAroundPoint(
       zoomRef.current,
@@ -254,9 +290,10 @@ export function FullscreenWorkspace({
       next,
       anchor,
       viewportSizeRef.current,
+      minZoom,
     );
     commitView(view, false);
-  }, [commitView]);
+  }, [commitView, minZoom]);
 
   const finishPointerGesture = useCallback(() => {
     const viewport = viewportRef.current;
@@ -389,6 +426,12 @@ export function FullscreenWorkspace({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Every new trace frame can create fresh HTML/SVG text nodes. Only new nodes
+  // read a base size; existing labels keep the cached value from zoom 1.
+  useLayoutEffect(() => {
+    syncTextScale(true);
+  }, [event, playback.index, syncTextScale]);
+
   // Lock only this immersive surface: the page gets its exact overflow state
   // back on exit, and the inert app cannot receive focus behind the dialog.
   useEffect(() => {
@@ -511,6 +554,7 @@ export function FullscreenWorkspace({
     if (!viewport) return;
     const sync = () => {
       viewportSizeRef.current = viewportSizeFromElement(viewportRef.current);
+      refreshTextScale();
       if (fitModeRef.current) {
         if (resizeFrameRef.current !== null) return;
         resizeFrameRef.current = requestAnimationFrame(() => {
@@ -537,7 +581,7 @@ export function FullscreenWorkspace({
         resizeFrameRef.current = null;
       }
     };
-  }, [applyTransform, fitToScreen]);
+  }, [applyTransform, fitToScreen, refreshTextScale]);
 
   const workspace = (
     <div
