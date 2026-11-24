@@ -1,8 +1,10 @@
 # AlgoViz · 数据结构与算法可视化学习平台
 
+**在线体验（GitHub Pages 公开测试部署）：https://vvvi734.github.io/AlgoViz/**
+
 AlgoViz 是一个浏览器端的数据结构与算法学习平台。Python 通过 Pyodide 在浏览器内真实执行，动画帧来自执行时记录的 Trace；`bubble` 官方课堂入口保留既有的 25 帧 JavaScript 教学预设。画布、变量、调用栈、教学步骤和参考代码共享同一个播放位置。
 
-当前发布候选版本：**v1.0.0**（RELEASE-01）。正式 Git Tag、Release 与线上部署需在发布确认后执行；本仓库不声称已经正式发布。版本说明见 [v1.0.0 发布说明](docs/RELEASES/v1.0.0.md)，部署要求见 [部署说明](docs/DEPLOYMENT.md)。
+当前发布候选版本：**v1.0.0**（RELEASE-01）。GitHub Pages 公开测试站点已上线，但正式 Git Tag、Release 与 v1.0.0 正式发布仍需发布确认；公开测试部署不等同于正式发布。版本说明见 [v1.0.0 发布说明](docs/RELEASES/v1.0.0.md)，部署要求与线上地址见 [部署说明](docs/DEPLOYMENT.md)。
 
 - 纯前端运行，不需要服务器或数据库。
 - 一个算法只有一条时间轴、一个播放器，不推测执行状态。
