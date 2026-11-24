@@ -24,10 +24,12 @@
 from collections import deque
 
 ORDER = 4
+# Python lists carry their own lengths, so the upper and lower bounds are checked against len(node.keys) rather than against a fixed array size.
 MAX_KEYS = ORDER - 1
 MIN_KEYS = ORDER // 2 - 1
 
 
+# A node stores keys and children as parallel sequences; for k keys an internal node must have exactly k+1 children, and leaves leave children empty.
 class BTreeNode:
     def __init__(self, leaf=True):
         self.keys = []
@@ -41,6 +43,7 @@ def btree_search(node, target, comparisons=None):
     """Read-only search. Returns True on a hit; counts key comparisons."""
     while node is not None:
         index = 0
+        # The key scan stops at the first key >= target; equality returns immediately, and a smaller target breaks to the child at that index.
         while index < len(node.keys):
             if comparisons is not None:
                 comparisons[0] += 1
@@ -60,12 +63,15 @@ def btree_search(node, target, comparisons=None):
 def split_child(parent, index):
     """Split a full child; promote its median into parent. Returns the new right node."""
     left = parent.children[index]
+    # Order 4 makes index 1 the median; it is copied out before the left key list is truncated, so the parent receives a value that no half retains.
     promoted = left.keys[1]
 
     right = BTreeNode(left.leaf)
+    # A full leaf has 3 keys, so the right node receives exactly the last key; the median itself is not copied into the right half.
     right.keys = [left.keys[2]]
     if not left.leaf:
         right.children = left.children[2:]
+        # The left child list is sliced to two entries after children 2 and 3 move right; keeping the old list would leave duplicate ownership of the same subtrees.
         left.children = left.children[:2]
     left.keys = left.keys[:1]
 
@@ -90,6 +96,7 @@ def btree_insert(root, value):
     if btree_search(root, value):
         return root
 
+    # Only a full root creates a new level; the old root becomes the new root's left child and the promoted separator becomes its only key.
     if len(root.keys) == MAX_KEYS:
         new_root = BTreeNode(leaf=False)
         new_root.children.append(root)
@@ -102,6 +109,7 @@ def btree_insert(root, value):
         while index < len(node.keys) and value > node.keys[index]:
             index += 1
         child = node.children[index]
+        # A full child is split before descending; the promoted key lets the loop choose the correct child without backtracking.
         if len(child.keys) == MAX_KEYS:
             promoted = child.keys[1]
             right = split_child(node, index)
@@ -110,6 +118,7 @@ def btree_insert(root, value):
         node = child
 
     position = len(node.keys)
+    # Leaf insertion finds the gap by moving only larger keys; equal keys would stop the walk, which matches the duplicate-rejection contract.
     while position > 0 and node.keys[position - 1] > value:
         position -= 1
     node.keys.insert(position, value)
@@ -135,6 +144,7 @@ def max_key(node):
 
 # Purpose: Repair the child at index before descending: borrow left, borrow right, then merge.
 # 作用：下降前修复 index 处孩子：先左借、再右借、最后合并。
+# The child is repaired before recursion; borrowing or merging at the parent is what keeps every recursive call above the minimum.
 def ensure_child(node, index):
     child = node.children[index]
     if len(child.keys) > MIN_KEYS:
@@ -142,6 +152,7 @@ def ensure_child(node, index):
     if index > 0:
         left = node.children[index - 1]
         if len(left.keys) > MIN_KEYS:
+            # Left borrowing inserts the parent separator at the front, then moves the left maximum up; for an internal child the matching child pointer moves too.
             child.keys.insert(0, node.keys[index - 1])
             node.keys[index - 1] = left.keys.pop()
             if not child.leaf:
@@ -157,6 +168,7 @@ def ensure_child(node, index):
             return
     if index > 0:
         left = node.children[index - 1]
+        # A left merge pops the separator from the parent and extends the left sibling with the child's keys; the child itself is then discarded.
         left.keys.append(node.keys.pop(index - 1))
         left.keys.extend(child.keys)
         if not child.leaf:
@@ -186,6 +198,7 @@ def delete_rec(node, target):
             if index == len(node.keys) or node.keys[index] != target:
                 delete_rec(node.children[index], target)
                 return
+        # The predecessor is the maximum of the left subtree; copying it into the internal slot and deleting the original leaf key avoids duplicate keys.
         predecessor = max_key(node.children[index])
         node.keys[index] = predecessor
         delete_rec(node.children[index], predecessor)
@@ -201,6 +214,7 @@ def btree_delete(root, target):
     if root is None or not btree_search(root, target):
         return root
     delete_rec(root, target)
+    # When the root has no keys but is not a leaf, its only child becomes the new root; this is the only height decrease.
     if not root.leaf and len(root.keys) == 0:
         root = root.children[0]
     return root

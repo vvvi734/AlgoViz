@@ -1,10 +1,10 @@
 /*
- * 中文导读：在普通二叉搜索树上维护高度差，使查找、插入、删除都保持 O(log n)。
+ * 中文导读：在普通二叉搜索树上维护高度差，使查找、插入保持 O(log n)；本版本不实现删除。
  * 阅读顺序：先看 Node 的 height 字段；再看 height()/balance_factor() 如何由子树高度算出；最后跟 insert() 的递归返回路径看四种旋转。
  * 关键不变量：任意结点的左右子树高度差只能是 -1、0、1；旋转后仍要满足 BST 的中序有序性。
- * 易错点：只改指针却忘记更新 height；把“不平衡”误判成只要左右高度相等；删除时没有沿整条返回路径继续修复。
- * 复杂度：查找/插入/删除 O(log n)，单次旋转 O(1)，额外空间 O(n)。
- * 输入/输出：输入 main 中的整数键序列；插入/删除原地修改树，中序输出升序键；重复键被忽略。
+ * 易错点：只改指针却忘记更新 height；把“不平衡”误判成只要左右高度相等；旋转后先刷新较高结点导致高度用旧值。
+ * 复杂度：查找/插入 O(log n)，单次旋转 O(1)，额外空间 O(h) 递归。
+ * 输入/输出：输入 main 中的整数键序列；插入原地修改树，中序输出升序键；重复键被忽略；不提供删除。
 */
 
 // AlgoViz reference implementation: AVL tree (C++17).
@@ -17,7 +17,7 @@
 // 3. If the balance factor leaves {-1, 0, 1}, apply LL, RR, LR or RL rotations.
 //
 // Complexity: O(log n) for insert/search; extra space O(h) = O(log n)
-//   recursion.
+//   recursion. Deletion is intentionally not implemented in this module.
 // Convention: Height of an empty subtree is 0; duplicate keys are ignored.
 
 #include <algorithm>
@@ -42,6 +42,7 @@ class AVLTree
 
     // Purpose: Start insertion at the root and publish the rebalanced subtree; height updates and rotations happen on the recursive return path.
     // 作用：从根启动插入并接回重新平衡的子树；高度更新与旋转在递归返回路径上完成。
+    // Moving root_ into the recursive call is an ownership transfer, not a copy; the returned subtree is then moved back into root_.
     void insert(int value)
     {
         root_ = insert(std::move(root_), value);
@@ -79,6 +80,7 @@ class AVLTree
 
     // Purpose: Return left height minus right height; an absolute value greater than 1 means imbalance.
     // 作用：返回左子树高度减右子树高度；绝对值大于 1 表示失衡。
+    // The factor is left height minus right height, so its sign already names the heavy side; the rotation code relies on that convention.
     static int balance_factor(const Node *node)
     {
         return node ? height(node->left.get()) - height(node->right.get()) : 0;
@@ -88,7 +90,9 @@ class AVLTree
     // 作用：右旋并返回新的子树根；旋转后要更新受影响结点的高度。
     static std::unique_ptr<Node> rotate_right(std::unique_ptr<Node> y)
     {
+        // x is captured before y->left is overwritten; rotation is only requested when the left side is heavy, so this pointer is non-null.
         auto x = std::move(y->left);
+        // The middle subtree changes parent as one unique_ptr; no node is copied, and the old x->right becomes empty.
         y->left = std::move(x->right);
         x->right = std::move(y);
         // y is now the lower node; refresh it before x, whose height depends on y's new height.
@@ -120,6 +124,7 @@ class AVLTree
         int factor = balance_factor(node.get());
         if (factor > 1)
         {
+            // The child's sign selects LR versus LL; the top-level factor only says the left side is too tall.
             if (balance_factor(node->left.get()) < 0)
             {
                 // LR case: repair the left-left shape with a left rotation on the child, then a right rotation.
@@ -144,6 +149,7 @@ class AVLTree
     {
         if (!node)
         {
+            // The leaf is created with height 1; duplicate keys return before balance, so an existing node is never rotated for no reason.
             return std::make_unique<Node>(value);
         }
         if (value < node->value)
@@ -158,11 +164,13 @@ class AVLTree
         {
             return node;
         }
+        // Every recursive return passes through balance, so ancestors see an already repaired subtree rather than a temporarily invalid height.
         return balance(std::move(node));
     }
 
     // Purpose: Inorder traversal of the whole tree printing ascending keys; read-only.
     // 作用：中序遍历整棵树并输出升序键值；只读。
+    // Rotations change shape but must not change the inorder sequence; this walk is the invariant check that no key was moved across another.
     static void inorder(const Node *node)
     {
         if (!node)

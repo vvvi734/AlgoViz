@@ -21,11 +21,13 @@
 #include <stdio.h>
 
 #define ORDER 4
+// MAX_KEYS is 3, but the arrays reserve one extra slot: insertion writes the fourth key first, then split_leaf moves it out. The overflow slot is part of the algorithm, not slack.
 #define MAX_KEYS 3
 #define MAX_NODES 72
 
 typedef struct
 {
+    // The extra key slot is what makes a split a move rather than a second insertion pass; without it, the fourth key would overflow before the split could run.
     int keys[MAX_KEYS + 1]; // slot MAX_KEYS is the temporary overflow before a split
     int key_count;
     int children[ORDER + 1]; // slot ORDER is the temporary overflow before an internal split
@@ -47,6 +49,7 @@ static int root = -1;
 
 // Purpose: Allocate a real node and initialize the leaf flag, key list and next link together.
 // 作用：分配真实节点，并同时初始化 leaf、键表与 next 链接。
+// The static pool returns a node id, not a pointer; -1 is the allocation failure sentinel and also propagates through Split.valid.
 static int new_node(int leaf)
 {
     if (node_count >= MAX_NODES)
@@ -78,6 +81,7 @@ static void release_node(int id)
 static int child_slot(int node, int key)
 {
     int slot = 0;
+    // Equality goes right because separator i equals the minimum of the right child; sending equality left would make a duplicate range unreachable.
     while (slot < nodes[node].key_count && key >= nodes[node].keys[slot])
     {
         ++slot;
@@ -90,6 +94,7 @@ static int child_slot(int node, int key)
 static int find_leaf(int target)
 {
     int node = root;
+    // Only an internal node has separators to follow; the loop stops at the first leaf, which is the only layer that can own a record.
     while (node >= 0 && !nodes[node].leaf)
     {
         node = nodes[node].children[child_slot(node, target)];
@@ -106,6 +111,7 @@ static int contains(int target)
     {
         return 0;
     }
+    // Routing to a leaf is not proof of a hit; the leaf must be scanned because several records can share one leaf block.
     for (int index = 0; index < nodes[leaf].key_count; ++index)
     {
         if (nodes[leaf].keys[index] == target)
@@ -121,6 +127,7 @@ static int contains(int target)
 // Precondition: `right` was allocated before this call. The helper only moves existing keys and links, so a later allocation cannot leave a half-written leaf.
 // Failure path: new_node failures are reported as valid=-1 before any key or link changes; callers release preallocated nodes and return -1 to insert_key.
 // 失败路径：new_node 失败在改动任何键或链接前返回 valid=-1；调用方释放预分配节点并把 -1 传回 insert_key。
+// The split is 2/2 after the overflow key is present: right keeps keys 2 and 3, left keeps keys 0 and 1, and the promoted separator stays in the right leaf.
 static Split split_leaf(int node, int right)
 {
     Split result = {0, 0, -1};
@@ -133,6 +140,7 @@ static Split split_leaf(int node, int right)
     {
         nodes[right].keys[index - 2] = nodes[node].keys[index];
     }
+    // The link order cannot be reversed: right first points at the old successor, then node points at right, so the chain stays connected.
     nodes[right].next = nodes[node].next;
     nodes[node].next = right;
     nodes[node].key_count = 2;
@@ -145,6 +153,7 @@ static Split split_leaf(int node, int right)
 // Purpose: Split an internal node, promote and remove the middle separator, and move the right child range.
 // 作用：分裂内部节点，提升并移除中间分隔键，同时移动右半孩子范围。
 // Precondition: `right` is already allocated; this helper cannot fail after mutating the left node or its children.
+// Internal split removes key 2 from both halves: it becomes the promoted separator, right receives keys after 2 and children after 2, left keeps keys 0..1 and children 0..2.
 static Split split_internal(int node, int right)
 {
     Split result = {0, 0, -1};
@@ -152,6 +161,7 @@ static Split split_internal(int node, int right)
     {
         return result;
     }
+    // The separator is read before the left node is truncated; afterward the value exists only in the parent, while both children keep disjoint ranges.
     result.separator = nodes[node].keys[2];
     nodes[right].key_count = nodes[node].key_count - 3;
     nodes[right].child_count = nodes[node].child_count - 3;
@@ -178,6 +188,7 @@ static Split insert_rec(int node, int key)
     if (nodes[node].leaf)
     {
         int right = -1;
+        // A full leaf is split only after the new key is written into the overflow slot; the preallocated right node makes this a pure move.
         if (nodes[node].key_count == MAX_KEYS)
         {
             right = new_node(1);
@@ -203,6 +214,7 @@ static Split insert_rec(int node, int key)
     }
     int slot = child_slot(node, key);
     int pending = -1;
+    // A pending index node is needed only when both parent and child may split; if the child does not split, the pending node is released unused.
     if (nodes[node].key_count == MAX_KEYS && nodes[nodes[node].children[slot]].key_count == MAX_KEYS)
     {
         pending = new_node(0);
@@ -269,6 +281,7 @@ static int insert_key(int key)
     int fresh = -1;
     int root_will_split = nodes[root].leaf ||
                           nodes[nodes[root].children[child_slot(root, key)]].key_count == MAX_KEYS;
+    // The root grows only when it is full and the selected child will actually produce a promotion; a full root above a non-full child needs no new level.
     if (nodes[root].key_count == MAX_KEYS && root_will_split)
     {
         fresh = new_node(0);
@@ -319,6 +332,7 @@ static void range_scan(int low, int high)
                 printf(" %d", key);
             }
         }
+        // Once a leaf's last key exceeds high, the next leaf starts even higher, so the chain walk may stop without scanning the rest of the tree.
         if (nodes[leaf].key_count > 0 && nodes[leaf].keys[nodes[leaf].key_count - 1] > high)
         {
             break;
@@ -333,6 +347,7 @@ static void range_scan(int low, int high)
 static void print_leaves(void)
 {
     int leaf = root;
+    // The leaf chain starts at the leftmost leaf, reached by always taking child 0; this path is independent of any separator value.
     while (leaf >= 0 && !nodes[leaf].leaf)
     {
         leaf = nodes[leaf].children[0];

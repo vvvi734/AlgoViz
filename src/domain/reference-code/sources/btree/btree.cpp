@@ -34,11 +34,13 @@
 
 constexpr int ORDER = 4;
 constexpr int MAX_KEYS = ORDER - 1;
+// The three constants are the node contract: at most 3 keys, at most 4 children, and a non-root node with at least 1 key; the code never derives these from size() alone.
 constexpr int MIN_KEYS = ORDER / 2 - 1;
 
 struct BTreeNode
 {
     std::vector<int> keys;
+    // children has one more entry than keys for every internal node; leaf nodes keep it empty and use the explicit leaf boolean.
     std::vector<std::shared_ptr<BTreeNode>> children;
     bool leaf = true;
 };
@@ -47,6 +49,7 @@ using NodePtr = std::shared_ptr<BTreeNode>;
 
 // Purpose: Create a new node with its value and pointer initialized; the caller owns the release.
 // 作用：创建一个新结点并初始化值和指针；调用者负责释放。
+// shared_ptr is used only for the child vectors that share ownership; the tree root and local traversal pointers do not create a second owner.
 NodePtr make_node(bool leaf)
 {
     auto node = std::make_shared<BTreeNode>();
@@ -63,6 +66,7 @@ bool btree_search(const NodePtr &node, int target, int *comparisons = nullptr)
     while (current != nullptr)
     {
         std::size_t index = 0;
+        // The inner scan stops at the first key >= target; index then doubles as the child edge, because separators and child slots share the same boundary.
         while (index < current->keys.size())
         {
             if (comparisons != nullptr)
@@ -91,17 +95,20 @@ bool btree_search(const NodePtr &node, int target, int *comparisons = nullptr)
 /* Split parent->children[index] (full) and promote its median into parent. */
 // Purpose: Split a full child by promoting its median key to the parent, moving the right half into a new node, and fixing child indices.
 // 作用：分裂满孩子：把中位键提升到父结点，右半部分放进新结点，并修正 children 下标。
+// The full child has 3 keys; median index 1 is promoted, key 2 becomes the right node's only key, and children 2 and 3 move with it.
 NodePtr split_child(const NodePtr &parent, std::size_t index)
 {
     NodePtr left = parent->children[index];
     int promoted = left->keys[1];
 
     NodePtr right = make_node(left->leaf);
+    // Only key 2 moves right; the promoted key is not copied there, so the parent and child do not both expose the same separator as a record.
     right->keys.push_back(left->keys[2]);
     if (!left->leaf)
     {
         right->children.push_back(left->children[2]);
         right->children.push_back(left->children[3]);
+        // Resizing left to two children is not cosmetic: it drops the moved child slots so a later descent cannot reach a node that now belongs to the right sibling.
         left->children.resize(2);
     }
     left->keys.resize(1);
@@ -130,6 +137,7 @@ NodePtr btree_insert(NodePtr root, int value)
         return root;
     }
 
+    // A full root is split before any descent; this is the only operation in the file that increases tree height.
     if (root->keys.size() == MAX_KEYS)
     {
         NodePtr new_root = make_node(false);
@@ -147,6 +155,7 @@ NodePtr btree_insert(NodePtr root, int value)
             ++index;
         }
         NodePtr child = node->children[index];
+        // Splitting happens before the loop moves down; comparing value with promoted then selects the old child or the new sibling, never both.
         if (child->keys.size() == MAX_KEYS)
         {
             int promoted = child->keys[1];
@@ -159,6 +168,7 @@ NodePtr btree_insert(NodePtr root, int value)
         node = child;
     }
 
+    // upper_bound is safe because duplicates were rejected; the insertion position lies inside the leaf, where no child pointers need repair.
     auto position = std::upper_bound(node->keys.begin(), node->keys.end(), value);
     node->keys.insert(position, value);
     return root;
@@ -189,6 +199,7 @@ static int max_key(NodePtr node)
 
 // Purpose: Repair the child at index before descending: borrow left, borrow right, then merge.
 // 作用：下降前修复 index 处孩子：先左借、再右借、最后合并。
+// The repair runs before the recursive delete, so the child has at least MIN_KEYS+1 keys and removing one cannot leave it underfull.
 static void ensure_child(const NodePtr &node, std::size_t index)
 {
     NodePtr child = node->children[index];
@@ -201,6 +212,7 @@ static void ensure_child(const NodePtr &node, std::size_t index)
         NodePtr left = node->children[index - 1];
         if (left->keys.size() > static_cast<std::size_t>(MIN_KEYS))
         {
+            // Left borrow is a three-way rotation: separator down, left maximum up, and one child pointer follows the moved key into the front slot.
             child->keys.insert(child->keys.begin(), node->keys[index - 1]);
             node->keys[index - 1] = left->keys.back();
             left->keys.pop_back();
@@ -231,6 +243,7 @@ static void ensure_child(const NodePtr &node, std::size_t index)
     if (index > 0)
     {
         NodePtr left = node->children[index - 1];
+        // A left merge appends the separator and the child's whole key/child ranges to the left sibling, then erases the separator and the child edge from the parent.
         left->keys.push_back(node->keys[index - 1]);
         left->keys.insert(left->keys.end(), child->keys.begin(), child->keys.end());
         if (!child->leaf)
@@ -275,6 +288,7 @@ static void delete_rec(const NodePtr &node, int target)
                 return;
             }
         }
+        // The predecessor is a real leaf key reached by always taking the rightmost child; replacing the internal key and deleting that leaf key preserves all ranges.
         int predecessor = max_key(node->children[index]);
         node->keys[index] = predecessor;
         delete_rec(node->children[index], predecessor);
@@ -294,6 +308,7 @@ NodePtr btree_delete(NodePtr root, int value)
         return root;
     }
     delete_rec(root, value);
+    // A zero-key internal root has one remaining child; replacing the root with it is the mirror of root splitting.
     if (!root->leaf && root->keys.empty())
     {
         root = root->children.front();

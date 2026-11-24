@@ -50,11 +50,13 @@ def balance_factor(node: Node | None) -> int:
 
 # Purpose: Rotate right around y, return the new subtree root, and update the heights of the affected nodes.
 # 作用：以 y 为轴右旋，返回新的子树根，并更新受影响结点高度。
+# x is captured before y.left is overwritten; the assertion documents that right rotation is only requested for a left-heavy node.
 def rotate_right(y: Node) -> Node:
     x = y.left
     assert x is not None
     middle = x.right
     x.right = y
+    # The middle subtree changes parent as a whole; nothing inside it is rebalanced during this rotation.
     y.left = middle
     # y is lower after the rotation; update it before x because x's height depends on y.
     update_height(y)
@@ -79,12 +81,15 @@ def rotate_left(x: Node) -> Node:
 # Recompute height after insertion, then apply LL/RR/LR/RL if balance leaves {-1, 0, 1}.
 # Purpose: Recompute height, repair imbalance with LL/RR/LR/RL, and return the new subtree root.
 # 作用：重算高度并按 LL/RR/LR/RL 修复失衡，返回新的子树根。
+# balance repairs one subtree on every unwind level; returning the new root is what lets the parent keep a valid left or right link.
 def balance(node: Node) -> Node:
     update_height(node)
     # The balance factor is height(left) - height(right); values outside {-1, 0, 1} need rotation.
     factor = balance_factor(node)
     if factor > 1:
+        # The assertion documents an invariant of the rotation branch: factor > 1 guarantees a left child, so the later rotation cannot dereference None.
         assert node.left is not None
+        # A right-heavy left child is the LR shape; rotating the child left first reduces it to the LL case.
         if balance_factor(node.left) < 0:
             # A negative left-child factor means LR: rotate the child left before rotating the root right.
             node.left = rotate_left(node.left)
@@ -100,6 +105,7 @@ def balance(node: Node) -> Node:
 # Purpose: Insert by BST ordering and rebalance while recursion unwinds; returns the new subtree root and leaves duplicate keys unchanged.
 # 作用：按 BST 规则插入 value，回溯时重新平衡；返回新的子树根，重复键原样返回。
 def insert(node: Node | None, value: int) -> Node:
+    # The new leaf has height 1 and no children; duplicate values return later without a balance pass.
     if node is None:
         return Node(value)
     if value < node.value:
@@ -107,6 +113,7 @@ def insert(node: Node | None, value: int) -> Node:
     elif value > node.value:
         node.right = insert(node.right, value)
     else:
+        # The duplicate path exits before balance, because an unchanged subtree cannot need a rotation.
         return node
     return balance(node)
 
@@ -134,6 +141,7 @@ def main() -> None:
     assert root is not None
     print("root:", root.value, "height:", root.height)
     assert output == [5, 10, 20, 25, 27, 30]
+    # The assertion checks the AVL invariant at the root after all rotations; the inorder assertion alone would only verify BST order.
     assert abs(balance_factor(root)) <= 1
 
 

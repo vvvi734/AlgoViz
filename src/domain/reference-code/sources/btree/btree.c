@@ -21,10 +21,12 @@
 #include <stdlib.h>
 
 #define BTREE_ORDER 4
+// These constants are one arithmetic family: order 4 gives at most 3 keys, at least 1 key in a non-root node, and at most 4 children; every index below assumes this relation.
 #define MAX_KEYS (BTREE_ORDER - 1)
 #define MIN_KEYS (BTREE_ORDER / 2 - 1)
 #define MAX_CHILDREN BTREE_ORDER
 
+// keys[i] separates children[i] and children[i+1]; a node with k keys therefore owns k+1 child slots, including the empty tail slots.
 typedef struct BTreeNode
 {
     int key_count;
@@ -34,6 +36,7 @@ typedef struct BTreeNode
 
 // Purpose: Allocate a zero-initialized node; this implementation has no separate leaf field, so children[0] == NULL is the leaf test.
 // 作用：分配并清零结点；本实现没有单独的 leaf 字段，因此用 children[0] == NULL 判断叶子。
+// calloc zeroes every slot, so children[0] == NULL is a reliable leaf test; the implementation deliberately stores no separate leaf marker.
 static BTreeNode *NewNode(void)
 {
     BTreeNode *node = (BTreeNode *)calloc(1, sizeof(BTreeNode));
@@ -49,6 +52,7 @@ static int Contains(const BTreeNode *node, int key)
         return 0;
     }
     int index = 0;
+    // The node scan stops at the first key >= target; equality is a hit, and a smaller target means the child at that same index.
     while (index < node->key_count && key > node->keys[index])
     {
         ++index;
@@ -75,17 +79,20 @@ int split(BTreeNode *parent, int index, BTreeNode *full, BTreeNode *right)
     {
         return 0;
     }
+    // The median index is 1 for order 4; it is moved to the parent and removed from the child, so the two halves never both retain it.
     int middle = MAX_KEYS / 2;
     int median = full->keys[middle];
 
     // Keys after the median become the right node; their child slots must move with them, not stay under the left node.
     right->key_count = MAX_KEYS - middle - 1;
+    // Right receives only the keys after the median; the bound is right->key_count, not MAX_KEYS, because copying the whole tail would duplicate keys.
     for (int offset = 0; offset < right->key_count; ++offset)
     {
         right->keys[offset] = full->keys[middle + 1 + offset];
     }
     if (full->children[0] != NULL)
     {
+        // A node with k keys owns k+1 children, so the right child slots include the slot just past the last key; the <= bound moves that tail child too.
         for (int offset = 0; offset <= right->key_count; ++offset)
         {
             right->children[offset] = full->children[middle + 1 + offset];
@@ -112,6 +119,7 @@ static int InsertNonFull(BTreeNode *node, int key)
     int index = node->key_count - 1;
     if (node->children[0] == NULL)
     {
+        // Leaf insertion walks left while larger keys are present; the new key is written only after the gap is opened, and key_count grows last.
         while (index >= 0 && key < node->keys[index])
         {
             node->keys[index + 1] = node->keys[index];
@@ -127,6 +135,7 @@ static int InsertNonFull(BTreeNode *node, int key)
     {
         ++index;
     }
+    // A full child is split before the descent; after promotion, comparing key with the new separator decides whether the lower half or the right sibling is the next child.
     if (node->children[index]->key_count == MAX_KEYS)
     {
         BTreeNode *right = NewNode();
@@ -164,6 +173,7 @@ int InsertBTree(BTreeNode **root, int key)
     {
         return 1;
     }
+    // Root splitting is the only height increase; both new nodes are allocated before any pointer changes, so an allocation failure leaves the old tree intact.
     if ((*root)->key_count == MAX_KEYS)
     {
         BTreeNode *new_root = NewNode();
@@ -209,6 +219,7 @@ static int MaxKey(const BTreeNode *node)
 
 // Purpose: Ensure the child at index has more than MIN_KEYS before descending: borrow from left, borrow from right, then merge.
 // 作用：下降前保证 index 处孩子多于 MIN_KEYS：先左借、再右借，最后合并。
+// ensure_child runs before descending; borrowing or merging here guarantees the child has at least MIN_KEYS+1 keys when the recursive delete reaches it.
 static void EnsureChild(BTreeNode *node, int index)
 {
     BTreeNode *child = node->children[index];
@@ -225,6 +236,7 @@ static void EnsureChild(BTreeNode *node, int index)
             {
                 child->keys[position] = child->keys[position - 1];
             }
+            // Left borrowing rotates three things: the parent separator moves down, the left maximum moves up, and the left child's last child slot moves under the inserted key.
             child->keys[0] = node->keys[index - 1];
             ++child->key_count;
             if (child->children[0] != NULL)
@@ -267,6 +279,7 @@ static void EnsureChild(BTreeNode *node, int index)
     if (index > 0)
     {
         BTreeNode *left = node->children[index - 1];
+        // A left merge pulls the separator into the left sibling, appends the underfull child's keys and children, then removes the separator and child slot from the parent.
         left->keys[left->key_count] = node->keys[index - 1];
         ++left->key_count;
         for (int offset = 0; offset < child->key_count; ++offset)
@@ -318,6 +331,7 @@ static void EnsureChild(BTreeNode *node, int index)
 // 作用：在已证明存在后从子树删除；下降前修复关键字不足的孩子。
 static void DeleteRec(BTreeNode *node, int key)
 {
+    // Leaf deletion only shifts keys left; there is no child pointer to repair, and decrementing key_count is the entire structural change.
     if (node->children[0] == NULL)
     {
         int index = NodeIndex(node, key);
@@ -342,6 +356,7 @@ static void DeleteRec(BTreeNode *node, int key)
                 return;
             }
         }
+        // An internal key is replaced by the maximum of its left child, then that real predecessor is deleted; copying the value without deleting its source would duplicate it.
         int predecessor = MaxKey(node->children[index]);
         node->keys[index] = predecessor;
         DeleteRec(node->children[index], predecessor);
@@ -361,6 +376,7 @@ void DeleteBTree(BTreeNode **root, int key)
         return;
     }
     DeleteRec(*root, key);
+    // A zero-key internal root has exactly one child; promoting it is the only legal height decrease and keeps the new root non-empty.
     if ((*root)->children[0] != NULL && (*root)->key_count == 0)
     {
         BTreeNode *old_root = *root;

@@ -21,6 +21,7 @@ ORDER = 4
 MAX_KEYS = ORDER - 1
 
 
+# keys and children are plain lists, so every split relies on slicing; leaf and next are the only extra state, and next never owns a node.
 class BPlusNode:
     def __init__(self, leaf=True):
         self.keys = []
@@ -39,6 +40,7 @@ class Promotion:
 # 作用：选第一个大于 key 的分隔键对应的孩子；相等时走右子树。
 def child_slot(node, key):
     slot = 0
+    # Equality belongs to the right child because the separator is that child's minimum; a strict > test would put an equal key on the wrong side.
     while slot < len(node.keys) and key >= node.keys[slot]:
         slot += 1
     return slot
@@ -62,8 +64,10 @@ def contains(root, target):
 
 # Purpose: Split a leaf 2/2 and promote the first key of the new right leaf.
 # 作用：叶节点按 2/2 分裂，并提升新右叶首键。
+# The overflow key is already present, so four keys split 2/2; right.keys[0] becomes both the separator and the first record of the right leaf.
 def split_leaf(node):
     right = BPlusNode(True)
+    # Right takes the last two keys while left keeps the first two; the separator is duplicated in the parent by design, not moved out of the leaf.
     right.keys = node.keys[2:]
     node.keys = node.keys[:2]
     right.next = node.next
@@ -73,11 +77,13 @@ def split_leaf(node):
 
 # Purpose: Split an internal node, promote and remove the middle separator, then move the right child range.
 # 作用：分裂内部节点，提升并移除中间分隔键，再移动右半孩子范围。
+# Internal split removes keys 2 from the children: right gets keys 3 onward and children 3 onward, while left keeps keys 0..1 and children 0..2.
 def split_internal(node):
     right = BPlusNode(False)
     separator = node.keys[2]
     right.keys = node.keys[3:]
     right.children = node.children[3:]
+    # Slicing the left node to two keys is required after the separator is promoted; leaving the old list would duplicate the separator in both levels.
     node.keys = node.keys[:2]
     node.children = node.children[:3]
     return Promotion(separator, right)
@@ -107,6 +113,7 @@ def insert_rec(node, key):
 
 # Purpose: Reject duplicates before mutation; a root split is the only height increase.
 # 作用：修改前拒绝重复；根分裂是唯一长高方式。
+# Duplicate rejection happens before mutation; a root promotion builds a fresh index node with one separator and exactly two children.
 def insert(root, key):
     if root is None:
         root = BPlusNode(True)
@@ -125,6 +132,7 @@ def insert(root, key):
 
 # Purpose: Start at the lower-bound leaf, follow next, and stop once records exceed high.
 # 作用：从下界叶子开始，沿 next 前进，超过上界即停止。
+# The lower-bound leaf can contain keys below low, so each key is filtered; next is followed until a leaf's last key exceeds high.
 def range_scan(root, low, high):
     result = []
     leaf = find_leaf(root, low)

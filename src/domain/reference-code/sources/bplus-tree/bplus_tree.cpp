@@ -24,6 +24,7 @@
 #include <vector>
 
 constexpr int ORDER = 4;
+// Order 4 means three resident keys; vectors grow to four during insertion, then splitLeaf or splitInternal removes the overflow entry.
 constexpr int MAX_KEYS = ORDER - 1;
 
 struct BPlusNode
@@ -31,6 +32,7 @@ struct BPlusNode
     std::vector<int> keys;
     std::vector<std::unique_ptr<BPlusNode>> children;
     bool leaf = true;
+    // next is a non-owning raw pointer: unique_ptr owns the tree edges, while next only exposes the leaf chain for range scans.
     BPlusNode *next = nullptr;
 };
 
@@ -54,6 +56,7 @@ std::unique_ptr<BPlusNode> makeNode(bool leaf)
 int childSlot(const BPlusNode &node, int key)
 {
     int slot = 0;
+    // The >= test sends equality to the right child, because a separator is the minimum record of that child rather than a value strictly smaller.
     while (slot < static_cast<int>(node.keys.size()) && key >= node.keys[slot])
     {
         ++slot;
@@ -63,6 +66,7 @@ int childSlot(const BPlusNode &node, int key)
 
 // Purpose: Reach a leaf through real separator ranges.
 // 作用：沿真实分隔键范围到达叶层。
+// Separators only route; even when target equals a separator, the loop continues until a leaf, because internal entries are not records.
 BPlusNode *findLeaf(BPlusNode *node, int target)
 {
     while (node && !node->leaf)
@@ -77,14 +81,17 @@ BPlusNode *findLeaf(BPlusNode *node, int target)
 bool contains(BPlusNode *root, int target)
 {
     BPlusNode *leaf = findLeaf(root, target);
+    // binary_search is valid because leaf keys stay sorted; it never inspects an internal separator as a possible record.
     return leaf && std::binary_search(leaf->keys.begin(), leaf->keys.end(), target);
 }
 
 // Purpose: Split a leaf 2/2 and promote the first key of the right leaf.
 // 作用：叶节点按 2/2 分裂，并提升右叶首键。
+// The leaf split assumes the overflow key is already present: node has four keys, right takes keys 2 and 3, and left keeps keys 0 and 1.
 Promotion splitLeaf(BPlusNode &node)
 {
     auto right = makeNode(true);
+    // The separator is right->keys.front() and remains stored there; unlike a B-tree split, the promoted value is duplicated at the record layer by design.
     right->keys.assign(node.keys.begin() + 2, node.keys.end());
     node.keys.erase(node.keys.begin() + 2, node.keys.end());
     right->next = node.next;
@@ -95,10 +102,12 @@ Promotion splitLeaf(BPlusNode &node)
 
 // Purpose: Split an internal node, promote and remove the middle separator, and move the right child range.
 // 作用：分裂内部节点，提升并移除中间分隔键，同时移动右半孩子范围。
+// The middle key is removed from both halves: it becomes the parent separator, right gets keys after 2, and left keeps two keys and three children.
 Promotion splitInternal(BPlusNode &node)
 {
     auto right = makeNode(false);
     int separator = node.keys[2];
+    // Right starts at index 3, not 2, because index 2 is the separator; copying index 2 would leave the same key in parent and child.
     right->keys.assign(node.keys.begin() + 3, node.keys.end());
     node.keys.erase(node.keys.begin() + 2, node.keys.end());
     right->children.reserve(node.children.size() - 3);
@@ -116,6 +125,7 @@ std::optional<Promotion> insertRec(BPlusNode &node, int key)
 {
     if (node.leaf)
     {
+        // Duplicates were rejected before this call, so lower_bound and upper_bound coincide; lower_bound is enough and keeps the leaf sorted.
         auto position = std::lower_bound(node.keys.begin(), node.keys.end(), key);
         node.keys.insert(position, key);
         if (static_cast<int>(node.keys.size()) <= MAX_KEYS)
@@ -154,6 +164,7 @@ std::unique_ptr<BPlusNode> insert(std::unique_ptr<BPlusNode> root, int key)
         return root;
     }
     auto promoted = insertRec(*root, key);
+    // A promotion at the root creates exactly one new level; no other path in this implementation changes tree height.
     if (promoted)
     {
         auto fresh = makeNode(false);
@@ -167,6 +178,7 @@ std::unique_ptr<BPlusNode> insert(std::unique_ptr<BPlusNode> root, int key)
 
 // Purpose: Start at the lower-bound leaf, follow next, and stop once keys exceed the upper bound.
 // 作用：从下界叶子开始，沿 next 前进，超过上界即停止。
+// The first leaf may contain keys below low; the explicit range test filters them instead of assuming the leaf starts at the lower bound.
 std::vector<int> rangeScan(BPlusNode *root, int low, int high)
 {
     std::vector<int> result;
