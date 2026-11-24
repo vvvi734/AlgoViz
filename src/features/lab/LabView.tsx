@@ -18,6 +18,7 @@ import { CodeDock } from './CodeDock';
 import { LearningRail } from './LearningRail';
 import { ReferenceCodePanel } from './ReferenceCodePanel';
 import { useSvgTextFloor } from './useSvgTextFloor';
+import { usePlaybackKeyboard } from './usePlaybackKeyboard';
 import { AlgorithmGuide, ALGORITHM_GUIDE_ID } from './AlgorithmGuide';
 import { useAlgorithmGuidePreferences } from './useAlgorithmGuidePreferences';
 import { buildAlgorithmGuide } from '../../domain/guides/buildGuide';
@@ -72,6 +73,9 @@ export function LabView({
   const entry = lab.catalog[lab.currentAlgo];
   const [conceptId, setConceptId] = useState<string | null>(initialConceptId);
   const concept = conceptById(conceptId);
+  // conceptById returns undefined on algorithm routes, so truthiness is the
+  // real "no player on this page" test; only a resolved concept lesson disables it.
+  usePlaybackKeyboard(lab.playback, !concept);
   const currentEvent = lab.events[lab.playback.index];
   const actualTreeTraversal =
     currentEvent?.structure?.kind === 'binary-tree' ? currentEvent.structure.traversal : null;

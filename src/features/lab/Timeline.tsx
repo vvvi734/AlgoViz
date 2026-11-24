@@ -43,19 +43,30 @@ export function Timeline({ events, playback }: { events: TraceEvent[]; playback:
         onInput={seekFromScrub}
       />
       <div className="controls">
-        <button className="btn small" onClick={playback.restart} title={t('playerReset')} aria-label={t('playerReset')} data-testid="restart-btn">⟲</button>
+        <button
+          className="btn small"
+          onClick={playback.restart}
+          title={t('playerResetShortcut')}
+          aria-label={t('playerResetShortcut')}
+          aria-keyshortcuts="R"
+          data-testid="restart-btn"
+        >⟲</button>
         <button
           className="btn small"
           onClick={playback.prev}
           disabled={playback.index <= 0}
-          title={t('playerPrevious')}
-          aria-label={t('playerPrevious')}
+          title={t('playerPreviousShortcut')}
+          aria-label={t('playerPreviousShortcut')}
+          aria-keyshortcuts="ArrowLeft"
           data-testid="prev-btn"
         >◀</button>
         <button
           className="btn primary"
           onClick={playback.toggle}
           disabled={events.length <= 1}
+          title={playback.playing ? t('playerPauseShortcut') : t('playerPlayShortcut')}
+          aria-label={playback.playing ? t('playerPauseShortcut') : t('playerPlayShortcut')}
+          aria-keyshortcuts="Space"
           data-testid="play-btn"
         >
           {playback.playing ? t('pause') : t('play')}
@@ -64,8 +75,9 @@ export function Timeline({ events, playback }: { events: TraceEvent[]; playback:
           className="btn small"
           onClick={playback.next}
           disabled={playback.index >= last}
-          title={t('playerNext')}
-          aria-label={t('playerNext')}
+          title={t('playerNextShortcut')}
+          aria-label={t('playerNextShortcut')}
+          aria-keyshortcuts="ArrowRight"
           data-testid="next-btn"
         >▶|</button>
         <span className="muted smalltext">{t('speed')}</span>
@@ -83,6 +95,20 @@ export function Timeline({ events, playback }: { events: TraceEvent[]; playback:
       <div className="timeline">
         <span data-testid="progress">{playback.progress}</span>
         <span>{t('timelineHint')}</span>
+      </div>
+      <div
+        className="keyboard-hint"
+        role="group"
+        aria-label={t('playerShortcutsLabel')}
+        data-testid="keyboard-hint"
+      >
+        <span className="keyboard-hint-icon" aria-hidden="true">⌨</span>
+        <span className="keyboard-hint-item"><kbd>←</kbd>{t('playerPrevious')}</span>
+        <span className="keyboard-hint-item"><kbd>→</kbd>{t('playerNext')}</span>
+        <span className="keyboard-hint-item"><kbd>Space</kbd>{t('playerShortcutPlayPause')}</span>
+        <span className="keyboard-hint-item"><kbd>R</kbd>{t('playerShortcutReset')}</span>
+        <span className="keyboard-hint-item"><kbd>Home</kbd>{t('playerShortcutFirst')}</span>
+        <span className="keyboard-hint-item"><kbd>End</kbd>{t('playerShortcutLast')}</span>
       </div>
     </div>
   );
