@@ -1,3 +1,4 @@
+import { useEffect, useId, useRef, useState } from 'react';
 import { useI18n } from '../../i18n/I18nProvider';
 import type { TournamentVisualModel } from '../../domain/visualization/tournamentModel';
 import type { RadixVisualModel } from '../../domain/visualization/radixModel';
@@ -23,13 +24,38 @@ const RADIX_OP_KEY: Record<RadixVisualModel['operation'], string> = {
 
 export function TournamentVisual({ model }: { model: TournamentVisualModel }) {
   const { t } = useI18n();
+  const treeScrollRef = useRef<HTMLDivElement>(null);
+  const scrollHintId = useId();
+  const [treeOverflows, setTreeOverflows] = useState(false);
   const byId = new Map(model.nodes.map((node) => [node.id, node]));
+
+  // The tree keeps a readable minimum width and scrolls inside its own panel.
+  // Report overflow explicitly so narrow layouts get a non-overlay hint; the
+  // surrounding stage must never be the element that silently clips the tree.
+  useEffect(() => {
+    const element = treeScrollRef.current;
+    if (!element) return;
+    const update = () => {
+      setTreeOverflows(element.scrollWidth > element.clientWidth + 1);
+    };
+    update();
+    if (typeof ResizeObserver === 'undefined') return;
+    const observer = new ResizeObserver(update);
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [model.leafCount, model.width, model.stageHeight]);
+
   return (
     <div
       className="tournament-visual"
       data-testid="tournament-visual"
       data-operation={model.operation}
       data-result={model.result ?? ''}
+      data-leaf-count={model.leafCount}
+      data-node-count={model.nodes.length}
+      data-view-width={model.width}
+      data-view-height={model.stageHeight}
+      data-tree-overflows={String(treeOverflows)}
     >
       <div className="sort10-head">
         <span className="sort10-op">{t(TOURNAMENT_OP_KEY[model.operation])}</span>
@@ -62,52 +88,73 @@ export function TournamentVisual({ model }: { model: TournamentVisualModel }) {
 
       <section className="sort10-tree-panel" aria-label={t('tournamentTreeLabel')}>
         <h4>{t('tournamentTreeLabel')}</h4>
-        <svg
-          className="sort10-tree"
-          viewBox={`0 0 ${model.width} ${model.stageHeight}`}
-          role="img"
+        <div
+          ref={treeScrollRef}
+          className="sort10-tree-scroll"
+          data-testid="tournament-tree-scroll"
+          role="group"
+          tabIndex={0}
           aria-label={t('tournamentTreeLabel')}
+          aria-describedby={treeOverflows ? scrollHintId : undefined}
         >
-          {model.edges.map((edge) => {
-            const from = byId.get(edge.fromId);
-            const to = byId.get(edge.toId);
-            if (!from || !to) return null;
-            const active = model.affectedNodeIds.includes(edge.fromId) &&
-              model.affectedNodeIds.includes(edge.toId);
-            return (
-              <line
-                key={edge.id}
-                x1={from.x}
-                y1={from.y}
-                x2={to.x}
-                y2={to.y}
-                className={active ? 'is-affected' : ''}
-              />
-            );
-          })}
-          {model.nodes.map((node) => (
-            <g
-              key={node.id}
-              transform={`translate(${node.x}, ${node.y})`}
-              className={`sort10-node is-${node.state}${node.filled ? '' : ' is-padding'}`}
-              data-testid="tournament-node"
-              data-node-id={node.id}
-              data-level={node.level}
-              data-record-id={node.recordId ?? ''}
-              data-state={node.state}
-            >
-              <rect x={-29} y={-19} width={58} height={38} rx={7} />
-              {node.filled ? (
-                <>
-                  <text className="sort10-node-key" y={-2}>{node.value}</text>
-                  <text className="sort10-node-id" y={13}>{node.label}</text>
-                </>
-              ) : (
-                <text className="sort10-node-id" y={4}>—</text>
-              )}
-            </g>
-          ))}
-        </svg>
+          <svg
+            className="sort10-tree"
+            viewBox={`0 0 ${model.width} ${model.stageHeight}`}
+            role="img"
+            aria-label={t('tournamentTreeLabel')}
+          >
+            {model.edges.map((edge) => {
+              const from = byId.get(edge.fromId);
+              const to = byId.get(edge.toId);
+              if (!from || !to) return null;
+              const active = model.affectedNodeIds.includes(edge.fromId) &&
+                model.affectedNodeIds.includes(edge.toId);
+              return (
+                <line
+                  key={edge.id}
+                  x1={from.x}
+                  y1={from.y}
+                  x2={to.x}
+                  y2={to.y}
+                  className={active ? 'is-affected' : ''}
+                />
+              );
+            })}
+            {model.nodes.map((node) => (
+              <g
+                key={node.id}
+                transform={`translate(${node.x}, ${node.y})`}
+                className={`sort10-node is-${node.state}${node.filled ? '' : ' is-padding'}`}
+                data-testid="tournament-node"
+                data-node-id={node.id}
+                data-level={node.level}
+                data-slot={node.slot}
+                data-leaf={String(node.leaf)}
+                data-record-id={node.recordId ?? ''}
+                data-state={node.state}
+              >
+                <rect x={-29} y={-19} width={58} height={38} rx={7} />
+                {node.filled ? (
+                  <>
+                    <text className="sort10-node-key" y={-2}>{node.value}</text>
+                    <text className="sort10-node-id" y={13}>{node.label}</text>
+                  </>
+                ) : (
+                  <text className="sort10-node-id" y={4}>—</text>
+                )}
+              </g>
+            ))}
+          </svg>
+        </div>
+        {treeOverflows ? (
+          <p
+            id={scrollHintId}
+            className="sort10-tree-scroll-hint"
+            data-testid="tournament-tree-scroll-hint"
+          >
+            ↔ {t('tournamentTreeScrollHint')}
+          </p>
+        ) : null}
       </section>
 
       <section className="sort10-output" aria-label={t('tournamentOutputLabel')}>

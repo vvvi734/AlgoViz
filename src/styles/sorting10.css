@@ -129,13 +129,62 @@
 .sort10-tree-panel {
   padding: 10px 12px;
   margin-bottom: 10px;
+  min-width: 0;
+  max-width: 100%;
+  overflow: visible;
+}
+
+/* The tree owns its horizontal overflow. The outer visual and the stage must
+   never grow to the SVG's min-content width: at 1280 px that pushed a 746 px
+   child into a 542 px stage and silently clipped both sides. */
+.tournament-visual {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.sort10-tree-scroll {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
   overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--line, #c7ccd2) transparent;
+}
+
+.sort10-tree-scroll:focus-visible {
+  outline: 2px solid var(--accent, #2563eb);
+  outline-offset: 2px;
+}
+
+.sort10-tree-scroll::-webkit-scrollbar {
+  height: 8px;
+}
+
+.sort10-tree-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sort10-tree-scroll::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: var(--line, #c7ccd2);
+}
+
+.sort10-tree-scroll-hint {
+  margin: 6px 0 0;
+  color: var(--muted, #59636d);
+  font-size: 11px;
+  line-height: 1.5;
 }
 
 .sort10-tree {
   display: block;
   width: 100%;
-  min-width: 720px;
+  min-width: 700px;
   height: auto;
   max-height: 390px;
 }

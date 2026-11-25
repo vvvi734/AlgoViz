@@ -109,7 +109,12 @@ export function buildTournamentModel(snapshot: TournamentSnapshot): TournamentVi
       recordId: node.recordId,
       label: record ? record.id : '',
       value: record ? record.value : null,
-      x: (node.slot + 0.5) * (TOURNAMENT_WIDTH / 2 ** node.level),
+      // `level` grows upward from 0 at the leaves. A complete tree therefore
+      // has 2^(height - level) slots at that level: the root gets one slot and
+      // the leaves get the narrowest spacing. Using 2^level here made every
+      // leaf one full canvas apart, pushing L1..L7 thousands of units outside
+      // the 1000-unit viewBox.
+      x: (node.slot + 0.5) * (TOURNAMENT_WIDTH / 2 ** (height - node.level)),
       y: 22 + (height - node.level) * TOURNAMENT_LEVEL_GAP,
       state,
     };
