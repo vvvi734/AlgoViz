@@ -125,6 +125,20 @@
   --mem-node-edge: #45597a;
   --mem-internal: #141d2d;
   --mem-internal-edge: #33445f;
+  /* Shared aliases and semantic accents for the legacy chapter diagrams. */
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --line: var(--edge);
+  --line-soft: color-mix(in srgb, var(--edge) 55%, transparent);
+  --ink: var(--txt);
+  --text: var(--txt);
+  --text-muted: var(--muted);
+  --surface-soft: var(--panel-2);
+  --accent-soft: color-mix(in srgb, var(--accent) 14%, var(--panel));
+  --accent-contrast: var(--btn-primary-fg);
+  --positive: var(--accent);
+  --positive-soft: var(--tag-green-bg);
+  --positive-strong: var(--tag-green-fg);
+  --diagram-violet: #b8a5ff;
 }
 
 :root[data-theme='light'] {
@@ -246,4 +260,18 @@
   --mem-node-edge: #b3c4d8;
   --mem-internal: #f7f9fc;
   --mem-internal-edge: #d3dce8;
+  /* Shared aliases and semantic accents for the legacy chapter diagrams. */
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --line: var(--edge);
+  --line-soft: color-mix(in srgb, var(--edge) 55%, transparent);
+  --ink: var(--txt);
+  --text: var(--txt);
+  --text-muted: var(--muted);
+  --surface-soft: var(--panel-2);
+  --accent-soft: color-mix(in srgb, var(--accent) 14%, var(--panel));
+  --accent-contrast: var(--btn-primary-fg);
+  --positive: var(--accent);
+  --positive-soft: var(--tag-green-bg);
+  --positive-strong: var(--tag-green-fg);
+  --diagram-violet: #7a6cb5;
 }

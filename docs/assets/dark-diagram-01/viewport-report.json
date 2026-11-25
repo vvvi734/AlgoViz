@@ -1,0 +1,182 @@
+[
+  {
+    "theme": "dark",
+    "id": "file-index",
+    "width": 360,
+    "overflow": 0
+  },
+  {
+    "theme": "dark",
+    "id": "file-index",
+    "width": 390,
+    "overflow": 0
+  },
+  {
+    "theme": "dark",
+    "id": "file-index",
+    "width": 768,
+    "overflow": 0
+  },
+  {
+    "theme": "dark",
+    "id": "file-index",
+    "width": 1280,
+    "overflow": 0
+  },
+  {
+    "theme": "dark",
+    "id": "file-index",
+    "width": 1440,
+    "overflow": 0
+  },
+  {
+    "theme": "dark",
+    "id": "tournament",
+    "width": 360,
+    "overflow": 0
+  },
+  {
+    "theme": "dark",
+    "id": "tournament",
+    "width": 390,
+    "overflow": 0
+  },
+  {
+    "theme": "dark",
+    "id": "tournament",
+    "width": 768,
+    "overflow": 0
+  },
+  {
+    "theme": "dark",
+    "id": "tournament",
+    "width": 1280,
+    "overflow": 0
+  },
+  {
+    "theme": "dark",
+    "id": "tournament",
+    "width": 1440,
+    "overflow": 0
+  },
+  {
+    "theme": "dark",
+    "id": "gl-depth",
+    "width": 360,
+    "overflow": 0
+  },
+  {
+    "theme": "dark",
+    "id": "gl-depth",
+    "width": 390,
+    "overflow": 0
+  },
+  {
+    "theme": "dark",
+    "id": "gl-depth",
+    "width": 768,
+    "overflow": 0
+  },
+  {
+    "theme": "dark",
+    "id": "gl-depth",
+    "width": 1280,
+    "overflow": 0
+  },
+  {
+    "theme": "dark",
+    "id": "gl-depth",
+    "width": 1440,
+    "overflow": 0
+  },
+  {
+    "theme": "light",
+    "id": "file-index",
+    "width": 360,
+    "overflow": 0
+  },
+  {
+    "theme": "light",
+    "id": "file-index",
+    "width": 390,
+    "overflow": 0
+  },
+  {
+    "theme": "light",
+    "id": "file-index",
+    "width": 768,
+    "overflow": 0
+  },
+  {
+    "theme": "light",
+    "id": "file-index",
+    "width": 1280,
+    "overflow": 0
+  },
+  {
+    "theme": "light",
+    "id": "file-index",
+    "width": 1440,
+    "overflow": 0
+  },
+  {
+    "theme": "light",
+    "id": "tournament",
+    "width": 360,
+    "overflow": 0
+  },
+  {
+    "theme": "light",
+    "id": "tournament",
+    "width": 390,
+    "overflow": 0
+  },
+  {
+    "theme": "light",
+    "id": "tournament",
+    "width": 768,
+    "overflow": 0
+  },
+  {
+    "theme": "light",
+    "id": "tournament",
+    "width": 1280,
+    "overflow": 0
+  },
+  {
+    "theme": "light",
+    "id": "tournament",
+    "width": 1440,
+    "overflow": 0
+  },
+  {
+    "theme": "light",
+    "id": "gl-depth",
+    "width": 360,
+    "overflow": 0
+  },
+  {
+    "theme": "light",
+    "id": "gl-depth",
+    "width": 390,
+    "overflow": 0
+  },
+  {
+    "theme": "light",
+    "id": "gl-depth",
+    "width": 768,
+    "overflow": 0
+  },
+  {
+    "theme": "light",
+    "id": "gl-depth",
+    "width": 1280,
+    "overflow": 0
+  },
+  {
+    "theme": "light",
+    "id": "gl-depth",
+    "width": 1440,
+    "overflow": 0
+  }
+]

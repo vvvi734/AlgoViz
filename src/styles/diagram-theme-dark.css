@@ -1,0 +1,948 @@
+/*
+ * DARK-DIAGRAM-01 — theme-aware colour layer for the textbook diagrams that
+ * predate the shared diagram tokens. Light mode keeps each chapter's original
+ * light palette; this file only remaps the fixed light colours in dark mode.
+ *
+ * Rules use :root[data-theme='dark'] so they win over chapter styles regardless
+ * of Vite's CSS import order. Every colour below resolves to a token from
+ * tokens.css; no fixed grey is introduced for an individual diagram.
+ */
+
+/* -------------------------------------------------------------------------
+ * External sorting: merge, replacement selection and optimal merge trees.
+ * ---------------------------------------------------------------------- */
+:root[data-theme='dark'] .ext-io-strip {
+  border-color: var(--edge);
+  background: linear-gradient(180deg, var(--panel-2), var(--panel));
+  color: var(--muted);
+}
+
+:root[data-theme='dark'] .ext-io-strip strong,
+:root[data-theme='dark'] .ext-panel h4,
+:root[data-theme='dark'] .ext-run-head b,
+:root[data-theme='dark'] .ext-candidate strong,
+:root[data-theme='dark'] .ext-weight-chip strong {
+  color: var(--txt);
+}
+
+:root[data-theme='dark'] .ext-io-strip small,
+:root[data-theme='dark'] .ext-panel h4 span,
+:root[data-theme='dark'] .ext-run-head,
+:root[data-theme='dark'] .ext-id,
+:root[data-theme='dark'] .ext-candidate > span,
+:root[data-theme='dark'] .ext-candidate small,
+:root[data-theme='dark'] .ext-flow,
+:root[data-theme='dark'] .ext-note,
+:root[data-theme='dark'] .ext-empty,
+:root[data-theme='dark'] .ext-tape-record small,
+:root[data-theme='dark'] .ext-input-progress,
+:root[data-theme='dark'] .ext-slot-index,
+:root[data-theme='dark'] .ext-workspace-slot > small,
+:root[data-theme='dark'] .ext-tree-roots,
+:root[data-theme='dark'] .ext-cost-selected > span,
+:root[data-theme='dark'] .ext-cost-numbers span,
+:root[data-theme='dark'] .ext-weight-chip small,
+:root[data-theme='dark'] .guided-external-runs small {
+  color: var(--muted);
+}
+
+:root[data-theme='dark'] :is(.ext-run, .ext-bucket, .ext-candidate, .ext-workspace-slot, .ext-cost-numbers > div, .ext-weight-chip, .ext-finished-run) {
+  border-color: var(--edge);
+  background: var(--panel-2);
+  color: var(--txt);
+}
+
+:root[data-theme='dark'] .ext-chip {
+  border-color: var(--edge);
+  background: var(--panel);
+  color: var(--txt);
+}
+
+:root[data-theme='dark'] .ext-chip.is-consumed {
+  border-color: var(--line-soft);
+  background: var(--panel);
+  color: var(--muted);
+}
+
+:root[data-theme='dark'] .ext-chip.is-unread {
+  color: var(--muted);
+}
+
+:root[data-theme='dark'] .ext-chip.is-buffered {
+  border-color: var(--edge-hover);
+  background: color-mix(in srgb, var(--accent-2) 10%, var(--panel));
+}
+
+:root[data-theme='dark'] :is(.ext-chip.is-current, .ext-chip.is-run-head, .ext-chip.is-current-run-new) {
+  border-color: var(--warn);
+  background: color-mix(in srgb, var(--warn) 13%, var(--panel));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--warn) 38%, transparent);
+}
+
+:root[data-theme='dark'] :is(.ext-chip.is-done, .ext-chip.is-output, .ext-chip.is-output-buffer, .ext-chip.is-completed, .ext-chip.is-current-run, .ext-chip.is-eligible) {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, var(--panel));
+  color: var(--positive-strong);
+}
+
+:root[data-theme='dark'] .ext-chip.is-frozen {
+  border-color: var(--red);
+  background: color-mix(in srgb, var(--red) 10%, var(--panel));
+  color: var(--feedback-error-fg);
+}
+
+:root[data-theme='dark'] .ext-order {
+  background: var(--tag-green-bg);
+  color: var(--tag-green-fg);
+}
+
+:root[data-theme='dark'] .ext-flow b {
+  color: var(--warn);
+}
+
+:root[data-theme='dark'] .ext-slot.is-empty {
+  border-color: var(--line-soft);
+  color: var(--muted);
+}
+
+:root[data-theme='dark'] .ext-input-tape {
+  border-color: var(--edge);
+  background:
+    repeating-linear-gradient(180deg, var(--panel-2) 0 26px, var(--panel) 26px 52px);
+}
+
+:root[data-theme='dark'] .ext-tape-record {
+  border-color: var(--edge);
+  background: var(--panel);
+  color: var(--txt);
+}
+
+:root[data-theme='dark'] .ext-tape-record.is-eligible {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 10%, var(--panel));
+}
+
+:root[data-theme='dark'] .ext-tape-record.is-frozen {
+  border-color: var(--red);
+  background: color-mix(in srgb, var(--red) 10%, var(--panel));
+}
+
+:root[data-theme='dark'] :is(.ext-tape-record.is-current-run, .ext-tape-record.is-completed) {
+  border-color: var(--edge-hover);
+  background: var(--panel-2);
+}
+
+:root[data-theme='dark'] .ext-progress-line {
+  background: var(--panel-2);
+}
+
+:root[data-theme='dark'] .ext-progress-line i {
+  background: var(--accent);
+}
+
+:root[data-theme='dark'] .ext-workspace-slot .ext-chip {
+  background: var(--panel);
+}
+
+:root[data-theme='dark'] .ext-finished-run .ext-run-head b {
+  color: var(--positive-strong);
+}
+
+:root[data-theme='dark'] .ext-tree line {
+  stroke: var(--graph-line);
+}
+
+:root[data-theme='dark'] .ext-tree line.is-selected {
+  stroke: var(--warn);
+}
+
+:root[data-theme='dark'] .ext-node rect {
+  fill: var(--graph-node);
+  stroke: var(--graph-node-edge);
+}
+
+:root[data-theme='dark'] .ext-node text {
+  fill: var(--graph-text);
+}
+
+:root[data-theme='dark'] .ext-node-id {
+  fill: var(--muted);
+}
+
+:root[data-theme='dark'] .ext-node.is-leaf rect {
+  fill: color-mix(in srgb, var(--accent) 10%, var(--graph-node));
+  stroke: var(--graph-node-edge);
+}
+
+:root[data-theme='dark'] .ext-node.is-internal rect {
+  fill: color-mix(in srgb, var(--warn) 10%, var(--graph-node));
+  stroke: var(--warn);
+}
+
+:root[data-theme='dark'] .ext-node.is-virtual rect {
+  fill: color-mix(in srgb, var(--red) 10%, var(--graph-node));
+  stroke: var(--red);
+}
+
+:root[data-theme='dark'] .ext-node.is-selected rect {
+  fill: color-mix(in srgb, var(--warn) 18%, var(--graph-node));
+  stroke: var(--warn);
+}
+
+:root[data-theme='dark'] .ext-node.is-new rect {
+  fill: color-mix(in srgb, var(--accent) 16%, var(--graph-node));
+  stroke: var(--accent);
+}
+
+:root[data-theme='dark'] .ext-node-badge {
+  color: var(--feedback-error-fg);
+}
+
+:root[data-theme='dark'] .ext-tree-roots b {
+  background: var(--tag-bg);
+  color: var(--tag-fg);
+}
+
+:root[data-theme='dark'] .ext-cost-numbers > div:nth-child(2) {
+  border-color: var(--warn);
+  background: color-mix(in srgb, var(--warn) 12%, var(--panel-2));
+}
+
+:root[data-theme='dark'] .ext-cost-numbers > div:nth-child(2) strong {
+  color: var(--warn);
+}
+
+:root[data-theme='dark'] .ext-virtual-note {
+  border-left-color: var(--red);
+  background: var(--feedback-error-bg);
+  color: var(--feedback-error-fg);
+}
+
+:root[data-theme='dark'] :is(.sort10-legend-item.is-consumed, .sort10-legend-item.is-buffered)::before {
+  border-color: var(--edge-hover);
+  background: color-mix(in srgb, var(--accent-2) 16%, var(--panel));
+}
+
+:root[data-theme='dark'] :is(.sort10-legend-item.is-winner, .sort10-legend-item.is-eligible, .sort10-legend-item.is-completed)::before {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 16%, var(--panel));
+}
+
+:root[data-theme='dark'] .sort10-legend-item.is-frozen::before {
+  border-color: var(--red);
+  background: color-mix(in srgb, var(--red) 16%, var(--panel));
+}
+
+/* -------------------------------------------------------------------------
+ * File structures: index files, ISAM overflow chains, inverted index.
+ * ---------------------------------------------------------------------- */
+:root[data-theme='dark'] .file-io-strip {
+  border-color: var(--edge);
+  background: linear-gradient(180deg, var(--panel-2), var(--panel));
+  color: var(--muted);
+}
+
+:root[data-theme='dark'] .file-io-strip strong,
+:root[data-theme='dark'] .file-path b,
+:root[data-theme='dark'] .file-block > header b,
+:root[data-theme='dark'] .isam-block > header b,
+:root[data-theme='dark'] .file-record,
+:root[data-theme='dark'] .inverted-record > b,
+:root[data-theme='dark'] .inverted-term > b {
+  color: var(--txt);
+}
+
+:root[data-theme='dark'] .file-io-strip small,
+:root[data-theme='dark'] .file-panel > header > span,
+:root[data-theme='dark'] .file-index-entry small,
+:root[data-theme='dark'] .file-block > header,
+:root[data-theme='dark'] .isam-block > header,
+:root[data-theme='dark'] .file-record small,
+:root[data-theme='dark'] .file-result,
+:root[data-theme='dark'] .file-result small,
+:root[data-theme='dark'] .isam-index-entries .file-index-entry > span:first-child,
+:root[data-theme='dark'] .isam-overflow-label,
+:root[data-theme='dark'] .isam-overflow-empty,
+:root[data-theme='dark'] .inverted-arrow,
+:root[data-theme='dark'] .inverted-postings em,
+:root[data-theme='dark'] .inverted-query-panel em {
+  color: var(--muted);
+}
+
+:root[data-theme='dark'] .file-panel {
+  border-color: var(--edge);
+  background: var(--panel);
+}
+
+:root[data-theme='dark'] .file-index-entry {
+  border-color: var(--edge);
+  background: var(--panel-2);
+  color: var(--txt);
+}
+
+:root[data-theme='dark'] .file-index-entry.is-path {
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--edge));
+  background: color-mix(in srgb, var(--accent) 9%, var(--panel));
+}
+
+:root[data-theme='dark'] .file-index-entry.is-active {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 15%, var(--panel));
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 22%, transparent);
+}
+
+:root[data-theme='dark'] .file-path {
+  border-color: var(--edge-hover);
+  background: var(--panel-2);
+  color: var(--muted);
+}
+
+:root[data-theme='dark'] :is(.file-block, .isam-block, .inverted-record, .inverted-term) {
+  border-color: var(--edge);
+  background: var(--panel-2);
+}
+
+:root[data-theme='dark'] :is(.file-block.is-current, .isam-block.is-current) {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 11%, var(--panel));
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 18%, transparent);
+}
+
+:root[data-theme='dark'] .file-block > header em {
+  background: var(--tag-green-bg);
+  color: var(--tag-green-fg);
+}
+
+:root[data-theme='dark'] .file-record {
+  border-color: var(--edge);
+  background: var(--panel);
+}
+
+:root[data-theme='dark'] .file-record.is-scanning {
+  border-color: var(--accent-2);
+  background: color-mix(in srgb, var(--accent-2) 12%, var(--panel));
+}
+
+:root[data-theme='dark'] .file-record.is-compare {
+  border-color: var(--warn);
+  background: color-mix(in srgb, var(--warn) 13%, var(--panel));
+}
+
+:root[data-theme='dark'] :is(.file-record.is-found, .file-record.is-matched) {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 14%, var(--panel));
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 18%, transparent);
+}
+
+:root[data-theme='dark'] .file-record.is-inserted {
+  border-color: var(--diagram-violet);
+  background: color-mix(in srgb, var(--diagram-violet) 13%, var(--panel));
+}
+
+:root[data-theme='dark'] .file-result {
+  border-color: var(--edge);
+  background: var(--panel-2);
+}
+
+:root[data-theme='dark'] .file-result.is-found {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, var(--panel-2));
+}
+
+:root[data-theme='dark'] .file-result.is-miss {
+  border-color: var(--red);
+  background: color-mix(in srgb, var(--red) 10%, var(--panel-2));
+}
+
+:root[data-theme='dark'] .isam-block.has-overflow {
+  border-color: color-mix(in srgb, var(--diagram-violet) 65%, var(--edge));
+}
+
+:root[data-theme='dark'] .isam-overflow {
+  border-top-color: color-mix(in srgb, var(--diagram-violet) 45%, var(--edge));
+}
+
+:root[data-theme='dark'] .isam-overflow-label,
+:root[data-theme='dark'] .isam-overflow-node > b,
+:root[data-theme='dark'] .isam-next {
+  color: color-mix(in srgb, var(--diagram-violet) 65%, var(--txt));
+}
+
+:root[data-theme='dark'] .isam-overflow-node {
+  border-color: color-mix(in srgb, var(--diagram-violet) 45%, var(--edge));
+  background: color-mix(in srgb, var(--diagram-violet) 11%, var(--panel));
+}
+
+:root[data-theme='dark'] .isam-overflow-node.is-current {
+  border-color: var(--diagram-violet);
+  background: color-mix(in srgb, var(--diagram-violet) 18%, var(--panel));
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--diagram-violet) 20%, transparent);
+}
+
+:root[data-theme='dark'] .isam-next.is-null {
+  color: var(--muted);
+}
+
+:root[data-theme='dark'] .inverted-record.is-scanning {
+  border-color: var(--warn);
+  background: color-mix(in srgb, var(--warn) 12%, var(--panel));
+}
+
+:root[data-theme='dark'] .inverted-record.is-matched,
+:root[data-theme='dark'] .inverted-term.is-active {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 13%, var(--panel));
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 16%, transparent);
+}
+
+:root[data-theme='dark'] .inverted-keywords span,
+:root[data-theme='dark'] .inverted-postings span,
+:root[data-theme='dark'] .inverted-query-terms span,
+:root[data-theme='dark'] .inverted-match-box span {
+  background: var(--tag-bg);
+  color: var(--tag-fg);
+}
+
+:root[data-theme='dark'] .inverted-postings span.is-current,
+:root[data-theme='dark'] .inverted-query-terms span.is-current,
+:root[data-theme='dark'] .inverted-match-box .is-matched {
+  background: var(--tag-green-bg);
+  color: var(--tag-green-fg);
+}
+
+:root[data-theme='dark'] .inverted-query-terms {
+  background: var(--panel-2);
+}
+
+:root[data-theme='dark'] .inverted-set-op {
+  color: var(--muted);
+}
+
+:root[data-theme='dark'] .inverted-match-box {
+  border-color: var(--edge);
+  background: var(--panel);
+}
+
+:root[data-theme='dark'] .inverted-match-box > strong {
+  color: var(--accent);
+}
+
+:root[data-theme='dark'] .inverted-postings em,
+:root[data-theme='dark'] .inverted-query-panel em {
+  color: var(--muted);
+}
+
+/* -------------------------------------------------------------------------
+ * Chapter 9 search: block index, B+ tree and key tree.
+ * ---------------------------------------------------------------------- */
+:root[data-theme='dark'] .block-search-visual,
+:root[data-theme='dark'] .bplus-visual,
+:root[data-theme='dark'] .key-tree-visual {
+  color: var(--txt);
+}
+
+:root[data-theme='dark'] .search-visual-head {
+  border-color: var(--edge);
+  background: var(--panel-2);
+}
+
+:root[data-theme='dark'] :is(.block-row, .search-result) {
+  border-color: var(--edge);
+  background: var(--panel);
+}
+
+:root[data-theme='dark'] .block-row.is-active,
+:root[data-theme='dark'] .block-row.has-match {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 10%, var(--panel));
+}
+
+:root[data-theme='dark'] .block-row-label {
+  color: var(--muted);
+}
+
+:root[data-theme='dark'] .block-cell {
+  border-color: var(--edge);
+  background: var(--panel-2);
+  color: var(--txt);
+}
+
+:root[data-theme='dark'] .block-cell.is-scanned {
+  background: var(--panel);
+  color: var(--muted);
+}
+
+:root[data-theme='dark'] .block-cell.is-compared {
+  border-color: var(--accent-2);
+  box-shadow: inset 0 0 0 1px var(--accent-2);
+}
+
+:root[data-theme='dark'] .block-cell.is-matched {
+  border-color: var(--positive);
+  background: var(--positive-soft);
+  color: var(--positive-strong);
+}
+
+:root[data-theme='dark'] .bplus-canvas-scroll {
+  border-color: var(--edge);
+  background:
+    linear-gradient(to right, color-mix(in srgb, var(--graph-line) 13%, transparent) 1px, transparent 1px) 0 0 / 24px 24px,
+    linear-gradient(to bottom, color-mix(in srgb, var(--graph-line) 13%, transparent) 1px, transparent 1px) 0 0 / 24px 24px,
+    var(--panel-2);
+}
+
+:root[data-theme='dark'] .bplus-edge {
+  stroke: var(--graph-line);
+}
+
+:root[data-theme='dark'] :is(.bplus-edge.is-on-path, .bplus-edge.is-selected) {
+  stroke: var(--accent-2);
+}
+
+:root[data-theme='dark'] .bplus-node rect {
+  fill: var(--graph-node);
+  stroke: var(--graph-node-edge);
+}
+
+:root[data-theme='dark'] .bplus-node.is-leaf rect {
+  fill: color-mix(in srgb, var(--accent) 10%, var(--graph-node));
+  stroke: color-mix(in srgb, var(--accent) 45%, var(--graph-node-edge));
+}
+
+:root[data-theme='dark'] :is(.bplus-node.is-on-path, .bplus-node.is-current) rect {
+  stroke: var(--accent-2);
+}
+
+:root[data-theme='dark'] .bplus-node.is-split-left rect,
+:root[data-theme='dark'] .bplus-node.is-split-right rect {
+  stroke: var(--warn);
+}
+
+:root[data-theme='dark'] .bplus-node.is-new-root rect {
+  stroke: var(--accent);
+}
+
+:root[data-theme='dark'] .bplus-node.is-range-scanned rect {
+  fill: color-mix(in srgb, var(--accent) 15%, var(--graph-node));
+}
+
+:root[data-theme='dark'] .bplus-node text {
+  fill: var(--graph-text);
+}
+
+:root[data-theme='dark'] .bplus-node-role {
+  fill: var(--muted) !important;
+}
+
+:root[data-theme='dark'] .bplus-key-separator {
+  stroke: color-mix(in srgb, var(--graph-line) 60%, transparent);
+}
+
+:root[data-theme='dark'] .bplus-key-compare {
+  fill: color-mix(in srgb, var(--warn) 28%, var(--graph-node));
+}
+
+:root[data-theme='dark'] .bplus-key-inserted {
+  fill: color-mix(in srgb, var(--accent) 24%, var(--graph-node));
+}
+
+:root[data-theme='dark'] .bplus-key-promoted {
+  fill: color-mix(in srgb, var(--warn) 20%, var(--graph-node));
+}
+
+:root[data-theme='dark'] .bplus-leaf-link {
+  stroke: var(--graph-line);
+}
+
+:root[data-theme='dark'] .bplus-leaf-link.is-scanned {
+  stroke: var(--accent);
+}
+
+:root[data-theme='dark'] .bplus-promoted rect {
+  fill: color-mix(in srgb, var(--warn) 15%, var(--panel));
+  stroke: var(--warn);
+}
+
+:root[data-theme='dark'] .bplus-promoted text {
+  fill: var(--warn);
+}
+
+:root[data-theme='dark'] .bplus-foot {
+  color: var(--muted);
+}
+
+:root[data-theme='dark'] .key-tree-canvas {
+  border-color: var(--edge);
+  background: var(--panel-2);
+}
+
+:root[data-theme='dark'] .key-tree-edge {
+  stroke: var(--graph-line);
+}
+
+:root[data-theme='dark'] .key-tree-edge.is-on-path {
+  stroke: var(--accent-2);
+}
+
+:root[data-theme='dark'] .key-tree-edge-label {
+  fill: var(--muted);
+}
+
+:root[data-theme='dark'] .key-tree-node-circle {
+  fill: var(--graph-node);
+  stroke: var(--graph-node-edge);
+}
+
+:root[data-theme='dark'] :is(.key-tree-node.is-on-path, .key-tree-node.is-current) .key-tree-node-circle {
+  stroke: var(--accent-2);
+}
+
+:root[data-theme='dark'] .key-tree-node.is-current .key-tree-node-circle {
+  fill: color-mix(in srgb, var(--warn) 18%, var(--graph-node));
+}
+
+:root[data-theme='dark'] .key-tree-node.is-created .key-tree-node-circle {
+  fill: color-mix(in srgb, var(--accent) 16%, var(--graph-node));
+  stroke: var(--accent);
+}
+
+:root[data-theme='dark'] .key-tree-terminal-ring {
+  stroke: var(--accent);
+}
+
+:root[data-theme='dark'] .key-tree-node-char {
+  fill: var(--graph-text);
+}
+
+:root[data-theme='dark'] .key-tree-node.is-root .key-tree-node-char {
+  fill: var(--muted);
+}
+
+:root[data-theme='dark'] .key-tree-created {
+  fill: var(--accent);
+}
+
+:root[data-theme='dark'] .key-tree-dictionary {
+  border-color: var(--edge);
+  background: var(--panel);
+}
+
+:root[data-theme='dark'] .key-tree-chips span {
+  border-color: var(--edge);
+  background: var(--panel-2);
+  color: var(--txt);
+}
+
+:root[data-theme='dark'] .key-tree-chips span.is-hit {
+  border-color: var(--positive);
+  background: var(--positive-soft);
+  color: var(--positive-strong);
+}
+
+:root[data-theme='dark'] .key-tree-dictionary p {
+  color: var(--muted);
+}
+
+/* -------------------------------------------------------------------------
+ * Chapter 10 sorting: tournament tree, radix buckets and legends.
+ * ---------------------------------------------------------------------- */
+:root[data-theme='dark'] :is(.sort10-head, .sort10-records, .sort10-tree-panel, .sort10-buckets-panel, .sort10-output, .sort10-collected) {
+  border-color: var(--edge);
+  background: var(--panel);
+}
+
+:root[data-theme='dark'] .sort10-op,
+:root[data-theme='dark'] .sort10-meta strong,
+:root[data-theme='dark'] .sort10-node text,
+:root[data-theme='dark'] .sort10-bucket-chip {
+  color: var(--txt);
+}
+
+:root[data-theme='dark'] .sort10-meta,
+:root[data-theme='dark'] .sort10-records h4,
+:root[data-theme='dark'] .sort10-tree-panel h4,
+:root[data-theme='dark'] .sort10-output h4,
+:root[data-theme='dark'] .sort10-buckets-panel h4,
+:root[data-theme='dark'] .sort10-collected h4,
+:root[data-theme='dark'] .sort10-empty,
+:root[data-theme='dark'] .sort10-bucket-empty,
+:root[data-theme='dark'] .sort10-hint,
+:root[data-theme='dark'] .sort10-legend {
+  color: var(--muted);
+}
+
+:root[data-theme='dark'] .sort10-chip {
+  border-color: var(--edge);
+  background: var(--panel-2);
+  color: var(--txt);
+}
+
+:root[data-theme='dark'] .sort10-chip.is-current {
+  border-color: var(--warn);
+  background: color-mix(in srgb, var(--warn) 14%, var(--panel));
+}
+
+:root[data-theme='dark'] .sort10-chip.is-compare {
+  border-color: var(--accent-2);
+  background: color-mix(in srgb, var(--accent-2) 12%, var(--panel));
+}
+
+:root[data-theme='dark'] .sort10-chip.is-winner,
+:root[data-theme='dark'] .sort10-chip.is-affected {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, var(--panel));
+  color: var(--positive-strong);
+}
+
+:root[data-theme='dark'] .sort10-chip.is-removed {
+  background: var(--panel);
+  color: var(--muted);
+}
+
+:root[data-theme='dark'] .sort10-tree line {
+  stroke: var(--graph-line);
+}
+
+:root[data-theme='dark'] .sort10-tree line.is-affected {
+  stroke: var(--warn);
+}
+
+:root[data-theme='dark'] .sort10-node rect {
+  fill: var(--graph-node);
+  stroke: var(--graph-node-edge);
+}
+
+:root[data-theme='dark'] .sort10-node text {
+  fill: var(--graph-text);
+}
+
+:root[data-theme='dark'] .sort10-node-id {
+  fill: var(--muted);
+}
+
+:root[data-theme='dark'] .sort10-node.is-current rect {
+  fill: color-mix(in srgb, var(--warn) 18%, var(--graph-node));
+  stroke: var(--warn);
+}
+
+:root[data-theme='dark'] .sort10-node.is-compare rect {
+  fill: color-mix(in srgb, var(--accent-2) 18%, var(--graph-node));
+  stroke: var(--accent-2);
+}
+
+:root[data-theme='dark'] .sort10-node.is-affected rect {
+  fill: color-mix(in srgb, var(--accent) 15%, var(--graph-node));
+  stroke: var(--accent);
+}
+
+:root[data-theme='dark'] .sort10-node.is-removed rect {
+  fill: var(--panel-2);
+  stroke: var(--edge-hover);
+}
+
+:root[data-theme='dark'] .sort10-node.is-padding rect {
+  fill: var(--panel-2);
+  stroke: var(--edge);
+}
+
+:root[data-theme='dark'] .sort10-node.is-padding text {
+  fill: var(--muted);
+}
+
+:root[data-theme='dark'] .sort10-bucket {
+  border-color: var(--edge);
+  background: var(--panel-2);
+}
+
+:root[data-theme='dark'] .sort10-bucket.is-active {
+  border-color: var(--warn);
+  box-shadow: 0 0 0 1px var(--warn) inset;
+}
+
+:root[data-theme='dark'] .sort10-bucket-head {
+  background: var(--tag-bg);
+  color: var(--tag-fg);
+}
+
+:root[data-theme='dark'] .sort10-bucket.is-active .sort10-bucket-head {
+  background: var(--tag-orange-bg);
+  color: var(--tag-orange-fg);
+}
+
+:root[data-theme='dark'] .sort10-legend-item::before {
+  border-color: var(--edge);
+  background: var(--panel-2);
+}
+
+:root[data-theme='dark'] .sort10-legend-item.is-current::before {
+  border-color: var(--warn);
+  background: color-mix(in srgb, var(--warn) 22%, var(--panel));
+}
+
+:root[data-theme='dark'] .sort10-legend-item.is-compare::before {
+  border-color: var(--accent-2);
+  background: color-mix(in srgb, var(--accent-2) 22%, var(--panel));
+}
+
+:root[data-theme='dark'] .sort10-legend-item.is-affected::before {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 22%, var(--panel));
+}
+
+:root[data-theme='dark'] .sort10-legend-item.is-removed::before {
+  border-color: var(--edge-hover);
+  background: var(--panel);
+}
+
+:root[data-theme='dark'] .sort10-result {
+  background: var(--positive-soft);
+  color: var(--positive-strong);
+}
+
+/* -------------------------------------------------------------------------
+ * Chapter 5 generalized lists: tree nodes, ledger and completion banner.
+ * ---------------------------------------------------------------------- */
+:root[data-theme='dark'] .gl-op-chip,
+:root[data-theme='dark'] .gl-level-chip,
+:root[data-theme='dark'] .gl-active-chip,
+:root[data-theme='dark'] .gl-metric-chip {
+  border-color: var(--edge);
+  background: var(--panel);
+  color: var(--txt);
+}
+
+:root[data-theme='dark'] .gl-op-chip {
+  border-color: var(--accent);
+}
+
+:root[data-theme='dark'] .gl-active-chip {
+  border-color: var(--warn);
+}
+
+:root[data-theme='dark'] .gl-status {
+  border-left-color: var(--accent);
+  background: var(--panel);
+  color: var(--txt);
+}
+
+:root[data-theme='dark'] .gl-status.is-done {
+  border-left-color: var(--accent);
+}
+
+:root[data-theme='dark'] .gl-tree-panel,
+:root[data-theme='dark'] .gl-ledger {
+  border-color: var(--edge);
+  background: var(--panel);
+}
+
+:root[data-theme='dark'] .gl-tree-panel.is-copy {
+  border-color: var(--accent);
+}
+
+:root[data-theme='dark'] .gl-panel-head {
+  border-bottom-color: var(--edge);
+  background: var(--panel-2);
+}
+
+:root[data-theme='dark'] .gl-edge {
+  stroke: var(--graph-line);
+}
+
+:root[data-theme='dark'] .gl-node-box {
+  fill: var(--graph-node);
+  stroke: var(--graph-node-edge);
+}
+
+:root[data-theme='dark'] .gl-node-label {
+  fill: var(--graph-text);
+}
+
+:root[data-theme='dark'] .gl-node.is-atom .gl-node-box {
+  fill: var(--graph-node);
+}
+
+:root[data-theme='dark'] .gl-node.is-list .gl-node-box {
+  fill: var(--panel-2);
+}
+
+:root[data-theme='dark'] .gl-node.is-active .gl-node-box {
+  fill: color-mix(in srgb, var(--warn) 18%, var(--graph-node));
+  stroke: var(--warn);
+}
+
+:root[data-theme='dark'] .gl-node.is-parent .gl-node-box {
+  fill: color-mix(in srgb, var(--accent-2) 16%, var(--graph-node));
+  stroke: var(--accent-2);
+}
+
+:root[data-theme='dark'] .gl-node.is-done .gl-node-box,
+:root[data-theme='dark'] .gl-node.is-copied .gl-node-box {
+  fill: color-mix(in srgb, var(--accent) 16%, var(--graph-node));
+  stroke: var(--accent);
+}
+
+:root[data-theme='dark'] .gl-node.is-copied.is-active .gl-node-box {
+  fill: color-mix(in srgb, var(--warn) 20%, var(--graph-node));
+  stroke: var(--warn);
+}
+
+:root[data-theme='dark'] .gl-node.is-empty .gl-node-label {
+  fill: var(--muted);
+}
+
+:root[data-theme='dark'] .gl-depth-badge {
+  fill: var(--accent);
+}
+
+:root[data-theme='dark'] .gl-ledger-row.is-active {
+  background: color-mix(in srgb, var(--warn) 15%, var(--panel));
+}
+
+:root[data-theme='dark'] .gl-ledger-id {
+  color: var(--muted);
+}
+
+:root[data-theme='dark'] .gl-ledger-value {
+  color: var(--accent);
+}
+
+:root[data-theme='dark'] .gl-ledger-formula {
+  background: var(--panel-2);
+  color: var(--txt);
+}
+
+:root[data-theme='dark'] .gl-done-banner {
+  border-color: var(--accent);
+  background: var(--positive-soft);
+  color: var(--positive-strong);
+}
+
+/* -------------------------------------------------------------------------
+ * Shared chapter details that only need a semantic correction in dark mode.
+ * ---------------------------------------------------------------------- */
+:root[data-theme='dark'] .btree-promoted text {
+  fill: var(--accent-contrast);
+}
+
+:root[data-theme='dark'] .search-mark.is-mid {
+  background: color-mix(in srgb, var(--warn) 16%, var(--panel));
+}
+
+:root[data-theme='dark'] .sorting-mark.is-pivot {
+  background: color-mix(in srgb, var(--warn) 16%, var(--panel));
+}
+
+:root[data-theme='dark'] :is(.array-cell.is-selected, .array-memory-slot.is-selected) {
+  border-color: var(--warn);
+  background: color-mix(in srgb, var(--warn) 18%, var(--panel-2));
+  color: var(--txt);
+}
+
+:root[data-theme='dark'] .array-cell.is-selected .array-cell-index,
+:root[data-theme='dark'] .array-memory-slot.is-selected .array-slot-index {
+  color: var(--warn);
+}
+
+:root[data-theme='dark'] .array-address {
+  color: var(--accent);
+}
