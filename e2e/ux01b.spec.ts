@@ -113,7 +113,7 @@ test.describe('UX-01B — simplified review sheet', () => {
     await selectAlgorithm(page, 'scc');
     await expect(page.locator('[data-testid="scc-stage"]')).toBeVisible({ timeout: 60_000 });
     await expect(page.locator('[data-testid="algorithm-guide"]')).toBeVisible();
-    await expect(page.locator('[data-testid="guide-title"]')).toContainText('Kosaraju');
+    await expect(page.locator('[data-testid="guide-title"]')).toContainText('强连通分量');
     await expect(page.getByTestId('algorithm-flow').locator('.algorithm-flow-section')).toHaveCount(5);
     await expectNoPageOverflow(page);
 
@@ -152,7 +152,7 @@ test.describe('UX-01B — simplified review sheet', () => {
     await selectAlgorithm(page, 'scc');
     await expect(page.locator('[data-testid="scc-stage"]')).toBeVisible({ timeout: 60_000 });
     await expect(page.locator('[data-testid="algorithm-guide"]')).toBeVisible();
-    await expect(page.locator('[data-testid="guide-title"]')).toContainText('Kosaraju');
+    await expect(page.locator('[data-testid="guide-title"]')).toContainText('强连通分量');
     const flow = page.getByTestId('algorithm-flow');
     await expect(flow.locator('.algorithm-flow-section')).toHaveCount(5);
     await expect(page.locator('.algorithm-flow-desktop').first()).toBeHidden();

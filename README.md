@@ -2,6 +2,8 @@
 
 **在线体验（GitHub Pages 公开测试部署）：https://vvvi734.github.io/AlgoViz/**
 
+仓库：[GitHub](https://github.com/vvvi734/AlgoViz) · [Gitee](https://gitee.com/vvvi734/algolens)
+
 AlgoViz 是一个浏览器端的数据结构与算法学习平台。Python 通过 Pyodide 在浏览器内真实执行，动画帧来自执行时记录的 Trace；`bubble` 官方课堂入口保留既有的 25 帧 JavaScript 教学预设。画布、变量、调用栈、教学步骤和参考代码共享同一个播放位置。
 
 当前发布候选版本：**v1.0.0**（RELEASE-01）。GitHub Pages 公开测试站点已上线，但正式 Git Tag、Release 与 v1.0.0 正式发布仍需发布确认；公开测试部署不等同于正式发布。版本说明见 [v1.0.0 发布说明](docs/RELEASES/v1.0.0.md)，部署要求与线上地址见 [部署说明](docs/DEPLOYMENT.md)。
@@ -126,7 +128,7 @@ npm run test:e2e
 - `npm run test:e2e`：Playwright，默认使用本机 Microsoft Edge；覆盖目录、播放器、输入与真实 Pyodide 的代表流程，第 12 章另有索引文件、ISAM 和倒排索引三条真实执行用例。
 - `npm run sync:legacy`：从迁移前定义重新生成 `*.generated.ts` 与帧基线。会改写生成文件，运行后必须 review 再提交。
 - 不要用 `file://` 直接打开构建产物；Worker 和模块加载需要 `npm run dev` 或 `npm run preview`。
-- 生产构建、子路径、缓存、CSP、Pyodide CDN 与静态托管要求见 [部署说明](docs/DEPLOYMENT.md)。本项目当前没有确认的托管平台，仓库只提供平台无关的 `dist/`。
+- 生产构建、子路径、缓存、CSP、Pyodide CDN 与静态托管要求见 [部署说明](docs/DEPLOYMENT.md)。GitHub Pages 公开测试部署由 GitHub Actions 在 GitHub `main` 更新后自动构建并发布；仅推送 Gitee 不会触发该工作流。正式 v1.0.0 尚未发布。
 
 ## 开源许可与来源
 

@@ -115,11 +115,13 @@ GitHub 仓库名和 Gitee 仓库名都没有因为展示名称统一为 AlgoViz 
 
 构建失败时 `deploy` job 不会执行。部署成功后，Pages 地址由 `deploy` job 的 `page_url` 输出。
 
-首次公开测试部署的运行记录：
+首次公开测试部署的历史运行记录（不是最新部署状态）：
 
 - Workflow：https://github.com/vvvi734/AlgoViz/actions/runs/45326384936
 - 结果：`success`
 - 提交：`7828f273bb1af84ca9fab680d39b995b2adc4758`
+
+最新部署状态应查看 Pages 工作流运行列表：https://github.com/vvvi734/AlgoViz/actions/workflows/pages.yml 。每次推送到 GitHub `main` 都会触发新的构建与部署；上述历史 run 不代表后续提交已经部署。
 
 ### 4.3 实际构建产物路径
 
