@@ -1,19 +1,19 @@
 # AlgoViz · 数据结构与算法可视化学习平台
 
-**在线体验（GitHub Pages 公开测试部署）：https://vvvi734.github.io/AlgoViz/**
+**在线体验（GitHub Pages 正式站点）：https://vvvi734.github.io/AlgoViz/**
 
 仓库：[GitHub](https://github.com/vvvi734/AlgoViz) · [Gitee](https://gitee.com/vvvi734/algolens)
 
 AlgoViz 是一个浏览器端的数据结构与算法学习平台。Python 通过 Pyodide 在浏览器内真实执行，动画帧来自执行时记录的 Trace；`bubble` 官方课堂入口保留既有的 25 帧 JavaScript 教学预设。画布、变量、调用栈、教学步骤和参考代码共享同一个播放位置。
 
-当前发布候选版本：**v1.0.0**（RELEASE-01）。GitHub Pages 公开测试站点已上线，但正式 Git Tag、Release 与 v1.0.0 正式发布仍需发布确认；公开测试部署不等同于正式发布。版本说明见 [v1.0.0 发布说明](docs/RELEASES/v1.0.0.md)，部署要求与线上地址见 [部署说明](docs/DEPLOYMENT.md)。
+**当前正式版本：v1.0.0。** annotated Git Tag `v1.0.0` 已同步到 GitHub 与 Gitee，解引用目标为提交 `52498964fea4689e5add732080638a4a9443fa7c`；[GitHub Release v1.0.0](https://github.com/vvvi734/AlgoViz/releases/tag/v1.0.0) 已正式发布。GitHub Pages 正式站点与 GitHub Release 是两套独立发布机制，不需要为创建 Release 重新部署网站。版本说明见 [v1.0.0 发布说明](docs/RELEASES/v1.0.0.md)，最终验收证据见 [v1.0.0 最终 QA 报告](docs/RELEASES/v1.0.0-final-qa.md)，部署要求与线上地址见 [部署说明](docs/DEPLOYMENT.md)。
 
 - 纯前端运行，不需要服务器或数据库。
 - 一个算法只有一条时间轴、一个播放器，不推测执行状态。
 - 理论专题是静态教学页，不挂播放器；动态算法才展示 Trace 和输入。
 - C / C++ / Python 只提供只读参考代码，带中英文内部教学注释。
 
-仓库版本字段为 `1.0.0`。
+仓库版本字段为 `1.0.0`。该版本发布前已通过 TypeScript typecheck、全量 Vitest（168 个文件、1641 项测试）、全量 Playwright（266/266）、生产构建、211/211 份参考源码检查、60 个官方输入执行覆盖和 GitHub Pages 公网 14/14 验收；未关闭 P0 与发布阻断 P1 均为 0。
 
 ## 教材目录
 
@@ -57,6 +57,9 @@ AlgoViz 是独立教学项目，不隶属于上述出版社或作者，也不是
 - `bubble` 的官方课堂入口保留 25 帧 JavaScript Trace；它的自定义与随机输入、以及其余 59 个算法全部走真实 Python/Pyodide。
 - 需要支持 WebAssembly、Web Worker 和现代 ES2020 的浏览器；首次加载 Python 运行时依赖 `cdn.jsdelivr.net` 上的 Pyodide，冷启动受网络与缓存影响，界面会显示加载状态。
 - Pyodide 只执行课程内置程序，不开放任意 Python / JavaScript 代码执行；C / C++ 代码为只读参考，不提供在线编译。
+- 当前没有 URL 级课程深层路由，刷新页面会回到默认教材入口；项目是交互式教学教材，不提供生产级算法 API 服务。
+- 跨浏览器自动化验证以 Chromium / 本机 Microsoft Edge 为主，Firefox / WebKit 覆盖仍有后续扩展空间。
+- 测试基础设施存在已记录、非阻断性的动态导入超时波动；最终全量 Vitest 门禁已通过。
 - 自动无障碍扫描覆盖首页/目录、理论页、输入面板和只读代码面板的代表场景，不等同于完整屏幕阅读器人工验收。复杂 SVG 提供文字摘要、可访问名称和结构说明，但不逐装饰元素朗读。
 - B+ 树本轮提供查找、插入与结构演示，删除操作未单独实现；插值查找、斐波那契查找和点双连通分量提取在理论页说明，没有独立播放器。这些是课程边界，不是隐藏入口。
 - 生产依赖 `npm audit --omit=dev` 当前为 0；开发/测试工具链（Vitest 3）仍报告上游告警，不进入生产包。
@@ -128,7 +131,7 @@ npm run test:e2e
 - `npm run test:e2e`：Playwright，默认使用本机 Microsoft Edge；覆盖目录、播放器、输入与真实 Pyodide 的代表流程，第 12 章另有索引文件、ISAM 和倒排索引三条真实执行用例。
 - `npm run sync:legacy`：从迁移前定义重新生成 `*.generated.ts` 与帧基线。会改写生成文件，运行后必须 review 再提交。
 - 不要用 `file://` 直接打开构建产物；Worker 和模块加载需要 `npm run dev` 或 `npm run preview`。
-- 生产构建、子路径、缓存、CSP、Pyodide CDN 与静态托管要求见 [部署说明](docs/DEPLOYMENT.md)。GitHub Pages 公开测试部署由 GitHub Actions 在 GitHub `main` 更新后自动构建并发布；仅推送 Gitee 不会触发该工作流。正式 v1.0.0 尚未发布。
+- 生产构建、子路径、缓存、CSP、Pyodide CDN 与静态托管要求见 [部署说明](docs/DEPLOYMENT.md)。GitHub Pages 正式站点由 GitHub Actions 在 GitHub `main` 更新后自动构建并发布；仅推送 Gitee 不会触发该工作流。正式 `v1.0.0` 已发布，GitHub Release 与 Pages 是两套独立的发布机制。
 
 ## 开源许可与来源
 
@@ -136,7 +139,7 @@ MIT，见 [LICENSE](LICENSE)。教材只参考章节与知识分类，没有复�
 
 ## English summary
 
-AlgoViz is a browser-first data-structure and algorithm learning platform, prepared as release candidate **v1.0.0**. Python runs in Pyodide and animation frames come from a real execution trace. The textbook directory follows Yan Weimin and Wu Weimin's *Data Structures (C Language Edition)* in 12 chapters; AlgoViz is an independent teaching project and is not an official or authorised electronic edition of that book. The repository currently ships 56 bilingual concept pages, 60 bilingual algorithm courses, inputs and traces, a single player, algorithm guides, and read-only C / C++ / Python reference code. All 60 custom and random entries execute real Python; 59 official entries do the same, while `bubble` keeps its established 25-frame JavaScript classroom preset. AI tutor, MCP, knowledge packs, the question bank, C/C++ execution and the editable Monaco workflow have been removed.
+AlgoViz is a browser-first data-structure and algorithm learning platform. **Stable v1.0.0 is released**, with the annotated `v1.0.0` tag mirrored on GitHub and Gitee and a formal [GitHub Release](https://github.com/vvvi734/AlgoViz/releases/tag/v1.0.0). Python runs in Pyodide and animation frames come from a real execution trace. The textbook directory follows Yan Weimin and Wu Weimin's *Data Structures (C Language Edition)* in 12 chapters; AlgoViz is an independent teaching project and is not an official or authorised electronic edition of that book. The repository ships 56 bilingual concept pages, 60 bilingual algorithm courses, inputs and traces, a single player, algorithm guides, and read-only C / C++ / Python reference code. All 60 custom and random entries execute real Python; 59 official entries do the same, while `bubble` keeps its established 25-frame JavaScript classroom preset. The final release gates passed 1,641 Vitest tests, 266 Playwright tests, 211 reference-source checks, 60 official-input executions and the 14-check public Pages acceptance. AI tutor, MCP, knowledge packs, the question bank, C/C++ execution and the editable Monaco workflow have been removed.
 
 ```sh
 npm ci && npm run dev
